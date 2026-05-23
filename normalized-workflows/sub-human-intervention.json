@@ -1,0 +1,1029 @@
+{
+  "updatedAt": "2026-04-14T00:25:04.117Z",
+  "createdAt": "2026-02-03T13:55:48.911Z",
+  "id": "rrYXzE61gCNUck_zmXe-G",
+  "name": "sub-human-intervention",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "agent"
+            },
+            {
+              "name": "team"
+            },
+            {
+              "name": "contact_phone_number"
+            },
+            {
+              "name": "current_assignee",
+              "type": "any"
+            },
+            {
+              "name": "message_id",
+              "type": "any"
+            },
+            {
+              "name": "is_test",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        288
+      ],
+      "id": "9c94bf98-fd29-41b6-b953-0003026d8620",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "CONVERSATIONS",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "assignmentType": "userId",
+        "assigneeUserId": "={{ $json.assignee_respond_user_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        224,
+        608
+      ],
+      "id": "7687d2be-6276-4512-8e12-696dbced687a",
+      "name": "Assign or unassign a Conversation1",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2e89c3d1-135a-4ff8-84d9-0368b45d204d",
+              "leftValue": "={{ $json.conversation_assignee_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        368
+      ],
+      "id": "770d8a0c-da79-4481-8959-027bf48e27fe",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "comment": "={{ '{' + '{@user.' + $('get-round-robin-assignee').first().json.assignee_respond_user_id + '}' + '}' }} from team: {{ $('When Executed by Another Workflow').item.json.team }}\n⏰ SLA Alert: This contact is routed to you at {{\n  $('conversation-sla-tracking-create').item.json.initiated_at\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}}. \nYou have until {{\n  $('conversation-sla-tracking-create').item.json.due_at\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}} to respond.\nYou have until {{\n  $('conversation-sla-tracking-create').item.json.due_at_resolution\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}} to resolve\nRemaining time for response: {{ $('get-round-robin-assignee').first().json.tier_response_hours }} hour(s)\nRemaining time for resolution: {{ $('get-round-robin-assignee').first().json.tier_resolution_hours }} hour(s)\n\nReference message: https://app.respond.io/space/364817/inbox/{{ $('When Executed by Another Workflow').first().json.contact_id }}#{{ $('When Executed by Another Workflow').first().json.message_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        576
+      ],
+      "id": "af45283d-084e-4642-994b-815caac08c4e",
+      "name": "Add a Comment",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    agent_assignee: $('conversation-sla-event-tracking-create').first().json.assigned_to\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        576
+      ],
+      "id": "a45bc94d-6ac3-445e-9b6c-b435c3155d16",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"policy_id\": \"{{ $('get-round-robin-assignee').item.json.policy_id }}\",\n    \"current_tier\": 1,\n    \"assigned_to\": \"{{ $('get-round-robin-assignee').item.json.assignee_id }}\",\n    \"contact_phone_number\": \"{{ $('When Executed by Another Workflow').first().json.contact_phone_number }}\",\n    \"agent_code\": \"{{ $('When Executed by Another Workflow').first().json.agent }}\",\n    \"team_set_code\": \"{{ $('When Executed by Another Workflow').first().json.team }}\",\n    \"message_id\": {{ $('When Executed by Another Workflow').first().json.message_id }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        448,
+        384
+      ],
+      "id": "06ae4997-3eed-4f22-9871-18f405aff5be",
+      "name": "conversation-sla-tracking-create"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/event-logs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sla_tracking_id\": \"{{ $json.id }}\",\n  \"event_type\": \"assign\",\n  \"from_tier\": 1,\n  \"to_tier\": 1,\n  \"assigned_to\": \"{{ $json.assigned_to }}\",\n  \"reason\": \"New Assignee {{ $('get-round-robin-assignee').first().json.assignee_name }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        384
+      ],
+      "id": "484e69e3-4fa4-48b6-856b-b5bfd10f5e62",
+      "name": "conversation-sla-event-tracking-create"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/next-assignee",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"agent_code\": \"{{ $json.agent }}\",\n    \"team_code\": \"{{ $json.team }}\",\n    \"contact_phone_number\": \"{{ $json.contact_phone_number }}\",\n    \"policy_code\": \"NORMAL\",\n    \"tier\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -448,
+        288
+      ],
+      "id": "89103c96-7827-4735-84c5-8c55a24ec9fd",
+      "name": "get-round-robin-assignee"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+            "message": "=This inquiry has been routed to the respective person-in-charge (PIC) from {{ $('When Executed by Another Workflow').first().json.team }} team. We will get back to you soon. Thanks for your patience."
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1568,
+        192
+      ],
+      "id": "0ca5413f-1b55-4296-a7c4-7d89c726adc7",
+      "name": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "83bed6cf-b77c-4326-a6db-07240c5366ec",
+              "leftValue": "={{ $json.is_already_assigned }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "ba3b3fbe-0d12-45e2-bccb-e716b5f11081",
+              "leftValue": "={{ $json.is_working_hours }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        624
+      ],
+      "id": "86f3ee70-d40c-4f9b-a656-4ceff3638fa3",
+      "name": "if-conversation-unassigned"
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "comment": "={{ '{' + '{@user.' + $json.assignee_respond_user_id + '}' + '}' }}\nHi {{ $('get-round-robin-assignee').item.json.assignee_name }} from team {{ $('When Executed by Another Workflow').item.json.team }}, this is a notification that the user has requested for your assistance. \n\n{{ ($json.assignee_id != $json.conversation_assignee_id) ? `The conversation is not assigned to you as it is already assigned to ${$json.conversation_assignee_name}. But your assistance to this matter is greatly appreciated` : \"\" }} \n\nReference Message: https://app.respond.io/space/364817/inbox/{{ $('When Executed by Another Workflow').item.json.contact_id }}#{{ $('When Executed by Another Workflow').item.json.message_id }}\n"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        816
+      ],
+      "id": "8cb8775c-3e97-47b8-9a60-42def8e18dc7",
+      "name": "comment-request-assistance",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.is_already_assigned && $json.is_working_hours }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    },
+                    "id": "60cccac2-213c-44d5-a5a1-5329b0beba96"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "A_W"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "43dd664a-d1c9-4a4b-af6c-f422c87436c5",
+                    "leftValue": "={{ !$json.is_working_hours }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "A_NW"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        768
+      ],
+      "id": "bb7a3ba4-4469-4e7b-b553-87b8f9dc6adc",
+      "name": "comment-switch"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "sorento-respond-assignee-queue",
+        "messageData": "={\n  \"contact_id\": {{ $('When Executed by Another Workflow').first().json.contact_id }},\n  \"assignee\": {{ JSON.stringify($json) }},\n  \"is_test\": {{ $('When Executed by Another Workflow').first().json.is_test }},\n  \"contact_phone_number\": \"{{ $('When Executed by Another Workflow').first().json.contact_phone_number }}\",\n  \"agent_code\": \"{{ $('When Executed by Another Workflow').first().json.agent }}\",\n  \"team\": \"{{ $('When Executed by Another Workflow').first().json.team }}\",\n  \"message_id\": {{ $('When Executed by Another Workflow').first().json.message_id }}\n}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        192
+      ],
+      "id": "669a96c8-c809-41f5-81ed-09f00d503e95",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "aae0714a-2aeb-4fac-badc-b1a1ed588bf0",
+              "leftValue": "={{ $('When Executed by Another Workflow').first().json.is_test }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        288
+      ],
+      "id": "f57ba17c-ba64-4798-bfa7-b3a77f8b0b6e",
+      "name": "if-is-test"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "83bed6cf-b77c-4326-a6db-07240c5366ec",
+              "leftValue": "={{ $json.conversation_assignee_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3bf425cd-b79d-437c-9c66-d39e041f5b65",
+              "leftValue": "={{ $json.is_working_hours }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "ab7a768a-a781-4c63-8138-a8cbe6f12d4d",
+      "name": "if-conversation-unassigned-test"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.is_already_assigned && $json.is_working_hours }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    },
+                    "id": "60cccac2-213c-44d5-a5a1-5329b0beba96"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "A_W"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "43dd664a-d1c9-4a4b-af6c-f422c87436c5",
+                    "leftValue": "={{ !$json.is_working_hours }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "A_NW"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "541cc1e6-2c60-40e4-8a25-0e88247856c3",
+      "name": "comment-switch-test"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This runs once per item in a Code node\nconst assigneeUserId = $json.assignee_respond_user_id;\n\nreturn {\n  json: {\n    output:\n`{{{@user.${assigneeUserId}}}}\nHi {{$('get-round-robin-assignee').item.json.assignee_name}} from team {{$('When Executed by Another Workflow').item.json.team}}, this is a notification that the user has requested for your assistance. \n\nThe conversation is not assigned to you as it is already assigned to {{$json.conversation_assignee_name}}. But your assistance to this matter\n\nMessage: https://app.respond.io/space/364817/inbox/{{$('When Executed by Another Workflow').item.json.contact_id}}#{{$('When Executed by Another Workflow').item.json.message_id}}`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -192
+      ],
+      "id": "05abfee6-f02f-420a-b6af-d990a3425b35",
+      "name": "test-output-assigned-in-working-hours"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  \"contact_id\": $('When Executed by Another Workflow').first().json.contact_id,\n  \"assignee\": JSON.stringify($input.first().json)\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "b9f6e97b-0518-4e99-9ad5-11a2fc0d0303",
+      "name": "test-output-assigned-outside-working-hours"
+    },
+    {
+      "parameters": {
+        "jsCode": "const userId = $json.assigned_to;\nconst team = $('When Executed by Another Workflow').item.json.team;\n\nvar initiatedAt = $('conversation-sla-tracking-create').first().json.initiated_at;\n\nvar dueAt = $('conversation-sla-tracking-create').first().json.due_at;\n\nconst dueAtResolution = $('conversation-sla-tracking-create').item.json.due_at_resolution;\n\nconst tierResponseHours = $('get-round-robin-assignee').first().json.tier_response_hours;\nconst tierResolutionHours = $('get-round-robin-assignee').first().json.tier_resolution_hours;\n\nreturn {\n  json: {\n    output: `{{{@user.${userId}}}} from team: ${team}\n⏰ SLA Alert: This contact is routed to you at ${initiatedAt}. \nYou have until ${dueAt} to respond.\nYou have until ${dueAtResolution} to resolve\nRemaining time for response: ${tierResponseHours} hour(s)\nRemaining time for resolution: ${tierResolutionHours} hour(s)`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        384
+      ],
+      "id": "b1581d61-f214-4e5f-a6bd-4320edd46128",
+      "name": "test-output-comment"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+            "message": "=We have noted down your enquiries. We are outside of our working hours, we will notify the respective PIC once they get back to work.\n\nOur operating hours (except public holidays):\n{{ $json.working_day_ranges[0].start_weekday }} - {{ $json.working_day_ranges[0].end_weekday }}\n{{ $json.working_hours_start }} - {{ $json.working_hours_end }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        384
+      ],
+      "id": "c5dd9961-0568-4c6e-8efa-c21343af715e",
+      "name": "sorento-sub-respond-sendmsg-respond-routed-to-pic1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/work-calendar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1568,
+        384
+      ],
+      "id": "321258ea-de71-47f8-a3b5-a3c14d2bb6b4",
+      "name": "get-working-days"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "aae0714a-2aeb-4fac-badc-b1a1ed588bf0",
+              "leftValue": "={{ $('When Executed by Another Workflow').first().json.is_test }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        384
+      ],
+      "id": "92ec4402-2d17-4da9-b8c5-31772ce266e3",
+      "name": "if-is-test1"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "get-round-robin-assignee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign or unassign a Conversation1": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-tracking-create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-tracking-create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Add a Comment": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversation-sla-tracking-create": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-event-tracking-create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversation-sla-event-tracking-create": {
+      "main": [
+        [
+          {
+            "node": "if-is-test1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-round-robin-assignee": {
+      "main": [
+        [
+          {
+            "node": "if-is-test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-conversation-unassigned": {
+      "main": [
+        [
+          {
+            "node": "Assign or unassign a Conversation1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "comment-switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "comment-switch": {
+      "main": [
+        [
+          {
+            "node": "comment-request-assistance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-is-test": {
+      "main": [
+        [
+          {
+            "node": "if-conversation-unassigned-test",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "if-conversation-unassigned",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-conversation-unassigned-test": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "comment-switch-test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "comment-switch-test": {
+      "main": [
+        [
+          {
+            "node": "test-output-assigned-in-working-hours",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "test-output-assigned-outside-working-hours",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "test-output-comment": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "comment-request-assistance": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "get-working-days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "test-output-assigned-outside-working-hours": {
+      "main": [
+        []
+      ]
+    },
+    "test-output-assigned-in-working-hours": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-working-days": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-is-test1": {
+      "main": [
+        [
+          {
+            "node": "test-output-comment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add a Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "contact_id": 423512626,
+          "team": "marketing",
+          "contact_phone_number": "+60166753328",
+          "current_assignee": null,
+          "message_id": 1776126006000000,
+          "is_test": false
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "e66d63ad-d89b-467a-87f2-cecc59d23d87",
+  "activeVersionId": "e66d63ad-d89b-467a-87f2-cecc59d23d87",
+  "versionCounter": 197,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:55:48.911Z",
+      "createdAt": "2026-02-03T13:55:48.911Z",
+      "role": "workflow:owner",
+      "workflowId": "rrYXzE61gCNUck_zmXe-G",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

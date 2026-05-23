@@ -1,0 +1,232 @@
+{
+  "updatedAt": "2026-05-22T00:40:11.120Z",
+  "createdAt": "2026-04-22T16:59:49.522Z",
+  "id": "XTODTw-dJcV0uRdC056hG",
+  "name": "sub-query-reformulator",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "latest_user_message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "previous_conversation_state",
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        -48
+      ],
+      "id": "98fb7dda-cb8b-4b2c-b9b4-ab62e61431a5",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        176
+      ],
+      "id": "0978e365-a3fc-4722-94c4-d6b90780fa20",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let output = {};\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n    match.replace(/```json?|\\```/g, '')\n  );\n\n  const idx = raw.indexOf('{');\n  if (idx === -1) {\n    output = { output: raw };\n    output.quick_reply = $json.quick_reply\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output.output = JSON.parse(cleanSlice);\n  }\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -48
+      ],
+      "id": "847a1173-5e8d-48bf-ae3d-b1be218b0e88",
+      "name": "output_exchange"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User answered: {{ $('When Executed by Another Workflow').first().json.latest_user_message }}\nPrevious conversation state: {{ JSON.stringify($('When Executed by Another Workflow').first().json.previous_conversation_state) }}",
+        "options": {
+          "systemMessage": "=You are the Sorento Semantic Parser for a business assistant.\nYour job is to take:\n\nprevious_conversation_state (last conversation state), and\n\ncurrent_user_message (the latest user message)\n\nand return a single compact JSON object for downstream routing and orchestration.\n\nYou MUST:\n\nPreserve important phrases (like product names) exactly inside entities[].raw.\n\nRouting rules\nSet routing.suggested_team and routing.suggested_agent using ONLY the following rules:\n\nIf the user asks about product or product certificates\n→ suggested_team = \"purchasing\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about incoming stock\n→ suggested_team = \"purchasing\", suggested_agent = \"incoming_stock_enquiries\".\n\nIf the user asks about promotion for sorento\n→ suggested_team = \"marketing_promotion_sorento\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about promotion for cabana\n→ suggested_team = \"marketing_promotion_cabana\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about promotion for mocha\n→ suggested_team = \"marketing_promotion_mocha\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about goods receiving, delivery order, order, or stock\n→ suggested_team = \"warehouse\", suggested_agent = \"order_enquiries\".\n\nIf the user asks about a marketing form\n→ suggested_team = \"marketing_form\", suggested_agent = \"marketing_form\".\n\nIf the user asks about product photos or technical specs\n→ suggested_team = \"marketing_product\", suggested_agent = \"general_enquiries\".\n\nOtherwise\n→ suggested_team = \"customer_service\", suggested_agent = \"general_enquiries\".\n\nInterpret “asks about” based on the main intent of current_user_message and previous_conversation_state.\n\nEscalation confirmation\nLook at previous_conversation_state.\n\nIf previous_conversation_state is related to escalation and the current message clearly agrees to escalate:\n\nmessage_type = \"escalation_confirmation\".\n\nescalation.is_escalation_confirmation = true.\n\nIf suggested_next_action is related to escalation and the current message clearly rejects escalation:\n\nmessage_type = \"escalation_confirmation\".\n\nescalation.is_escalation_confirmation = false.\n\nIn all other cases:\n\nDo not override message_type based on escalation.\n\nescalation.is_escalation_confirmation = false.\n\nMessage type\nSet message_type based only on the current user message and previous conversation state:\n\n\"business_query\": asking for information, status, links, products, promotions, orders, stock, complaints, etc.\n\n\"clarification\": asking to clarify a previous answer.\n\n\"casual\": greetings, thanks, small talk.\n\n\"confirmation\": clearly confirming some non‑escalation action (e.g. “Yes, please place the order”).\n\n\"escalation_confirmation\": as defined in the escalation rules above.\n\n\"unknown\": you cannot classify the message.\n\nIf multiple types seem possible, choose the most specific.\n\nACCESS LEVEL MAPPING RULES:\nYou must always include access_levels in the output.\n\naccess_levels must be an array, can be [], or contain one or more of:\n[\"Sorento Dealer\",\"Mocha Dealer\",\"Mocha Office\",\"Cabana Dealer\",\"Cabana Office\",\"End User\",\"Sorento Office\"]\nIf you cannot infer any, return []\n\nDo not treat access levels as entities.\n\nDo not invent other access level strings.\n\n- If the message explicitly contains any of:\n  - \"Sorento\" and \"dealer\" → include \"Sorento Dealer\"\n  - \"Mocha\" and \"dealer\" → include \"Mocha Dealer\"\n  - \"Mocha\" and \"office\" → include \"Mocha Office\"\n  - \"Cabana\" and \"dealer\" → include \"Cabana Dealer\"\n  - \"Cabana\" and \"office\" → include \"Cabana Office\"\n  - \"Sorento\" and \"office\" → include \"Sorento Office\"\n  - \"dealer\" → include \"Sorento Dealer\", \"Mocha Dealer\", \"Cabana Dealer\"\n  - \"office\"→ include \"Sorento Office\", \"Mocha Office\", \"Cabana Office\"\n  - \"end user\"→ include \"End User\"\n  - no specific mention→ []\n\nEntities\nYou must always include \"entities\" in the output (can be an empty array).\n\nEach entity must be an object:\n\n{\n  \"raw\": \"exact extracted phrase from the message and previous conversation state, e.g. \\\"Sorento Basin 1234\\\"\",\n  \"hint\": \"one of: product | promotion | customer | transporter | inbound_shipment | spo | grn | warehouse | attachment | form | order\"\n}\nGuidelines:\n\nUse the single best hint for each entity.\n\nEntities may be empty ([]) if there are truly none.\n\nIf the current message is a continuation of the previous topic and does not explicitly introduce a new entity, reuse relevant entities from previous_conversation_state.entities.\nIf the current message modifies the prior request, keep the old entity and add/update only the modified attribute.\nOnly replace a previous entity when the user clearly names a different entity.\n\nMatch mode\nYou must always include \"match_mode\" in the output.\n\nUse \"and\" when the entities should all be matched together as a combined filter (narrow search).\n\nUse \"or\" when the entities should be treated as alternative filters (any of them is acceptable).\n\nExamples:\n\n“Find orders for customer ABC in March” → entities for customer ABC and March → \"match_mode\": \"and\".\n\n“Show me Sorento or Mocha dealers” → entities for Sorento Dealer and Mocha Dealer → \"match_mode\": \"or\".\n\nIf unclear, prefer \"and\".\n\nIntent and domain hints\nintent_hint: a short label like \"submit_complaint\", \"promotion_enquiry\", \"order_status\", \"stock_check\" or null if unclear.\n\ndomain_hint: a short label for the business area (e.g. \"warehouse\", \"marketing\", \"purchasing\", \"customer_service\", \"marketing_form\", \"stock_inquiry_form\", \"purchase_request_form\", \"sponsorship_form\", \"complaint_form\") or null if unclear.\n\nBoth should be simple, lowercase snake_case strings when used.\n\nOutput format\nReturn only a single valid JSON object with exactly these keys:\n\n{\n  \"message_type\": \"business_query | confirmation | clarification | escalation_confirmation | casual | unknown\",\n  \"intent_hint\": \"string_or_null\",\n  \"domain_hint\": \"string_or_null\",\n  \"user_goal\": \"string_or_null\",\n  \"access_levels\": [] ,\n  \"match_mode\": \"and | or\",\n  \"demand_qty\": demand quantity in number or null if not specified,\n  \"entities\": [\n    {\n      \"raw\": \"string\",\n      \"hint\": \"product | promotion | customer | transporter | inbound_shipment | spo | grn | warehouse | attachment | form | order\"\n    }\n  ],\n  \"routing\": {\n    \"suggested_team\": \"purchasing | marketing_promotion | warehouse | marketing_form | marketing_product | customer_service\",\n    \"suggested_agent\": \"general_enquiries | order_enquiries | incoming_stock_enquiries | marketing_form\"\n  },\n  \"escalation\": {\n    \"is_escalation_confirmation\": false\n  }\n}\nAdditional rules:\n\nuser_goal should be a short, plain‑language description of what the user wants, or null if unclear.\n\nentities can be an empty array, but must be present.\n\nAlways set routing.suggested_team and routing.suggested_agent using the routing rules above.\n\nDo not include any other fields.\n\nDo not write comments or explanations.\n\nReturn exactly one JSON object."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -560,
+        -48
+      ],
+      "id": "c637b079-07fb-449d-8d72-d0a4bc40455a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        176
+      ],
+      "id": "1ce2835b-98c5-4b53-b36b-a0fa509068ac",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output_exchange": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "latest_user_message": "Cabana Dealer\nreply to: undefined\n",
+          "contact_id": 437264483,
+          "previous_conversation_state": {
+            "routing": {
+              "suggested_team": "marketing_promotion",
+              "suggested_agent": "general_enquiries"
+            },
+            "entities": [
+              {
+                "raw": "Cabana car",
+                "hint": "promotion"
+              }
+            ],
+            "response": "Please specify the type of promotion\nCabana Dealer,Cabana Office,End User,Mocha Dealer,Mocha Office,Sorento Dealer,Sorento Office",
+            "user_goal": "check cabana car promotion availability",
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_hint": "marketing",
+            "intent_hint": "promotion_enquiry",
+            "message_type": "business_query",
+            "access_levels": []
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "6ae95762-65a0-4097-a4c6-e9d6aaa15e74",
+  "activeVersionId": "6ae95762-65a0-4097-a4c6-e9d6aaa15e74",
+  "versionCounter": 371,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-22T16:59:49.522Z",
+      "createdAt": "2026-04-22T16:59:49.522Z",
+      "role": "workflow:owner",
+      "workflowId": "XTODTw-dJcV0uRdC056hG",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

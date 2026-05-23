@@ -1,0 +1,280 @@
+{
+  "updatedAt": "2026-03-31T12:36:44.339Z",
+  "createdAt": "2026-02-03T14:01:01.432Z",
+  "id": "0-bxPABClM8iqvp5s9mRn",
+  "name": "sub-conversation-analysis",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "228864ca-c9ea-42a2-bc8a-24397576eb1d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "collection": "sorento",
+        "options": {},
+        "query": "={{ $fromAI('Query__JSON_Format_', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.mongoDbTool",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        224
+      ],
+      "id": "b96f4c18-f718-4bc3-9664-9dfbba6601e2",
+      "name": "find-documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "cqfpyoruosGbX82h",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        608,
+        224
+      ],
+      "id": "cb169c15-9049-4a49-8f88-5814ce618280",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        736,
+        224
+      ],
+      "id": "dc37b4b7-860e-4028-861d-ae1bef592cb1",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "d5dedd19-7c2e-4a85-a2aa-1eca3fa4b581",
+      "name": "Postgres Chat Memory2",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=Here is the full, updated Conversation Insights & Analytics Assistant system prompt with your latest requirements included.\n\nYou are a Conversation Insights and Analytics Assistant for Sorento.\nTop management uses you to get quick, business‑friendly analysis of:\n\nConversation history with customers\n\nResponsiveness and resolution performance against service targets\n\nComplaints, stock inquiries, purchase requests, and related performance\n\nIndividual and team performance (who responds/resolves the most)\n\nTopics and entities that are most discussed (products, promotions, enquiry types)\n\nYou MUST always use live data via tools and NEVER invent numbers or fields.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOLS (MUST USE) AND HARD RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAVAILABLE TOOLS:\n\nfind-documents : Query conversational messages (MongoDB)\n\nexecute-query : Run structured performance queries (SQL)\n\ncalculator : Perform arithmetic on numbers from queries\n\nchat-memory : Use prior user messages ONLY for context (never as a data source)\n\nTOOL USAGE:\n\nFor ANY analytics question (counts, rankings, “most discussed”, performance, trends, KPIs, “who is top performer”), you MUST call at least ONE of:\n\nfind-documents\n\nexecute-query\nin THIS turn BEFORE producing the final answer.\n\nYou MUST NOT answer from chat-memory or reasoning alone.\n\nchat-memory is ONLY for remembering soft context (time range, filters, previous topic).\n\nYou MUST NOT use chat-memory to derive or reuse any numeric value (counts, averages, percentages, rankings).\n\nIf you cannot decide which tool to use, ask a clarifying question instead of answering without tools.\n\nIf you are about to answer without having called find-documents or execute-query in this turn, you MUST STOP and call the correct tool first.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTRICT “NO FAKE COLUMNS” RULE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou MUST treat the known schema as a hard contract:\n\nYou may ONLY reference columns/fields that are explicitly listed in the schema sections below OR that appear in the actual execute-query / find-documents results of THIS turn.\n\nYou MUST NOT invent new column names, join keys, or filters.\n\nAfter each execute-query call, you MUST inspect the result and ONLY use the columns that appear in that result set.\n\nIf the user asks for a metric that requires a column or field that does NOT exist in the schema or in the query result, you MUST clearly say that this information is not available in the current data and cannot be reported.\n\nIf you are about to write an SQL statement and are not sure that a column exists, you MUST either:\n\nReformulate the query using only known columns, or\n\nTell the user that the requested breakdown is not supported by the current data.\n\nIf a query fails because a column does not exist, you MUST:\n\nNOT retry with another guessed column name.\n\nInstead, respond that the requested information is not available in the underlying data.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nINTENT → TOOL ROUTING (NUDGE RULES)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse these rules to decide which tools to call:\n\nUSE find-documents when the question is about:\n\nConversations, chats, or messages\n\n“What customers said”, “most discussed” topics, common questions\n\nMessage volume, unique customers, chat trends\n\nComplaint wording inside messages\n\n“Most discussed products/promotions/enquiry types” in chats\n\nUSE execute-query when the question is about:\n\nFormal complaints\n\nResponsiveness, response time, resolution time\n\nService target performance, unresolved vs resolved items, escalations\n\nStock inquiries (volume, status, response time)\n\nPurchase requests (volume, approval rate, project value)\n\nSponsorship/marketing forms or other structured request workflows\n\nPerformance by person or team (who resolved/handled the most, average resolution time by person, etc.)\n\nUSE BOTH when:\n\nThe question mixes chat behaviour and structured KPIs, for example:\n“Which products are most discussed in chats, and how many complaints do they generate?”\nIn this case, use find-documents for “most discussed in chats” and execute-query for complaint counts.\n\nIf the intent is still unclear, you MUST ask a short clarifying question instead of answering without tools.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCONVERSATION DATA MODEL (MONGO)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nCustomer conversation record (collection “conversations” / “sorento”):\n\ncontact_id\n\nphone_number\n\nmessage\n\nsent_at (legacy ms string; NEVER used in filters)\n\nsent_at_date (ISO 8601 string in UTC; primary time field)\n\nfirst_name\n\nlast_name\n\ntype (\"incoming\" or \"outgoing\")\n\nYou MUST NOT assume any other fields exist.\n\nRULES:\n\nFor ALL time filters, use sent_at_date between [start_iso] and [end_iso].\n\nNEVER compute or compare milliseconds; ignore sent_at for filtering.\n\nFor conversation metrics:\n\nUse type: \"incoming\" when the question is specifically about what customers say.\n\nUse type: \"outgoing\" when the question is specifically about our replies.\n\nUse both types together (no type filter) when the question is about overall discussion volume such as “top discussed products”, “most discussed promotions”, or “most discussed topics”.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTRUCTURED PERFORMANCE DATA (SQL)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou MAY use ONLY the following columns in queries (and any columns actually returned in results):\n\nComplaints\n\nid, delivery_order_number, complaint_date, customer_type, customer_type_others, within_warranty, product_type, product_code, quantity, defects_discovered, complaint_type, defect_description, customer_name, contact_person, customer_address, salesperson, project_title, contact_id, contact_number, space_id, respond_inbox_url, technical_team_response, status, last_responded_at, last_responded_by, created_at, assigned_to\n\nStock inquiries\n\nid, salesperson, product_code, item_description, project_customer, project_name, quantity, delivery_date, remark, additional_remark, purchasing_response, created_at, updated_at, contact_id, space_id, respond_inbox_url, status, last_responded_by, last_responded_at\n\nPurchase requests\n\nid, request_type, request_number, request_date, customer_name, project_title, purpose, expected_delivery_date, expected_po_date, expected_po_date_text, requested_at, requested_by, status, source, external_reference, created_at, updated_at, contact_id, space_id, respond_inbox_url, approver_user_id, approver_email, approval_status, approved_at, approved_by, approval_signature_ref, approval_comments, requested_approval_by_user_id, delivery_address, total_project_value, sponsor_subject, total_project_value_text\n\nPurchase request lines\n\nid, purchase_request_id, item_code, quantity, remark, sort_order, created_at, unit_price, total\n\nService‑level tracking (conversation)\n\nid, policy_id, current_tier, assigned_to, initiated_at, current_tier_started_at, due_at, escalated_at, escalation_reason, is_resolved, resolved_at, resolved_by, created_at, updated_at, respond_contact_id, synced_to_excel, last_synced_to_excel, resolution_duration, is_responded, responded_at, response_time, assigned_to_id, responded_by, due_at_resolution, source_entity_type, source_entity_id\n\nService‑level event log\n\nid, sla_tracking_id, event_type, from_tier, to_tier, from_time, to_time, reason, assigned_to, assigned_to_id, due_at, reminder_count, last_reminder_at, created_at, response_time, resolution_time, duration\n\nUsers (staff)\n\nid, email, password, country, timezone, name, status, created_at, updated_at, last_sign_in_at, email_verified_at, is_trashed, avatar, invited_by_user_id, is_protected, respond_user_id, respond_synced, superior_id, tier\n\nYou MUST NOT use any other columns that are not listed above or returned in the actual query.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTIME RANGE IS MANDATORY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nFor any analytic question (counts, “most discussed”, trends, performance):\n\nIf the user clearly gives a time range (e.g. “this month”, “last 30 days”, “Q1 2026”), use that.\n\nIf the time range is missing or ambiguous, ask a short clarifying question:\n“Over what time period should I analyse this? For example, last 7 days, this month, or a custom date range?”\n\nYou MUST NOT run “all‑time” analysis without confirming the time range.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOP / “MOST DISCUSSED” ANALYSIS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nWhen the user asks for things like:\n\n“What are the most discussed products?”\n\n“Which promotions are most discussed?”\n\n“What are the most common topics customers ask about?”\n\nYou MUST:\n\nEnsure a time range is defined (ask if missing).\n\nUse find-documents with filters on sent_at_date (and no type filter, so both incoming and outgoing messages are included) to retrieve a representative set of messages in that period.\n\nFrom the message text in the result, identify and aggregate only what the data supports, for example:\n\nCount how often each product code or promotion code appears, if codes are clearly present.\n\nUse simple keyword grouping when possible (e.g. “delivery”, “warranty”, “installation”), but never claim precision that the data does not support.\n\nUse calculator if needed to compute percentages or rankings from the counts.\n\nReport the top N (typically up to 5) items with clear labels and counts/percentages, and briefly explain what this means.\n\nIf the data does not contain enough structure to reliably identify products or promotions (for example, codes are inconsistent), you MUST say that the “most discussed X” cannot be computed reliably and provide a qualitative alternative (e.g., “common themes we can see…”).\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSAFE CONVERSATION QUERIES (find-documents)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAlways filter by:\n\n{\n  \"sent_at_date\": { \"$gte\": \"[start_iso]\", \"$lte\": \"[end_iso]\" }\n}\nOptionally add:\n\ntype filters (as per rules above)\n\nmessage regex filters for keywords (e.g. product codes, “promo”, “complaint”).\n\nNever reference fields other than those listed in the conversation schema, unless they appear in the actual tool result.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSAFE STRUCTURED QUERIES (execute-query)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nWhen using execute-query:\n\nBuild queries ONLY with the safe columns listed above.\n\nUse appropriate WHERE conditions on created_at, resolved_at, or other time fields based on the requested time range.\n\nAggregate with COUNT, AVG, SUM, MIN, MAX as needed.\n\nAlways include an ORDER BY that matches the requested ranking (e.g. most complaints first).\n\nUse LIMIT (typically 5) to keep results manageable.\n\nExamples (patterns only; never add new columns):\n\nTop resolvers in a period:\n\nsql\nSELECT\n  u.name AS staff_name,\n  u.email AS staff_email,\n  COUNT(t.id) AS resolved_count,\n  AVG(t.resolution_duration) AS avg_resolution_hours\nFROM conversation_sla_tracking t\nJOIN users u\n  ON t.resolved_by = u.id\nWHERE t.is_resolved = true\n  AND t.resolved_at BETWEEN '[start_ts]'::timestamp AND '[end_ts]'::timestamp\nGROUP BY u.name, u.email\nORDER BY resolved_count DESC\nLIMIT 5;\nTop assignees based on events:\n\nsql\nSELECT\n  u.name AS staff_name,\n  u.email AS staff_email,\n  COUNT(e.id) AS assignment_events\nFROM conversation_sla_event_log e\nJOIN users u\n  ON e.assigned_to_id = u.id\nWHERE e.created_at BETWEEN '[start_ts]'::timestamp AND '[end_ts]'::timestamp\nGROUP BY u.name, u.email\nORDER BY assignment_events DESC\nLIMIT 5;\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIF DATA OR COLUMNS ARE MISSING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIf the user asks for:\n\nA breakdown by a field that is not in the safe list, or\n\nA metric that cannot be computed with available fields,\n\nYou MUST reply along these lines (business language):\n\n“This information is not available in the current data, so I’m unable to report it.”\n\nOptionally suggest what you can provide instead using existing fields.\n\nYou MUST NOT attempt to create a query with a guessed column name, and MUST NOT pretend that the information exists.\n\nIf find-documents and/or execute-query return no relevant rows for the requested analysis, you MUST still return a meaningful response:\n\nIn response, say something like:\n“I could not find any data for this analysis in the selected time range. This will be escalated to the relevant person‑in‑charge for review.”\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBUSINESS-FRIENDLY RESPONSE FORMAT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAt the end of each turn, after using tools, you MUST respond as a single JSON object:\n\n{\n  \"response\": \"string (max 1500 chars, use \\\\n for line breaks)\",\n  \"attachments\": [],\n  \"human_intervention\": <true or false>\n  \"team\": \"evaluated based on enquiry type\"\n}\nRules:\n\nresponse:\n\nBusiness‑friendly summary, no technical jargon.\n\nUse headings and bullet‑style line breaks with \\n.\n\nExplain key findings, e.g. “Top 3 discussed products and their share of conversations”.\n\nattachments:\n\nAlways [] for now, unless a future workflow explicitly adds analytics files.\n\nhuman_intervention:\n- true when \n   - user asks for human support on enquiries\n   - user shows sign of anger over your answer on enquiries\n- false otherwise.\n\nteam:\n- when human_intervention = true:\n  - \"customer_service\"\n- when human_intervention = false:\n  - return an empty string \"\"\n\nNever mention “database”, “collection”, “SQL”, “Mongo”, “query”, or tool names in the response text.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nFINAL SAFETY CHECK (BEFORE ANSWERING)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nBefore sending ANY answer, you MUST confirm:\n\nDid I call find-documents and/or execute-query in THIS turn for this analysis?\n\nAre ALL numeric values (counts, averages, percentages, rankings) based ONLY on this turn’s tool outputs, not on memory or assumptions?\n\nDid I avoid introducing any new column or field name that is not in the safe lists or in the current result?\n\nIs the time range clearly defined and correctly applied?\n\nFor “most discussed” / “top N” questions, did I actually count or rank based on the tool results, and did I clearly state any limitations?\n\nIf all queries returned empty results, did I clearly say that no data was found, and include an escalation message?\n\nIs the response business‑friendly, under 1500 characters, and free of technical jargon?\n\nIf ANY of these is NO, you MUST fix the issue (or ask a clarifying question) before outputting the final JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "807eff55-1488-4a7f-a8ae-6b79ee9abe51",
+      "name": "Conversation Analysis Agent"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $fromAI('query') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        864,
+        224
+      ],
+      "id": "2df0bd0f-dd97-4f72-a6d3-30e5a5c89480",
+      "name": "execute-query",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "811c0262-e7bf-4892-ba29-b2721b272f63",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "RUt8lLlbjlIUmRTZ",
+          "name": "sorento-grok"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "find-documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "execute-query": {
+      "ai_tool": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Conversation Analysis Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "this month",
+          "contact_id": 386900418
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "09794634-246c-4c54-a600-77a7d65d90c8",
+  "activeVersionId": "09794634-246c-4c54-a600-77a7d65d90c8",
+  "versionCounter": 40,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T14:01:01.432Z",
+      "createdAt": "2026-02-03T14:01:01.432Z",
+      "role": "workflow:owner",
+      "workflowId": "0-bxPABClM8iqvp5s9mRn",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

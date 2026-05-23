@@ -1,0 +1,234 @@
+{
+  "updatedAt": "2026-05-22T05:44:01.149Z",
+  "createdAt": "2026-05-21T10:56:33.247Z",
+  "id": "Fss5aAaXthJSWpZCgKiKR",
+  "name": "sub-get-results",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "tool"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "user_prompt"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        -64
+      ],
+      "id": "843d5c81-d777-4075-bbb5-acf3d8988578",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When Executed by Another Workflow').first().json.user_prompt }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are the Sorento MCP Response Agent.\n\nYour only job is to:\n1. Read the user prompt.\n2. Call the MCP tool to get live Sorento data or perform the requested live Sorento action.\n3. Return exactly one JSON object in the required schema.\n\nYou have access to:\n- MCP tool (live business data and actions)\n- Calculator (arithmetic only)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOPERATING SCOPE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUpstream systems already pass all resolved context needed for this turn:\n- message_type\n- intent_hint\n- user_goal\n- entities\n- access_levels\n\nUse only the inputs provided in THIS turn and the MCP tool results from THIS turn.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCURRENT DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nCURRENT DATE: {{ $now.format('cccc, dd MMMM yyyy') }}\n\nIf relative dates such as \"today\" or \"yesterday\" appear in the current turn input, convert them to absolute dates before calling the MCP tool.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOL USAGE POLICY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nFor any request involving live Sorento business data or business actions, you MUST call the MCP tool in this turn before producing the final JSON.\n\nNever answer from prior knowledge.\nNever invent IDs, statuses, URLs, timestamps, file paths, or record details.\nNever set `has_result` to false unless MCP tool was called in this turn and returned no useful result.\n\nUse the Calculator only for arithmetic. Do not use it for business lookups.\n\nDefault MCP parameter rules:\n- If the tool supports `limit` and the user does not specify a limit, use `limit = 10`.\n- If entity UUIDs are provided in `entities`, pass them to the MCP tool using the correct parameter based on `entity_type`.\n- If multiple entity UUIDs apply to the same parameter, pass them as an array in one MCP call instead of making repeated calls.\n- If optional MCP parameters are not available, omit them and still call the tool with the minimum valid arguments.\n- If a truly required argument is missing and cannot be derived from this turn’s provided inputs, ask for clarification by returning a JSON response with `has_result: false`.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOUTPUT BEHAVIOR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAfter the MCP tool returns:\n1. Format the tool result.\n2. Return exactly one JSON object.\n3. Do not wrap the JSON in markdown.\n4. Do not add explanations outside the JSON.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nANSWERS ARRAY (STRICT)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n- `answers` MUST contain ONE element per result record returned by the MCP tool.\n- If the tool returns 10 records, emit 10 answer objects.\n- NEVER merge multiple records into one `description`.\n- Each `description` must describe EXACTLY ONE entity only.\n- Do NOT pre-number items inside `description`.\n\nWRONG:\n{\n  \"answers\": [\n    {\n      \"description\": \"*Order:* A\\n*Date:* ...\\n\\n*Order:* B\\n*Date:* ...\",\n      \"product\": \"Product A\",\n      \"stock_qty\": stock quantity in number, or null\n    }\n  ]\n}\n\nRIGHT:\n{\n  \"answers\": [\n    {\n      \"description\": \"*Order:* A\\n*Date:* ...\",\n      \"product\": \"Product A\",\n      \"stock_qty\": stock quantity in number, or null\n    },\n    {\n      \"description\": \"*Order:* B\\n*Date:* ...\",\n      \"product\": \"Product A\",\n      \"stock_qty\": stock quantity in number, or null\n    }\n  ]\n}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nATTACHMENTS (STRICT)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n- Extract ALL attachment/file objects from the MCP tool response across ALL returned records.\n- `attachments` MUST contain ONE element per source attachment object.\n- Never merge, summarize, or drop attachments.\n- Preserve source order.\n- Only deduplicate when the exact same `file_path` appears more than once.\n- Do not mention attachment URLs in `answers` or `response_intro`.\n- If attachments exist, set `response_intro` to exactly:\n  `I have attached the file(s) below.`\n- If no attachments exist, return `\"attachments\": []`.\n\nEach attachment object MUST map directly from MCP tool data:\n- `url` <- `file_path`\n- `filename` <- `stored_filename`\n- `mimeType` <- `mime_type`\n- `attachmentType` <- `attachment_type->description`\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nFIELD RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n- `response_intro`: short opening line; if attachments exist, must be exactly `I have attached the file(s) below.`\n- `answers[].description`: multi-line string using `\\n` between fields; format labels in bold, for example `*Product Code:* 123\\n*Link:* https://...`\n- Do NOT include discontinued status in `description`.\n- Do NOT include portal links in `description`.\n- `answers[].is_discontinued`: true only if explicitly stated in MCP data for that specific item, else false.\n- `last_updated_at`: the latest `updated_at` datetime found in the MCP tool data.\n- `has_result`: true only if MCP returned useful result records relevant to the user goal; otherwise false.\n- `escalate_team`: populate only if explicitly justified by MCP result or request handling rules; otherwise empty string.\n- `escalated_agent`: populate only if explicitly justified by MCP result or request handling rules; otherwise empty string.\n- `action_links`: include only links explicitly returned by the MCP tool or explicitly defined by the request handling rule. Never invent URLs.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nNO-RESULT BEHAVIOR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIf the MCP tool returns no useful result:\n- return `has_result: false`\n- return `answers: []`\n- return `attachments: []`\n- return the safest valid values for the other fields\n- do not fabricate fallback business data\n\nIf a required field is truly missing before any valid MCP call can be made:\n- return `has_result: false`\n- explain the missing required input briefly in `response_intro`\n- do not invent parameters\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOUTPUT SCHEMA\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nReturn exactly one JSON object with this structure:\n\n{\n  \"response_intro\": \"short opening line\",\n  \"answers\": [\n    {\n      \"description\": \"A multi-line string detailing exactly one item.\",\n      \"is_discontinued\": false,\n      \"product\": \"Product A\",\n      \"stock_qty\": stock quantity in number, or null\n    }\n  ],\n  \"escalate_team\": \"purchasing|marketing_product|marketing_promotion|warehouse|marketing_form|customer_service|\",\n  \"escalated_agent\": \"general_enquiries|order_enquiries|incoming_stock_enquiries|marketing_form|\",\n  \"action_links\": [\n    {\n      \"label\": \"Complaint Submission Portal\",\n      \"url\": \"https://...\",\n      \"type\": \"portal_link\"\n    }\n  ],\n  \"attachments\": [\n    {\n      \"url\": \"file path from MCP result\",\n      \"filename\": \"stored filename from MCP result\",\n      \"mimeType\": \"mime type from MCP result\"\n      \"attachmentType\": \"attachment type description from MCP result\"\n    }\n  ],\n  \"last_updated_at\": \"latest updated_at datetime in MCP tool data\",\n  \"has_result\": true,\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        32,
+        -64
+      ],
+      "id": "4a9d9137-eeee-4415-88e4-9ca263dc6292",
+      "name": "AI Agent",
+      "retryOnFail": false,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://72.62.195.20:8765/mcp",
+        "include": "selected",
+        "includeTools": "={{ $('When Executed by Another Workflow').first().json.tool.trim().split() }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        160
+      ],
+      "id": "7b7839e7-4c63-4c7d-91a9-b4f0cca3370c",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        224,
+        160
+      ],
+      "id": "810518a8-b400-4aac-9050-b86900b6370f",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        160
+      ],
+      "id": "21f3c440-6211-4263-bbb8-221f5aa5a6f8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// =============================================================================\n  // n8n Code node: output_exchange\n  // Mode: Run Once for All Items\n  // Parses AI Agent JSON output, sanitizes it, and stitches a single response\n  // string for the messaging channel.\n  //\n  // Tolerances added:\n  //   - Strips ```json / ``` fences.\n  //   - Joins JS-style string concatenation (\"a\" + \"b\") that small models\n  //     sometimes emit, so JSON.parse can still consume the payload.\n  //   - Falls back to raw text if all parse attempts fail.\n  // =============================================================================\nfunction cleanDescription(text) {\n    const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';\n    // Matches lines like:  *Promotion ID:* xxx   /   *Order ID:* xxx   /   *ID:* xxx\n    // Word \"id\" must be a standalone token in the label (so \"*Order:*\" / \"*Customer:*\" survive)\n    const ID_LABEL_LINE = /^\\s*\\*+\\s*[A-Za-z ]*\\bid\\b\\s*:\\s*\\*+\\s*\\S.*$/i;\n\n    return String(text || '')\n      .replace(/\\n?\\*?(?:Is )?Discontinued:\\*?\\s*(true|false)\\s*/gi, '')\n      .split('\\n')\n      .filter(line =>\n        !ID_LABEL_LINE.test(line) &&\n        !new RegExp(UUID_RE, 'i').test(line)   // belt-and-braces for any UUID elsewhere\n      )\n      .join('\\n')\n      .replace(new RegExp(UUID_RE, 'gi'), '')  // strip bare UUIDs that survived\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .trim(); \n  }\n  \n  let output;\n\n  // 1. Parse the JSON safely\n  if ($json.output && typeof $json.output === 'object') {\n    output = $json.output;\n  } else {  \n    let raw = String($json.output || '');\n\n    // Strip markdown code fences if present.\n    raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n      match.replace(/```json?|```/g, '')\n    );\n\n    const idx = raw.indexOf('{');\n    if (idx === -1) { \n      output = { response: raw };\n      output.quick_reply = $json.quick_reply;\n    } else {\n      const startSlice = raw.slice(idx);\n      const last = startSlice.lastIndexOf('}');\n      let cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n\n      // Tolerate JS-style string concatenation that gpt-4.1-mini sometimes emits:\n      //   \"foo\\n\" +\n      //   \"bar\\n\"\n      // → join adjacent string literals separated by `+` (and any whitespace\n      // including newlines).\n      let prev;\n      do {\n        prev = cleanSlice;\n        cleanSlice = cleanSlice.replace(/\"\\s*\\+\\s*\"/g, '');\n      } while (cleanSlice !== prev);\n\n      try {\n        output = JSON.parse(cleanSlice);\n      } catch (e) {\n        output = { response: cleanSlice };\n      }\n    }\n  }\n\n  // Helper: remove discontinued line from description\n  function cleanDescription(text) {\n    return String(text || '')\n      .replace(/\\n?\\*?(?:Is )?Discontinued:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .trim();\n  }\n\n  // Helper: format timestamp to dd/MM/yyyy HH:mm:ss\n  function formatTimestamp(isoString) {\n    if (!isoString) return null;\n    const date = new Date(isoString);\n    const day = String(date.getDate()).padStart(2, '0');\n    const month = String(date.getMonth() + 1).padStart(2, '0');\n    const year = date.getFullYear();\n    const hours = String(date.getHours()).padStart(2, '0');\n    const minutes = String(date.getMinutes()).padStart(2, '0');\n    const seconds = String(date.getSeconds()).padStart(2, '0');\n    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;\n  }\n\n  // Optional: clean answers in the structured output itself\n  if (output && Array.isArray(output.answers)) {\n    output.answers = output.answers.map(ans => ({\n      ...ans,\n      description: cleanDescription(ans.description),\n    }));\n  }\n\n  // 2. Stitch the new structured components into a single 'response' string\n  if (output && output.response_intro) {\n    let finalMessage = output.response_intro.trim() + '\\n\\n';\n\n    // Show what the agent looked up\n    if (output.query_used) {\n      finalMessage += `_Query: ${String(output.query_used).trim()}_\\n\\n`;\n    }\n  \n    if (Array.isArray(output.action_links) && output.action_links.length > 0) {\n      output.action_links.forEach((link, index) => {\n        finalMessage += `${index + 1}. *${link.label || 'Link'}:* ${link.url}\\n`;\n      });   \n      finalMessage += '\\n';\n    }\n  \n    if (Array.isArray(output.answers) && output.answers.length > 0) {\n        output.answers.forEach((ans, index) => {\n        let desc = cleanDescription(ans.description);\n        let extra = '';\n    \n        if (ans.product) {\n          extra += `\\n*Product:* ${ans.product}`;\n        }\n    \n        if (ans.stock_qty !== undefined && ans.stock_qty !== null && ans.stock_qty !== '') {\n          extra += `\\n*Quantity:* ${ans.stock_qty}`;\n        }\n    \n        let line = `${index + 1}. ${desc}${extra}`;\n    \n        if (ans.is_discontinued === true || ans.is_discontinued === 'true') {\n          line += '  ⚠️  *(DISCONTINUED)*';\n        }\n    \n        finalMessage += line + '\\n';\n      });\n    \n      finalMessage += '\\n';\n    }\n\n    if (output.suggested_next_action) {\n      finalMessage += output.suggested_next_action.trim() + '\\n\\n';\n    }\n\n    // Add timestamp footer if available\n    const timestamp = output?.last_updated_at;\n    if (timestamp) {\n      const formatted = formatTimestamp(timestamp);\n      if (formatted) {\n        finalMessage += `_Data last updated: ${formatted}_`;\n      }\n    }\n\n    output.response = cleanDescription(finalMessage.trim());\n  }\n\n  return output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "1970e24e-334c-4b7c-a987-d002f766b2f5",
+      "name": "output_exchange"
+    }
+  ],
+  "connections": {
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "tool": "crm_incoming_stock_by_product ",
+          "contact_id": "437264483 ",
+          "user_prompt": "message_type: business_query  \nintent_hint: stock_check  \ndomain_hint: warehouse  \nuser_goal: check if product 11412 has any new incoming shipment  \nentities: [{\"uuid\":\"3424200e-478c-4ce6-96bc-2abecafcd7f5\",\"entity_type\":\"product\"}] \naccess level: [] \ncontact_id: 437264483 \nspace_id: 364817"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "841079f3-9364-4525-aca0-13cc38c581b3",
+  "activeVersionId": "841079f3-9364-4525-aca0-13cc38c581b3",
+  "versionCounter": 38,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-21T10:56:33.247Z",
+      "createdAt": "2026-05-21T10:56:33.247Z",
+      "role": "workflow:owner",
+      "workflowId": "Fss5aAaXthJSWpZCgKiKR",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

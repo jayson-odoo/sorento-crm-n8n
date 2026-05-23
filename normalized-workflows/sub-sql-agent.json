@@ -1,0 +1,289 @@
+{
+  "updatedAt": "2026-04-18T13:12:14.427Z",
+  "createdAt": "2026-04-11T09:29:48.546Z",
+  "id": "PLf5z4VyNW_jQ_zg88nAm",
+  "name": "sub-sql-agent",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query_description"
+            },
+            {
+              "name": "access_levels"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        -72
+      ],
+      "id": "7b8f36f7-4fdb-405a-8f47-029d2ca72c72",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawSql = ($input.first().json.text || '').trim();\n\nif (!rawSql) {\n  return [{\n    json: {\n      isValid: false,\n      reason: 'Empty SQL',\n      sql: rawSql,\n    }\n  }];\n}\n\nconst sql = rawSql\n  .replace(/```sql/gi, '')\n  .replace(/```/g, '')\n  .trim();\n\nconst forbiddenKeywords = [\n  'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'TRUNCATE',\n  'CREATE', 'GRANT', 'REVOKE', 'MERGE', 'CALL', 'DO', 'COPY',\n  'EXECUTE', 'BEGIN', 'COMMIT', 'ROLLBACK'\n];\n\nconst allowStart = /^(SELECT|WITH)\\b/i;\nconst multiStatement = /;[\\s\\r\\n]*\\S+/;\nconst forbiddenPattern = new RegExp(`\\\\b(${forbiddenKeywords.join('|')})\\\\b`, 'i');\n\nconst allowedTables = [\n  'public.products',\n  'public.stock',\n  'public.warehouses',\n  'public.product_categories',\n  'public.attachments',\n  'public.product_attachments',\n  'public.promotions',\n  'public.promotion_products',\n  'public.promotion_groups',\n  'public.promotion_attachments',\n  'public.product_suppliers',\n  'public.brands',\n  'public.stock_inquiries',\n  'public.purchase_requests',\n  'public.purchase_request_lines',\n  'public.forms',\n  'public.order_statuses',\n  'public.orders',\n  'public.order_lines',\n  'public.inbound_shipments',\n  'public.inbound_shipment_lines',\n  'public.spo_allocations',\n  'public.picking_headers',\n  'public.picking_lines',\n  'products',\n  'stock',\n  'warehouses',\n  'product_categories',\n  'attachments',\n  'product_attachments',\n  'promotions',\n  'promotion_products',\n  'promotion_groups',\n  'promotion_attachments',\n  'product_suppliers',\n  'brands',\n  'stock_inquiries',\n  'purchase_requests',\n  'purchase_request_lines',\n  'forms',\n  'order_statuses',\n  'orders',\n  'order_lines',\n  'inbound_shipments',\n  'inbound_shipment_lines',\n  'spo_allocations',\n  'picking_headers',\n  'picking_lines'\n];\n\nconst deniedSchemas = /\\b(information_schema|pg_catalog|pg_shadow|pg_user|pg_roles)\\b/i;\n\nconst problems = [];\n\nif (!allowStart.test(sql)) {\n  problems.push('Only SELECT or WITH queries are allowed');\n}\n\nif (forbiddenPattern.test(sql)) {\n  problems.push('Forbidden SQL keyword detected');\n}\n\nif (multiStatement.test(sql.replace(/;\\s*$/, ''))) {\n  problems.push('Multiple SQL statements are not allowed');\n}\n\nif (deniedSchemas.test(sql)) {\n  problems.push('System schemas are not allowed');\n}\n\nconst lowerSql = sql.toLowerCase();\n\nconst tableRegex = /\\b(from|join)\\s+([a-zA-Z0-9_.\"]+)/gi;\nlet match;\nconst referencedTables = [];\n\nwhile ((match = tableRegex.exec(sql)) !== null) {\n  const tableName = match[2].replace(/\"/g, '');\n  referencedTables.push(tableName);\n}\n\nconst invalidTables = referencedTables.filter(t => {\n  const normalized = t.toLowerCase();\n  return !allowedTables.map(a => a.toLowerCase()).includes(normalized);\n});\n\nif (invalidTables.length > 0) {\n  problems.push(`Disallowed table(s): ${[...new Set(invalidTables)].join(', ')}`);\n}\n\nconst hasLimit = /\\blimit\\s+\\d+\\b/i.test(sql);\nlet safeSql = sql.replace(/;+\\s*$/, '');\n\nif (!hasLimit) {\n  safeSql += '\\nLIMIT 100';\n}\n\nconst hasOrderBy = /\\border\\s+by\\b/i.test(sql);\nconst isAggregateOnly =\n  /\\b(count|sum|avg|min|max)\\s*\\(/i.test(sql) &&\n  !/\\b(product_code|product_name|promo_code|warehouse_code|original_filename)\\b/i.test(sql);\n\nreturn [{\n  json: {\n    isValid: problems.length === 0,\n    reason: problems.join('; '),\n    sql: rawSql,\n    normalizedSql: safeSql,\n    referencedTables: [...new Set(referencedTables)],\n    hasLimit,\n    hasOrderBy,\n    isAggregateOnly,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -72
+      ],
+      "id": "86344c3d-0da4-49bd-9bf0-c7cfb1510242",
+      "name": "SQL Validator"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9a415198-72ed-4926-9a35-74926cccb94e",
+              "leftValue": "={{ $json.isValid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        -72
+      ],
+      "id": "d6ed0558-68b1-42e6-ae88-c2e4a03a7dd0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.normalizedSql }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        464,
+        -144
+      ],
+      "id": "66e91777-a8cd-42df-be85-64dea2eb48df",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if ($input.first().json.isValid == false) {\n  return {\n    \"output\": \"Invalid query\"\n  }\n} else if (Object.keys($input.first().json).length > 0) {\n  return $input.all()\n} else {\n  return {\n    \"output\": \"No result\"\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        -72
+      ],
+      "id": "c61fd71f-4c29-470c-94f0-0f7de779f1bb",
+      "name": "Return",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Query description: {{ $json.query_description }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a PostgreSQL SQL Query Generator.\n\nYour ONLY job is to generate one safe, read-only PostgreSQL query using only the tables, columns, and relationships provided in the schema appended below.\n\nYou are not a chat assistant.\nYou do not explain reasoning.\nYou do not output markdown.\nYou do not output JSON.\nYou do not output code fences.\nYou do not add comments.\n\nYou output exactly one SQL query string and nothing else.\n\nCore behavior\nYou will receive:\n\na natural-language query_description,\n\noptional runtime parameters such as:\n\nquery_class\n\nACCESS_LEVEL\n\nIS_ALLOWED_STOCK\n\nCONTACT_ID\n\nproduct codes, promo codes, order numbers, shipment numbers, or keywords.\n\nYour task is to convert that input into one valid PostgreSQL SELECT query.\n\nHard rules\nRead-only only\nYou may generate only:\n\nSELECT\n\nWITH ... SELECT\n\nYou must never generate:\n\nINSERT\n\nUPDATE\n\nDELETE\n\nMERGE\n\nCREATE\n\nALTER\n\nDROP\n\nTRUNCATE\n\nGRANT\n\nREVOKE\n\nCALL\n\nDO\n\nCOPY\n\nEXECUTE\n\nBEGIN\n\nCOMMIT\n\nROLLBACK\n\nOne statement only\n\nOutput exactly one SQL statement.\n\nNever output multiple statements.\n\nUse only provided schema\n\nUse only tables, columns, and relationships explicitly provided in the schema below.\n\nNever invent a table.\n\nNever invent a column.\n\nNever invent a join.\n\nIf a requested concept does not map directly to a provided column, choose the closest valid interpretation using only available schema.\n\nIf a field name is not present in the schema, do not use it.\n\nNo prose\n\nOutput SQL only.\n\nNo explanation before or after.\n\nPostgreSQL syntax only\n\nUse valid PostgreSQL syntax.\n\nQuery construction rules\nColumn usage\nNever use SELECT *.\n\nAlways select only the columns needed to answer the request.\n\nAliases\nUse short aliases consistently, such as:\n\np for products\n\ns for stock\n\nw for warehouses\n\npc for product_categories\n\nb for brands\n\npr for promotions\n\npp for promotion_products\n\npg for promotion_groups\n\na for attachments\n\npa for product_attachments\n\npa2 for promotion_attachments\n\nps for product_suppliers\n\nish for inbound_shipments\n\nisl for inbound_shipment_lines\n\no for orders\n\nol for order_lines\n\nsi for stock_inquiries\n\nfs for forms\n\nph for picking_headers\n\npl for picking_lines\n\nsa for spo_allocations\n\nOrdering and limits\nEvery row-returning query should include ORDER BY and LIMIT.\n\nDefault to LIMIT 10 unless the request clearly specifies another limit.\n\nUse a sensible ORDER BY, such as:\n\nname ascending for product lists,\n\ndate descending for recent records,\n\nETA ascending for incoming stock,\n\nquantity descending for stock summaries.\n\nMatching rules\nUnless the request explicitly says “exact”, “only this code”, or clearly refers to a unique exact identifier:\n\nprefer loose matching with ILIKE '%' || value || '%'.\n\nProduct matching\nWhen resolving a product from user text, prefer:\n\nsql\n(\n  p.product_code ILIKE '%' || :search || '%'\n  OR p.product_name ILIKE '%' || :search || '%'\n  OR p.description ILIKE '%' || :search || '%'\n)\nPromotion matching\nUse promotions alias pr and prefer:\n\nsql\n(\n  pr.promo_code ILIKE '%' || :search || '%'\n  OR pr.name ILIKE '%' || :search || '%'\n  OR pr.description ILIKE '%' || :search || '%'\n)\nOrder matching\nWhen searching orders, match loosely across:\n\no.order_number\n\no.customer_ref\n\no.debtor_code\n\no.debtor_name\n\no.remarks\n\no.delivery_remarks\n\no.remarks_cs\n\nShipment matching\nWhen searching inbound shipments, match loosely across:\n\nish.shipment_number\n\nish.invoice_number\n\nish.bill_of_lading_number\n\nish.shipping_container_number\n\nish.notes\n\nAttachments\nWhen the request involves attachments:\n\nalways filter a.is_deleted = FALSE\n\nsearch across:\n\na.original_filename\n\na.description\n\na.file_path\n\na.full_directory_path\n\nbut you must never select a.full_directory_path in the output.\n\nAccess control\nIf relevant tables contain access_levels JSONB and ACCESS_LEVEL is provided:\n\nfilter using:\n\nsql\naccess_levels @> '[\"<ACCESS_LEVEL>\"]'::jsonb\nUse this only in WHERE.\n\nStock rules\nUse stock.quantity_available for stock availability.\n\nAggregate with SUM(quantity_available) when needed.\n\nUse GROUP BY correctly.\n\nUse HAVING for aggregate filtering, never WHERE SUM(...).\n\nPromotions rules\nFor active promotions:\n\nsql\npr.is_active = TRUE\nAND CURRENT_DATE BETWEEN pr.start_date AND pr.end_date\nFor active promotion-product lines:\n\nsql\n(pp.start_date IS NULL OR CURRENT_DATE >= pp.start_date)\nAND (pp.end_date IS NULL OR CURRENT_DATE <= pp.end_date)\nDealer-only promotion fields:\n\npp.dealer_cost\n\npp.dealer_discount_percent\n\npp.list_to_dealer_margin_amount\n\nCustomer-facing promotion fields:\n\npp.promo_selling_price\n\npp.discount_percent\n\npp.discount_amount\n\npp.list_price_at_promo\n\nIf ACCESS_LEVEL != 'dealer', do not use dealer-only fields unless explicitly instructed by the runtime rules.\n\nLead time rules\nLead time comes from product_suppliers.standard_lead_time_days.\n\nPrefer product_suppliers.is_primary = TRUE where relevant.\n\nIncoming stock rules\nUse inbound_shipments, inbound_shipment_lines, and related tables only as defined in the schema.\n\nFocus on outstanding/incoming quantities and ETA-related fields when the request is about incoming stock.\n\nContact-scoped data\nFor stock_inquiries, always filter by:\n\nsql\nsi.contact_id = CONTACT_ID\nQuery class guidance\nIf query_class is provided, use it to bias table selection:\n\nproduct → products, categories, brands\n\npromotion → promotions, promotion_products, products\n\nproduct_attachment → products, product_attachments, attachments\n\npromotion_attachment → promotions, promotion_attachments, attachments\n\nstock → products, stock, warehouses\n\nlead_time → products, product_suppliers\n\nincoming_stock → products, inbound_shipment_lines, inbound_shipments\n\norder_search or order_stock → orders, order_lines, products, warehouses\n\nforms → forms, attachments\n\nUse only the minimum relevant tables.\n\nSafety and accuracy rules\nPrefer simple valid SQL over clever SQL.\n\nDo not use a column unless it is explicitly present in the schema below.\n\nDo not assume business meanings that are not supported by schema.\n\nIf the request is ambiguous, generate the most reasonable query using the provided fields only.\n\nNever use attachments.full_directory_path in the SELECT list.\n\nNever use DISTINCT unless necessary.\n\nIf using DISTINCT, ensure PostgreSQL ORDER BY compatibility.\n\nOutput rule\nReturn exactly one PostgreSQL SQL query string and nothing else.\n\nSchema\n\npublic.brands (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tbrand_name varchar(150) NOT NULL,\n\tbrand_code varchar(50) NOT NULL,\n\tmanufacturer varchar(150) NULL,\n\tdescription text NULL,\n\tlogo_url varchar(255) NULL,\n\twebsite varchar(255) NULL,\n\tis_active bool DEFAULT true NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL\n);\n\npublic.complaints (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tdelivery_order_number text NULL,\n\tcomplaint_date date NULL,\n\tcustomer_type text NULL,\n\tcustomer_type_others text NULL,\n\twithin_warranty text NULL,\n\tproduct_type text NULL,\n\tdefects_discovered text NULL,\n\tcomplaint_type text NULL,\n\tdefect_description text NULL,\n\tproduct_code text NULL,\n\tsalesperson text NULL,\n\tcustomer_name text NULL,\n\tcontact_person text NULL,\n\tcontact_number text NULL,\n\tcustomer_address text NULL,\n\tproject_title text NULL,\n\tcontact_id text NULL,\n\tspace_id text NULL,\n\trespond_inbox_url text NULL,\n\ttechnical_team_response text NULL,\n\tstatus varchar(50) DEFAULT 'new'::character varying NOT NULL,\n\tlast_responded_by text NULL,\n\tlast_responded_at timestamp NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tassigned_to text NULL\n);\n\npublic.order_statuses (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tstatus_code varchar(50) NOT NULL,\n\tstatus_name varchar(100) NOT NULL,\n\tdescription text NULL,\n\t\"sequence\" int4 NOT NULL,\n\tis_final_status bool DEFAULT false NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n);\n\npublic.picking_headers (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpicking_number varchar(50) NOT NULL,\n\tpicking_type varchar(50) NOT NULL,\n\tsource_entity_type varchar(50) NULL,\n\tsource_entity_id uuid NULL,\n\tpicking_date date DEFAULT CURRENT_DATE NOT NULL,\n\tpicked_by_user_id uuid NULL,\n\tinspection_status varchar(50) DEFAULT 'pending'::character varying NULL,\n\tquality_remarks text NULL,\n\tinspected_by_user_id uuid NULL,\n\tinspection_date timestamp NULL,\n\tpicking_status varchar(50) DEFAULT 'draft'::character varying NULL,\n\ttotal_items_picked int4 NULL,\n\ttotal_items_discrepancy int4 NULL,\n\ttotal_cost numeric(15, 2) NULL,\n\tnotes text NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tspo_number varchar(50) NULL,\n\tCONSTRAINT picking_headers_inspection_status_check CHECK (((inspection_status)::text = ANY (ARRAY[('pending'::character varying)::text, ('passed'::character varying)::text, ('failed'::character varying)::text, ('partial_pass'::character varying)::text]))),\n\tCONSTRAINT picking_headers_picking_status_check CHECK (((picking_status)::text = ANY (ARRAY[('draft'::character varying)::text, ('submitted'::character varying)::text, ('approved'::character varying)::text, ('posted'::character varying)::text, ('rejected'::character varying)::text, ('closed'::character varying)::text]))),\n\tCONSTRAINT picking_headers_picking_type_check CHECK (((picking_type)::text = ANY (ARRAY[('goods_received'::character varying)::text, ('warehouse_transfer'::character varying)::text, ('sales_picking'::character varying)::text, ('stock_return'::character varying)::text, ('inventory_adjustment'::character varying)::text]))),\n);\npublic.promotions (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpromo_code varchar(50) NOT NULL,\n\t\"name\" varchar(255) NOT NULL,\n\tdescription text NULL,\n\tstart_date date NOT NULL,\n\tend_date date NOT NULL,\n\tpromo_type varchar(50) NOT NULL,\n\tis_active bool DEFAULT true NULL,\n\tcreated_by uuid NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\taccess_levels jsonb DEFAULT '[\"dealer\", \"end_user\"]'::jsonb NOT NULL,\n\tCONSTRAINT promotions_promo_type_check CHECK (((promo_type)::text = ANY (ARRAY[('price_override'::character varying)::text, ('discount_percent'::character varying)::text, ('discount_amount'::character varying)::text, ('bundle'::character varying)::text, ('other'::character varying)::text])))\n);\npublic.purchase_requests (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\trequest_type varchar(50) NOT NULL,\n\trequest_number varchar(50) NULL,\n\trequest_date date NULL,\n\tcustomer_name text NULL,\n\tproject_title text NULL,\n\tpurpose text NULL,\n\texpected_delivery_date date NULL,\n\texpected_po_date date NULL,\n\texpected_po_date_text text NULL,\n\trequested_by text NULL,\n\trequested_at date NULL,\n\tstatus varchar(50) DEFAULT 'draft'::character varying NOT NULL,\n\t\"source\" varchar(50) DEFAULT 'external'::character varying NOT NULL,\n\texternal_reference text NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tcontact_id text NULL,\n\tspace_id text NULL,\n\trespond_inbox_url text NULL,\n\tapprover_user_id varchar(100) NULL,\n\tapprover_email varchar(255) NULL,\n\tapproval_status varchar(50) NULL,\n\tapproved_at timestamp NULL,\n\tapproved_by text NULL,\n\tapproval_signature_ref text NULL,\n\tapproval_comments text NULL,\n\trequested_approval_by_user_id varchar(100) NULL,\n\tdelivery_address text NULL,\n\ttotal_project_value numeric(15, 2) NULL,\n\tsponsor_subject text NULL,\n\ttotal_project_value_text text NULL,\n);\npublic.stock_inquiries (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tsalesperson text NULL,\n\tproduct_code text NULL,\n\titem_description text NULL,\n\tproject_customer text NULL,\n\tproject_name text NULL,\n\tquantity text NULL,\n\tdelivery_date text NULL,\n\tremark text NULL,\n\tadditional_remark text NULL,\n\tpurchasing_response text NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tcontact_id text NULL,\n\tspace_id text NULL,\n\trespond_inbox_url text NULL,\n\tstatus varchar(50) DEFAULT 'new'::character varying NOT NULL,\n\tlast_responded_by text NULL,\n\tlast_responded_at timestamp NULL,\n\trejection_reason text NULL,\n\trejected_at timestamp NULL,\n\trejected_by text NULL,\n\treopen_reason text NULL,\n\treopened_at timestamp NULL,\n\treopened_by text NULL,\n\trejected_from varchar(50) NULL,\n\tinquiry_number varchar(50) NULL,\n);\n\npublic.suppliers (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tsupplier_code varchar(50) NOT NULL,\n\tsupplier_name varchar(255) NOT NULL,\n\tcontact_name varchar(150) NULL,\n\temail varchar(150) NULL,\n\tphone_number varchar(50) NULL,\n\twebsite varchar(255) NULL,\n\taddress_line1 varchar(255) NULL,\n\taddress_line2 varchar(255) NULL,\n\tcity varchar(100) NULL,\n\tstate varchar(100) NULL,\n\tpostal_code varchar(20) NULL,\n\tcountry varchar(100) NULL,\n\tpayment_terms_days int4 NULL,\n\tis_active bool DEFAULT true NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n);\n\npublic.warehouses (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\twarehouse_code varchar(50) NOT NULL,\n\twarehouse_name varchar(150) NOT NULL,\n\t\"location\" varchar(255) NULL,\n\tmanager_id uuid NULL,\n\tis_active bool DEFAULT true NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n);\n\npublic.attachment_directories (\n\tid uuid NOT NULL,\n\tparent_id uuid NULL,\n\t\"name\" varchar(255) NOT NULL,\n\tsort_order int4 NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tis_deleted bool DEFAULT false NOT NULL,\n\tdeleted_at timestamp NULL,\n\tdeleted_by varchar NULL,\n\tCONSTRAINT attachment_directories_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.attachment_directories(id) ON DELETE CASCADE\n);\n\npublic.attachments (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tattachment_type_id uuid NULL,\n\toriginal_filename varchar(255) NOT NULL,\n\tstored_filename varchar(255) NOT NULL,\n\tfile_path text NOT NULL,\n\tfile_size_bytes int8 NULL,\n\tmime_type varchar(100) NULL,\n\tfile_hash varchar(64) NULL,\n\tentity_type varchar(100) NULL,\n\tentity_id uuid NULL,\n\tuploaded_by uuid NULL,\n\tuploaded_at timestamp DEFAULT now() NULL,\n\tdescription text NULL,\n\tis_deleted bool DEFAULT false NULL,\n\tdeleted_at timestamp NULL,\n\tdeleted_by uuid NULL,\n\tdirectory_id uuid NULL,\n\tsort_order int4 NULL,\n\tfull_directory_path text NULL,\n\taccess_levels jsonb DEFAULT '[\"dealer\", \"end_user\"]'::jsonb NOT NULL,\n\tcreated_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,\n\tCONSTRAINT attachments_entity_type_check CHECK (((entity_type IS NULL) OR ((entity_type)::text = ANY ((ARRAY['product'::character varying, 'promotion'::character varying, 'complaint'::character varying, 'general'::character varying, 'complaint_document'::character varying, 'order'::character varying, 'stock_list'::character varying, 'form'::character varying, 'inbound_shipment'::character varying])::text[])))),\n\tCONSTRAINT attachments_attachment_type_id_fkey FOREIGN KEY (attachment_type_id) REFERENCES public.attachment_types(id) ON DELETE SET NULL,\n\tCONSTRAINT attachments_directory_id_fkey FOREIGN KEY (directory_id) REFERENCES public.attachment_directories(id) ON DELETE SET NULL\n);\npublic.commercial_leads (\n\tid uuid NOT NULL,\n\tcustomer_id uuid NOT NULL,\n\tlead_code varchar(64) NOT NULL,\n\ttitle varchar(255) NOT NULL,\n\tstatus varchar(50) DEFAULT 'open'::character varying NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tCONSTRAINT commercial_leads_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE\n);\n\npublic.commercial_projects (\n\tid uuid NOT NULL,\n\tlead_id uuid NOT NULL,\n\t\"name\" varchar(255) NOT NULL,\n\tstatus varchar(50) DEFAULT 'active'::character varying NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tCONSTRAINT commercial_projects_lead_id_fkey FOREIGN KEY (lead_id) REFERENCES public.commercial_leads(id) ON DELETE CASCADE\n);\npublic.complaint_attachments (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tcomplaint_id uuid NOT NULL,\n\tattachment_id uuid NOT NULL,\n\tis_primary bool DEFAULT false NOT NULL,\n\tsort_order int4 NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tcreated_by uuid NULL,\n\tCONSTRAINT complaint_attachments_new_attachment_id_fkey FOREIGN KEY (attachment_id) REFERENCES public.attachments(id) ON DELETE CASCADE,\n\tCONSTRAINT complaint_attachments_new_complaint_id_fkey FOREIGN KEY (complaint_id) REFERENCES public.complaints(id) ON DELETE CASCADE\n);\n\npublic.forms (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tcode varchar(100) NOT NULL,\n\t\"name\" varchar(255) NOT NULL,\n\tdescription text NULL,\n\tpurpose text NULL,\n\t\"language\" varchar(10) DEFAULT 'en'::character varying NOT NULL,\n\t\"version\" int4 DEFAULT 1 NOT NULL,\n\tis_active bool DEFAULT true NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tattachment_id uuid NULL,\n\tsynced_to_excel bool DEFAULT false NULL,\n\tlast_synced_to_excel timestamp NULL,\n\tcreated_by varchar(255) NULL,\n\taccess_levels jsonb DEFAULT '[\"dealer\", \"end_user\"]'::jsonb NOT NULL,\n\tCONSTRAINT forms_attachment_id_fkey FOREIGN KEY (attachment_id) REFERENCES public.attachments(id) ON DELETE SET NULL\n);\n\npublic.inbound_shipments (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tshipment_number varchar(50) NOT NULL,\n\tsupplier_id uuid NULL,\n\tshipment_date date NOT NULL,\n\testimated_arrival_date date NULL,\n\tactual_arrival_date date NULL,\n\tbill_of_lading_number varchar(100) NULL,\n\tshipping_container_number varchar(100) NULL,\n\tinvoice_number varchar(100) NULL,\n\tshipment_status varchar(50) DEFAULT 'in_transit'::character varying NULL,\n\ttotal_items_shipped int4 NULL,\n\ttotal_cartons int4 NULL,\n\tnotes text NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tattachment_id uuid NULL,\n\taccess_levels jsonb DEFAULT '[\"dealer\", \"end_user\"]'::jsonb NOT NULL,\n\tCONSTRAINT inbound_shipments_shipment_status_check CHECK (((shipment_status)::text = ANY (ARRAY[('in_transit'::character varying)::text, ('arrived_at_port'::character varying)::text, ('at_warehouse'::character varying)::text, ('partially_received'::character varying)::text, ('fully_received'::character varying)::text, ('closed'::character varying)::text]))),\n\tCONSTRAINT inbound_shipments_attachment_id_fkey FOREIGN KEY (attachment_id) REFERENCES public.attachments(id) ON DELETE SET NULL,\n\tCONSTRAINT inbound_shipments_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES public.suppliers(id) ON DELETE SET NULL\n);\n\npublic.orders (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\torder_number varchar(100) NOT NULL,\n\torder_date date NULL,\n\testimated_delivery_date date NULL,\n\tactual_delivery_date date NULL,\n\tcustomer_id uuid NULL,\n\torder_status_id uuid NULL,\n\tcreated_by uuid NULL,\n\tupdated_by uuid NULL,\n\tbilling_address_id uuid NULL,\n\tshipping_address_id uuid NULL,\n\tsubtotal_amount numeric(15, 2) DEFAULT 0 NULL,\n\tdiscount_amount numeric(15, 2) DEFAULT 0 NULL,\n\ttax_amount numeric(15, 2) DEFAULT 0 NULL,\n\ttotal_amount numeric(15, 2) DEFAULT 0 NULL,\n\tremarks text NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tdeleted_at timestamp NULL,\n\tcreated_time timestamp NULL,\n\tdebtor_code varchar(100) NULL,\n\tdebtor_name varchar(255) NULL,\n\tagent varchar(100) NULL,\n\tis_cancelled bool DEFAULT false NOT NULL,\n\tremarks_cs text NULL,\n\torder_type varchar(50) NULL,\n\tdelivery_time varchar(20) NULL,\n\tchecker varchar(100) NULL,\n\ttransporter varchar(100) NULL,\n\tdriver_name varchar(100) NULL,\n\tlorry_plate varchar(50) NULL,\n\tcustomer_ref varchar(255) NULL,\n\tdelivery_remarks_cs text NULL,\n\tdelivery_remarks text NULL,\n\tsalesman varchar(100) NULL,\n\ttrips int4 NULL,\n\twarehouse varchar(50) NULL,\n\tdelivery_days int4 NULL,\n\tkpi_warning bool DEFAULT false NOT NULL,\n\tCONSTRAINT orders_billing_address_id_fkey FOREIGN KEY (billing_address_id) REFERENCES public.customer_addresses(id),\n\tCONSTRAINT orders_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id),\n\tCONSTRAINT orders_order_status_id_fkey FOREIGN KEY (order_status_id) REFERENCES public.order_statuses(id),\n\tCONSTRAINT orders_shipping_address_id_fkey FOREIGN KEY (shipping_address_id) REFERENCES public.customer_addresses(id)\n);\n\npublic.product_categories (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tcategory_code varchar(50) NOT NULL,\n\tcategory_name varchar(150) NOT NULL,\n\tdescription text NULL,\n\tparent_category_id uuid NULL,\n\tis_active bool DEFAULT true NULL,\n\tdisplay_order int4 NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tCONSTRAINT product_categories_parent_category_id_fkey FOREIGN KEY (parent_category_id) REFERENCES public.product_categories(id)\n);\n\npublic.promotion_attachments (\n\tid uuid NOT NULL,\n\tpromotion_id uuid NOT NULL,\n\tattachment_id uuid NOT NULL,\n\tis_primary bool DEFAULT false NOT NULL,\n\tsort_order int4 NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tcreated_by uuid NULL,\n\tupdated_at timestamp NULL,\n\tCONSTRAINT fk_promotion_attachments_attachment FOREIGN KEY (attachment_id) REFERENCES public.attachments(id) ON DELETE CASCADE,\n\tCONSTRAINT fk_promotion_attachments_promotion FOREIGN KEY (promotion_id) REFERENCES public.promotions(id) ON DELETE CASCADE\n);\n\npublic.promotion_groups (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpromotion_id uuid NOT NULL,\n\tgroup_name varchar(255) NOT NULL,\n\tsort_order int4 DEFAULT 0 NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tfoc_tiers jsonb NULL,\n\tCONSTRAINT promotion_groups_promotion_id_fkey FOREIGN KEY (promotion_id) REFERENCES public.promotions(id) ON DELETE CASCADE\n);\n\npublic.purchase_request_lines (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpurchase_request_id uuid NOT NULL,\n\titem_code text NULL,\n\tquantity numeric(15, 2) NULL,\n\tremark text NULL,\n\tsort_order int4 NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tunit_price numeric(15, 2) NULL,\n\ttotal numeric(15, 2) NULL,\n\tCONSTRAINT purchase_request_lines_purchase_request_id_fkey FOREIGN KEY (purchase_request_id) REFERENCES public.purchase_requests(id) ON DELETE CASCADE\n);\n\npublic.units_of_measure (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tuom_code varchar(20) NOT NULL,\n\tuom_name varchar(100) NOT NULL,\n\tdescription text NULL,\n\tbase_uom_id uuid NULL,\n\tconversion_factor numeric(10, 4) NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tsynced_to_excel bool DEFAULT false NULL,\n\tlast_synced_to_excel timestamp NULL,\n\tupdated_at timestamp NULL,\n\tis_active bool DEFAULT true NOT NULL,\n\tCONSTRAINT units_of_measure_base_uom_id_fkey FOREIGN KEY (base_uom_id) REFERENCES public.units_of_measure(id)\n);\npublic.commercial_master_quotations (\n\tid uuid NOT NULL,\n\ttender_id uuid NOT NULL,\n\tquotation_code varchar(64) NOT NULL,\n\ttitle varchar(255) NOT NULL,\n\texecution_state varchar(80) DEFAULT 'not_started'::character varying NOT NULL,\n\texecution_updated_at timestamp NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tCONSTRAINT commercial_master_quotations_tender_id_fkey FOREIGN KEY (tender_id) REFERENCES public.commercial_tenders(id) ON DELETE CASCADE\n);\npublic.commercial_sales_orders (\n\tid uuid NOT NULL,\n\tquotation_revision_id uuid NOT NULL,\n\tmaster_quotation_id uuid NOT NULL,\n\ttender_id uuid NOT NULL,\n\tsales_order_number varchar(100) NOT NULL,\n\tstatus varchar(32) DEFAULT 'draft'::character varying NOT NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tCONSTRAINT ck_commercial_sales_orders_status CHECK (((status)::text = ANY ((ARRAY['draft'::character varying, 'confirmed'::character varying, 'void'::character varying, 'cancelled'::character varying])::text[]))),\n\tCONSTRAINT commercial_sales_orders_master_quotation_id_fkey FOREIGN KEY (master_quotation_id) REFERENCES public.commercial_master_quotations(id) ON DELETE RESTRICT,\n\tCONSTRAINT commercial_sales_orders_quotation_revision_id_fkey FOREIGN KEY (quotation_revision_id) REFERENCES public.commercial_quotation_revisions(id) ON DELETE RESTRICT,\n\tCONSTRAINT commercial_sales_orders_tender_id_fkey FOREIGN KEY (tender_id) REFERENCES public.commercial_tenders(id) ON DELETE RESTRICT\n);\n\npublic.conversation_sla_tracking (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpolicy_id uuid NOT NULL,\n\tcurrent_tier int4 NOT NULL,\n\tassigned_to text NULL,\n\tinitiated_at timestamp DEFAULT now() NOT NULL,\n\tcurrent_tier_started_at timestamp DEFAULT now() NOT NULL,\n\tdue_at timestamp NOT NULL,\n\tescalated_at timestamp NULL,\n\tescalation_reason text NULL,\n\tis_resolved bool DEFAULT false NOT NULL,\n\tresolved_at timestamp NULL,\n\tresolved_by text NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\trespond_contact_id text NULL,\n\tsynced_to_excel bool DEFAULT false NULL,\n\tlast_synced_to_excel timestamp NULL,\n\tresolution_duration numeric NULL,\n\tis_responded bool DEFAULT false NOT NULL,\n\tresponded_at timestamp NULL,\n\tresponse_time numeric(10, 2) NULL,\n\tassigned_to_id varchar NULL,\n\tresponded_by text NULL,\n\tdue_at_resolution timestamp NULL,\n\tsource_entity_type varchar(50) NULL,\n\tsource_entity_id varchar(100) NULL,\n\tteam_set_code varchar(100) NULL,\n\tagent_id uuid NULL,\n\tmessage_id int8 NULL,\n\tCONSTRAINT conversation_sla_tracking_policy_id_fkey FOREIGN KEY (policy_id) REFERENCES public.sla_policies(id),\n\tCONSTRAINT fk_conversation_sla_tracking_agent_id FOREIGN KEY (agent_id) REFERENCES public.access_agents(id) ON DELETE SET NULL,\n\tCONSTRAINT fk_conversation_sla_tracking_assigned_to_id FOREIGN KEY (assigned_to_id) REFERENCES public.users(id) ON DELETE SET NULL,\n\tCONSTRAINT fk_conversation_sla_tracking_respond_contact_id FOREIGN KEY (respond_contact_id) REFERENCES public.respond_contacts(id) ON DELETE SET NULL\n);\npublic.products (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tproduct_code varchar(100) NOT NULL,\n\tproduct_name varchar(255) NOT NULL,\n\tdescription text NULL,\n\tcategory_id uuid NOT NULL,\n\tbrand_id uuid NULL,\n\tbase_uom_id uuid NOT NULL,\n\tlist_price numeric(12, 2) NOT NULL,\n\tcost_price numeric(12, 2) NULL,\n\tinvoice_price numeric(12, 2) NULL,\n\tweight numeric(10, 2) NULL,\n\tdimensions_length numeric(10, 2) NULL,\n\tdimensions_width numeric(10, 2) NULL,\n\tdimensions_height numeric(10, 2) NULL,\n\treorder_level int4 DEFAULT 10 NULL,\n\treorder_quantity int4 DEFAULT 50 NULL,\n\twarranty_months int4 NULL,\n\thas_serial_tracking bool DEFAULT false NULL,\n\thas_batch_tracking bool DEFAULT false NULL,\n\tis_active bool DEFAULT true NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tupdated_by uuid NULL,\n\titem_type varchar(50) NULL,\n\tCONSTRAINT products_base_uom_id_fkey FOREIGN KEY (base_uom_id) REFERENCES public.units_of_measure(id),\n\tCONSTRAINT products_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES public.brands(id),\n\tCONSTRAINT products_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.product_categories(id)\n);\npublic.promotion_products (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpromotion_id uuid NOT NULL,\n\tproduct_id uuid NOT NULL,\n\tpromo_selling_price numeric(12, 2) NULL,\n\tlist_price_at_promo numeric(12, 2) NULL,\n\tdiscount_percent numeric(5, 2) NULL,\n\tdiscount_amount numeric(12, 2) NULL,\n\tstart_date date NULL,\n\tend_date date NULL,\n\tremarks text NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tsynced_to_excel bool DEFAULT false NULL,\n\tlast_synced_to_excel timestamp NULL,\n\tupdated_at timestamp NULL,\n\tpromotion_group_id uuid NOT NULL,\n\tdealer_discount_percent numeric(8, 6) NULL,\n\tdealer_cost numeric(12, 2) NULL,\n\tlist_to_dealer_margin_amount numeric(12, 2) NULL,\n\tCONSTRAINT fk_promotion_products_promotion_group_id FOREIGN KEY (promotion_group_id) REFERENCES public.promotion_groups(id) ON DELETE CASCADE,\n\tCONSTRAINT promotion_products_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE,\n\tCONSTRAINT promotion_products_promotion_id_fkey FOREIGN KEY (promotion_id) REFERENCES public.promotions(id) ON DELETE CASCADE\n);\n\npublic.spo_allocations (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tspo_number varchar(50) NULL,\n\tinbound_shipment_id uuid NOT NULL,\n\twarehouse_id uuid NOT NULL,\n\tstorage_zone_id uuid NULL,\n\tallocated_quantity int4 NOT NULL,\n\tuom_id uuid NULL,\n\treceipt_status varchar(50) DEFAULT 'pending'::character varying NULL,\n\tquantity_received int4 DEFAULT 0 NULL,\n\tquantity_rejected int4 DEFAULT 0 NULL,\n\tallocation_notes text NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tspo_line_number int4 NULL,\n\tproduct_id uuid NOT NULL,\n\tupdated_at timestamp NULL,\n\tCONSTRAINT spo_allocations_receipt_status_check CHECK (((receipt_status)::text = ANY (ARRAY[('pending'::character varying)::text, ('partial_received'::character varying)::text, ('fully_received'::character varying)::text, ('rejected'::character varying)::text]))),\n\tCONSTRAINT spo_allocations_inbound_shipment_id_fkey FOREIGN KEY (inbound_shipment_id) REFERENCES public.inbound_shipments(id) ON DELETE CASCADE,\n\tCONSTRAINT spo_allocations_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE,\n\tCONSTRAINT spo_allocations_storage_zone_id_fkey FOREIGN KEY (storage_zone_id) REFERENCES public.storage_zones(id),\n\tCONSTRAINT spo_allocations_uom_id_fkey FOREIGN KEY (uom_id) REFERENCES public.units_of_measure(id),\n\tCONSTRAINT spo_allocations_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id) ON DELETE RESTRICT\n);\n\npublic.stock (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tproduct_id uuid NOT NULL,\n\twarehouse_id uuid NOT NULL,\n\tzone_id uuid NULL,\n\tquantity_on_hand int4 DEFAULT 0 NOT NULL,\n\tquantity_reserved int4 DEFAULT 0 NULL,\n\tquantity_available int4 GENERATED ALWAYS AS (quantity_on_hand - quantity_reserved) STORED NULL,\n\tquantity_damaged int4 DEFAULT 0 NULL,\n\tlast_count_date date NULL,\n\treorder_point int4 NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp DEFAULT now() NULL,\n\tCONSTRAINT stock_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id),\n\tCONSTRAINT stock_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id),\n\tCONSTRAINT stock_zone_id_fkey FOREIGN KEY (zone_id) REFERENCES public.storage_zones(id)\n);\n\npublic.inbound_shipment_lines (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tshipment_id uuid NOT NULL,\n\tproduct_id uuid NOT NULL,\n\tquantity_shipped int4 NOT NULL,\n\tuom_id uuid NULL,\n\tbatch_number varchar(100) NULL,\n\tserial_number_range_from varchar(100) NULL,\n\tserial_number_range_to varchar(100) NULL,\n\tcarton_number varchar(50) NULL,\n\tcartons_count int4 DEFAULT 1 NULL,\n\tweight_per_carton numeric(10, 2) NULL,\n\tunit_cost numeric(12, 2) NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tupdated_at timestamp NULL,\n\tline_status varchar(50) DEFAULT 'in_transit'::character varying NOT NULL,\n\tspo_allocated_quantity int4 DEFAULT 0 NOT NULL,\n\tquantity_received int4 DEFAULT 0 NOT NULL,\n\tCONSTRAINT inbound_shipment_lines_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE RESTRICT,\n\tCONSTRAINT inbound_shipment_lines_shipment_id_fkey FOREIGN KEY (shipment_id) REFERENCES public.inbound_shipments(id) ON DELETE CASCADE,\n\tCONSTRAINT inbound_shipment_lines_uom_id_fkey FOREIGN KEY (uom_id) REFERENCES public.units_of_measure(id)\n);\n\npublic.order_lines (\n\tid uuid NOT NULL,\n\torder_id uuid NOT NULL,\n\tproduct_id uuid NOT NULL,\n\twarehouse_id uuid NOT NULL,\n\tquantity numeric(15, 4) DEFAULT '0'::numeric NOT NULL,\n\tunit_price numeric(15, 4) NULL,\n\tdiscount numeric(15, 4) DEFAULT '0'::numeric NULL,\n\ttotal numeric(15, 4) NULL,\n\ttax numeric(15, 4) NULL,\n\ttotal_excluding_tax numeric(15, 4) NULL,\n\ttotal_including_tax numeric(15, 4) NULL,\n\tcreated_at timestamp DEFAULT now() NOT NULL,\n\tupdated_at timestamp DEFAULT now() NOT NULL,\n\tline_sequence int4 NOT NULL,\n\tCONSTRAINT order_lines_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id) ON DELETE CASCADE,\n\tCONSTRAINT order_lines_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE RESTRICT,\n\tCONSTRAINT order_lines_warehouse_id_fkey FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(id) ON DELETE RESTRICT\n);\n\npublic.picking_lines (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tpicking_header_id uuid NOT NULL,\n\tspo_allocation_id uuid NULL,\n\tproduct_id uuid NOT NULL,\n\tquantity_expected int4 NOT NULL,\n\tquantity_picked int4 NOT NULL,\n\tquantity_discrepancy int4 GENERATED ALWAYS AS (quantity_picked - quantity_expected) STORED NULL,\n\tuom_id uuid NULL,\n\tpicked_condition varchar(50) DEFAULT 'good'::character varying NULL,\n\tcondition_remarks text NULL,\n\tbatch_number_picked varchar(100) NULL,\n\texpiry_date date NULL,\n\tunit_cost numeric(12, 2) NULL,\n\tline_total numeric(15, 2) NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tsource_warehouse_id uuid NULL,\n\tdestination_warehouse_id uuid NULL,\n\tupdated_at timestamp NULL,\n\tCONSTRAINT picking_lines_picked_condition_check CHECK (((picked_condition)::text = ANY (ARRAY[('good'::character varying)::text, ('damaged'::character varying)::text, ('defective'::character varying)::text, ('shortfall'::character varying)::text]))),\n\tCONSTRAINT picking_lines_destination_warehouse_id_fkey FOREIGN KEY (destination_warehouse_id) REFERENCES public.warehouses(id) ON DELETE RESTRICT,\n\tCONSTRAINT picking_lines_picking_header_id_fkey FOREIGN KEY (picking_header_id) REFERENCES public.picking_headers(id) ON DELETE CASCADE,\n\tCONSTRAINT picking_lines_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE RESTRICT,\n\tCONSTRAINT picking_lines_source_warehouse_id_fkey FOREIGN KEY (source_warehouse_id) REFERENCES public.warehouses(id) ON DELETE RESTRICT,\n\tCONSTRAINT picking_lines_spo_allocation_id_fkey FOREIGN KEY (spo_allocation_id) REFERENCES public.spo_allocations(id),\n\tCONSTRAINT picking_lines_uom_id_fkey FOREIGN KEY (uom_id) REFERENCES public.units_of_measure(id)\n);\n\npublic.product_attachments (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tproduct_id uuid NOT NULL,\n\tattachment_id uuid NOT NULL,\n\tis_primary bool DEFAULT false NULL,\n\tsort_order int4 NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tupdated_at timestamp NULL,\n\taccess_levels jsonb DEFAULT '[\"dealer\", \"end_user\"]'::jsonb NOT NULL,\n\tCONSTRAINT product_attachments_attachment_id_fkey FOREIGN KEY (attachment_id) REFERENCES public.attachments(id) ON DELETE CASCADE,\n\tCONSTRAINT product_attachments_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE\n);\n\npublic.product_suppliers (\n\tid uuid DEFAULT gen_random_uuid() NOT NULL,\n\tproduct_id uuid NOT NULL,\n\tsupplier_id uuid NOT NULL,\n\tis_primary bool DEFAULT false NULL,\n\tstandard_lead_time_days int4 NOT NULL,\n\tmin_order_quantity int4 NULL,\n\tpurchase_uom_id uuid NULL,\n\tlast_purchase_price numeric(12, 2) NULL,\n\tlast_reviewed_at timestamp NULL,\n\teffective_from date DEFAULT CURRENT_DATE NULL,\n\teffective_to date NULL,\n\tcreated_at timestamp DEFAULT now() NULL,\n\tcreated_by uuid NULL,\n\tCONSTRAINT product_suppliers_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE,\n\tCONSTRAINT product_suppliers_purchase_uom_id_fkey FOREIGN KEY (purchase_uom_id) REFERENCES public.units_of_measure(id),\n\tCONSTRAINT product_suppliers_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES public.suppliers(id) ON DELETE RESTRICT\n);"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -336,
+        -72
+      ],
+      "id": "b89ebe0c-54d8-4fdc-a9af-2c7510523e66",
+      "name": "SQL Query Generator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -264,
+        152
+      ],
+      "id": "e136554d-d18f-4b09-bc53-ba6c04689d9b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "SQL Query Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Validator": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Return",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Query Generator": {
+      "main": [
+        [
+          {
+            "node": "SQL Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SQL Query Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query_description": "retrieve up to 10 product codes, names, and categories of products currently sold",
+          "access_levels": "dealer",
+          "contact_id": 423512626
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "4c9e94a8-9aea-4881-bc49-bd6fe2e67da9",
+  "activeVersionId": "4c9e94a8-9aea-4881-bc49-bd6fe2e67da9",
+  "versionCounter": 110,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-11T09:29:48.546Z",
+      "createdAt": "2026-04-11T09:29:48.546Z",
+      "role": "workflow:owner",
+      "workflowId": "PLf5z4VyNW_jQ_zg88nAm",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

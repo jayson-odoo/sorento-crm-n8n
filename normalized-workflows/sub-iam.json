@@ -1,0 +1,206 @@
+{
+  "updatedAt": "2026-02-03T13:56:06.026Z",
+  "createdAt": "2026-02-03T13:56:06.026Z",
+  "id": "BzHS-apDP7ijX__kWnCoy",
+  "name": "sub-iam",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "next_agent"
+            },
+            {
+              "name": "contact_phone_number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -624,
+        96
+      ],
+      "id": "0a5d8d87-4a06-4756-a05c-c60d4a751b9d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT caa.id\nFROM public.contact_agent_access caa\nLEFT JOIN public.access_agents aa ON aa.id = caa.agent_id\nLEFT JOIN public.respond_contacts rc ON rc.id = caa.respond_contact_id\nWHERE rc.phone_number = '{{ $json.contact_phone_number }}'\n  AND aa.code =  '{{ $json.next_agent }}'\n  AND caa.is_allowed = TRUE\n  AND now() BETWEEN caa.valid_from AND caa.valid_to",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -416,
+        96
+      ],
+      "id": "90b19f32-d94a-4816-8925-fb2502d9376e",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "daaadb70-07d9-4e1c-bd62-82b9b950a9e4",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        96
+      ],
+      "id": "aad62789-419a-4730-8c7a-da6820f5b384",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nreturn {\n  json: {\n    allowed: true,\n    description: `Contact ${$('When Executed by Another Workflow').first().json.contact_id} is allowed for function ${$('When Executed by Another Workflow').first().json.next_agent}`\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e6621156-0ca1-4916-b7a4-90668ead5730",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nreturn {\n  json: {\n    allowed: false,\n    description: `Sorry, you are not allowed to access function ${$('When Executed by Another Workflow').first().json.next_agent}`\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        192
+      ],
+      "id": "f0c31728-1177-4795-8116-c49a022214df",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "contact_id": 330358328,
+          "next_agent": "general_enquiries"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "d45467f3-4273-4ae5-8efb-729144bd2a56",
+  "activeVersionId": "d45467f3-4273-4ae5-8efb-729144bd2a56",
+  "versionCounter": 7,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:56:06.026Z",
+      "createdAt": "2026-02-03T13:56:06.026Z",
+      "role": "workflow:owner",
+      "workflowId": "BzHS-apDP7ijX__kWnCoy",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

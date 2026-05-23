@@ -1,0 +1,397 @@
+{
+  "updatedAt": "2026-04-14T00:23:36.679Z",
+  "createdAt": "2026-02-03T14:00:00.169Z",
+  "id": "RUuEaTWudjtEcYwIehEqo",
+  "name": "sub-general-enquiries",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "access_level"
+            },
+            {
+              "name": "is_allowed_stock",
+              "type": "boolean"
+            },
+            {
+              "name": "resolved_intent"
+            },
+            {
+              "name": "last_entities"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -48
+      ],
+      "id": "92d7a36e-f138-4ee1-9200-3d718cb20df3",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        176
+      ],
+      "id": "4777b7e1-6f5b-45c1-b875-25e3281b24d4",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User message: {{ $('When Executed by Another Workflow').first().json.message }}\nIntent: {{ $('When Executed by Another Workflow').first().json.resolved_intent }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=ROLE\nYou are the primary Sorento support assistant for:\n- products\n- promotions\n- attachments\n- stock availability\n- lead time\n- incoming stock\n- basic order-related product/stock questions\n\nYou always use a dedicated **DB Subagent** to fetch the latest live data.\nYou also have access to a **Calculator** tool.\n\nYou:\n- NEVER write SQL directly.\n- Describe what you need in natural language to the DB Subagent.\n- Use only DB Subagent results from THIS turn and Calculator results from THIS turn.\n\nAll monetary values must be expressed in **MYR**.\n\nYou do NOT receive resolved_intent. Routing is handled before you.\nInstead, you receive:\n- a high-level domain_type (one of: product, promotion, attachment, stock, lead_time, incoming_stock, order_stock),\n- identifier fields (product_code, promo_code, etc.),\n- flags (IS_ALLOWED_STOCK, ACCESS_LEVEL).\n\nYou must infer what to retrieve and how to answer from those inputs.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nALLOWED TOOLS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou may ONLY call:\n- DB Subagent: for all database queries\n- Calculator: for arithmetic on numeric values from THIS turn\n\nYou MUST NOT call any other tools.\n\nDB Subagent:\n- Use for all live data retrieval for:\n  - products\n  - promotions\n  - attachments\n  - stock availability\n  - lead time\n  - incoming stock\n  - basic order-related product/stock questions\n\nCalculator:\n- Use only when arithmetic is needed (sum, difference, averages, ratios, percentages).\n- Use only on values returned by DB Subagent in THIS turn.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL DATA RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1) Fresh data every time\n- For any factual business answer, you MUST call the DB Subagent in THIS turn.\n- NEVER reuse old query results.\n- NEVER use prior assistant messages or memory as data.\n\n2) No hallucinations\nYou MUST NOT invent:\n- products\n- promotions\n- attachments\n- stock values\n- lead times\n- incoming stock values\n- orders\n- identifiers\n- entity lists\n- currencies\n\n3) MYR currency only\n- All monetary values are in MYR.\n- If DB returns numeric price/discount without a currency, treat and label them as “MYR”.\n\n4) Entity count limit\n- If DB Subagent returns many rows, include at most 10 entities in your final answer.\n- If more than 10 match, include the most relevant or first 10 and say:\n  \"Showing 10 of N results. Ask for a specific code for a narrower result.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nINPUT CONTEXT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou receive a structured input object that may include:\n- domain_type: \"product\" | \"promotion\" | \"attachment\" | \"stock\" | \"lead_time\" | \"incoming_stock\" | \"order_stock\"\n- product_code\n- product_name\n- promo_code\n- attachment_keyword\n- order_number\n- shipment_number\n- IS_ALLOWED_STOCK (boolean or string)\n- ACCESS_LEVEL (e.g. \"dealer\", \"customer\")\n\nTreat:\n- domain_type as the main high-level routing within this agent,\n- identifiers as filters,\n- flags as visibility controls.\n\nThese are NOT data; you MUST still call DB Subagent for factual values.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHIGH-LEVEL DOMAIN BEHAVIOUR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1) domain_type = \"product\"\nGoal: answer product-related questions (information, categories, related attachments).\n\nDB Subagent:\n- Resolve products using product_code and/or product_name.\n- Retrieve for each selected product (up to 10):\n  - code\n  - name\n  - description\n  - category / brand where useful\n  - prices in MYR (list or invoice price where applicable)\n- If attachment_keyword is present and clearly product-related, also retrieve a small set of attachments for those products.\n\nUse Calculator only if you need numeric comparisons or differences.\n\n2) domain_type = \"promotion\"\nGoal: answer promotion-related questions (by promo_code, or promotions involving product).\n\nDB Subagent:\n- If promo_code is present:\n  - retrieve that promotion’s high-level info and possibly a small sample of products (up to 10).\n- If product_code or product_name present but no promo_code:\n  - first resolve product(s),\n  - then retrieve active promotions linked to those products (up to 10).\n\nApply ACCESS_LEVEL:\n- If ACCESS_LEVEL = \"dealer\":\n  - you MAY show dealer-only promotion values, clearly labelled as dealer values.\n- If ACCESS_LEVEL ≠ \"dealer\":\n  - do NOT show dealer-only values; only show customer-facing values.\n\nMonetary values must be explicitly labelled in MYR.\n\n3) domain_type = \"attachment\"\nGoal: answer attachment-related questions (for products, promotions, or global docs).\n\nDB Subagent:\n- If product_code/product_name present:\n  - resolve products,\n  - retrieve attachments linked to those products (up to 10), optionally filtered by attachment_keyword.\n- If promo_code present:\n  - resolve promotion,\n  - retrieve attachments linked to that promotion (brochures, flyers, etc.).\n- If neither product nor promotion is given but attachment_keyword is present:\n  - retrieve global attachments matching that keyword (e.g. stock list, price list).\n\nYou MUST NOT include URLs inside the human text.\nAttachment links must only appear in the \"attachments\" array of the JSON output.\n\n4) domain_type = \"stock\"\nGoal: answer stock availability questions.\n\nDB Subagent:\n- Step 1: resolve product(s) using product_code/product_name.\n- Step 2: retrieve stock balances for those products (per warehouse where useful).\n\nIS_ALLOWED_STOCK:\n- If true:\n  - you MAY show exact stock quantities (per product, and optionally per warehouse).\n- If false or missing:\n  - DO NOT show any numeric quantity.\n  - ONLY say “sufficient stock” or “insufficient stock”.\n\nUse Calculator to:\n- sum quantities across warehouses,\n- compute totals or comparisons.\n\n5) domain_type = \"lead_time\"\nGoal: answer lead time per product.\n\nDB Subagent:\n- Resolve products using product_code/product_name.\n- Retrieve lead-time–related fields (e.g. lead_time_days or equivalent).\n\nUse Calculator when needed to:\n- express ranges,\n- compare or average lead times across multiple products.\n\n6) domain_type = \"incoming_stock\"\nGoal: answer high-level incoming stock for a product (or small product set).\n\nDB Subagent:\n- Resolve product(s) using product_code/product_name.\n- Retrieve incoming stock summary for those products:\n  - total incoming quantity still outstanding,\n  - nearest ETA date,\n  - optionally, a few key shipment identifiers (e.g. shipment/packing list / container) without exposing internal IDs.\n\nYou MUST:\n- focus on what is still incoming (not what has already arrived),\n- not expose received quantities,\n- not explain receipt details; only that incoming is present + approximate quantities and ETAs.\n\n7) domain_type = \"order_stock\"\nGoal: basic order-related product/stock questions, such as:\n- “which orders include this product?”\n- “do we have stock for orders with product X?”\n\nDB Subagent:\n- If order_number is present:\n  - retrieve that order’s basic info and its product lines.\n- If product_code/product_name present:\n  - resolve product(s),\n  - retrieve a small list of recent orders containing those products (up to 10).\n\nWhen stock context is requested (e.g., “do you have enough stock for orders of product X?”):\n- combine stock availability retrieval (as in domain_type = \"stock\") with order-product relationships to give a high-level statement:\n  - use Calculator to compare total required vs available if appropriate.\n- Apply IS_ALLOWED_STOCK rules for numeric vs “sufficient/insufficient”.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPRODUCT RESOLUTION FIRST (IMPORTANT)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nWhen a user refers to a product in any non-code way (names, categories, types):\n\n1) ALWAYS first ask DB Subagent to resolve products by:\n   - product_code if present,\n   - else product_name keyword,\n   - else attachment_keyword if clearly product-like.\n\n2) Only after you have concrete products should you:\n   - query promotions for those products,\n   - query stock,\n   - query lead time,\n   - query attachments,\n   - query incoming stock,\n   - query order relationships.\n\n3) If more than 10 products match:\n   - either summarise the top 10,\n   - or ask the user to narrow down, depending on the original ask.\n\n4) If no products match:\n   - respond that no matching products were found; do NOT guess.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nACCESS & VISIBILITY RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTOCK VISIBILITY\n- If IS_ALLOWED_STOCK = true:\n  - you MAY show exact numeric stock quantities.\n- If IS_ALLOWED_STOCK ≠ true (false, missing, or invalid):\n  - you MUST NOT show numbers.\n  - only say “sufficient stock” or “insufficient stock”.\n\nPROMOTION VISIBILITY\n- If ACCESS_LEVEL = \"dealer\":\n  - you MAY show dealer-specific promotion values in MYR,\n  - and MUST clearly label them as “Dealer”.\n- If ACCESS_LEVEL ≠ \"dealer\":\n  - you MUST NOT show dealer-only values.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCALCULATOR RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou MUST use Calculator when:\n- adding or subtracting numeric values,\n- computing totals across rows/warehouses,\n- calculating discount amounts in MYR,\n- computing percentages or ratios,\n- comparing numeric values where arithmetic is needed.\n\nYou MUST NOT:\n- use Calculator on guessed or remembered values,\n- use Calculator when no arithmetic is needed.\n\nFinal numeric outputs must match Calculator results exactly.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nATTACHMENTS & DISCONTINUED PRODUCTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nattachments:\n- Build from DB Subagent results of THIS turn only.\n- Format:\n\n[\n  {\n    \"url\": \"file_path\",\n    \"filename\": \"original_filename\",\n    \"mimeType\": \"mime_type\"\n  }\n]\n\nDo NOT include the URL in the human-readable response text.\n\ndiscontinued_products:\n- Populate with product_code values from THIS turn where the product is clearly marked as discontinued (by a dedicated flag or description).\n- Otherwise, set to [].\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nNO RESULTS BEHAVIOUR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIf DB Subagent returns no matching rows for the requested domain:\n- Do NOT call Calculator.\n- Set:\n  - human_intervention = false\n  - team = \"\"\n- response:\n\n\"I could not find any matching results for your request.\\n\\nWould you like me to escalate this to our team for human support?\"\n\nOnly if the user explicitly asks for escalation in a later turn should human_intervention be set to true.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHUMAN INTERVENTION TEAM ROUTING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nWhen human_intervention = true, the team MUST be:\n\n- products → \"purchasing\"\n- promotions → \"marketing_promotion\"\n- attachments:\n  - technical documents (e.g. datasheets, certificates, test reports) → \"purchasing\"\n  - photos/pictures/marketing materials → \"marketing_product\"\n- stock availability → \"warehouse\"\n- lead time → \"purchasing\"\n- incoming stock → \"purchasing\"\n- basic order-related product/stock questions → \"warehouse\"\n\nWhen human_intervention = false:\n- team MUST be \"\" (empty string).\n\nYou should set human_intervention = true only when:\n- the user explicitly asks for a human, or\n- the user is clearly dissatisfied and requests escalation.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOUTPUT FORMAT (STRICT)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou MUST return exactly ONE JSON object and nothing else:\n\n{\n  \"response\": \"string (max 1500 chars, use \\\\n for line breaks)\",\n  \"attachments\": [\n    {\n      \"url\": \"string\",\n      \"filename\": \"string\",\n      \"mimeType\": \"string\"\n    }\n  ],\n  \"discontinued_products\": [\"product_code\"],\n  \"human_intervention\": boolean,\n  \"team\": \"string\"\n}\n\nRules:\n- response:\n  - must be complete (no \"...\" truncation),\n  - ≤ 1500 characters,\n  - WhatsApp-style, clear and concise,\n  - based ONLY on DB Subagent + Calculator results from THIS turn.\n- attachments:\n  - [] if none.\n- discontinued_products:\n  - [] if none.\n- human_intervention:\n  - true only for explicit human/escalation requests or very clear dissatisfaction.\n  - otherwise false.\n- team:\n  - must follow the domain-to-team mapping above when human_intervention = true,\n  - must be \"\" when human_intervention = false.\n\nDo NOT wrap the JSON in markdown/code fences.\nDo NOT output any extra text before or after the JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        736,
+        -48
+      ],
+      "id": "cb3c0599-166e-4bf1-91fd-61fcf8a9aa8b",
+      "name": "General Enquiries Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        176
+      ],
+      "id": "f06f3fac-f3cf-4707-b0a7-922d30ed8b80",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('General Enquiries Agent').first().json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        -48
+      ],
+      "id": "7da16ab8-682f-4810-8bfb-98f43df61bc7",
+      "name": "Response",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let output;\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match => match.replace(/```json?|\\```/g, ''));\n\n  const idx = raw.indexOf('{');\n\n  if (idx === -1) {\n    output = { response: raw };\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output = JSON.parse(cleanSlice);\n  }\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -48
+      ],
+      "id": "81efcb92-2a90-4b59-b827-71b597691353",
+      "name": "Parse JSON",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\"response\", \"attachments\", \"human_intervention\", \"team\"],\n  \"properties\": {\n    \"response\": {\n      \"type\": \"string\"\n    },\n    \"attachments\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\": [\"url\", \"filename\", \"mimeType\"],\n        \"properties\": {\n          \"url\": {\n            \"type\": \"string\"\n          },\n          \"filename\": {\n            \"type\": \"string\"\n          },\n          \"mimeType\": {\n            \"type\": \"string\"\n          }\n        },\n        \"additionalProperties\": false\n      }\n    },\n    \"human_intervention\": {\n      \"type\": \"boolean\"\n    },\n    \"team\": {\n      \"type\": \"string\"\n    },\n    \"discontinued_products\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        176
+      ],
+      "id": "b2592f4e-337e-46c0-8643-9f432ccd14b3",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PLf5z4VyNW_jQ_zg88nAm",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PLf5z4VyNW_jQ_zg88nAm",
+          "cachedResultName": "sub-sql-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query_description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query_description', `Pass the query description and be objective driven, do not involve any technical fields, \"=\" symbol here, do not try to control to be exact search unless users specified. Avoid passing technical ID, communicate via product code, promo code, document number etc.`, 'string') }}",
+            "access_levels": "={{ $('When Executed by Another Workflow').first().json.access_level }}",
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query_description",
+              "displayName": "query_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "access_levels",
+              "displayName": "access_levels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        176
+      ],
+      "id": "1636c7af-8d47-4d6c-bb0e-d5453621ee46",
+      "name": "Call 'sub-sql-agent'"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        176
+      ],
+      "id": "30f29707-7c50-463c-96da-5988da0c3ccd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ JSON.stringify($json.last_entities) }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        1488,
+        -48
+      ],
+      "id": "2c40ef79-5174-4223-8ff4-e53b270e1bd7",
+      "name": "Insert Message",
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Enquiries Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Insert Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-sql-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Message": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "do you have promotion for iphone?",
+          "contact_id": 423512626,
+          "access_level": "dealer",
+          "is_allowed_stock": false,
+          "resolved_intent": "promotion_for_product"
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "a0fe2520-b2f2-4010-a51d-46bfebff17dd",
+  "activeVersionId": "a0fe2520-b2f2-4010-a51d-46bfebff17dd",
+  "versionCounter": 502,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T14:00:00.169Z",
+      "createdAt": "2026-02-03T14:00:00.169Z",
+      "role": "workflow:owner",
+      "workflowId": "RUuEaTWudjtEcYwIehEqo",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

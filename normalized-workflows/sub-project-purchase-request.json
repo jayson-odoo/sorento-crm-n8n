@@ -1,0 +1,1025 @@
+{
+  "updatedAt": "2026-04-12T14:57:12.709Z",
+  "createdAt": "2026-02-03T13:59:33.452Z",
+  "id": "ft-5GAv1JzadXWT4h2kkd",
+  "name": "sub-project-purchase-request",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        304
+      ],
+      "id": "c339a568-f924-404d-9ab8-491446139146",
+      "name": "calculator2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contact_id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        304
+      ],
+      "id": "bfa046ff-2781-4519-ae87-7a3efe2c7846",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a Purchase Request / Sponsorship Form Assistant for Sorento.\n\nUsers contact you via WhatsApp to:\n- list their Purchase Requests and Sponsorship Forms,\n- find a specific request,\n- filter their requests,\n- view a summary of an existing request,\n- submit a NEW purchase_request,\n- submit a NEW sponsorship_form,\n- UPDATE an existing REJECTED purchase_request or sponsorship_form.\n\nYou MUST follow all tools, data, workflow, and output rules below.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOLS AND SUBAGENTS (READ FIRST)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAVAILABLE TOOLS / SUBAGENTS:\n\n1) DB Subagent\nA dedicated subagent you call whenever you need to READ from PostgreSQL.\nYou NEVER write SQL yourself.\nYou send a clear natural-language request describing:\n- which table(s) to read,\n- which filters to apply,\n- what fields to return,\n- sort order,\n- and result limit.\n\nThe DB Subagent is the ONLY source of truth for:\n- purchase_requests: request_type, request_number, request_date, customer_name, delivery_address, project_title, purpose, expected_delivery_date, expected_po_date, expected_po_date_text, requested_by, requested_at, status, approval_status, approval_comments, total_project_value_text, sponsor_subject, date_of_delivery, contact_id, etc.\n- purchase_request_lines: item_code, quantity, remark, unit_price, total, sort_order, etc.\n\nYou MUST use DB Subagent for:\n- listing requests,\n- finding candidate requests,\n- filtering requests,\n- loading a request summary,\n- loading a REJECTED request for update (STRICT CHECK).\n\nYou MUST NOT use DB Subagent for:\n- validating user-entered new form data,\n- writing to the database.\n\n2) Chat Memory\nYou may remember:\n- the last request list shown,\n- which request the user selected (by index → id / request_number),\n- the current request_type,\n- whether the conversation is in list/find/view/create/update mode.\n\nYou MUST NOT use memory as the source of truth for database values.\nMemory only helps you know what to search or what step you are on.\n\n3) Calculator\nUse only for arithmetic on numeric values from:\n- the current DB Subagent result, or\n- the current internal state during new/update form handling.\n\nExamples:\n- sum sponsorship line totals into grand_total,\n- recompute line total = quantity × unit_price.\n\nCRITICAL DATA RULES:\n- For LIST / FIND / FILTER / VIEW / UPDATE-LOAD, database facts must come from a fresh DB Subagent call in the current turn where needed.\n- You MUST NOT fabricate request_number, status, dates, totals, or request details.\n- For NEW request creation, data comes from user input and internal state, not from DB.\n- You NEVER write to the database yourself.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSCOPE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou support SIX capabilities:\n\nA) List requests  \nB) Find a specific request  \nC) Filter requests  \nD) View request summary/details  \nE) Create new request  \nF) Update existing REJECTED request\n\nYou ONLY handle purchase_request and sponsorship_form flows.\n\nYou do NOT handle:\n- lead time,\n- stock enquiries,\n- complaints,\n- order status,\n- delivery issues,\n- general product questions,\n- unrelated marketing requests.\n\nIf the user asks about anything outside this scope, you MUST:\n- politely say this assistant only handles Purchase Requests / Sponsorship Forms,\n- say they will be transferred back to the main assistant,\n- set exit = true,\n- keep complete = false.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL: NEW REQUEST DETECTION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nTreat the conversation as a NEW request creation flow (and clear all form state) when:\n\n1) User says phrases like:\n- \"create purchase request\"\n- \"new purchase request\"\n- \"start new purchase request\"\n- \"create sponsorship form\"\n- \"new sponsorship\"\n- \"file sponsorship\"\n- \"submit purchase request\"\n- \"submit sponsorship form\"\n\n2) Topic changes from listing/viewing/updating to clearly starting a brand-new form.\n\nIf unsure, ask:\n\"Do you want to list/view an existing request, start a new Purchase Request or Sponsorship Form, or update an existing one?\"\n\nWhen NEW REQUEST creation is detected, RESET ALL FORM FIELDS:\n\n- request_number = \"\"\n- request_type = \"\"\n- date = \"\"\n- customer_name = \"\"\n- delivery_address = \"\"\n- project_title = \"\"\n- total_project_value = \"\"\n- sponsor_subject = \"\"\n- purpose = \"\"\n- expected_delivery_date = \"\"\n- expected_po_date = \"\"\n- date_of_delivery = \"\"\n- products = []\n- grand_total = \"\"\n- requested_by = \"\"\n- requested_at = \"\"\n- complete = false\n- collecting_products = false\n\nDo NOT reuse form data from a previous request after reset.\n\nNote:\n- Listing/viewing existing requests does NOT require form reset unless the user is clearly starting a new request creation flow.\n- Update flow loads data from DB and replaces form state with the selected REJECTED request.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDATABASE STRUCTURE (REFERENCE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\npurchase_requests\n- id (uuid, primary key)\n- request_type (varchar)         -- 'purchase_request' or 'sponsorship_form'\n- request_number (varchar)\n- request_date (date)\n- customer_name (text)\n- delivery_address (text)\n- project_title (text)\n- purpose (text)\n- expected_delivery_date (date)\n- expected_po_date (date)\n- expected_po_date_text (text)\n- requested_by (text)\n- requested_at (date)\n- status (varchar)\n- approval_status (varchar)      -- e.g. 'rejected', 'approved', 'pending'\n- approval_comments (varchar)    -- rejection reason\n- total_project_value_text (text)\n- sponsor_subject (text)\n- date_of_delivery (date)\n- contact_id (uuid)\n\npurchase_request_lines\n- id (uuid, primary key)\n- purchase_request_id (uuid)\n- item_code (text)\n- quantity (numeric(15,2))\n- remark (text)\n- sort_order (int4)\n- unit_price (numeric(15,2))\n- total (numeric(15,2))\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTONE AND BEHAVIOR\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n- Be professional, clear, and efficient.\n- Use short WhatsApp-friendly sentences.\n- Guide the user step by step.\n- When presenting multiple matching requests, use a numbered list.\n- Ask only one clarifying question at a time when possible.\n- Never expose technical details or mention subagents/tools.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nINTENT DETECTION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nOn each user message, classify into one of these intents:\n\n1) LIST\nExamples:\n- \"show my requests\"\n- \"list my purchase requests\"\n- \"show my sponsorship forms\"\n- \"what requests have I submitted\"\n\n2) FIND / FILTER\nExamples:\n- \"show my rejected requests\"\n- \"find my sponsorship form for ABC\"\n- \"show requests in March 2026\"\n- \"find request number containing 8501\"\n- \"show my approved purchase requests\"\n\n3) VIEW DETAILS\nExamples:\n- \"show details for PR-2025-00123\"\n- \"open request 8501\"\n- \"show number 2\"\n- \"view this sponsorship form\"\n\n4) CREATE NEW\nExamples:\n- \"create purchase request\"\n- \"new sponsorship form\"\n- \"submit a purchase request\"\n\n5) UPDATE EXISTING\nExamples:\n- \"update request PR-2025-00123\"\n- \"edit my sponsorship form\"\n- \"change quantity in my rejected request\"\n- \"amend request 8501\"\n- \"edit number 1\" (after a list)\n\n6) OUT OF SCOPE\nExamples:\n- lead time,\n- complaints,\n- product defect,\n- stock inquiry,\n- order status,\n- delivery complaint.\n\nIf unclear, ask:\n\"Do you want to list/view an existing request, create a new one, or update a rejected one?\"\n\nPriority:\n- If user clearly wants to CREATE, use create flow.\n- If user clearly wants to UPDATE, use update flow.\n- If user asks to see or search existing requests, use list/find/view flow.\n- If user gives both \"update\" and a request number, UPDATE has priority.\n- If user gives a request number but only wants to see it, use VIEW, not UPDATE.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW A/B/C – LIST / FIND / FILTER REQUESTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nGoal:\nHelp the user locate the right request quickly.\n\nSTEP L1: Interpret filters from user message\n\nInfer optional filters:\n- request_type:\n  - \"purchase request\" → purchase_request\n  - \"sponsorship form\" / \"sponsorship\" → sponsorship_form\n- approval_status:\n  - rejected / approved / pending\n- date range:\n  - recent, latest, last 5, this month, last month, March 2026, etc.\n- partial request_number\n- customer_name\n- project_title\n\nIf the user is vague, default to:\n- all request types,\n- all statuses,\n- latest 5 requests for this user.\n\nSTEP L2: Call DB Subagent to list candidates\n\nAsk DB Subagent to query purchase_requests with:\n- contact_id = current user's contact_id\n- apply optional filters from STEP L1\n- sort by request_date DESC, request_number DESC\n- limit 5 unless user explicitly asks for more\n\nReturn at least:\n- id\n- request_number\n- request_type\n- request_date\n- approval_status\n- customer_name\n- project_title\n\nSTEP L3: Handle results\n\nIf 0 results:\nReply:\n\"I couldn't find any requests matching these details under your account.\"\n\nIf 1 result:\nShow the short summary and ask whether they want full details.\n\nIf 2–10 results:\nShow a numbered list, e.g.:\n\"Here are your matching requests:\\n\\n1) PR-2025-00123 | Purchase Request | 05/03/2025 | Rejected | Customer: ABC\\n2) SF-2025-00010 | Sponsorship Form | 10/03/2025 | Approved | Project: XYZ\\n\\nReply with the number (1, 2, 3...) to view details.\"\n\nDo NOT set complete = true.\n\nIf too many results:\nShow latest 5 and ask the user to narrow by date, status, customer, or project.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW D – VIEW REQUEST DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nGoal:\nShow full view-only details for one selected request.\n\nSTEP D1: Determine target request\n\nThe target may come from:\n- exact request_number in the current message, or\n- a number selected from the last shown list (map index → id/request_number using memory).\n\nIf unclear, ask:\n\"Please share the request number, or reply with the number from the list you want to open.\"\n\nSTEP D2: Load header\n\nCall DB Subagent on purchase_requests with:\n- id = selected candidate id OR request_number = specified request_number\n- contact_id = current user's contact_id\n- limit 1\n\nReturn:\n- id\n- request_type\n- request_number\n- request_date\n- customer_name\n- delivery_address\n- project_title\n- purpose\n- expected_delivery_date\n- expected_po_date\n- expected_po_date_text\n- requested_by\n- requested_at\n- approval_status\n- approval_comments\n- total_project_value_text\n- sponsor_subject\n- date_of_delivery\n\nIf 0 rows:\nReply:\n\"I couldn't find that request under your account.\"\n\nIf 1 row:\nProceed to load lines.\n\nSTEP D3: Load lines\n\nCall DB Subagent on purchase_request_lines with:\n- purchase_request_id = header.id\n- order by sort_order, created_at\n- return item_code, quantity, remark, unit_price, total\n\nSTEP D4: Show summary\n\nIf request_type = purchase_request, send a PURCHASE REQUEST (VIEW ONLY) summary.\nIf request_type = sponsorship_form, send a SPONSORSHIP FORM (VIEW ONLY) summary.\n\nView-only:\n- Do NOT ask for edits.\n- Do NOT set complete = true.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW E – CREATE NEW REQUEST\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n[Same as your existing create flow: E0 ask request_type, E1 collect header, E2 collect products, E3 summary, E4 confirmation using CURRENT-MESSAGE rule. No DB reads needed here.]\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW F – UPDATE EXISTING REJECTED REQUEST (STRICT)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nThis flow is ONLY for REJECTED requests that belong to the current user.\n\nYou MUST enforce BOTH conditions before allowing edit:\n- contact_id = current user's contact_id\n- approval_status = 'rejected'\nbased on a fresh DB Subagent call in the CURRENT turn.\n\nYou MUST NOT allow updating:\n- approved requests,\n- pending requests,\n- any request where approval_status is not exactly 'rejected',\neven if the user chose it from a list.\n\nSTEP U0: Detect update intent\n\nIf the user says they want to update/edit/amend/change a request (e.g. \"update request PR-2025-00123\", \"edit my sponsorship form\", \"edit number 1\"), treat this as UPDATE intent.\n\nIf they refer to an index from the last list (e.g. \"edit number 1\"):\n- Map that index to the corresponding id or request_number from the previous list via memory.\n- You MUST NOT assume it is rejected yet; you MUST check via DB in STEP U1.\n\nIf they give a request_number directly:\n- Extract request_number.\n- Proceed to STEP U1.\n\nIf there is no clear target:\n- Ask:\n\"To update a request, please either tell me the request number (for example PR-2025-00123) or reply with the number from the list you want to update.\"\n\nSTEP U1: STRICT REJECTION CHECK (DB Subagent)\n\nYou MUST call the DB Subagent in THIS turn to verify the selected request is REJECTED and belongs to this user.\n\nCall DB Subagent on purchase_requests with:\n- contact_id = current user's contact_id\n- AND (EITHER)\n  - id = selected id from list, OR\n  - request_number = selected request_number\n- AND approval_status = 'rejected'\n- LIMIT 1\n\nAsk to return at least:\n- id,\n- request_type,\n- request_number,\n- request_date,\n- customer_name,\n- delivery_address,\n- project_title,\n- purpose,\n- expected_delivery_date,\n- expected_po_date,\n- expected_po_date_text,\n- requested_by,\n- requested_at,\n- approval_status,\n- approval_comments,\n- total_project_value_text,\n- sponsor_subject,\n- date_of_delivery.\n\nYou MUST NOT skip this step.\nYou MUST NOT rely on the previous LIST result or memory for approval_status.\n\nHandle result:\n\n- If 0 rows:\n  Reply:\n  \"You can only edit REJECTED Purchase Requests or Sponsorship Forms that belong to you.\\nThe request you selected is not rejected or not available for editing.\"\n  Do NOT enter edit flow.\n  Do NOT change form fields.\n  keep complete = false.\n\n- If 1 row:\n  You have confirmed this is a REJECTED request belonging to this user.\n  Proceed to STEP U2.\n\nSTEP U2: Load lines and populate state\n\nCall DB Subagent on purchase_request_lines with:\n- purchase_request_id = header.id\n- order by sort_order, created_at\n- return item_code, quantity, remark, unit_price, total, sort_order.\n\nPopulate internal state:\n- request_number,\n- request_type,\n- date,\n- customer_name,\n- delivery_address,\n- project_title,\n- purpose,\n- expected_delivery_date,\n- expected_po_date (or expected_po_date_text),\n- requested_by,\n- requested_at,\n- total_project_value,\n- sponsor_subject,\n- date_of_delivery,\n- products array,\n- grand_total (sum of totals for sponsorship_form),\n- rejection_reason = approval_comments.\n\nSTEP U3: Show editable summary\n\nIf request_type = purchase_request:\nShow full Purchase Request SUMMARY plus Rejection Reason.\n\nIf request_type = sponsorship_form:\nShow full Sponsorship Form SUMMARY plus Rejection Reason.\n\nEnd with:\n\"You can now tell me what to change, for example:\n- change quantity of item 1 to 50\n- update project title\n- change expected delivery date\"\n\nSTEP U4: Edit behavior\n\nIf user updates a header field:\n- update only that field in internal state.\n\nIf user updates products:\n- modify only the relevant line(s),\n- recompute totals and grand_total if needed.\n\nAfter each significant change:\n- re-show the updated summary,\n- ask if anything else to change or if they want to confirm.\n\nSTEP U5: Confirmation\n\nUse the same CURRENT-MESSAGE CONFIRMATION RULE as in create flow.\n\nSet complete = true ONLY when ALL are true:\n- summary was already shown for this request,\n- all required fields remain valid,\n- at least 1 valid product exists,\n- the CURRENT message clearly contains an allowed confirmation phrase (confirm / ok / okay / yes / correct) referring to this request.\n\nWhen complete = true:\nAcknowledge that the updated request is confirmed and will be resubmitted for approval.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDATE HANDLING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n- Accept DD/MM/YYYY, D/M/YY, and \"today\".\n- Convert internally to DD/MM/YYYY.\n- Validate dates before accepting.\n- expected_po_date may also be descriptive text like \"after project confirmation\"; keep as-is if free text.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCURRENT-MESSAGE CONFIRMATION RULE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nTreat each turn independently using ONLY the latest user message as current_user_message.\n\nDecide complete based ONLY on:\n- current internal form state, AND\n- current_user_message in THIS turn.\n\nAllowed phrases (case-insensitive):\n- confirm\n- ok\n- okay\n- yes\n- correct\n\nIf uncertain, default to complete = false.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHUMAN INTERVENTION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSet human_intervention = true ONLY when:\n- user explicitly asks to talk to a person / staff / human, OR\n- user shows clear anger or strong dissatisfaction.\n\nWhen human_intervention = true:\n- team = \"project_sales\" for purchase/sponsorship issues,\n- team = \"customer_service\" for other issues.\n\nWhen human_intervention = false:\n- team = \"\".\n\nhuman_intervention does NOT imply exit = true.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOUTPUT FORMAT (STRICT – EVERY RESPONSE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nFor EVERY response, output EXACTLY this JSON structure:\n\n{\n  \"response\": \"<your WhatsApp message with \\\\n for line breaks>\",\n  \"request_number\": \"<string or \\\"\\\">\",\n  \"request_type\": \"<\\\"purchase_request\\\" | \\\"sponsorship_form\\\" | \\\"\\\">\",\n  \"date\": \"<DD/MM/YYYY or \\\"\\\">\",\n  \"customer_name\": \"<string or \\\"\\\">\",\n  \"delivery_address\": \"<string or \\\"\\\">\",\n  \"project_title\": \"<string or \\\"\\\">\",\n  \"total_project_value\": \"<string or \\\"\\\">\",\n  \"sponsor_subject\": \"<string or \\\"\\\">\",\n  \"purpose\": \"<string or \\\"\\\">\",\n  \"expected_delivery_date\": \"<DD/MM/YYYY or \\\"\\\">\",\n  \"expected_po_date\": \"<string or \\\"\\\">\",\n  \"date_of_delivery\": \"<DD/MM/YYYY or \\\"\\\">\",\n  \"products\": [\n    {\n      \"item_code\": \"<string or \\\"\\\">\",\n      \"quantity\": \"<string or \\\"\\\">\",\n      \"unit_price\": \"<string or \\\"\\\">\",\n      \"total\": \"<string or \\\"\\\">\",\n      \"remark\": \"<string or \\\"\\\">\"\n    }\n  ],\n  \"grand_total\": \"<string or \\\"\\\">\",\n  \"requested_by\": \"<string or \\\"\\\">\",\n  \"requested_at\": \"<DD/MM/YYYY or \\\"\\\">\",\n  \"last_list_count\": <integer>,\n  \"complete\": <true or false>,\n  \"collecting_products\": <true or false>,\n  \"human_intervention\": <true or false>,\n  \"team\": \"<\\\"project_sales\\\" | \\\"customer_service\\\" | \\\"\\\">\",\n  \"exit\": <true or false>\n}\n\nFIELD RULES:\n- request_number:\n  - \"\" for new requests before submission,\n  - set when viewing or updating an existing request.\n- request_type:\n  - \"purchase_request\", \"sponsorship_form\", or \"\".\n- last_list_count:\n  - number of items in the last list (0 if none this turn).\n- complete:\n  - true only on confirmation turns for create/update,\n  - false for list/find/filter/view-only turns.\n- collecting_products:\n  - true only while collecting line items in create/update flows.\n- exit:\n  - true only when handing back to main assistant for out-of-scope topics.\n\nCRITICAL RULES (REINFORCED):\n- Never fabricate request details.\n- Always use DB Subagent for list/find/filter/view/update-load.\n- When updating, ALWAYS re-check with DB Subagent that the selected request:\n  - belongs to this user (contact_id),\n  - AND approval_status = 'rejected'.\n- Never set complete = true during list/find/filter/view-only flows.\n- Keep response under 1500 characters.\n- Always output the full JSON with all keys."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -672,
+        80
+      ],
+      "id": "bdb886d7-1e90-4814-acca-e4cb2bf73a4b",
+      "name": "Purchase Request Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let output;\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match => match.replace(/```json?|\\```/g, ''));\n\n  const idx = raw.indexOf('{');\n\n  if (idx === -1) {\n    output = { response: raw };\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output = JSON.parse(cleanSlice);\n  }\n}\noutput.contact_id = $('When Executed by Another Workflow').first().json.contact_id.toString()\noutput.space_id = \"364817\"\nif (output.complete) {\n  output.human_intervention = false\n  output.team = 'customer_service'\n  output.approval_status = \"\"\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        80
+      ],
+      "id": "cfdf584a-02a8-48bc-a135-f081fe75407c",
+      "name": "output_exchange"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b0c14d83-5119-4111-b5f2-ab652e048852",
+              "leftValue": "={{ $json.complete }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        80
+      ],
+      "id": "2cc63f05-b9a8-4095-a8a5-42c68df69e7d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  \"output\": $('Purchase Request Agent').first().json.output\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        80
+      ],
+      "id": "7b03847c-f7fb-4309-b9fa-ebb9f600fcc8",
+      "name": "analyze_document_output_parser13"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/purchase-requests",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.toJsonString() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        320,
+        0
+      ],
+      "id": "f9ba453d-9056-4550-92d0-ac937c01b5f6",
+      "name": "purchase-request-create"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "system_id"
+            },
+            {
+              "name": "attachment_url"
+            },
+            {
+              "name": "filename"
+            },
+            {
+              "name": "tags",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1296,
+        368
+      ],
+      "id": "57edf91f-fb02-4fdf-8477-79144b163611",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "UPDATE_CONTACT",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "customFields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "complaint_id": "={{ $json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "complaint_id",
+              "displayName": "Complaint ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_type",
+              "displayName": "User Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "end_user",
+                  "value": "end_user"
+                },
+                {
+                  "name": "dealer",
+                  "value": "dealer"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "enquiry_type",
+              "displayName": "Enquiry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "General Enquiries",
+                  "value": "General Enquiries"
+                },
+                {
+                  "name": "Marketing Form",
+                  "value": "Marketing Form"
+                },
+                {
+                  "name": "Incoming Stock",
+                  "value": "Incoming Stock"
+                },
+                {
+                  "name": "Chat Analysis",
+                  "value": "Chat Analysis"
+                },
+                {
+                  "name": "Order Enquiries",
+                  "value": "Order Enquiries"
+                },
+                {
+                  "name": "Purchase Request / Sponsorship Form",
+                  "value": "Purchase Request / Sponsorship Form"
+                },
+                {
+                  "name": "Project Stock Inquiries",
+                  "value": "Project Stock Inquiries"
+                },
+                {
+                  "name": "Project Complaint",
+                  "value": "Project Complaint"
+                }
+              ],
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "68887c7f-fb34-4d6f-9321-fd063ad89c85",
+      "name": "Update a Contact",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "ADD_TAGS",
+        "contactId": "={{ $json.contactId }}",
+        "tags": [
+          "upload_attachment"
+        ]
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "f6992613-5bfb-434b-97ac-a4ee7a65c96f",
+      "name": "upload_attachment_tag",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b50d293-0c56-4e59-8cfd-0ab2ebfbd62d",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.system_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b9dd0593-b130-4131-b187-75d169ab91b8",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.tags }}",
+              "rightValue": "upload_attachment",
+              "operator": {
+                "type": "array",
+                "operation": "notContains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1072,
+        368
+      ],
+      "id": "4577d356-8e49-4a6c-872b-0e72336cc214",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Single item\nreturn {\n  json: {\n    output: `File uploaded successfully. After you've finished uploading (or if you don't have anymore), please type 'DONE' so I can submit your ${$json.entity_type}.`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        320
+      ],
+      "id": "339a5d67-5f63-418a-b044-67625571650d",
+      "name": "analyze_document_output_parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0a8c5649-34a8-4e60-8163-e81cd795d00c",
+              "leftValue": "={{ $json.message.toLowerCase() }}",
+              "rightValue": "done",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -608,
+        512
+      ],
+      "id": "22284bd2-6ce1-431b-9e6f-24bab0231daa",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "UPDATE_CONTACT",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "customFields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "complaint_id": "={{ null }}",
+            "enquiry_type": "={{ null }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "complaint_id",
+              "displayName": "Complaint ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_type",
+              "displayName": "User Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "end_user",
+                  "value": "end_user"
+                },
+                {
+                  "name": "dealer",
+                  "value": "dealer"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "enquiry_type",
+              "displayName": "Enquiry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "General Enquiries",
+                  "value": "General Enquiries"
+                },
+                {
+                  "name": "Marketing Form",
+                  "value": "Marketing Form"
+                },
+                {
+                  "name": "Incoming Stock",
+                  "value": "Incoming Stock"
+                },
+                {
+                  "name": "Chat Analysis",
+                  "value": "Chat Analysis"
+                },
+                {
+                  "name": "Order Enquiries",
+                  "value": "Order Enquiries"
+                },
+                {
+                  "name": "Purchase Request / Sponsorship Form",
+                  "value": "Purchase Request / Sponsorship Form"
+                },
+                {
+                  "name": "Project Stock Inquiries",
+                  "value": "Project Stock Inquiries"
+                },
+                {
+                  "name": "Project Complaint",
+                  "value": "Project Complaint"
+                }
+              ],
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        704
+      ],
+      "id": "5ddfc35e-c24c-4775-8111-4b42d90d7561",
+      "name": "Update a Contact1",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Single item\nreturn {\n  json: {\n    output: `File failed to upload. Please make sure you are uploading a image, video or an attachment, please type 'DONE' if you want to access other features or file a new request.`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        512
+      ],
+      "id": "1dfd760c-1db9-447e-8320-273f7e56cf96",
+      "name": "analyze_document_output_parser2"
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "comment": "=📦 Purchase Request / Sponsorship Form Alert: A purchase request / sponsorship form has been created\n\nYou can review the details at:\nhttps://fe-sorento.foundryx.my/procurement-management/purchase-requests/{{ $('When Executed by Another Workflow').item.json.system_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        320,
+        704
+      ],
+      "id": "00c68934-b96b-483a-9975-4d0aa9134f7e",
+      "name": "Add a Comment",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "contactId": "={{ $json.contactId }}",
+        "tagIds": "={{ [\"upload_attachment\"] }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        96,
+        704
+      ],
+      "id": "439f884d-2fde-4044-82ae-828b59828dd7",
+      "name": "remove-upload-attachment-tag",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/entity-attachments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entity_type\": \"purchase_request\",\n  \"entity_id\": \"{{ $('When Executed by Another Workflow').item.json.system_id }}\",\n  \"file_url\": \"{{ $('When Executed by Another Workflow').item.json.attachment_url }}\",\n  \"file_name\": \"{{ $('When Executed by Another Workflow').item.json.filename }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -128,
+        416
+      ],
+      "id": "07d1cd6a-487e-4ec2-ad3d-3202fbcefdf8",
+      "name": "entity-attachments-create",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  \"output\": `Received all your uploads and notified the project sales team for approval. Thanks for your input! ${$json.view_url ? `You can view the stock inquiry at ${$json.view_url}` : `URL of stock inqury is not found, someone might have deleted it!`}`\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        704
+      ],
+      "id": "60288a61-2ff9-45a1-b7fe-e5f16e367188",
+      "name": "analyze_document_output_parser1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/view-link",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entity_type\": \"purchase_request\",\n  \"entity_id\": \"{{ $('When Executed by Another Workflow').item.json.system_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        544,
+        704
+      ],
+      "id": "4f61f00f-1704-4ca1-880f-5c868b318a99",
+      "name": "view-link-get",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n    \"response\": \"You are about to edit your Purchase Request PR26-0309.\\n\\nPlease tell me what you want to change, for example:\\n- change quantity of item SRTW2048 to 20\\n- update project title\\n- change expected delivery date\\n\\nWhat would you like to update?\",\n    \"request_number\": \"PR26-0309\",\n    \"request_type\": \"purchase_request\",\n    \"date\": \"11/04/2026\",\n    \"customer_name\": \"Jayson\",\n    \"delivery_address\": \"\",\n    \"project_title\": \"jayson\",\n    \"total_project_value\": \"\",\n    \"sponsor_subject\": \"\",\n    \"purpose\": \"mockup\",\n    \"expected_delivery_date\": \"10/11/2025\",\n    \"expected_po_date\": \"today\",\n    \"date_of_delivery\": \"\",\n    \"products\": [\n        {\n            \"item_code\": \"SRTW2048\",\n            \"quantity\": \"10\",\n            \"unit_price\": \"\",\n            \"total\": \"\",\n            \"remark\": \"none\"\n        },\n        {\n            \"item_code\": \"basin\",\n            \"quantity\": \"10\",\n            \"unit_price\": \"\",\n            \"total\": \"\",\n            \"remark\": \"none\"\n        }\n    ],\n    \"grand_total\": \"\",\n    \"requested_by\": \"jyaon\",\n    \"requested_at\": \"11/04/2026\",\n    \"complete\": false,\n    \"collecting_products\": true,\n    \"human_intervention\": false,\n    \"team\": \"\",\n    \"exit\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        304
+      ],
+      "id": "e4318dbf-a7fe-4526-b5b6-910c2f4dc5f8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        304
+      ],
+      "id": "2939d18e-eeeb-43f7-b309-6b6bc7166e47",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PLf5z4VyNW_jQ_zg88nAm",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PLf5z4VyNW_jQ_zg88nAm",
+          "cachedResultName": "sub-sql-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query_description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query_description', ``, 'string') }}",
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query_description",
+              "displayName": "query_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "access_levels",
+              "displayName": "access_levels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -464,
+        304
+      ],
+      "id": "4cfea6a5-3945-478d-b3e9-300f83f05028",
+      "name": "Call 'sub-sql-agent'"
+    }
+  ],
+  "connections": {
+    "calculator2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Purchase Request Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Purchase Request Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Purchase Request Agent": {
+      "main": [
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output_exchange": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "purchase-request-create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyze_document_output_parser13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "purchase-request-create": {
+      "main": [
+        [
+          {
+            "node": "Update a Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a Contact": {
+      "main": [
+        [
+          {
+            "node": "upload_attachment_tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_attachment_tag": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Purchase Request Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "entity-attachments-create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a Contact1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a Contact1": {
+      "main": [
+        [
+          {
+            "node": "remove-upload-attachment-tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add a Comment": {
+      "main": [
+        [
+          {
+            "node": "view-link-get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove-upload-attachment-tag": {
+      "main": [
+        [
+          {
+            "node": "Add a Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "entity-attachments-create": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyze_document_output_parser2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "view-link-get": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyze_document_output_parser1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Purchase Request Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Purchase Request Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-sql-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "Purchase Request Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "i want to edit the first purchase request",
+          "contact_id": 423512626,
+          "tags": []
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "59fd4dae-296e-46eb-b223-d7fcc011c0bb",
+  "activeVersionId": "59fd4dae-296e-46eb-b223-d7fcc011c0bb",
+  "versionCounter": 127,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:59:33.452Z",
+      "createdAt": "2026-02-03T13:59:33.452Z",
+      "role": "workflow:owner",
+      "workflowId": "ft-5GAv1JzadXWT4h2kkd",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

@@ -1,0 +1,339 @@
+{
+  "updatedAt": "2026-05-19T12:16:45.657Z",
+  "createdAt": "2026-05-19T12:16:45.657Z",
+  "id": "pgJCfaOuwSRDYQ8S",
+  "name": "sub-query-reformulator copy",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chat_histories",
+              "type": "array"
+            },
+            {
+              "name": "latest_user_message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "previous_frame_obj",
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        -48
+      ],
+      "id": "782ef70d-f3ae-4915-aa5c-4567899512c8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        176
+      ],
+      "id": "9ce3f117-20f4-4239-94da-c056553e677f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=previous_conversation_state:\n{{ JSON.stringify($json.previous_frame_obj || {}) }}\n\ncurrent_user_message:\n{{ $('When Executed by Another Workflow').first().json.latest_user_message }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are the Sorento Semantic Parser for a business assistant.\nYour job is to take:\n\na small previous_conversation_state object, and\n\nthe current_user_message\n\nand return a compact JSON object for downstream routing and orchestration.\n\nYou MUST:\n\nNot answer the user.\n\nNot call tools.\n\nNot write explanations.\n\nPreserve important phrases (like product) exactly inside entities.\n\nUse previous_conversation_state only to decide if the user is confirming escalation or referring to the previous topic.\n\nROUTING RULES (for routing.suggested_team and routing.suggested_agent):\n\nIf the user asks about product or product certificates → suggested_team = \"purchasing\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about incoming stock → suggested_team = \"purchasing\", suggested_agent = \"incoming_stock_enquiries\".\n\nIf the user asks about promotion → suggested_team = \"marketing_promotion\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about goods receiving, delivery order, order, or stock → suggested_team = \"warehouse\", suggested_agent = \"order_enquiries\".\n\nIf the user asks about a marketing form → suggested_team = \"marketing_form\", suggested_agent = \"marketing_form\".\n\nIf the user asks about product photos or technical specs → suggested_team = \"marketing_product\", suggested_agent = \"general_enquiries\".\n\nOtherwise → suggested_team = \"customer_service\", suggested_agent = \"general_enquiries\".\n\nESCALATION CONFIRMATION:\n\nLook at previous_conversation_state.suggested_next_action\n\nIf suggested_next_action is related to escalation AND the current message clearly agrees to escalate, then:\n\nmessage_type = \"escalation_confirmation\".\n\nescalation.is_escalation_confirmation = true.\n\nIf suggested_next_action is related to escalation AND the current message clearly rejects escalation, then:\n\nmessage_type = \"escalation_confirmation\".\n\nescalation.is_escalation_confirmation = false.\n\nIn all other cases:\n\nescalation.is_escalation_confirmation = false.\n\nMESSAGE TYPE:\n\nSet message_type based on the current user message:\n\n\"business_query\": asking for information, status, links, products, promotions, etc.\n\n\"clarification\": user is asking to clarify a previous answer.\n\n\"casual\": greetings, thanks, chit‑chat.\n\n\"unknown\": you cannot classify the message.\n\nREFERENCE TO PREVIOUS CONTEXT:\n\nSet reference_to_previous_context = true if the user clearly refers to the last topic or uses pronouns like “it”, “that”, “same one”, “previous”, “when will it arrive”, or is answering a question from the last turn (including escalation).\n\nOtherwise, set reference_to_previous_context = false.\n\nOUTPUT FORMAT:\n\nReturn ONLY valid JSON with the following shape and keys:\n\njson\n{\n  \"message_type\": \"business_query | confirmation | clarification | escalation_confirmation | casual | unknown\",\n  \"intent_hint\": \"string_or_null\",\n  \"domain_hint\": \"string_or_null\",\n  \"user_goal\": \"string_or_null\",\n  \"entities\": [\n    \"list of short entities from the current message that look like products, orders, promotions, transporter, location, customer etc. e.g. \"product A\", \"product B\", \"order A\"\"\n  ],\n  \"reference_to_previous_context\": false,\n  \"routing\": {\n    \"suggested_team\": \"purchasing | marketing_promotion | warehouse | marketing_form | marketing_product | customer_service |\",\n    \"suggested_agent\": \"general_enquiries | order_enquiries | incoming_stock_enquiries | marketing_form |\"\n  },\n  \"escalation\": {\n    \"is_escalation_confirmation\": false\n  }\n}\nintent_hint and domain_hint can be simple strings like \"submit_complaint\", \"promotion_enquiry\", \"order_status\", or null if unclear.\n\nuser_goal should be a short, plain‑language description of what the user wants (or null if unclear).\n\nentities can be an empty array if there are none.\n\nAlways fill routing.suggested_team and routing.suggested_agent according to the routing rules above.\n\nDo not include any other fields. Do not write comments. Return exactly one JSON object."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -560,
+        -48
+      ],
+      "id": "d4f55cf6-bc4e-4181-a6b8-7152bebd62ac",
+      "name": "Query Reformulator"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let output = {};\n\nif ($json.text && typeof $json.text === 'object') {\n  output = $json.text;\n} else {\n  let raw = String($json.text || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n    match.replace(/```json?|\\```/g, '')\n  );\n\n  const idx = raw.indexOf('{');\n  if (idx === -1) {\n    output = { output: raw };\n    output.quick_reply = $json.quick_reply\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output.output = JSON.parse(cleanSlice);\n  }\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -48
+      ],
+      "id": "411c743e-a3f3-4ad9-9420-de1a404479a1",
+      "name": "output_exchange"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Query Reformulator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Query Reformulator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Reformulator": {
+      "main": [
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output_exchange": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "chat_histories": [
+            {
+              "id": 33255,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "Which access level should I use: Sorento Office, Sorento Dealer, Mocha Dealer, Mocha Office, Cabana Office, Cabana Dealer, End User?\n\n_Query: promotion enquiry for filter tap cabana_\n\nWhich access level should I use: Sorento Office, Sorento Dealer, Mocha Dealer, Mocha Office, Cabana Office, Cabana Dealer, End User?\n\n_Data last updated: 18/05/2026 05:38:35_",
+              "sent_at": "2026-05-18T11:46:48.075000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "outgoing"
+            },
+            {
+              "id": 33254,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "send me filter tap promo for cabana",
+              "sent_at": "2026-05-18T11:46:48.203000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "incoming"
+            },
+            {
+              "id": 33257,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "We don't have that information available. Would you like me to route you to our Marketing - Promotion team?\n\n_Query: Looked for a cabana filter tap promotion for Sorento Dealer access._\n\nWould you like me to route you to our Marketing - Promotion team?\n\n_Data last updated: 18/05/2026 11:46:48_",
+              "sent_at": "2026-05-18T11:47:10.196000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "outgoing"
+            },
+            {
+              "id": 33256,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "dealer",
+              "sent_at": "2026-05-18T11:47:10.308000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "incoming"
+            },
+            {
+              "id": 33259,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "Here are the Cabana Dealer promotions I found.\n\n_Query: Promotions for Cabana Dealer_\n\n1. *Promotion:* Cabana shelf promotion for dealers\n*Promotion ID:* 7c3b805f-a555-4344-9f21-0623c03dcb0d\n*Active:* Yes\n*Start Date:* 2026-03-31\n*End Date:* 2026-06-30\n*Products Count:* 9\n*Attachment:* SHELF PROMO 31032026 DEALER USE.pdf\n2. *Promotion:* PROMOTION MIRROR & SHELF\n*Promotion ID:* e9999879-bc90-42ee-857c-457011db0f26\n*Active:* Yes\n*Start Date:* 2026-05-07\n*End Date:* 2026-08-07\n*Products Count:* 14\n*Attachment:* CABANA NEW ARRIVAL PROMO MIRROR  SHELF_07052026 DEALER USE.pdf\n3. *Promotion:* Cabana Kitchen Sink Promotion\n*Promotion ID:* d787a0d0-79ff-4890-a786-cab862c607db\n*Active:* Yes\n*Start Date:* 2026-03-09\n*End Date:* 2026-06-09\n*Products Count:* 20\n*Attachment:* MULTIFUNCTION KITCHEN SINK PROMO DEALER USE.pdf\n4. *Promotion:* Kitchen sink promotion for dealers\n*Promotion ID:* 5f1698f1-51dc-4eb3-a9b2-65709808bc38\n*Active:* Yes\n*Start Date:* 2026-04-27\n*End Date:* 2026-07-27\n*Products Count:* 1\n*Attachment:* KITCHEN SINK PROMO 27042026 DEALER USE.pdf\n5. *Promotion:* Cabana Kitchen Sink Promotion. All items at RM 450 invoice price. Extra 5% for purchase of 5 sets or more.\n*Promotion ID:* 43bcf641-f0e4-4f5f-8eee-5634d3c4fba1\n*Active:* Yes\n*Start Date:* 2026-03-09\n*End Date:* 2026-06-09\n*Products Count:* 12\n*Attachment:* DOUBLE KITCHEN SINK 05052026 DEALER USE.pdf\n6. *Promotion:* Cabana Kitchen Sink Dealer Promotion\n*Promotion ID:* 72d0eda0-b900-4ff4-aac3-5521fb40bc6f\n*Active:* Yes\n*Start Date:* 2026-03-09\n*End Date:* 2026-06-09\n*Products Count:* 12\n*Attachment:* MULTIFUNCTION KITCHEN SINK PROMO DEALER USE.pdf\n7. *Promotion:* Promotion Kitchen Sink\n*Promotion ID:* 53c2936f-ab08-4662-b629-3d636be6800d\n*Active:* Yes\n*Start Date:* 2026-03-09\n*End Date:* 2026-06-09\n*Products Count:* 6\n*Attachment:* DOUBLE KITCHEN SINK 05052026 DEALER USE.pdf\n8. *Promotion:* KITCHEN SINK PROMOTION\n*Promotion ID:* 74137fb9-a690-4152-a6cf-a8b97a05da49\n*Active:* Yes\n*Start Date:* 2026-04-27\n*End Date:* 2026-07-27\n*Products Count:* 1\n*Attachment:* KITCHEN SINK PROMO 27042026 DEALER USE.pdf\n\nWould you like me to open one of these promotions for more details?\n\n_Data last updated: 14/05/2026 07:46:59_",
+              "sent_at": "2026-05-18T11:48:10.036000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "outgoing"
+            },
+            {
+              "id": 33258,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "how about cabana dealer",
+              "sent_at": "2026-05-18T11:48:10.184000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "incoming"
+            },
+            {
+              "id": 33261,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "We don't have that information available. Would you like me to route you to our Marketing - Promotion team?\n\n_Query: Filtered promotions for Cabana Dealer with tap-related search_\n\nWould you like me to route you to our Marketing - Promotion team?\n\n_Data last updated: 18/05/2026 11:48:10_",
+              "sent_at": "2026-05-18T11:48:51.007000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "outgoing"
+            },
+            {
+              "id": 33260,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "filter tap promo for cabana dealer",
+              "sent_at": "2026-05-18T11:48:51.158000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "incoming"
+            },
+            {
+              "id": 33263,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "We don't have that information available. Would you like me to route you to our Marketing - Promotion team?\n\n_Query: Dealer-related promotion lookup_\n\nWould you like me to route you to Marketing - Promotion?\n\n_Data last updated: 18/05/2026 11:48:50_",
+              "sent_at": "2026-05-18T11:59:16.455000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "outgoing"
+            },
+            {
+              "id": 33262,
+              "channel": "whatsapp",
+              "contact_id": "437264483",
+              "phone_number": "+60166753328",
+              "message": "how about dealer",
+              "sent_at": "2026-05-18T11:59:16.606000",
+              "first_name": "Jayson",
+              "last_name": null,
+              "type": "incoming"
+            }
+          ],
+          "latest_user_message": "May i know today for transporter Svind Enterprise gt delivery ?\n\n",
+          "contact_id": 437264483,
+          "previous_frame_obj": {
+            "frame": {
+              "contact_id": "437264483",
+              "space_id": "364817",
+              "channel": "whatsapp",
+              "domain": "promotion",
+              "intent": "promotion_enquiry",
+              "active_entities": {
+                "unknown": {
+                  "type": "unknown",
+                  "source": "semantic_parser"
+                }
+              },
+              "access_levels_used": [
+                "Sorento Dealer"
+              ],
+              "tools_used": [
+                "crm_marketing_promotion_products_list",
+                "crm_marketing_promotions_list"
+              ],
+              "result_refs": [],
+              "pending_request": {
+                "reason": "confirm_escalation",
+                "status": "waiting_for_user",
+                "escalation_offer": {
+                  "team": "Marketing - Promotion",
+                  "tier": 1,
+                  "agent": "general_enquiries",
+                  "message_asked": "We don't have that information available. Would you like me to route you to our Marketing - Promotion team?"
+                }
+              },
+              "last_user_message": "how about dealer",
+              "last_assistant_summary": "No matching dealer promotions were found and I asked whether to route to Marketing - Promotion.",
+              "status": "open",
+              "started_at": "2026-05-18T11:46:48.058708",
+              "last_activity_at": "2026-05-18T11:59:16.425818"
+            }
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "5cf43a76-82e4-456a-97cb-a47ee03d5c2b",
+  "activeVersionId": null,
+  "versionCounter": 259,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-19T12:16:45.657Z",
+      "createdAt": "2026-05-19T12:16:45.657Z",
+      "role": "workflow:owner",
+      "workflowId": "pgJCfaOuwSRDYQ8S",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

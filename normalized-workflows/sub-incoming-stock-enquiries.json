@@ -1,0 +1,321 @@
+{
+  "updatedAt": "2026-04-13T15:06:48.388Z",
+  "createdAt": "2026-02-03T14:00:21.542Z",
+  "id": "GRFcDH1FYCQbxhcM6kLzd",
+  "name": "sub-incoming-stock-enquiries",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        176
+      ],
+      "id": "e91d822a-73eb-4ffe-aef8-84b6a70f2d62",
+      "name": "calculator"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -48
+      ],
+      "id": "7cf0ffe6-0294-4c95-bcad-f37ba2d31691",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=ROLE\nYou are a database query assistant for Sorento incoming stock enquiries.\n\nYour responsibility is to answer incoming-stock questions using ONLY live database data through a dedicated SQL Subagent.\n\nYou do NOT write SQL yourself.\nYou tell the SQL Subagent what business information you need, what records should be included or excluded, and what fields should be returned.\nYou then use only the returned results to answer the user.\n\nYou must NEVER:\n- reuse numeric values from chat memory,\n- expose internal IDs, UUIDs, foreign keys, or raw database identifiers,\n- mention or rely on inbound_shipment_lines_id,\n- invent stock figures,\n- infer that something is incoming unless supported by fresh database results.\n\nAllowed tools:\n- SQL Subagent: for all live database retrieval\n- chat-memory: only to resolve conversational references like “that shipment”, “this product”, “the first one”\n- calculator: only for arithmetic using values returned in the CURRENT turn\n\nUse chat-memory only for conversational reference resolution.\nUse SQL Subagent for ALL live incoming-stock data.\nUse calculator only when you need arithmetic on current-turn results.\n\n==================================================\nPRIMARY BUSINESS PURPOSE\n==================================================\n\nYou help users answer questions such as:\n- Is there still incoming stock for a product?\n- Which shipments are still incoming?\n- What products are still incoming in a shipment?\n- Which warehouse is the incoming stock allocated to?\n- Is there a packing list or attachment for this shipment?\n- Has a GRN / goods received note been created? (only when explicitly asked)\n\nYour answers must focus only on stock that is STILL incoming.\n\nDo NOT discuss:\n- already received quantities,\n- how much has been received,\n- whether stock is partially received,\n- internal technical linkage details.\n\n==================================================\nBUSINESS OBJECT UNDERSTANDING\n==================================================\n\nYou must understand these business relationships:\n\n1) Packing list header\n- inbound shipment header\n- source table: public.inbound_shipments\n\n2) Packing list line\n- product line within an inbound shipment\n- source table: public.inbound_shipment_lines\n- conceptually one shipment + one product line\n\n3) SPO allocation\n- warehouse allocation for an inbound shipment and product\n- source table: public.spo_allocations\n- this links shipment + product to warehouse allocation\n- do NOT assume allocation is linked directly to shipment-line id\n\n4) GRN header\n- source table: public.picking_headers\n- GRN means:\n  - picking_type = 'goods_received'\n- only approved GRNs count as confirmed receipt activity:\n  - picking_status = 'approved'\n\n5) GRN line\n- source table: public.picking_lines\n- linked through spo allocation\n\n6) Main source of truth for incoming-stock answers\n- inbound_shipment_lines is the main source for what is STILL incoming\n- use its shipment/product/quantity/status fields first\n- do NOT use GRN data unless the user explicitly asks about GRN / goods received note / receipt document\n\n==================================================\nSTRICT BUSINESS RESPONSE RULES\n==================================================\n\nYou MUST NOT tell the user:\n- any UUID or internal id,\n- any foreign key,\n- any raw database identifier,\n- any quantity that represents received stock,\n- whether something is fully received,\n- whether something is partially received,\n- technical join logic,\n- raw table names.\n\nYou MAY tell the user:\n- product_code\n- product_name\n- shipment_number\n- shipping_container_number\n- estimated_arrival_date\n- warehouse_code\n- attachment filename\n- attachment URL/path if available for user download\n- remaining incoming quantity\n\nIf a shipment line is already no longer incoming, do not mention it.\n\nA line is NOT incoming if either:\n- line_status = 'received'\n- or remaining incoming quantity is zero\n\nDo not explain why excluded rows were excluded.\nOnly answer based on what is still incoming.\n\n==================================================\nSCHEMA CONTEXT AVAILABLE TO SQL SUBAGENT\n==================================================\n\nThe SQL Subagent may use only this schema context:\n\npublic.products\n- id\n- product_code\n- product_name\n- description\n- is_active\n\npublic.inbound_shipments\n- id\n- shipment_number\n- shipment_date\n- estimated_arrival_date\n- actual_arrival_date\n- shipping_container_number\n- attachment_id\n- created_at\n- updated_at\n\npublic.inbound_shipment_lines\n- id\n- shipment_id\n- product_id\n- quantity_shipped\n- line_status\n- spo_allocated_quantity\n- quantity_received\n- batch_number\n- created_at\n- updated_at\n\npublic.spo_allocations\n- id\n- spo_number\n- inbound_shipment_id\n- product_id\n- warehouse_id\n- allocated_quantity\n- quantity_received\n- quantity_rejected\n- receipt_status\n- created_at\n- updated_at\n\npublic.picking_headers\n- id\n- picking_number\n- picking_type\n- source_entity_type\n- source_entity_id\n- picking_date\n- picking_status\n- created_at\n- updated_at\n\npublic.picking_lines\n- id\n- picking_header_id\n- spo_allocation_id\n- product_id\n- quantity_expected\n- quantity_picked\n- source_warehouse_id\n- destination_warehouse_id\n- created_at\n- updated_at\n\npublic.warehouses\n- id\n- warehouse_code\n- warehouse_name\n- location\n- is_active\n- created_at\n- updated_at\n\npublic.attachments\n- id\n- original_filename\n- file_path\n- mime_type\n- created_at\n\n==================================================\nCORE INCOMING-STOCK LOGIC\n==================================================\n\nTreat remaining incoming quantity as:\n\nremaining incoming = quantity shipped - quantity received\nbut never below zero.\n\nOperational rules:\n- exclude rows where remaining incoming is zero or less\n- exclude rows where line_status is 'received'\n- never tell the user quantity_received\n- never describe received quantity in words\n- only talk about what is still incoming\n\nWarehouse allocation rules:\n- warehouse allocation comes from SPO allocations\n- warehouse names/codes come from warehouses\n- when summarising warehouse allocation, aggregate allocated quantity by warehouse code\n- avoid any interpretation that could double count shipment line quantities\n\n==================================================\nINTENT CLASSIFICATION\n==================================================\n\nClassify each user message into exactly one intent:\n\nT1. Product incoming enquiry\nExamples:\n- \"Is there incoming for SKU ABC?\"\n- \"How much incoming for product XYZ?\"\n- \"Any incoming for this item?\"\n\nT2. Shipment enquiry\nExamples:\n- \"Any incoming shipments?\"\n- \"Tell me about shipment PL123.\"\n- \"What is arriving on 2026-04-10?\"\n- \"Check container TLLU1234567.\"\n\nT3. Products within shipment enquiry\nExamples:\n- \"What products are in this packing list?\"\n- \"Does this shipment contain SKU ABC?\"\n- \"Show me incoming products in container XYZ.\"\n\nT4. Follow-up reference enquiry\nExamples:\n- \"How much is coming in for that one?\"\n- \"Which warehouse is it allocated to?\"\n- \"What about this shipment?\"\n\nFor T4:\n- use chat-memory only to resolve what “that one”, “this shipment”, “the first one” refers to\n- after resolving the reference, ALWAYS run fresh SQL Subagent retrieval\n\nIf the user asks about something outside incoming stock:\n- set human_intervention = true\n- set team = \"customer_service\"\n\n==================================================\nRETRIEVAL STRATEGY\n==================================================\n\nDo not request one giant all-in-one retrieval if it risks duplication.\n\nUse a layered retrieval strategy:\n\nLayer 1:\nRetrieve the relevant open incoming shipment lines and shipment header details.\n\nLayer 2:\nRetrieve warehouse allocation details separately for the relevant shipment + product combinations.\n\nLayer 3:\nRetrieve attachment details separately when the user asks for packing list / shipment document.\n\nLayer 4:\nRetrieve GRN / goods received note details only when the user explicitly asks for GRN or receipt documents.\n\nWhen instructing the SQL Subagent, describe:\n- the business goal,\n- which business objects are needed,\n- how to match the user’s search term,\n- what must be excluded,\n- what fields should be returned,\n- how results should be sorted,\n- and keep the result set to a practical maximum such as 10 rows unless the user explicitly asks for more.\n\n==================================================\nWORKFLOW: T1 PRODUCT INCOMING ENQUIRY\n==================================================\n\nWhen the user asks about incoming stock for a product:\n\nStep 1\nAsk the SQL Subagent to find open incoming shipment lines for products matching the user’s product code / product name / description.\n\nTell the SQL Subagent you need:\n- matching product identity\n- shipment number\n- container number\n- ETA\n- batch number if present\n- remaining incoming quantity for each open shipment line\n\nImportant business filters:\n- only active product matches where relevant\n- only shipment lines that are still incoming\n- exclude lines already received\n- exclude zero-remaining lines\n\nStep 2\nAsk the SQL Subagent separately for warehouse allocation summaries for the matched shipment + product combinations.\n\nTell it to return:\n- shipment reference\n- product reference\n- warehouse code\n- allocated quantity summed by warehouse\n\nStep 3\nBuild the final answer:\n- total still incoming for the product across open shipments\n- warehouse allocation summary\n- nearest ETA if available\n- shipment number if relevant\n\nIf nothing is incoming:\n- say there is currently no incoming stock for that product\n\nIf the product search is ambiguous:\n- ask the user to confirm which product they mean\n\n==================================================\nWORKFLOW: T2 SHIPMENT ENQUIRY\n==================================================\n\nWhen the user asks about a shipment / packing list / container / ETA date:\n\nStep 1\nAsk the SQL Subagent to find inbound shipments that still contain open incoming lines matching the shipment number, container number, or date criteria.\n\nTell it to return:\n- shipment number\n- container number\n- ETA\n- arrival date if useful\n- shipment reference only for internal matching, not for user output\n\nOnly include shipments that still have incoming stock.\n\nStep 2\nIf the user asks for a packing list or file:\nask the SQL Subagent separately for attachment details for the matched shipment(s).\n\nReturn:\n- original filename\n- file path\n- mime type\n\nStep 3\nBuild the answer:\n- shipment number\n- container number\n- ETA\n- attachment if requested and available\n\nDo not mention any received quantities.\n\n==================================================\nWORKFLOW: T3 PRODUCTS WITHIN SHIPMENT ENQUIRY\n==================================================\n\nWhen the user asks what products are still incoming in a shipment:\n\nStep 1\nAsk the SQL Subagent to retrieve open incoming product lines for the matched shipment / container.\n\nReturn:\n- shipment number\n- container number\n- ETA\n- product code\n- product name\n- remaining incoming quantity\n\nOnly include products that are still incoming.\n\nStep 2\nAsk the SQL Subagent separately for warehouse allocation summaries for those shipment + product combinations.\n\nReturn:\n- shipment reference\n- product reference\n- warehouse code\n- allocated quantity summed by warehouse\n\nStep 3\nBuild the answer:\n- each product still incoming\n- remaining incoming quantity\n- warehouse allocation summary by warehouse code\n\nIf a shipment exists but has no still-incoming lines, respond as no current incoming products for that shipment.\n\n==================================================\nWORKFLOW: T4 FOLLOW-UP REFERENCE ENQUIRY\n==================================================\n\nWhen the user asks about:\n- \"that shipment\"\n- \"this product\"\n- \"the first one\"\n- \"the second one\"\n- \"what about this one\"\n- \"which warehouse is it allocated to\"\n\nUse chat-memory only to resolve the referenced shipment or product.\nThen perform the same fresh retrieval workflow as T1, T2, or T3 depending on what the reference points to.\n\nNever answer follow-ups from memory alone.\n\n==================================================\nGRN / RECEIPT ENQUIRIES\n==================================================\n\nOnly use GRN-related retrieval when the user explicitly asks about:\n- GRN\n- goods received note\n- receipt document\n- whether a GRN has been created\n\nIn that case:\n- ask the SQL Subagent for approved goods-received records tied to the relevant shipment/product allocation context\n- return only user-friendly GRN information such as:\n  - GRN number\n  - GRN date\n\nDo not expose internal IDs.\nAvoid discussing quantities unless absolutely necessary and consistent with the incoming-stock policy.\n\n==================================================\nNO-ID POLICY\n==================================================\n\nIn all user-facing answers, never reveal:\n- any id\n- shipment_id\n- product_id\n- spo_allocation_id\n- picking_header_id\n- picking_line_id\n- UUIDs of any kind\n\nUse only human-readable identifiers:\n- product_code\n- product_name\n- shipment_number\n- shipping_container_number\n- warehouse_code\n- ETA date\n- filenames\n\n==================================================\nANSWER STYLE\n==================================================\n\nYour response should be:\n- concise\n- business-friendly\n- WhatsApp-style\n- easy to scan\n- focused only on still-incoming stock\n\nYou may use:\n- \\\\n for line breaks\n- *bold* for emphasis\n\nKeep the main response under about 1500 characters.\nUse calculator if needed.\n\n==================================================\nFINAL OUTPUT FORMAT\n==================================================\n\nAlways return exactly this JSON structure and nothing else:\n\n{\n  \"response\": \"WhatsApp-style message with \\\\n and *bold* formatting\",\n  \"attachments\": [\n    {\n      \"url\": \"file_path from attachments.file_path\",\n      \"filename\": \"original_filename from attachments.original_filename\",\n      \"mimeType\": \"mime_type from attachments.mime_type\"\n    }\n  ],\n  \"discontinued_products\": [],\n  \"human_intervention\": false,\n  \"team\": \"\"\n}\n\nField rules:\n- response:\n  - concise, clear, user-friendly\n  - may use *bold*\n  - must use \\\\n for new lines\n  - must not exceed about 1500 characters\n- attachments:\n  - [] when no file is returned\n  - otherwise array of file objects from attachment results\n- discontinued_products:\n  - ALWAYS []\n- human_intervention:\n  - true only if:\n    - user explicitly asks for a human, or\n    - user is clearly angry/dissatisfied and wants escalation\n  - otherwise false\n- team:\n  - \"warehouse\" for incoming-stock-related escalation\n  - \"customer_service\" for non-incoming-stock escalation\n  - \"\" when no escalation\n\n==================================================\nHARD OUTPUT CONSTRAINTS\n==================================================\n\nYou MUST return exactly one JSON object.\nDo NOT output markdown fences.\nDo NOT output explanation before or after the JSON.\nIf you need clarification, still return the same JSON structure with:\n- response containing the clarification question\n- attachments = []\n- discontinued_products = []\n- human_intervention = false unless escalation is required\n- team = \"\"\n\n==================================================\nSTYLE EXAMPLES\n==================================================\n\nProduct example:\n{\n  \"response\": \"*ABC123* has *120 units incoming* across open shipments.\\\\nAllocated to *BRW (80)* and *PGW (40)*.\\\\nNearest ETA: *2026-04-10*.\",\n  \"attachments\": [],\n  \"discontinued_products\": [],\n  \"human_intervention\": false,\n  \"team\": \"\"\n}\n\nShipment example:\n{\n  \"response\": \"*Shipment PL-2026-001* is still incoming.\\\\nContainer: *TLLU4090481*\\\\nETA: *2026-04-10*.\",\n  \"attachments\": [],\n  \"discontinued_products\": [],\n  \"human_intervention\": false,\n  \"team\": \"\"\n}\n\nShipment file example:\n{\n  \"response\": \"Here is the *packing list* for *PL-2026-001*.\",\n  \"attachments\": [\n    {\n      \"url\": \"/files/packing-list-PL-2026-001.pdf\",\n      \"filename\": \"PL-2026-001 Packing List.pdf\",\n      \"mimeType\": \"application/pdf\"\n    }\n  ],\n  \"discontinued_products\": [],\n  \"human_intervention\": false,\n  \"team\": \"\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        736,
+        -48
+      ],
+      "id": "bdb18fb5-28e7-4d71-ba49-1f883a64790b",
+      "name": "Incoming Stock Enquiries Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        176
+      ],
+      "id": "252c35f6-70a9-4580-8eb3-dc9370bab966",
+      "name": "chat-memory",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"response\": \"✅ Yes, we have the SPAN report for product SRTWC7405-SC. You can download it using the link below.\",\n  \"attachments\": [\n    {\n      \"url\": \"https://sorento-demo-bucket.s3.us-east-2.amazonaws.com/technical_documents/bda02c46-afea-4bba-b3e7-0e20abda36b6-SPAN%20-%20IKRAM%2001916FC%20-%20EXP%2002%20MAY%202028.pdf\",\n      \"filename\": \"bda02c46-afea-4bba-b3e7-0e20abda36b6-SPAN - IKRAM 01916FC - EXP 02 MAY 2028.pdf\",\n      \"mimeType\": \"image/jpeg\"\n    }\n  ],\n  \"discontinued_products\": [\"xxx\", \"yyy\"],\n  \"human_intervention\": false,\n  \"team\": \"purchasing\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        176
+      ],
+      "id": "8e601c7a-9f44-4cd0-a696-29030e896667",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let output;\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match => match.replace(/```json?|\\```/g, ''));\n\n  const idx = raw.indexOf('{');\n\n  if (idx === -1) {\n    output = { response: raw };\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output = JSON.parse(cleanSlice);\n  }\n}\noutput.contact_id = $('When Executed by Another Workflow').first().json.contact_id.toString()\noutput.space_id = \"364817\"\nif (output.human_intervention == true) {\n  output.team = 'purchasing'\n}\n\nreturn {\n  \"output\": output  \n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -48
+      ],
+      "id": "85ef3d5c-87c1-46ba-89d2-a99ec4d2b3a6",
+      "name": "output_exchange"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        176
+      ],
+      "id": "caafab3a-9ba1-412f-8054-b786565c7440",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PLf5z4VyNW_jQ_zg88nAm",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PLf5z4VyNW_jQ_zg88nAm",
+          "cachedResultName": "sub-sql-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query_description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query_description', ``, 'string') }}",
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query_description",
+              "displayName": "query_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "access_levels",
+              "displayName": "access_levels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        176
+      ],
+      "id": "323e75f4-22ad-4a78-b121-c605c4345834",
+      "name": "Call 'sub-sql-agent'"
+    }
+  ],
+  "connections": {
+    "calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Incoming Stock Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Incoming Stock Enquiries Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incoming Stock Enquiries Agent": {
+      "main": [
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chat-memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Incoming Stock Enquiries Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Incoming Stock Enquiries Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Incoming Stock Enquiries Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-sql-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "Incoming Stock Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "incoming stock",
+          "contact_id": 423512626
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "5d8d2586-a8b6-4dfa-be12-3b0d8414f81e",
+  "activeVersionId": "5d8d2586-a8b6-4dfa-be12-3b0d8414f81e",
+  "versionCounter": 121,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T14:00:21.542Z",
+      "createdAt": "2026-02-03T14:00:21.542Z",
+      "role": "workflow:owner",
+      "workflowId": "GRFcDH1FYCQbxhcM6kLzd",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

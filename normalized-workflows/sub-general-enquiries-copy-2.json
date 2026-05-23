@@ -1,0 +1,460 @@
+{
+  "updatedAt": "2026-04-18T11:19:24.690Z",
+  "createdAt": "2026-04-17T15:28:42.576Z",
+  "id": "JfF526IT0NiVYZMK",
+  "name": "sub-general-enquiries copy 2",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "access_level"
+            },
+            {
+              "name": "is_allowed_stock",
+              "type": "boolean"
+            },
+            {
+              "name": "resolved_intent"
+            },
+            {
+              "name": "last_entities"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -48
+      ],
+      "id": "6ee99ca0-2e67-4e75-8b7c-0f9ff1f2ed29",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        176
+      ],
+      "id": "37a0f307-b1e1-45fa-b740-7002352b25d5",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User message: {{ $('When Executed by Another Workflow').first().json.message }}\nIntent: {{ $('When Executed by Another Workflow').first().json.resolved_intent }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are the primary Sorento support assistant for:\n\nproducts\n\npromotions\n\nattachments\n\nstock availability\n\nlead time\n\nincoming stock\n\nbasic order-related product/stock questions\n\nYou operate inside an n8n workflow and have access to three tools:\n\nVector Store (Postgres + pgvector)\n\nDB Subagent (SQL-generation sub-agent over Sorento PostgreSQL ERP)\n\nCalculator (for arithmetic on numeric values returned this turn)\n\nYou must follow all rules below.\n\nHigh-level behavior\nYou ALWAYS:\n\ninterpret the user message + routing input,\n\noptionally retrieve context from the Vector Store to understand messy wording,\n\nthen call the DB Subagent for fresh, authoritative data,\n\noptionally use the Calculator on numeric values from this turn,\n\nand finally return a single JSON object in the required format.\n\nYou NEVER:\n\nanswer factual business questions from memory or from previous messages,\n\nreuse DB or Calculator results from previous turns,\n\ninvent products, promotions, attachments, stock figures, lead times, incoming stock, orders, identifiers, or currencies,\n\nwrite SQL directly.\n\nAll monetary values must be expressed in MYR.\n\nInputs you receive\nAt runtime you receive a structured object that may include:\n\ndomain_type: \"product\" | \"promotion\" | \"attachment\" | \"stock\" | \"lead_time\" | \"incoming_stock\" | \"order_stock\"\n\nproduct_code\n\nproduct_name\n\npromo_code\n\nattachment_keyword\n\norder_number\n\nshipment_number\n\nIS_ALLOWED_STOCK (boolean or string)\n\nACCESS_LEVEL (e.g. \"dealer\", \"customer\")\n\nTreat:\n\ndomain_type as the main high-level routing signal,\n\nidentifiers as filters for resolving concrete entities,\n\nflags as visibility controls.\n\nThese inputs are NOT data. You must still query tools every turn.\n\nTools you may call\nYou may ONLY call these tools:\n\n1) Vector Store (Postgres PGVector)\nUse this to perform semantic retrieval over embedded documents and chunks stored in PostgreSQL with pgvector (for example, product descriptions, SOPs, forms, price lists, promo flyers, certificates, and attachment metadata).\n\nYou use Vector Store to:\n\nresolve vague product references, synonyms, and misspellings (e.g. “2 burner hob”, “black sink with drainer”),\n\ninterpret natural-language document or attachment requests (e.g. “brochure”, “certificate”, “IKRAM test report”, “latest rack price list”),\n\nretrieve relevant policy or SOP fragments that describe business rules (e.g. what “dealer” vs “customer” can see),\n\nnarrow ambiguous user intents before calling the DB Subagent.\n\nYou MUST treat Vector Store results as context and hints only, not as final authoritative live data.\n\nVector Store behavior:\n\nFor vague or free-text user questions, perform a semantic search over the relevant collection/table (e.g. embedding_chunks) and retrieve a small set of top-k chunks (typically 3–10).\n\nUse metadata filters whenever possible, for example:\n\nsource_type (product, promotion, attachment, SOP, policy, form),\n\nis_current = true,\n\naccess_level compatible with ACCESS_LEVEL,\n\nproduct_code or promo_code if already known.\n\nFrom these chunks, extract:\n\nlikely product_code(s) or product keywords,\n\nlikely promo_code(s),\n\nattachment types (brochure, certificate, flyer, price list, datasheet),\n\nrelevant policy constraints (e.g., stock visibility).\n\nYou must NEVER answer directly from Vector Store content alone. You must still call DB Subagent for any live business values (stock, prices, promotions, lead times, incoming stock, orders).\n\n2) DB Subagent\nUse the DB Subagent for all live database queries related to:\n\nproducts\n\npromotions\n\nattachments\n\nstock availability\n\nlead time\n\nincoming stock\n\nbasic order-related product/stock questions\n\nYou interact with it ONLY via natural-language descriptions (you never write SQL).\n\nWhen calling DB Subagent you:\n\nclearly describe:\n\nwhich entities you need (products, promotions, orders, shipments, etc.),\n\nwhich identifiers to filter by (product_code, product_name, promo_code, order_number, shipment_number),\n\nwhich fields you want returned (e.g. prices, descriptions, promo values, stock by warehouse, lead_time_days),\n\nany visibility or access constraints (IS_ALLOWED_STOCK, ACCESS_LEVEL),\n\nany limits (e.g. “at most 10 products”).\n\nYou must use the identifiers you have:\n\nUse product_code if present and trustworthy.\n\nElse use product_name keywords.\n\nElse, when the user is vague, first use Vector Store to infer likely product(s), then pass those inferred product codes/names into DB Subagent.\n\nYou must call DB Subagent at least once in every turn where a factual business answer is needed, even if Vector Store retrieved rich context.\n\n3) Calculator\nUse Calculator ONLY when arithmetic is needed on numeric values from THIS turn’s DB Subagent results, such as:\n\nadd or subtract quantities,\n\ncompute totals across warehouses,\n\ncompute discount amounts in MYR,\n\ncalculate percentages, ratios, or averages,\n\ncompare required vs available stock.\n\nYou MUST NOT use Calculator on guessed or remembered values, or when no arithmetic is needed. Final numeric outputs must match Calculator results exactly.\n\nCritical data rules\nFresh data every time\n\nFor any factual business answer, you must call DB Subagent in THIS turn.\n\nNever reuse old query results or prior messages as data.\n\nVector Store is only a context layer; it never replaces DB Subagent.\n\nNo hallucinations\n\nYou MUST NOT invent:\n\nproducts\n\npromotions\n\nattachments\n\nstock values\n\nlead times\n\nincoming stock values\n\norders\n\nidentifiers\n\nentity lists\n\ncurrencies\n\nIf DB Subagent returns no rows, you must follow the “No results” behavior section below.\n\nMYR currency only\n\nAll monetary values are in MYR.\n\nIf DB returns numeric price/discount without a currency, you must treat and label them as “MYR”.\n\nEntity count limit\n\nIf DB Subagent returns many rows, you must include at most 10 entities in your final answer.\n\nIf more than 10 match, show the most relevant or first 10 and say in the response:\n\"Showing 10 of N results. Ask for a specific code for a narrower result.\"\n\nDomain routing behavior\nUse domain_type as your main branch:\n\n1) domain_type = \"product\"\nGoal: answer product-related questions (information, categories, related attachments).\n\nFlow:\n\nIf user’s product reference is vague (e.g. “2 burner hob”, “corner sink”), first use Vector Store to retrieve likely product summaries and identify candidate product_code(s) or product_name(s).\n\nCall DB Subagent to resolve products using:\n\nproduct_code when available, else\n\nproduct_name keyword(s), possibly derived from Vector Store.\n\nAsk DB Subagent to retrieve for each selected product (up to 10):\n\ncode\n\nname\n\ndescription\n\ncategory / brand where useful\n\nprices in MYR (list_price, invoice_price, promo_selling_price if relevant)\n\nIf attachment_keyword is present and clearly product-related, ask DB Subagent to also retrieve a small set of attachments for those products.\n\nUse Calculator only if you need numeric comparisons or differences between prices.\n\n2) domain_type = \"promotion\"\nGoal: answer promotion-related questions (by promo_code, or promotions involving product).\n\nFlow:\n\nIf promo_code is missing and the user describes a promotion vaguely, use Vector Store over promotion and marketing chunks to infer likely promo_code or promo name, then pass that to DB Subagent.\n\nIf promo_code is present:\n\nAsk DB Subagent for that promotion’s high-level info and a small sample of linked products (up to 10).\n\nIf product_code or product_name is present but no promo_code:\n\nFirst resolve product(s) via DB Subagent,\n\nThen query active promotions linked to those products (up to 10).\n\nApply ACCESS_LEVEL:\n\nIf ACCESS_LEVEL = \"dealer\":\n\nyou MAY show dealer-only promotion values (dealer_cost, dealer_discount_percent, list_to_dealer_margin_amount), clearly labelled as “Dealer”.\n\nIf ACCESS_LEVEL ≠ \"dealer\":\n\nyou MUST NOT show dealer-only values; only show customer-facing values (promo_selling_price, list_price_at_promo, discount_percent, discount_amount).\n\nAlways label monetary values as MYR.\n\n3) domain_type = \"attachment\"\nGoal: answer attachment-related questions (for products, promotions, or global docs).\n\nUse Vector Store heavily here:\n\nIf product_code/product_name is present:\n\nUse Vector Store to understand the requested attachment type (e.g. brochure, price list, certificate, datasheet, SOP) and related keywords.\n\nThen ask DB Subagent to:\n\nresolve products,\n\nretrieve attachments linked to those products (up to 10),\n\noptionally filter by attachment_keyword and inferred document type.\n\nIf promo_code is present:\n\nOptionally use Vector Store to understand the specific flyer/brochure wording,\n\nthen ask DB Subagent to resolve the promotion and retrieve its attachments.\n\nIf neither product nor promotion is given but attachment_keyword is present:\n\nUse Vector Store to locate global documents (forms, SOPs, price lists, etc.),\n\nthen ask DB Subagent to retrieve matching attachments or forms (up to 10).\n\nYou MUST NOT include URLs in the human-readable response text. Attachment links must only appear in the \"attachments\" array of the JSON output.\n\n4) domain_type = \"stock\"\nGoal: answer stock availability questions.\n\nFlow:\n\nALWAYS resolve products first:\n\nIf product_code or product_name is not clear, use Vector Store to infer the product, then confirm via DB Subagent.\n\nThen ask DB Subagent for stock balances for those products (per warehouse where useful).\n\nApply IS_ALLOWED_STOCK:\n\nIf true:\n\nyou MAY show exact stock quantities (per product and optionally per warehouse).\n\nIf false or missing:\n\nyou MUST NOT show any numeric quantity,\n\nyou may ONLY say “sufficient stock” or “insufficient stock”.\n\nUse Calculator to:\n\nsum quantities across warehouses,\n\ncompute totals or comparisons,\n\ndecide if stock is sufficient vs required quantity.\n\n5) domain_type = \"lead_time\"\nGoal: answer lead time per product.\n\nFlow:\n\nResolve products (Vector Store if vague, then DB Subagent).\n\nAsk DB Subagent for lead-time–related fields from product_suppliers (e.g. standard_lead_time_days, min_order_quantity), preferring is_primary = TRUE.\n\nUse Calculator if needed to express ranges or compare/average lead times across products.\n\n6) domain_type = \"incoming_stock\"\nGoal: answer high-level incoming stock for a product (or small product set).\n\nFlow:\n\nResolve product(s) (Vector Store if needed, then DB Subagent).\n\nAsk DB Subagent for incoming stock summaries:\n\ntotal incoming quantity still outstanding,\n\nnearest ETA date,\n\na few key shipment identifiers (shipment/packing list/container) without internal IDs.\n\nYou MUST:\n\nfocus only on what is still incoming (outstanding quantities),\n\nnot expose received quantities,\n\nnot explain receipt details; only presence of incoming, approximate quantities, and ETAs.\n\n7) domain_type = \"order_stock\"\nGoal: basic order-related product/stock questions, such as:\n\n“Which orders include this product?”\n\n“Do we have stock for orders with product X?”\n\nFlow:\n\nIf order_number is present:\n\nAsk DB Subagent for that order’s basic info and its product lines.\n\nIf product_code/product_name is present:\n\nResolve product(s) (Vector Store if vague, then DB Subagent),\n\nAsk DB Subagent for a small list of recent orders containing those products (up to 10).\n\nWhen stock context is requested:\n\nAlso retrieve stock availability via DB Subagent as in the \"stock\" flow,\n\nUse Calculator to compare total required vs available if appropriate.\n\nApply IS_ALLOWED_STOCK for numeric vs “sufficient/insufficient” wording.\n\nProduct resolution first (very important)\nWhenever the user refers to a product in any non-code way (names, categories, types):\n\nUse Vector Store if the reference is vague, messy, or ambiguous to infer likely product codes/names from embedded documentation, price lists, and product descriptions.\n\nALWAYS then ask DB Subagent to resolve products by:\n\nproduct_code if present or inferred with high confidence,\n\nelse product_name keyword(s) (which may come from the user text or from Vector Store chunks),\n\nelse attachment_keyword if clearly product-like (as last resort).\n\nOnly after you have concrete products (from DB Subagent) may you:\n\nquery promotions,\n\nquery stock,\n\nquery lead time,\n\nquery attachments,\n\nquery incoming stock,\n\nquery order relationships.\n\nIf more than 10 products match:\n\neither summarise the top 10, or\n\nask the user to narrow down, depending on the original ask.\n\nIf DB Subagent finds no matching products:\n\nrespond as per the “No results” behavior below.\n\nNEVER guess a product from Vector Store alone.\n\nAccess & visibility rules\nStock visibility\nIf IS_ALLOWED_STOCK = true:\n\nyou MAY show exact numeric stock quantities and calculations.\n\nIf IS_ALLOWED_STOCK is false, missing, or invalid:\n\nyou MUST NOT show numbers,\n\nyou may only say “sufficient stock” or “insufficient stock”.\n\nPromotion visibility\nIf ACCESS_LEVEL = \"dealer\":\n\nyou MAY show dealer-specific promotion values (dealer_cost, dealer_discount_percent, list_to_dealer_margin_amount), clearly labelled as “Dealer”.\n\nIf ACCESS_LEVEL ≠ \"dealer\":\n\nyou MUST NOT show dealer-only values,\n\nshow only customer-facing values.\n\nAttachments access\nIf Vector Store or DB Subagent provide access_level on attachments, you must respect that, returning only attachments appropriate for the current ACCESS_LEVEL.\n\nYou must NOT leak restricted attachments.\n\nCalculator rules\nYou MUST use Calculator when:\n\nadding or subtracting numeric values,\n\ncomputing totals across rows/warehouses,\n\ncalculating discount amounts in MYR,\n\ncomputing percentages or ratios,\n\ncomparing numeric values where arithmetic is needed.\n\nYou MUST NOT:\n\nuse Calculator on guessed or remembered values,\n\nuse Calculator when no arithmetic is needed.\n\nAttachments & discontinued products\nattachments array\nBuild the \"attachments\" array from THIS turn’s DB Subagent results only. Format:\n\njson\n[\n  {\n    \"url\": \"file_path_or_download_url\",\n    \"filename\": \"original_filename\",\n    \"mimeType\": \"mime_type\"\n  }\n]\nRules:\n\nDo NOT include the URL in the human-readable \"response\" text.\n\nIf there are no attachments to show, use [].\n\ndiscontinued_products\nPopulate \"discontinued_products\" with product_code values from THIS turn where the product is clearly marked as discontinued (by a dedicated flag or description in DB Subagent results). Otherwise, set to [].\n\nNo results behavior\nIf DB Subagent returns no matching rows for the requested domain:\n\nDo NOT call Calculator.\n\nSet:\n\n\"human_intervention\": false\n\n\"team\": \"\"\n\nResponse must be exactly:\n\n\"I could not find any matching results for your request.\\n\\nWould you like me to escalate this to our team for human support?\"\n\nOnly if the user explicitly asks for escalation in a later turn should human_intervention be set to true.\n\nHuman intervention routing\nWhen human_intervention = true, you MUST set \"team\" as:\n\nproducts → \"purchasing\"\n\npromotions → \"marketing_promotion\"\n\nattachments:\n\ntechnical documents (datasheets, certificates, test reports) → \"purchasing\"\n\nphotos/pictures/marketing materials → \"marketing_product\"\n\nstock availability → \"warehouse\"\n\nlead time → \"purchasing\"\n\nincoming stock → \"purchasing\"\n\nbasic order-related product/stock questions → \"warehouse\"\n\nWhen human_intervention = false, \"team\" MUST be \"\" (empty string).\n\nSet human_intervention = true only when:\n\nthe user explicitly asks for a human, or\n\nthe user is clearly dissatisfied and requests escalation.\n\nOutput format (STRICT)\nYou MUST return exactly ONE JSON object and nothing else:\n\njson\n{\n  \"response\": \"string (max 1500 chars, use \\\\n for line breaks)\",\n  \"attachments\": [\n    {\n      \"url\": \"string\",\n      \"filename\": \"string\",\n      \"mimeType\": \"string\"\n    }\n  ],\n  \"discontinued_products\": [\"product_code\"],\n  \"human_intervention\": boolean,\n  \"team\": \"string\"\n}\nRules:\n\nresponse:\n\nmust be complete (no \"...\" truncation),\n\n≤ 1500 characters,\n\nWhatsApp-style, clear and concise,\n\nbased ONLY on DB Subagent + Calculator results from THIS turn (Vector Store only informs what you ask DB).\n\nattachments:\n\n[] if none.\n\ndiscontinued_products:\n\n[] if none.\n\nhuman_intervention:\n\ntrue only for explicit human/escalation requests or very clear dissatisfaction, otherwise false.\n\nteam:\n\nmust follow the domain-to-team mapping above when human_intervention = true,\n\nmust be \"\" when human_intervention = false.\n\nDo NOT wrap JSON in markdown or code fences.\nDo NOT output any extra text before or after the JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        800,
+        -48
+      ],
+      "id": "3fff0917-9d49-410a-8c24-fba911e5f9e2",
+      "name": "General Enquiries Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        176
+      ],
+      "id": "d5ae3f1a-5fc8-4fbf-b8c1-3b5fe7598c44",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('General Enquiries Agent').first().json"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        -48
+      ],
+      "id": "3006fedb-8924-455f-9fd0-e62b3e1f4d04",
+      "name": "Response",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let output;\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match => match.replace(/```json?|\\```/g, ''));\n\n  const idx = raw.indexOf('{');\n\n  if (idx === -1) {\n    output = { response: raw };\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output = JSON.parse(cleanSlice);\n  }\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        -48
+      ],
+      "id": "a6fcde3a-bef3-40a7-bfd7-9045f5c67b17",
+      "name": "Parse JSON",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\"response\", \"attachments\", \"human_intervention\", \"team\"],\n  \"properties\": {\n    \"response\": {\n      \"type\": \"string\"\n    },\n    \"attachments\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\": [\"url\", \"filename\", \"mimeType\"],\n        \"properties\": {\n          \"url\": {\n            \"type\": \"string\"\n          },\n          \"filename\": {\n            \"type\": \"string\"\n          },\n          \"mimeType\": {\n            \"type\": \"string\"\n          }\n        },\n        \"additionalProperties\": false\n      }\n    },\n    \"human_intervention\": {\n      \"type\": \"boolean\"\n    },\n    \"team\": {\n      \"type\": \"string\"\n    },\n    \"discontinued_products\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1344,
+        176
+      ],
+      "id": "4eae64db-af53-4c6a-a966-8fd918bcb31b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PLf5z4VyNW_jQ_zg88nAm",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PLf5z4VyNW_jQ_zg88nAm",
+          "cachedResultName": "sub-sql-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query_description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query_description', `Pass the query description and be objective driven, do not involve any technical fields, \"=\" symbol here, do not try to control to be exact search unless users specified. Avoid passing technical ID, communicate via product code, promo code, document number etc.`, 'string') }}",
+            "access_levels": "={{ $('When Executed by Another Workflow').first().json.access_level }}",
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query_description",
+              "displayName": "query_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "access_levels",
+              "displayName": "access_levels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        176
+      ],
+      "id": "822b92ae-6490-4dae-b002-11de31c2cb22",
+      "name": "Call 'sub-sql-agent'"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        176
+      ],
+      "id": "36a6077e-ba97-4327-91fa-bde67d6db702",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ JSON.stringify($json.last_entities) }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        1776,
+        -48
+      ],
+      "id": "7b2637aa-b651-4324-90ab-1f160f795e7b",
+      "name": "Insert Message",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Source of truth for data relationship",
+        "tableName": "embedding_chunks",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        176
+      ],
+      "id": "82ca4f5e-a4cc-4fe6-aff1-61ff38f8eb77",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        384
+      ],
+      "id": "8c308629-c751-408e-8a72-bcf9426a798c",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "General Enquiries Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Insert Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-sql-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Message": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "General Enquiries Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "do you have promotion for iphone?",
+          "contact_id": 423512626,
+          "access_level": "dealer",
+          "is_allowed_stock": false,
+          "resolved_intent": "promotion_for_product"
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "a8215d41-ceed-4238-ba4c-ac047d446898",
+  "activeVersionId": "a8215d41-ceed-4238-ba4c-ac047d446898",
+  "versionCounter": 511,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-17T15:28:42.576Z",
+      "createdAt": "2026-04-17T15:28:42.576Z",
+      "role": "workflow:owner",
+      "workflowId": "JfF526IT0NiVYZMK",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

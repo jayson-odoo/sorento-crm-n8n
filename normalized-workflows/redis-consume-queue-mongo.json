@@ -1,0 +1,286 @@
+{
+  "updatedAt": "2026-04-24T16:29:11.819Z",
+  "createdAt": "2026-02-03T13:54:57.208Z",
+  "id": "Srs08P0Ha3Cv--YPx0-Yn",
+  "name": "redis-consume-queue-mongo",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "id": "d5bd0fe6-a4d1-493c-a5b2-736fb38b05a1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "pop",
+        "list": "sorento-respond-message",
+        "propertyName": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        448,
+        96
+      ],
+      "id": "adc26bcb-e039-41c4-8fa9-10812089d9fc",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Analyze message in  {{ $json[''].message }} to output following details in JSON format\n\n- category : select from product, promotion, order, stock, others\n- sentiment: select from happy, angry, sad, dissapointed, neutral\n- context: if the category is product, mention the exact product; if the category is promotion, mention the exact promotion",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        192
+      ],
+      "id": "eab52daa-68ac-4dfd-b633-8462b77548d2",
+      "name": "Analyze document",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\n//var output\n//var ai_obj;\n//ai_obj = JSON.parse($input.item.json.content.parts[0].text.replaceAll(\"json\", \"\").replaceAll(\"`\", \"\").replaceAll(\"\\n\", \"\"))\nvar output = $json[\"\"]\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "2d243d81-5174-47ff-8d34-8650c65748e9",
+      "name": "output-parser"
+    },
+    {
+      "parameters": {
+        "operation": "llen",
+        "list": "sorento-respond-message"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        224,
+        96
+      ],
+      "id": "ecdb9da3-0e54-4656-9689-3cc86f4107f3",
+      "name": "Redis1",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7f4803f7-1c63-4460-a487-1f70254ea1b8",
+              "leftValue": "={{ $json[''] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "29822089-e533-42c5-9972-32b00cceae59",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/chat-history/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "25b7e0aa-b025-4de9-8225-169221bf6409",
+      "name": "insert-message"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Redis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output-parser": {
+      "main": [
+        [
+          {
+            "node": "insert-message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis1": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "output-parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-04-24T12:27:45.001-04:00",
+          "Readable date": "April 24th 2026, 12:27:45 pm",
+          "Readable time": "12:27:45 pm",
+          "Day of week": "Friday",
+          "Year": "2026",
+          "Month": "April",
+          "Day of month": "24",
+          "Hour": "12",
+          "Minute": "27",
+          "Second": "45",
+          "Timezone": "America/New_York (UTC-04:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "74b14a62-a5c0-4921-a0e8-0297ade06908",
+  "activeVersionId": "74b14a62-a5c0-4921-a0e8-0297ade06908",
+  "versionCounter": 28,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:54:57.208Z",
+      "createdAt": "2026-02-03T13:54:57.208Z",
+      "role": "workflow:owner",
+      "workflowId": "Srs08P0Ha3Cv--YPx0-Yn",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

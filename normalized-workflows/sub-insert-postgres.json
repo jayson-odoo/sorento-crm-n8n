@@ -1,0 +1,447 @@
+{
+  "updatedAt": "2026-02-03T14:02:40.879Z",
+  "createdAt": "2026-02-03T14:02:40.879Z",
+  "id": "d0kz7fAQy2mzUobkkB60k",
+  "name": "sub-insert-postgres",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "={{ $('If2').item.json.split_data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        192
+      ],
+      "id": "92357488-3cd9-44f6-94eb-403fc61b265b",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        96
+      ],
+      "id": "d7f09e83-dddf-424a-b9f5-258abe45774d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Single item\nreturn {\n  json: {\n    output: `${$json.type} with name ${$json.insert_key_val} already exists in the system! Failed to upload. Please upload a different file.`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        384
+      ],
+      "id": "9bce0562-b00e-40fe-957b-1eae2cc6cb35",
+      "name": "analyze_document_output_parser12"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -448,
+        192
+      ],
+      "id": "84e8b032-43f3-4512-8cb8-cb02b5e07220",
+      "name": "Merge8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2d90273d-562d-4a8d-8e20-89c387e1c455",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        192
+      ],
+      "id": "c3ed604d-c944-4c65-9009-75539e96ab83",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "insert_table"
+            },
+            {
+              "name": "insert_key"
+            },
+            {
+              "name": "insert_key_val"
+            },
+            {
+              "name": "insert_data"
+            },
+            {
+              "name": "split_data"
+            },
+            {
+              "name": "incoming_data",
+              "type": "object"
+            },
+            {
+              "name": "type"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -896,
+        192
+      ],
+      "id": "6db8507e-7992-4e5f-8b34-e18d4f58a6ed",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id\nFROM {{ $json.insert_table }}\nWHERE {{ $json.insert_key }} = '{{ $json.insert_key_val }}'\nLIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -672,
+        272
+      ],
+      "id": "5cdac25c-7942-4df1-9b3d-7312c53e5c01",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bde76eaf-6d48-4f26-b420-e3861511f2fa",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function buildInsertFromConfig(configItem) {\n  const { insert_table, insert_data, incoming_data } = configItem;\n\n  // 1) Get the source object to insert from (e.g. incoming_data[\"packing_list\"])\n  const source = incoming_data[insert_data];\n  if (!source || typeof source !== 'object') {\n    throw new Error(`Source data '${insert_data}' not found in incoming_data`);\n  }\n\n  // 2) Build column list and value list from the source object's keys\n  const columns = [];\n  const values = [];\n\n  for (const [key, rawVal] of Object.entries(source)) {\n    columns.push(key);\n\n    // Basic SQL escaping for single quotes\n    let val = rawVal;\n    if (val === null || val === undefined) {\n      values.push('NULL');\n    } else if (typeof val === 'number') {\n      values.push(val.toString());\n    } else if (typeof val === 'boolean') {\n      values.push(val ? 'TRUE' : 'FALSE');\n    } else {\n      const escaped = String(val).replace(/'/g, \"''\");\n      values.push(`'${escaped}'`);\n    }\n  }\n\n  const columnsSql = columns.join(', ');\n  const valuesSql = values.join(', ');\n\n  const sql = `INSERT INTO ${insert_table} (${columnsSql}) VALUES (${valuesSql}) RETURNING ID;`;\n  return sql;\n}\nconst items = [ $json ];\n\nconst sql = buildInsertFromConfig(items[0]);\n// Example result:\n// INSERT INTO inbound_shipments (shipment_number, expected_arrival_date, shipment_date, shipping_container_number)\n// VALUES ('WHA2088594','45938','9/26/25','WHSU6960643');\n\nreturn {\n  \"output\": sql\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c526ed5d-b97e-42c0-b816-a634d13bdb41",
+      "name": "analyze_document_output_parser"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.incoming_data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        192
+      ],
+      "id": "81c536e7-62d3-4cb0-bb68-91c5b4fac9ec",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge8": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyze_document_output_parser12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "analyze_document_output_parser": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "insert_table": "inbound_shipments",
+          "insert_key": "shipping_container_number",
+          "insert_key_val": "WHSU6960643",
+          "insert_data": "packing_list",
+          "split_data": "packing_list_products",
+          "incoming_data": {
+            "packing_list": {
+              "shipment_number": "WHA2088594",
+              "supplier_id": "146d351c-cc9d-43f7-a883-f2f2fdd628a4",
+              "shipment_date": "9/26/25",
+              "shipping_container_number": "WHSU6960643"
+            },
+            "packing_list_products": [
+              {
+                "product_code": "CGB9032B",
+                "quantity": 288
+              },
+              {
+                "product_code": "MWB242",
+                "quantity": 107
+              },
+              {
+                "product_code": "SRTWB243",
+                "quantity": 293
+              },
+              {
+                "product_code": "SRTWB247",
+                "quantity": 35
+              },
+              {
+                "product_code": "CWB247",
+                "quantity": 168
+              },
+              {
+                "product_code": "SRTWB890",
+                "quantity": 185
+              },
+              {
+                "product_code": "SRTWB245",
+                "quantity": 416
+              },
+              {
+                "product_code": "3087A",
+                "quantity": 5
+              },
+              {
+                "product_code": "SRTWC8355-RL",
+                "quantity": 106
+              },
+              {
+                "product_code": "CGB9032B",
+                "quantity": 5
+              },
+              {
+                "product_code": "SRTWB243",
+                "quantity": 5
+              },
+              {
+                "product_code": "CWB247",
+                "quantity": 3
+              },
+              {
+                "product_code": "SRTWB890",
+                "quantity": 3
+              },
+              {
+                "product_code": "SRTWB245",
+                "quantity": 4
+              },
+              {
+                "product_code": "SRTWC8354-SH-200",
+                "quantity": 10
+              },
+              {
+                "product_code": "SRTWB247",
+                "quantity": 2
+              },
+              {
+                "product_code": "EMPTY CTN",
+                "quantity": 5
+              }
+            ]
+          },
+          "type": "Packing List"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "d761afbe-d3e3-46b2-85b9-b044b5fb39a4",
+  "activeVersionId": "d761afbe-d3e3-46b2-85b9-b044b5fb39a4",
+  "versionCounter": 7,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T14:02:40.879Z",
+      "createdAt": "2026-02-03T14:02:40.879Z",
+      "role": "workflow:owner",
+      "workflowId": "d0kz7fAQy2mzUobkkB60k",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

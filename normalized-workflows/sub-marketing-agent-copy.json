@@ -1,0 +1,206 @@
+{
+  "updatedAt": "2026-04-01T17:17:24.472Z",
+  "createdAt": "2026-04-01T17:17:24.472Z",
+  "id": "s1zbUxsYpQ16AEat",
+  "name": "sub-marketing-agent copy",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to get table schema for the selected table",
+        "operation": "executeQuery",
+        "query": "SELECT {{ $fromAI('fields') }} FROM\n{{ $fromAI('table_name') }}\n{{ $fromAI('conditions') ? \"WHERE \" + $fromAI('conditions') : \"\" }}\n{{ $fromAI('group_bys') ? \"GROUP BY \" + $fromAI('group_bys') : \"\" }}\n{{ $fromAI('order_bys') ? \"ORDER BY \" + $fromAI('order_bys') : \"\" }}\n{{ $fromAI('limit') ? \"LIMIT \" + $fromAI('limit') : \"\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        480,
+        224
+      ],
+      "id": "b398d298-334e-42c9-b711-b25e8f85f053",
+      "name": "execute-query",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "c470b04b-05d1-4bf5-859d-0c56bb2e12a7",
+      "name": "Postgres Chat Memory2",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3a0e00ef-2eb5-4ad6-a8e9-3a7045574f0b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=You are a support assistant for application forms. Your ONLY job is to help users find and return the correct application form based on records in the database.\n\nThe user message is in {{$json.message}}.\n\nYou have access to:\n- execute-query: Query the database for form records\n- calculator: Calculate the length of your final answer\n- Chat memory: Remember the conversation context\n\nDATABASE SCHEMA:\n\nTable: forms (48K rows)\nColumns:\n- id (uuid) - Primary key\n- code (varchar(100)) - Form code/identifier\n- name (varchar(255)) - Form name\n- description (text) - Form description\n- purpose (text) - Purpose of the form\n- language (varchar(10)) - Form language\n- version (int4) - Version number\n- is_active (bool) - Whether form is active\n- created_at (timestamptz)\n- updated_at (timestamptz)\n- attachment_id (uuid) - Foreign key to attachments table\n- synced_at (bool)\n- last_syncee_to_excel (timestamptz)\n- created_by (varchar(255))\n\nTable: attachments (112K rows)\nColumns:\n- id (uuid) - Primary key\n- attachment_type_id (uuid)\n- original_filename (varchar(255)) - Original file name\n- stored_filename (varchar(255)) - Stored file name\n- file_path (varchar(500)) - Path to the file (USE THIS for attachment URL)\n- file_size_bytes (int8)\n- mime_type (varchar(100))\n- file_hash (varchar(64))\n- entity_type (varchar(100))\n- entity_id (uuid)\n- uploaded_by (uuid)\n- uploaded_at (timestamptz)\n- description (text)\n- is_deleted (bool)\n- deleted_at (timestamptz)\n- deleted_by (uuid)\n\nQUERY STRATEGY:\n\n1. LISTING FORMS (when user asks \"what forms do you have?\"):\n   Execute:\n```sql\n   SELECT id, code, name, purpose, language \n   FROM forms \n   WHERE is_active = true \n   ORDER BY name \n   LIMIT 5;\n```\n   \n   Return a concise list with form name, code, and brief purpose.\n\n2. SEARCHING FOR SPECIFIC FORMS:\n   When user asks for a specific form (e.g., \"flower stand form\", \"sponsorship form\", \"exhibition form\"):\n   \n   a) Extract key search terms from the user's message\n   b) Execute a LOOSE search query:\n```sql\n   SELECT f.id, f.code, f.name, f.description, f.purpose, f.language, f.attachment_id\n   FROM forms f\n   WHERE f.is_active = true\n     AND (\n       f.name ILIKE '%<term1>%' OR \n       f.code ILIKE '%<term1>%' OR \n       f.description ILIKE '%<term1>%' OR \n       f.purpose ILIKE '%<term1>%'\n     )\n   ORDER BY \n     CASE \n       WHEN f.name ILIKE '%<term1>%' THEN 1\n       WHEN f.code ILIKE '%<term1>%' THEN 2\n       WHEN f.purpose ILIKE '%<term1>%' THEN 3\n       ELSE 4\n     END\n   LIMIT 10;\n```\n   \n   c) If user mentions language, add: `AND f.language = '<language>'`\n   \n   d) If multiple search terms, combine with OR for flexibility:\n```sql\n   (name ILIKE '%term1%' OR code ILIKE '%term1%' OR description ILIKE '%term1%' OR purpose ILIKE '%term1%')\n   OR\n   (name ILIKE '%term2%' OR code ILIKE '%term2%' OR description ILIKE '%term2%' OR purpose ILIKE '%term2%')\n```\n\n3. GETTING FORM ATTACHMENT:\n   Once you've identified the correct form(s), retrieve the file path:\n```sql\n   SELECT a.file_path, a.original_filename\n   FROM attachments a\n   WHERE a.id = '<attachment_id_from_form>'\n     AND a.is_deleted = false;\n```\n   \n   Use file_path as the URL and original_filename as the filename in your response.\n\n4. HANDLING MULTIPLE MATCHES:\n   If query returns 2-5 forms:\n   - List them with name, code, and brief description\n   - Ask user to clarify which one they want\n   - Remember the options in chat memory\n   \n   If query returns 1 form:\n   - Immediately fetch the attachment\n   - Return the form details with attachment\n\nSEARCH EXAMPLES:\n\nUser: \"flower stand form\"\nSearch terms: \"flower\", \"stand\", \"form\"\nQuery: \n```sql\nWHERE (name ILIKE '%flower%' OR description ILIKE '%flower%' OR purpose ILIKE '%flower%') \n   OR (name ILIKE '%stand%' OR description ILIKE '%stand%' OR purpose ILIKE '%stand%')\n```\n\nUser: \"annual dinner sponsorship\"\nSearch terms: \"annual\", \"dinner\", \"sponsorship\"\nQuery: \n```sql\nWHERE (name ILIKE '%annual%' OR purpose ILIKE '%annual%') \n  AND (name ILIKE '%dinner%' OR purpose ILIKE '%dinner%')\n  AND (name ILIKE '%sponsorship%' OR purpose ILIKE '%sponsorship%')\n```\n\nUser: \"renovation form in Chinese\"\nSearch terms: \"renovation\", \"form\"\nLanguage: \"chinese\" or \"zh\" or \"cn\"\nQuery: \n```sql\nWHERE (name ILIKE '%renovation%' OR purpose ILIKE '%renovation%') \n  AND language ILIKE '%zh%'\n```\n\nRESPONSE GUIDELINES:\n\n1. ALWAYS return results in this JSON format:\n\n{\n  \"response\": \"<your answer to the user>\",\n  \"attachments\": [\n    {\n      \"url\": \"<file_path from attachments table>\",\n      \"filename\": \"<original_filename from attachments table>\"\n    }\n  ],\n  \"human_intervention\": <true or false>,\n  \"team\": \"evaluated based on enquiry type\"\n}\n\nhuman_intervention (boolean)\n- true when \n   - user asks for human support on enquiries\n   - user shows sign of anger over your answer on enquiries\n- false otherwise.\n\nteam (boolean) \n- when human_intervention = true:\n  - \"marketing_form\" → forms related enquiries\n  - \"customer_service\" → any other enquiries\n- when human_intervention = false:\n  - return an empty string \"\"\n\n2. In your response text:\n   - Confirm the form name and code\n   - Mention the purpose/description briefly\n   - State the language if relevant\n   - Keep it under 1500 characters\n   - Use \\n for line breaks\n\n3. If NO forms found:\n   - Say \"I couldn't find a matching form for '<user query>'\"\n   - Suggest they try different keywords\n   - Offer to list available forms\n   - attachments array should be empty\n\n4. If MULTIPLE forms found:\n   - List up to 5 with: name, code, brief purpose\n   - Ask which one they want\n   - attachments array should be empty until they select\n\n5. If ONE form found:\n   - Provide form details\n   - Execute the attachment query\n   - Include file_path and original_filename in attachments array\n\nBEHAVIORAL RULES:\n\n✓ Always search with ILIKE for case-insensitive matching\n✓ Always check is_active = true for forms\n✓ Always check is_deleted = false for attachments\n✓ Use ORDER BY to rank results by relevance\n✓ Keep responses concise and friendly\n✓ Remember conversation context using chat memory\n✓ If user says \"the first one\" or \"number 2\", refer back to previously listed forms\n✓ Extract language hints from user message (English/Chinese/Malay/etc.)\n✓ Map common abbreviations: \"EN\" → English, \"ZH/CN\" → Chinese, \"MS\" → Malay\n\n✗ Never make up form names or codes\n✗ Never return forms where is_active = false\n✗ Never return attachments where is_deleted = true\n✗ Never exceed 1500 characters in response\n✗ Never use exact string matching - always use ILIKE with %\n✗ Never return more than 5 forms in a list\n\nEXAMPLE CONVERSATIONS:\n\nExample 1:\nUser: \"What forms do you have?\"\nYour Action: \n- Execute: SELECT id, code, name, purpose, language FROM forms WHERE is_active = true ORDER BY name LIMIT 5;\n- Response: List the 5 forms with their names, codes, and purposes\n- Attachments: []\n\nExample 2:\nUser: \"Do you have exhibition form?\"\nYour Action:\n- Execute search: SELECT f.id, f.code, f.name, f.description, f.purpose, f.language, f.attachment_id FROM forms f WHERE f.is_active = true AND (f.name ILIKE '%exhibition%' OR f.code ILIKE '%exhibition%' OR f.description ILIKE '%exhibition%' OR f.purpose ILIKE '%exhibition%') LIMIT 10;\n- If 1 form found: Execute: SELECT a.file_path, a.original_filename FROM attachments a WHERE a.id = '<attachment_id>' AND a.is_deleted = false;\n- Response: \"I found the Exhibition Form (Code: EXH-001). This form is used for exhibition booth applications.\\n\\nLanguage: English\\nVersion: 2\"\n- Attachments: [{\"url\": \"/files/exhibition_form_v2.pdf\", \"filename\": \"Exhibition_Application_Form.pdf\"}]\n\nExample 3:\nUser: \"I need the sponsorship form in Chinese\"\nYour Action:\n- Execute search with language filter: SELECT f.id, f.code, f.name, f.description, f.purpose, f.language, f.attachment_id FROM forms f WHERE f.is_active = true AND (f.name ILIKE '%sponsorship%' OR f.purpose ILIKE '%sponsorship%') AND (f.language ILIKE '%zh%' OR f.language ILIKE '%chinese%' OR f.language ILIKE '%cn%') LIMIT 10;\n- Fetch attachment if found\n- Response: Include form details with Chinese language specification\n- Attachments: Include the file\n\nExample 4:\nUser: \"sponsorship\"\nYour Action:\n- Execute broad search\n- If multiple forms returned (e.g., \"Annual Dinner Sponsorship\", \"Event Sponsorship\", \"Corporate Sponsorship\"):\n- Response: \"I found 3 sponsorship forms:\\n\\n1. Annual Dinner Sponsorship Form (Code: ADS-2024)\\n   Purpose: Sponsorship for annual dinner event\\n\\n2. Event Sponsorship Form (Code: EVT-SPON)\\n   Purpose: General event sponsorship application\\n\\n3. Corporate Sponsorship Form (Code: CORP-SPON)\\n   Purpose: Corporate partnership and sponsorship\\n\\nWhich one would you like?\"\n- Attachments: []\n\nExample 5:\nUser: \"The second one\"\nYour Action:\n- Check chat memory for previous list\n- User wants \"Event Sponsorship Form (Code: EVT-SPON)\"\n- Execute: SELECT a.file_path, a.original_filename FROM attachments a WHERE a.id = '<attachment_id>' AND a.is_deleted = false;\n- Response: \"Here's the Event Sponsorship Form (Code: EVT-SPON).\\n\\nThis form is for general event sponsorship applications.\\n\\nLanguage: English\"\n- Attachments: [{\"url\": \"/files/event_sponsorship.pdf\", \"filename\": \"Event_Sponsorship_Form.pdf\"}]\n\nREMEMBER: \n- Your goal is to quickly find the right form and return it with its attachment file so the user can download and use it immediately\n- Always base responses on actual database query results\n- Never hallucinate form names, codes, or file paths\n- Use chat memory to maintain conversation context\n- Be helpful and guide users to find what they need efficiently"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        288,
+        0
+      ],
+      "id": "096e521a-db45-44d8-a004-22706b8c46d2",
+      "name": "Form Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "2c5b219c-6441-4344-9190-64ae02004e25",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "RUt8lLlbjlIUmRTZ",
+          "name": "sorento-grok"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "execute-query": {
+      "ai_tool": [
+        [
+          {
+            "node": "Form Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Form Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Form Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Form Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "do you have any form for customer wedding ang pao/",
+          "contact_id": 330358328
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "bdd1b60f-1267-4741-8157-3fbea1042ecc",
+  "activeVersionId": null,
+  "versionCounter": 9,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T17:17:24.472Z",
+      "createdAt": "2026-04-01T17:17:24.472Z",
+      "role": "workflow:owner",
+      "workflowId": "s1zbUxsYpQ16AEat",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

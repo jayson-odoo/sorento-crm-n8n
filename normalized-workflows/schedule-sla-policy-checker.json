@@ -1,0 +1,769 @@
+{
+  "updatedAt": "2026-04-06T11:24:25.384Z",
+  "createdAt": "2026-02-03T13:43:10.193Z",
+  "id": "7lFff6i_udSxyUbCMdTuD",
+  "name": "schedule-sla-policy-checker",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "e381b88d-2f7e-4545-b713-5770d9166df5",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, policy_id, current_tier, assigned_to, respond_contact_id, escalated_at, escalation_reason, is_resolved, resolved_at, resolved_by, due_at\nFROM public.conversation_sla_tracking\nWHERE current_tier = 1 and is_resolved = false and now() > due_at",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        256,
+        -208
+      ],
+      "id": "7219a816-8100-4bde-ade5-d5ab259bab74",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT sp.id as policy_id, spt.response_hours\nFROM public.sla_policy_tiers spt\nLEFT JOIN public.sla_policies sp\n  ON sp.id = spt.policy_id\nWHERE sp.is_active = TRUE AND spt.tier_level = 2\nLIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        -208
+      ],
+      "id": "4335ae00-372c-4e0f-804e-b70a0a917119",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, policy_id, current_tier, assigned_to, respond_contact_id, escalated_at, escalation_reason, is_resolved, resolved_at, resolved_by, due_at\nFROM public.conversation_sla_tracking\nWHERE current_tier = 2 and is_resolved = false and now() > due_at",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        256,
+        176
+      ],
+      "id": "d355d77b-7750-430d-81e3-f11ca46f92d7",
+      "name": "Execute a SQL query3",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT sp.id as policy_id, spt.response_hours\nFROM public.sla_policy_tiers spt\nLEFT JOIN public.sla_policies sp\n  ON sp.id = spt.policy_id\nWHERE sp.is_active = TRUE AND spt.tier_level = 3\nLIMIT 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        176
+      ],
+      "id": "c4cee5f0-ca01-4be4-ae8b-394ad39c4824",
+      "name": "Execute a SQL query4",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/event-logs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sla_tracking_id\": \"{{ $json.tracking_id }}\",\n  \"event_type\": \"escalation\",\n  \"from_tier\": 2,\n  \"to_tier\": 3,\n  \"assigned_to\": \"{{ $json.assigned_to_id }}\",\n  \"reason\": \"Escalate from Tier 2 to Tier 3\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        704,
+        176
+      ],
+      "id": "19f83a70-c8f1-452e-9e4f-8042fbf0ff02",
+      "name": "conversation-sla-event-tracking-create"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/integration/escalate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"respond_contact_id\": \"{{ $json.respond_contact_id }}\",\n  \"policy_id\": \"{{ $json.policy_id }}\",\n  \"current_tier\": 3,\n  \"escalation_reason\": \"no response by manager\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        176
+      ],
+      "id": "9e28ff10-0ced-495d-a0e9-0ede14d1dd4d",
+      "name": "conversation-sla-tracking-escalate",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/event-logs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sla_tracking_id\": \"{{ $json.tracking_id }}\",\n  \"event_type\": \"escalation\",\n  \"from_tier\": 1,\n  \"to_tier\": 2,\n  \"assigned_to\": \"{{ $json.assigned_to_id }}\",\n  \"reason\": \"Escalate from Tier 1 to Tier 2\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        704,
+        -208
+      ],
+      "id": "01861022-0518-43d5-aad4-ba594655107b",
+      "name": "conversation-sla-event-tracking-create1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/integration/escalate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"respond_contact_id\": \"{{ $json.respond_contact_id }}\",\n  \"policy_id\": \"{{ $json.policy_id }}\",\n  \"current_tier\": 2,\n  \"escalation_reason\": \"no response by executive\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        -208
+      ],
+      "id": "89498d70-fa62-433e-874c-6534b62ec372",
+      "name": "conversation-sla-tracking-escalate1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "CONVERSATIONS",
+        "contactId": "={{ $('Call \\'sorento-sub-respond-findcontact-respond\\'').item.json.id }}",
+        "assignmentType": "userId",
+        "assigneeUserId": "={{ $('conversation-sla-tracking-escalate1').first().json.assigned_to_respond_user_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -304
+      ],
+      "id": "d4b12857-162f-480f-97ee-0c0b0f05df96",
+      "name": "Assign or unassign a Conversation1",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7a500220-cf42-4d32-a36a-d3e6785bd089",
+              "leftValue": "={{ $json.assignee.id.toString() }}",
+              "rightValue": "={{ $('conversation-sla-tracking-escalate1').first().json.assigned_to_respond_user_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "1f471d15-6fee-4866-a6b6-d94a26dfd520",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1376,
+        -304
+      ],
+      "id": "df7caa8c-188a-4859-a31c-55c4fdc29861",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "D62_NHUOrugeULSFwfjEJ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/D62_NHUOrugeULSFwfjEJ",
+          "cachedResultName": "sorento-sub-respond-findcontact-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $json.phone_number }}"
+          },
+          "matchingColumns": [
+            "contact_identifer"
+          ],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        -208
+      ],
+      "id": "582362b3-f4ba-4a66-9f01-ce4777916896",
+      "name": "Call 'sorento-sub-respond-findcontact-respond'"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT rc.phone_number\nFROM respond_contacts rc\nJOIN conversation_sla_tracking cst ON cst.respond_contact_id = rc.id\nWHERE cst.id = '{{ $json.sla_tracking_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        928,
+        -208
+      ],
+      "id": "cd802773-9a2c-4688-b9e3-4e1fd72f9daa",
+      "name": "Execute a SQL query2",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $('Call \\'sorento-sub-respond-findcontact-respond\\'').item.json.id }}",
+        "comment": "={{ '{' + '{@user.' + $('conversation-sla-tracking-escalate1').first().json.assigned_to_respond_user_id + '}' + '}' }}\n⏰ SLA Alert: This contact is routed to you at {{\n  $('conversation-sla-event-tracking-create1').item.json.created_at\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}}. You have until {{\n  $('conversation-sla-tracking-escalate1').item.json.due_at\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}} to respond. \nYou have until {{\n  $('conversation-sla-tracking-escalate1').item.json.due_at_resolution\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}} to resolve\nRemaining time for response: {{ $('conversation-sla-tracking-escalate1').item.json.remaining_response_hours }} hour(s)\nRemaining time for resolution: {{ $('conversation-sla-tracking-escalate1').item.json.remaining_resolution_hours }} hour(s)\nThis is due to no response from executive\n\nReference message: https://app.respond.io/space/364817/inbox/386900418#{{ $('conversation-sla-tracking-escalate1').first().json.message_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        -112
+      ],
+      "id": "ba241782-0b4c-43d4-b56d-aaefa629ccc7",
+      "name": "Add a Comment",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "CONVERSATIONS",
+        "contactId": "={{ $('Call \\'sorento-sub-respond-findcontact-respond\\'1').item.json.id }}",
+        "assignmentType": "userId",
+        "assigneeUserId": "={{ $('conversation-sla-tracking-escalate').first().json.assigned_to_respond_user_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        80
+      ],
+      "id": "b3dcd83b-4a3c-4ee7-abe8-3c38b3414d60",
+      "name": "Assign or unassign a Conversation",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7a500220-cf42-4d32-a36a-d3e6785bd089",
+              "leftValue": "={{ $json.assignee.id.toString() }}",
+              "rightValue": "={{ $('conversation-sla-tracking-escalate').first().json.assigned_to_respond_user_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "1f471d15-6fee-4866-a6b6-d94a26dfd520",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1376,
+        80
+      ],
+      "id": "73c23071-619a-4d26-91ac-9f19cd5817fe",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "D62_NHUOrugeULSFwfjEJ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/D62_NHUOrugeULSFwfjEJ",
+          "cachedResultName": "sorento-sub-respond-findcontact-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $json.phone_number }}"
+          },
+          "matchingColumns": [
+            "contact_identifer"
+          ],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        176
+      ],
+      "id": "5e5a2ed4-c994-48fb-bd4a-523a60cb15ed",
+      "name": "Call 'sorento-sub-respond-findcontact-respond'1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT rc.phone_number\nFROM respond_contacts rc\nJOIN conversation_sla_tracking cst ON cst.respond_contact_id = rc.id\nWHERE cst.id = '{{ $json.sla_tracking_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        928,
+        176
+      ],
+      "id": "1711f689-4c5e-4b46-99cd-536d30caec65",
+      "name": "Execute a SQL query5",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $('Call \\'sorento-sub-respond-findcontact-respond\\'1').item.json.id }}",
+        "comment": "={{ '{' + '{@user.' + $('conversation-sla-tracking-escalate').first().json.assigned_to_respond_user_id + '}' + '}' }}\n⏰ SLA Alert: This contact is routed to you at {{\n  $('conversation-sla-event-tracking-create').first().json.created_at\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}}. You have until {{\n  $('conversation-sla-tracking-escalate').first().json.due_at\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}} to respond. \nYou have until {{\n  $('conversation-sla-tracking-escalate').first().json.due_at_resolution\n    .toDateTime()                // parse string to Luxon DateTime\n    .plus({ hours: 8 })          // add 8 hours\n    .toFormat('yyyy-MM-dd HH:mm:ss')\n}} to resolve\nRemaining time for response: {{ $('conversation-sla-tracking-escalate').first().json.remaining_response_hours }} hour(s)\nRemaining time for resolution: {{ $('conversation-sla-tracking-escalate').first().json.remaining_resolution_hours }} hour(s)\nThis is due to no response from manager\n\nReference message: https://app.respond.io/space/364817/inbox/386900418#{{ $('conversation-sla-tracking-escalate').first().json.message_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        272
+      ],
+      "id": "09b285ee-5bea-4de3-b7bf-b6bbd4ec9de8",
+      "name": "Add a Comment1",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute a SQL query4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-tracking-escalate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query3": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-tracking-escalate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query4": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversation-sla-tracking-escalate": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-event-tracking-create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversation-sla-tracking-escalate1": {
+      "main": [
+        [
+          {
+            "node": "conversation-sla-event-tracking-create1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Assign or unassign a Conversation1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversation-sla-event-tracking-create1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sorento-sub-respond-findcontact-respond'": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add a Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query2": {
+      "main": [
+        [
+          {
+            "node": "Call 'sorento-sub-respond-findcontact-respond'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conversation-sla-event-tracking-create": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign or unassign a Conversation1": {
+      "main": [
+        []
+      ]
+    },
+    "Assign or unassign a Conversation": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Assign or unassign a Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sorento-sub-respond-findcontact-respond'1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add a Comment1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query5": {
+      "main": [
+        [
+          {
+            "node": "Call 'sorento-sub-respond-findcontact-respond'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-04-06T07:19:18.002-04:00",
+          "Readable date": "April 6th 2026, 7:19:18 am",
+          "Readable time": "7:19:18 am",
+          "Day of week": "Monday",
+          "Year": "2026",
+          "Month": "April",
+          "Day of month": "06",
+          "Hour": "07",
+          "Minute": "19",
+          "Second": "18",
+          "Timezone": "America/New_York (UTC-04:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "1f9c1728-0eba-480d-9798-cba309b7b9e6",
+  "activeVersionId": "1f9c1728-0eba-480d-9798-cba309b7b9e6",
+  "versionCounter": 71,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:43:10.193Z",
+      "createdAt": "2026-02-03T13:43:10.193Z",
+      "role": "workflow:owner",
+      "workflowId": "7lFff6i_udSxyUbCMdTuD",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

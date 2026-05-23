@@ -1,0 +1,3092 @@
+{
+  "updatedAt": "2026-05-22T05:52:27.242Z",
+  "createdAt": "2026-05-02T16:48:09.221Z",
+  "id": "9qVyfUxmRQqrpGRMDLRuz",
+  "name": "sorento-consume-main",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "attachments",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3872,
+        2080
+      ],
+      "id": "107da9a8-4ca0-45b0-8f2d-8f1b2ade1afc",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "D62_NHUOrugeULSFwfjEJ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/D62_NHUOrugeULSFwfjEJ",
+          "cachedResultName": "sorento-sub-respond-findcontact-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $json.contact.id }}"
+          },
+          "matchingColumns": [
+            "contact_identifer"
+          ],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1504,
+        1696
+      ],
+      "id": "5ab3603b-7ea2-4eba-8ed9-47603e57fe30",
+      "name": "sorento-sub-respond-findcontact-respond"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "rrYXzE61gCNUck_zmXe-G",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/rrYXzE61gCNUck_zmXe-G",
+          "cachedResultName": "sub-human-intervention"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "agent": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}",
+            "contact_phone_number": "={{ $('sorento-sub-respond-findcontact-respond').first().json.phone }}",
+            "team": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}",
+            "current_assignee": "={{ $('sorento-sub-respond-findcontact-respond').first().json.assignee.id }}",
+            "message_id": "={{ $('tf-message').first().json.message.messageId }}",
+            "is_test": false
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "agent",
+              "displayName": "agent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "team",
+              "displayName": "team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_phone_number",
+              "displayName": "contact_phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "current_assignee",
+              "displayName": "current_assignee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message_id",
+              "displayName": "message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_test",
+              "displayName": "is_test",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3424,
+        704
+      ],
+      "id": "726da5dc-cd83-4762-9eb2-4f17797daac5",
+      "name": "Call 'sub-human-intervention'"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.respond.io/v2/contact/id:{{ $('sorento-sub-respond-findcontact-respond').first().json.id }}/message",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "respondIoApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"type\": \"attachment\",\n    \"attachment\": {\n      \"type\": \"file\",\n      \"url\": \"{{ $json.presigned_url }}\",\n      \"fileName\": \"{{ $json.filename }}\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4768,
+        2368
+      ],
+      "id": "c1a262d0-8256-48ff-852d-53874007f4ab",
+      "name": "send-message-files",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.respond.io/v2/contact/id:{{ $('sorento-sub-respond-findcontact-respond').first().json.id }}/message",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "respondIoApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"type\": \"attachment\",\n    \"attachment\": {\n      \"type\": \"image\",\n      \"url\": \"{{ $json.presigned_url }}\",\n      \"fileName\": \"{{ $json.filename }}\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4768,
+        1984
+      ],
+      "id": "413734a6-79f2-47d8-a556-3f3e61e31e5e",
+      "name": "send-message-images",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Split Out').item.json.mimeType }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "87d569ae-f00d-4a5b-934e-c4308a50f564"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a1b3f485-574d-4407-acf8-89042e87dab9",
+                    "leftValue": "={{ $('Split Out').item.json.mimeType }}",
+                    "rightValue": "video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "video"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        4544,
+        2064
+      ],
+      "id": "ea905e22-625d-4466-8631-e0b53e4c1534",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.respond.io/v2/contact/id:{{ $('sorento-sub-respond-findcontact-respond').first().json.id }}/message",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "respondIoApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"type\": \"text\",\n    \"text\": {{ $json.presigned_url.toJsonString() }}\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4768,
+        2176
+      ],
+      "id": "b06e8704-8c58-41db-a178-9c0765b08bbe",
+      "name": "send-message-video",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/presigned-url",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"file_path\": \"{{ $json.url }}\",\n  \"filename\": \"{{ $json.filename }}\",\n  \"expires_in\": 3600\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4320,
+        2080
+      ],
+      "id": "fdc7234b-6c50-4a27-904c-cb09eedc081b",
+      "name": "get-presigned-url",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "whisper-large-v3"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('tf-message').item.json.message.message.attachment.url }}"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -608,
+        1264
+      ],
+      "id": "63d2984f-31ae-4209-b3a8-d4fc5cf09068",
+      "name": "audio-transcribe",
+      "credentials": {
+        "groqApi": {
+          "id": "RUt8lLlbjlIUmRTZ",
+          "name": "sorento-grok"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "UrETd-jm46tFj3Xw7w8vL",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/UrETd-jm46tFj3Xw7w8vL",
+          "cachedResultName": "sub-respond-save-message-redis"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "phone_number": "={{ $('sorento-sub-respond-findcontact-respond').first().json.phone }}",
+            "message": "={{ $('validator').first().json.response }}",
+            "sent_at": "={{ new Date().getTime() }}",
+            "data": "={{ JSON.stringify(\n  {\n    \"contact_id\": `${$('sorento-sub-respond-findcontact-respond').first().json.id}`,\n  \"phone_number\": $('sorento-sub-respond-findcontact-respond').first().json.phone,\n  \"message\": $json.response,\n  \"sent_at\": new Date().getTime(),\n  \"first_name\": $('sorento-sub-respond-findcontact-respond').first().json.firstName,\n  \"last_name\": $('sorento-sub-respond-findcontact-respond').first().json.lastName,\n  \"type\": \"outgoing\"\n}) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3424,
+        1504
+      ],
+      "id": "53955deb-538b-4e02-a8be-ec7609201261",
+      "name": "Call 'sub-respond-save-message-redis'1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "75a98767-4c60-48dd-8663-38c26122cdef",
+              "leftValue": "={{ $('sorento-sub-respond-findcontact-respond').first().json.custom_fields.find(x => x.name == 'is_human_intervened')?.value?.toBoolean() == true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1280,
+        1696
+      ],
+      "id": "d589eb51-ab26-4f59-ab6b-048f2b4468aa",
+      "name": "is-human-intervened",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "83165a12-1a14-42b7-8ade-5ec2f6663366",
+              "leftValue": "={{ $('tf-message').first().json.message.message.attachment.type }}",
+              "rightValue": "audio",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -832,
+        1616
+      ],
+      "id": "4c6f034a-145f-4b85-a27f-466596b1cf9b",
+      "name": "if-message-is-audio"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('tf-message').first().json.contact.id }}",
+            "message": "=You said: {{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        1168
+      ],
+      "id": "4db2df34-050c-4973-be5d-16bc09b5186a",
+      "name": "sorento-sub-respond-sendmsg-respond-transcribed-message",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var output = $('is-human-intervened').item.json\n\noutput.message = $json.text\n\nreturn output\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        1360
+      ],
+      "id": "239f5687-9354-42a7-8a5e-7c70c4cba1cb",
+      "name": "transcribed-message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "25498100-4fe7-4fa7-a5eb-826f0fa2f0b1",
+              "leftValue": "={{ $('validator').first().json.attachments.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3424,
+        1888
+      ],
+      "id": "c8c78361-96e3-4520-9e91-2b95c16f6dbd",
+      "name": "if-got-attachments"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "={{ $('validator').first().json.response }}",
+            "quick_reply": "={{ $('validator').first().json.quick_reply }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quick_reply",
+              "displayName": "quick_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3424,
+        1696
+      ],
+      "id": "326f449a-613a-4f6f-b88f-003353f93e63",
+      "name": "sorento-sub-respond-sendmsg-respond2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "=Your request is out of the scope of my ability and require human assistance. We are directing your enquiry to the correct person. Please wait for a moment."
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3200,
+        704
+      ],
+      "id": "a891aef1-62ef-499b-99c6-ba1178750db3",
+      "name": "sorento-sub-respond-sendmsg-respond",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "url",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        4096,
+        2080
+      ],
+      "id": "57217800-91f9-48f9-8a96-b78b8a61476b",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "UPDATE_CONTACT",
+        "contactId": "={{ $json.id }}",
+        "customFields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_human_intervened": false
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "backend_id",
+              "displayName": "backend_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "is_human_intervened",
+              "displayName": "is_human_intervened",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "removed": false
+            },
+            {
+              "id": "is_allowed_stock",
+              "displayName": "Is Allowed Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "removed": true
+            },
+            {
+              "id": "complaint_id",
+              "displayName": "system_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "user_type",
+              "displayName": "User Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "end_user",
+                  "value": "end_user"
+                },
+                {
+                  "name": "dealer",
+                  "value": "dealer"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "enquiry_type",
+              "displayName": "Enquiry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "General Enquiries",
+                  "value": "General Enquiries"
+                },
+                {
+                  "name": "Marketing Form",
+                  "value": "Marketing Form"
+                },
+                {
+                  "name": "Incoming Stock",
+                  "value": "Incoming Stock"
+                },
+                {
+                  "name": "Chat Analysis",
+                  "value": "Chat Analysis"
+                },
+                {
+                  "name": "Order Enquiries",
+                  "value": "Order Enquiries"
+                },
+                {
+                  "name": "Purchase Request / Sponsorship Form",
+                  "value": "Purchase Request / Sponsorship Form"
+                },
+                {
+                  "name": "Project Stock Inquiries",
+                  "value": "Project Stock Inquiries"
+                },
+                {
+                  "name": "Project Complaint",
+                  "value": "Project Complaint"
+                }
+              ],
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        1840
+      ],
+      "id": "7af23676-0102-456b-b928-44a415906c50",
+      "name": "update-human-intervened",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "$input.first().json.custom_fields.find(x => x.name == \"is_human_intervened\").value = \"false\"\n\nreturn $input.first().json\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        1552
+      ],
+      "id": "3c12f837-6222-4f8e-8d19-73ee32e86914",
+      "name": "set-human-intervened"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "={{ $('Switch').first().json.presigned_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        4992,
+        2080
+      ],
+      "id": "f0a30b9c-32d5-48c4-b5f8-31cacddb32c8",
+      "name": "sorento-sub-respond-sendmsg-respond4",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "XTODTw-dJcV0uRdC056hG",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/XTODTw-dJcV0uRdC056hG",
+          "cachedResultName": "sub-query-reformulator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "latest_user_message": "={{ $('tf-message').first().json.message.message.text || $('tf-message').item.json.message.message.attachment.description || $json.message }}\n{{ $('tf-message').first().json.message.replyTo?.message ? \"reply to: \" + $('tf-message').first().json.message.replyTo.message.text : \"\" }}\n",
+            "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "previous_conversation_state": "={{ $('get-session-vars').first().json.session_vars.variables }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "latest_user_message",
+              "displayName": "latest_user_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "previous_conversation_state",
+              "displayName": "previous_conversation_state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        1552
+      ],
+      "id": "7b2e4733-3330-4e03-87d4-cf86078e521e",
+      "name": "Call 'sub-query-reformulator'",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "tWP33QOFT7SxThfT",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/tWP33QOFT7SxThfT",
+          "cachedResultName": "sub-get-rag"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "=intent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}\ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}\nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}",
+            "source_type": "mcp_tool",
+            "limit": 5
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "source_type",
+              "displayName": "source_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1856,
+        1328
+      ],
+      "id": "fbba5095-de5d-4efc-844b-9fd4b9620e98",
+      "name": "Execute 'sub-get-rag'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "UrETd-jm46tFj3Xw7w8vL",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/UrETd-jm46tFj3Xw7w8vL",
+          "cachedResultName": "sub-respond-save-message-redis"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "phone_number": "={{ $('sorento-sub-respond-findcontact-respond').first().json.phone }}",
+            "message": "={{ $('tf-message').first().json.message.message.text || $('tf-message').item.json.message.message.attachment.description || $json.message }}",
+            "sent_at": "={{ new Date().getTime() }}",
+            "data": "={{ JSON.stringify(\n  {\n    \"contact_id\": `${$('sorento-sub-respond-findcontact-respond').first().json.id}`,\n  \"phone_number\": $('sorento-sub-respond-findcontact-respond').first().json.phone,\n  \"message\": $('tf-message').isExecuted ? $('tf-message').first().json.message.message.text : $('tf-message').first().json.message.message.text || $('tf-message').item.json.message.message.attachment.description || $json.message,\n  \"sent_at\": new Date().getTime(),\n  \"first_name\": $('sorento-sub-respond-findcontact-respond').first().json.firstName,\n  \"last_name\": $('sorento-sub-respond-findcontact-respond').first().json.lastName,\n  \"type\": \"incoming\"\n}) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sent_at",
+              "displayName": "sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        1744
+      ],
+      "id": "f99f1e4b-10e6-458c-acc4-2607ca56d289",
+      "name": "Call 'sub-respond-save-message-redis'2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2176,
+        1696
+      ],
+      "id": "14884141-bbf8-4181-b036-2c28c143dd35",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "pop",
+        "list": "main-message-list",
+        "propertyName": "message",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        1696
+      ],
+      "id": "680febfe-074b-4e16-a0da-6a74e6dddf90",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.first().json.message"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        1696
+      ],
+      "id": "850dd362-8a52-4760-8af4-183dca28fb49",
+      "name": "tf-message"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "main-message-list",
+        "messageData": "={{ JSON.stringify($('tf-message').first().json) }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        1648
+      ],
+      "id": "b8572be5-ffc4-4b78-bd96-d1c2a3c2cc73",
+      "name": "Redis2",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let output = {};\n\noutput.response = `There is some error encountered by the AI: ${$input.first().json.error}`\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2976,
+        2432
+      ],
+      "id": "d966b993-e256-4b97-8ad6-2c4ca85d1252",
+      "name": "set-ran-query-formulator"
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "actual",
+              "value": "true"
+            },
+            {
+              "key": "contact_id",
+              "value": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "position": [
+        3648,
+        1328
+      ],
+      "id": "3c1a3be5-a20d-47d0-ac70-f765edad2667",
+      "name": "Execution Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "daec32e9-1b3a-493f-9b73-c4a25ffcc05b",
+              "leftValue": "={{ $('validator').first().json.human_intervention }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3200,
+        1696
+      ],
+      "id": "0588070b-11be-4fe8-aacd-f0aec5c9cd66",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let output = {};\n\noutput.response = \"There is some error in getting the chat histories. We have contacted the system administrator to investigate. Sorry for the inconvenience\"\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2976,
+        2624
+      ],
+      "id": "459ba104-e9e8-4e3e-8e8b-fb09df16fd1e",
+      "name": "output_exchange1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "23193a1c-44b3-4db8-aa0b-a3e72c5ca995",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.escalation.is_escalation_confirmation }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        288,
+        1360
+      ],
+      "id": "3f7aef05-aa73-4758-9f16-69dab093958f",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/system/references/resolve",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal || \"nothing\" }}\",\n  \"match_mode\": \"or\",\n  \"tokens\": {{ JSON.stringify($('Call \\'sub-query-reformulator\\'').first().json.output.entities.map(x => x.raw).length > 0 ? $('Call \\'sub-query-reformulator\\'').first().json.output.entities.map(x => x.raw) : [\"nothing\"]) }},\n  \"allowed_entity_types\": {{ JSON.stringify($('Call \\'sub-query-reformulator\\'').first().json.output.entities.map(x => x.raw).length > 0 ? $('Call \\'sub-query-reformulator\\'').first().json.output.entities.map(x => x.hint) : [\"nothing\"]) }},\n  \"access_levels\": {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1408,
+        1232
+      ],
+      "id": "a2bed208-8051-4eb4-8e21-4bee16bd3568",
+      "name": "resolve-entity"
+    },
+    {
+      "parameters": {
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/contact-access-types/active?contact_id={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}&space_id=364817",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        736,
+        1168
+      ],
+      "id": "79d9a064-3512-461f-85cc-94e00d849875",
+      "name": "get-access-types",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1a016d85-4661-4d70-8a5d-a6b6d979f068",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}",
+              "rightValue": "promotion_enquiry",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        512,
+        1520
+      ],
+      "id": "ba523f6a-3bcd-417d-9654-fe29b1931822",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        960,
+        1168
+      ],
+      "id": "48e184a9-a0ca-4d99-b798-fe03d0100f03",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e6818373-74f0-4d0b-bc45-cf863ae44125",
+              "leftValue": "={{ $('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels) }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "50d7c5dd-def2-4c29-a43f-2be5324b66bd",
+              "leftValue": "={{ $json.name.length }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        1168
+      ],
+      "id": "c708b112-53c5-4d2d-819d-4cae580f02f1",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "=Please specify the type of promotion",
+            "quick_reply": "={{ $json.name.join(\",\") }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quick_reply",
+              "displayName": "quick_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3424,
+        896
+      ],
+      "id": "a6a527a2-3ad1-49a9-903f-13b756c68386",
+      "name": "sorento-sub-respond-sendmsg-respond3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/access-agent/check",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contact_id\": \"{{ $('sorento-sub-respond-findcontact-respond').first().json.id }}\",\n  \"space_id\": \"364817\",\n  \"agent\": \"{{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -160,
+        1456
+      ],
+      "id": "ac480f37-7bb0-4f4d-8b43-663eb64c1ad8",
+      "name": "check-access",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5533527c-23af-4c7b-9f59-8a0f246f65ec",
+              "leftValue": "={{ $('check-access').first().json.allowed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        1456
+      ],
+      "id": "2ee8ee9e-13bf-46e2-8ace-30968b5b73d8",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "=Sorry, you are not allowed to access {{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quick_reply",
+              "displayName": "quick_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3424,
+        2288
+      ],
+      "id": "7eaf5764-446b-4f97-9ba2-3229b815b02d",
+      "name": "sorento-sub-respond-sendmsg-respond5",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4e03cff3-3036-4748-a62f-34e471eacba9",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.query_scope }}",
+              "rightValue": "specific_entity_enquiry",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "5636b2bd-cc9c-49c1-9829-90182907378c",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.needs_resolved_entity }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "49e4b4f4-3c6c-4b63-931b-442d81800220",
+              "leftValue": "={{ $('resolve-entity').first().json.tokens.length }}",
+              "rightValue": "={{ $('resolve-entity').first().json.unresolved_tokens.length }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1632,
+        1232
+      ],
+      "id": "ae4b5f18-c990-4691-a317-0d998cb13d71",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "={{ $('Edit Fields1').first().json.escalate_message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quick_reply",
+              "displayName": "quick_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3200,
+        1040
+      ],
+      "id": "2e5b4b4c-21ad-4e2f-b984-88a576ed42ea",
+      "name": "sorento-sub-respond-sendmsg-respond6",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2304,
+        1328
+      ],
+      "id": "d6cfb265-6786-4e1c-9012-b2f1b2bb87c3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Fss5aAaXthJSWpZCgKiKR",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Fss5aAaXthJSWpZCgKiKR",
+          "cachedResultName": "sub-get-results"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify(Object.values(Object.fromEntries($('resolve-entity').all().flatMap(item => [ ...(item.json.resolutions ?? []).flatMap(r => r.matches ?? []), ...(item.json.intersection ?? []), ...(Object.values(item.json.by_entity_type ?? {}).flat()) ]).map(m => [m.uuid, { uuid: m.uuid, entity_type: m.entity_type }])))) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817",
+            "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+            "tool": "={{ $json.name }} "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tool",
+              "displayName": "tool",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "user_prompt",
+              "displayName": "user_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2528,
+        1360
+      ],
+      "id": "084f4d54-36f8-4fa8-9493-32fc1c678b6e",
+      "name": "Call 'sub-get-results'",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tools",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        1328
+      ],
+      "id": "c0ad8c5f-dabb-4c45-bbd1-0ce224e3f40c",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e2795d7c-4d36-4802-9dbe-a9f634066087",
+              "leftValue": "={{ $('validator').first().json.has_result }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5fd347a7-5f6a-4925-a15b-576f6d6e2894",
+              "leftValue": "={{ $('validator').first().json.is_valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2976,
+        1424
+      ],
+      "id": "91c0e341-84c5-4222-8868-03cda18727f1",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/conversation-variables/{{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3424,
+        1312
+      ],
+      "id": "ce3d5c4d-5460-42d3-bc7c-0f55f528c341",
+      "name": "save-session-vars"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nlet output = {}\nlet query_formulator_output = $('Call \\'sub-query-reformulator\\'').first().json.output\nlet contact = $('sorento-sub-respond-findcontact-respond').first().json\nlet response;\nif ($(\"Edit Fields1\").isExecuted) {\n  response = $(\"Edit Fields1\").first().json.escalate_message\n} else if ($('Edit Fields3').isExecuted) {\n  response = $(\"Edit Fields3\").first().json.escalate_message\n} else if ($('Edit Fields4').isExecuted) {\n  response = $(\"Edit Fields4\").first().json.escalate_message\n} else {\n  response = $('validator').first().json.response\n}\noutput = {\n  \"variables\": {\n     \"message_type\": query_formulator_output.message_type,\n    \"intent_hint\": query_formulator_output.intent_hint,\n    \"domain_hint\": query_formulator_output.domain_hint,\n    \"user_goal\": query_formulator_output.user_goal,\n    \"query_scope\": query_formulator_output.query_scope,\n    \"access_levels\": query_formulator_output.access_levels,\n    \"entities\": query_formulator_output.entities,\n    \"routing\": query_formulator_output.routing,\n    \"escalation\": query_formulator_output.escalation, \n    \"response\": response\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3200,
+        1312
+      ],
+      "id": "0804657c-f600-450b-8ae9-17972406f0e9",
+      "name": "compile-current-state"
+    },
+    {
+      "parameters": {
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/conversation-variables/{{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -608,
+        1552
+      ],
+      "id": "1b06a306-cab3-4667-8d50-873c3a15ca7e",
+      "name": "get-session-vars"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "response_intro"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        1168
+      ],
+      "id": "4f2068b9-3c20-4021-8911-4565d227fb53",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nlet is_valid = false\nlet output = $input.first().json\nlet semantic_parser = $('Call \\'sub-query-reformulator\\'').first().json\nlet domain_hint = semantic_parser.output.domain_hint\n// if ($('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint == \"marketing_form\" && $('Call \\'sub-get-results\\'').first().json.action_links.length > 0) {\n//   output.is_valid = false\n// } \n// else if (output.answers.length === 0 &&\n// ![\n//   \"purchase_request_form\",\n//   \"sponsorship_form\",\n//   \"complaint_form\",\n//   \"stock_inquiry_form\"\n// ].includes(domain_hint) && output.action_links.length > 0) {\n//  output.is_valid = false} \n// else {\n  output.is_valid = true\n  if ($('Edit Fields2').isExecuted && $('Edit Fields2').first().json.not_allowed_check_stock) {\n    const resultNode = $input.first().json;\n    const formulatorNode = $('Call \\'sub-query-reformulator\\'').first().json;\n    \n    // handle parser output shape: [{ output: {...} }] or { output: {...} }\n    const parserOutput = formulatorNode.output ?? formulatorNode;\n    const demandQty = Number(parserOutput.demand_qty ?? 0);\n    \n    // handle answer records from get-result\n    const answers = Array.isArray(resultNode.answers) ? resultNode.answers : [];\n    \n    // group by product and sum stock_qty\n    const grouped = {};\n    \n    for (const item of answers) {\n      const product = item.product || 'UNKNOWN_PRODUCT';\n      const stockQty = Number(item.stock_qty ?? 0);\n    \n      if (!grouped[product]) {\n        grouped[product] = {\n          product,\n          total_stock_qty: 0,\n          rows: [],\n        };\n      }\n    \n      grouped[product].total_stock_qty += stockQty;\n      grouped[product].rows.push(item);\n    }\n    \n    // build response_intro lines\n    const introLines = Object.values(grouped).map(group => {\n      const canFulfill = demandQty <= group.total_stock_qty;\n      if (canFulfill) {\n        return `Quantity of ${demandQty} for product ${group.product} can be fulfilled.`;\n      }\n      return `Quantity of ${demandQty} for product ${group.product} cannot be fulfilled. Total available quantity is ${group.total_stock_qty}.`;\n    });\n    output.response = introLines.join(\"\\n\")\n  // }\n  \n}\nreturn output"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2752,
+        1360
+      ],
+      "id": "7347e4f1-0da1-4002-85a8-a9459292591f",
+      "name": "validator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e1afc5c-6e71-4648-a902-43a6d3d0c29e",
+              "name": "attachments",
+              "value": "={{ $('validator').first().json.attachments }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3648,
+        2080
+      ],
+      "id": "25f699ec-4155-454d-bbe8-bbbe10e9e2ae",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+              "name": "escalate_message",
+              "value": "={{ `Could not find for ${$('Call \\'sub-query-reformulator\\'').first().json.output.entities?.map(e => `${e.hint} ${e.raw}`).join(', ') || 'the requested item'}${$('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint === 'promotion_enquiry' ? ` for ${$('Call \\'sub-query-reformulator\\'').first().json.output.access_levels?.join(', ') || 'End User'}` : ''}. Would you like me to escalate to ${$('Call \\'sub-query-reformulator\\'').first().json.output.routing?.suggested_team || 'customer_service'} team?` }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2976,
+        1088
+      ],
+      "id": "4347b22a-6e8e-493e-b3aa-003c5550ddc1",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e7fd13eb-4268-4863-b854-99766b911fd4",
+              "leftValue": "={{ $('sorento-sub-respond-findcontact-respond').item.json.custom_fields.find(x => x.name == \"is_allowed_stock\").value.toBoolean() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0df3c364-63e6-4524-ab56-bd10b79033d1",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}",
+              "rightValue": "stock_check",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "e368914d-5c11-4697-9643-a7263d483528",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').item.json.output.entities }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        736,
+        1984
+      ],
+      "id": "1d39e823-dffb-4667-9903-36f9a51ffc27",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2e0fe211-2023-466b-b416-ca330748db5d",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.demand_qty }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d121e879-3dd2-4933-924a-a0a1c5ba4b48",
+              "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.demand_qty }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        2048
+      ],
+      "id": "1fcfd034-430d-4b72-a759-72101c2ae69a",
+      "name": "If8"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "aoydkG1dbItXR5jXFEQsP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/aoydkG1dbItXR5jXFEQsP",
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_identifer": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+            "message": "=Please specify your demand quantity"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_identifer",
+              "displayName": "contact_identifer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quick_reply",
+              "displayName": "quick_reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        3424,
+        2096
+      ],
+      "id": "1d36004b-711f-4756-8c88-fb406fe5b3f3",
+      "name": "sorento-sub-respond-sendmsg-respond7",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f54435ab-2be9-4b4a-bf06-d5013737e714",
+              "name": "not_allowed_check_stock",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        2048
+      ],
+      "id": "e858dd75-e3f4-4630-9851-7d5d84bc023e",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+              "name": "escalate_message",
+              "value": "=Please specify the type of promotion\n{{ $json.name.join(\",\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2976,
+        1696
+      ],
+      "id": "50f39bd8-2aa9-4ab3-9859-19ef093e288d",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+              "name": "escalate_message",
+              "value": "=Please specify your demand quantity",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2608,
+        1936
+      ],
+      "id": "18ce3128-c787-4617-a104-1ab7c26ea393",
+      "name": "Edit Fields4"
+    }
+  ],
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-findcontact-respond": {
+      "main": [
+        [
+          {
+            "node": "is-human-intervened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send-message-files": {
+      "main": [
+        [],
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send-message-images": {
+      "main": [
+        [],
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "send-message-images",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send-message-video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send-message-files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send-message-video": {
+      "main": [
+        [],
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-presigned-url": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "audio-transcribe": {
+      "main": [
+        [
+          {
+            "node": "transcribed-message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "sorento-sub-respond-sendmsg-respond-transcribed-message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is-human-intervened": {
+      "main": [
+        [
+          {
+            "node": "if-message-is-audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "update-human-intervened",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "set-human-intervened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-message-is-audio": {
+      "main": [
+        [
+          {
+            "node": "audio-transcribe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'sub-respond-save-message-redis'2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "get-session-vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-got-attachments": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond": {
+      "main": [
+        [
+          {
+            "node": "Call 'sub-human-intervention'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "get-presigned-url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-human-intervened": {
+      "main": [
+        [
+          {
+            "node": "if-message-is-audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-query-reformulator'": {
+      "main": [
+        [
+          {
+            "node": "check-access",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute 'sub-get-rag'": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "tf-message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tf-message": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-findcontact-respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-ran-query-formulator": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond2": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-human-intervention'": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Call 'sub-respond-save-message-redis'1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "sorento-sub-respond-sendmsg-respond2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "if-got-attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output_exchange1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resolve-entity": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "get-access-types",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-access-types": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "resolve-entity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check-access": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute 'sub-get-rag'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond6": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond3": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond5": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'sub-get-results'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-get-results'": {
+      "main": [
+        [
+          {
+            "node": "validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "compile-current-state",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "compile-current-state": {
+      "main": [
+        [
+          {
+            "node": "save-session-vars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-session-vars": {
+      "main": [
+        [
+          {
+            "node": "Call 'sub-query-reformulator'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validator": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "compile-current-state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "resolve-entity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "sorento-sub-respond-sendmsg-respond7",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "resolve-entity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond7": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "compile-current-state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "compile-current-state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-05-22T01:49:11.000-04:00",
+          "Readable date": "May 22nd 2026, 1:49:11 am",
+          "Readable time": "1:49:11 am",
+          "Day of week": "Friday",
+          "Year": "2026",
+          "Month": "May",
+          "Day of month": "22",
+          "Hour": "01",
+          "Minute": "49",
+          "Second": "11",
+          "Timezone": "America/New_York (UTC-04:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "cbfbdb8e-addf-40b8-bf0a-43e4cd6174f3",
+  "activeVersionId": "cbfbdb8e-addf-40b8-bf0a-43e4cd6174f3",
+  "versionCounter": 651,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-02T16:48:09.221Z",
+      "createdAt": "2026-05-02T16:48:09.221Z",
+      "role": "workflow:owner",
+      "workflowId": "9qVyfUxmRQqrpGRMDLRuz",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

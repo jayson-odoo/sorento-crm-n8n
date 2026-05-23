@@ -1,0 +1,129 @@
+{
+  "updatedAt": "2026-02-28T07:31:21.010Z",
+  "createdAt": "2026-02-03T13:55:18.908Z",
+  "id": "UrETd-jm46tFj3Xw7w8vL",
+  "name": "sub-respond-save-message-redis",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "phone_number",
+              "type": "any"
+            },
+            {
+              "name": "message",
+              "type": "any"
+            },
+            {
+              "name": "sent_at",
+              "type": "any"
+            },
+            {
+              "name": "data"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f61c094a-2140-471c-bbfc-af211a804210",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "sorento-respond-message",
+        "messageData": "={{ $json.data }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2d2d6773-5bd2-4a11-a072-1667c8884039",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "contact_id": 386900418,
+          "phone_number": "+60166753328",
+          "message": "hahahh sorry sorry",
+          "sent_at": 1772263216000
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "485413d5-f76f-4c69-970f-f13bf785f47c",
+  "activeVersionId": "485413d5-f76f-4c69-970f-f13bf785f47c",
+  "versionCounter": 19,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:55:18.908Z",
+      "createdAt": "2026-02-03T13:55:18.908Z",
+      "role": "workflow:owner",
+      "workflowId": "UrETd-jm46tFj3Xw7w8vL",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

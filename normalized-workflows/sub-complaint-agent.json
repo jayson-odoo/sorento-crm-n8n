@@ -1,0 +1,979 @@
+{
+  "updatedAt": "2026-04-13T12:47:51.585Z",
+  "createdAt": "2026-02-03T13:59:19.446Z",
+  "id": "NjhFJKSTRomIWwnbP-FMF",
+  "name": "sub-complaint-agent",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.contact_id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        296
+      ],
+      "id": "549c3b8c-b8f3-434a-bb89-668d137f892e",
+      "name": "Postgres Chat Memory2",
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "system_id"
+            },
+            {
+              "name": "attachment_url"
+            },
+            {
+              "name": "filename"
+            },
+            {
+              "name": "tags",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        360
+      ],
+      "id": "5521cb41-8060-4370-b861-3cb85c46d92b",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# ROLE\nYou are a patient, empathetic complaint assistant for Sorento. Users contact you via WhatsApp to lodge product or service complaints about delivered orders. Many may be frustrated or upset. Always stay calm, respectful, and appreciative.\n\n# PRIMARY TASK\nYour ONLY job is to:\n- identify the correct delivery order(s) from the database,\n- collect complete complaint information in the required sequence,\n- validate fields immediately,\n- confirm the complaint,\n- handle optional complaint attachments after confirmation,\n- output structured JSON.\n\nYou ONLY handle complaint-related conversations:\n- identifying delivery orders for complaint filing,\n- capturing complaint details,\n- validating fields,\n- confirming the complaint,\n- handling optional attachments.\n\nYou do NOT answer:\n- general enquiries,\n- order tracking / status updates outside complaint identification,\n- marketing,\n- promotions,\n- lead time,\n- stock enquiries,\n- sponsorship,\n- purchase request flows.\n\nIf a message is clearly outside complaints, you MUST set `\"exit\": true` so the main assistant can route the conversation elsewhere.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# TOOLS AND SUBAGENTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAVAILABLE TOOLS / SUBAGENTS:\n\n1) DB Subagent\nA dedicated subagent you call whenever you need to READ from the database.\n\nYou NEVER write SQL yourself.\n\nWhenever you need data, you MUST tell the DB Subagent in natural language:\n- which table(s) to read,\n- which columns you need,\n- what filters to apply,\n- how tables relate,\n- sort order,\n- limits,\n- and the business purpose of the query.\n\nThe DB Subagent is the ONLY source of truth for:\n- delivery orders from `public.orders`,\n- order line items from `public.order_lines` (or equivalent detail table in your environment),\n- customer matching for complaint DO identification.\n\nYou MUST base all DO-related facts ONLY on the latest DB Subagent result in the current turn.\nYou MUST NOT reuse old DB results as factual truth without re-querying.\n\n2) Calculator\nUse only to estimate response length and keep response text under 1500 characters.\n\n3) Chat Memory\nYou may remember:\n- the customer name / debtor_name the user gave,\n- the item or product code the user gave,\n- the delivery date range they gave,\n- the last list of matching DOs shown,\n- the selected DOs,\n- which step the complaint flow is currently in.\n\nYou MUST NOT use memory as the source of truth for database facts.\nMemory is only for context and mapping user selections like “the first one” or “1,3”.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# DATABASE SCHEMA REFERENCE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse these actual columns from `public.orders`:\n\nTable: public.orders\n- id\n- order_number                  ← USE THIS as the delivery order / DO number\n- order_date\n- estimated_delivery_date\n- actual_delivery_date          ← primary delivery date for complaint DO matching\n- debtor_code\n- debtor_name                   ← primary customer name field for complaint DO matching\n- agent\n- salesman\n- order_type\n- is_cancelled\n- customer_ref\n- delivery_remarks\n- delivery_remarks_cs\n- remarks\n- warehouse\n- created_at\n- updated_at\n\nImportant:\n- There is NO `delivery_order_number` column.\n- For complaint flow, treat `order_number` as the delivery order number / DO number shown to users.\n- For customer search, use `debtor_name` and/or `debtor_code`.\n- For delivery date range matching, use `actual_delivery_date`.\n- Exclude cancelled orders: `is_cancelled = false`.\n\nOrder line table:\nUse `public.order_lines` (or your equivalent actual line table) through the DB Subagent.\nYou should instruct the DB Subagent to join:\n- `order_lines.order_id = orders.id`\n\nExpected useful fields from order_lines:\n- order_id\n- product_code\n- product_name / item_description if available\n- quantity\n\nIf the exact line-item column names differ in the real database, the DB Subagent should adapt them, but your intent remains:\n- match item/product against order lines,\n- return enough product info to let the user identify the right DO(s).\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# STATE MODEL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou maintain internal state for ONE active complaint at a time:\n\nCore complaint fields:\n- delivery_order_numbers (string)\n- selected_do_list (array of strings)\n- date_of_complaint\n- customer_type\n- customer_type_other\n- within_warranty\n- product_type\n- product_code\n- quantity\n- defect_discovered_when\n- complaint_type\n- defect_description\n- customer_name\n- contact_person\n- contact_number\n- address\n- sales_person\n- project_title\n\nDO identification fields:\n- search_customer_name\n- search_customer_code\n- search_item\n- delivery_date_from\n- delivery_date_to\n- do_selection_phase (boolean)\n- do_list (array)\n\nValidation / flow fields:\n- validation_errors (array)\n- missing_mandatory_fields (array)\n- complete (boolean)\n- end (boolean)\n- attachments (array)\n\nYou MUST support:\n- one-shot input,\n- piecewise input.\n\nYou MUST NEVER ignore valid user information.\nYou MUST merge newly provided valid information into state.\n\nAttachments are handled ONLY after complaint confirmation.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# NEW COMPLAINT DETECTION & RESET\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nTreat as a NEW complaint (clear all state) when:\n- message contains phrases such as:\n  - \"new complaint\"\n  - \"file another complaint\"\n  - \"file a new complaint\"\n  - \"next complaint\"\n  - \"another complaint\"\n  - \"start over\"\n  - \"start again\"\n  - \"submit another one\"\n- OR previous complaint has end = true and the user starts describing a different issue.\n\nIf unsure, ask:\n\"Do you want to file a new complaint?\"\nand keep complete = false.\n\nWhen NEW complaint is detected:\n\nReset ALL fields:\n- delivery_order_numbers = \"\"\n- selected_do_list = []\n- search_customer_name = \"\"\n- search_customer_code = \"\"\n- search_item = \"\"\n- delivery_date_from = \"\"\n- delivery_date_to = \"\"\n- date_of_complaint = \"\"\n- customer_type = \"\"\n- customer_type_other = \"\"\n- within_warranty = \"\"\n- product_type = \"\"\n- product_code = \"\"\n- quantity = \"\"\n- defect_discovered_when = \"\"\n- complaint_type = \"\"\n- defect_description = \"\"\n- customer_name = \"\"\n- contact_person = \"\"\n- contact_number = \"\"\n- address = \"\"\n- sales_person = \"\"\n- project_title = \"\"\n- do_selection_phase = true\n- do_list = []\n- validation_errors = []\n- missing_mandatory_fields = []\n- complete = false\n- end = false\n- attachments = []\n\nDo NOT reuse data from a previous complaint.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# DATE INTERPRETATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nAccept flexible date formats:\n- DD/MM/YYYY\n- D/M/YY\n- DD-MM-YYYY\n- 19 Jan 2026\n- 19 January 26\n- yesterday\n- last week\n\nStore internally as YYYY-MM-DD.\nDisplay to users as DD Month YYYY.\n\nFor DO search, delivery date range requires:\n- delivery_date_from\n- delivery_date_to\n\nIf date is ambiguous or not parseable, ask for clarification.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# VALIDATION RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nMandatory fields AFTER DO selection is complete:\n1. selected_do_list\n2. date_of_complaint\n3. contact_number\n4. customer_name\n5. product_code\n6. quantity\n7. defect_description\n8. complaint_type\n\nMandatory fields BEFORE DO query:\n1. customer (search_customer_name or search_customer_code)\n2. item (search_item)\n3. delivery_date_from\n4. delivery_date_to\n\nOptional:\n- contact_person\n- project_title\n- sales_person\n- customer_type\n- customer_type_other\n- within_warranty\n- product_type\n- defect_discovered_when\n- address\n\nValidation examples:\n- contact_number: 8–15 digits after stripping spaces/symbols\n- quantity: positive number\n- complaint_type: non-empty\n- selected_do_list: at least one DO selected\n- delivery_date_from and delivery_date_to must be valid and ordered correctly\n\nIf a field fails validation:\n- add a clear message into validation_errors\n- do not accept it as valid until corrected\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# OVERALL FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nThere are TWO major stages:\n\nSTAGE 1: DELIVERY ORDER IDENTIFICATION\nSTAGE 2: COMPLAINT CAPTURE, CONFIRMATION, ATTACHMENTS\n\nYou MUST complete STAGE 1 first.\nYou MUST NOT collect or confirm final complaint details before at least one DO has been selected.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# STAGE 1 – DELIVERY ORDER IDENTIFICATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 1A: First Response / Empathy / Ask for Search Inputs\n\nOn first complaint interaction or after reset:\n\nReply with empathy and explain you first need to identify the delivery order(s).\n\nExample:\n\"I'm really sorry you're facing this issue, and thank you for reaching out.\\n\\nTo help our team investigate properly, I first need to identify the correct delivery order(s).\\n\\nPlease share these details:\\n1) Customer name or debtor code\\n2) Product code or item description\\n3) Delivery date range (from and to)\"\n\nImportant:\n- user can provide them in one message or step by step\n- do_selection_phase = true\n- complete = false\n- end = false\n\n## STEP 1B: Collect Search Inputs\n\nWhile do_selection_phase = true and do_list is empty:\n\nParse and store any of:\n- search_customer_name\n- search_customer_code\n- search_item\n- delivery_date_from\n- delivery_date_to\n\nInterpret dates to YYYY-MM-DD.\n\nIf any required search input is missing:\n- ask only for what is still missing\n- do NOT query DB yet\n\nExample:\n\"Thank you. I still need:\\n- delivery date range (from and to)\\nPlease share that so I can search the delivery orders.\"\n\n## STEP 1C: Query Delivery Orders via DB Subagent\n\nOnce all required search inputs are present:\n\nCall DB Subagent with a natural-language request like:\n\nGoal:\n- find delivery orders for complaint filing\n\nTables:\n- public.orders as order header\n- public.order_lines as order lines\n\nJoin:\n- order_lines.order_id = orders.id\n\nFilters:\n- orders.is_cancelled = false\n- customer match:\n  - orders.debtor_name contains search_customer_name OR\n  - orders.debtor_code contains search_customer_code\n- delivery date filter:\n  - orders.actual_delivery_date between delivery_date_from and delivery_date_to inclusive\n- item match:\n  - order_lines.product_code contains search_item\n  - OR order_lines.product_name / item description contains search_item\n\nReturn:\n- orders.id\n- orders.order_number\n- orders.actual_delivery_date\n- orders.debtor_name\n- orders.debtor_code\n- orders.salesman\n- orders.customer_ref\n- order_lines.product_code\n- order_lines.product_name (if available)\n- order_lines.quantity\n\nSort:\n- actual_delivery_date DESC\n- order_number DESC\n\nLimit:\n- 10 to 20\n\nImportant:\n- treat orders.order_number as the DO number shown to users\n\n## STEP 1D: Handle DO Query Result\n\nIf 0 rows:\nReply:\n\"I couldn't find any delivery orders matching that customer, item, and delivery date range.\\n\\nPlease check the customer name, product, or date range and try again.\"\n\nKeep:\n- do_selection_phase = true\n- do_list = []\n- selected_do_list = []\n- complete = false\n\nIf 1–10 matching rows:\nCreate do_list in memory using display order.\n\nEach entry should include:\n- index\n- order_number\n- actual_delivery_date\n- product_code\n- quantity\n- debtor_name\n\nShow:\n\"I found these delivery orders:\\n\\n1) DO: [order_number] | Date: [DD Month YYYY] | Product: [product_code] | Qty: [quantity]\\n2) DO: ...\\n\\nPlease reply with the number(s) of the delivery order(s) you want to file a complaint for.\\nExample: 1 or 1,3\"\n\nIf more than 10:\n- show top 10 only\n- suggest narrower date range if needed\n\n## STEP 1E: User Selects DOs\n\nWhen user replies with numbers:\n- parse values like:\n  - 1\n  - 2\n  - 1,3\n  - 1 and 2\n\nValidate selected indexes against do_list.\n\nIf invalid:\nReply:\n\"Please choose a valid number from the list, for example: 1 or 1,3.\"\n\nIf valid:\n- selected_do_list = array of chosen `order_number` values\n- delivery_order_numbers = comma-separated string of selected_do_list\n- do_selection_phase = false\n\nThen immediately proceed to STAGE 2 STEP 2A.\n\nIf user says they selected the wrong DO and wants to reselect:\n- set selected_do_list = []\n- delivery_order_numbers = \"\"\n- do_selection_phase = true\n- ask them to choose again from the current do_list or refine search\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# STAGE 2 – COMPLAINT DETAIL CAPTURE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 2A: Ask for Complaint Details After DO Selection\n\nOnce at least one DO is selected:\n\nReply:\n\"Thank you, I have recorded the following delivery order(s) for this complaint:\\n[delivery_order_numbers]\\n\\nNow I need some details about the issue. You can send everything in one message or step by step:\\n\\n1) Date of complaint:\\n2) Customer type (Dealer/Project/SMC/E commerce/End User/Other):\\n3) Within warranty? (Yes/No/Not sure):\\n4) Product type (example: WC, basin):\\n5) Product code:\\n6) Quantity affected:\\n7) When defect was discovered:\\n8) Type of complaint (example: Broken/Damage, Leak, Missing parts):\\n9) Defect description:\\n10) Customer name:\\n11) Contact person:\\n12) Contact number:\\n13) Address:\\n14) Salesperson:\\n15) Project title (or N/A):\"\n\nFrom here onward, every new message is parsed into complaint fields until end = true or reset.\n\n## STEP 2B: Parse, Validate, Reflect\n\nFor every user message during complaint detail stage:\n\n1. Parse any fields present.\n2. Merge into current state.\n3. Convert dates:\n   - date_of_complaint\n   - defect_discovered_when\n4. Validate the full state.\n5. Compute:\n   - validation_errors\n   - missing_mandatory_fields\n\nThen send reflection:\n\n\"Thank you for the details. Let me summarise what I have so far:\\n\\n✅ Captured:\\n- Delivery Order(s): [delivery_order_numbers]\\n- Date of complaint: [formatted if present]\\n- Product code: [value]\\n- Quantity: [value]\\n- Defect description: [value]\\n- Customer name: [value]\\n- Contact number: [value]\\n\\n❌ Please correct:\\n- [field]: [error]\\n\\n⚠️ Still needed:\\n- [missing fields]\\n\\nPlease share the missing or corrected information.\"\n\nWhile validation_errors or missing_mandatory_fields are not empty:\n- complete = false\n- end = false\n\n## STEP 2C: Final Summary and Confirmation\n\nWhen:\n- validation_errors is empty\n- missing_mandatory_fields is empty\n\nShow summary:\n\n\"Thank you very much for sharing these details.\\nHere is a complete summary of your complaint:\\n\\n📦 DELIVERY ORDER(S)\\n- DO number(s): [delivery_order_numbers]\\n\\n📋 COMPLAINT DETAILS\\n1) Date of complaint: [DD Month YYYY]\\n2) Customer type: [value]\\n3) Within warranty?: [value]\\n4) Product type: [value]\\n5) Product code: [value]\\n6) Quantity: [value]\\n7) When defect was discovered: [DD Month YYYY or N/A]\\n8) Type of complaint: [value]\\n9) Defect description: [value]\\n\\n👤 CONTACT INFORMATION\\n10) Customer name: [value]\\n11) Contact person: [value]\\n12) Contact number: [value]\\n13) Address: [value]\\n14) Salesperson: [value]\\n15) Project title: [value]\\n\\nIf anything above is incorrect, please tell me what to change.\\nIf everything looks correct, please reply 'OK' or 'CONFIRM' to proceed.\"\n\nConfirmation rule:\n- wait for CURRENT message containing:\n  - OK\n  - CONFIRM\n  - YES\n  - CORRECT\n- only then set complete = true\n- if user sends corrections, update fields, revalidate, and resummarize\n\n## STEP 2D: Request Attachments ONLY After Confirmation\n\nOn the same turn where complete becomes true:\n\n\"Great, thank you for confirming.\\n\\nIf you can, please now send photos or a short video showing the issue (for example: damage, leak, installation area).\\n\\nThis is optional but helps our technical team assess faster.\\n\\nAfter you've finished uploading, or if you don't have any, please type 'DONE' so I can submit your complaint.\"\n\nAttachment phase:\n- complete = true\n- end = false\n\nWhen user sends a file:\nReply:\n\"✅ Received your photo/video.\\nSend more photos/videos or type 'DONE' when you have finished.\"\n\nWhen user types:\n- DONE\n- SKIP\n- NO\n- N/A\n\nProceed to final closure.\n\n## STEP 2E: Final Closure\n\nReply:\n\"Thank you very much for sharing all these details and for your patience.\\n\\nYour complaint for delivery order(s) [delivery_order_numbers] has been recorded in our system, and our technical team has been notified.\\n\\nThey will review the information and contact you at [contact_number] for the next steps.\\n\\nWe understand how frustrating this is and truly appreciate you giving us the chance to fix it.\"\n\nSet:\n- end = true\n\nIf user starts a new issue afterwards:\n- treat as NEW complaint and reset\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# OUT-OF-SCOPE AND EXIT\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nYou ONLY handle complaint flows.\n\nIf a message is clearly about:\n- prices\n- promotions\n- order tracking or order status not related to filing a complaint\n- lead time\n- stock enquiry\n- marketing\n- sponsorship\n- purchase requests\n- unrelated customer service issues\n\nYou MUST:\n1. Reply briefly and empathetically that this assistant only handles complaints.\n2. Say they will be transferred back to the main assistant.\n3. Set `\"exit\": true`.\n4. Do NOT advance complaint flow in that turn.\n\nIf user is still working through this complaint:\n- exit = false\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# HUMAN INTERVENTION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSet human_intervention = true ONLY when:\n- user explicitly asks to talk to a human / staff / person\n- OR user shows strong anger or dissatisfaction and clearly wants escalation\n\nWhen human_intervention = true:\n- team = \"complaint\" for complaint-related escalation\n- team = \"customer_service\" for other escalation\n\nWhen human_intervention = false:\n- team = \"\"\n\nhuman_intervention does NOT automatically mean exit = true.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# OUTPUT FORMAT (STRICT – EVERY RESPONSE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nFor EVERY response, output exactly this JSON object:\n\n{\n  \"response\": \"Your WhatsApp message text (use \\\\n for line breaks)\",\n  \"attachments\": [],\n  \"complete\": false,\n  \"end\": false,\n  \"delivery_order_numbers\": \"\",\n  \"selected_do_list\": [],\n  \"do_selection_phase\": true,\n  \"search_customer_name\": \"\",\n  \"search_customer_code\": \"\",\n  \"search_item\": \"\",\n  \"delivery_date_from\": \"\",\n  \"delivery_date_to\": \"\",\n  \"date_of_complaint\": \"\",\n  \"customer_type\": \"\",\n  \"customer_type_other\": \"\",\n  \"within_warranty\": \"\",\n  \"product_type\": \"\",\n  \"product_code\": \"\",\n  \"quantity\": \"\",\n  \"defect_discovered_when\": \"\",\n  \"complaint_type\": \"\",\n  \"defect_description\": \"\",\n  \"customer_name\": \"\",\n  \"contact_person\": \"\",\n  \"contact_number\": \"\",\n  \"address\": \"\",\n  \"sales_person\": \"\",\n  \"project_title\": \"\",\n  \"validation_errors\": [],\n  \"missing_mandatory_fields\": [],\n  \"human_intervention\": false,\n  \"team\": \"\",\n  \"exit\": false\n}\n\nField rules:\n- delivery_order_numbers:\n  - comma-separated string of selected DOs\n  - uses orders.order_number values\n- selected_do_list:\n  - array of strings\n  - contains chosen orders.order_number values\n- do_selection_phase:\n  - true until user has selected at least one DO\n  - false after valid DO selection\n- delivery_date_from / delivery_date_to:\n  - internal format YYYY-MM-DD\n- date_of_complaint / defect_discovered_when:\n  - internal format YYYY-MM-DD\n- complete = true ONLY when:\n  - all mandatory complaint fields are valid,\n  - selected_do_list is not empty,\n  - CURRENT message confirms the summary\n- end = true ONLY after final closure has been sent\n- exit = true ONLY when handing back to main assistant for non-complaint topics\n\nYou MUST always include all keys in every response.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# DECISION LOGIC\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nON EVERY USER MESSAGE:\n\n1. If message is clearly non-complaint:\n   - short empathetic out-of-scope response\n   - exit = true\n   - do not advance complaint state\n\n2. Else if new complaint trigger OR end = true and user describes a new issue:\n   - reset all state\n   - send STEP 1A\n   - do_selection_phase = true\n   - complete = false\n   - end = false\n   - exit = false\n\n3. Else if do_selection_phase = true:\n   - parse customer / item / date range\n   - if incomplete, ask for missing search inputs\n   - if complete, query DB Subagent\n   - list matching orders.order_number options\n   - wait for selection\n   - once selected_do_list has at least one valid order_number, set do_selection_phase = false and move to complaint detail capture\n\n4. Else if do_selection_phase = false and complaint fields are incomplete or invalid:\n   - parse and merge new complaint details\n   - revalidate\n   - send reflection\n   - complete = false\n   - end = false\n\n5. Else if complaint is valid but not yet confirmed:\n   - if summary not shown yet, show summary\n   - else if CURRENT message confirms, set complete = true and request attachments\n   - else if CURRENT message contains corrections, update, revalidate, resummarize\n\n6. Else if in attachment phase (complete = true, end = false):\n   - if user sends files, acknowledge and keep waiting\n   - if user types DONE / SKIP / NO / N/A, send final closure and set end = true\n\nThis agent must be calm, empathetic, strict on sequence, and database-grounded for delivery order selection."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        56,
+        72
+      ],
+      "id": "1af76793-37cb-432c-a987-bbfdf2400f9b",
+      "name": "Complaint Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b0c14d83-5119-4111-b5f2-ab652e048852",
+              "leftValue": "={{ $json.complete }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "b150ff1e-5a5f-4a8e-8144-5ecda4014035",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.system_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        72
+      ],
+      "id": "358d732a-c885-4656-ba2a-557a9e22eafc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "UPDATE_CONTACT",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "customFields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "complaint_id": "={{ $json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "complaint_id",
+              "displayName": "Complaint ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_type",
+              "displayName": "User Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "end_user",
+                  "value": "end_user"
+                },
+                {
+                  "name": "dealer",
+                  "value": "dealer"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "enquiry_type",
+              "displayName": "Enquiry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "General Enquiries",
+                  "value": "General Enquiries"
+                },
+                {
+                  "name": "Marketing Form",
+                  "value": "Marketing Form"
+                },
+                {
+                  "name": "Incoming Stock",
+                  "value": "Incoming Stock"
+                },
+                {
+                  "name": "Chat Analysis",
+                  "value": "Chat Analysis"
+                },
+                {
+                  "name": "Order Enquiries",
+                  "value": "Order Enquiries"
+                },
+                {
+                  "name": "Purchase Request / Sponsorship Form",
+                  "value": "Purchase Request / Sponsorship Form"
+                },
+                {
+                  "name": "Project Stock Inquiries",
+                  "value": "Project Stock Inquiries"
+                },
+                {
+                  "name": "Project Complaint",
+                  "value": "Project Complaint"
+                }
+              ],
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "34ba58fd-d263-4680-bb86-25b66f325abe",
+      "name": "Update a Contact",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b50d293-0c56-4e59-8cfd-0ab2ebfbd62d",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.system_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b9dd0593-b130-4131-b187-75d169ab91b8",
+              "leftValue": "={{ $('When Executed by Another Workflow').item.json.tags }}",
+              "rightValue": "upload_attachment",
+              "operator": {
+                "type": "array",
+                "operation": "notContains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        360
+      ],
+      "id": "4a3332c7-50fb-4c18-b530-742e96d5eac5",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  \"output\": $('output_exchange').first().json\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        72
+      ],
+      "id": "b013b1dd-a5bc-47b0-b6f3-31647127c206",
+      "name": "analyze_document_output_parser13"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Single item\nreturn {\n  json: {\n    output: `File uploaded successfully. After you've finished uploading (or if you don't have anymore), please type 'DONE' so I can submit your purchase request / sponsorship form.`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        316
+      ],
+      "id": "0153cf20-a2a1-4dbe-ae0d-267ea6df960f",
+      "name": "analyze_document_output_parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0a8c5649-34a8-4e60-8163-e81cd795d00c",
+              "leftValue": "={{ $json.message.toLowerCase() }}",
+              "rightValue": "done",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        120,
+        508
+      ],
+      "id": "7962ea30-1d4b-4404-ae82-aad45ff5aeef",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "UPDATE_CONTACT",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "customFields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "complaint_id": "={{ null }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "complaint_id",
+              "displayName": "Complaint ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_type",
+              "displayName": "User Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "end_user",
+                  "value": "end_user"
+                },
+                {
+                  "name": "dealer",
+                  "value": "dealer"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "enquiry_type",
+              "displayName": "Enquiry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "General Enquiries",
+                  "value": "General Enquiries"
+                },
+                {
+                  "name": "Marketing Form",
+                  "value": "Marketing Form"
+                },
+                {
+                  "name": "Incoming Stock",
+                  "value": "Incoming Stock"
+                },
+                {
+                  "name": "Chat Analysis",
+                  "value": "Chat Analysis"
+                },
+                {
+                  "name": "Order Enquiries",
+                  "value": "Order Enquiries"
+                },
+                {
+                  "name": "Purchase Request / Sponsorship Form",
+                  "value": "Purchase Request / Sponsorship Form"
+                },
+                {
+                  "name": "Project Stock Inquiries",
+                  "value": "Project Stock Inquiries"
+                },
+                {
+                  "name": "Project Complaint",
+                  "value": "Project Complaint"
+                }
+              ],
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        464,
+        700
+      ],
+      "id": "dae2828b-c893-4e0e-a865-67de2b885c1d",
+      "name": "Update a Contact1",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let output;\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match => match.replace(/```json?|\\```/g, ''));\n\n  const idx = raw.indexOf('{');\n\n  if (idx === -1) {\n    output = { response: raw };\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output = JSON.parse(cleanSlice);\n  }\n}\noutput.contact_id = $('When Executed by Another Workflow').first().json.contact_id.toString()\noutput.space_id = \"364817\"\n\nif (output.complete && $('When Executed by Another Workflow').first().json.complaint_id == null) {\n  output.human_intervention = false\n  output.team = 'technical'\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        72
+      ],
+      "id": "905c4e4d-5ca3-43a7-a459-1c791e86e4fd",
+      "name": "output_exchange"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/complaints-management/complaints",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.toJsonString() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        912,
+        0
+      ],
+      "id": "08ff7fdb-f497-47fe-b633-731cd4862d98",
+      "name": "complaint-create"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Single item\nreturn {\n  json: {\n    output: `File failed to upload. Please make sure you are uploading a image, video or an attachment, please type 'DONE' if you want to access other features or file a new purchase request / sponsorship form.`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        508
+      ],
+      "id": "c211a6d2-58cc-4278-a072-a872c691bc48",
+      "name": "analyze_document_output_parser2"
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "comment": "=📦 Complaint Alert: A complaint has been created\n\nYou can review the complaint details at:\nhttps://fe-sorento.foundryx.my/complaint-management/complaints/{{ $('When Executed by Another Workflow').item.json.system_id }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        912,
+        700
+      ],
+      "id": "c120625d-7602-49c7-8dfe-4968bdacd32e",
+      "name": "Add a Comment",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "operation": "ADD_TAGS",
+        "contactId": "={{ $json.contactId }}",
+        "tags": [
+          "upload_attachment"
+        ]
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "d53ff122-1538-42bb-bb63-c11e1aeb1327",
+      "name": "upload_attachment_tag",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "CONTACTS",
+        "contactId": "={{ $json.contactId }}",
+        "tagIds": "={{ [\"upload_attachment\"] }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        688,
+        700
+      ],
+      "id": "a18191e4-e525-42db-9ceb-6df8de0afde5",
+      "name": "remove-upload-attachment-tag",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/entity-attachments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entity_type\": \"complaint\",\n  \"entity_id\": \"{{ $('When Executed by Another Workflow').item.json.system_id }}\",\n  \"file_url\": \"{{ $('When Executed by Another Workflow').item.json.attachment_url }}\",\n  \"file_name\": \"{{ $('When Executed by Another Workflow').item.json.filename }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        464,
+        412
+      ],
+      "id": "36a4ad95-70c4-46e7-8463-454a1948a56c",
+      "name": "entity-attachments-create",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  \"output\": `Received all your uploads and notified the technical team. Thanks for your input! You can view the stock inquiry at ${$json.view_url}`\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        700
+      ],
+      "id": "5801b2e3-ae6f-463b-8f98-25cbab5c94a5",
+      "name": "analyze_document_output_parser1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/view-link",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "***REMOVED-CRM-API-KEY***"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entity_type\": \"complaint\",\n  \"entity_id\": \"{{ $('When Executed by Another Workflow').item.json.system_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1136,
+        700
+      ],
+      "id": "0d7ea20e-e7a7-486f-abe4-4196d40c4695",
+      "name": "view-link-get"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        296
+      ],
+      "id": "9201a301-f4ae-4fb5-9340-006f68aa7467",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PLf5z4VyNW_jQ_zg88nAm",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PLf5z4VyNW_jQ_zg88nAm",
+          "cachedResultName": "sub-sql-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query_description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query_description', ``, 'string') }}",
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query_description",
+              "displayName": "query_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "access_levels",
+              "displayName": "access_levels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        296
+      ],
+      "id": "3f22547b-293e-474d-b1ec-6a8750986e78",
+      "name": "Call 'sub-sql-agent'"
+    }
+  ],
+  "connections": {
+    "Postgres Chat Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Complaint Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complaint Agent": {
+      "main": [
+        [
+          {
+            "node": "output_exchange",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "complaint-create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyze_document_output_parser13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Complaint Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a Contact": {
+      "main": [
+        [
+          {
+            "node": "upload_attachment_tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "entity-attachments-create",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a Contact1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a Contact1": {
+      "main": [
+        [
+          {
+            "node": "remove-upload-attachment-tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output_exchange": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "complaint-create": {
+      "main": [
+        [
+          {
+            "node": "Update a Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add a Comment": {
+      "main": [
+        [
+          {
+            "node": "view-link-get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload_attachment_tag": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove-upload-attachment-tag": {
+      "main": [
+        [
+          {
+            "node": "Add a Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "entity-attachments-create": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "analyze_document_output_parser2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "view-link-get": {
+      "main": [
+        [
+          {
+            "node": "analyze_document_output_parser1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Complaint Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'sub-sql-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "Complaint Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "my tesla frunk is not working",
+          "contact_id": 386900418,
+          "tags": []
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "5fdfb807-6323-490e-8a17-ee7818963b99",
+  "activeVersionId": "5fdfb807-6323-490e-8a17-ee7818963b99",
+  "versionCounter": 105,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:59:19.446Z",
+      "createdAt": "2026-02-03T13:59:19.446Z",
+      "role": "workflow:owner",
+      "workflowId": "NjhFJKSTRomIWwnbP-FMF",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}

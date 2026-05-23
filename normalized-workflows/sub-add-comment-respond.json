@@ -1,0 +1,106 @@
+{
+  "updatedAt": "2026-02-03T13:56:39.542Z",
+  "createdAt": "2026-02-03T13:56:39.542Z",
+  "id": "2l8egTLJbyGOPvG-DbtDX",
+  "name": "sub-add-comment-respond",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "user_id",
+              "type": "any"
+            },
+            {
+              "name": "comment",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "606ec888-4667-4aa8-904f-725250b24fc8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "COMMENTS",
+        "contactId": "={{ $json.contact_id }}",
+        "comment": "={{ '{' + '{@user.' + $json.user_id + '}' + '}' }} \n{{ $json.comment }}"
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a0b67594-c972-4f20-8cba-f81193d8716e",
+      "name": "Add a Comment",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Add a Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3b9a75c8-92bf-46e6-8cc0-e8201223bab5",
+  "activeVersionId": "3b9a75c8-92bf-46e6-8cc0-e8201223bab5",
+  "versionCounter": 7,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T13:56:39.542Z",
+      "createdAt": "2026-02-03T13:56:39.542Z",
+      "role": "workflow:owner",
+      "workflowId": "2l8egTLJbyGOPvG-DbtDX",
+      "projectId": "0HJOI5FmkQeIVfH8",
+      "project": {
+        "updatedAt": "2026-02-03T13:27:34.210Z",
+        "createdAt": "2026-02-03T13:26:47.249Z",
+        "id": "0HJOI5FmkQeIVfH8",
+        "name": "Teh Jayson <jayson@foundryx.my>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+      }
+    }
+  ]
+}
