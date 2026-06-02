@@ -52,8 +52,15 @@ while [ $# -gt 0 ]; do
     --preserve-active) PRESERVE_ACTIVE=1; shift;;        # re-activate whatever was active before import
     --all)      while IFS= read -r f; do FILES+=("$f"); done < <(ls "$NORM_DIR"/*.json); shift;;
     --changed)  CHANGED_USED=1
-                # diff base: ORIG_HEAD (set by `git pull`) else reflog HEAD@{1}
-                DIFF_BASE="$(git -C "$REPO_ROOT" rev-parse --verify -q ORIG_HEAD || git -C "$REPO_ROOT" rev-parse --verify -q 'HEAD@{1}')"
+                # diff base preference: explicit DEPLOY_DIFF_BASE (CI passes the push's
+                # before-SHA) -> ORIG_HEAD (set by git pull) -> reflog HEAD@{1} -> HEAD~1.
+                DIFF_BASE=""
+                if [ -n "${DEPLOY_DIFF_BASE:-}" ] && git -C "$REPO_ROOT" rev-parse --verify -q "${DEPLOY_DIFF_BASE}^{commit}" >/dev/null; then
+                  DIFF_BASE="$DEPLOY_DIFF_BASE"
+                else
+                  DIFF_BASE="$(git -C "$REPO_ROOT" rev-parse --verify -q ORIG_HEAD || git -C "$REPO_ROOT" rev-parse --verify -q 'HEAD@{1}' || git -C "$REPO_ROOT" rev-parse --verify -q 'HEAD~1')"
+                fi
+                echo ">> --changed diff base: ${DIFF_BASE:-<none>}"
                 while IFS= read -r f; do [ -n "$f" ] && FILES+=("$NORM_DIR/$(basename "$f")"); done \
                    < <(git -C "$REPO_ROOT" diff --name-only "$DIFF_BASE" HEAD -- normalized-workflows/ 2>/dev/null | xargs -n1 basename 2>/dev/null); shift;;
     *)          FILES+=("$1"); shift;;

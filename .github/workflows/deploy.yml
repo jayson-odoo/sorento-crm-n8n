@@ -35,20 +35,25 @@ jobs:
           PORT: ${{ secrets.PROD_SSH_PORT }}            # optional; defaults to 22 below
           REPO_DIR: ${{ vars.PROD_REPO_DIR }}           # path to the n8n-workflows-init checkout on prod
           COMPOSE_DIR: ${{ vars.PROD_COMPOSE_DIR }}     # dir containing docker-compose.yml on prod
+          BEFORE: ${{ github.event.before }}            # commit before this push; '' on workflow_dispatch
         run: |
           set -euo pipefail
           PORT="${PORT:-22}"
-          # Remote command prefix carries the paths; heredoc body is sent verbatim to remote bash.
+          # zeros = new branch / no parent -> let deploy.sh fall back
+          case "$BEFORE" in ''|0000000000000000000000000000000000000000) BEFORE="" ;; esac
+          # Remote command prefix carries paths + diff base; heredoc body sent verbatim to remote bash.
           ssh -i ~/.ssh/id_deploy -p "$PORT" -o StrictHostKeyChecking=yes \
             "$USER@$HOST" \
-            "REPO_DIR='$REPO_DIR' COMPOSE_DIR='$COMPOSE_DIR' bash -s" <<'REMOTE'
+            "REPO_DIR='$REPO_DIR' COMPOSE_DIR='$COMPOSE_DIR' BEFORE='$BEFORE' bash -s" <<'REMOTE'
           set -euo pipefail
           cd "$REPO_DIR"
           echo ">> updating repo on prod ($REPO_DIR)"
           git fetch --quiet origin main
           git checkout --quiet main
-          git pull --ff-only origin main          # sets ORIG_HEAD -> deploy.sh --changed diffs against it
+          OLD_LOCAL="$(git rev-parse HEAD)"            # fallback base if push 'before' unavailable
+          git pull --ff-only origin main
           echo ">> running deploy.sh"
           COMPOSE_DIR="${COMPOSE_DIR:-$(cd .. && pwd)}" \
+            DEPLOY_DIFF_BASE="${BEFORE:-$OLD_LOCAL}" \
             YES=1 ./scripts/deploy.sh --changed --preserve-active
           REMOTE
