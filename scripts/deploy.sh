@@ -1,24 +1,31 @@
 #!/usr/bin/env bash
 #
-# deploy.sh — backup-first import of workflow JSON into PROD n8n (run on prod).
+# deploy.sh — backup-first deploy of workflow JSON into PROD n8n (run on prod).
 #
-# Pipeline: confirm -> backup prod -> credential-id sanity report -> import by id
-#           -> optional activate -> restart -> tail logs.
-# Import upserts by internal `id`, so matching IDs update in place and keep all
-# cross-workflow executeWorkflow references intact.
+# Pipeline: confirm -> backup prod -> credential remap -> PUT via n8n public API
+#           -> (re)activate via API -> done.
+# Uses the n8n REST API (PUT /workflows/{id} then /activate) instead of the CLI
+# `import:workflow`. The API update path creates a proper workflow_history row,
+# so activation works — CLI import does not, and leaves workflows unpublishable
+# ("Version not found"). The API body is only {name,nodes,connections,settings};
+# version/active/publish fields are never sent, so cross-instance version FKs
+# can't break. Workflow `id` is matched in place, preserving executeWorkflow refs.
 #
 # Usage (run AFTER `git pull` on prod):
 #   ./scripts/deploy.sh <file.json> [<file.json>...]   # deploy these files
 #   ./scripts/deploy.sh --all                          # deploy every normalized file
 #   ./scripts/deploy.sh --changed                      # files changed in last git pull
-#   ./scripts/deploy.sh --activate <ID,ID> <file...>   # also (re)activate these ids
+#   ./scripts/deploy.sh --preserve-active <files>      # re-publish flows active before
+#   ./scripts/deploy.sh --activate <ID,ID> <files>     # also (re)activate these ids
 #
+# Required env:
+#   N8N_API_KEY    n8n public API key (Settings -> n8n API). NO default.
 # Env overrides:
-#   COMPOSE_DIR    dir with docker-compose.yml   (default: repo parent)
-#   N8N_SERVICE    editor service               (default: n8n-main)
-#   WORKER_SERVICE worker service               (default: n8n-worker)
-#   PG_SERVICE     postgres service             (default: postgres)
-#   PG_USER/PG_DB  for cred check               (default: n8n_user / n8n)
+#   N8N_API_BASE   API base URL                (default: http://localhost:5678/api/v1)
+#   COMPOSE_DIR    dir with docker-compose.yml (default: repo parent)
+#   N8N_SERVICE    editor service              (default: n8n-main)  [backup only]
+#   PG_SERVICE     postgres service            (default: postgres)
+#   PG_USER/PG_DB  for cred dump + active snap (default: n8n_user / n8n)
 #   YES=1          skip interactive confirmations
 #
 set -euo pipefail
@@ -28,11 +35,19 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 NORM_DIR="$REPO_ROOT/normalized-workflows"
 COMPOSE_DIR="${COMPOSE_DIR:-$(cd "$REPO_ROOT/.." && pwd)}"
 N8N_SERVICE="${N8N_SERVICE:-n8n-main}"
-WORKER_SERVICE="${WORKER_SERVICE:-n8n-worker}"
 PG_SERVICE="${PG_SERVICE:-postgres}"
 PG_USER="${PG_USER:-n8n_user}"
 PG_DB="${PG_DB:-n8n}"
+N8N_API_BASE="${N8N_API_BASE:-http://localhost:5678/api/v1}"
+N8N_API_KEY="${N8N_API_KEY:-}"
 BACKUP_DIR="$REPO_ROOT/backups"
+
+# n8n API helpers. api_put: update workflow body; api_activate: publish.
+api_call() { # METHOD URL [datafile] -> prints http_code; body in $API_RESP
+  local method="$1" url="$2" data="${3:-}" args=(-sS -m 60 -o "$API_RESP" -w '%{http_code}' -X "$method" "$url" -H "X-N8N-API-KEY: $N8N_API_KEY")
+  [ -n "$data" ] && args+=(-H "Content-Type: application/json" --data @"$data")
+  curl "${args[@]}"
+}
 
 confirm() { [ "${YES:-0}" = "1" ] && return 0; read -rp "$1 [y/N] " a; [ "$a" = "y" ] || [ "$a" = "Y" ]; }
 # risky prompts (credential safety): non-interactive (CI) FAILS CLOSED unless FORCE=1.
@@ -79,6 +94,11 @@ echo ">> compose dir : $COMPOSE_DIR"
 echo ">> targets (${#FILES[@]}):"
 for f in "${FILES[@]}"; do echo "     $f"; done
 [ -n "$ACTIVATE_IDS" ] && echo ">> will activate: $ACTIVATE_IDS"
+if [ -z "$N8N_API_KEY" ]; then
+  echo "!! N8N_API_KEY not set — required for API deploy. Get one in n8n UI: Settings -> n8n API." >&2
+  exit 1
+fi
+API_RESP="$(mktemp)"
 confirm "Proceed?" || { echo "aborted."; exit 1; }
 
 cd "$COMPOSE_DIR"
@@ -130,67 +150,67 @@ else
 fi
 confirm "Continue to import?" || { echo "aborted (backup kept)."; exit 1; }
 
-# ---- 3. import (upsert by id) ----------------------------------------------
-# Per-file tolerant: one failure is recorded, not fatal, so the rest still deploy.
-echo; echo ">> [3/5] importing ..."
+# ---- 3. update via API (PUT) -----------------------------------------------
+# PUT /workflows/{id} with {name,nodes,connections,settings}. Creates a new
+# workflow_history version in place. Per-file tolerant. Records id->file map.
+echo; echo ">> [3/4] updating workflows via API ($N8N_API_BASE) ..."
 IMPORT_FAILED=()
+declare -A DEPLOYED_BY_ID=()
 for f in "${DEPLOY_FILES[@]}"; do
   base="$(basename "$f")"
-  docker compose cp "$f" "$N8N_SERVICE:/tmp/$base"
-  if docker compose exec -T "$N8N_SERVICE" n8n import:workflow --input="/tmp/$base"; then
-    echo "   imported $base"
+  wid="$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('id',''))" "$f")"
+  body="$(mktemp)"
+  python3 - "$f" > "$body" <<'PY'
+import json,sys
+wf=json.load(open(sys.argv[1]))
+print(json.dumps({"name":wf["name"],"nodes":wf["nodes"],
+                  "connections":wf.get("connections",{}),"settings":wf.get("settings",{})}))
+PY
+  code="$(api_call PUT "$N8N_API_BASE/workflows/$wid" "$body")"
+  if [ "$code" = "200" ]; then
+    echo "   updated $base ($wid)"; DEPLOYED_BY_ID["$wid"]="$base"
   else
-    echo "   !! FAILED to import $base"
+    echo "   !! FAILED ($code) $base ($wid): $(head -c 200 "$API_RESP")"
     IMPORT_FAILED+=("$base")
   fi
+  rm -f "$body"
 done
-if [ ${#IMPORT_FAILED[@]} -gt 0 ]; then
-  echo "   !! ${#IMPORT_FAILED[@]} import(s) failed: ${IMPORT_FAILED[*]}"
-fi
+[ ${#IMPORT_FAILED[@]} -gt 0 ] && echo "   !! ${#IMPORT_FAILED[@]} update(s) failed: ${IMPORT_FAILED[*]}"
 
-# ---- 4. activate ------------------------------------------------------------
-# We imported the deployed workflows INACTIVE (sanitizer sets active=false to avoid
-# the publish_history FK). So only re-activate the ones WE deactivated that were
-# active before = (deployed ids ∩ active-before). Untouched workflows keep their
-# state naturally. Explicit --activate ids are always honored too.
-DEPLOYED_IDS="$(for f in "${FILES[@]}"; do
-  python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('id',''))" "$f" 2>/dev/null
-done)"
+# ---- 4. (re)activate via API -----------------------------------------------
+# Publish the new version for workflows that were active before (deployed ∩
+# active-before) plus any explicit --activate ids. activate uses current state,
+# so it republishes the just-PUT version. Untouched workflows keep their state.
 ACT_SET=""
 [ -n "$ACTIVATE_IDS" ] && ACT_SET="$(echo "$ACTIVATE_IDS" | tr ',' '\n')"
 if [ "$PRESERVE_ACTIVE" = "1" ]; then
-  # intersection of active-before and deployed ids
   inter="$(comm -12 <(echo "$ACTIVE_BEFORE" | sed '/^$/d' | sort -u) \
-                    <(echo "$DEPLOYED_IDS" | sed '/^$/d' | sort -u))"
+                    <(printf '%s\n' "${!DEPLOYED_BY_ID[@]}" | sed '/^$/d' | sort -u))"
   ACT_SET="$(printf '%s\n%s\n' "$ACT_SET" "$inter")"
 fi
 ACT_SET="$(echo "$ACT_SET" | sed '/^$/d' | sort -u)"
+ACTIVATE_FAILED=()
 if [ -n "$ACT_SET" ]; then
-  echo; echo ">> [4/5] (re)activating $(echo "$ACT_SET" | wc -l | tr -d ' ') workflow(s) ..."
+  echo; echo ">> [4/4] (re)activating $(echo "$ACT_SET" | wc -l | tr -d ' ') workflow(s) via API ..."
   while IFS= read -r id; do
     [ -z "$id" ] && continue
-    docker compose exec -T "$N8N_SERVICE" n8n update:workflow --id="$id" --active=true >/dev/null \
-      && echo "   activated $id" || echo "   !! failed to activate $id"
+    code="$(api_call POST "$N8N_API_BASE/workflows/$id/activate")"
+    if [ "$code" = "200" ]; then echo "   activated $id"
+    else echo "   !! FAILED to activate ($code) $id: $(head -c 160 "$API_RESP")"; ACTIVATE_FAILED+=("$id"); fi
   done <<< "$ACT_SET"
 else
-  echo; echo ">> [4/5] no activation requested (use --preserve-active or --activate); imported state applies."
+  echo; echo ">> [4/4] no activation requested (use --preserve-active or --activate)."
 fi
 
-# ---- 5. restart + tail ------------------------------------------------------
-echo; echo ">> [5/5] restarting $N8N_SERVICE $WORKER_SERVICE ..."
-docker compose restart "$N8N_SERVICE" "$WORKER_SERVICE"
 echo
 echo "DONE. Backup: $BACKUP_DIR/prod-$STAMP.tgz"
-echo "Rollback:  extract that tgz and re-run import on the old files."
+echo "Rollback:  extract that tgz; PUT the old bodies back via the same API."
 
 RC=0
 if [ "${IMPORT_FAILED:+x}" = "x" ] && [ ${#IMPORT_FAILED[@]} -gt 0 ]; then
-  echo "!! deploy finished WITH FAILURES: ${IMPORT_FAILED[*]}"; RC=1
+  echo "!! deploy finished WITH UPDATE FAILURES: ${IMPORT_FAILED[*]}"; RC=1
 fi
-
-if [ "${YES:-0}" = "1" ]; then
-  echo "Recent logs:"; docker compose logs --tail=60 "$N8N_SERVICE"   # non-interactive (CI): no follow
-  exit $RC
-else
-  echo "Tailing logs (Ctrl-C to stop):"; docker compose logs -f --tail=40 "$N8N_SERVICE"
+if [ "${ACTIVATE_FAILED:+x}" = "x" ] && [ ${#ACTIVATE_FAILED[@]} -gt 0 ]; then
+  echo "!! activation FAILURES (flip these Active in UI): ${ACTIVATE_FAILED[*]}"; RC=1
 fi
+exit $RC

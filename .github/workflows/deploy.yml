@@ -36,15 +36,16 @@ jobs:
           REPO_DIR: ${{ vars.PROD_REPO_DIR }}           # path to the n8n-workflows-init checkout on prod
           COMPOSE_DIR: ${{ vars.PROD_COMPOSE_DIR }}     # dir containing docker-compose.yml on prod
           BEFORE: ${{ github.event.before }}            # commit before this push; '' on workflow_dispatch
+          API_KEY: ${{ secrets.N8N_API_KEY }}           # n8n public API key (Settings -> n8n API)
         run: |
           set -euo pipefail
           PORT="${PORT:-22}"
           # zeros = new branch / no parent -> let deploy.sh fall back
           case "$BEFORE" in ''|0000000000000000000000000000000000000000) BEFORE="" ;; esac
-          # Remote command prefix carries paths + diff base; heredoc body sent verbatim to remote bash.
+          # Remote command prefix carries paths + diff base + api key; heredoc body sent verbatim to remote bash.
           ssh -i ~/.ssh/id_deploy -p "$PORT" -o StrictHostKeyChecking=yes \
             "$USER@$HOST" \
-            "REPO_DIR='$REPO_DIR' COMPOSE_DIR='$COMPOSE_DIR' BEFORE='$BEFORE' bash -s" <<'REMOTE'
+            "REPO_DIR='$REPO_DIR' COMPOSE_DIR='$COMPOSE_DIR' BEFORE='$BEFORE' N8N_API_KEY='$API_KEY' bash -s" <<'REMOTE'
           set -euo pipefail
           cd "$REPO_DIR"
           echo ">> updating repo on prod ($REPO_DIR)"
@@ -55,5 +56,6 @@ jobs:
           echo ">> running deploy.sh"
           COMPOSE_DIR="${COMPOSE_DIR:-$(cd .. && pwd)}" \
             DEPLOY_DIFF_BASE="${BEFORE:-$OLD_LOCAL}" \
+            N8N_API_KEY="$N8N_API_KEY" \
             YES=1 ./scripts/deploy.sh --changed --preserve-active
           REMOTE
