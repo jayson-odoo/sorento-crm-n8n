@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-21T15:57:38.263Z",
+  "updatedAt": "2026-05-29T16:32:02.672Z",
   "createdAt": "2026-04-23T12:56:29.205Z",
   "id": "tWP33QOFT7SxThfT",
   "name": "sub-get-rag",
@@ -20,6 +20,9 @@
             {
               "name": "limit",
               "type": "number"
+            },
+            {
+              "name": "domain"
             }
           ]
         }
@@ -54,17 +57,17 @@
       "name": "HTTP Request",
       "credentials": {
         "openAiApi": {
-          "id": "o130We0PEJ77Z1lH",
-          "name": "sorento-openai"
+          "id": "jNno3DjFl343L2Hb",
+          "name": "local-openai-api-key"
         }
       }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT \n  id, \n  source_id, \n  source_type, \n  similarity\nFROM (\n  SELECT DISTINCT ON (source_id)\n    id,\n    source_id,\n    source_type,\n    1 - (embedding <=> $1::vector) AS similarity,\n    embedding <=> $1::vector AS distance\n  FROM embedding_chunks\n  WHERE source_type = $2 and is_current = true\n  ORDER BY source_id, embedding <=> $1::vector ASC\n) AS unique_chunks\nORDER BY distance ASC\nLIMIT $3;",
+        "query": "SELECT \n  id, \n  source_id, \n  source_type, \n  similarity\nFROM (\n  SELECT DISTINCT ON (source_id)\n    id,\n    source_id,\n    source_type,\n    1 - (embedding <=> $1::vector) AS similarity,\n    embedding <=> $1::vector AS distance\n  FROM embedding_chunks\n  WHERE source_type = $2 AND is_current = true \n  AND source_id LIKE '%' || $4 || '%'\n  ORDER BY source_id, embedding <=> $1::vector ASC\n) AS unique_chunks\nORDER BY distance ASC\nLIMIT $3;",
         "options": {
-          "queryReplacement": "={{ $json.vector_text }},{{ $json.source_type }},{{ $json.limit }}"
+          "queryReplacement": "={{ $json.vector_text }},{{ $json.source_type }},{{ $json.limit }}, {{ $json.domain }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
@@ -77,14 +80,14 @@
       "name": "Execute a SQL query",
       "credentials": {
         "postgres": {
-          "id": "ETJL5KoaA1UpkDip",
-          "name": "sorento-crm-db"
+          "id": "655hi8BQkJofoyRP",
+          "name": "sorento-ai-automation"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const embedding = $json.data[0].embedding;\n\nreturn [\n  {\n    json: {\n      vector_text: `[${embedding.join(',')}]`,\n      source_type: $('When Executed by Another Workflow').first().json.source_type,\n      limit: $('When Executed by Another Workflow').first().json.limit\n    }\n  }\n];\n"
+        "jsCode": "const embedding = $json.data[0].embedding;\n\nreturn [\n  {\n    json: {\n      vector_text: `[${embedding.join(',')}]`,\n      source_type: $('When Executed by Another Workflow').first().json.source_type,\n      limit: $('When Executed by Another Workflow').first().json.limit,\n      domain: $('When Executed by Another Workflow').first().json.domain\n    }\n  }\n];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -160,16 +163,15 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {
     "When Executed by Another Workflow": [
       {
         "json": {
-          "message": "intent_hint: stock_inquiry\ndomain_hint: purchasing\nuser_goal: file a stock inquiry",
+          "message": "intent_hint: incoming_stock_enquiry\ndomain_hint: incoming_stock\nuser_goal: know the container number for the next new incoming",
           "source_type": "mcp_tool",
-          "limit": 5
+          "limit": 5,
+          "domain": "incoming_stock"
         },
         "pairedItem": {
           "item": 0
@@ -177,27 +179,27 @@
       }
     ]
   },
-  "versionId": "cea4c7a7-be65-40a5-8c0b-3a287b8777d4",
-  "activeVersionId": "cea4c7a7-be65-40a5-8c0b-3a287b8777d4",
-  "versionCounter": 44,
+  "versionId": "48dff36e-1aed-4dc4-843c-8e6880f16091",
+  "activeVersionId": "48dff36e-1aed-4dc4-843c-8e6880f16091",
+  "versionCounter": 26,
   "triggerCount": 0,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-04-23T12:56:29.205Z",
-      "createdAt": "2026-04-23T12:56:29.205Z",
+      "updatedAt": "2026-05-23T08:20:18.662Z",
+      "createdAt": "2026-05-23T08:20:18.662Z",
       "role": "workflow:owner",
       "workflowId": "tWP33QOFT7SxThfT",
-      "projectId": "0HJOI5FmkQeIVfH8",
+      "projectId": "7Hsu92Gikf4hBFZp",
       "project": {
-        "updatedAt": "2026-02-03T13:27:34.210Z",
-        "createdAt": "2026-02-03T13:26:47.249Z",
-        "id": "0HJOI5FmkQeIVfH8",
+        "updatedAt": "2026-05-23T09:08:51.908Z",
+        "createdAt": "2026-05-23T08:30:38.008Z",
+        "id": "7Hsu92Gikf4hBFZp",
         "name": "Teh Jayson <jayson@foundryx.my>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+        "creatorId": "24eeb3d0-ff0f-484e-ad8c-b9f1e9ef29c8"
       }
     }
   ]

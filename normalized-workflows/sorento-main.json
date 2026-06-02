@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T15:58:40.505Z",
+  "updatedAt": "2026-06-02T09:21:10.093Z",
   "createdAt": "2026-04-22T16:51:56.622Z",
   "id": "NwMOBEQ1NW7LVky5",
   "name": "sorento-main",
@@ -7,29 +7,6 @@
   "active": true,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {
-        "messageType": [
-          "text",
-          "attachment"
-        ]
-      },
-      "type": "@respond-io/n8n-nodes-respond-io.respondioTrigger",
-      "typeVersion": 1,
-      "position": [
-        -1120,
-        2208
-      ],
-      "id": "35d003eb-6932-4109-8a4e-36bd9f22b18f",
-      "name": "Respond.io Trigger",
-      "webhookId": "a1da9407-86f7-4a09-9920-6dd1b9d412f2",
-      "credentials": {
-        "respondIoApi": {
-          "id": "OiS59QkzpKfKSdaa",
-          "name": "sorento-api"
-        }
-      }
-    },
     {
       "parameters": {
         "httpMethod": "POST",
@@ -40,7 +17,7 @@
       "typeVersion": 2.1,
       "position": [
         -1344,
-        2016
+        2000
       ],
       "id": "e7eea71f-1acd-46c8-9a8a-721635cca1eb",
       "name": "Webhook",
@@ -54,7 +31,7 @@
       "typeVersion": 2,
       "position": [
         -1120,
-        2016
+        1904
       ],
       "id": "374d6d82-99c0-4558-82bf-bfceead5239d",
       "name": "webhook-to-respond-convert"
@@ -63,20 +40,21 @@
       "parameters": {
         "operation": "incr",
         "key": "=\"{{ $('If1').first().json.id }}\"",
-        "expire": true
+        "expire": true,
+        "ttl": 1
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -224,
-        2112
+        0,
+        2000
       ],
       "id": "93fd0569-d979-4bda-bf3b-56914db982f3",
       "name": "Redis1",
       "credentials": {
         "redis": {
-          "id": "H5w6o7tptzTPMVdy",
-          "name": "sorento-redis"
+          "id": "wLbY6SAxzfqrLCGy",
+          "name": "local-redis-account"
         }
       }
     },
@@ -93,7 +71,7 @@
             {
               "id": "e116235b-9c52-4b4a-80ea-9c7478e3e3f9",
               "leftValue": "={{ $json[$json.keys()[0]] }}",
-              "rightValue": 10,
+              "rightValue": 30,
               "operator": {
                 "type": "number",
                 "operation": "lte"
@@ -117,8 +95,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        0,
-        2112
+        224,
+        2000
       ],
       "id": "cfad4b98-ad48-47d0-bbe2-56fa9c98a4cb",
       "name": "If"
@@ -131,7 +109,7 @@
       "typeVersion": 2,
       "position": [
         -896,
-        2112
+        2000
       ],
       "id": "8dba69ed-907f-46e1-bfc3-7b4bbf2f06cb",
       "name": "consolidate"
@@ -181,6 +159,36 @@
               "canBeUsedToMatch": true,
               "type": "string",
               "removed": true
+            },
+            {
+              "id": "input_message",
+              "displayName": "input_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "test_run_id",
+              "displayName": "test_run_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -191,8 +199,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        224,
-        2208
+        448,
+        2096
       ],
       "id": "0204df88-6338-4f49-9808-034e1e7e52ca",
       "name": "Call 'sorento-sub-respond-sendmsg-respond'"
@@ -234,10 +242,11 @@
       "typeVersion": 1.3,
       "position": [
         -672,
-        2112
+        2000
       ],
       "id": "3df9cb52-7b83-4b97-a74d-ef19cd879040",
-      "name": "Call 'sorento-sub-respond-findcontact-respond'"
+      "name": "Call 'sorento-sub-respond-findcontact-respond'",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -258,16 +267,6 @@
                 "operation": "false",
                 "singleValue": true
               }
-            },
-            {
-              "id": "65dd68c8-49e3-4a1b-a4e9-afe29826bec7",
-              "leftValue": "={{ $json.custom_fields.find(x => x.name == \"is_allowed_ai\").value?.toBoolean() }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
             }
           ],
           "combinator": "and"
@@ -278,7 +277,7 @@
       "typeVersion": 2.3,
       "position": [
         -448,
-        2112
+        2000
       ],
       "id": "7940ef86-0b2f-466d-85c2-ab12b15e366a",
       "name": "If1"
@@ -287,36 +286,187 @@
       "parameters": {
         "operation": "push",
         "list": "main-message-list",
-        "messageData": "={{ JSON.stringify($('consolidate').first().json) }}"
+        "messageData": "={{ JSON.stringify($('concat_queue_body').first().json) }}"
       },
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        224,
-        2016
+        448,
+        1904
       ],
       "id": "e8289cb4-9c5f-40ea-acce-64ee5220076a",
       "name": "Redis2",
       "credentials": {
         "redis": {
-          "id": "H5w6o7tptzTPMVdy",
-          "name": "sorento-redis"
+          "id": "wLbY6SAxzfqrLCGy",
+          "name": "local-redis-account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b10899c4-ea15-454d-959a-8a070b84cad8",
+              "leftValue": "={{ $env?.APP_ENV }}",
+              "rightValue": "local",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        1904
+      ],
+      "id": "27a98305-1ecc-4367-b7fe-540ac26c8339",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "9qVyfUxmRQqrpGRMDLRuz",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9qVyfUxmRQqrpGRMDLRuz",
+          "cachedResultName": "sorento-consume-main"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "test": "test",
+            "test_run_id": "={{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+            "started_at": "={{ $('When Executed by Another Workflow').first().json.started_at }}"
+          },
+          "matchingColumns": [
+            "test"
+          ],
+          "schema": [
+            {
+              "id": "test",
+              "displayName": "test",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "test_run_id",
+              "displayName": "test_run_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        1904
+      ],
+      "id": "5371c142-14bf-441f-a77b-492298b243e1",
+      "name": "Call 'sorento-consume-main'"
+    },
+    {
+      "parameters": {
+        "messageType": [
+          "text",
+          "attachment"
+        ]
+      },
+      "type": "@respond-io/n8n-nodes-respond-io.respondioTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        2096
+      ],
+      "id": "66e13331-dcee-46cd-a7ea-f52edee272e5",
+      "name": "Respond.io Trigger",
+      "webhookId": "a1da9407-86f7-4a09-9920-6dd1b9d412f2",
+      "credentials": {
+        "respondIoApi": {
+          "id": "aVOmqMDlDlMjSAmq",
+          "name": "Respond.io account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "body",
+              "type": "object"
+            },
+            {
+              "name": "test_run_id"
+            },
+            {
+              "name": "started_at"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1344,
+        1808
+      ],
+      "id": "fd727d4e-f152-45be-be16-fbf57cf5ba07",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nlet output = {}\n\noutput.message = $('consolidate').first().json\noutput.contact = $('If1').first().json\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        2000
+      ],
+      "id": "450e2f2b-76e9-4c9c-a48c-fcbf66279f96",
+      "name": "concat_queue_body"
     }
   ],
   "connections": {
-    "Respond.io Trigger": {
-      "main": [
-        [
-          {
-            "node": "consolidate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook": {
       "main": [
         [
@@ -394,6 +544,61 @@
       "main": [
         [
           {
+            "node": "concat_queue_body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Call 'sorento-consume-main'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond.io Trigger": {
+      "main": [
+        [
+          {
+            "node": "consolidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "webhook-to-respond-convert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "concat_queue_body": {
+      "main": [
+        [
+          {
             "node": "Redis1",
             "type": "main",
             "index": 0
@@ -407,71 +612,59 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {
     "Webhook": [
       {
         "json": {
           "headers": {
-            "connection": "close",
-            "host": "automate-sorento.foundryx.my",
-            "origin": "https://automate-sorento.foundryx.my",
-            "x-real-ip": "175.136.98.253",
-            "x-forwarded-for": "175.136.98.253",
-            "x-forwarded-proto": "https",
-            "content-length": "679",
-            "user-agent": "Sorento-CRM/1.0.0",
-            "content-type": "application/json"
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "content-type": "application/json",
+            "user-agent": "axios/1.12.0",
+            "content-length": "584",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "host": "localhost:5678",
+            "connection": "close"
           },
           "params": {},
           "query": {},
-          "body": [
-            {
-              "contact": {
-                "id": 437264483,
-                "phone": null,
-                "firstName": "",
-                "lastName": "",
-                "role": "user",
-                "created_at": 1777127407
-              },
+          "body": {
+            "contact": {
+              "id": 437253667,
+              "phone": null,
+              "firstName": "",
+              "lastName": "",
+              "role": "user",
+              "created_at": 1777127407
+            },
+            "message": {
+              "messageId": 1777740082261013,
+              "channelMessageId": null,
+              "contactId": 437264483,
+              "channelId": null,
+              "traffic": "incoming",
+              "timestamp": 1777740082261,
               "message": {
-                "messageId": 1777740082261013,
-                "channelMessageId": null,
-                "contactId": 437264483,
-                "channelId": null,
-                "traffic": "incoming",
-                "timestamp": 1777740082261,
-                "message": {
-                  "type": "text",
-                  "text": "What are the products you have?"
-                }
-              },
-              "channel": {
-                "id": null,
-                "name": "Whatsapp Business",
-                "source": "whatsapp_business",
-                "meta": null,
-                "created_at": 1777127407
-              },
-              "sender": {
-                "source": "contact",
-                "userId": null,
-                "teamId": null,
-                "workflowId": null,
-                "broadcastHistoryId": null
-              },
-              "source": "Contact",
-              "crm": {
-                "business_table": "stock_inquiries",
-                "business_id": "9d69259e-4cb2-4839-81c4-f5be1ced463f",
-                "space_id": "364817"
+                "type": "text",
+                "text": "Hi I would like to file a complaint of Egdewood project, for SRTWC7405-RL"
               }
+            },
+            "channel": {
+              "id": null,
+              "name": "Whatsapp Business",
+              "source": "whatsapp_business",
+              "meta": null,
+              "created_at": 1777127407
+            },
+            "sender": {
+              "source": "contact",
+              "userId": null,
+              "teamId": null,
+              "workflowId": null,
+              "broadcastHistoryId": null
             }
-          ],
-          "webhookUrl": "https://automate-sorento.foundryx.my/webhook/0b2cc5ea-5461-49c7-b062-8647448d01ec",
+          },
+          "webhookUrl": "http://localhost:5678/webhook/0b2cc5ea-5461-49c7-b062-8647448d01ec",
           "executionMode": "production"
         },
         "pairedItem": {
@@ -479,84 +672,72 @@
         }
       }
     ],
-    "Respond.io Trigger": [
+    "When Executed by Another Workflow": [
       {
         "json": {
-          "event_type": "message.received",
-          "event_id": "98b097e6-8d45-46df-ab1a-dcd9776f7d4a",
-          "contact": {
-            "id": 437264483,
-            "firstName": "Jayson",
-            "lastName": "",
-            "phone": "+60166753328",
-            "email": null,
-            "language": null,
-            "profilePic": null,
-            "countryCode": "MY",
-            "status": "open",
-            "assignee": {
-              "id": 995165,
-              "email": "ai@sorento.com.my",
-              "firstName": "AI",
-              "lastName": "Sorento",
-              "role": "user"
+          "body": {
+            "contact": {
+              "id": "445239396",
+              "phone": null,
+              "firstName": "",
+              "lastName": "",
+              "role": "user",
+              "created_at": 1777127407
             },
-            "created_at": 1777336715
-          },
-          "message": {
-            "messageId": 1779119087000000,
-            "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQjk0QjVCREFDNDE5NDU0MjA0MgA=",
-            "contactId": 437264483,
-            "channelId": 453209,
-            "traffic": "incoming",
-            "timestamp": 1779119087000,
             "message": {
-              "type": "text",
-              "text": "i want to apply for renovation, you have the form?"
+              "messageId": 1777740082261013,
+              "channelMessageId": null,
+              "contactId": 437264483,
+              "channelId": null,
+              "traffic": "incoming",
+              "timestamp": 1777740082261,
+              "message": {
+                "type": "text",
+                "text": "i want to submit complaint"
+              }
+            },
+            "channel": {
+              "id": null,
+              "name": "Whatsapp Business",
+              "source": "whatsapp_business",
+              "meta": null,
+              "created_at": 1777127407
+            },
+            "sender": {
+              "source": "contact",
+              "userId": null,
+              "teamId": null,
+              "workflowId": null,
+              "broadcastHistoryId": null
             }
           },
-          "channel": {
-            "id": 453209,
-            "name": "Whatsapp Business",
-            "source": "whatsapp_business",
-            "meta": "{\"meta\":{\"profile\":{\"name\":\"Jayson\"},\"wa_id\":\"60166753328\",\"user_id\":\"MY.26947315341558761\",\"firstName\":\"Jayson\",\"lastName\":\"\"}}",
-            "created_at": 1767682908
-          },
-          "sender": {
-            "source": "contact",
-            "userId": null,
-            "teamId": null,
-            "workflowId": null,
-            "broadcastHistoryId": null
-          }
-        },
-        "pairedItem": {
-          "item": 0
+          "test_run_id": "9060",
+          "started_at": "2026-05-31T12:48:36.096-04:00"
         }
       }
     ]
   },
-  "versionId": "1cf4ff8b-233c-4fa6-86e1-71fb0a086e2a",
-  "activeVersionId": "1cf4ff8b-233c-4fa6-86e1-71fb0a086e2a",
-  "versionCounter": 797,
-  "triggerCount": 2,
+  "versionId": "8ad5ecfa-7b45-43de-ba77-3e0b963f5651",
+  "activeVersionId": "8ad5ecfa-7b45-43de-ba77-3e0b963f5651",
+  "versionCounter": 72,
+  "triggerCount": 1,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-04-22T16:51:56.622Z",
-      "createdAt": "2026-04-22T16:51:56.622Z",
+      "updatedAt": "2026-05-23T08:20:18.662Z",
+      "createdAt": "2026-05-23T08:20:18.662Z",
       "role": "workflow:owner",
       "workflowId": "NwMOBEQ1NW7LVky5",
-      "projectId": "0HJOI5FmkQeIVfH8",
+      "projectId": "7Hsu92Gikf4hBFZp",
       "project": {
-        "updatedAt": "2026-02-03T13:27:34.210Z",
-        "createdAt": "2026-02-03T13:26:47.249Z",
-        "id": "0HJOI5FmkQeIVfH8",
+        "updatedAt": "2026-05-23T09:08:51.908Z",
+        "createdAt": "2026-05-23T08:30:38.008Z",
+        "id": "7Hsu92Gikf4hBFZp",
         "name": "Teh Jayson <jayson@foundryx.my>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+        "creatorId": "24eeb3d0-ff0f-484e-ad8c-b9f1e9ef29c8"
       }
     }
   ]

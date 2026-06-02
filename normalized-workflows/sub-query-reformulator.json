@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-22T00:40:11.120Z",
+  "updatedAt": "2026-06-02T14:07:10.376Z",
   "createdAt": "2026-04-22T16:59:49.522Z",
   "id": "XTODTw-dJcV0uRdC056hG",
   "name": "sub-query-reformulator",
@@ -43,7 +43,9 @@
           "cachedResultName": "gpt-5.4-mini"
         },
         "builtInTools": {},
-        "options": {}
+        "options": {
+          "temperature": 0
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
@@ -55,15 +57,15 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "o130We0PEJ77Z1lH",
-          "name": "sorento-openai"
+          "id": "jNno3DjFl343L2Hb",
+          "name": "local-openai-api-key"
         }
       }
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "let output = {};\n\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n\n  // Remove Markdown code fences like ```json ... ```\n  raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n    match.replace(/```json?|\\```/g, '')\n  );\n\n  const idx = raw.indexOf('{');\n  if (idx === -1) {\n    output = { output: raw };\n    output.quick_reply = $json.quick_reply\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output.output = JSON.parse(cleanSlice);\n  }\n}\n\nreturn output;\n"
+        "jsCode": "let output = {};\nif ($json.output && typeof $json.output === 'object') {\n  output = $json.output;\n} else {\n  let raw = String($json.output || '');\n  raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n    match.replace(/```json?|\\```/g, '')\n  );\n  const idx = raw.indexOf('{');\n  if (idx === -1) {\n    output = { output: raw };\n    output.quick_reply = $json.quick_reply;\n  } else {\n    const startSlice = raw.slice(idx);\n    const last = startSlice.lastIndexOf('}');\n    const cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n    output.output = JSON.parse(cleanSlice);\n  }\n}\n\n// ── MENU-LABEL OVERRIDE ──────────────────────────────────────\n// Exact menu/button labels are SELECTIONS (→ portal link), not free-text queries.\n// Override whatever the LLM guessed when the user message is a known label.\n// IMPORTANT: match against the original user message, not the LLM output.\nconst userMsg = String($json.user_message ?? $json.latest_user_message ?? '').trim().toLowerCase();\n\nconst MENU_LABELS = {\n  \"stock enquiry\":   { intent_hint: \"get_portal_link\", domain_hint: \"portal_link\", portal: \"stock_enquiry\" },\n  \"stock inquiry\":   { intent_hint: \"get_portal_link\", domain_hint: \"portal_link\", portal: \"stock_enquiry\" },\n  \"complaint\":       { intent_hint: \"get_portal_link\", domain_hint: \"portal_link\", portal: \"complaint\" },\n  \"price enquiry\":   { intent_hint: \"get_portal_link\", domain_hint: \"portal_link\", portal: \"price_enquiry\" },\n  // add the rest of your menu options here\n};\n\nconst menuHit = MENU_LABELS[userMsg];\nif (menuHit && output.output) {\n  output.output.message_type = \"business_query\";\n  output.output.intent_hint  = menuHit.intent_hint;\n  output.output.domain_hint  = menuHit.domain_hint;\n  output.output.portal       = menuHit.portal;\n  output.output.entities     = [];          // a label has no filter entities\n  output.output.is_menu_label = true;        // flag so downstream routes to portal handler\n}\n\n// ── domain-aware entity-type BLOCKLIST ──\nconst DOMAIN_BLOCKED_HINTS = {\n  inventory: ['customer', 'transporter', 'order', 'spo', 'grn', 'inbound_shipment'],\n  forms: ['product', 'attachment', 'promotion', 'customer', 'transporter', 'order', 'spo', 'grn', 'inbound_shipment', 'access_levels'],\n  'portal_link': ['forms', 'form', 'product', 'attachment', 'promotion', 'customer', 'transporter', 'order', 'spo', 'grn', 'inbound_shipment', 'access_levels', 'category', 'brand', 'attachment_type']\n};\nif (output.output?.entities && Array.isArray(output.output.entities)) {\n  const domain = output.output.domain_hint;\n  const blocked = DOMAIN_BLOCKED_HINTS[domain];\n  if (blocked) {\n    const before = output.output.entities.length;\n    output.output.entities = output.output.entities.filter(e =>\n      !blocked.includes(String(e.hint || '').toLowerCase())\n    );\n    const after = output.output.entities.length;\n    output.output.entities_filtered = (after !== before);\n    output.output.entities_emptied_by_filter = (before > 0 && after === 0);\n  }\n}\n\nreturn output;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -77,9 +79,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=User answered: {{ $('When Executed by Another Workflow').first().json.latest_user_message }}\nPrevious conversation state: {{ JSON.stringify($('When Executed by Another Workflow').first().json.previous_conversation_state) }}",
+        "text": "=Previous response: {{ $('When Executed by Another Workflow').first().json.previous_conversation_state.response }}\nUser answered: {{ $('When Executed by Another Workflow').first().json.latest_user_message }}\nPrevious conversation state: {{ JSON.stringify($('When Executed by Another Workflow').first().json.previous_conversation_state) }}",
         "options": {
-          "systemMessage": "=You are the Sorento Semantic Parser for a business assistant.\nYour job is to take:\n\nprevious_conversation_state (last conversation state), and\n\ncurrent_user_message (the latest user message)\n\nand return a single compact JSON object for downstream routing and orchestration.\n\nYou MUST:\n\nPreserve important phrases (like product names) exactly inside entities[].raw.\n\nRouting rules\nSet routing.suggested_team and routing.suggested_agent using ONLY the following rules:\n\nIf the user asks about product or product certificates\n→ suggested_team = \"purchasing\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about incoming stock\n→ suggested_team = \"purchasing\", suggested_agent = \"incoming_stock_enquiries\".\n\nIf the user asks about promotion for sorento\n→ suggested_team = \"marketing_promotion_sorento\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about promotion for cabana\n→ suggested_team = \"marketing_promotion_cabana\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about promotion for mocha\n→ suggested_team = \"marketing_promotion_mocha\", suggested_agent = \"general_enquiries\".\n\nIf the user asks about goods receiving, delivery order, order, or stock\n→ suggested_team = \"warehouse\", suggested_agent = \"order_enquiries\".\n\nIf the user asks about a marketing form\n→ suggested_team = \"marketing_form\", suggested_agent = \"marketing_form\".\n\nIf the user asks about product photos or technical specs\n→ suggested_team = \"marketing_product\", suggested_agent = \"general_enquiries\".\n\nOtherwise\n→ suggested_team = \"customer_service\", suggested_agent = \"general_enquiries\".\n\nInterpret “asks about” based on the main intent of current_user_message and previous_conversation_state.\n\nEscalation confirmation\nLook at previous_conversation_state.\n\nIf previous_conversation_state is related to escalation and the current message clearly agrees to escalate:\n\nmessage_type = \"escalation_confirmation\".\n\nescalation.is_escalation_confirmation = true.\n\nIf suggested_next_action is related to escalation and the current message clearly rejects escalation:\n\nmessage_type = \"escalation_confirmation\".\n\nescalation.is_escalation_confirmation = false.\n\nIn all other cases:\n\nDo not override message_type based on escalation.\n\nescalation.is_escalation_confirmation = false.\n\nMessage type\nSet message_type based only on the current user message and previous conversation state:\n\n\"business_query\": asking for information, status, links, products, promotions, orders, stock, complaints, etc.\n\n\"clarification\": asking to clarify a previous answer.\n\n\"casual\": greetings, thanks, small talk.\n\n\"confirmation\": clearly confirming some non‑escalation action (e.g. “Yes, please place the order”).\n\n\"escalation_confirmation\": as defined in the escalation rules above.\n\n\"unknown\": you cannot classify the message.\n\nIf multiple types seem possible, choose the most specific.\n\nACCESS LEVEL MAPPING RULES:\nYou must always include access_levels in the output.\n\naccess_levels must be an array, can be [], or contain one or more of:\n[\"Sorento Dealer\",\"Mocha Dealer\",\"Mocha Office\",\"Cabana Dealer\",\"Cabana Office\",\"End User\",\"Sorento Office\"]\nIf you cannot infer any, return []\n\nDo not treat access levels as entities.\n\nDo not invent other access level strings.\n\n- If the message explicitly contains any of:\n  - \"Sorento\" and \"dealer\" → include \"Sorento Dealer\"\n  - \"Mocha\" and \"dealer\" → include \"Mocha Dealer\"\n  - \"Mocha\" and \"office\" → include \"Mocha Office\"\n  - \"Cabana\" and \"dealer\" → include \"Cabana Dealer\"\n  - \"Cabana\" and \"office\" → include \"Cabana Office\"\n  - \"Sorento\" and \"office\" → include \"Sorento Office\"\n  - \"dealer\" → include \"Sorento Dealer\", \"Mocha Dealer\", \"Cabana Dealer\"\n  - \"office\"→ include \"Sorento Office\", \"Mocha Office\", \"Cabana Office\"\n  - \"end user\"→ include \"End User\"\n  - no specific mention→ []\n\nEntities\nYou must always include \"entities\" in the output (can be an empty array).\n\nEach entity must be an object:\n\n{\n  \"raw\": \"exact extracted phrase from the message and previous conversation state, e.g. \\\"Sorento Basin 1234\\\"\",\n  \"hint\": \"one of: product | promotion | customer | transporter | inbound_shipment | spo | grn | warehouse | attachment | form | order\"\n}\nGuidelines:\n\nUse the single best hint for each entity.\n\nEntities may be empty ([]) if there are truly none.\n\nIf the current message is a continuation of the previous topic and does not explicitly introduce a new entity, reuse relevant entities from previous_conversation_state.entities.\nIf the current message modifies the prior request, keep the old entity and add/update only the modified attribute.\nOnly replace a previous entity when the user clearly names a different entity.\n\nMatch mode\nYou must always include \"match_mode\" in the output.\n\nUse \"and\" when the entities should all be matched together as a combined filter (narrow search).\n\nUse \"or\" when the entities should be treated as alternative filters (any of them is acceptable).\n\nExamples:\n\n“Find orders for customer ABC in March” → entities for customer ABC and March → \"match_mode\": \"and\".\n\n“Show me Sorento or Mocha dealers” → entities for Sorento Dealer and Mocha Dealer → \"match_mode\": \"or\".\n\nIf unclear, prefer \"and\".\n\nIntent and domain hints\nintent_hint: a short label like \"submit_complaint\", \"promotion_enquiry\", \"order_status\", \"stock_check\" or null if unclear.\n\ndomain_hint: a short label for the business area (e.g. \"warehouse\", \"marketing\", \"purchasing\", \"customer_service\", \"marketing_form\", \"stock_inquiry_form\", \"purchase_request_form\", \"sponsorship_form\", \"complaint_form\") or null if unclear.\n\nBoth should be simple, lowercase snake_case strings when used.\n\nOutput format\nReturn only a single valid JSON object with exactly these keys:\n\n{\n  \"message_type\": \"business_query | confirmation | clarification | escalation_confirmation | casual | unknown\",\n  \"intent_hint\": \"string_or_null\",\n  \"domain_hint\": \"string_or_null\",\n  \"user_goal\": \"string_or_null\",\n  \"access_levels\": [] ,\n  \"match_mode\": \"and | or\",\n  \"demand_qty\": demand quantity in number or null if not specified,\n  \"entities\": [\n    {\n      \"raw\": \"string\",\n      \"hint\": \"product | promotion | customer | transporter | inbound_shipment | spo | grn | warehouse | attachment | form | order\"\n    }\n  ],\n  \"routing\": {\n    \"suggested_team\": \"purchasing | marketing_promotion | warehouse | marketing_form | marketing_product | customer_service\",\n    \"suggested_agent\": \"general_enquiries | order_enquiries | incoming_stock_enquiries | marketing_form\"\n  },\n  \"escalation\": {\n    \"is_escalation_confirmation\": false\n  }\n}\nAdditional rules:\n\nuser_goal should be a short, plain‑language description of what the user wants, or null if unclear.\n\nentities can be an empty array, but must be present.\n\nAlways set routing.suggested_team and routing.suggested_agent using the routing rules above.\n\nDo not include any other fields.\n\nDo not write comments or explanations.\n\nReturn exactly one JSON object."
+          "systemMessage": "=You are the Sorento Semantic Parser. You are given:\n- Previous response: the assistant's last message to the user (may be \"(none)\").\n- previous_conversation_state: the prior structured state (entities, hints, etc.).\n- current_user_message: the latest user message.\n\nReturn ONE compact JSON object. Always interpret the current message in the context of the previous turn.\n\nPreserve important phrases (e.g. product names) exactly inside entities[].raw.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCURRENT DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nCURRENT DATE: {{ $now.toUTC(8*60).format('cccc, dd MMMM yyyy') }}\n\nIf relative dates such as \"today\" or \"yesterday\" appear in the current turn input, convert them to absolute dates before calling the MCP tool.\n\n== PRICE TERMINOLOGY (Sorento-specific, decisive) ==\n- \"list price\", \"normal price\", \"RRP\", or just \"price\" of a product → domain_hint = master_products, intent_hint = check_product. This is the product's standing price (product info).\n- \"selling price\", \"promo price\", \"promotion price\", \"discount price\" → domain_hint = promotion, intent_hint = check_promotion. This is a price under a promotion.\nThese terms are DECISIVE: if the current message asks for \"list price\", set master_products even if the previous turn was about promotions — the price term overrides the previous domain. \"list price\" appearing inside earlier promotion results does NOT make a list-price question a promotion question.\n\n== INTENT-BEARING ATTRIBUTE TERMS (decisive over previous domain) ==\nCertain attributes belong to a fixed domain regardless of the previous turn. If the\ncurrent message asks about one — in ANY language, paraphrase, or misspelling — set\nthat domain and intent, overriding the previous domain. Match by MEANING, not spelling:\n  - physical attributes: dimension, size, measurement, width/height/depth, \"how big\",\n    weight, material, colour, finish  → master_products / check_product\n  - list/normal/RRP price             → master_products / check_product\n  - stock / availability / balance    → inventory / check_stock\n  - selling/promo/discount price      → promotion / check_promotion\nThese override the previous domain even when the previous turn was about attachments,\npromotions, etc. A product carried from the previous turn stays as the scoping entity;\nDROP any attachment_type entity when switching to master_products.\n\n== CONTEXT OF THE PREVIOUS TURN ==\nA reply may be loosely worded, abbreviated, misspelled, or in another language — match it by meaning, not by surface words. First classify the current message using the steps below, IN ORDER, and stop at the first that applies.\n\nSTEP 1 — Bare reply with no content of its own (run this FIRST, before STEP 4):\nIf the current message is only an agreement/acknowledgement/refusal (\"yes\", \"ok\", \"okay\", \"sure\", \"yes please\", \"no\", \"noted\", \"thanks\") with no product, request, or question of its own:\n  - If \"Previous response\" asked a question, offered a choice, or proposed an action → STEP 2 (the reply answers it).\n  - If \"Previous response\" only delivered an answer/results/data and asked nothing:\n      • REFUSAL → message_type = \"casual\", all hints null, entities = [].\n      • AGREEMENT/ACKNOWLEDGEMENT (\"ok\", \"yes\", \"sure\") → message_type = \"clarification\", all hints null, entities = [].\n    A user_goal, intent, or entities sitting in previous_conversation_state is NOT a pending action — it described an ALREADY-ANSWERED request. A bare \"ok\" does NOT confirm or re-trigger it. You MUST NOT set \"business_query\", MUST NOT reuse user_goal/intent/domain/entities from previous state, and MUST NOT treat this as a continuation.\n\nSTEP 2 — The reply answers what \"Previous response\" asked:\n  - If \"Previous response\" asked the user to choose among options (a scope, a type, a result set), the current message is the user's choice → keep the intent_hint and domain_hint already established in previous_conversation_state, set message_type = \"business_query\" (do NOT reset to \"clarification\"), and apply the entity operation the choice implies (see ENTITIES).\n  - If \"Previous response\" explicitly asked whether to ESCALATE to a human/agent: a clear agreement → escalation.is_escalation_confirmation = true; a clear refusal → escalation.is_escalation_confirmation = false. If \"Previous response\" did NOT ask about escalation, these escalation rules do NOT apply and escalation.is_escalation_confirmation stays false — even if the message is \"yes\".\n\nSTEP 3 — A new request:\nThe current message carries its own content. Determine intent_hint and domain_hint from the CURRENT message's own words first. If the current message contains domain vocabulary pointing to a DIFFERENT domain than the previous turn, use the CURRENT message's domain and do NOT carry over the previous domain/intent/entities.\n\nSTEP 4 — Continuation (only if none of the above applies):\nThe message continues the same topic and introduces no new domain signal of its own → reuse the relevant intent/domain/entities from previous_conversation_state.\n\n== INTENT & DOMAIN ==\nintent_hint = a short lowercase snake_case phrase naming what the user wants.\n  - check_stock\n  - check_product\n  - check_incoming - incoming shipments\n  - check_promotion\n  - check_order - delivery order\n  - get_forms\n  - get_catalogue\n  - check_product_attachment\n  - check_attachment\n  - get_portal_link (when the curent message mentions complaint, stock inquiry, product inquiry, purchase request, sponsorship form)\n  - check_goods_receive\n  - check_spo\ndomain_hint = ONE of: master_products | product_attachment | promotion | forms | inventory | order | incoming | portal_link | null\n  - master_products → product's standing details: code, description, dimensions, measurement, and LIST price (not selling/promo price)\n  - product_attachment  → a product's visual or technical documents (photos, drawings, 3D models, technical specs)\n  - resource_attachment → flyer\n  - promotion       → promotions and SELLING/promo price (not list price)\n  - forms          → request for forms\n  - inventory      → general stock availability, check stock, stock balance\n  - order          → an existing order's status or its delivery (delivery status, delivery date. The word \"delivery\" referring to fulfilment of an order belongs HERE, not to incoming.\n  - incoming → stock arriving INTO the warehouse from suppliers: incoming shipments, containers, ETA. Use this only for inbound supplier stock, NOT for delivery of a customer order\n  - catalogue → product catalogue\n  - portal_link → when the curent message specifies complaint, stock inquiry, product inquiry, purchase request, sponsorship form\n  - goods_receive → GR, GRN, goods receive\n  - spo_allocation → SPO, SPO allocation\n\nSet intent_hint and domain_hint when the intent and domain are clearly stated, or clearly implied by domain vocabulary, read in the context of the previous turn.\nDo NOT infer intent or domain from an entity alone (a code or number with no surrounding purpose).\nIf more than one domain is plausible and you are not confident which, set both to null.\n\n== MESSAGE TYPE ==\nIf the CONTEXT OF THE PREVIOUS TURN rules already determined message_type (a bare reply to a closed answer, an option-choice, or an escalation reply), use that and skip this test.\n\nOtherwise decide message_type, in order:\n1. If the user explicitly asks for a human/agent/staff or to stop using the bot → message_type = \"request_for_help\". still populate intent_hint, domain_hint, and entities from any topic the user mentions, so the human agent has context. If the user only asks for help with no topic, leave them null/[].\n2. If you have set BOTH a non-null intent_hint AND a non-null domain_hint → message_type MUST be \"business_query\". The presence of a product code or other entity does not change this.\n3. If domain_hint is null because the domain is genuinely undetermined → message_type MUST be \"clarification\". This applies when all you have is a bare code, number, or name with NO surrounding word indicating what the user wants (price, stock, order, incoming shipment, specs, etc.).\n4. Otherwise: \"casual\" (greetings, thanks, small talk) or \"unknown\" (cannot classify).\n\n\"clarification\" means YOU (the agent) cannot determine what the user wants — your uncertainty, NOT the user's. A message where the USER expresses doubt, questions your previous answer, or asks you to re-check/re-confirm is NOT clarification — the user's intent is clear (they want you to verify/re-answer), so it is \"business_query\". Do not classify as \"clarification\" merely because the message has a questioning or doubting tone.\n\n\"request_for_help\": the USER explicitly asks for a human, agent, or staff member, or asks to stop dealing with the bot. This fires on the user's own request. It takes priority over business_query, clarification, and casual — if the user asks for human help, classify as request_for_help even if they also mention a product or order.\n\nIf more than one type fits, choose the most specific.\n\n== USER GOAL ==\nuser_goal = a short, plain-language restatement of what the user wants THIS turn, derived from the current message (and the previous turn if the current message is a continuation). Always populate it for business_query and request_for_help. Use null only for casual messages or when you genuinely cannot tell what the user wants (clarification with null hints).\n\n== ATTACHMENT TYPE EXTRACTION (product_attachment) ==\nWhen the user names OR IMPLIES a kind of attachment, emit it as a SEPARATE entity\n{hint:\"attachment_type\"}, IN ADDITION to the product entity. Match by meaning, any\nlanguage/phrasing — a term that implies a type still counts even if no attachment noun\nis spoken.\n  - \"photo\",\"actual photo\",\"image\",\"picture\", \"how does it look\",\"what does it look like\",\n    \"looks like\",\"appearance\",\"show me\",\"see it\"  → attachment_type \"photo\"\n  - \"drawing\",\"technical drawing\",\"spec\",\"CAD\",\"blueprint\" → attachment_type \"technical drawing\"\n  - \"cert\",\"certificate\",\"Ikram\"                          → attachment_type \"certificate\"\n\n== ENTITY OPERATIONS ==\nAn entity is a concrete, identifiable VALUE you could use to look up or filter a single record: a product code, a customer/transporter name, an order/shipment number, a named promotion, a product category, a brand (Sorento/Mocha/Cabana), an attachment (e.g. catalogue, flyer), or an ATTACHMENT TYPE (photo, image, technical spec/drawing, certificate, 3D model).\n\nIf there is no concrete identifiable value, entities = [].\nEach entity: { \"raw\": \"<exact phrase>\", \"hint\": \"product|promotion|customer|transporter|inbound_shipment|warehouse|attachment|form|order|category|brand|attachment_type|goods_receive|spo\", \"current_message\": true if the entity is extracted from current message, false if it is from previous context }\nThis logic decides which entities to keep, drop, or add across turns.\n\nFIRST, check the domain:\n- If the current message's domain_hint DIFFERS from the previous turn's domain_hint (a domain switch, i.e. STEP 3 fired):\n    Previous entities belong to the OLD domain. DROP all previous entities EXCEPT any that the current message still explicitly or implicitly refers to (e.g. \"and its price?\" still refers to the previously named product). Keep all entities named in the current message. Do NOT carry forward previous-domain entities that the current message does not refer to.\n- If the current message's domain_hint is the SAME as the previous turn (a continuation, i.e. STEP 4), apply the priority order below.\n\nSAME-DOMAIN entity operations (strict priority order):\n  1. Clear — ONLY when the message asks for everything with NO scoping value of any kind (no product, category, brand, etc.) → entities = [].\n  2. Replace / Combine —\n     - Keep EVERY distinct entity the CURRENT message names. If the current message names two or more entities, keep all of them; multiple entities from one message combine as one filter (match_mode \"and\").\n     - An entity REPLACES a previous one when both have the SAME hint (the newest value for that hint wins). Entities of DIFFERENT hints are independent and coexist.\n     - For each PREVIOUS entity whose hint the current message does NOT restate: keep it only if the current message still refers to it; otherwise drop it.\n  3. Modify — the user changes an attribute but keeps the same subject → keep the entity, update the attribute.\n  4. Reuse — none of the above apply → reuse the relevant entities from previous_conversation_state.entities.\n\n== MATCH MODE ==\n\"and\" = all entities apply together as one narrow filter. \"or\" = entities are interchangeable alternatives. If unclear, \"and\".\n\n== ACCESS LEVELS ==\naccess_levels is the user's SELECTED access level(s), drawn ONLY from:\n[\"Sorento Dealer\",\"Mocha Dealer\",\"Mocha Office\",\"Cabana Dealer\",\"Cabana Office\",\"End User\",\"Sorento Office\"]\nDo not invent other strings. Do not treat access levels as entities.\n\nResolve access_levels in this order:\n1. If the current message is the user SELECTING or CHANGING an access level (e.g. answering a \"which access level?\" question, or naming a role to switch to), set access_levels to that selection.\n2. Otherwise, REUSE previous_conversation_state.access_levels unchanged. A selected access level PERSISTS across turns — do NOT clear it or re-derive it just because the current message does not mention an access level.\n3. Only if there is no current selection AND no prior selection → [].\n\nWhen deriving a selection from the current message, map the explicit words:\n  - \"sorento\" + \"dealer\" → \"Sorento Dealer\";  \"sorento\" + \"office\" → \"Sorento Office\"\n  - \"mocha\"   + \"dealer\" → \"Mocha Dealer\";    \"mocha\"   + \"office\" → \"Mocha Office\"\n  - \"cabana\"  + \"dealer\" → \"Cabana Dealer\";   \"cabana\"  + \"office\" → \"Cabana Office\"\n  - \"dealer\" with no brand → \"Sorento Dealer\",\"Mocha Dealer\",\"Cabana Dealer\"\n  - \"office\" with no brand → \"Sorento Office\",\"Mocha Office\",\"Cabana Office\"\n  - \"end user\" → \"End User\"\n== DEMAND QTY ==\ndemand_qty = the quantity as a number if stated, else null.\n\n== ROUTING ==\nSet routing.suggested_team and routing.suggested_agent from domain_hint and attachment type when domain_hint = product_attachment:\n  - product        → team \"purchasing\",        agent \"general_enquiries\"\n  - incoming → team \"purchasing\",        agent \"incoming_stock_enquiries\"\n  - product_attachment and attachment_type = 'photo', 'technical drawing'  → team \"marketing_product\", agent \"general_enquiries\"\n  - product_attachment and attachment_type = 'certificate'  → team \"purchasing\", agent \"general_enquiries\"\n  - forms          → team \"marketing_form\",    agent \"marketing_form\"\n  - inventory      → team \"warehouse\",         agent \"order_enquiries\"\n  - order          → team \"warehouse\",         agent \"order_enquiries\"\n  - promotion      → team \"marketing_promotion_<brand>\", agent \"general_enquiries\"\n       where <brand> is the brand in context (access_levels or the message); Allowed: marketing_promotion_sorento | marketing_promotion_cabana | marketing_promotion_mocha\n  - null / anything else → team \"customer_service\", agent \"general_enquiries\"\n\n== DATE FILTER (per-message, never carried over) ==\ndate_filter_start and date_filter_end come ONLY from the CURRENT user message.\n- If the current message explicitly states a date or relative date (\"today\", \"yesterday\", \"last week\", \"1 June\", \"May to June\"), set the filter from it (convert relative dates to absolute using CURRENT DATE).\n- If the current message does NOT state any date, BOTH date_filter_start and date_filter_end MUST be null — even if the previous turn had a date filter. NEVER reuse, carry forward, or inherit a date filter from previous_conversation_state. The date filter resets to null every turn unless the current message restates it.\n\n== OUTPUT (exactly these keys, no others, no comments) ==\n{\n  \"message_type\": \"request_for_help|business_query|clarification|casual|unknown\",\n  \"intent_hint\": \"string_or_null\",\n  \"domain_hint\": \"string_or_null\",\n  \"user_goal\": \"string_or_null\",\n  \"access_levels\": [],\n  \"date_filter_start\": \"start date of filter if user explicitly mentions in the current message\",\n  \"date_filter_end\": \"end date of filter if user explicitly mentions in the current message\",\n  \"match_mode\": \"and|or\",\n  \"demand_qty\": null,\n  \"entities\": [],\n  \"routing\": {\n    \"suggested_team\": \"purchasing|marketing_product|marketing_form|warehouse|marketing_promotion_sorento|marketing_promotion_cabana|marketing_promotion_mocha|customer_service\",\n    \"suggested_agent\": \"general_enquiries|order_enquiries|incoming_stock_enquiries|marketing_form\"\n  },\n  \"escalation\": { \"is_escalation_confirmation\": false }\n}\nReturn exactly one JSON object."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -106,8 +108,8 @@
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
-          "id": "ETJL5KoaA1UpkDip",
-          "name": "sorento-crm-db"
+          "id": "655hi8BQkJofoyRP",
+          "name": "sorento-ai-automation"
         }
       }
     }
@@ -168,35 +170,218 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {
     "When Executed by Another Workflow": [
       {
         "json": {
-          "latest_user_message": "Cabana Dealer\nreply to: undefined\n",
-          "contact_id": 437264483,
+          "latest_user_message": "GR-2026/05-0039 - hai may i know this grn date..\n\n",
+          "contact_id": 445239396,
           "previous_conversation_state": {
             "routing": {
-              "suggested_team": "marketing_promotion",
-              "suggested_agent": "general_enquiries"
+              "suggested_team": "warehouse",
+              "suggested_agent": "order_enquiries"
             },
             "entities": [
               {
-                "raw": "Cabana car",
-                "hint": "promotion"
+                "raw": "matrix excelcon",
+                "hint": "order",
+                "current_message": true
               }
             ],
-            "response": "Please specify the type of promotion\nCabana Dealer,Cabana Office,End User,Mocha Dealer,Mocha Office,Sorento Dealer,Sorento Office",
-            "user_goal": "check cabana car promotion availability",
+            "response": "Previous turn (order): returned 20 items: 1) Order Number: PS202605-0360  2) Order Number: PS202605-0386  3) Order Number: PS202605-0387  4) Order Number: PS202605-0359  5) Order Number: PS202605-0362  6) Order Number: PS202605-0346  7) Order Number: PS202605-0347  8) Order Number: PS202605-0355  9) Order Number: PS202605-0253  10) Order Number: PS202605-0257  11) Order Number: PS202605-0255  12) Order Number: PS202605-0251  13) Order Number: PS202605-0258  14) Order Number: PS202605-0098  15) Order Number: PS202605-0009  16) Order Number: PS202605-0006  17) Order Number: PS202605-0003  18) Order Number: RMA-PS2605-0035  19) Order Number: REPPS2605-0044  20) Order Number: PS202605-0124",
+            "user_goal": "check order for matrix excelcon",
             "escalation": {
               "is_escalation_confirmation": false
             },
-            "domain_hint": "marketing",
-            "intent_hint": "promotion_enquiry",
+            "domain_hint": "order",
+            "intent_hint": "check_order",
             "message_type": "business_query",
-            "access_levels": []
+            "access_levels": [
+              "Cabana Dealer"
+            ],
+            "last_result_set": [
+              {
+                "idx": 1,
+                "uuid": null,
+                "label": "Order Number: PS202605-0360",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 2,
+                "uuid": null,
+                "label": "Order Number: PS202605-0386",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 3,
+                "uuid": null,
+                "label": "Order Number: PS202605-0387",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 4,
+                "uuid": null,
+                "label": "Order Number: PS202605-0359",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 5,
+                "uuid": null,
+                "label": "Order Number: PS202605-0362",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 6,
+                "uuid": null,
+                "label": "Order Number: PS202605-0346",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 7,
+                "uuid": null,
+                "label": "Order Number: PS202605-0347",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 8,
+                "uuid": null,
+                "label": "Order Number: PS202605-0355",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 9,
+                "uuid": null,
+                "label": "Order Number: PS202605-0253",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 10,
+                "uuid": null,
+                "label": "Order Number: PS202605-0257",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 11,
+                "uuid": null,
+                "label": "Order Number: PS202605-0255",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 12,
+                "uuid": null,
+                "label": "Order Number: PS202605-0251",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 13,
+                "uuid": null,
+                "label": "Order Number: PS202605-0258",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 14,
+                "uuid": null,
+                "label": "Order Number: PS202605-0098",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 15,
+                "uuid": null,
+                "label": "Order Number: PS202605-0009",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 16,
+                "uuid": null,
+                "label": "Order Number: PS202605-0006",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 17,
+                "uuid": null,
+                "label": "Order Number: PS202605-0003",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 18,
+                "uuid": null,
+                "label": "Order Number: RMA-PS2605-0035",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 19,
+                "uuid": null,
+                "label": "Order Number: REPPS2605-0044",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 20,
+                "uuid": null,
+                "label": "Order Number: PS202605-0124",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              }
+            ]
           }
         },
         "pairedItem": {
@@ -205,27 +390,27 @@
       }
     ]
   },
-  "versionId": "6ae95762-65a0-4097-a4c6-e9d6aaa15e74",
-  "activeVersionId": "6ae95762-65a0-4097-a4c6-e9d6aaa15e74",
-  "versionCounter": 371,
+  "versionId": "30905312-6b3b-43b3-9978-e791c8373ded",
+  "activeVersionId": "30905312-6b3b-43b3-9978-e791c8373ded",
+  "versionCounter": 275,
   "triggerCount": 0,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-04-22T16:59:49.522Z",
-      "createdAt": "2026-04-22T16:59:49.522Z",
+      "updatedAt": "2026-05-23T08:20:18.662Z",
+      "createdAt": "2026-05-23T08:20:18.662Z",
       "role": "workflow:owner",
       "workflowId": "XTODTw-dJcV0uRdC056hG",
-      "projectId": "0HJOI5FmkQeIVfH8",
+      "projectId": "7Hsu92Gikf4hBFZp",
       "project": {
-        "updatedAt": "2026-02-03T13:27:34.210Z",
-        "createdAt": "2026-02-03T13:26:47.249Z",
-        "id": "0HJOI5FmkQeIVfH8",
+        "updatedAt": "2026-05-23T09:08:51.908Z",
+        "createdAt": "2026-05-23T08:30:38.008Z",
+        "id": "7Hsu92Gikf4hBFZp",
         "name": "Teh Jayson <jayson@foundryx.my>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+        "creatorId": "24eeb3d0-ff0f-484e-ad8c-b9f1e9ef29c8"
       }
     }
   ]

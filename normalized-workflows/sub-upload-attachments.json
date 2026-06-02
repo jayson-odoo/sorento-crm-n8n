@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-22T03:29:35.412Z",
+  "updatedAt": "2026-06-02T10:25:16.907Z",
   "createdAt": "2026-02-03T13:58:01.742Z",
   "id": "_NbFU3cCoEQwPSbvn14vV",
   "name": "sub-upload-attachments",
@@ -10,7 +10,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\nvar output = {\n  \"products\": JSON.parse($json.content.parts[0].text.replaceAll(\"`\", \"\").replaceAll(\"\\n\", \"\").replace(\"json\", \"\")).products\n}\noutput.attachment_id = $('Webhook').first().json.body.attachment_id\noutput.access_level = $('Webhook').first().json.body.access_levels\n\nreturn output;"
+        "jsCode": "const rawFilename = $('Webhook').first().json.body.attachment_filename || '';\nconst filename = rawFilename.replace(/\\.[^/.]+$/, '');\n\nlet raw = String($json.content?.parts?.[0]?.text ?? '')\n  .replaceAll('`', '')\n  .trim();\n\n// slice to the outermost {...}, discarding any prose before/after\nconst start = raw.indexOf('{');\nconst end   = raw.lastIndexOf('}');\nif (start !== -1 && end !== -1) raw = raw.slice(start, end + 1);\n\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  try { parsed = JSON.parse(raw.replace(/\"\\s*\\+\\s*\"/g, '')); }\n  catch (e2) { parsed = {}; }\n}\n\nconst products = Array.isArray(parsed.products) ? parsed.products : [];\nif (filename && !products.includes(filename)) products.push(filename);\n\nreturn {\n  products,\n  attachment_id: $('Webhook').first().json.body.attachment_id,\n  access_level:  $('Webhook').first().json.body.access_levels,\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -362,13 +362,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/external/packing-lists",
+        "url": "=http://host.docker.internal:3000/api/v1/external/packing-lists",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -390,13 +390,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/external/product-attachments",
+        "url": "=http://host.docker.internal:3000/api/v1/external/product-attachments",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -418,13 +418,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "=http://host.docker.internal:3000/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -445,13 +445,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -472,13 +472,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -499,40 +499,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/external/promotions",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json.toJsonString() }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        896,
-        880
-      ],
-      "id": "335e141c-c067-4cc2-aa8d-efcf43ffc8e6",
-      "name": "promotions-create"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -553,13 +526,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/external/forms",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/external/forms",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -581,13 +554,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -608,13 +581,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "=http://host.docker.internal:3000/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -635,13 +608,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -662,13 +635,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -689,13 +662,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "=http://host.docker.internal:3000/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -716,13 +689,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "=http://host.docker.internal:3000/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -743,13 +716,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "=http://host.docker.internal:3000/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -797,13 +770,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "=http://host.docker.internal:3000/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -824,13 +797,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -865,7 +838,7 @@
       "name": "Split a pdf",
       "credentials": {
         "pdfapihubApi": {
-          "id": "It527CvGZPUoKIgV",
+          "id": "kFwq030rXRDT4Yvi",
           "name": "PDF Hub account"
         }
       }
@@ -879,7 +852,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=You are an expert at reading marketing flyers and dealer A3 promo posters for bathroom and kitchen products.\nYou will receive one page (image or PDF) of a dealer promotion.\n\nIMPORTANT PAGE FILTER RULE\nIf the page contains the word \"MEMO\" anywhere in a prominent title, heading, or watermark (for example \"MEMO\", \"DEALER MEMO\", \"INTERNAL MEMO\"), you MUST treat this page as NON-PROMOTIONAL and IGNORE it for promotion extraction.\n\nIn that case:\n- Do NOT try to read or interpret any promotion mechanics, products, prices, or dates from the page.\n- Do NOT invent a promotion.\n- You MUST return an EMPTY promotion result with the required structure, using default values:\n\n{\n  \"promotions\": {\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"promo_type\": \"other\",\n    \"is_active\": false\n  },\n  \"promotion_groups\": []\n}\n\nYou MUST still follow the output format rules:\n- top-level keys exactly: \"promotions\" and \"promotion_groups\",\n- no extra keys,\n- no explanations or text outside the JSON,\n- but with empty/default values as shown above.\n\nYour task is to extract structured promotion data in a format that can be stored in a database and used for dealer pricing logic.\n\nThere are three levels of data:\n\n- Overall promotion header\n- One or more promotion groups (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.)\n- Inside each group:\n  - One or more FOC rules (purchase/free quantity combinations)\n  - A list of promotion products\n\nRead all visible text on the page: titles, product codes, prices, discount labels like “LESS 37%”, group labels like “10 FOC 1 25 FOC 5”, and promo validity dates like “VALID FROM: 01.01.2025 – 31.03.2025”.\n\n1. Promotion header\nCreate one object called promotions with these exact fields:\n\nstart_date: Promotion start date in the format YYYY-MM-DD.\n- If you see a full date like 01.01.2025, convert it to 2025-01-01.\n- If only month/year is visible, use the first day of that month (e.g. “MAR 2025” → 2025-03-01).\n- If no start date is visible, use an empty string.\n\nend_date: Promotion end date in the format YYYY-MM-DD.\n- If you see a full date like 31.03.2025, convert it to 2025-03-31.\n- If only month/year is visible, use the last day of that month.\n- If no end date is visible, use an empty string.\n\npromo_type: One of: \"bundle\", \"discount\", \"price_override\", \"clearance\", \"other\".\n- If there are “buy X free Y” or FOC mechanics, use \"bundle\".\n- If the key message is a percentage saving like “LESS 37%”, use \"discount\".\n- Otherwise choose the most appropriate, or \"other\" if unclear.\n\nis_active: A boolean. Set to true if today’s date is between start_date and end_date (inclusive). If dates are missing or clearly in the past, set to false.\n\n2. Promotion groups\nCreate an array called promotion_groups.\nEach group represents a logical set of products that share the same headline promotion concept (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.).\n\nFor each group, extract:\n\ngroup_name: A label for this group (e.g. “LESS 45% ≥5 UNITS EXTRA 5% ≥10 UNITS EXTRA 10%”, “≥ 10 UNITS EXTRA 5%”, “LESS 40% + 5%”, etc.). The group name does not need to always contain the discount; if there isn't any related group discount, then just give it a short descriptive label.\n\ndealer_discount:\n- If the flyer shows a dealer discount like “LESS 37%” that applies to all products in this group, convert it to a decimal fraction:\n  - “LESS 37%” → 0.37\n  - “LESS 20%” → 0.20\n- If no dealer discount is clearly shown for this group, set this field to 0.\n\nfoc_rules: an array describing one or more purchase/free combinations in this group.\n\nEach foc_rules[k] object must have:\n- purchase_quantity_for_foc: The purchase quantity in the rule.\n  - “10 FOC 1” → 10\n  - “25 FOC 5” → 25\n- foc_quantity: The corresponding free quantity.\n  - “10 FOC 1” → 1\n  - “25 FOC 5” → 5\n\nExample: a label “10 FOC 1 25 FOC 5” for the same group should become:\n\n\"foc_rules\": [\n  { \"purchase_quantity_for_foc\": 10, \"foc_quantity\": 1 },\n  { \"purchase_quantity_for_foc\": 25, \"foc_quantity\": 5 }\n]\n\nIf no FOC mechanic exists for this group, use an empty array: [].\n\npromotion_products: an array of products belonging to this group (see below).\n\nAssign products to the group whose mechanics and title clearly apply to those products. If the flyer clearly separates products into different blocks with different mechanics, use multiple groups.\n\n3. Promotion products inside each group\nFor each promotion_groups[i].promotion_products[j], extract:\n\nproduct_code: The main product code or model number (for example “SRT6641”, “SRT6642-BL”, “SRT6643-GM”, “SRT6651-GM”).\n- Use the most specific code printed near the product.\n- If no clear code is visible, use an empty string.\n\nselling_price: The main promo selling price as a number (no currency symbol, no commas).\n- Example: “SP RM 79” → 79\n- Example: “SP RM 125” → 125\n\nIf the flyer only shows a list price but also says “LESS 37% dealer discount”, you may calculate the effective selling price if it is clearly defined; otherwise use the printed “SP” price.\n\nIf price is missing, set 0.\n\nImportant rules for grouping, FOC and discount:\n\n- If the same FOC mechanic text (for example, “10 FOC 1 25 FOC 5”) is printed once but obviously applies to all products in a block, create one group with multiple foc_rules entries as described above.\n- If different mechanics clearly apply to different sets of products, use multiple promotion_groups.\n- A dealer discount like “LESS 37%” that applies to all products in a block should be stored once at promotion_groups[i].dealer_discount and is not repeated on each product.\n- Do not invent any product codes, prices, dates, or discounts that are not visible. If unsure, leave them empty or zero as specified.\n\nOutput format (very important)\nReturn a single JSON object with this exact top-level structure:\n\n{\n  \"promotions\": {\n    \"start_date\": \"2025-02-12\",\n    \"end_date\": \"2026-03-02\",\n    \"promo_type\": \"bundle\",\n    \"is_active\": true\n  },\n  \"promotion_groups\": [\n    {\n      \"group_name\": \"LESS 40% + 5%\",\n      \"dealer_discount\": 0.37,\n      \"foc_rules\": [\n        {\n          \"purchase_quantity_for_foc\": 10,\n          \"foc_quantity\": 1\n        },\n        {\n          \"purchase_quantity_for_foc\": 25,\n          \"foc_quantity\": 5\n        }\n      ],\n      \"promotion_products\": [\n        {\n          \"product_code\": \"SRTWT51012\",\n          \"selling_price\": 1639\n        },\n        {\n          \"product_code\": \"SRTWT51013\",\n          \"selling_price\": 899\n        }\n      ]\n    }\n  ]\n}\n\nConstraints:\n\n- Top-level keys must be exactly: promotions and promotion_groups.\n- promotions must contain all of: start_date, end_date, promo_type, is_active.\n- Each promotion_groups[i] must contain all of: group_name, dealer_discount, foc_rules, promotion_products.\n- Each foc_rules[k] must contain both: purchase_quantity_for_foc, foc_quantity.\n- Each promotion_products[j] must contain both: product_code, selling_price.\n- Do not add any other keys.\n- Do not wrap the JSON in a code block and do not include any explanation or text before or after the JSON.\n\nNow read the provided dealer promotion page (image or PDF) and return the JSON object in exactly this structure, or an empty promotion as described in the MEMO rule if the page is a MEMO.",
+        "text": "=You are an expert at reading marketing flyers and dealer A3 promo posters for bathroom and kitchen products.\nYou will receive one page (image or PDF) of a dealer promotion.\n\nIMPORTANT PAGE FILTER RULE\nIf the page contains the word \"MEMO\" anywhere in a prominent title, heading, or watermark (for example \"MEMO\", \"DEALER MEMO\", \"INTERNAL MEMO\"), you MUST treat this page as NON-PROMOTIONAL and IGNORE it for promotion extraction.\n\nIn that case:\n- Do NOT try to read or interpret any promotion mechanics, products, prices, or dates from the page.\n- Do NOT invent a promotion.\n- You MUST return an EMPTY promotion result with the required structure, using default values:\n\n{\n  \"start_date\": \"\",\n  \"end_date\": \"\",\n  \"is_active\": false,\n  \"promotion_groups\": []\n}\n\nYou MUST still follow the output format rules:\n- top-level keys exactly: \"promotions\" and \"promotion_groups\",\n- no extra keys,\n- no explanations or text outside the JSON,\n- but with empty/default values as shown above.\n\nYour task is to extract structured promotion data in a format that can be stored in a database and used for dealer pricing logic.\n\nThere are three levels of data:\n\n- Overall promotion header\n- One or more promotion groups (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.)\n- Inside each group:\n  - One or more FOC rules (purchase/free quantity combinations)\n  - A list of promotion products\n\nRead all visible text on the page: titles, product codes, prices, discount labels like “LESS 37%”, group labels like “10 FOC 1 25 FOC 5”, and promo validity dates like “VALID FROM: 01.01.2025 – 31.03.2025”.\n\n1. Promotion header\nCreate one object called promotions with these exact fields:\n\nstart_date: Promotion start date in the format YYYY-MM-DD.\n- If you see a full date like 01.01.2025, convert it to 2025-01-01.\n- If only month/year is visible, use the first day of that month (e.g. “MAR 2025” → 2025-03-01).\n- If no start date is visible, use an empty string.\n\nend_date: Promotion end date in the format YYYY-MM-DD.\n- If you see a full date like 31.03.2025, convert it to 2025-03-31.\n- If only month/year is visible, use the last day of that month.\n- If no end date is visible, use an empty string.\n\nis_active: A boolean. Set to true if today’s date is between start_date and end_date (inclusive). If dates are missing or clearly in the past, set to false.\n\n2. Promotion groups\nCreate an array called promotion_groups.\nEach group represents a logical set of products that share the same headline promotion concept (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.).\n\nFor each group, extract:\n\ngroup_name: A label for this group (e.g. “LESS 45% ≥5 UNITS EXTRA 5% ≥10 UNITS EXTRA 10%”, “≥ 10 UNITS EXTRA 5%”, “LESS 40% + 5%”, etc.). The group name does not need to always contain the discount; if there isn't any related group discount, then just give it a short descriptive label.\n\ndealer_discount:\n- If the flyer shows a dealer discount like “LESS 37%” that applies to all products in this group, convert it to a decimal fraction:\n  - “LESS 37%” → 0.37\n  - “LESS 20%” → 0.20\n- If no dealer discount is clearly shown for this group, set this field to 0.\n\nfoc_rules: an array describing one or more purchase/free combinations in this group.\n\nEach foc_rules[k] object must have:\n- purchase_quantity_for_foc: The purchase quantity in the rule.\n  - “10 FOC 1” → 10\n  - “25 FOC 5” → 25\n- foc_quantity: The corresponding free quantity.\n  - “10 FOC 1” → 1\n  - “25 FOC 5” → 5\n\nExample: a label “10 FOC 1 25 FOC 5” for the same group should become:\n\n\"foc_rules\": [\n  { \"purchase_quantity_for_foc\": 10, \"foc_quantity\": 1 },\n  { \"purchase_quantity_for_foc\": 25, \"foc_quantity\": 5 }\n]\n\nIf no FOC mechanic exists for this group, use an empty array: [].\n\npromotion_products: an array of products belonging to this group (see below).\n\nAssign products to the group whose mechanics and title clearly apply to those products. If the flyer clearly separates products into different blocks with different mechanics, use multiple groups.\n\n3. Promotion products inside each group\nFor each promotion_groups[i].promotion_products[j], extract:\n\nproduct_code: The main product code or model number (for example “SRT6641”, “SRT6642-BL”, “SRT6643-GM”, “SRT6651-GM”).\n- Use the most specific code printed near the product.\n- If no clear code is visible, use an empty string.\n\nselling_price: The main promo selling price as a number (no currency symbol, no commas).\n- Example: “SP RM 79” → 79\n- Example: “SP RM 125” → 125\n\nIf the flyer only shows a list price but also says “LESS 37% dealer discount”, you may calculate the effective selling price if it is clearly defined; otherwise use the printed “SP” price.\n\nIf price is missing, set 0.\n\nImportant rules for grouping, FOC and discount:\n\n- If the same FOC mechanic text (for example, “10 FOC 1 25 FOC 5”) is printed once but obviously applies to all products in a block, create one group with multiple foc_rules entries as described above.\n- If different mechanics clearly apply to different sets of products, use multiple promotion_groups.\n- A dealer discount like “LESS 37%” that applies to all products in a block should be stored once at promotion_groups[i].dealer_discount and is not repeated on each product.\n- Do not invent any product codes, prices, dates, or discounts that are not visible. If unsure, leave them empty or zero as specified.\n\nOutput format (very important)\nReturn a single JSON object with this exact top-level structure:\n\n{\n  \"start_date\": \"2025-02-12\",\n  \"end_date\": \"2026-03-02\",\n  \"is_active\": true,\n  \"promotion_groups\": [\n    {\n      \"group_name\": \"LESS 40% + 5%\",\n      \"dealer_discount\": 0.37,\n      \"foc_rules\": [\n        {\n          \"purchase_quantity_for_foc\": 10,\n          \"foc_quantity\": 1\n        },\n        {\n          \"purchase_quantity_for_foc\": 25,\n          \"foc_quantity\": 5\n        }\n      ],\n      \"promotion_products\": [\n        {\n          \"product_code\": \"SRTWT51012\",\n          \"selling_price\": 1639\n        },\n        {\n          \"product_code\": \"SRTWT51013\",\n          \"selling_price\": 899\n        }\n      ]\n    }\n  ]\n}\n\nConstraints:\n\n- Top-level keys must be exactly: promotions and promotion_groups.\n- promotions must contain all of: start_date, end_date, is_active.\n- Each promotion_groups[i] must contain all of: group_name, dealer_discount, foc_rules, promotion_products.\n- Each foc_rules[k] must contain both: purchase_quantity_for_foc, foc_quantity.\n- Each promotion_products[j] must contain both: product_code, selling_price.\n- Do not add any other keys.\n- Do not wrap the JSON in a code block and do not include any explanation or text before or after the JSON.\n\nNow read the provided dealer promotion page (image or PDF) and return the JSON object in exactly this structure, or an empty promotion as described in the MEMO rule if the page is a MEMO.",
         "documentUrls": "={{ $json.split_urls }}",
         "simplify": false,
         "options": {}
@@ -894,8 +867,8 @@
       "name": "analyze-promotion1",
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -919,12 +892,8 @@
         "fieldsToAggregate": {
           "fieldToAggregate": [
             {
-              "fieldToAggregate": "promotions"
-            },
-            {
               "fieldToAggregate": "promotion_groups"
-            },
-            {}
+            }
           ]
         },
         "options": {
@@ -942,7 +911,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nvar output = $input.first().json\n\nconst today = new Date();\n\n// Helper: build Date from YYYY-MM-DD as local date (no timezone shift)\nfunction parseYmd(ymd) {\n  if (!ymd) return null;\n  const [y, m, d] = ymd.split('-').map(Number);\n  return new Date(y, m - 1, d); // year, monthIndex, day\n}\n  const start = parseYmd(output.promotions.start_date);\n  const end = parseYmd(output.promotions.end_date);\n  if (start && end) {\n    // Compare by milliseconds\n    const t = today.getTime();\n    output.promotions.is_active =\n      t >= start.getTime() && t <= end.getTime();\n  } else {\n    if (start == null && end == null) {\n      output.promotions.is_active = true\n    } else {\n      output.promotions.is_active = false;\n    }\n  }\n\noutput.promotion_groups = $input.first().json.promotion_groups\noutput.access_levels = $('Switch').first().json.body.access_levels\noutput.attachment_id = $('Webhook').first().json.body.attachment_id\noutput.description = $('Webhook').first().json.body.attachment_filename\nreturn output;"
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nvar output = $('analyze_document_output_parser2').first().json\noutput.promotion_groups = $('Aggregate').first().json.promotion_groups\nconst today = new Date();\n\n// Helper: build Date from YYYY-MM-DD as local date (no timezone shift)\nfunction parseYmd(ymd) {\n  if (!ymd) return null;\n  const [y, m, d] = ymd.split('-').map(Number);\n  return new Date(y, m - 1, d); // year, monthIndex, day\n}\n  const start = parseYmd(output.start_date);\n  const end = parseYmd(output.end_date);\n  if (start && end) {\n    // Compare by milliseconds\n    const t = today.getTime();\n    output.is_active =\n      t >= start.getTime() && t <= end.getTime();\n  } else {\n    if (start == null && end == null) {\n      output.is_active = true\n    } else {\n      output.is_active = false;\n    }\n  }\n\noutput.access_levels = $('Switch').first().json.body.access_levels\noutput.attachment_id = $('Webhook').first().json.body.attachment_id\noutput.description = $('Webhook').first().json.body.attachment_filename\nreturn output;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -956,13 +925,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://fe-sorento.foundryx.my/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
+        "url": "={{ $env?.CRM_BASE }}/api/v1/integration-management/integration-logs/{{ $('Webhook').first().json.body.integration_log_id }}/status",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "***REMOVED-CRM-API-KEY***"
+              "value": "test"
             }
           ]
         },
@@ -988,7 +957,7 @@
           "value": "models/gemini-2.5-pro",
           "mode": "id"
         },
-        "text": "=You are an expert at reading marketing flyers and dealer A3 promo posters for bathroom and kitchen products.\nYou will receive one page (image or PDF) of a dealer promotion.\n\nIMPORTANT PAGE FILTER RULE\nIf the page contains the word \"MEMO\" anywhere in a prominent title, heading, or watermark (for example \"MEMO\", \"DEALER MEMO\", \"INTERNAL MEMO\"), you MUST treat this page as NON-PROMOTIONAL and IGNORE it for promotion extraction.\n\nIn that case:\n- Do NOT try to read or interpret any promotion mechanics, products, prices, or dates from the page.\n- Do NOT invent a promotion.\n- You MUST return an EMPTY promotion result with the required structure, using default values:\n\n{\n  \"promotions\": {\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"promo_type\": \"other\",\n    \"is_active\": false\n  },\n  \"promotion_groups\": []\n}\n\nYou MUST still follow the output format rules:\n- top-level keys exactly: \"promotions\" and \"promotion_groups\",\n- no extra keys,\n- no explanations or text outside the JSON,\n- but with empty/default values as shown above.\n\nYour task is to extract structured promotion data in a format that can be stored in a database and used for dealer pricing logic.\n\nThere are three levels of data:\n\n- Overall promotion header\n- One or more promotion groups (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.)\n- Inside each group:\n  - One or more FOC rules (purchase/free quantity combinations)\n  - A list of promotion products\n\nRead all visible text on the page: titles, product codes, prices, discount labels like “LESS 37%”, group labels like “10 FOC 1 25 FOC 5”, and promo validity dates like “VALID FROM: 01.01.2025 – 31.03.2025”.\n\n1. Promotion header\nCreate one object called promotions with these exact fields:\n\nstart_date: Promotion start date in the format YYYY-MM-DD.\n- If you see a full date like 01.01.2025, convert it to 2025-01-01.\n- If only month/year is visible, use the first day of that month (e.g. “MAR 2025” → 2025-03-01).\n- If no start date is visible, use an empty string.\n\nend_date: Promotion end date in the format YYYY-MM-DD.\n- If you see a full date like 31.03.2025, convert it to 2025-03-31.\n- If only month/year is visible, use the last day of that month.\n- If no end date is visible, use an empty string.\n\npromo_type: One of: \"bundle\", \"discount\", \"price_override\", \"clearance\", \"other\".\n- If there are “buy X free Y” or FOC mechanics, use \"bundle\".\n- If the key message is a percentage saving like “LESS 37%”, use \"discount\".\n- Otherwise choose the most appropriate, or \"other\" if unclear.\n\nis_active: A boolean. Set to true if today’s date is between start_date and end_date (inclusive). If dates are missing or clearly in the past, set to false.\n\n2. Promotion groups\nCreate an array called promotion_groups.\nEach group represents a logical set of products that share the same headline promotion concept (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.).\n\nFor each group, extract:\n\ngroup_name: A label for this group (e.g. “LESS 45% ≥5 UNITS EXTRA 5% ≥10 UNITS EXTRA 10%”, “≥ 10 UNITS EXTRA 5%”, “LESS 40% + 5%”, etc.). The group name does not need to always contain the discount; if there isn't any related group discount, then just give it a short descriptive label.\n\ndealer_discount:\n- If the flyer shows a dealer discount like “LESS 37%” that applies to all products in this group, convert it to a decimal fraction:\n  - “LESS 37%” → 0.37\n  - “LESS 20%” → 0.20\n- If no dealer discount is clearly shown for this group, set this field to 0.\n\nfoc_rules: an array describing one or more purchase/free combinations in this group.\n\nEach foc_rules[k] object must have:\n- purchase_quantity_for_foc: The purchase quantity in the rule.\n  - “10 FOC 1” → 10\n  - “25 FOC 5” → 25\n- foc_quantity: The corresponding free quantity.\n  - “10 FOC 1” → 1\n  - “25 FOC 5” → 5\n\nExample: a label “10 FOC 1 25 FOC 5” for the same group should become:\n\n\"foc_rules\": [\n  { \"purchase_quantity_for_foc\": 10, \"foc_quantity\": 1 },\n  { \"purchase_quantity_for_foc\": 25, \"foc_quantity\": 5 }\n]\n\nIf no FOC mechanic exists for this group, use an empty array: [].\n\npromotion_products: an array of products belonging to this group (see below).\n\nAssign products to the group whose mechanics and title clearly apply to those products. If the flyer clearly separates products into different blocks with different mechanics, use multiple groups.\n\n3. Promotion products inside each group\nFor each promotion_groups[i].promotion_products[j], extract:\n\nproduct_code: The main product code or model number (for example “SRT6641”, “SRT6642-BL”, “SRT6643-GM”, “SRT6651-GM”).\n- Use the most specific code printed near the product.\n- If no clear code is visible, use an empty string.\n\nselling_price: The main promo selling price as a number (no currency symbol, no commas).\n- Example: “SP RM 79” → 79\n- Example: “SP RM 125” → 125\n\nIf the flyer only shows a list price but also says “LESS 37% dealer discount”, you may calculate the effective selling price if it is clearly defined; otherwise use the printed “SP” price.\n\nIf price is missing, set 0.\n\nImportant rules for grouping, FOC and discount:\n\n- If the same FOC mechanic text (for example, “10 FOC 1 25 FOC 5”) is printed once but obviously applies to all products in a block, create one group with multiple foc_rules entries as described above.\n- If different mechanics clearly apply to different sets of products, use multiple promotion_groups.\n- A dealer discount like “LESS 37%” that applies to all products in a block should be stored once at promotion_groups[i].dealer_discount and is not repeated on each product.\n- Do not invent any product codes, prices, dates, or discounts that are not visible. If unsure, leave them empty or zero as specified.\n\nOutput format (very important)\nReturn a single JSON object with this exact top-level structure:\n\n{\n  \"promotions\": {\n    \"start_date\": \"2025-02-12\",\n    \"end_date\": \"2026-03-02\",\n    \"promo_type\": \"bundle\",\n    \"is_active\": true\n  },\n  \"promotion_groups\": [\n    {\n      \"group_name\": \"LESS 40% + 5%\",\n      \"dealer_discount\": 0.37,\n      \"foc_rules\": [\n        {\n          \"purchase_quantity_for_foc\": 10,\n          \"foc_quantity\": 1\n        },\n        {\n          \"purchase_quantity_for_foc\": 25,\n          \"foc_quantity\": 5\n        }\n      ],\n      \"promotion_products\": [\n        {\n          \"product_code\": \"SRTWT51012\",\n          \"selling_price\": 1639\n        },\n        {\n          \"product_code\": \"SRTWT51013\",\n          \"selling_price\": 899\n        }\n      ]\n    }\n  ]\n}\n\nConstraints:\n\n- Top-level keys must be exactly: promotions and promotion_groups.\n- promotions must contain all of: start_date, end_date, promo_type, is_active.\n- Each promotion_groups[i] must contain all of: group_name, dealer_discount, foc_rules, promotion_products.\n- Each foc_rules[k] must contain both: purchase_quantity_for_foc, foc_quantity.\n- Each promotion_products[j] must contain both: product_code, selling_price.\n- Do not add any other keys.\n- Do not wrap the JSON in a code block and do not include any explanation or text before or after the JSON.\n\nNow read the provided dealer promotion page (image or PDF) and return the JSON object in exactly this structure, or an empty promotion as described in the MEMO rule if the page is a MEMO.",
+        "text": "=You are an expert at reading marketing flyers and dealer A3 promo posters for bathroom and kitchen products.\nYou will receive one page (image or PDF) of a dealer promotion.\n\nIMPORTANT PAGE FILTER RULE\nIf the page contains the word \"MEMO\" anywhere in a prominent title, heading, or watermark (for example \"MEMO\", \"DEALER MEMO\", \"INTERNAL MEMO\"), you MUST treat this page as NON-PROMOTIONAL and IGNORE it for promotion extraction.\n\nIn that case:\n- Do NOT try to read or interpret any promotion mechanics, products, prices, or dates from the page.\n- Do NOT invent a promotion.\n- You MUST return an EMPTY promotion result with the required structure, using default values:\n\n{\n  \"start_date\": \"\",\n  \"end_date\": \"\",\n  \"is_active\": false,\n  \"promotion_groups\": []\n}\n\nYou MUST still follow the output format rules:\n- top-level keys exactly: \"promotions\" and \"promotion_groups\",\n- no extra keys,\n- no explanations or text outside the JSON,\n- but with empty/default values as shown above.\n\nYour task is to extract structured promotion data in a format that can be stored in a database and used for dealer pricing logic.\n\nThere are three levels of data:\n\n- Overall promotion header\n- One or more promotion groups (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.)\n- Inside each group:\n  - One or more FOC rules (purchase/free quantity combinations)\n  - A list of promotion products\n\nRead all visible text on the page: titles, product codes, prices, discount labels like “LESS 37%”, group labels like “10 FOC 1 25 FOC 5”, and promo validity dates like “VALID FROM: 01.01.2025 – 31.03.2025”.\n\n1. Promotion header\nCreate one object called promotions with these exact fields:\n\nstart_date: Promotion start date in the format YYYY-MM-DD.\n- If you see a full date like 01.01.2025, convert it to 2025-01-01.\n- If only month/year is visible, use the first day of that month (e.g. “MAR 2025” → 2025-03-01).\n- If no start date is visible, use an empty string.\n\nend_date: Promotion end date in the format YYYY-MM-DD.\n- If you see a full date like 31.03.2025, convert it to 2025-03-31.\n- If only month/year is visible, use the last day of that month.\n- If no end date is visible, use an empty string.\n\nis_active: A boolean. Set to true if today’s date is between start_date and end_date (inclusive). If dates are missing or clearly in the past, set to false.\n\n2. Promotion groups\nCreate an array called promotion_groups.\nEach group represents a logical set of products that share the same headline promotion concept (e.g. LESS 45%, ≥5 UNITS EXTRA 5%, ≥10 UNITS EXTRA 10%, ≥ 10 UNITS EXTRA 5%, LESS 40% + 5%, etc.).\n\nFor each group, extract:\n\ngroup_name: A label for this group (e.g. “LESS 45% ≥5 UNITS EXTRA 5% ≥10 UNITS EXTRA 10%”, “≥ 10 UNITS EXTRA 5%”, “LESS 40% + 5%”, etc.). The group name does not need to always contain the discount; if there isn't any related group discount, then just give it a short descriptive label.\n\ndealer_discount:\n- If the flyer shows a dealer discount like “LESS 37%” that applies to all products in this group, convert it to a decimal fraction:\n  - “LESS 37%” → 0.37\n  - “LESS 20%” → 0.20\n- If no dealer discount is clearly shown for this group, set this field to 0.\n\nfoc_rules: an array describing one or more purchase/free combinations in this group.\n\nEach foc_rules[k] object must have:\n- purchase_quantity_for_foc: The purchase quantity in the rule.\n  - “10 FOC 1” → 10\n  - “25 FOC 5” → 25\n- foc_quantity: The corresponding free quantity.\n  - “10 FOC 1” → 1\n  - “25 FOC 5” → 5\n\nExample: a label “10 FOC 1 25 FOC 5” for the same group should become:\n\n\"foc_rules\": [\n  { \"purchase_quantity_for_foc\": 10, \"foc_quantity\": 1 },\n  { \"purchase_quantity_for_foc\": 25, \"foc_quantity\": 5 }\n]\n\nIf no FOC mechanic exists for this group, use an empty array: [].\n\npromotion_products: an array of products belonging to this group (see below).\n\nAssign products to the group whose mechanics and title clearly apply to those products. If the flyer clearly separates products into different blocks with different mechanics, use multiple groups.\n\n3. Promotion products inside each group\nFor each promotion_groups[i].promotion_products[j], extract:\n\nproduct_code: The main product code or model number (for example “SRT6641”, “SRT6642-BL”, “SRT6643-GM”, “SRT6651-GM”).\n- Use the most specific code printed near the product.\n- If no clear code is visible, use an empty string.\n\nselling_price: The main promo selling price as a number (no currency symbol, no commas).\n- Example: “SP RM 79” → 79\n- Example: “SP RM 125” → 125\n\nIf the flyer only shows a list price but also says “LESS 37% dealer discount”, you may calculate the effective selling price if it is clearly defined; otherwise use the printed “SP” price.\n\nIf price is missing, set 0.\n\nImportant rules for grouping, FOC and discount:\n\n- If the same FOC mechanic text (for example, “10 FOC 1 25 FOC 5”) is printed once but obviously applies to all products in a block, create one group with multiple foc_rules entries as described above.\n- If different mechanics clearly apply to different sets of products, use multiple promotion_groups.\n- A dealer discount like “LESS 37%” that applies to all products in a block should be stored once at promotion_groups[i].dealer_discount and is not repeated on each product.\n- Do not invent any product codes, prices, dates, or discounts that are not visible. If unsure, leave them empty or zero as specified.\n\nOutput format (very important)\nReturn a single JSON object with this exact top-level structure:\n\n{\n  \"start_date\": \"2025-02-12\",\n  \"end_date\": \"2026-03-02\",\n  \"is_active\": true,\n  \"promotion_groups\": [\n    {\n      \"group_name\": \"LESS 40% + 5%\",\n      \"dealer_discount\": 0.37,\n      \"foc_rules\": [\n        {\n          \"purchase_quantity_for_foc\": 10,\n          \"foc_quantity\": 1\n        },\n        {\n          \"purchase_quantity_for_foc\": 25,\n          \"foc_quantity\": 5\n        }\n      ],\n      \"promotion_products\": [\n        {\n          \"product_code\": \"SRTWT51012\",\n          \"selling_price\": 1639\n        },\n        {\n          \"product_code\": \"SRTWT51013\",\n          \"selling_price\": 899\n        }\n      ]\n    }\n  ]\n}\n\nConstraints:\n\n- Top-level keys must be exactly: promotions and promotion_groups.\n- promotions must contain all of: start_date, end_date, is_active.\n- Each promotion_groups[i] must contain all of: group_name, dealer_discount, foc_rules, promotion_products.\n- Each foc_rules[k] must contain both: purchase_quantity_for_foc, foc_quantity.\n- Each promotion_products[j] must contain both: product_code, selling_price.\n- Do not add any other keys.\n- Do not wrap the JSON in a code block and do not include any explanation or text before or after the JSON.\n\nNow read the provided dealer promotion page (image or PDF) and return the JSON object in exactly this structure, or an empty promotion as described in the MEMO rule if the page is a MEMO.",
         "documentUrls": "={{ $json.body.s3_url }}",
         "simplify": false,
         "options": {}
@@ -1003,8 +972,8 @@
       "name": "analyze-promotion",
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -1019,7 +988,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=The image is tied to 1 or multiple products. Analyze the document and extract a list of products in this format, the linked product can also be found in the filename {{ $json.body.attachment_filename }}\n\nOutput format:\n{\n  \"products\": [\"WC287\", \"WC286\"]\n}",
+        "text": "=The image is tied to 1 or multiple products. Analyze the document and extract a list of products in this format\n\nOutput format:\n{\n  \"products\": [\"WC287\", \"WC286\"]\n}",
         "imageUrls": "={{ $json.body.s3_url }}",
         "options": {}
       },
@@ -1033,8 +1002,8 @@
       "name": "analyze-product-image",
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -1049,7 +1018,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=The video is tied to 1 or multiple products. Analyze the document and extract a list of products in this format, the linked product can also be found in the filename {{ $json.body.attachment_filename }}\n\nOutput format:\n{\n  \"products\": [\"WC287\", \"WC286\"]\n}",
+        "text": "=The video is tied to 1 or multiple products. Analyze the document and extract a list of products in this format\n\nOutput format:\n{\n  \"products\": [\"WC287\", \"WC286\"]\n}",
         "videoUrls": "={{ $json.body.s3_url }}",
         "options": {}
       },
@@ -1063,8 +1032,8 @@
       "name": "analyze-product-video",
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -1078,7 +1047,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=The document is an attachment tied to 1 or multiple products. Analyze the document and extract a list of products in this format, the linked product can also be found in the filename {{ $json.body.attachment_filename }}\n\nOutput format:\n{\n  \"products\": [\"WC287\", \"WC286\"]\n}",
+        "text": "=The document is an attachment tied to 1 or multiple products. Analyze the document and extract a list of products in this format\n\nOutput format:\n{\n  \"products\": [\"WC287\", \"WC286\"]\n}",
         "documentUrls": "={{ $json.body.s3_url }}",
         "options": {}
       },
@@ -1092,8 +1061,8 @@
       "name": "analyze-product-document",
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -1236,8 +1205,8 @@
       "name": "analyze-marketing-form",
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -1299,8 +1268,8 @@
       "retryOnFail": true,
       "credentials": {
         "googlePalmApi": {
-          "id": "fr3jSAU1JR6Ioobn",
-          "name": "sorento-gemini"
+          "id": "iapyO5caG8i6TTEV",
+          "name": "Google Gemini(PaLM) Api account"
         }
       },
       "onError": "continueErrorOutput"
@@ -1338,6 +1307,33 @@
       ],
       "id": "7e2ee14b-547c-4d18-8e1d-7af7c52478df",
       "name": "if-packing-list-linked-product"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:3000/api/v1/external/promotions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "test"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.toJsonString() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        880
+      ],
+      "id": "2180130d-f140-422f-8bd9-fbe2fa409aab",
+      "name": "promotion-create"
     }
   ],
   "connections": {
@@ -1539,18 +1535,6 @@
         ]
       ]
     },
-    "promotions-create": {
-      "main": [
-        [
-          {
-            "node": "integration-log-update-successful4",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        []
-      ]
-    },
     "forms-insert": {
       "main": [
         [
@@ -1624,7 +1608,7 @@
       "main": [
         [
           {
-            "node": "promotions-create",
+            "node": "promotion-create",
             "type": "main",
             "index": 0
           }
@@ -1828,6 +1812,17 @@
           }
         ]
       ]
+    },
+    "promotion-create": {
+      "main": [
+        [
+          {
+            "node": "integration-log-update-successful4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1835,9 +1830,7 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {
     "When Executed by Another Workflow": [
       {
@@ -1857,42 +1850,39 @@
       {
         "json": {
           "headers": {
-            "connection": "close",
-            "host": "automate-sorento.foundryx.my",
-            "origin": "https://automate-sorento.foundryx.my",
-            "x-real-ip": "172.69.176.25",
-            "x-forwarded-for": "72.62.195.20, 172.69.176.25",
-            "x-forwarded-proto": "https",
-            "content-length": "1276",
+            "host": "localhost:5678",
             "accept": "*/*",
-            "user-agent": "Sorento-CRM/1.0.0",
+            "accept-encoding": "gzip, deflate, zstd",
+            "connection": "keep-alive",
             "content-type": "application/json",
-            "cf-ray": "9ff8b8168baa1a58-SIN",
-            "accept-encoding": "gzip, br",
-            "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "72.62.195.20",
-            "cf-ipcountry": "MY",
-            "cf-visitor": "{\"scheme\":\"https\"}"
+            "user-agent": "Sorento-CRM/1.0.0",
+            "content-length": "1203"
           },
           "params": {},
           "query": {},
           "body": {
-            "integration_log_id": "628c3d32-0349-44a4-8a4f-f95ebf666921",
-            "event_type": "attachment_replaced",
-            "attachment_url": "https://cdn-sorento.com/promotion/SORENTO%20NEW%20ARRIVAL%20KITCHEN%20SINK_22052026%20DEALER.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260522%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260522T032623Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8ff9557ff5ae0b6f134345822924aa339fed7e1a8a19209feb018a75d627f50f",
-            "s3_url": "https://cdn-sorento.com/promotion/SORENTO%20NEW%20ARRIVAL%20KITCHEN%20SINK_22052026%20DEALER.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260522%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260522T032623Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8ff9557ff5ae0b6f134345822924aa339fed7e1a8a19209feb018a75d627f50f",
-            "file_path": "https://cdn-sorento.com/promotion/SORENTO NEW ARRIVAL KITCHEN SINK_22052026 DEALER.pdf",
-            "attachment_id": "9a942e85-4927-40ba-bc60-b258768b8955",
-            "attachment_filename": "SORENTO NEW ARRIVAL KITCHEN SINK_22052026 DEALER.pdf",
-            "attachment_mime_type": "application/pdf",
-            "file_size": 1329378,
-            "attachment_type": "Promotion",
+            "integration_log_id": "48cacea7-da4c-4957-bcd1-6e5356943d05",
+            "event_type": "attachment_uploaded",
+            "attachment_url": "https://cdn-sorento.com/product_photos/SRTWT6503.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260602%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260602T102255Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7fbf95eb403d2cee67f158c414b8c5ccbdce4d0abe024f3bcf89473252adf39b",
+            "s3_url": "https://cdn-sorento.com/product_photos/SRTWT6503.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260602%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260602T102255Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7fbf95eb403d2cee67f158c414b8c5ccbdce4d0abe024f3bcf89473252adf39b",
+            "file_path": "https://cdn-sorento.com/product_photos/SRTWT6503.jpg",
+            "attachment_id": "039012f0-1726-40d4-833e-73d87d8cde00",
+            "attachment_filename": "SRTWT6503.jpg",
+            "attachment_mime_type": "image/jpeg",
+            "file_size": 53093,
+            "attachment_type": "Product Photos",
             "access_levels": [
-              "dealer"
+              "sorento_office",
+              "dealer",
+              "mocha_dealer",
+              "mocha_office",
+              "cabana_office",
+              "cabana_dealer",
+              "end_user"
             ],
-            "upload_batch_id": "2e65f2d5-7324-4287-91de-f6beb686522f"
+            "upload_batch_id": "d8fb8fce-e7c8-4c4a-ace4-452e13ff801c"
           },
-          "webhookUrl": "https://automate-sorento.foundryx.my/webhook/e26f935a-0e48-42a1-93ac-703b94b7196f",
+          "webhookUrl": "http://localhost:5678/webhook/e26f935a-0e48-42a1-93ac-703b94b7196f",
           "executionMode": "production"
         },
         "pairedItem": {
@@ -1901,27 +1891,27 @@
       }
     ]
   },
-  "versionId": "e478d766-e176-445f-8dda-8e3f415aea09",
-  "activeVersionId": "f04decaa-84b2-47e2-9b87-0ccf5c8ed394",
-  "versionCounter": 169,
+  "versionId": "7786cbc9-666e-4467-bcc8-a6c7aa62226a",
+  "activeVersionId": "7786cbc9-666e-4467-bcc8-a6c7aa62226a",
+  "versionCounter": 50,
   "triggerCount": 1,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-02-03T13:58:01.742Z",
-      "createdAt": "2026-02-03T13:58:01.742Z",
+      "updatedAt": "2026-05-23T08:20:18.662Z",
+      "createdAt": "2026-05-23T08:20:18.662Z",
       "role": "workflow:owner",
       "workflowId": "_NbFU3cCoEQwPSbvn14vV",
-      "projectId": "0HJOI5FmkQeIVfH8",
+      "projectId": "7Hsu92Gikf4hBFZp",
       "project": {
-        "updatedAt": "2026-02-03T13:27:34.210Z",
-        "createdAt": "2026-02-03T13:26:47.249Z",
-        "id": "0HJOI5FmkQeIVfH8",
+        "updatedAt": "2026-05-23T09:08:51.908Z",
+        "createdAt": "2026-05-23T08:30:38.008Z",
+        "id": "7Hsu92Gikf4hBFZp",
         "name": "Teh Jayson <jayson@foundryx.my>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+        "creatorId": "24eeb3d0-ff0f-484e-ad8c-b9f1e9ef29c8"
       }
     }
   ]

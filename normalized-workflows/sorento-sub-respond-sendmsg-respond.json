@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-22T00:16:43.499Z",
+  "updatedAt": "2026-05-30T16:23:54.021Z",
   "createdAt": "2026-02-03T13:56:27.908Z",
   "id": "aoydkG1dbItXR5jXFEQsP",
   "name": "sorento-sub-respond-sendmsg-respond",
@@ -20,6 +20,15 @@
             },
             {
               "name": "quick_reply"
+            },
+            {
+              "name": "input_message"
+            },
+            {
+              "name": "test_run_id"
+            },
+            {
+              "name": "started_at"
             }
           ]
         }
@@ -27,8 +36,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        0,
-        332
+        -192,
+        608
       ],
       "id": "752fab22-92d9-412b-a7f3-8bb380d21dcc",
       "name": "When Executed by Another Workflow"
@@ -44,15 +53,15 @@
       "type": "@respond-io/n8n-nodes-respond-io.respondio",
       "typeVersion": 1,
       "position": [
-        960,
-        384
+        1056,
+        416
       ],
       "id": "9fd31e18-edfc-4798-bd42-ff128e22075b",
       "name": "Send a Message",
       "credentials": {
         "respondIoApi": {
-          "id": "OiS59QkzpKfKSdaa",
-          "name": "sorento-api"
+          "id": "aVOmqMDlDlMjSAmq",
+          "name": "Respond.io account"
         }
       }
     },
@@ -116,8 +125,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        448,
-        752
+        256,
+        1232
       ],
       "id": "7863b0b2-cc64-45a1-be21-d08f45235f23",
       "name": "Switch1",
@@ -132,15 +141,15 @@
       "type": "@respond-io/n8n-nodes-respond-io.respondio",
       "typeVersion": 1,
       "position": [
-        224,
-        752
+        32,
+        1232
       ],
       "id": "7ca92cd5-a07a-42aa-8ff2-e290b206c0d4",
       "name": "Find a Message",
       "credentials": {
         "respondIoApi": {
-          "id": "OiS59QkzpKfKSdaa",
-          "name": "sorento-api"
+          "id": "aVOmqMDlDlMjSAmq",
+          "name": "Respond.io account"
         }
       },
       "disabled": true
@@ -152,8 +161,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        0,
-        752
+        -192,
+        1232
       ],
       "id": "ef07daf8-5072-4faf-a1b2-70959b006e2b",
       "name": "Wait",
@@ -181,15 +190,15 @@
       "type": "@respond-io/n8n-nodes-respond-io.respondio",
       "typeVersion": 1,
       "position": [
-        672,
-        752
+        480,
+        1232
       ],
       "id": "d0e04462-6b50-4a64-af74-3b1d0d2f6151",
       "name": "Send Template",
       "credentials": {
         "respondIoApi": {
-          "id": "OiS59QkzpKfKSdaa",
-          "name": "sorento-api"
+          "id": "aVOmqMDlDlMjSAmq",
+          "name": "Respond.io account"
         }
       },
       "disabled": true
@@ -222,8 +231,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        224,
-        332
+        32,
+        608
       ],
       "id": "22fed99e-1035-4fe3-a63d-971b9afc09d5",
       "name": "If"
@@ -242,15 +251,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        672,
-        528
+        480,
+        848
       ],
       "id": "28816181-276f-4cc8-a79c-f76519c11c45",
       "name": "HTTP Request",
       "credentials": {
         "respondIoApi": {
-          "id": "OiS59QkzpKfKSdaa",
-          "name": "sorento-api"
+          "id": "aVOmqMDlDlMjSAmq",
+          "name": "Respond.io account"
         }
       }
     },
@@ -268,7 +277,7 @@
       "type": "@n8n/n8n-nodes-langchain.memoryManager",
       "typeVersion": 1.1,
       "position": [
-        896,
+        704,
         -16
       ],
       "id": "ad3461a1-5d50-4ce1-8c67-6abb036762d0",
@@ -282,15 +291,15 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        968,
+        784,
         208
       ],
       "id": "a5060e31-46e8-4491-ac82-cbc945153a0a",
       "name": "Postgres Chat Memory1",
       "credentials": {
         "postgres": {
-          "id": "ETJL5KoaA1UpkDip",
-          "name": "sorento-crm-db"
+          "id": "655hi8BQkJofoyRP",
+          "name": "sorento-ai-automation"
         }
       }
     },
@@ -301,8 +310,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        448,
-        236
+        256,
+        464
       ],
       "id": "c43974ff-9ea9-4092-bcec-f109104006c3",
       "name": "Code in JavaScript"
@@ -314,11 +323,621 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        672,
-        236
+        480,
+        464
       ],
       "id": "ce067603-3e9e-47f4-af39-d26b164330a3",
       "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e4322f59-8fe9-44ee-ab3f-359ba62cc8a5",
+              "leftValue": "={{ $env?.APP_ENV }}",
+              "rightValue": "local",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        768,
+        384
+      ],
+      "id": "bb0b5dcb-0473-4e7a-a48c-a120d74c66ab",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "test_results",
+          "mode": "list",
+          "cachedResultName": "test_results"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "passed": false,
+            "test_run_id": "={{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+            "workflow_name": "={{ $workflow.name }}",
+            "input_chat_history_ids": "=[\"{{ $('When Executed by Another Workflow').item.json.contact_identifer }}\"] ",
+            "input_messages": "={\n  \"message\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.input_message) }}\n}",
+            "output_messages": "={\n  \"message\": {{ JSON.stringify($json.message) }}\n}",
+            "started_at": "={{ $('When Executed by Another Workflow').first().json.started_at }}",
+            "finished_at": "={{ DateTime.now() }}",
+            "created_at": "={{ DateTime.now() }}",
+            "expected_messages": "{\n  \"message\": \"evaluated later\"\n}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "test_run_id",
+              "displayName": "test_run_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "test_name",
+              "displayName": "test_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "input_chat_history_ids",
+              "displayName": "input_chat_history_ids",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "trigger_chat_history_id",
+              "displayName": "trigger_chat_history_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "input_messages",
+              "displayName": "input_messages",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "agent_route",
+              "displayName": "agent_route",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "model",
+              "displayName": "model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "output_messages",
+              "displayName": "output_messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "expected_messages",
+              "displayName": "expected_messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "passed",
+              "displayName": "passed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "judge_notes",
+              "displayName": "judge_notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "latency_ms",
+              "displayName": "latency_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tokens_input",
+              "displayName": "tokens_input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tokens_output",
+              "displayName": "tokens_output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "metadata",
+              "displayName": "metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1056,
+        608
+      ],
+      "id": "51a0cd2d-0342-4b2a-9320-0e462a9d0913",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "tznTDP74eWIS7iCT",
+          "name": "local-postgres-n8n-test"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e4322f59-8fe9-44ee-ab3f-359ba62cc8a5",
+              "leftValue": "={{ $env?.APP_ENV }}",
+              "rightValue": "local",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        816
+      ],
+      "id": "0fa1f3e2-ed35-4d39-b515-5ec99df9b789",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "test_results",
+          "mode": "list",
+          "cachedResultName": "test_results"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "passed": false,
+            "test_run_id": "={{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+            "workflow_name": "={{ $workflow.name }}",
+            "input_chat_history_ids": "=[\"{{ $('When Executed by Another Workflow').item.json.contact_identifer }}\"] ",
+            "input_messages": "={\n  \"message\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.input_message) }}\n}",
+            "output_messages": "={\n  \"message\": {{ JSON.stringify($json.message) }},\n  \"quick_reply\": {{ JSON.stringify($json.quick_reply) }}\n}",
+            "started_at": "={{ $('When Executed by Another Workflow').first().json.started_at }}",
+            "finished_at": "={{ DateTime.now() }}",
+            "created_at": "={{ DateTime.now() }}",
+            "expected_messages": "{\n  \"message\": \"evaluated later\"\n}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "test_run_id",
+              "displayName": "test_run_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "test_name",
+              "displayName": "test_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "input_chat_history_ids",
+              "displayName": "input_chat_history_ids",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "trigger_chat_history_id",
+              "displayName": "trigger_chat_history_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "input_messages",
+              "displayName": "input_messages",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "agent_route",
+              "displayName": "agent_route",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "model",
+              "displayName": "model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "output_messages",
+              "displayName": "output_messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "expected_messages",
+              "displayName": "expected_messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "passed",
+              "displayName": "passed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "judge_notes",
+              "displayName": "judge_notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "latency_ms",
+              "displayName": "latency_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tokens_input",
+              "displayName": "tokens_input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tokens_output",
+              "displayName": "tokens_output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "metadata",
+              "displayName": "metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        480,
+        976
+      ],
+      "id": "f5ca6361-30d8-4e94-9063-6e45da3bba0e",
+      "name": "Insert rows in a table1",
+      "credentials": {
+        "postgres": {
+          "id": "tznTDP74eWIS7iCT",
+          "name": "local-postgres-n8n-test"
+        }
+      }
     }
   ],
   "connections": {
@@ -378,7 +997,7 @@
         ],
         [
           {
-            "node": "HTTP Request",
+            "node": "If2",
             "type": "main",
             "index": 0
           }
@@ -440,7 +1059,54 @@
         ],
         [
           {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
             "node": "Send a Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert rows in a table1",
             "type": "main",
             "index": 0
           }
@@ -460,8 +1126,12 @@
     "When Executed by Another Workflow": [
       {
         "json": {
-          "contact_identifer": 437264483,
-          "message": "Order status retrieved.\n\n1. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n2. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n3. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n4. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n5. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n6. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n7. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n8. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n9. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n10. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n11. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n12. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n13. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n14. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n15. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n16. *Order:* PS202605-0368\n*Status:* Picked Up / In Transit\n*Order Date:* 2026-05-20T00:00:00\n*Actual Delivery Date:* 2026-05-20T00:00:00\n*Customer:* SETIA-WOOD INDUSTRIES SDN BHD (PROJECT)\n*Warehouse:* BRW\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* BRW8761\n\n_Data last updated: 21/05/2026 02:51:43_"
+          "contact_identifer": 428126355,
+          "message": "Please specify the type of promotion",
+          "quick_reply": "End User,Sorento Dealer,Sorento Office",
+          "input_message": "can i know what latest promo for sorento kitchen sink ",
+          "test_run_id": "5156",
+          "started_at": "2026-05-30T12:23:13.976-04:00"
         },
         "pairedItem": {
           "item": 0
@@ -469,27 +1139,27 @@
       }
     ]
   },
-  "versionId": "f4daa8db-ecd5-4d8f-9d44-a9c9210cc2ea",
-  "activeVersionId": "f4daa8db-ecd5-4d8f-9d44-a9c9210cc2ea",
-  "versionCounter": 27,
+  "versionId": "b090e925-5b10-4ece-a775-586731fe5492",
+  "activeVersionId": "b090e925-5b10-4ece-a775-586731fe5492",
+  "versionCounter": 53,
   "triggerCount": 0,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-02-03T13:56:27.908Z",
-      "createdAt": "2026-02-03T13:56:27.908Z",
+      "updatedAt": "2026-05-23T08:20:18.662Z",
+      "createdAt": "2026-05-23T08:20:18.662Z",
       "role": "workflow:owner",
       "workflowId": "aoydkG1dbItXR5jXFEQsP",
-      "projectId": "0HJOI5FmkQeIVfH8",
+      "projectId": "7Hsu92Gikf4hBFZp",
       "project": {
-        "updatedAt": "2026-02-03T13:27:34.210Z",
-        "createdAt": "2026-02-03T13:26:47.249Z",
-        "id": "0HJOI5FmkQeIVfH8",
+        "updatedAt": "2026-05-23T09:08:51.908Z",
+        "createdAt": "2026-05-23T08:30:38.008Z",
+        "id": "7Hsu92Gikf4hBFZp",
         "name": "Teh Jayson <jayson@foundryx.my>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+        "creatorId": "24eeb3d0-ff0f-484e-ad8c-b9f1e9ef29c8"
       }
     }
   ]

@@ -1,0 +1,54 @@
+name: deploy-prod
+
+# Auto-deploy to prod on push to main (only when workflows or scripts change).
+# SSHes into the prod box, pulls, and runs scripts/deploy.sh (backup -> cred
+# remap -> import -> preserve active state -> restart). Non-interactive (YES=1).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'normalized-workflows/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch: {}        # also allow manual "Run workflow"
+
+concurrency:
+  group: deploy-prod           # never run two prod deploys at once
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure SSH (key + pinned host key)
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "${{ secrets.PROD_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy on prod over SSH
+        env:
+          HOST: ${{ secrets.PROD_SSH_HOST }}
+          USER: ${{ secrets.PROD_SSH_USER }}
+          PORT: ${{ secrets.PROD_SSH_PORT }}            # optional; defaults to 22 below
+          REPO_DIR: ${{ vars.PROD_REPO_DIR }}           # path to the n8n-workflows-init checkout on prod
+          COMPOSE_DIR: ${{ vars.PROD_COMPOSE_DIR }}     # dir containing docker-compose.yml on prod
+        run: |
+          set -euo pipefail
+          PORT="${PORT:-22}"
+          # Remote command prefix carries the paths; heredoc body is sent verbatim to remote bash.
+          ssh -i ~/.ssh/id_deploy -p "$PORT" -o StrictHostKeyChecking=yes \
+            "$USER@$HOST" \
+            "REPO_DIR='$REPO_DIR' COMPOSE_DIR='$COMPOSE_DIR' bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd "$REPO_DIR"
+          echo ">> updating repo on prod ($REPO_DIR)"
+          git fetch --quiet origin main
+          git checkout --quiet main
+          git pull --ff-only origin main          # sets ORIG_HEAD -> deploy.sh --changed diffs against it
+          echo ">> running deploy.sh"
+          COMPOSE_DIR="${COMPOSE_DIR:-$(cd .. && pwd)}" \
+            YES=1 ./scripts/deploy.sh --changed --preserve-active
+          REMOTE
