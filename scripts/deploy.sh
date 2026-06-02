@@ -44,7 +44,8 @@ BACKUP_DIR="$REPO_ROOT/backups"
 
 # n8n API helpers. api_put: update workflow body; api_activate: publish.
 api_call() { # METHOD URL [datafile] -> prints http_code; body in $API_RESP
-  local method="$1" url="$2" data="${3:-}" args=(-sS -m 60 -o "$API_RESP" -w '%{http_code}' -X "$method" "$url" -H "X-N8N-API-KEY: $N8N_API_KEY")
+  local method="$1" url="$2" data="${3:-}"
+  local args=(-sS -m 60 -o "$API_RESP" -w '%{http_code}' -X "$method" "$url" -H "X-N8N-API-KEY: $N8N_API_KEY")
   [ -n "$data" ] && args+=(-H "Content-Type: application/json" --data @"$data")
   curl "${args[@]}"
 }
@@ -105,7 +106,7 @@ cd "$COMPOSE_DIR"
 
 # ---- 1. backup prod ---------------------------------------------------------
 STAMP="$(date +%Y%m%d-%H%M%S)"
-echo; echo ">> [1/5] backing up ALL prod workflows ..."
+echo; echo ">> [1/4] backing up ALL prod workflows ..."
 docker compose exec -T "$N8N_SERVICE" sh -c 'rm -rf /tmp/prod-backup && mkdir -p /tmp/prod-backup'
 docker compose exec -T "$N8N_SERVICE" n8n export:workflow --all --separate --pretty --output=/tmp/prod-backup
 mkdir -p "$BACKUP_DIR"
@@ -122,7 +123,7 @@ ACTIVE_BEFORE="$(docker compose exec -T "$PG_SERVICE" psql -U "$PG_USER" -d "$PG
 # import:workflow never touches credentials_entity, so prod SECRETS are safe.
 # What we fix is the node's cred REFERENCE (id+name) -> prod's id, matched by
 # name+type. Dev-only names (local-*) translate via cred-aliases.json first.
-echo; echo ">> [2/5] credential remap (resolve refs against prod credentials_entity) ..."
+echo; echo ">> [2/4] credential remap (resolve refs against prod credentials_entity) ..."
 PROD_CREDS_FILE="$(mktemp)"
 docker compose exec -T "$PG_SERVICE" psql -U "$PG_USER" -d "$PG_DB" -t -A -F'|' \
   -c 'SELECT id,name,type FROM credentials_entity;' > "$PROD_CREDS_FILE" 2>/dev/null || true
