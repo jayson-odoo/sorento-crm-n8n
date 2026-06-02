@@ -49,16 +49,14 @@ def main():
                if not k.startswith("_")}
     os.makedirs(out_dir, exist_ok=True)
 
-    # Instance-local fields that break cross-instance import. activeVersionId/
-    # versionId point at version rows that exist only on the source instance, so
-    # importing an active workflow makes n8n write workflow_publish_history with a
-    # dangling FK. shared/pinData/tags reference local users/projects/tags. We strip
-    # these and import INACTIVE; deploy.sh --preserve-active re-activates cleanly,
-    # which builds a fresh, self-consistent version + publish row on the target.
-    SANITIZE_DROP = ("activeVersionId", "versionId", "versionCounter", "triggerCount",
-                     "shared", "pinData", "meta", "tags", "isArchived",
-                     "createdAt", "updatedAt")
-
+    # Minimal sanitize for cross-instance import (proven shape: a workflow that
+    # imports clean has active=false + activeVersionId=null, versionId kept).
+    # Importing an ACTIVE workflow whose activeVersionId points at a version row
+    # that exists only on the source instance violates the workflow_publish_history
+    # FK. So: import inactive with no active-version pointer; deploy.sh
+    # --preserve-active re-activates the ones that were live, which n8n then
+    # publishes with a valid current version. versionId is NOT-NULL in
+    # workflow_entity, so it MUST be left intact (removing it breaks import).
     unmapped, changed = {}, 0
     for fp in files:
         wf = json.load(open(fp))
@@ -73,9 +71,8 @@ def main():
                 else:
                     unmapped[(ctype, c.get("name"), want)] = \
                         unmapped.get((ctype, c.get("name"), want), 0) + 1
-        for k in SANITIZE_DROP:
-            wf.pop(k, None)
-        wf["active"] = False        # import inactive; reactivate via deploy.sh step 4
+        wf["active"] = False            # import inactive; reactivate via deploy.sh step 4
+        wf["activeVersionId"] = None    # drop source-instance active-version pointer (FK safety)
         out = os.path.join(out_dir, os.path.basename(fp))
         with open(out, "w") as f:
             f.write(json.dumps(wf, indent=2, ensure_ascii=False) + "\n")
