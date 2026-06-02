@@ -131,20 +131,39 @@ fi
 confirm "Continue to import?" || { echo "aborted (backup kept)."; exit 1; }
 
 # ---- 3. import (upsert by id) ----------------------------------------------
+# Per-file tolerant: one failure is recorded, not fatal, so the rest still deploy.
 echo; echo ">> [3/5] importing ..."
+IMPORT_FAILED=()
 for f in "${DEPLOY_FILES[@]}"; do
   base="$(basename "$f")"
   docker compose cp "$f" "$N8N_SERVICE:/tmp/$base"
-  docker compose exec -T "$N8N_SERVICE" n8n import:workflow --input="/tmp/$base"
-  echo "   imported $base"
+  if docker compose exec -T "$N8N_SERVICE" n8n import:workflow --input="/tmp/$base"; then
+    echo "   imported $base"
+  else
+    echo "   !! FAILED to import $base"
+    IMPORT_FAILED+=("$base")
+  fi
 done
+if [ ${#IMPORT_FAILED[@]} -gt 0 ]; then
+  echo "   !! ${#IMPORT_FAILED[@]} import(s) failed: ${IMPORT_FAILED[*]}"
+fi
 
 # ---- 4. activate ------------------------------------------------------------
-# Build the set to activate: explicit --activate ids, plus (if --preserve-active)
-# every id that was active before import. Restores prod's live state after upsert.
+# We imported the deployed workflows INACTIVE (sanitizer sets active=false to avoid
+# the publish_history FK). So only re-activate the ones WE deactivated that were
+# active before = (deployed ids ∩ active-before). Untouched workflows keep their
+# state naturally. Explicit --activate ids are always honored too.
+DEPLOYED_IDS="$(for f in "${FILES[@]}"; do
+  python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('id',''))" "$f" 2>/dev/null
+done)"
 ACT_SET=""
 [ -n "$ACTIVATE_IDS" ] && ACT_SET="$(echo "$ACTIVATE_IDS" | tr ',' '\n')"
-[ "$PRESERVE_ACTIVE" = "1" ] && ACT_SET="$(printf '%s\n%s\n' "$ACT_SET" "$ACTIVE_BEFORE")"
+if [ "$PRESERVE_ACTIVE" = "1" ]; then
+  # intersection of active-before and deployed ids
+  inter="$(comm -12 <(echo "$ACTIVE_BEFORE" | sed '/^$/d' | sort -u) \
+                    <(echo "$DEPLOYED_IDS" | sed '/^$/d' | sort -u))"
+  ACT_SET="$(printf '%s\n%s\n' "$ACT_SET" "$inter")"
+fi
 ACT_SET="$(echo "$ACT_SET" | sed '/^$/d' | sort -u)"
 if [ -n "$ACT_SET" ]; then
   echo; echo ">> [4/5] (re)activating $(echo "$ACT_SET" | wc -l | tr -d ' ') workflow(s) ..."
@@ -163,8 +182,15 @@ docker compose restart "$N8N_SERVICE" "$WORKER_SERVICE"
 echo
 echo "DONE. Backup: $BACKUP_DIR/prod-$STAMP.tgz"
 echo "Rollback:  extract that tgz and re-run import on the old files."
+
+RC=0
+if [ "${IMPORT_FAILED:+x}" = "x" ] && [ ${#IMPORT_FAILED[@]} -gt 0 ]; then
+  echo "!! deploy finished WITH FAILURES: ${IMPORT_FAILED[*]}"; RC=1
+fi
+
 if [ "${YES:-0}" = "1" ]; then
   echo "Recent logs:"; docker compose logs --tail=60 "$N8N_SERVICE"   # non-interactive (CI): no follow
+  exit $RC
 else
   echo "Tailing logs (Ctrl-C to stop):"; docker compose logs -f --tail=40 "$N8N_SERVICE"
 fi

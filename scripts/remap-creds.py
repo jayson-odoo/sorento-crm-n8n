@@ -49,6 +49,16 @@ def main():
                if not k.startswith("_")}
     os.makedirs(out_dir, exist_ok=True)
 
+    # Instance-local fields that break cross-instance import. activeVersionId/
+    # versionId point at version rows that exist only on the source instance, so
+    # importing an active workflow makes n8n write workflow_publish_history with a
+    # dangling FK. shared/pinData/tags reference local users/projects/tags. We strip
+    # these and import INACTIVE; deploy.sh --preserve-active re-activates cleanly,
+    # which builds a fresh, self-consistent version + publish row on the target.
+    SANITIZE_DROP = ("activeVersionId", "versionId", "versionCounter", "triggerCount",
+                     "shared", "pinData", "meta", "tags", "isArchived",
+                     "createdAt", "updatedAt")
+
     unmapped, changed = {}, 0
     for fp in files:
         wf = json.load(open(fp))
@@ -63,6 +73,9 @@ def main():
                 else:
                     unmapped[(ctype, c.get("name"), want)] = \
                         unmapped.get((ctype, c.get("name"), want), 0) + 1
+        for k in SANITIZE_DROP:
+            wf.pop(k, None)
+        wf["active"] = False        # import inactive; reactivate via deploy.sh step 4
         out = os.path.join(out_dir, os.path.basename(fp))
         with open(out, "w") as f:
             f.write(json.dumps(wf, indent=2, ensure_ascii=False) + "\n")
