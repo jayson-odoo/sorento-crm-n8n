@@ -1,0 +1,615 @@
+{
+ "label": "2A-G2",
+ "test_run_id": "sim-2A-G2",
+ "text": "photo for SRTWC8383",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "photo for SRTWC8383"
+   },
+   "test_run_id": "sim-2A-G2",
+   "ts": "2026-07-07T13:55:03.358-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_product_attachment",
+      "domain_hint": "product_attachment",
+      "user_goal": "trying to get the photo for SRTWC8383",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRTWC8383",
+        "hint": "product",
+        "canonical_code": "SRTWC8383-RL-BW",
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "photo",
+        "hint": "attachment_type",
+        "canonical_code": "Product Photos",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_product",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (product_attachment): returned 8 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+        "label": "SRTWC8383-RL-BW",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-BW",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": "bcba16cf-2ae1-4d3d-8888-241a14209e7e",
+        "label": "SRTWC8383-RL-P",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-P",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": "a998bd4a-24f4-44cd-8f0a-600a81b401ee",
+        "label": "SRTWC8383-RL-RG",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-RG",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": "a3998a9d-59dc-40ba-8877-b18e96fa4660",
+        "label": "SRTWC8383-RL-MBL",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-MBL",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": "c258b677-0bcd-4762-877c-001944575a78",
+        "label": "SRTWC8383-RL-GY",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-GY",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": "ab480d4d-cb82-44ac-b00c-71c24fc614fb",
+        "label": "SRTWC8383-RL-UF",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-UF",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": "cf51f305-b586-468b-b112-59fdb891e84b",
+        "label": "SRTWC8383-RL-BL",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-BL",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": "444f2cc5-7d3a-48af-9a7a-d099392852aa",
+        "label": "SRTWC8383-RL-PP",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-PP",
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "disambiguation",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWC8383-RL-P\n3. SRTWC8383-RL-RG\n4. SRTWC8383-RL-MBL\n5. SRTWC8383-RL-GY\n6. SRTWC8383-RL-UF\n7. SRTWC8383-RL-BL\n8. SRTWC8383-RL-PP"
+    }
+   },
+   "test_run_id": "sim-2A-G2",
+   "ts": "2026-07-07T13:55:03.354-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWC8383-RL-P\n3. SRTWC8383-RL-RG\n4. SRTWC8383-RL-MBL\n5. SRTWC8383-RL-GY\n6. SRTWC8383-RL-UF\n7. SRTWC8383-RL-BL\n8. SRTWC8383-RL-PP",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+      "label": "SRTWC8383-RL-BW",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-BW",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": "bcba16cf-2ae1-4d3d-8888-241a14209e7e",
+      "label": "SRTWC8383-RL-P",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-P",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": "a998bd4a-24f4-44cd-8f0a-600a81b401ee",
+      "label": "SRTWC8383-RL-RG",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-RG",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": "a3998a9d-59dc-40ba-8877-b18e96fa4660",
+      "label": "SRTWC8383-RL-MBL",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-MBL",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": "c258b677-0bcd-4762-877c-001944575a78",
+      "label": "SRTWC8383-RL-GY",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-GY",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": "ab480d4d-cb82-44ac-b00c-71c24fc614fb",
+      "label": "SRTWC8383-RL-UF",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-UF",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": "cf51f305-b586-468b-b112-59fdb891e84b",
+      "label": "SRTWC8383-RL-BL",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-BL",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": "444f2cc5-7d3a-48af-9a7a-d099392852aa",
+      "label": "SRTWC8383-RL-PP",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-PP",
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-2A-G2",
+   "ts": "2026-07-07T13:55:03.338-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838982",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRTWC8383",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "photo",
+     "hint": "attachment_type",
+     "canonical_code": "photo",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_product",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to get the photo for SRTWC8383"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "SRTWC8383",
+    "photo"
+   ],
+   "elapsed_ms": 63.65,
+   "resolutions": [
+    {
+     "token": "SRTWC8383",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-BW",
+       "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-BW",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-P",
+       "uuid": "bcba16cf-2ae1-4d3d-8888-241a14209e7e",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-P",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-RG",
+       "uuid": "a998bd4a-24f4-44cd-8f0a-600a81b401ee",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-RG",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-MBL",
+       "uuid": "a3998a9d-59dc-40ba-8877-b18e96fa4660",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-MBL",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-GY",
+       "uuid": "c258b677-0bcd-4762-877c-001944575a78",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-GY",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-UF",
+       "uuid": "ab480d4d-cb82-44ac-b00c-71c24fc614fb",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-UF",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-BL",
+       "uuid": "cf51f305-b586-468b-b112-59fdb891e84b",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-BL",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC8383-RL-PP",
+       "uuid": "444f2cc5-7d3a-48af-9a7a-d099392852aa",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC8383-RL-PP",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    },
+    {
+     "token": "photo",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "attachment_type",
+       "canonical_code": "Product Photos",
+       "uuid": "90e76894-8384-4186-a3f7-ef73667726ff",
+       "match_field": "type_name",
+       "match_tier": "substring",
+       "similarity": null,
+       "display": {
+        "code": null,
+        "type_name": "Product Photos",
+        "description": "Product Photos by Marketing"
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": true,
+   "gate_reason": "'product_attachment' ambiguous (no single exact match); user must pick",
+   "gate_clarification": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWC8383-RL-P\n3. SRTWC8383-RL-RG\n4. SRTWC8383-RL-MBL\n5. SRTWC8383-RL-GY\n6. SRTWC8383-RL-UF\n7. SRTWC8383-RL-BL\n8. SRTWC8383-RL-PP",
+   "compatible_entities": [
+    {
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-BW"
+    },
+    {
+     "uuid": "bcba16cf-2ae1-4d3d-8888-241a14209e7e",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-P"
+    },
+    {
+     "uuid": "a998bd4a-24f4-44cd-8f0a-600a81b401ee",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-RG"
+    },
+    {
+     "uuid": "a3998a9d-59dc-40ba-8877-b18e96fa4660",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-MBL"
+    },
+    {
+     "uuid": "c258b677-0bcd-4762-877c-001944575a78",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-GY"
+    },
+    {
+     "uuid": "ab480d4d-cb82-44ac-b00c-71c24fc614fb",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-UF"
+    },
+    {
+     "uuid": "cf51f305-b586-468b-b112-59fdb891e84b",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-BL"
+    },
+    {
+     "uuid": "444f2cc5-7d3a-48af-9a7a-d099392852aa",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-PP"
+    }
+   ],
+   "gate_debug": {
+    "domain": "product_attachment",
+    "allowed_lookup": [
+     "product",
+     "attachment",
+     "attachment_type",
+     "category",
+     "brand"
+    ],
+    "entities_count": 9
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWC8383-RL-P\n3. SRTWC8383-RL-RG\n4. SRTWC8383-RL-MBL\n5. SRTWC8383-RL-GY\n6. SRTWC8383-RL-UF\n7. SRTWC8383-RL-BL\n8. SRTWC8383-RL-PP",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWC8383-RL-P\n3. SRTWC8383-RL-RG\n4. SRTWC8383-RL-MBL\n5. SRTWC8383-RL-GY\n6. SRTWC8383-RL-UF\n7. SRTWC8383-RL-BL\n8. SRTWC8383-RL-PP"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "user_goal": "trying to get the photo for SRTWC8383",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRTWC8383",
+     "hint": "product",
+     "canonical_code": "SRTWC8383-RL-BW",
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "photo",
+     "hint": "attachment_type",
+     "canonical_code": "Product Photos",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_product",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (product_attachment): returned 8 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "label": "SRTWC8383-RL-BW",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-BW",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": "bcba16cf-2ae1-4d3d-8888-241a14209e7e",
+     "label": "SRTWC8383-RL-P",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-P",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": "a998bd4a-24f4-44cd-8f0a-600a81b401ee",
+     "label": "SRTWC8383-RL-RG",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-RG",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": "a3998a9d-59dc-40ba-8877-b18e96fa4660",
+     "label": "SRTWC8383-RL-MBL",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-MBL",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": "c258b677-0bcd-4762-877c-001944575a78",
+     "label": "SRTWC8383-RL-GY",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-GY",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": "ab480d4d-cb82-44ac-b00c-71c24fc614fb",
+     "label": "SRTWC8383-RL-UF",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-UF",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": "cf51f305-b586-468b-b112-59fdb891e84b",
+     "label": "SRTWC8383-RL-BL",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-BL",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": "444f2cc5-7d3a-48af-9a7a-d099392852aa",
+     "label": "SRTWC8383-RL-PP",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-PP",
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": "disambiguation",
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWC8383-RL-P\n3. SRTWC8383-RL-RG\n4. SRTWC8383-RL-MBL\n5. SRTWC8383-RL-GY\n6. SRTWC8383-RL-UF\n7. SRTWC8383-RL-BL\n8. SRTWC8383-RL-PP",
+   "quick_reply": null,
+   "result_set_len": 8,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

@@ -1,0 +1,1017 @@
+{
+ "label": "2A-R",
+ "test_run_id": "sim-2A-R",
+ "text": "Send me all Sorento WC certificate",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Send me all Sorento WC certificate"
+   },
+   "test_run_id": "sim-2A-R",
+   "ts": "2026-07-07T13:54:52.138-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_product_attachment",
+      "domain_hint": "product_attachment",
+      "user_goal": "trying to get all Sorento WC certificates",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Sorento",
+        "hint": "brand",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "WC",
+        "hint": "category",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing_certification",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (product_attachment): returned 14 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+        "label": "SRTWC8383-RL-BW",
+        "entity_type": "product",
+        "product": "SRTWC8383-RL-BW",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+        "label": "SRTWCY8419",
+        "entity_type": "product",
+        "product": "SRTWCY8419",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+        "label": "SRTWCY8058-FT",
+        "entity_type": "product",
+        "product": "SRTWCY8058-FT",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+        "label": "SRTWC7602-OKU",
+        "entity_type": "product",
+        "product": "SRTWC7602-OKU",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+        "label": "SRTWCPS189",
+        "entity_type": "product",
+        "product": "SRTWCPS189",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+        "label": "SRTWC8518-SH",
+        "entity_type": "product",
+        "product": "SRTWC8518-SH",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+        "label": "SRTWC8517-SH-UF-150",
+        "entity_type": "product",
+        "product": "SRTWC8517-SH-UF-150",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+        "label": "SRTWC8840-SC",
+        "entity_type": "product",
+        "product": "SRTWC8840-SC",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 9,
+        "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+        "label": "SRTWCFT151-OP",
+        "entity_type": "product",
+        "product": "SRTWCFT151-OP",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 10,
+        "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+        "label": "SRTWCFT OL-200 CC",
+        "entity_type": "product",
+        "product": "SRTWCFT OL-200 CC",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 11,
+        "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+        "label": "SRTWC8317-P-RL",
+        "entity_type": "product",
+        "product": "SRTWC8317-P-RL",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 12,
+        "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+        "label": "SRTWC8605-SC-RL",
+        "entity_type": "product",
+        "product": "SRTWC8605-SC-RL",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 13,
+        "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+        "label": "SRTWCX7604-P",
+        "entity_type": "product",
+        "product": "SRTWCX7604-P",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 14,
+        "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+        "label": "SRTWC8066-SH-MW",
+        "entity_type": "product",
+        "product": "SRTWC8066-SH-MW",
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "disambiguation",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Please provide the attachment type for the requested product \u2014 e.g. product image, technical drawing, or certificate."
+    }
+   },
+   "test_run_id": "sim-2A-R",
+   "ts": "2026-07-07T13:54:52.132-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Please provide the attachment type for the requested product \u2014 e.g. product image, technical drawing, or certificate.",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+      "label": "SRTWC8383-RL-BW",
+      "entity_type": "product",
+      "product": "SRTWC8383-RL-BW",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+      "label": "SRTWCY8419",
+      "entity_type": "product",
+      "product": "SRTWCY8419",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+      "label": "SRTWCY8058-FT",
+      "entity_type": "product",
+      "product": "SRTWCY8058-FT",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+      "label": "SRTWC7602-OKU",
+      "entity_type": "product",
+      "product": "SRTWC7602-OKU",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+      "label": "SRTWCPS189",
+      "entity_type": "product",
+      "product": "SRTWCPS189",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+      "label": "SRTWC8518-SH",
+      "entity_type": "product",
+      "product": "SRTWC8518-SH",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+      "label": "SRTWC8517-SH-UF-150",
+      "entity_type": "product",
+      "product": "SRTWC8517-SH-UF-150",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+      "label": "SRTWC8840-SC",
+      "entity_type": "product",
+      "product": "SRTWC8840-SC",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 9,
+      "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+      "label": "SRTWCFT151-OP",
+      "entity_type": "product",
+      "product": "SRTWCFT151-OP",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 10,
+      "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+      "label": "SRTWCFT OL-200 CC",
+      "entity_type": "product",
+      "product": "SRTWCFT OL-200 CC",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 11,
+      "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+      "label": "SRTWC8317-P-RL",
+      "entity_type": "product",
+      "product": "SRTWC8317-P-RL",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 12,
+      "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+      "label": "SRTWC8605-SC-RL",
+      "entity_type": "product",
+      "product": "SRTWC8605-SC-RL",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 13,
+      "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+      "label": "SRTWCX7604-P",
+      "entity_type": "product",
+      "product": "SRTWCX7604-P",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 14,
+      "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+      "label": "SRTWC8066-SH-MW",
+      "entity_type": "product",
+      "product": "SRTWC8066-SH-MW",
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-2A-R",
+   "ts": "2026-07-07T13:54:52.114-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838961",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "scope_intent": "broaden",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Sorento",
+     "hint": "brand",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "WC",
+     "hint": "category",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_certification",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to get all Sorento WC certificates"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "Sorento",
+    "WC"
+   ],
+   "elapsed_ms": 44.63,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8383-RL-BW",
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8383-RL-BW",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCY8419",
+     "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCY8419",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCY8058-FT",
+     "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCY8058-FT",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC7602-OKU",
+     "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC7602-OKU",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "ACC-SRT1008",
+     "uuid": "372d8b3d-b29c-4087-9ea6-d01dcda5d01a",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "ACC-SRT1008",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCPS189",
+     "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCPS189",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8518-SH",
+     "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8518-SH",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8517-SH-UF-150",
+     "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8517-SH-UF-150",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8840-SC",
+     "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8840-SC",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCFT151-OP",
+     "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCFT151-OP",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCFT OL-200 CC",
+     "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCFT OL-200 CC",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8317-P-RL",
+     "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8317-P-RL",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8605-SC-RL",
+     "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8605-SC-RL",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCX7604-P",
+     "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCX7604-P",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8066-SH-MW",
+     "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8066-SH-MW",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8383-RL-BW",
+      "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8383-RL-BW",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCY8419",
+      "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCY8419",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCY8058-FT",
+      "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCY8058-FT",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC7602-OKU",
+      "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC7602-OKU",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "ACC-SRT1008",
+      "uuid": "372d8b3d-b29c-4087-9ea6-d01dcda5d01a",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "ACC-SRT1008",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCPS189",
+      "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCPS189",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8518-SH",
+      "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8518-SH",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8517-SH-UF-150",
+      "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8517-SH-UF-150",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8840-SC",
+      "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8840-SC",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCFT151-OP",
+      "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCFT151-OP",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCFT OL-200 CC",
+      "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCFT OL-200 CC",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8317-P-RL",
+      "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8317-P-RL",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8605-SC-RL",
+      "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8605-SC-RL",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCX7604-P",
+      "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCX7604-P",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8066-SH-MW",
+      "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8066-SH-MW",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": true,
+   "gate_reason": "'product_attachment' ambiguous (no single exact match); user must pick",
+   "gate_clarification": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTWC8383-RL-BW\n2. SRTWCY8419\n3. SRTWCY8058-FT\n4. SRTWC7602-OKU\n5. SRTWCPS189\n6. SRTWC8518-SH\n7. SRTWC8517-SH-UF-150\n8. SRTWC8840-SC\n9. SRTWCFT151-OP\n10. SRTWCFT OL-200 CC\n11. SRTWC8317-P-RL\n12. SRTWC8605-SC-RL\n13. SRTWCX7604-P\n14. SRTWC8066-SH-MW",
+   "compatible_entities": [
+    {
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-BW"
+    },
+    {
+     "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+     "entity_type": "product",
+     "code": "SRTWCY8419"
+    },
+    {
+     "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+     "entity_type": "product",
+     "code": "SRTWCY8058-FT"
+    },
+    {
+     "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+     "entity_type": "product",
+     "code": "SRTWC7602-OKU"
+    },
+    {
+     "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+     "entity_type": "product",
+     "code": "SRTWCPS189"
+    },
+    {
+     "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+     "entity_type": "product",
+     "code": "SRTWC8518-SH"
+    },
+    {
+     "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+     "entity_type": "product",
+     "code": "SRTWC8517-SH-UF-150"
+    },
+    {
+     "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+     "entity_type": "product",
+     "code": "SRTWC8840-SC"
+    },
+    {
+     "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+     "entity_type": "product",
+     "code": "SRTWCFT151-OP"
+    },
+    {
+     "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+     "entity_type": "product",
+     "code": "SRTWCFT OL-200 CC"
+    },
+    {
+     "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+     "entity_type": "product",
+     "code": "SRTWC8317-P-RL"
+    },
+    {
+     "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+     "entity_type": "product",
+     "code": "SRTWC8605-SC-RL"
+    },
+    {
+     "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+     "entity_type": "product",
+     "code": "SRTWCX7604-P"
+    },
+    {
+     "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+     "entity_type": "product",
+     "code": "SRTWC8066-SH-MW"
+    }
+   ],
+   "gate_debug": {
+    "domain": "product_attachment",
+    "allowed_lookup": [
+     "product",
+     "attachment",
+     "attachment_type",
+     "category",
+     "brand"
+    ],
+    "entities_count": 15
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "Please provide the attachment type for the requested product \u2014 e.g. product image, technical drawing, or certificate.",
+   "is_clarification": true
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Please provide the attachment type for the requested product \u2014 e.g. product image, technical drawing, or certificate."
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "user_goal": "trying to get all Sorento WC certificates",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Sorento",
+     "hint": "brand",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "WC",
+     "hint": "category",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_certification",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (product_attachment): returned 14 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "label": "SRTWC8383-RL-BW",
+     "entity_type": "product",
+     "product": "SRTWC8383-RL-BW",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+     "label": "SRTWCY8419",
+     "entity_type": "product",
+     "product": "SRTWCY8419",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+     "label": "SRTWCY8058-FT",
+     "entity_type": "product",
+     "product": "SRTWCY8058-FT",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+     "label": "SRTWC7602-OKU",
+     "entity_type": "product",
+     "product": "SRTWC7602-OKU",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+     "label": "SRTWCPS189",
+     "entity_type": "product",
+     "product": "SRTWCPS189",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+     "label": "SRTWC8518-SH",
+     "entity_type": "product",
+     "product": "SRTWC8518-SH",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+     "label": "SRTWC8517-SH-UF-150",
+     "entity_type": "product",
+     "product": "SRTWC8517-SH-UF-150",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+     "label": "SRTWC8840-SC",
+     "entity_type": "product",
+     "product": "SRTWC8840-SC",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 9,
+     "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+     "label": "SRTWCFT151-OP",
+     "entity_type": "product",
+     "product": "SRTWCFT151-OP",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 10,
+     "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+     "label": "SRTWCFT OL-200 CC",
+     "entity_type": "product",
+     "product": "SRTWCFT OL-200 CC",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 11,
+     "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+     "label": "SRTWC8317-P-RL",
+     "entity_type": "product",
+     "product": "SRTWC8317-P-RL",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 12,
+     "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+     "label": "SRTWC8605-SC-RL",
+     "entity_type": "product",
+     "product": "SRTWC8605-SC-RL",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 13,
+     "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+     "label": "SRTWCX7604-P",
+     "entity_type": "product",
+     "product": "SRTWCX7604-P",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 14,
+     "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+     "label": "SRTWC8066-SH-MW",
+     "entity_type": "product",
+     "product": "SRTWC8066-SH-MW",
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": "disambiguation",
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Please provide the attachment type for the requested product \u2014 e.g. product image, technical drawing, or certificate.",
+   "quick_reply": null,
+   "result_set_len": 14,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

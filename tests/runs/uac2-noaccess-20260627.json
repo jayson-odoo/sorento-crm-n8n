@@ -1,0 +1,29 @@
+{
+  "case": "UAC §2 — no-access",
+  "test_run_id": "uac2-noaccess-20260627",
+  "contact": "457216562",
+  "clone_execution_id": "6742128",
+  "wrapper_execution_id": "6742127",
+  "verdict": "PASS",
+  "branch_reached": "check-access(real CRM)=allowed:false/deny_no_access -> If5 FALSE -> sorento-sub-respond-sendmsg-respond5 (guarded) -> Execution Data. Did NOT reach get-access-types/resolve-entity/get-rag/get-results/compile-current-state.",
+  "executed_nodes": ["When Executed","redis-pop-main-message-list","tf-message","sorento-sub-respond-findcontact-respond","is-human-intervened(out0)","if-message-is-audio(out1)","get-session-vars","Call 'sub-query-reformulator'(subexec 6742129, bypassed)","check-access","If5(out1)","sorento-sub-respond-sendmsg-respond5(subexec 6742130)","Execution Data","guard-h-record"],
+  "subexecutions": {
+    "reformulator XTODTw-dJcV0uRdC056hG": "6742129 — returned exactly mock_reformulator_output, AI Agent not run (0 tokens)",
+    "send sub aoydkG1dbItXR5jXFEQsP": "6742130 — When Executed -> test-guard(out0 TRUE) -> test-guard-record ONLY; real 'Send a Message'/'HTTP Request' NOT executed"
+  },
+  "egress_log_key": "test:egress:uac2-noaccess-20260627",
+  "egress_records": [
+    {"guard": "sendmsg-sub", "kind": "would_send", "message": "Sorry, you are not allowed to access general_enquiries", "quick_reply": null, "result_set": null},
+    {"guard": "save-message-redis", "kind": "would_log", "note": "Guard H (orphaned save-message-redis2). Record JSON malformed: empty message value. Cosmetic record bug, not egress."}
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": "PASS — send sub short-circuited at test-guard; no api.respond.io 2xx",
+    "S2_zero_assignment_writes": "PASS — human-intervention not invoked; no assign/SLA/comment/queue",
+    "S3_zero_crm_writes": "PASS — save-session-vars not reached (no compile-current-state); update-human-intervened not executed",
+    "S4_get_results_no_write": "PASS — get-results not reached",
+    "S5_test_mode_present": "PASS — is_test=true on send sub call; control via redis item",
+    "S6_token_bound": "PASS — deterministic: reformulator bypassed (0 tokens), parser chain not on path"
+  },
+  "orphaned_egress_nodes_executed": "NONE (update-human-intervened, save-session-vars, send-message-files/images/video absent from runData)",
+  "notes": "Empirically confirms tf-message.json = item.message and n8n IF tolerates missing nested paths (if-message-is-audio did not throw on absent attachment chain)."
+}

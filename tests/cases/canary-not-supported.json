@@ -1,0 +1,51 @@
+{
+  "_case": "UAC §4 — not-supported-domain canary",
+  "_target_clone": "txiPzSxy3Pclsz6v",
+  "_redis_list": "main-message-list-test",
+  "_note": "This is the exact item the zz-canary-seed helper (4eDGDBL3rEkGQuBV) RPUSHes. Control fields (test_run_id, scope, mock_parser_output, mock_reformulator_output) are siblings at the item root and are read by the clone at $('redis-pop-main-message-list').first().json.message.<field>.",
+  "item": {
+    "message": {
+      "message": { "text": "What is the weather in KL today", "type": "text", "attachment": { "type": "text", "description": "" } },
+      "replyTo": {}
+    },
+    "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary", "custom_fields": [], "assignee": { "id": null } },
+    "messageId": "test-canary-nsd-20260627",
+    "replyTo": null,
+    "test_run_id": "canary-nsd-20260627",
+    "scope": "deterministic",
+    "mock_parser_output": {
+      "message_type": "business_query",
+      "intent_hint": "goods_receive_status",
+      "domain_hint": "goods_receive",
+      "user_goal": "What is the weather in KL today",
+      "entities": [],
+      "access_levels": []
+    },
+    "mock_reformulator_output": {
+      "message_type": "business_query",
+      "intent_hint": "goods_receive_status",
+      "domain_hint": "goods_receive",
+      "user_goal": "What is the weather in KL today",
+      "access_levels": [],
+      "entities": [],
+      "escalation": { "is_escalation_confirmation": false },
+      "correction": false,
+      "routing": { "suggested_team": "purchasing", "suggested_agent": "general_enquiries" },
+      "date_mode": null,
+      "query_scope": null,
+      "match_mode": null,
+      "contains_flyer": false,
+      "date_filter_start": null,
+      "date_filter_end": null
+    }
+  },
+  "expected_route": [
+    "redis-pop-main-message-list (pop) -> tf-message -> sorento-sub-respond-findcontact-respond",
+    "is-human-intervened (custom_fields[]=> not intervened, TRUE/out0) -> if-message-is-audio (text, FALSE/out1) -> get-session-vars (CRM read)",
+    "Call 'sub-query-reformulator' (is_test=true + mock => 0-token bypass, output.domain_hint=goods_receive)",
+    "check-access (CRM read, POST access-agent/check) -> If5 (allowed) -> If2 (FALSE: not request_for_help) -> If10 (FALSE: correction falsy) -> If9 (FALSE: business_query w/ non-null domain) -> If1 (FALSE: not clarification) -> not-supported-domain (TRUE: domain_hint==goods_receive)",
+    "Edit Fields5 (escalate_message = canned not-supported reply) -> compile-current-state",
+    "compile-current-state -> [sorento-sub-respond-sendmsg-respond2 (is_test=true => send sub short-circuits, records would_send), guard-d-record (records would_write save-session-vars)]"
+  ],
+  "expected_canned_reply": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container"
+}

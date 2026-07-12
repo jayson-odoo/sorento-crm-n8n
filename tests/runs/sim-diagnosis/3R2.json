@@ -1,0 +1,441 @@
+{
+ "label": "3R2",
+ "test_run_id": "sim-3R2",
+ "text": "Srt79ss GM ETA",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Srt79ss GM ETA"
+   },
+   "test_run_id": "sim-3R2",
+   "ts": "2026-07-07T13:59:57.454-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260707%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260707T175957Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=30d6840543f19157ac531998f973924afab8ee3093c392b67ff22141151ce6bb",
+    "filename": "TGBU9807730.xlsx"
+   },
+   "test_run_id": "sim-3R2",
+   "ts": "2026-07-07T13:59:57.415-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for Srt79ss GM",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Srt79ss GM",
+        "hint": "product",
+        "canonical_code": "SRT79-SS-GM",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (incoming): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRT79-SS-GM",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRT79-SS-GM\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 192"
+    }
+   },
+   "test_run_id": "sim-3R2",
+   "ts": "2026-07-07T13:59:57.154-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRT79-SS-GM\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 192",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRT79-SS-GM",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-3R2",
+   "ts": "2026-07-07T13:59:57.139-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_send",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839372",
+  "nodes_ran": 50,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [
+   "get-presigned-url"
+  ],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Srt79ss GM",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the ETA for Srt79ss GM"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "Srt79ss GM"
+   ],
+   "elapsed_ms": 408.73,
+   "resolutions": [
+    {
+     "token": "Srt79ss GM",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRT79-SS-GM",
+       "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRT79-SS-GM",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inbound_shipment"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "entity_type": "product",
+     "code": "SRT79-SS-GM"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": {
+   "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRT79-SS-GM\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 192",
+   "response_intro": "I have attached the file(s) below.",
+   "answers": [
+    {
+     "title": "SRT79-SS-GM",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRT79-SS-GM"
+      },
+      {
+       "label": "Container",
+       "value": "TGBU9807730"
+      },
+      {
+       "label": "Estimated Arrival Date",
+       "value": "2026-07-19"
+      },
+      {
+       "label": "Incoming Quantity",
+       "value": 192
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [
+    {
+     "url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx",
+     "filename": "TGBU9807730.xlsx",
+     "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "attachmentType": null
+    }
+   ],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839381",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for Srt79ss GM",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Srt79ss GM",
+     "hint": "product",
+     "canonical_code": "SRT79-SS-GM",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (incoming): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRT79-SS-GM",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRT79-SS-GM\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 192",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "product_ids": [
+      "5f925bcf-1fde-4f4b-bd55-b3989b051710"
+     ],
+     "_diagnostics": {
+      "entities_in": 1,
+      "total_uuids_passed": 1,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "incoming_stock",
+        "intro": "I have attached the file(s) below.",
+        "items": [
+         {
+          "title": "SRT79-SS-GM",
+          "fields": [
+           {
+            "label": "Product Code",
+            "value": "SRT79-SS-GM"
+           },
+           {
+            "label": "Container",
+            "value": "TGBU9807730"
+           },
+           {
+            "label": "Estimated Arrival Date",
+            "value": "2026-07-19"
+           },
+           {
+            "label": "Incoming Quantity",
+            "value": 192
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [
+         {
+          "url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx",
+          "filename": "TGBU9807730.xlsx",
+          "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "attachmentType": null
+         }
+        ],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRT79-SS-GM\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 192",
+     "response_intro": "I have attached the file(s) below.",
+     "answers": [
+      {
+       "title": "SRT79-SS-GM",
+       "fields": [
+        {
+         "label": "Product Code",
+         "value": "SRT79-SS-GM"
+        },
+        {
+         "label": "Container",
+         "value": "TGBU9807730"
+        },
+        {
+         "label": "Estimated Arrival Date",
+         "value": "2026-07-19"
+        },
+        {
+         "label": "Incoming Quantity",
+         "value": 192
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [
+      {
+       "url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx",
+       "filename": "TGBU9807730.xlsx",
+       "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+       "attachmentType": null
+      }
+     ],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

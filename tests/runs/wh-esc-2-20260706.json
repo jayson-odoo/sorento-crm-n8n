@@ -1,0 +1,47 @@
+{
+  "test_run_id": "wh-esc-2-20260706",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "purpose": "Investigate CURRENT behavior (no fix): user DECLINES the offer and asks for a DIFFERENT team (warehouse) while mid member_offer. Distinct failure-mode check vs msg1: does 'don't want' (is_affirmative=false) trip a decline arm (cancel escalation / message_type->casual)?",
+  "message": "don't want, i want warehouse team to assist",
+  "contact": "437264483",
+  "scope": "parser (real reformulator; NO mock; AI Agent LLM executed)",
+  "mode": "regress-capture",
+  "seed": "member_offer state re-seeded (identical to wh-esc-1)",
+  "execs": {"clone": "7675298", "reformulator_fork": "7675299 (AI Agent real LLM ran)", "sendmsg_sub": "7675303"},
+  "parser_raw_llm_AI_Agent": {
+    "message_type": "request_for_help",
+    "is_affirmative": false,
+    "routing": {"suggested_team": "warehouse", "suggested_agent": "general_enquiries"},
+    "escalation": {"is_escalation_confirmation": false},
+    "correction": false,
+    "entity_op": "reuse",
+    "user_goal": "trying to get the warehouse team to assist instead of escalating to customer service"
+  },
+  "parser_final_output_exchange": {
+    "message_type": "business_query",
+    "is_affirmative": false,
+    "routing": {"suggested_team": "customer_service", "suggested_agent": "order_enquiries"},
+    "escalation": {"is_escalation_confirmation": false, "member_reprompt": "out_of_range"},
+    "correction": true,
+    "member_pick_context": true,
+    "entity_op": "reuse"
+  },
+  "decline_arm_check": "NO distinct decline behavior. is_affirmative=false ('don't want') IS captured (preserved through output_exchange) but does NOT trip a member_offer decline/cancel arm: message_type is NOT set to casual, escalation is NOT cancelled. The member_pick_context out_of_range logic dominates identically to msg1 -> re-offers the same CS list. is_affirmative=false + non-matching pick simply falls into the same out_of_range reprompt as a null-affirmative.",
+  "clobber_note": "Same clobber as msg1: LLM request_for_help+warehouse -> output_exchange business_query+customer_service+member_reprompt out_of_range.",
+  "clone_branch": "Identical to msg1: If2 FALSE -> escalate-offer/cs-offer-gate -> get-cs-members(READ) -> build-cs-member-offer -> compile-current-state -> sendmsg sub (short-circuit). NO human-intervention sub, NO get-rag/get-results.",
+  "would_send_message": "Same CS-member re-offer list (customer_service team, Ms Tan/Sandy Lim/Lin/Nur/Emily).",
+  "egress_log": {
+    "source": "clone runData (authoritative; equals redis test:egress:wh-esc-2-20260706)",
+    "sendmsg_sub_7675303": "{guard:sendmsg-sub, blocked:true} - input is_test=true, nodes=[When Executed by Another Workflow, test-guard, test-guard-record]; NO respond.io POST",
+    "save-session-vars": "ABSENT -> guard-d-record would_write only",
+    "update-human-intervened": "ABSENT",
+    "send-message-files/images/video": "ABSENT",
+    "human-intervention-sub": "NOT CALLED (escalation false)",
+    "session_write": "pg-upsert-session -> n8n_test (NOT prod)"
+  },
+  "safety_gate_S0": {
+    "S1": "PASS", "S2": "PASS", "S3": "PASS", "S4": "PASS (trivial)", "S5": "PASS (is_test=true trigger+reformulator+sendmsg)", "S6": "PASS (parser tier, only reformulator LLM)"
+  },
+  "verdict": "CLOBBERED to customer_service. NOT routed to warehouse; escalation NOT cancelled. 'don't want' set is_affirmative=false but there is NO decline arm - same out_of_range member reprompt as msg1. ZERO real egress."
+}

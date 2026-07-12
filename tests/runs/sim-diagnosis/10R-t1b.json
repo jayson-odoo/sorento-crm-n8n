@@ -1,0 +1,453 @@
+{
+ "label": "10R-t1b",
+ "test_run_id": "sim-10R-t1b",
+ "text": "check eta SRTWT7448",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "check eta SRTWT7448"
+   },
+   "test_run_id": "sim-10R-t1b",
+   "ts": "2026-07-07T14:15:08.977-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260707%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260707T181508Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=161296ead78587859c74118923947dd27e86707030c8e167b23fbd6643a83195",
+    "filename": "TGBU9807730.xlsx"
+   },
+   "test_run_id": "sim-10R-t1b",
+   "ts": "2026-07-07T14:15:08.940-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for SRTWT7448",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRTWT7448",
+        "hint": "product",
+        "canonical_code": "SRTWT7448",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (incoming): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRTWT7448",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT7448\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 200"
+    }
+   },
+   "test_run_id": "sim-10R-t1b",
+   "ts": "2026-07-07T14:15:08.696-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT7448\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 200",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRTWT7448",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-10R-t1b",
+   "ts": "2026-07-07T14:15:08.679-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_send",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840651",
+  "nodes_ran": 50,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [
+   "get-presigned-url"
+  ],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRTWT7448",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the ETA for SRTWT7448"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "SRTWT7448"
+   ],
+   "elapsed_ms": 1676.42,
+   "resolutions": [
+    {
+     "token": "SRTWT7448",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWT7448",
+       "uuid": "319a0a95-7622-40ae-ba6c-6caccc5a34f9",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWT7448",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWT7448-GM",
+       "uuid": "2c296ec1-d5d4-48e9-a38d-a2af56fcca6c",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWT7448-GM",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inbound_shipment"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "319a0a95-7622-40ae-ba6c-6caccc5a34f9",
+     "entity_type": "product",
+     "code": "SRTWT7448"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 2
+   }
+  },
+  "get_results": {
+   "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT7448\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 200",
+   "response_intro": "I have attached the file(s) below.",
+   "answers": [
+    {
+     "title": "SRTWT7448",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWT7448"
+      },
+      {
+       "label": "Container",
+       "value": "TGBU9807730"
+      },
+      {
+       "label": "Estimated Arrival Date",
+       "value": "2026-07-19"
+      },
+      {
+       "label": "Incoming Quantity",
+       "value": 200
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [
+    {
+     "url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx",
+     "filename": "TGBU9807730.xlsx",
+     "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "attachmentType": null
+    }
+   ],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7840660",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for SRTWT7448",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRTWT7448",
+     "hint": "product",
+     "canonical_code": "SRTWT7448",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (incoming): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRTWT7448",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT7448\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 200",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "product_ids": [
+      "319a0a95-7622-40ae-ba6c-6caccc5a34f9"
+     ],
+     "_diagnostics": {
+      "entities_in": 1,
+      "total_uuids_passed": 1,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "incoming_stock",
+        "intro": "I have attached the file(s) below.",
+        "items": [
+         {
+          "title": "SRTWT7448",
+          "fields": [
+           {
+            "label": "Product Code",
+            "value": "SRTWT7448"
+           },
+           {
+            "label": "Container",
+            "value": "TGBU9807730"
+           },
+           {
+            "label": "Estimated Arrival Date",
+            "value": "2026-07-19"
+           },
+           {
+            "label": "Incoming Quantity",
+            "value": 200
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [
+         {
+          "url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx",
+          "filename": "TGBU9807730.xlsx",
+          "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "attachmentType": null
+         }
+        ],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT7448\n*Container:* TGBU9807730\n*Estimated Arrival Date:* 2026-07-19\n*Incoming Quantity:* 200",
+     "response_intro": "I have attached the file(s) below.",
+     "answers": [
+      {
+       "title": "SRTWT7448",
+       "fields": [
+        {
+         "label": "Product Code",
+         "value": "SRTWT7448"
+        },
+        {
+         "label": "Container",
+         "value": "TGBU9807730"
+        },
+        {
+         "label": "Estimated Arrival Date",
+         "value": "2026-07-19"
+        },
+        {
+         "label": "Incoming Quantity",
+         "value": 200
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [
+      {
+       "url": "https://cdn-sorento.com/packing_list/9a2f5549-37cc-4bc3-b2b3-174f8d316f01/TGBU9807730.xlsx",
+       "filename": "TGBU9807730.xlsx",
+       "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+       "attachmentType": null
+      }
+     ],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

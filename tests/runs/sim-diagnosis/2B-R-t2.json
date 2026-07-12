@@ -1,0 +1,922 @@
+{
+ "label": "2B-R-t2",
+ "test_run_id": "sim-2B-R-t2",
+ "text": "Certificate",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Certificate"
+   },
+   "test_run_id": "sim-2B-R-t2",
+   "ts": "2026-07-07T13:56:03.705-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_product_attachment",
+      "domain_hint": "product_attachment",
+      "user_goal": "trying to view product certificates",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "certificate",
+        "hint": "attachment_type",
+        "canonical_code": "Certification",
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "Sorento",
+        "hint": "product",
+        "canonical_code": "SORENTO CATALOGUE",
+        "current_message": false,
+        "confident": true
+       },
+       {
+        "raw": "WC",
+        "hint": "product",
+        "canonical_code": "WC7019B",
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing_certification",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (product_attachment): returned 14 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "f2a7e8d2-b2c8-4f99-9da0-4182071f0ce9",
+        "label": "SORENTO CATALOGUE",
+        "entity_type": "product",
+        "product": "SORENTO CATALOGUE",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": "56b0e12b-cfa1-4ff6-aa5a-1b7c4d0217a8",
+        "label": "SORENTOBAG",
+        "entity_type": "product",
+        "product": "SORENTOBAG",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": "b30afc26-fc00-47dd-b409-d64d3e97fcc9",
+        "label": "SORENTO SP0100",
+        "entity_type": "product",
+        "product": "SORENTO SP0100",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": "ce6a7dbf-bb30-4ea7-81aa-12aa9c7e980e",
+        "label": "SORENTO188",
+        "entity_type": "product",
+        "product": "SORENTO188",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": "40c77556-2299-48a4-92a1-2eeb700dafb3",
+        "label": "WC7019B",
+        "entity_type": "product",
+        "product": "WC7019B",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": "8b352d14-9131-4e95-8769-ec944c432ce7",
+        "label": "WC7039C",
+        "entity_type": "product",
+        "product": "WC7039C",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": "81c30d45-f200-4658-b4f8-c3c9d387c0e1",
+        "label": "WC7019C-S",
+        "entity_type": "product",
+        "product": "WC7019C-S",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": "9688aa13-30c6-4abb-a722-1742851fdd6c",
+        "label": "WC975C",
+        "entity_type": "product",
+        "product": "WC975C",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 9,
+        "uuid": "1a3d7131-c170-457b-88f2-0d7f0c2ae265",
+        "label": "WC7060C",
+        "entity_type": "product",
+        "product": "WC7060C",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 10,
+        "uuid": "a61cb0ec-9974-4f2b-b654-03a22023b372",
+        "label": "WC7019GS",
+        "entity_type": "product",
+        "product": "WC7019GS",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 11,
+        "uuid": "dd920004-1604-4962-bf33-ed8f1dfc98dc",
+        "label": "WC7042",
+        "entity_type": "product",
+        "product": "WC7042",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 12,
+        "uuid": "3116533b-578c-4b71-ab8b-85a67b07c0d7",
+        "label": "WC7039M",
+        "entity_type": "product",
+        "product": "WC7039M",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 13,
+        "uuid": "32b8ffe4-9dd3-451a-bdca-c58880e64870",
+        "label": "WC7060B",
+        "entity_type": "product",
+        "product": "WC7060B",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 14,
+        "uuid": "3eb23fa3-377a-4142-a7e1-fd07f360c5b1",
+        "label": "WC7019C",
+        "entity_type": "product",
+        "product": "WC7019C",
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "disambiguation",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SORENTO CATALOGUE\n2. SORENTOBAG\n3. SORENTO SP0100\n4. SORENTO188\n5. WC7019B\n6. WC7039C\n7. WC7019C-S\n8. WC975C\n9. WC7060C\n10. WC7019GS\n11. WC7042\n12. WC7039M\n13. WC7060B\n14. WC7019C"
+    }
+   },
+   "test_run_id": "sim-2B-R-t2",
+   "ts": "2026-07-07T13:56:03.701-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SORENTO CATALOGUE\n2. SORENTOBAG\n3. SORENTO SP0100\n4. SORENTO188\n5. WC7019B\n6. WC7039C\n7. WC7019C-S\n8. WC975C\n9. WC7060C\n10. WC7019GS\n11. WC7042\n12. WC7039M\n13. WC7060B\n14. WC7019C",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": "f2a7e8d2-b2c8-4f99-9da0-4182071f0ce9",
+      "label": "SORENTO CATALOGUE",
+      "entity_type": "product",
+      "product": "SORENTO CATALOGUE",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": "56b0e12b-cfa1-4ff6-aa5a-1b7c4d0217a8",
+      "label": "SORENTOBAG",
+      "entity_type": "product",
+      "product": "SORENTOBAG",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": "b30afc26-fc00-47dd-b409-d64d3e97fcc9",
+      "label": "SORENTO SP0100",
+      "entity_type": "product",
+      "product": "SORENTO SP0100",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": "ce6a7dbf-bb30-4ea7-81aa-12aa9c7e980e",
+      "label": "SORENTO188",
+      "entity_type": "product",
+      "product": "SORENTO188",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": "40c77556-2299-48a4-92a1-2eeb700dafb3",
+      "label": "WC7019B",
+      "entity_type": "product",
+      "product": "WC7019B",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": "8b352d14-9131-4e95-8769-ec944c432ce7",
+      "label": "WC7039C",
+      "entity_type": "product",
+      "product": "WC7039C",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": "81c30d45-f200-4658-b4f8-c3c9d387c0e1",
+      "label": "WC7019C-S",
+      "entity_type": "product",
+      "product": "WC7019C-S",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": "9688aa13-30c6-4abb-a722-1742851fdd6c",
+      "label": "WC975C",
+      "entity_type": "product",
+      "product": "WC975C",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 9,
+      "uuid": "1a3d7131-c170-457b-88f2-0d7f0c2ae265",
+      "label": "WC7060C",
+      "entity_type": "product",
+      "product": "WC7060C",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 10,
+      "uuid": "a61cb0ec-9974-4f2b-b654-03a22023b372",
+      "label": "WC7019GS",
+      "entity_type": "product",
+      "product": "WC7019GS",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 11,
+      "uuid": "dd920004-1604-4962-bf33-ed8f1dfc98dc",
+      "label": "WC7042",
+      "entity_type": "product",
+      "product": "WC7042",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 12,
+      "uuid": "3116533b-578c-4b71-ab8b-85a67b07c0d7",
+      "label": "WC7039M",
+      "entity_type": "product",
+      "product": "WC7039M",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 13,
+      "uuid": "32b8ffe4-9dd3-451a-bdca-c58880e64870",
+      "label": "WC7060B",
+      "entity_type": "product",
+      "product": "WC7060B",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 14,
+      "uuid": "3eb23fa3-377a-4142-a7e1-fd07f360c5b1",
+      "label": "WC7019C",
+      "entity_type": "product",
+      "product": "WC7019C",
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-2B-R-t2",
+   "ts": "2026-07-07T13:56:03.681-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839062",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "certificate",
+     "hint": "attachment_type",
+     "canonical_code": "certificate",
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "Sorento",
+     "hint": "brand",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    },
+    {
+     "raw": "WC",
+     "hint": "category",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_certification",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to view product certificates"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "certificate",
+    "Sorento",
+    "WC"
+   ],
+   "elapsed_ms": 4560.73,
+   "resolutions": [
+    {
+     "token": "certificate",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4599",
+       "match_field": "type_name",
+       "match_tier": "substring",
+       "similarity": null,
+       "display": {
+        "code": null,
+        "type_name": "Certification",
+        "description": "Certification, Cert, Certificate, Watermark Cert, WCM, PPS, Ikram by Purchasing"
+       }
+      }
+     ],
+     "alternatives": []
+    },
+    {
+     "token": "Sorento",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SORENTO CATALOGUE",
+       "uuid": "f2a7e8d2-b2c8-4f99-9da0-4182071f0ce9",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SORENTO CATALOGUE",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SORENTOBAG",
+       "uuid": "56b0e12b-cfa1-4ff6-aa5a-1b7c4d0217a8",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SORENTOBAG",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SORENTO SP0100",
+       "uuid": "b30afc26-fc00-47dd-b409-d64d3e97fcc9",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SORENTO SP0100",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SORENTO188",
+       "uuid": "ce6a7dbf-bb30-4ea7-81aa-12aa9c7e980e",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SORENTO188",
+        "is_active": false
+       }
+      }
+     ],
+     "alternatives": []
+    },
+    {
+     "token": "WC",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7019B",
+       "uuid": "40c77556-2299-48a4-92a1-2eeb700dafb3",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7019B",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7039C",
+       "uuid": "8b352d14-9131-4e95-8769-ec944c432ce7",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7039C",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7019C-S",
+       "uuid": "81c30d45-f200-4658-b4f8-c3c9d387c0e1",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7019C-S",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC975C",
+       "uuid": "9688aa13-30c6-4abb-a722-1742851fdd6c",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC975C",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7060C",
+       "uuid": "1a3d7131-c170-457b-88f2-0d7f0c2ae265",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7060C",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7019GS",
+       "uuid": "a61cb0ec-9974-4f2b-b654-03a22023b372",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7019GS",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7042",
+       "uuid": "dd920004-1604-4962-bf33-ed8f1dfc98dc",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7042",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7039M",
+       "uuid": "3116533b-578c-4b71-ab8b-85a67b07c0d7",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7039M",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7060B",
+       "uuid": "32b8ffe4-9dd3-451a-bdca-c58880e64870",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7060B",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "WC7019C",
+       "uuid": "3eb23fa3-377a-4142-a7e1-fd07f360c5b1",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "WC7019C",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4599",
+       "match_field": "type_name",
+       "match_tier": "substring",
+       "similarity": null,
+       "display": {
+        "code": null,
+        "type_name": "Certification",
+        "description": "Certification, Cert, Certificate, Watermark Cert, WCM, PPS, Ikram by Purchasing"
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": true,
+   "gate_reason": "'product_attachment' ambiguous (no single exact match); user must pick",
+   "gate_clarification": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SORENTO CATALOGUE\n2. SORENTOBAG\n3. SORENTO SP0100\n4. SORENTO188\n5. WC7019B\n6. WC7039C\n7. WC7019C-S\n8. WC975C\n9. WC7060C\n10. WC7019GS\n11. WC7042\n12. WC7039M\n13. WC7060B\n14. WC7019C",
+   "compatible_entities": [
+    {
+     "uuid": "f2a7e8d2-b2c8-4f99-9da0-4182071f0ce9",
+     "entity_type": "product",
+     "code": "SORENTO CATALOGUE"
+    },
+    {
+     "uuid": "56b0e12b-cfa1-4ff6-aa5a-1b7c4d0217a8",
+     "entity_type": "product",
+     "code": "SORENTOBAG"
+    },
+    {
+     "uuid": "b30afc26-fc00-47dd-b409-d64d3e97fcc9",
+     "entity_type": "product",
+     "code": "SORENTO SP0100"
+    },
+    {
+     "uuid": "ce6a7dbf-bb30-4ea7-81aa-12aa9c7e980e",
+     "entity_type": "product",
+     "code": "SORENTO188"
+    },
+    {
+     "uuid": "40c77556-2299-48a4-92a1-2eeb700dafb3",
+     "entity_type": "product",
+     "code": "WC7019B"
+    },
+    {
+     "uuid": "8b352d14-9131-4e95-8769-ec944c432ce7",
+     "entity_type": "product",
+     "code": "WC7039C"
+    },
+    {
+     "uuid": "81c30d45-f200-4658-b4f8-c3c9d387c0e1",
+     "entity_type": "product",
+     "code": "WC7019C-S"
+    },
+    {
+     "uuid": "9688aa13-30c6-4abb-a722-1742851fdd6c",
+     "entity_type": "product",
+     "code": "WC975C"
+    },
+    {
+     "uuid": "1a3d7131-c170-457b-88f2-0d7f0c2ae265",
+     "entity_type": "product",
+     "code": "WC7060C"
+    },
+    {
+     "uuid": "a61cb0ec-9974-4f2b-b654-03a22023b372",
+     "entity_type": "product",
+     "code": "WC7019GS"
+    },
+    {
+     "uuid": "dd920004-1604-4962-bf33-ed8f1dfc98dc",
+     "entity_type": "product",
+     "code": "WC7042"
+    },
+    {
+     "uuid": "3116533b-578c-4b71-ab8b-85a67b07c0d7",
+     "entity_type": "product",
+     "code": "WC7039M"
+    },
+    {
+     "uuid": "32b8ffe4-9dd3-451a-bdca-c58880e64870",
+     "entity_type": "product",
+     "code": "WC7060B"
+    },
+    {
+     "uuid": "3eb23fa3-377a-4142-a7e1-fd07f360c5b1",
+     "entity_type": "product",
+     "code": "WC7019C"
+    }
+   ],
+   "gate_debug": {
+    "domain": "product_attachment",
+    "allowed_lookup": [
+     "product",
+     "attachment",
+     "attachment_type",
+     "category",
+     "brand"
+    ],
+    "entities_count": 15
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SORENTO CATALOGUE\n2. SORENTOBAG\n3. SORENTO SP0100\n4. SORENTO188\n5. WC7019B\n6. WC7039C\n7. WC7019C-S\n8. WC975C\n9. WC7060C\n10. WC7019GS\n11. WC7042\n12. WC7039M\n13. WC7060B\n14. WC7019C",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SORENTO CATALOGUE\n2. SORENTOBAG\n3. SORENTO SP0100\n4. SORENTO188\n5. WC7019B\n6. WC7039C\n7. WC7019C-S\n8. WC975C\n9. WC7060C\n10. WC7019GS\n11. WC7042\n12. WC7039M\n13. WC7060B\n14. WC7019C"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "user_goal": "trying to view product certificates",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "certificate",
+     "hint": "attachment_type",
+     "canonical_code": "Certification",
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "Sorento",
+     "hint": "product",
+     "canonical_code": "SORENTO CATALOGUE",
+     "current_message": false,
+     "confident": true
+    },
+    {
+     "raw": "WC",
+     "hint": "product",
+     "canonical_code": "WC7019B",
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_certification",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (product_attachment): returned 14 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": "f2a7e8d2-b2c8-4f99-9da0-4182071f0ce9",
+     "label": "SORENTO CATALOGUE",
+     "entity_type": "product",
+     "product": "SORENTO CATALOGUE",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": "56b0e12b-cfa1-4ff6-aa5a-1b7c4d0217a8",
+     "label": "SORENTOBAG",
+     "entity_type": "product",
+     "product": "SORENTOBAG",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": "b30afc26-fc00-47dd-b409-d64d3e97fcc9",
+     "label": "SORENTO SP0100",
+     "entity_type": "product",
+     "product": "SORENTO SP0100",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": "ce6a7dbf-bb30-4ea7-81aa-12aa9c7e980e",
+     "label": "SORENTO188",
+     "entity_type": "product",
+     "product": "SORENTO188",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": "40c77556-2299-48a4-92a1-2eeb700dafb3",
+     "label": "WC7019B",
+     "entity_type": "product",
+     "product": "WC7019B",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": "8b352d14-9131-4e95-8769-ec944c432ce7",
+     "label": "WC7039C",
+     "entity_type": "product",
+     "product": "WC7039C",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": "81c30d45-f200-4658-b4f8-c3c9d387c0e1",
+     "label": "WC7019C-S",
+     "entity_type": "product",
+     "product": "WC7019C-S",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": "9688aa13-30c6-4abb-a722-1742851fdd6c",
+     "label": "WC975C",
+     "entity_type": "product",
+     "product": "WC975C",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 9,
+     "uuid": "1a3d7131-c170-457b-88f2-0d7f0c2ae265",
+     "label": "WC7060C",
+     "entity_type": "product",
+     "product": "WC7060C",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 10,
+     "uuid": "a61cb0ec-9974-4f2b-b654-03a22023b372",
+     "label": "WC7019GS",
+     "entity_type": "product",
+     "product": "WC7019GS",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 11,
+     "uuid": "dd920004-1604-4962-bf33-ed8f1dfc98dc",
+     "label": "WC7042",
+     "entity_type": "product",
+     "product": "WC7042",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 12,
+     "uuid": "3116533b-578c-4b71-ab8b-85a67b07c0d7",
+     "label": "WC7039M",
+     "entity_type": "product",
+     "product": "WC7039M",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 13,
+     "uuid": "32b8ffe4-9dd3-451a-bdca-c58880e64870",
+     "label": "WC7060B",
+     "entity_type": "product",
+     "product": "WC7060B",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 14,
+     "uuid": "3eb23fa3-377a-4142-a7e1-fd07f360c5b1",
+     "label": "WC7019C",
+     "entity_type": "product",
+     "product": "WC7019C",
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": "disambiguation",
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SORENTO CATALOGUE\n2. SORENTOBAG\n3. SORENTO SP0100\n4. SORENTO188\n5. WC7019B\n6. WC7039C\n7. WC7019C-S\n8. WC975C\n9. WC7060C\n10. WC7019GS\n11. WC7042\n12. WC7039M\n13. WC7060B\n14. WC7019C",
+   "quick_reply": null,
+   "result_set_len": 14,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

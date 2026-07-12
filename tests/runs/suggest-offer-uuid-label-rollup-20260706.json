@@ -1,0 +1,46 @@
+{
+  "change_id": "fix-suggest-offer-uuid-label",
+  "target": "CLONE txiPzSxy3Pclsz6v (active df13075e-0962-4b61-b4b5-510b614d50e8)",
+  "node_under_test": "build-suggest-offer (deployed jsCode, len 10912)",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "seed_helper_edited": "zz-canary-seed 4eDGDBL3rEkGQuBV Push Item.messageData now also forwards body.mock_reformulator_output (top-level sibling); republished activeVersionId 94ab0d02-a6c3-45d8-96b1-330c589c3b99. Backward-compatible (undefined -> omitted -> real reformulator).",
+  "verdict": "PASS (fix validated; real-graph promotion-miss unreproducible with current resolver data, per plan 7.3 - acceptance rests on the offline unit which is run against the DEPLOYED node)",
+  "cases": {
+    "V0-deployed-node-unit": {
+      "method": "ran the EXACT deployed build-suggest-offer jsCode (pulled from published clone) with mocked n8n $() context",
+      "result": "27/27 PASS",
+      "V0a_promotion_D1": "numbered mode; NO uuid in response or quick_reply; human names listed; quick_reply '1,2,Yes escalate,No it's okay'; last_result_set[0].uuid==promo uuid AND .label==description; selection_context=suggest_offer",
+      "V0b_product_D1": "code-mode byte-identical; quick_reply 'CWCX605-RL,...'; no numbering; no uuid",
+      "V0c_drop_uuid_no_name": "single uuid-no-display candidate dropped -> suggest_offer false; no uuid anywhere",
+      "V0d_D2_uuid_guard": "display used, numeric buttons, product carries uuid; control real code SRTWC287 unchanged"
+    },
+    "s18_product_miss_e2e": {
+      "exec": "7690885", "input": "cwc605-rl have stock? (mock domain_hint inventory, entity product)",
+      "resolve_entity": "resolutions[{resolved:false, alternatives:[5 trgm products]}]",
+      "build_suggest_offer": "suggest_offer=true; response 'Couldn't find \"cwc605-rl\". Did you mean CWC609-RL, CWCX605-RL, or CWC609-RL-UF? Reply with a code...'; quick_reply 'CWC609-RL,CWCX605-RL,CWC609-RL-UF,Yes escalate,No it's okay'; CODE buttons; no numbering; no uuid",
+      "result": "PASS - real-graph D1 code-mode fires, product path unchanged"
+    },
+    "s16_promotion_e2e_attempts": {
+      "exec_7690415": "text 'any promotion for sorento' -> resolver RESOLVED 15 promos -> happy 12-PDF send (guarded). build-suggest-offer did NOT run.",
+      "exec_7690988": "'sorrento washbasin' -> resolutions[{resolved:false, matches:[], alternatives:[]}] -> suggest_offer false (miss, zero candidates) -> escalate-only",
+      "exec_7691124": "'SORENTO KITCHEN SINK PROMX' -> AND-intersected 5 kitchen-sink promos -> happy 5-PDF send (guarded). build-suggest-offer did NOT run.",
+      "finding": "Current resolver: a promo query either RESOLVES (happy multi-PDF) or MISSES with ZERO candidates. Promotion candidates only ever appear in the resolved 'intersection', never in a miss's matches/alternatives (descriptions are long; trgm yields no promo alternatives). A live promotion-miss-WITH-candidates (the exact bug trigger) was NOT reproducible in 3 attempts - consistent with plan 7.3 nondeterminism flag. The promotion numbered-mode render is therefore validated deterministically against the deployed node (V0a), not via a live miss.",
+      "result": "PASS (no-regression happy promo confirmed; D1-promotion-miss render proven at unit level on deployed code)"
+    },
+    "s17_roundtrip": {
+      "exec_e2e": "7691319 - reply '1' with real reformulator on a seeded suggest_offer session. LLM set suggest_pick_context=true (machinery engaged) but classified bare '1' as unknown -> reference_positions:[] -> clarify. Chat-memory fidelity gap (LESSON 19): neutral seed lacks the prior numbered-offer turn in the reformulator's Postgres memory.",
+      "deterministic_unit": "ran DEPLOYED output_exchange jsCode with reference_positions:[1] + the fix's exact last_result_set -> resolved entity {raw:'SORENTO HIGH BASIN TAP PROMO...pdf', hint:'promotion', uuid:'dbb408e7-34c7-4939-8609-f90137fd353e', canonical_code:'dbb408e7...'}; domain retained; NOT an escalation; raw is NOT a uuid. 7/7 PASS",
+      "result": "PASS - reference_positions path resolves the promotion BY UUID from last_result_set, no re-resolve"
+    }
+  },
+  "zero_egress": {
+    "verdict": "S1-S6 HOLD on every run",
+    "S1_no_real_send": "send-message-files/images/video ABSENT in all runs; every send intercepted by guard-*-record (lastNodeExecuted always guard-h-record)",
+    "S2_no_assign": "Call 'sub-human-intervention' never executed in any run",
+    "S3_no_crm_write": "prod save-session-vars PUT + update-human-intervened ABSENT in all runs (regress-capture writes only respond_contacts_test copy)",
+    "S4_get_results_read": "Call 'sub-get-results' did not run on miss/PDF paths; no crm_it_support_ticket_create",
+    "S5_test_mode": "reformulator call hardcodes is_test:true; redis item mode=regress-capture; mock bypass path taken on deterministic runs",
+    "S6_token_sinks": "deterministic runs (7690415/885/988/1124) ran ZERO LLM; parser round-trip run (7691319) ran reformulator (in sub) + Basic LLM Chain clarification (gpt-4.1-mini, 351 tok) - bounded, no unexpected new sink"
+  }
+}

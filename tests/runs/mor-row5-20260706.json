@@ -1,0 +1,21 @@
+{
+  "test_run_id": "mor-row5-20260706",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "case": "Row 5 (priority, §10 Gap A / V7) — member_offer decline naming a DIFFERENT team (expected: retarget to warehouse)",
+  "reply": "no, I want warehouse",
+  "contact": "437264483",
+  "scope": "parser (real fork CpxE8LroLzCkrAQN @ a5900ed0; OMIT mock). mode=regress-capture.",
+  "samples": 3,
+  "clone_execs": ["7683261 (5a)","7683273 (5b)","7683284 (5c)"],
+  "verdict": "FAIL (functional; zero-egress HELD; NOT a HALT)",
+  "fork_output_exchange_ALL3_IDENTICAL": {"message_type":"casual","is_affirmative":false,"routing":{"suggested_team":"customer_service","suggested_agent":"order_enquiries"},"escalation":{"is_escalation_confirmation":false,"escalation_declined":true},"member_pick_context":true},
+  "spine_branch": "same as row 4 — If2 FALSE -> If10[FALSE] -> is-escalation-declined[TRUE] -> 'Escalation declined.'",
+  "final_response": "Escalation declined.",
+  "basic_llm_chain": "N",
+  "expected": {"message_type":"request_for_help","is_affirmative":false,"routing":{"suggested_team":"warehouse"},"escalation":{"is_escalation_confirmation":true,"retarget_team":true},"If2":"TRUE","human_intervention":"team=warehouse (guarded)"},
+  "root_cause": "The fork gpt classifies 'no, I want warehouse' as a PLAIN DECLINE (leading 'no' -> is_affirmative=false, message_type=casual) and does NOT surface warehouse as routing.suggested_team. The §10.2 Part-1 clause ('a decline naming a DIFFERENT team -> request_for_help + suggested_team=that team') is not honored for this phrasing. Tier-1 retarget keys on message_type==='request_for_help' which never appears; the is_affirmative===false arm fires and emits escalation_declined. DETERMINISTIC across 3 samples (byte-identical output) — NOT flaky.",
+  "comparison": "Row 6 ('can i escalate to warehouse team?', non-decline framing) retargets to warehouse correctly (clone_exec 7683296) — the retarget MECHANISM is sound; only the parser classification of the decline-framed phrase fails. Also an improvement over pre-§10 baseline (wh-esc-*: infinite out_of_range CS re-offer loop); it now declines cleanly, just does not retarget.",
+  "egress_log": {"guard-d-record":"would_write","guard-h-record":"would_log","sendmsg_sub_7683267":"would_send 'Escalation declined.' is_test=true","human_intervention":"NOT called (If2 FALSE)","media_guards":"none"},
+  "S0": {"S1":"PASS","S2":"PASS","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS (1 fork LLM/turn; Basic LLM Chain dark)"}
+}

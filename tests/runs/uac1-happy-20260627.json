@@ -1,0 +1,26 @@
+{
+  "case": "UAC §1 — happy path (full-access business query with real product)",
+  "test_run_id": "uac1-happy-20260627",
+  "contact": "437264483",
+  "clone_execution_id": "6742544",
+  "wrapper_execution_id": "6742543",
+  "verdict": "BLOCKED (needs a real, resolvable product code) — safety gate held (zero egress) but the happy-path get-rag/get-results branch was NOT exercised.",
+  "attempted_product_code": "SRTWC7405-RL",
+  "resolve_entity_result": {"tokens": ["SRTWC7405-RL"], "resolutions": [{"token": "SRTWC7405-RL", "resolved": false, "ambiguous": false, "matches": []}], "unresolved_tokens": ["SRTWC7405-RL"]},
+  "what_happened": "resolve-entity (REAL CRM read, 2335ms) returned NO match for SRTWC7405-RL -> If3 TRUE (unresolved>0) -> not-found-error-message -> compile-current-state -> respond2(guarded) + guard-d-record. Execute 'sub-get-rag' and Call 'sub-get-results' were NOT reached. Identical to the §5 not-found branch.",
+  "blocker": "Need a product code (or other entity) that actually resolves in https://fe-sorento.foundryx.my/api/v1/system/references/resolve for domain 'incoming'. SRTWC7405-RL and SR-1234 (placeholders) do not resolve. ASK THE USER for a known-good product code, then re-run §1 to exercise get-rag -> get-results and verify S4 (resolved tool is a READ tool, never crm_it_support_ticket_create).",
+  "safety_gate": {
+    "S1_zero_real_sends": "PASS — respond2 subexec 6742549 guarded (is_test=true)",
+    "S2_zero_assignment_writes": "PASS (no escalation)",
+    "S3_zero_crm_writes": "PASS — save-session-vars blocked (guard-d would_write)",
+    "S4_get_results_no_write": "NOT EXERCISED — get-results never ran (product unresolved). Cannot verify the READ-tool allowlist until a resolvable code is provided.",
+    "S5_test_mode_present": "PASS",
+    "S6_token_bound": "PASS — reformulator bypassed; resolve-entity is a real CRM READ"
+  },
+  "orphaned_egress_nodes_executed": "NONE",
+  "egress_records": [
+    {"guard": "sendmsg-sub", "kind": "would_send", "message": "Could not find incoming for SRTWC7405-RL. Would you like me to escalate to customer_service team?", "result_set": []},
+    {"guard": "save-session-vars", "kind": "would_write", "last_result_set": []},
+    {"guard": "save-message-redis", "kind": "would_log"}
+  ]
+}

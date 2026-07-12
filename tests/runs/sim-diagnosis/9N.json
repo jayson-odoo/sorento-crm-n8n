@@ -1,0 +1,403 @@
+{
+ "label": "9N",
+ "test_run_id": "sim-9N",
+ "text": "thanks, can you also check SRT79-SS-GM stock",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "thanks, can you also check SRT79-SS-GM stock"
+   },
+   "test_run_id": "sim-9N",
+   "ts": "2026-07-07T14:08:13.131-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "trying to check stock for SRT79-SS-GM",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRT79-SS-GM",
+        "hint": "product",
+        "canonical_code": "SRT79-SS-GM",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (inventory): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRT79-SS-GM",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRT79-SS-GM\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-AM\n*Quantity On Hand:* 0\n\n_Data last updated: 03/07/2026 10:07:20_"
+    }
+   },
+   "test_run_id": "sim-9N",
+   "ts": "2026-07-07T14:08:13.127-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRT79-SS-GM\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-AM\n*Quantity On Hand:* 0\n\n_Data last updated: 03/07/2026 10:07:20_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRT79-SS-GM",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-9N",
+   "ts": "2026-07-07T14:08:13.111-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840112",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRT79-SS-GM",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check stock for SRT79-SS-GM"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "SRT79-SS-GM"
+   ],
+   "elapsed_ms": 31.11,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SRT79-SS-GM",
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRT79-SS-GM",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRT79-SS-GM",
+      "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRT79-SS-GM",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "entity_type": "product",
+     "code": "SRT79-SS-GM"
+    }
+   ],
+   "gate_debug": {
+    "domain": "inventory",
+    "allowed_lookup": [
+     "product",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": {
+   "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRT79-SS-GM\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-AM\n*Quantity On Hand:* 0\n\n_Data last updated: 03/07/2026 10:07:20_",
+   "response_intro": "Stock details found for the requested products.",
+   "answers": [
+    {
+     "title": "SRT79-SS-GM",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRT79-SS-GM"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-AM"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-03T10:07:20.908920",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7840120",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "user_goal": "trying to check stock for SRT79-SS-GM",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRT79-SS-GM",
+     "hint": "product",
+     "canonical_code": "SRT79-SS-GM",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (inventory): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRT79-SS-GM",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRT79-SS-GM\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-AM\n*Quantity On Hand:* 0\n\n_Data last updated: 03/07/2026 10:07:20_",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "product_ids": [
+      "5f925bcf-1fde-4f4b-bd55-b3989b051710"
+     ],
+     "_diagnostics": {
+      "entities_in": 1,
+      "total_uuids_passed": 1,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "stock",
+        "intro": "Stock details found for the requested products.",
+        "items": [
+         {
+          "title": "SRT79-SS-GM",
+          "fields": [
+           {
+            "label": "Product Code",
+            "value": "SRT79-SS-GM"
+           },
+           {
+            "label": "Warehouse",
+            "value": "BUKIT RAJA"
+           },
+           {
+            "label": "System Location",
+            "value": "BRW-AM"
+           },
+           {
+            "label": "Quantity On Hand",
+            "value": 0
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-07-03T10:07:20.908920",
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRT79-SS-GM\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-AM\n*Quantity On Hand:* 0\n\n_Data last updated: 03/07/2026 10:07:20_",
+     "response_intro": "Stock details found for the requested products.",
+     "answers": [
+      {
+       "title": "SRT79-SS-GM",
+       "fields": [
+        {
+         "label": "Product Code",
+         "value": "SRT79-SS-GM"
+        },
+        {
+         "label": "Warehouse",
+         "value": "BUKIT RAJA"
+        },
+        {
+         "label": "System Location",
+         "value": "BRW-AM"
+        },
+        {
+         "label": "Quantity On Hand",
+         "value": 0
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": "2026-07-03T10:07:20.908920",
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

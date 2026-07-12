@@ -1,0 +1,90 @@
+[
+  {
+    "parameters": {
+      "conditions": {
+        "options": {
+          "caseSensitive": true,
+          "leftValue": "",
+          "typeValidation": "loose",
+          "version": 2
+        },
+        "combinator": "and",
+        "conditions": [
+          {
+            "id": "g1",
+            "leftValue": "={{ $('escalate-catalog').first().json.is_escalate_offer }}",
+            "rightValue": true,
+            "operator": {
+              "type": "boolean",
+              "operation": "true",
+              "singleValue": true
+            }
+          },
+          {
+            "id": "g2",
+            "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}",
+            "rightValue": "customer_service",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          },
+          {
+            "id": "g3",
+            "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}",
+            "rightValue": "order_enquiries",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          }
+        ]
+      },
+      "options": {}
+    },
+    "name": "cs-offer-gate",
+    "type": "n8n-nodes-base.if",
+    "typeVersion": 2.3,
+    "position": [
+      4400,
+      1904
+    ],
+    "id": "cs-offer-gate-node"
+  },
+  {
+    "parameters": {
+      "url": "=https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}&team_code={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}&tier=1",
+      "sendHeaders": true,
+      "headerParameters": {
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "value": "***REMOVED-CRM-API-KEY***"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "name": "get-cs-members",
+    "type": "n8n-nodes-base.httpRequest",
+    "typeVersion": 4.3,
+    "position": [
+      4640,
+      1824
+    ],
+    "id": "get-cs-members-node"
+  },
+  {
+    "parameters": {
+      "jsCode": "// ── build-cs-member-offer (Δ3) ──────────────────────────────────────\n// Runs only when the cs-offer-gate passed (is_escalate_offer + customer_service + order_enquiries).\n// Turns the live team-members roster into a numbered escalation offer, and stores the roster as\n// cs_last_result_set + selection_context so the NEXT turn's position pick resolves to a member.\n// Empty roster → fall back to the catalog's generic offer (round-robin on a bare \"yes\").\n// get-cs-members returns a JSON array; n8n may emit it as one item (json=array) OR split into\n// one item per element — handle both, then keep only real members.\nlet _raw = $('get-cs-members').all().map(i => i.json);\nlet members = (_raw.length === 1 && Array.isArray(_raw[0])) ? _raw[0] : _raw;\n// exclude members with no respond_user_id — respond.io conversation-assign can't reach them\nmembers = (Array.isArray(members) ? members : []).filter(m => m && m.user_id && m.respond_user_id);\nconst cat = $('escalate-catalog').first().json;\nconst out = { ...cat };\n\nif (members.length === 0) {\n  out.selection_context = null;\n  out.member_offer = false;\n  out.cs_last_result_set = [];\n  return out;\n}\n\nconst numbered = members.map((m, i) => `${i + 1}. ${m.name}`).join('\\n');\nout.response =\n  `Would you like me to escalate to customer_service team?\\n\\n` +\n  `Please choose who to route to (reply with the number):\\n${numbered}\\n\\n` +\n  `If you have no preference, just reply 'yes' and we'll assign automatically.`;\nout.member_offer = true;\nout.selection_context = 'member_offer';\nout.cs_last_result_set = members.map((m, i) => ({\n  idx: i + 1, label: m.name, uuid: m.user_id, respond_user_id: m.respond_user_id,\n}));\nout.manualResponse = true;     // member offer is a manual response (skip business-summary overwrite)\nout.includeResponse = true;\nreturn out;\n"
+    },
+    "name": "build-cs-member-offer",
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+      4864,
+      1824
+    ],
+    "id": "build-cs-member-offer-node"
+  }
+]

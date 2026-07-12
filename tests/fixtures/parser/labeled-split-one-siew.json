@@ -1,0 +1,19 @@
+{
+  "_fixture": "Pinned from the REAL reformulator copy SB8wEXKdpITfhYXA, clone exec 6972176 / sub-exec 6972178 (2026-06-29). UAC §13b: the labeled turn-2 form 'customer one siew, product srtkt72ss' SPLITS into two confident:true entities (customer + product). Proves Change 1 split rule (V-C2).",
+  "_message": "customer one siew, product srtkt72ss",
+  "_resolver_fact": "resolve-entity tokens ['one siew','srtkt72ss'] both resolve (customer ONE SIEW ENTERPRISE SDN BHD exact + product SRTKT72SS exact); unresolved_tokens=[]; If3 FALSE; get-rag tool crm_order_management_orders_list; get-results returned order 202606-4073 (customer one siew, products incl SRTKT72SS). V-C1 AND-resolve confirmed.",
+  "output": {
+    "message_type": "business_query",
+    "intent_hint": "check_order",
+    "domain_hint": "order",
+    "scope_intent": "specific",
+    "match_mode": "and",
+    "entities": [
+      { "raw": "one siew", "hint": "customer", "current_message": true, "confident": true },
+      { "raw": "srtkt72ss", "hint": "product", "current_message": true, "confident": true }
+    ],
+    "entity_op": "replace_combine",
+    "routing": { "suggested_team": "customer_service", "suggested_agent": "order_enquiries" },
+    "escalation": { "is_escalation_confirmation": false }
+  }
+}

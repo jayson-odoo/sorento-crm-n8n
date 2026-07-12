@@ -1,0 +1,91 @@
+{
+  "change": "vague-token-clarify-split",
+  "plan": "n8n-workflows-init/plans/vague-token-clarify-split.md",
+  "uac": "n8n-workflows-init/tests/UAC.md §13",
+  "date": "2026-06-29",
+  "tester": "sorento-tester",
+  "target_clone": "txiPzSxy3Pclsz6v (sorento-consume-main TEST)",
+  "reformulator_copy": "SB8wEXKdpITfhYXA (sub-query-reformulator TEST delta2; carries Change-1 confident prompt; versionId==activeVersionId 177a0c71, updated 2026-06-29)",
+  "live_untouched": ["9qVyfUxmRQqrpGRMDLRuz", "XTODTw-dJcV0uRdC056hG"],
+  "mechanism": "REST PUT seed item into zz-canary-seed Push Item -> execute_workflow seed -> execute_workflow zz-canary-run -> search_executions(clone) -> get_execution(includeData) -> read test:egress:{trid} via zz-canary-read. Deterministic bypass is driven by item.mock_reformulator_output (consumed by reformulator sub test-reformulator-bypass when is_test==true), NOT the clone parser-bypass-gate/mock_parser_output (that gate feeds Basic LLM Chain; plan §1's claim is stale).",
+  "safety_gate_overall": "PASS — §0 S1-S6 held on EVERY run; zero real egress anywhere (no api.respond.io message POST, no assign/SLA/comment/queue, no save-session-vars PUT, no update-human-intervened). No HALT condition.",
+
+  "ENVIRONMENTAL_BLOCKER": {
+    "what": "In uac mode session-get-gate is FALSE (mode!=regress-*), so the clone reads PROD conversation-variables for contact 437264483. That prod session is POLLUTED with a prior 'One siew srtkt72ss' order turn (incl. a member-offer response). The reformulator's Postgres Chat Memory is also keyed by contact_id.",
+    "effect": "Any parser-tier run whose message matches/continues that stored state takes the reformulator REUSE path (current_message:false). output_exchange's reuse arm rebuilds entities from previous_conversation_state (which lacks `confident`), DROPPING the LLM's fresh confident flag. Hits 13a-parser and 13f-T1/T3-parser.",
+    "proof_change1_still_works": "13a-parser sub-exec 6971041 AI Agent RAW output emitted entities:[{raw:'One siew srtkt72ss',hint:'order',current_message:false,confident:false}] — Change-1 prompt DOES emit confident:false. The strip happens downstream in output_exchange reuse, not in the LLM.",
+    "cannot_fix": "S3 forbids prod CRM writes, so the dev contact's prod session cannot be cleared by the tester.",
+    "latent_gap_flagged": "On the reformulator reuse path, `confident` is not preserved (plan §2.3 default-true hardening was NOT applied to output_exchange; even if applied it would default true, not preserve false). A genuinely-vague mash that the parser REUSES (because session already holds it) will escalate-offer, not clarify. Fresh/first-turn vague mashes work (proven by 13a-det).",
+    "recommendation": "Parser-tier UAC for the clarify/escalation paths needs a CLEAN-session dev contact (or uac-mode session sourced from n8n_test respond_contacts_test instead of prod). Reviewer/owner action."
+  },
+
+  "discrepancies_observed": {
+    "human_intervention_sub_id": "Clone Call 'sub-human-intervention' resolves to vUfFUDjLAuMaeQE6 (a dedicated guarded TEST copy with a top test-guard), NOT rrYXzE61gCNUck_zmXe-G from CLAUDE.md. Safer, not a problem; flagging for doc accuracy.",
+    "deterministic_bypass_field": "Active bypass field is mock_reformulator_output (not mock_parser_output as plan §1/§8 state). Tester corrected harness accordingly.",
+    "resolver_aggressiveness": "The live resolver word/semantic-matches descriptive multi-word phrases to product lists ('water closet'->15 WC products; 'victorian clawfoot bathtub'->15 tubs; 'two pintu cks'->CKS/CB products). So a multi-word UNRESOLVED token is hard to force; the unresolved->escalate arm is pinned by 13c instead."
+  },
+
+  "cases": {
+    "13a-parser": {
+      "scope": "parser", "trid": "vts-13a-parser-20260629", "clone_exec": "6971040", "reformulator_subexec": "6971041",
+      "verdict": "CHANGE-1 PASS (parser layer) / E2E-BLOCKED (environmental)",
+      "evidence": "AI Agent raw output: one entity hint:order confident:false (Change-1 OK). output_exchange reuse stripped confident -> clone saw no confident -> not-found is_clarification=false, escalate_message='Could not find order for One siew srtkt72ss. Would you like me to escalate to customer_service team?', escalate-catalog.is_escalate_offer=true. Masked by polluted prod session (reuse).",
+      "safety": "S1-S6 PASS (egress: save-message-redis/save-session-vars/sendmsg-sub all blocked; no human-intervention; no media)."
+    },
+    "13a-det": {
+      "scope": "deterministic (0 token, bypass active)", "trid": "vts-13a-det2-20260629", "clone_exec": "6971674", "reformulator_subexec": "6971675 (35ms, AI Agent bypassed)",
+      "verdict": "PASS",
+      "evidence": "Call output=pinned mock (confident:false, no output_exchange signature). resolve-entity unresolved_tokens=['One siew srtkt72ss']; If3 TRUE; not-found-error-message.is_clarification=true; escalate_message='I captured \"One siew srtkt72ss\" but couldn't tell which part is which. For a order enquiry, please give me a labeled specific — e.g. order, customer_order, transporter, customer, or product.'; NO 'escalate to' substring; escalate-catalog.is_escalate_offer=false; manualResponse=true; compile-current-state.last_result_set=[].",
+      "safety": "S1-S6 PASS (egress sendmsg-sub message=clarify, result_set=[], all blocked; 0 LLM tokens)."
+    },
+    "13b": {
+      "scope": "parser", "trid": "vts-13b-parser-20260629", "clone_exec": "6972176", "reformulator_subexec": "6972178",
+      "verdict": "PASS (V-C1 + V-C2 confirmed)",
+      "evidence": "Reformulator SPLIT: entities=[{raw:'one siew',hint:'customer',confident:true},{raw:'srtkt72ss',hint:'product',confident:true}] (V-C2). resolve-entity ANDed: 'one siew'->customer ONE SIEW ENTERPRISE SDN BHD (exact), 'srtkt72ss'->product SRTKT72SS (exact); unresolved_tokens=[]; If3 FALSE -> get-rag(crm_order_management_orders_list) -> get-results RAN -> order 202606-4073 (customer ONE SIEW, products incl SRTKT72SS), has_result=true (V-C1). No clarify, no escalate.",
+      "safety": "S1-S6 PASS; S4 get-results tool=crm_order_management_orders_list (READ), never crm_it_support_ticket_create."
+    },
+    "13c": {
+      "scope": "deterministic", "trid": "vts-13c-20260629", "clone_exec": "6971821",
+      "verdict": "PASS",
+      "evidence": "mock order SMC202606-9999 confident:true; resolve unresolved_tokens=['SMC202606-9999']; If3 TRUE; not-found vague-check did NOT fire (confident:true); is_clarification=false; escalate_message='Could not find order for SMC202606-9999. Would you like me to escalate to customer_service team?'; escalate-catalog.is_escalate_offer=true (UNCHANGED).",
+      "safety": "S1-S6 PASS."
+    },
+    "13d": {
+      "scope": "deterministic", "trid": "vts-13d-20260629", "clone_exec": "6971903", "getresults_subexec": "6971909",
+      "verdict": "PASS",
+      "evidence": "mock product SRTKT72SS confident:true, domain incoming; resolve resolved (unresolved empty); If3 FALSE -> get-rag(crm_incoming_stock_list) -> get-results RAN (has_result=false, 0 rows) -> Aggregate1 re-entry -> not-found is_clarification=false; escalate_message='Could not find incoming for product SRTKT72SS. Would you like me to escalate to purchasing team?'; escalate-catalog.is_escalate_offer=true. Data-miss never masqueraded as vague-clarify.",
+      "safety": "S1-S6 PASS; S4 tool=crm_incoming_stock_list (READ), has_result=false (no write)."
+    },
+    "13e": {
+      "scope": "deterministic", "trid": "vts-13e-20260629 (+suppl vts-13eb-20260629)", "clone_exec": "6971983 (+6972117)",
+      "verdict": "PASS (discriminator)",
+      "evidence": "mock category 'water closet' confident:true, domain master_products. Live resolver RESOLVED it to 15 WC products (unresolved empty, gate_passed=true) -> If3 FALSE -> get-results product list. not-found never ran -> is_clarification never true -> NOT vague-clarify (word-count!=vague). Supplementary 'victorian clawfoot bathtub' (13e-b) also resolved (15 tubs) -> no clarify. The unresolved-confident:true->escalate arm is pinned by 13c.",
+      "safety": "S1-S6 PASS (would_send product list blocked; get-results READ)."
+    },
+    "13f": {
+      "scope": "parser (+det for T3 path)",
+      "verdict": "PARTIAL PASS — T2 confident:false + If2-not-taken OK; T3 guarded human-intervention validated deterministically; T1 & T3-parser blocked by session contamination",
+      "T1": {"trid":"(== 13a-parser)","note":"Same message as 13a-parser; contaminated reuse -> escalate offer (not clarify). Environmental."},
+      "T2": {"trid":"vts-13f-t2-20260629","clone_exec":"6972300","reformulator_subexec":"6972301","evidence":"Reformulator emitted one entity {raw:'two pintu cks',hint:'product',confident:false} (Change-1 OK on a fresh mash). If2 NOT taken (no escalation-confirm misread). BUT resolver word-matched 'cks'->15 products (unresolved empty) -> If3 FALSE -> 20-order list; vague-clarify branch not reached because token RESOLVED. No escalate offer, no 'escalate to' substring. Safety S1-S6 PASS."},
+      "T3-parser": {"trid":"vts-13f-t3-20260629","clone_exec":"6972419","reformulator_subexec":"6972420","evidence":"Contaminated reuse -> reformulator returned message_type=business_query (echoed stale 'One siew' order), NOT request_for_help -> If2 NOT taken -> human-intervention NOT exercised (safe, but path not validated)."},
+      "T3-det": {"trid":"vts-13f-t3det-20260629","clone_exec":"6972501","hi_subexec":"6972503 (workflow vUfFUDjLAuMaeQE6)","verdict":"PASS","evidence":"Forced mock message_type=request_for_help,domain_hint=order -> If2 TRUE -> Call 'sub-human-intervention' (is_test=true) -> sub ran ONLY [When Executed by Another Workflow, test-guard, test-guard-record] and short-circuited. NONE of Assign/SLA-create/add-comment/assignee-queue/round-robin executed. Egress has human-intervention-sub would_write (blocked). S2 PASS."}
+    }
+  },
+
+  "verify_checks": {
+    "V-C1_resolver_AND_resolve": "CONFIRMED (13b): resolve-entity ANDs customer 'one siew' + product 'srtkt72ss' and get-results returned the matching order 202606-4073.",
+    "V-C2_reformulator_split": "CONFIRMED (13b): real reformulator split 'customer one siew, product srtkt72ss' into two confident:true entities {customer,product}.",
+    "V-C3_raw_match_key": "CONFIRMED (13a-det): unresolved_tokens=['One siew srtkt72ss'] mapped by normalized raw (trim+lowercase) to the confident:false entity -> vague-clarify fired."
+  },
+
+  "net_verdict": "Change LOGIC validated: Change-1 reformulator emits per-entity confident (false for mashes, splits labeled into confident:true) and Change-2 not-found vague-clarify flips is_escalate_offer off with a domain-labeled ask; clear/unchanged/no-data paths preserved (13c/13d/13e). Zero-egress §0 gate held on all runs. CAVEAT: full parser-tier e2e of the vague->clarify path (13a-parser, 13f-T1/T3-parser) is masked by a POLLUTED prod session for dev contact 437264483 forcing the reformulator reuse path (confident stripped in output_exchange). Recommend a clean-session dev contact + (optional) preserve confident on the reuse arm before relying on the parser-tier clarify e2e or promoting.",
+
+  "G1_closure_20260629": {
+    "status": "GREEN — the masking CAVEAT above is now RESOLVED for G1.",
+    "run": "n8n-workflows-init/tests/runs/vts-13a-clean-20260629.json",
+    "how": "Ran 13a parser-tier with a CLEAN session sourced from n8n_test (mode=regress-capture; respond_contacts_test[437264483] reset to {\"variables\":{}}). previous_conversation_state={} so the reformulator took the FRESH-turn path: AI Agent RAW emitted entity_op=replace_combine + entity{current_message:true, confident:false}; output_exchange PRESERVED confident:false (current-message arm, no reuse rebuild). resolve-entity (real, 888ms) unresolved -> If3 TRUE -> not-found is_clarification=true -> escalate-catalog is_escalate_offer=false, domain-labeled ask, NO 'escalate' substring. Clone exec 6977978, reformulator sub-exec 6977980. §0 S1-S6 PASS.",
+    "correction_to_ENVIRONMENTAL_BLOCKER": "The blocker's secondary worry that the reformulator's Postgres Chat Memory (keyed by contact_id, bound to PROD sorento-crm-db) co-forces reuse is REFUTED: that node is ORPHANED in the TEST copy (ai_memory output [[]], not wired to AI Agent). Sub-exec 6977980 tracing: memory.loads=0, memory.saves=0. So the real reformulator does ZERO prod chat-memory read/write, and previous_conversation_state (the session read) is the SOLE reuse driver — fully controllable via n8n_test. Option (a) [inject state in the redis item] was proven structurally ineffective (reformulator reads previous_conversation_state from get-session-vars, not the item).",
+    "zero_prod_session_confirmed": "No prod conversation-variables read or PUT; no respond_contacts.session_vars write. Session read+save both via n8n_test respond_contacts_test (isolated).",
+    "concurrency_flag": "A sibling regression replay (aROEBlQyyoQaB7a1 exec 6974683, label replay-vagueA-20260629-1502) was concurrently consuming the shared redis list main-message-list-test; first 13a-clean attempt collided (popped replay item 34404). Retried back-to-back mid-gap successfully. Serialize UAC vs replay (zz-canary-seed's Clear List corrupts an active replay) or give replay its own list."
+  }
+}

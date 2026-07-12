@@ -1,0 +1,89 @@
+{
+  "run": "UAC §9 — two distinct exact codes + missing attachment (Fix A + Fix B)",
+  "change": "fix-gate-render-notfound-msg",
+  "test_run_id": "uac9-parser-20260628",
+  "date": "2026-06-28",
+  "target_clone": "txiPzSxy3Pclsz6v (sorento-consume-main TEST)",
+  "scope_run": "parser (Step-0 capture run; real reformulator + real reads + applied fix). Doubles as the §9 functional verdict — see note on deterministic re-run blocker.",
+  "verdict": "PASS",
+  "message": "SPAN cert for srtwt03C or SRTUFV101",
+  "contact": "437264483 (FULL access)",
+  "execution_ids": {
+    "seed (zz-canary-seed 4eDGDBL3rEkGQuBV)": "6846886",
+    "run (clone txiPzSxy3Pclsz6v)": "6846893",
+    "reformulator sub (SB8wEXKdpITfhYXA)": "6846894",
+    "get-rag sub (tWP33QOFT7SxThfT)": "6846899",
+    "get-results sub (Fss5aAaXthJSWpZCgKiKR)": "6846902",
+    "egress read (zz-canary-read LLIbMXAixexM9Cwc)": "6846973"
+  },
+
+  "real_reformulator_output": {
+    "domain_hint": "product_attachment",
+    "entities": [
+      { "raw": "SPAN cert", "hint": "attachment_type" },
+      { "raw": "srtwt03C", "hint": "product" },
+      { "raw": "SRTUFV101", "hint": "product" }
+    ],
+    "match_mode": "and",
+    "_confirmed": "SPAN cert -> single attachment_type entity; srtwt03C and SRTUFV101 -> single product entities each. No free-text descriptor token emitted."
+  },
+
+  "resolve_entity_real_read": {
+    "tokens": ["SPAN cert", "srtwt03C", "SRTUFV101"],
+    "fallback_match_mode": "or",
+    "unresolved_tokens": [],
+    "SPAN cert": "attachment_type Certification (uuid 1439736c..., match_tier word)",
+    "srtwt03C": "SRTWT03C(exact) + SRTWT03CA(prefix) + SRTWT03C-ECO(prefix) — ambiguous=true",
+    "SRTUFV101": "SRTUFV101(exact) + SRTUFV101-WEPLS(prefix) — ambiguous=true"
+  },
+
+  "asserted_node_outputs": {
+    "disallowed-entity-gate": {
+      "gate_passed": true,
+      "require_specific": false,
+      "gate_reason": "ok",
+      "gate_clarification": "",
+      "compatible_entities": [
+        { "uuid": "1439736c-20ca-4bba-b387-b242ff4a4599", "entity_type": "attachment_type", "code": "Certification" },
+        { "uuid": "d10f57fe-705b-4ad9-a597-d57a372649a9", "entity_type": "product", "code": "SRTWT03C" },
+        { "uuid": "82495be6-ae8d-41b3-8238-9d43d4749f3e", "entity_type": "product", "code": "SRTUFV101" }
+      ],
+      "gate_debug": { "domain": "product_attachment", "entities_count": 6 }
+    },
+    "not-found-error-message": {
+      "escalate_message": "Could not find a SPAN cert for product srtwt03C and SRTUFV101. Would you like me to escalate to purchasing_certification team?",
+      "is_clarification": false
+    },
+    "tool-filter": { "resolved_tool": "crm_master_product_attachments_list" },
+    "get-results": { "has_result": false, "_attachment_genuinely_missing": true }
+  },
+
+  "functional_assertions": {
+    "FixA_no_false_prompt": "PASS — require_specific=false, gate_passed=true, gate_clarification empty. NO 'please choose' / 'search needs to be more specific'.",
+    "FixA_no_union_noise": "PASS — compatible_entities is the cleanly-resolved set (Certification + SRTWT03C + SRTUFV101). NONE of the prefix variants (SRTWT03CA, SRTWT03C-ECO, SRTUFV101-WEPLS) and NONE of any cross-token 18-union noise (no AMS-FFAS9859-001500BT0 / CB114 / SRT0001 / etc.).",
+    "FixA_two_codes_pass_as_set": "PASS — both exact products SRTWT03C and SRTUFV101 pass through together.",
+    "FixB_no_literal_leak": "PASS — escalate_message does NOT contain 'product_attachment'.",
+    "FixB_names_product_and_attachment": "PASS — contains 'SPAN cert' and 'product srtwt03C and SRTUFV101'; ends 'Would you like me to escalate to purchasing_certification team?'.",
+    "would_send_equals_escalate_message": "PASS — egress sendmsg-sub would_send.message == escalate_message.",
+    "DEVIATION_from_UAC_literal": "UAC §9 expected compatible_entities.length===2 (two products only). ACTUAL length===3 because the real reformulator emitted 'SPAN cert' as an attachment_type entity that the resolver resolved to a uuid (Certification), so it legitimately joins the compatible set. This is MORE correct, not the bug: the anti-bug assertions (no prompt, no union noise) all hold. Also Fix B prints the raw user tokens ('srtwt03C' lowercase) not canonical codes, per the parser-driven phrasing in the coder diff — matches Fix B code exactly."
+  },
+
+  "safety_S0_gate": {
+    "S1_zero_real_sends": "PASS — egress test:egress:uac9-parser-20260628 has sendmsg-sub {kind:would_send, blocked} only; no api.respond.io message POST. message = the Fix-B not-found string.",
+    "S2_zero_assignment_writes": "PASS — not the escalation branch; NO human-intervention-sub record, no Assign/SLA/PIC-comment/assignee-queue.",
+    "S3_zero_crm_writes": "PASS — save-session-vars {kind:would_write, target crm:conversation-variables:PUT, blocked}; orphaned PUT did not fire.",
+    "S4_get_results_no_write": "PASS — get-results resolved tool = crm_master_product_attachments_list (READ/list); NEVER crm_it_support_ticket_create; has_result=false.",
+    "S5_test_mode_present": "PASS — guard short-circuits (sendmsg-sub, save-session-vars, save-message-redis) only fire when is_test=true; reformulator + get-results ran as test sub-executions.",
+    "S6_token_bound": "parser scope (Step 0) — only the reformulator LLM ran (allowed for Step-0 capture). No clarification Basic LLM Chain, no get-results LLM. For the deterministic re-run S6 expects 0 tokens (reformulator bypassed) — BLOCKED, see rollup."
+  },
+
+  "egress_log_test_egress_uac9-parser-20260628": [
+    { "guard": "save-message-redis", "kind": "would_log", "blocked": true, "contact_id": "437264483" },
+    { "guard": "save-session-vars", "kind": "would_write", "target": "crm:conversation-variables:PUT", "blocked": true },
+    { "guard": "sendmsg-sub", "kind": "would_send", "target": "437264483", "message": "Could not find a SPAN cert for product srtwt03C and SRTUFV101. Would you like me to escalate to purchasing_certification team?", "blocked": true }
+  ],
+
+  "no_leak_sweep": "PASS — no node output anywhere in exec 6846893 contains the literal 'product_attachment' (gate_clarification empty; escalate_message uses natural phrasing).",
+
+  "notes": "Captured before the concurrent-replay contention was detected; this run is internally consistent (my text -> my reformulator parse -> my gate -> my egress under my test_run_id), so it is a trustworthy CLEAN PASS. The deterministic pinned re-run (0-token confirmation) was NOT completed — see rollup blocker."
+}

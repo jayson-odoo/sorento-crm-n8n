@@ -1,0 +1,1402 @@
+{
+ "label": "2A-N",
+ "test_run_id": "sim-2A-N",
+ "text": "Send me Sorento WC",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Send me Sorento WC"
+   },
+   "test_run_id": "sim-2A-N",
+   "ts": "2026-07-07T13:55:08.349-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_product",
+      "domain_hint": "master_products",
+      "user_goal": "trying to get Sorento WC",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Sorento WC",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing_product",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (master_products): returned 15 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "ACC-SRT1008",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "SRTWC7602-OKU",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": null,
+        "label": "SRTWC8066-SH-MW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": null,
+        "label": "SRTWC8383-RL-BW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": null,
+        "label": "SRTWCY8419",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": null,
+        "label": "SRTWCX7604-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": null,
+        "label": "SRTWCY8058-FT",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": null,
+        "label": "SRTWCPS189",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 9,
+        "uuid": null,
+        "label": "SRTWC8518-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 10,
+        "uuid": null,
+        "label": "SRTWC8517-SH-UF-150",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 11,
+        "uuid": null,
+        "label": "SRTWC8840-SC",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 12,
+        "uuid": null,
+        "label": "SRTWCFT151-OP",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 13,
+        "uuid": null,
+        "label": "SRTWCFT OL-200 CC",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 14,
+        "uuid": null,
+        "label": "SRTWC8317-P-RL",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 15,
+        "uuid": null,
+        "label": "SRTWC8605-SC-RL",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Here are the matching products.\n\n1. *Product Code:* ACC-SRT1008\n*Description:* SORENTO SRTWC13017 REMOTE CONTROL ACC-SRT1008\n*List Price:* MYR 680.00\n*Dimensions:* Not defined\n\n2. *Product Code:* SRTWC7602-OKU\n*Description:* SORENTO ONE PIECE WASHDOWN TOILET (S-TRAP 250MM) SRTWC7602-OKU\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* SRTWC8066-SH-MW\n*Description:* SORENTO SERENE ONE PIECE TWISTER  FLUSHING  WC (S-TRAP:250MM) SRTWC8066-SH-MW\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* SRTWC8383-RL-BW\n*Description:* **** SORENTO ONE PIECE WASHDOWN (RIMLESS) TOILET (S-TRAP 250MM)  SRTWC8383-RL-BW\n*List Price:* MYR 3550.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWCY8419\n*Description:* SORENTO CLOSE-COUPLED CISTERN ONLY (C/W FITTING) SRTWCY8419\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n6. *Product Code:* SRTWCX7604-P\n*Description:* ****SORENTO CLOSE-COUPLED PEDESTAL WASH-DOWN FLUSHING (P-TRAP 180MM)  SRTWCX7604-P\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n7. *Product Code:* SRTWCY8058-FT\n*Description:* SORENTO CLOSE-COUPLED CISTERN FITTING ONLY SRTWCY8058-FT\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n8. *Product Code:* SRTWCPS189\n*Description:* SORENTO WC FIXING SCREW SRTWCPS189\n*List Price:* MYR 12.50\n*Dimensions:* Not defined\n\n9. *Product Code:* SRTWC8518-SH\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 250MM)  SRTWC8518-SH C/W PP SEAT COVER\n*List Price:* MYR 1295.00\n*Dimensions:* Not defined\n\n10. *Product Code:* SRTWC8517-SH-UF-150\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 150MM)  SRTWC8517-SH-UF-150\n*List Price:* MYR 1750.00\n*Dimensions:* Not defined\n\n11. *Product Code:* SRTWC8840-SC\n*Description:* SORENTO SRTWC8840 SEAT COVER ONLY SRTWC8840-SC\n*List Price:* MYR 85.00\n*Dimensions:* Not defined\n\n12. *Product Code:* SRTWCFT151-OP\n*Description:* SORENTO ONE PIECE  WC FITTING SET ONLY 150MM  SRTWCFT151-OP FOR SRTWC8088 USE\n*List Price:* MYR 130.00\n*Dimensions:* Not defined\n\n13. *Product Code:* SRTWCFT OL-200 CC\n*Description:* SORENTO CLOSE COUPLED OUTLET FITTING 200mm (SRTWCFT OL-200 CC)\n*List Price:* MYR 40.00\n*Dimensions:* Not defined\n\n14. *Product Code:* SRTWC8317-P-RL\n*Description:* SORENTO ONE PIECE-COUPLED PEDESTAL RIMLESS FLUSHING (P-TRAP 180MM) SRTWC8317-P-RL\n*List Price:* MYR 1200.00\n*Dimensions:* Not defined\n\n15. *Product Code:* SRTWC8605-SC-RL\n*Description:* SORENTO SRTWC8605-SC-RL SEAT COVER ONLY\n*List Price:* MYR 70.00\n*Dimensions:* Not defined\n\n_Data last updated: 06/07/2026 08:34:53_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you \ud83d\ude0a"
+    }
+   },
+   "test_run_id": "sim-2A-N",
+   "ts": "2026-07-07T13:55:08.345-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Here are the matching products.\n\n1. *Product Code:* ACC-SRT1008\n*Description:* SORENTO SRTWC13017 REMOTE CONTROL ACC-SRT1008\n*List Price:* MYR 680.00\n*Dimensions:* Not defined\n\n2. *Product Code:* SRTWC7602-OKU\n*Description:* SORENTO ONE PIECE WASHDOWN TOILET (S-TRAP 250MM) SRTWC7602-OKU\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* SRTWC8066-SH-MW\n*Description:* SORENTO SERENE ONE PIECE TWISTER  FLUSHING  WC (S-TRAP:250MM) SRTWC8066-SH-MW\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* SRTWC8383-RL-BW\n*Description:* **** SORENTO ONE PIECE WASHDOWN (RIMLESS) TOILET (S-TRAP 250MM)  SRTWC8383-RL-BW\n*List Price:* MYR 3550.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWCY8419\n*Description:* SORENTO CLOSE-COUPLED CISTERN ONLY (C/W FITTING) SRTWCY8419\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n6. *Product Code:* SRTWCX7604-P\n*Description:* ****SORENTO CLOSE-COUPLED PEDESTAL WASH-DOWN FLUSHING (P-TRAP 180MM)  SRTWCX7604-P\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n7. *Product Code:* SRTWCY8058-FT\n*Description:* SORENTO CLOSE-COUPLED CISTERN FITTING ONLY SRTWCY8058-FT\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n8. *Product Code:* SRTWCPS189\n*Description:* SORENTO WC FIXING SCREW SRTWCPS189\n*List Price:* MYR 12.50\n*Dimensions:* Not defined\n\n9. *Product Code:* SRTWC8518-SH\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 250MM)  SRTWC8518-SH C/W PP SEAT COVER\n*List Price:* MYR 1295.00\n*Dimensions:* Not defined\n\n10. *Product Code:* SRTWC8517-SH-UF-150\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 150MM)  SRTWC8517-SH-UF-150\n*List Price:* MYR 1750.00\n*Dimensions:* Not defined\n\n11. *Product Code:* SRTWC8840-SC\n*Description:* SORENTO SRTWC8840 SEAT COVER ONLY SRTWC8840-SC\n*List Price:* MYR 85.00\n*Dimensions:* Not defined\n\n12. *Product Code:* SRTWCFT151-OP\n*Description:* SORENTO ONE PIECE  WC FITTING SET ONLY 150MM  SRTWCFT151-OP FOR SRTWC8088 USE\n*List Price:* MYR 130.00\n*Dimensions:* Not defined\n\n13. *Product Code:* SRTWCFT OL-200 CC\n*Description:* SORENTO CLOSE COUPLED OUTLET FITTING 200mm (SRTWCFT OL-200 CC)\n*List Price:* MYR 40.00\n*Dimensions:* Not defined\n\n14. *Product Code:* SRTWC8317-P-RL\n*Description:* SORENTO ONE PIECE-COUPLED PEDESTAL RIMLESS FLUSHING (P-TRAP 180MM) SRTWC8317-P-RL\n*List Price:* MYR 1200.00\n*Dimensions:* Not defined\n\n15. *Product Code:* SRTWC8605-SC-RL\n*Description:* SORENTO SRTWC8605-SC-RL SEAT COVER ONLY\n*List Price:* MYR 70.00\n*Dimensions:* Not defined\n\n_Data last updated: 06/07/2026 08:34:53_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you \ud83d\ude0a",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "ACC-SRT1008",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "SRTWC7602-OKU",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": null,
+      "label": "SRTWC8066-SH-MW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": null,
+      "label": "SRTWC8383-RL-BW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": null,
+      "label": "SRTWCY8419",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": null,
+      "label": "SRTWCX7604-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": null,
+      "label": "SRTWCY8058-FT",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": null,
+      "label": "SRTWCPS189",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 9,
+      "uuid": null,
+      "label": "SRTWC8518-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 10,
+      "uuid": null,
+      "label": "SRTWC8517-SH-UF-150",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 11,
+      "uuid": null,
+      "label": "SRTWC8840-SC",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 12,
+      "uuid": null,
+      "label": "SRTWCFT151-OP",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 13,
+      "uuid": null,
+      "label": "SRTWCFT OL-200 CC",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 14,
+      "uuid": null,
+      "label": "SRTWC8317-P-RL",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 15,
+      "uuid": null,
+      "label": "SRTWC8605-SC-RL",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-2A-N",
+   "ts": "2026-07-07T13:55:08.332-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838994",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_product",
+   "domain_hint": "master_products",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Sorento WC",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_product",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to get Sorento WC"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "Sorento WC"
+   ],
+   "elapsed_ms": 53.22,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8383-RL-BW",
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8383-RL-BW",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCY8419",
+     "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCY8419",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCY8058-FT",
+     "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCY8058-FT",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC7602-OKU",
+     "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC7602-OKU",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "ACC-SRT1008",
+     "uuid": "372d8b3d-b29c-4087-9ea6-d01dcda5d01a",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "ACC-SRT1008",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCPS189",
+     "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCPS189",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8518-SH",
+     "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8518-SH",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8517-SH-UF-150",
+     "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8517-SH-UF-150",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8840-SC",
+     "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8840-SC",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCFT151-OP",
+     "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCFT151-OP",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCFT OL-200 CC",
+     "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCFT OL-200 CC",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8317-P-RL",
+     "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8317-P-RL",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8605-SC-RL",
+     "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8605-SC-RL",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWCX7604-P",
+     "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWCX7604-P",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC8066-SH-MW",
+     "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC8066-SH-MW",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8383-RL-BW",
+      "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8383-RL-BW",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCY8419",
+      "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCY8419",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCY8058-FT",
+      "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCY8058-FT",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC7602-OKU",
+      "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC7602-OKU",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "ACC-SRT1008",
+      "uuid": "372d8b3d-b29c-4087-9ea6-d01dcda5d01a",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "ACC-SRT1008",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCPS189",
+      "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCPS189",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8518-SH",
+      "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8518-SH",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8517-SH-UF-150",
+      "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8517-SH-UF-150",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8840-SC",
+      "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8840-SC",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCFT151-OP",
+      "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCFT151-OP",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCFT OL-200 CC",
+      "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCFT OL-200 CC",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8317-P-RL",
+      "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8317-P-RL",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8605-SC-RL",
+      "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8605-SC-RL",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWCX7604-P",
+      "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWCX7604-P",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC8066-SH-MW",
+      "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC8066-SH-MW",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "06a5e50e-4098-4bf3-892b-240016aa3a39",
+     "entity_type": "product",
+     "code": "SRTWC8383-RL-BW"
+    },
+    {
+     "uuid": "16f185d1-3797-41fd-8930-d74928511a1d",
+     "entity_type": "product",
+     "code": "SRTWCY8419"
+    },
+    {
+     "uuid": "412b123e-9b84-473c-983c-6a002e706665",
+     "entity_type": "product",
+     "code": "SRTWCY8058-FT"
+    },
+    {
+     "uuid": "57d68c98-1e18-4d29-879d-7c56b48d9f5d",
+     "entity_type": "product",
+     "code": "SRTWC7602-OKU"
+    },
+    {
+     "uuid": "372d8b3d-b29c-4087-9ea6-d01dcda5d01a",
+     "entity_type": "product",
+     "code": "ACC-SRT1008"
+    },
+    {
+     "uuid": "5aed55f8-4466-41f8-8ed5-6b8b7dd1a92e",
+     "entity_type": "product",
+     "code": "SRTWCPS189"
+    },
+    {
+     "uuid": "5d67c2b5-51cb-447f-9bce-0e377b58a04b",
+     "entity_type": "product",
+     "code": "SRTWC8518-SH"
+    },
+    {
+     "uuid": "5e72a0d1-9867-443e-a044-505f6aa6601f",
+     "entity_type": "product",
+     "code": "SRTWC8517-SH-UF-150"
+    },
+    {
+     "uuid": "5e7a194d-60f6-4beb-8615-2ea964a9ee86",
+     "entity_type": "product",
+     "code": "SRTWC8840-SC"
+    },
+    {
+     "uuid": "5f1fa8d6-78f0-477f-b28b-e831e5b87eab",
+     "entity_type": "product",
+     "code": "SRTWCFT151-OP"
+    },
+    {
+     "uuid": "643d79a5-f6ab-4fd0-95a9-a183cdfb7bcd",
+     "entity_type": "product",
+     "code": "SRTWCFT OL-200 CC"
+    },
+    {
+     "uuid": "652a9e8e-d17f-4407-a093-46d2665ebe34",
+     "entity_type": "product",
+     "code": "SRTWC8317-P-RL"
+    },
+    {
+     "uuid": "6bbefc18-545e-4f3a-9667-570fb62055ce",
+     "entity_type": "product",
+     "code": "SRTWC8605-SC-RL"
+    },
+    {
+     "uuid": "183466a3-6d0e-4eeb-831a-88051880ce91",
+     "entity_type": "product",
+     "code": "SRTWCX7604-P"
+    },
+    {
+     "uuid": "6c7876e7-5545-4c8d-ac77-3a7307858e80",
+     "entity_type": "product",
+     "code": "SRTWC8066-SH-MW"
+    }
+   ],
+   "gate_debug": {
+    "domain": "master_products",
+    "allowed_lookup": [
+     "product",
+     "category",
+     "brand"
+    ],
+    "entities_count": 15
+   }
+  },
+  "get_results": {
+   "response": "Here are the matching products.\n\n1. *Product Code:* ACC-SRT1008\n*Description:* SORENTO SRTWC13017 REMOTE CONTROL ACC-SRT1008\n*List Price:* MYR 680.00\n*Dimensions:* Not defined\n\n2. *Product Code:* SRTWC7602-OKU\n*Description:* SORENTO ONE PIECE WASHDOWN TOILET (S-TRAP 250MM) SRTWC7602-OKU\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* SRTWC8066-SH-MW\n*Description:* SORENTO SERENE ONE PIECE TWISTER  FLUSHING  WC (S-TRAP:250MM) SRTWC8066-SH-MW\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* SRTWC8383-RL-BW\n*Description:* **** SORENTO ONE PIECE WASHDOWN (RIMLESS) TOILET (S-TRAP 250MM)  SRTWC8383-RL-BW\n*List Price:* MYR 3550.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWCY8419\n*Description:* SORENTO CLOSE-COUPLED CISTERN ONLY (C/W FITTING) SRTWCY8419\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n6. *Product Code:* SRTWCX7604-P\n*Description:* ****SORENTO CLOSE-COUPLED PEDESTAL WASH-DOWN FLUSHING (P-TRAP 180MM)  SRTWCX7604-P\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n7. *Product Code:* SRTWCY8058-FT\n*Description:* SORENTO CLOSE-COUPLED CISTERN FITTING ONLY SRTWCY8058-FT\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n8. *Product Code:* SRTWCPS189\n*Description:* SORENTO WC FIXING SCREW SRTWCPS189\n*List Price:* MYR 12.50\n*Dimensions:* Not defined\n\n9. *Product Code:* SRTWC8518-SH\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 250MM)  SRTWC8518-SH C/W PP SEAT COVER\n*List Price:* MYR 1295.00\n*Dimensions:* Not defined\n\n10. *Product Code:* SRTWC8517-SH-UF-150\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 150MM)  SRTWC8517-SH-UF-150\n*List Price:* MYR 1750.00\n*Dimensions:* Not defined\n\n11. *Product Code:* SRTWC8840-SC\n*Description:* SORENTO SRTWC8840 SEAT COVER ONLY SRTWC8840-SC\n*List Price:* MYR 85.00\n*Dimensions:* Not defined\n\n12. *Product Code:* SRTWCFT151-OP\n*Description:* SORENTO ONE PIECE  WC FITTING SET ONLY 150MM  SRTWCFT151-OP FOR SRTWC8088 USE\n*List Price:* MYR 130.00\n*Dimensions:* Not defined\n\n13. *Product Code:* SRTWCFT OL-200 CC\n*Description:* SORENTO CLOSE COUPLED OUTLET FITTING 200mm (SRTWCFT OL-200 CC)\n*List Price:* MYR 40.00\n*Dimensions:* Not defined\n\n14. *Product Code:* SRTWC8317-P-RL\n*Description:* SORENTO ONE PIECE-COUPLED PEDESTAL RIMLESS FLUSHING (P-TRAP 180MM) SRTWC8317-P-RL\n*List Price:* MYR 1200.00\n*Dimensions:* Not defined\n\n15. *Product Code:* SRTWC8605-SC-RL\n*Description:* SORENTO SRTWC8605-SC-RL SEAT COVER ONLY\n*List Price:* MYR 70.00\n*Dimensions:* Not defined\n\n_Data last updated: 06/07/2026 08:34:53_",
+   "response_intro": "Here are the matching products.",
+   "answers": [
+    {
+     "title": "ACC-SRT1008",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "ACC-SRT1008"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO SRTWC13017 REMOTE CONTROL ACC-SRT1008"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 680.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC7602-OKU",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC7602-OKU"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO ONE PIECE WASHDOWN TOILET (S-TRAP 250MM) SRTWC7602-OKU"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 0.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8066-SH-MW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8066-SH-MW"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO SERENE ONE PIECE TWISTER  FLUSHING  WC (S-TRAP:250MM) SRTWC8066-SH-MW"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 0.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8383-RL-BW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8383-RL-BW"
+      },
+      {
+       "label": "Description",
+       "value": "**** SORENTO ONE PIECE WASHDOWN (RIMLESS) TOILET (S-TRAP 250MM)  SRTWC8383-RL-BW"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 3550.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWCY8419",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWCY8419"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO CLOSE-COUPLED CISTERN ONLY (C/W FITTING) SRTWCY8419"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 0.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWCX7604-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWCX7604-P"
+      },
+      {
+       "label": "Description",
+       "value": "****SORENTO CLOSE-COUPLED PEDESTAL WASH-DOWN FLUSHING (P-TRAP 180MM)  SRTWCX7604-P"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 0.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWCY8058-FT",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWCY8058-FT"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO CLOSE-COUPLED CISTERN FITTING ONLY SRTWCY8058-FT"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 0.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWCPS189",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWCPS189"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO WC FIXING SCREW SRTWCPS189"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 12.50"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8518-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8518-SH"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 250MM)  SRTWC8518-SH C/W PP SEAT COVER"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 1295.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8517-SH-UF-150",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8517-SH-UF-150"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 150MM)  SRTWC8517-SH-UF-150"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 1750.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8840-SC",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8840-SC"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO SRTWC8840 SEAT COVER ONLY SRTWC8840-SC"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 85.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWCFT151-OP",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWCFT151-OP"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO ONE PIECE  WC FITTING SET ONLY 150MM  SRTWCFT151-OP FOR SRTWC8088 USE"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 130.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWCFT OL-200 CC",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWCFT OL-200 CC"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO CLOSE COUPLED OUTLET FITTING 200mm (SRTWCFT OL-200 CC)"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 40.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8317-P-RL",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8317-P-RL"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO ONE PIECE-COUPLED PEDESTAL RIMLESS FLUSHING (P-TRAP 180MM) SRTWC8317-P-RL"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 1200.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC8605-SC-RL",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC8605-SC-RL"
+      },
+      {
+       "label": "Description",
+       "value": "SORENTO SRTWC8605-SC-RL SEAT COVER ONLY"
+      },
+      {
+       "label": "List Price",
+       "value": "MYR 70.00"
+      },
+      {
+       "label": "Dimensions",
+       "value": "Not defined"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-06T08:34:53.917498",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7838999",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_product",
+   "domain_hint": "master_products",
+   "user_goal": "trying to get Sorento WC",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Sorento WC",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_product",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (master_products): returned 15 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "ACC-SRT1008",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "SRTWC7602-OKU",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": null,
+     "label": "SRTWC8066-SH-MW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": null,
+     "label": "SRTWC8383-RL-BW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": null,
+     "label": "SRTWCY8419",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": null,
+     "label": "SRTWCX7604-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": null,
+     "label": "SRTWCY8058-FT",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": null,
+     "label": "SRTWCPS189",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 9,
+     "uuid": null,
+     "label": "SRTWC8518-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 10,
+     "uuid": null,
+     "label": "SRTWC8517-SH-UF-150",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 11,
+     "uuid": null,
+     "label": "SRTWC8840-SC",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 12,
+     "uuid": null,
+     "label": "SRTWCFT151-OP",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 13,
+     "uuid": null,
+     "label": "SRTWCFT OL-200 CC",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 14,
+     "uuid": null,
+     "label": "SRTWC8317-P-RL",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 15,
+     "uuid": null,
+     "label": "SRTWC8605-SC-RL",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Here are the matching products.\n\n1. *Product Code:* ACC-SRT1008\n*Description:* SORENTO SRTWC13017 REMOTE CONTROL ACC-SRT1008\n*List Price:* MYR 680.00\n*Dimensions:* Not defined\n\n2. *Product Code:* SRTWC7602-OKU\n*Description:* SORENTO ONE PIECE WASHDOWN TOILET (S-TRAP 250MM) SRTWC7602-OKU\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* SRTWC8066-SH-MW\n*Description:* SORENTO SERENE ONE PIECE TWISTER  FLUSHING  WC (S-TRAP:250MM) SRTWC8066-SH-MW\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* SRTWC8383-RL-BW\n*Description:* **** SORENTO ONE PIECE WASHDOWN (RIMLESS) TOILET (S-TRAP 250MM)  SRTWC8383-RL-BW\n*List Price:* MYR 3550.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWCY8419\n*Description:* SORENTO CLOSE-COUPLED CISTERN ONLY (C/W FITTING) SRTWCY8419\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n6. *Product Code:* SRTWCX7604-P\n*Description:* ****SORENTO CLOSE-COUPLED PEDESTAL WASH-DOWN FLUSHING (P-TRAP 180MM)  SRTWCX7604-P\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n7. *Product Code:* SRTWCY8058-FT\n*Description:* SORENTO CLOSE-COUPLED CISTERN FITTING ONLY SRTWCY8058-FT\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n8. *Product Code:* SRTWCPS189\n*Description:* SORENTO WC FIXING SCREW SRTWCPS189\n*List Price:* MYR 12.50\n*Dimensions:* Not defined\n\n9. *Product Code:* SRTWC8518-SH\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 250MM)  SRTWC8518-SH C/W PP SEAT COVER\n*List Price:* MYR 1295.00\n*Dimensions:* Not defined\n\n10. *Product Code:* SRTWC8517-SH-UF-150\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC  (S-TRAP 150MM)  SRTWC8517-SH-UF-150\n*List Price:* MYR 1750.00\n*Dimensions:* Not defined\n\n11. *Product Code:* SRTWC8840-SC\n*Description:* SORENTO SRTWC8840 SEAT COVER ONLY SRTWC8840-SC\n*List Price:* MYR 85.00\n*Dimensions:* Not defined\n\n12. *Product Code:* SRTWCFT151-OP\n*Description:* SORENTO ONE PIECE  WC FITTING SET ONLY 150MM  SRTWCFT151-OP FOR SRTWC8088 USE\n*List Price:* MYR 130.00\n*Dimensions:* Not defined\n\n13. *Product Code:* SRTWCFT OL-200 CC\n*Description:* SORENTO CLOSE COUPLED OUTLET FITTING 200mm (SRTWCFT OL-200 CC)\n*List Price:* MYR 40.00\n*Dimensions:* Not defined\n\n14. *Product Code:* SRTWC8317-P-RL\n*Description:* SORENTO ONE PIECE-COUPLED PEDESTAL RIMLESS FLUSHING (P-TRAP 180MM) SRTWC8317-P-RL\n*List Price:* MYR 1200.00\n*Dimensions:* Not defined\n\n15. *Product Code:* SRTWC8605-SC-RL\n*Description:* SORENTO SRTWC8605-SC-RL SEAT COVER ONLY\n*List Price:* MYR 70.00\n*Dimensions:* Not defined\n\n_Data last updated: 06/07/2026 08:34:53_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you \ud83d\ude0a",
+   "quick_reply": null,
+   "result_set_len": 15,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

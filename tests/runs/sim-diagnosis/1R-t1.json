@@ -1,0 +1,334 @@
+{
+ "label": "1R-t1",
+ "test_run_id": "sim-1R-t1",
+ "text": "Check new style lighting order srt104 GY delivery",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Check new style lighting order srt104 GY delivery"
+   },
+   "test_run_id": "sim-1R-t1",
+   "ts": "2026-07-07T13:51:10.218-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to check the delivery of the lighting order srt104 GY",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "lighting order srt104 GY",
+        "hint": "order",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": false
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "Maryam Ariffin",
+        "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+        "respond_user_id": "1144607"
+       },
+       {
+        "idx": 2,
+        "label": "Cyndi",
+        "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+        "respond_user_id": "1144556"
+       },
+       {
+        "idx": 3,
+        "label": "Aisyah",
+        "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+        "respond_user_id": "1144561"
+       },
+       {
+        "idx": 4,
+        "label": "Balqis",
+        "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+        "respond_user_id": "1144558"
+       },
+       {
+        "idx": 5,
+        "label": "Niki",
+        "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+        "respond_user_id": "1144554"
+       },
+       {
+        "idx": 6,
+        "label": "Nurain",
+        "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+        "respond_user_id": "1144604"
+       }
+      ],
+      "selection_context": "member_offer",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+    }
+   },
+   "test_run_id": "sim-1R-t1",
+   "ts": "2026-07-07T13:51:10.213-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "label": "Maryam Ariffin",
+      "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+      "respond_user_id": "1144607"
+     },
+     {
+      "idx": 2,
+      "label": "Cyndi",
+      "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+      "respond_user_id": "1144556"
+     },
+     {
+      "idx": 3,
+      "label": "Aisyah",
+      "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+      "respond_user_id": "1144561"
+     },
+     {
+      "idx": 4,
+      "label": "Balqis",
+      "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+      "respond_user_id": "1144558"
+     },
+     {
+      "idx": 5,
+      "label": "Niki",
+      "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+      "respond_user_id": "1144554"
+     },
+     {
+      "idx": 6,
+      "label": "Nurain",
+      "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+      "respond_user_id": "1144604"
+     }
+    ]
+   },
+   "test_run_id": "sim-1R-t1",
+   "ts": "2026-07-07T13:51:10.198-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838648",
+  "nodes_ran": 40,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "lighting order srt104 GY",
+     "hint": "order",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": false
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [
+    "delivery"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the delivery of the lighting order srt104 GY"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "lighting srt104 GY"
+   ],
+   "elapsed_ms": 827.54,
+   "resolutions": [
+    {
+     "token": "lighting srt104 GY",
+     "resolved": false,
+     "ambiguous": false,
+     "matches": [],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [
+    "lighting srt104 GY"
+   ],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": false,
+   "gate_reason": "no entities and 'order' requires a scoping entity",
+   "gate_clarification": "",
+   "compatible_entities": [],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 0
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": {
+   "response": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+   "quick_reply": null,
+   "escalate_message": null
+  },
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to check the delivery of the lighting order srt104 GY",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "lighting order srt104 GY",
+     "hint": "order",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": false
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "label": "Maryam Ariffin",
+     "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "respond_user_id": "1144607"
+    },
+    {
+     "idx": 2,
+     "label": "Cyndi",
+     "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "respond_user_id": "1144556"
+    },
+    {
+     "idx": 3,
+     "label": "Aisyah",
+     "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "respond_user_id": "1144561"
+    },
+    {
+     "idx": 4,
+     "label": "Balqis",
+     "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "respond_user_id": "1144558"
+    },
+    {
+     "idx": 5,
+     "label": "Niki",
+     "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "respond_user_id": "1144554"
+    },
+    {
+     "idx": 6,
+     "label": "Nurain",
+     "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+     "respond_user_id": "1144604"
+    }
+   ],
+   "selection_context": "member_offer",
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Could not find order for lighting srt104 GY. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+   "quick_reply": null,
+   "result_set_len": 6,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

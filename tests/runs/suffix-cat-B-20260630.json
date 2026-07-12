@@ -1,0 +1,59 @@
+{
+  "run": "Friendly-suffix UAC Case B — resource_attachment catalogue (positive)",
+  "change": "compile-current-state friendly domain disclaimers",
+  "verdict": "PASS",
+  "scope": "deterministic",
+  "mode": "uac",
+  "contact": "437264483 (FULL)",
+  "message": "send me the product catalogue",
+  "executions": {
+    "seed": "7081321",
+    "run": "7081325",
+    "clone": "7081326",
+    "reformulator_sub": "7081328",
+    "sendmsg_sub": "7081335",
+    "egress_read": "7081387"
+  },
+  "branch": "happy (If6 -> central-exchange) + attachment path (if-got-attachments TRUE -> get-presigned-url real read -> guard-g)",
+  "domain_hint": "resource_attachment",
+  "get_results_tool": "crm_resource_attachments_list (READ)",
+  "last_result_set_len": 1,
+  "reconciled_entity_raw": "catalogue (matches /catalog|katalog/i)",
+  "user_response_tail": "I have attached the file(s) below.\\n\\n1. *File Name:* SORENTO CATALOGUE 2024 SEARCHABLE_compressed.pdf\\n\\nTip: looking for a specific detail like material or finish? Search the *product code* inside the catalogue and you'll find all its attributes there 👍",
+  "suffix_verdict": "PASS — resource_attachment catalogue Tip suffix appended",
+  "attachment_flow": "PASS — send-message-files would_send (presigned URL well-formed, blocked); real send-message-files node did NOT execute",
+  "egress_log": [
+    {
+      "guard": "save-message-redis",
+      "kind": "would_log",
+      "blocked": true
+    },
+    {
+      "guard": "send-message-files",
+      "kind": "would_send",
+      "target": "respondio:contact:message",
+      "blocked": true,
+      "payload": "presigned catalogue PDF URL"
+    },
+    {
+      "guard": "save-session-vars",
+      "kind": "would_write",
+      "blocked": true
+    },
+    {
+      "guard": "sendmsg-sub",
+      "kind": "would_send",
+      "target": "437264483",
+      "blocked": true,
+      "message_ends_with": "...all its attributes there 👍"
+    }
+  ],
+  "safety_S0": {
+    "S1_zero_real_sends": "PASS",
+    "S2_zero_assignment_writes": "PASS",
+    "S3_zero_crm_writes": "PASS",
+    "S4_get_results_read_only": "PASS — tool crm_resource_attachments_list",
+    "S5_test_mode_present": "PASS — sendmsg sub received is_test=true; egress records carry test_run_id",
+    "S6_token_bound": "PASS (deterministic) — reformulator BYPASSED (sub output === injected mock_reformulator_output, dispositive). No clarification Basic LLM Chain. NOTE: get-results sub ran as a real READ and produced formatted markdown; its internal agent LLM liveness was not separately instrumented."
+  }
+}

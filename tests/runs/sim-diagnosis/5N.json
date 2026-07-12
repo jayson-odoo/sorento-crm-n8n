@@ -1,0 +1,183 @@
+{
+ "label": "5N",
+ "test_run_id": "sim-5N",
+ "text": "delivery 7/7/2026",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "delivery 7/7/2026"
+   },
+   "test_run_id": "sim-5N",
+   "ts": "2026-07-07T14:02:52.949-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to check the delivery date for the order",
+      "access_levels": [],
+      "entities": [],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up.",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": "2026-07-07",
+      "date_filter_end": "2026-07-07",
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up."
+    }
+   },
+   "test_run_id": "sim-5N",
+   "ts": "2026-07-07T14:02:52.946-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up.",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-5N",
+   "ts": "2026-07-07T14:02:52.934-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839651",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [
+    "delivery"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": "2026-07-07",
+   "date_filter_end": "2026-07-07",
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to check the delivery date for the order"
+  },
+  "resolve_entity": {
+   "tokens": [],
+   "elapsed_ms": 0,
+   "resolutions": [],
+   "unresolved_tokens": [],
+   "ambiguous_tokens": []
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": false,
+   "gate_reason": "no entities and 'order' requires a scoping entity",
+   "gate_clarification": "",
+   "compatible_entities": [],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 0
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up.",
+   "is_clarification": true
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up."
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to check the delivery date for the order",
+   "access_levels": [],
+   "entities": [],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up.",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": "2026-07-07",
+   "date_filter_end": "2026-07-07",
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "A order enquiry can't be answered with a general search \u2014 please specify a order, customer_order, transporter, customer, or product so I can look it up.",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

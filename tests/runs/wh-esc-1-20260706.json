@@ -1,0 +1,51 @@
+{
+  "test_run_id": "wh-esc-1-20260706",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "purpose": "Investigate CURRENT behavior (no fix): user asks to escalate to a DIFFERENT team (warehouse) while mid member_offer (customer_service escalation offer open, 5 CS members listed).",
+  "message": "can i escalate to warehouse team?",
+  "contact": "437264483",
+  "scope": "parser (real reformulator; NO mock_reformulator_output; AI Agent LLM executed)",
+  "mode": "regress-capture (session sourced from n8n_test respond_contacts_test)",
+  "seed": "respond_contacts_test[437264483].session_vars.variables = member_offer state (selection_context=member_offer, last_result_set=[Ms Tan,Sandy Lim,Lin,Nur,Emily], prior routing customer_service/order_enquiries, escalation.member_reprompt=out_of_range/is_escalation_confirmation=false)",
+  "execs": {"clone": "7675048", "reformulator_fork": "7675049 (CpxE8LroLzCkrAQN, AI Agent real LLM ran)", "sendmsg_sub": "7675054 (aoydkG1dbItXR5jXFEQsP)"},
+  "parser_raw_llm_AI_Agent": {
+    "message_type": "request_for_help",
+    "is_affirmative": null,
+    "routing": {"suggested_team": "warehouse", "suggested_agent": "general_enquiries"},
+    "escalation": {"is_escalation_confirmation": false},
+    "correction": false,
+    "entity_op": "reuse",
+    "user_goal": "trying to escalate the issue to the warehouse team"
+  },
+  "parser_final_output_exchange": {
+    "message_type": "business_query",
+    "is_affirmative": null,
+    "routing": {"suggested_team": "customer_service", "suggested_agent": "order_enquiries"},
+    "escalation": {"is_escalation_confirmation": false, "member_reprompt": "out_of_range"},
+    "correction": true,
+    "member_pick_context": true,
+    "entity_op": "reuse"
+  },
+  "clobber_note": "output_exchange OVERRODE the LLM: message_type request_for_help->business_query; routing warehouse->customer_service (prior member_offer routing reused); escalation.member_reprompt forced out_of_range; correction false->true. selection_context==member_offer + non-pick reply => member_pick out_of_range path dominates.",
+  "clone_branch": "If2 escalation gate FALSE (final message_type=business_query, is_escalation_confirmation=false) -> tag-escalate-offer/escalate-catalog/cs-offer-gate -> get-cs-members(READ) -> build-cs-member-offer -> compile-current-state -> sendmsg sub (short-circuit). NO human-intervention sub. NO get-rag/get-results.",
+  "would_send_message": "Re-offer of the SAME customer_service team CS-member list (member_reprompt out_of_range): 'I am sorry the provided answer does not meet your requirements. Would you like me to escalate to customer_service team? ... 1. Ms Tan 2. Sandy Lim 3. Lin 4. Nur 5. Emily ...'",
+  "egress_log": {
+    "source": "clone runData (authoritative superset of redis test:egress:wh-esc-1-20260706; host has no redis client, guard-record node data IS the egress-log content)",
+    "sendmsg_sub_7675054": "{guard:sendmsg-sub, blocked:true} - input is_test=true, nodes=[When Executed by Another Workflow, test-guard, test-guard-record]; NO api.respond.io/.../message POST",
+    "save-session-vars": "ABSENT (orphaned) -> guard-d-record would_write only (routing customer_service, member_reprompt out_of_range)",
+    "update-human-intervened": "ABSENT (orphaned)",
+    "send-message-files/images/video": "ABSENT",
+    "human-intervention-sub": "NOT CALLED (escalation false) -> no assign/SLA/comment/assignee-queue",
+    "session_write": "pg-upsert-session -> n8n_test respond_contacts_test (NOT prod)"
+  },
+  "safety_gate_S0": {
+    "S1": "PASS - sendmsg sub short-circuit; no send-message-*; no respond.io message POST",
+    "S2": "PASS - no human-intervention sub; no assign/SLA/PIC-comment/assignee-queue write",
+    "S3": "PASS - save-session-vars + update-human-intervened absent (guard-d would_write only); session write to n8n_test",
+    "S4": "PASS (trivial) - get-results never reached (member-reprompt path)",
+    "S5": "PASS - is_test=true on trigger + reformulator fork + sendmsg sub",
+    "S6": "PASS - parser tier: only reformulator AI Agent LLM ran (1 call); Basic LLM Chain dark; no new token sink"
+  },
+  "verdict": "CLOBBERED to customer_service. NOT routed to warehouse. LLM said request_for_help+warehouse; output_exchange member_pick_context forced business_query + customer_service + member_reprompt out_of_range -> re-offers the SAME CS list. ZERO real egress."
+}

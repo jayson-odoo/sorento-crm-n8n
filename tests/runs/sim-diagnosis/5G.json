@@ -1,0 +1,787 @@
+{
+ "label": "5G",
+ "test_run_id": "sim-5G",
+ "text": "YOO LIVING delivery 7/7/2026",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "YOO LIVING delivery 7/7/2026"
+   },
+   "test_run_id": "sim-5G",
+   "ts": "2026-07-07T14:02:47.392-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to check the delivery status/date for YOO LIVING",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "YOO LIVING",
+        "hint": "customer",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (order): returned 2 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "202607-0822",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "RF2606-054",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": "2026-07-07",
+      "date_filter_end": "2026-07-07",
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0822\n*Customer:* YOO LIVING HOUSE [A/C III]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n2. *Order Number:* RF2606-054\n*Customer:* YOO LIVING HOUSE\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n_Data last updated: 07/07/2026 17:25:22_"
+    }
+   },
+   "test_run_id": "sim-5G",
+   "ts": "2026-07-07T14:02:47.388-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-0822\n*Customer:* YOO LIVING HOUSE [A/C III]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n2. *Order Number:* RF2606-054\n*Customer:* YOO LIVING HOUSE\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n_Data last updated: 07/07/2026 17:25:22_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "202607-0822",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "RF2606-054",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-5G",
+   "ts": "2026-07-07T14:02:47.375-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839636",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "YOO LIVING",
+     "hint": "customer",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [
+    "delivery"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": "2026-07-07",
+   "date_filter_end": "2026-07-07",
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the delivery status/date for YOO LIVING"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "YOO LIVING"
+   ],
+   "elapsed_ms": 88.12,
+   "intersection": [
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y066",
+     "uuid": "6991119d-6423-4d4c-84c6-7412c3933316",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C III]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y065",
+     "uuid": "207f2284-cec8-49a2-808d-ab20f2f9d898",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C I]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "DBR-59e57de1b7",
+     "uuid": "9a93220b-6064-4a8b-88ea-b04fb1553711",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C III] - PRICETAG",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y067",
+     "uuid": "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C IV]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y065",
+     "uuid": "613beac4-3877-4c1f-b274-cdd064acd0be",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "customer": [
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y066",
+      "uuid": "6991119d-6423-4d4c-84c6-7412c3933316",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C III]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y065",
+      "uuid": "207f2284-cec8-49a2-808d-ab20f2f9d898",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C I]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "DBR-59e57de1b7",
+      "uuid": "9a93220b-6064-4a8b-88ea-b04fb1553711",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C III] - PRICETAG",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y067",
+      "uuid": "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C IV]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y065",
+      "uuid": "613beac4-3877-4c1f-b274-cdd064acd0be",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "6991119d-6423-4d4c-84c6-7412c3933316",
+     "entity_type": "customer",
+     "code": "300-Y066"
+    },
+    {
+     "uuid": "207f2284-cec8-49a2-808d-ab20f2f9d898",
+     "entity_type": "customer",
+     "code": "300-Y065"
+    },
+    {
+     "uuid": "9a93220b-6064-4a8b-88ea-b04fb1553711",
+     "entity_type": "customer",
+     "code": "DBR-59e57de1b7"
+    },
+    {
+     "uuid": "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+     "entity_type": "customer",
+     "code": "300-Y067"
+    },
+    {
+     "uuid": "613beac4-3877-4c1f-b274-cdd064acd0be",
+     "entity_type": "customer",
+     "code": "300-Y065"
+    }
+   ],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 5
+   }
+  },
+  "get_results": {
+   "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0822\n*Customer:* YOO LIVING HOUSE [A/C III]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n2. *Order Number:* RF2606-054\n*Customer:* YOO LIVING HOUSE\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "response_intro": "Here are the orders I found.",
+   "answers": [
+    {
+     "title": "202607-0822",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0822"
+      },
+      {
+       "label": "Customer",
+       "value": "YOO LIVING HOUSE [A/C III]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-07T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "10:06:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SORENTO"
+      },
+      {
+       "label": "Driver",
+       "value": "AZHAR"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "VQP1678"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "RF2606-054",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "RF2606-054"
+      },
+      {
+       "label": "Customer",
+       "value": "YOO LIVING HOUSE"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-30T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-07T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "10:06:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SORENTO"
+      },
+      {
+       "label": "Driver",
+       "value": "AZHAR"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "VQP1678"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T17:25:22.310192",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839643",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to check the delivery status/date for YOO LIVING",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "YOO LIVING",
+     "hint": "customer",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (order): returned 2 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "202607-0822",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "RF2606-054",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": "2026-07-07",
+   "date_filter_end": "2026-07-07",
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-0822\n*Customer:* YOO LIVING HOUSE [A/C III]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n2. *Order Number:* RF2606-054\n*Customer:* YOO LIVING HOUSE\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "quick_reply": null,
+   "result_set_len": 2,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "customer_ids": [
+      "6991119d-6423-4d4c-84c6-7412c3933316",
+      "207f2284-cec8-49a2-808d-ab20f2f9d898",
+      "9a93220b-6064-4a8b-88ea-b04fb1553711",
+      "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+      "613beac4-3877-4c1f-b274-cdd064acd0be"
+     ],
+     "_diagnostics": {
+      "entities_in": 5,
+      "total_uuids_passed": 5,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "actual_delivery_date_from": "2026-07-07",
+     "actual_delivery_date_to": "2026-07-07",
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "orders",
+        "intro": "Here are the orders I found.",
+        "items": [
+         {
+          "title": "202607-0822",
+          "fields": [
+           {
+            "label": "Order Number",
+            "value": "202607-0822"
+           },
+           {
+            "label": "Customer",
+            "value": "YOO LIVING HOUSE [A/C III]"
+           },
+           {
+            "label": "Order Date",
+            "value": "2026-07-06T00:00:00"
+           },
+           {
+            "label": "Actual Delivery Date",
+            "value": "2026-07-07T00:00:00"
+           },
+           {
+            "label": "Status",
+            "value": "Picked Up / In Transit"
+           },
+           {
+            "label": "Pickup Time",
+            "value": "10:06:00"
+           },
+           {
+            "label": "Transporter",
+            "value": "SORENTO"
+           },
+           {
+            "label": "Driver",
+            "value": "AZHAR"
+           },
+           {
+            "label": "Lorry Plate",
+            "value": "VQP1678"
+           },
+           {
+            "label": "Warehouse",
+            "value": "BRW"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "RF2606-054",
+          "fields": [
+           {
+            "label": "Order Number",
+            "value": "RF2606-054"
+           },
+           {
+            "label": "Customer",
+            "value": "YOO LIVING HOUSE"
+           },
+           {
+            "label": "Order Date",
+            "value": "2026-06-30T00:00:00"
+           },
+           {
+            "label": "Actual Delivery Date",
+            "value": "2026-07-07T00:00:00"
+           },
+           {
+            "label": "Status",
+            "value": "Picked Up / In Transit"
+           },
+           {
+            "label": "Pickup Time",
+            "value": "10:06:00"
+           },
+           {
+            "label": "Transporter",
+            "value": "SORENTO"
+           },
+           {
+            "label": "Driver",
+            "value": "AZHAR"
+           },
+           {
+            "label": "Lorry Plate",
+            "value": "VQP1678"
+           },
+           {
+            "label": "Warehouse",
+            "value": "BRW"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-07-07T17:25:22.310192",
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0822\n*Customer:* YOO LIVING HOUSE [A/C III]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n2. *Order Number:* RF2606-054\n*Customer:* YOO LIVING HOUSE\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 10:06:00\n*Transporter:* SORENTO\n*Driver:* AZHAR\n*Lorry Plate:* VQP1678\n*Warehouse:* BRW\n\n_Data last updated: 07/07/2026 17:25:22_",
+     "response_intro": "Here are the orders I found.",
+     "answers": [
+      {
+       "title": "202607-0822",
+       "fields": [
+        {
+         "label": "Order Number",
+         "value": "202607-0822"
+        },
+        {
+         "label": "Customer",
+         "value": "YOO LIVING HOUSE [A/C III]"
+        },
+        {
+         "label": "Order Date",
+         "value": "2026-07-06T00:00:00"
+        },
+        {
+         "label": "Actual Delivery Date",
+         "value": "2026-07-07T00:00:00"
+        },
+        {
+         "label": "Status",
+         "value": "Picked Up / In Transit"
+        },
+        {
+         "label": "Pickup Time",
+         "value": "10:06:00"
+        },
+        {
+         "label": "Transporter",
+         "value": "SORENTO"
+        },
+        {
+         "label": "Driver",
+         "value": "AZHAR"
+        },
+        {
+         "label": "Lorry Plate",
+         "value": "VQP1678"
+        },
+        {
+         "label": "Warehouse",
+         "value": "BRW"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "RF2606-054",
+       "fields": [
+        {
+         "label": "Order Number",
+         "value": "RF2606-054"
+        },
+        {
+         "label": "Customer",
+         "value": "YOO LIVING HOUSE"
+        },
+        {
+         "label": "Order Date",
+         "value": "2026-06-30T00:00:00"
+        },
+        {
+         "label": "Actual Delivery Date",
+         "value": "2026-07-07T00:00:00"
+        },
+        {
+         "label": "Status",
+         "value": "Picked Up / In Transit"
+        },
+        {
+         "label": "Pickup Time",
+         "value": "10:06:00"
+        },
+        {
+         "label": "Transporter",
+         "value": "SORENTO"
+        },
+        {
+         "label": "Driver",
+         "value": "AZHAR"
+        },
+        {
+         "label": "Lorry Plate",
+         "value": "VQP1678"
+        },
+        {
+         "label": "Warehouse",
+         "value": "BRW"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": "2026-07-07T17:25:22.310192",
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

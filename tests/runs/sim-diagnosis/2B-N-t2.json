@@ -1,0 +1,475 @@
+{
+ "label": "2B-N-t2",
+ "test_run_id": "sim-2B-N-t2",
+ "text": "SRTBF11705 photo",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "SRTBF11705 photo"
+   },
+   "test_run_id": "sim-2B-N-t2",
+   "ts": "2026-07-07T13:56:20.736-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_product_attachment",
+      "domain_hint": "product_attachment",
+      "user_goal": "trying to check the photo attachment for SRTBF11705",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRTBF11705",
+        "hint": "product",
+        "canonical_code": "SRTBF11705",
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "photo",
+        "hint": "attachment_type",
+        "canonical_code": "Product Photos",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_product",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (product_attachment): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRTBF11705",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705\n*Attachment Type:* Product Photos\n*File Name:* SRTBF11705.png\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*"
+    }
+   },
+   "test_run_id": "sim-2B-N-t2",
+   "ts": "2026-07-07T13:56:17.949-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705\n*Attachment Type:* Product Photos\n*File Name:* SRTBF11705.png\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRTBF11705",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-2B-N-t2",
+   "ts": "2026-07-07T13:56:17.938-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true,
+  "benign_reads_ran": [
+   "get-presigned-url"
+  ],
+  "note": "get-presigned-url ran = benign CloudFront asset READ (400'd, missing key); real send-message-* orphaned, sendmsg-sub logged would_send. Not a real egress."
+ },
+ "capture": {
+  "exec_id": "7839089",
+  "nodes_ran": 47,
+  "real_egress_nodes_ran": [
+   "get-presigned-url"
+  ],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRTBF11705",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "photo",
+     "hint": "attachment_type",
+     "canonical_code": "photo",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_product",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the photo attachment for SRTBF11705"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "SRTBF11705",
+    "photo"
+   ],
+   "elapsed_ms": 69.19,
+   "resolutions": [
+    {
+     "token": "SRTBF11705",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTBF11705",
+       "uuid": "5375c5dd-16f0-4453-8fd4-39ebaf174d80",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTBF11705",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTBF11705-NEW",
+       "uuid": "6c5596dc-53ac-4026-a693-9f9d4f95b556",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTBF11705-NEW",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    },
+    {
+     "token": "photo",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "attachment_type",
+       "canonical_code": "Product Photos",
+       "uuid": "90e76894-8384-4186-a3f7-ef73667726ff",
+       "match_field": "type_name",
+       "match_tier": "substring",
+       "similarity": null,
+       "display": {
+        "code": null,
+        "type_name": "Product Photos",
+        "description": "Product Photos by Marketing"
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "5375c5dd-16f0-4453-8fd4-39ebaf174d80",
+     "entity_type": "product",
+     "code": "SRTBF11705"
+    },
+    {
+     "uuid": "90e76894-8384-4186-a3f7-ef73667726ff",
+     "entity_type": "attachment_type",
+     "code": "Product Photos"
+    }
+   ],
+   "gate_debug": {
+    "domain": "product_attachment",
+    "allowed_lookup": [
+     "product",
+     "attachment",
+     "attachment_type",
+     "category",
+     "brand"
+    ],
+    "entities_count": 3
+   }
+  },
+  "get_results": {
+   "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705\n*Attachment Type:* Product Photos\n*File Name:* SRTBF11705.png\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*",
+   "response_intro": "I have attached the file(s) below.",
+   "answers": [
+    {
+     "title": "SRTBF11705",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTBF11705"
+      },
+      {
+       "label": "Attachment Type",
+       "value": "Product Photos"
+      },
+      {
+       "label": "File Name",
+       "value": "SRTBF11705.png"
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [
+    {
+     "url": "https://d1k6bbzmejl1no.cloudfront.net/product_photos/567323d1-1f89-4d52-b218-39e6986b3d70/SRTBF11705.png",
+     "filename": "SRTBF11705.png",
+     "mimeType": "image/png",
+     "attachmentType": "Product Photos"
+    }
+   ],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839098",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "user_goal": "trying to check the photo attachment for SRTBF11705",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRTBF11705",
+     "hint": "product",
+     "canonical_code": "SRTBF11705",
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "photo",
+     "hint": "attachment_type",
+     "canonical_code": "Product Photos",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_product",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (product_attachment): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRTBF11705",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705\n*Attachment Type:* Product Photos\n*File Name:* SRTBF11705.png\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "product_ids": [
+      "5375c5dd-16f0-4453-8fd4-39ebaf174d80"
+     ],
+     "attachment_type_ids": [
+      "90e76894-8384-4186-a3f7-ef73667726ff"
+     ],
+     "_diagnostics": {
+      "entities_in": 2,
+      "total_uuids_passed": 2,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "product_attachments",
+        "intro": "I have attached the file(s) below.",
+        "items": [
+         {
+          "title": "SRTBF11705",
+          "fields": [
+           {
+            "label": "Product Code",
+            "value": "SRTBF11705"
+           },
+           {
+            "label": "Attachment Type",
+            "value": "Product Photos"
+           },
+           {
+            "label": "File Name",
+            "value": "SRTBF11705.png"
+           }
+          ],
+          "flags": {
+           "discontinued": true,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [
+         {
+          "url": "https://d1k6bbzmejl1no.cloudfront.net/product_photos/567323d1-1f89-4d52-b218-39e6986b3d70/SRTBF11705.png",
+          "filename": "SRTBF11705.png",
+          "mimeType": "image/png",
+          "attachmentType": "Product Photos"
+         }
+        ],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705\n*Attachment Type:* Product Photos\n*File Name:* SRTBF11705.png\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*",
+     "response_intro": "I have attached the file(s) below.",
+     "answers": [
+      {
+       "title": "SRTBF11705",
+       "fields": [
+        {
+         "label": "Product Code",
+         "value": "SRTBF11705"
+        },
+        {
+         "label": "Attachment Type",
+         "value": "Product Photos"
+        },
+        {
+         "label": "File Name",
+         "value": "SRTBF11705.png"
+        }
+       ],
+       "flags": {
+        "discontinued": true,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [
+      {
+       "url": "https://d1k6bbzmejl1no.cloudfront.net/product_photos/567323d1-1f89-4d52-b218-39e6986b3d70/SRTBF11705.png",
+       "filename": "SRTBF11705.png",
+       "mimeType": "image/png",
+       "attachmentType": "Product Photos"
+      }
+     ],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

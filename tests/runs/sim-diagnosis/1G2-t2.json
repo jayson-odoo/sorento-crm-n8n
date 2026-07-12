@@ -1,0 +1,352 @@
+{
+ "label": "1G2-t2",
+ "test_run_id": "sim-1G2-t2",
+ "text": "1",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "1"
+   },
+   "test_run_id": "sim-1G2-t2",
+   "ts": "2026-07-07T13:54:16.461-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "trying to refer to the 1st item from the previous stock results",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRTWC286-SH-NEW-P",
+        "hint": "product",
+        "ordinal": 1,
+        "current_message": true,
+        "uuid": null,
+        "canonical_code": "SRTWC286-SH-NEW-P"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (inventory): returned 2 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_"
+    }
+   },
+   "test_run_id": "sim-1G2-t2",
+   "ts": "2026-07-07T13:54:16.456-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-1G2-t2",
+   "ts": "2026-07-07T13:54:16.442-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838907",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRTWC286-SH-NEW-P",
+     "hint": "inventory",
+     "ordinal": 1,
+     "current_message": true,
+     "uuid": null,
+     "canonical_code": "SRTWC286-SH-NEW-P"
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to refer to the 1st item from the previous stock results"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "SRTWC286-SH-NEW-P"
+   ],
+   "elapsed_ms": 912.07,
+   "resolutions": [
+    {
+     "token": "SRTWC286-SH-NEW-P",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTWC286-SH-NEW-P",
+       "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTWC286-SH-NEW-P",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inventory"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-NEW-P"
+    }
+   ],
+   "gate_debug": {
+    "domain": "inventory",
+    "allowed_lookup": [
+     "product",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": {
+   "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_",
+   "response_intro": "Stock details found for the requested products.",
+   "answers": [
+    {
+     "title": "SRTWC286-SH-NEW-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-RSV"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 107
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T16:00:30.955074",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7838915",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "user_goal": "trying to refer to the 1st item from the previous stock results",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRTWC286-SH-NEW-P",
+     "hint": "product",
+     "ordinal": 1,
+     "current_message": true,
+     "uuid": null,
+     "canonical_code": "SRTWC286-SH-NEW-P"
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (inventory): returned 2 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_",
+   "quick_reply": null,
+   "result_set_len": 2,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

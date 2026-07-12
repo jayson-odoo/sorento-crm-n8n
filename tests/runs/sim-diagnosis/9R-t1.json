@@ -1,0 +1,607 @@
+{
+ "label": "9R-t1",
+ "test_run_id": "sim-9R-t1",
+ "text": "may know delivery for cust yoo living for today",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "may know delivery for cust yoo living for today"
+   },
+   "test_run_id": "sim-9R-t1",
+   "ts": "2026-07-07T14:08:00.281-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to check the delivery status for cust yoo living for today",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "cust yoo living",
+        "hint": "customer",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "No delivery on 2026-07-08. cust yoo living has delivery on 2026-07-07 (DO RF2606-054); 2026-07-01 (DO 202607-0301); 2026-06-26 (DO 202606-4014). Reply with a date to continue, or would you like me to escalate to customer_service team?\n\nTo escalate, choose who to route to \u2014 reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nOr just reply 'yes' and we'll assign automatically.",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "Maryam Ariffin",
+        "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+        "respond_user_id": "1144607"
+       },
+       {
+        "idx": 2,
+        "label": "Cyndi",
+        "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+        "respond_user_id": "1144556"
+       },
+       {
+        "idx": 3,
+        "label": "Aisyah",
+        "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+        "respond_user_id": "1144561"
+       },
+       {
+        "idx": 4,
+        "label": "Balqis",
+        "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+        "respond_user_id": "1144558"
+       },
+       {
+        "idx": 5,
+        "label": "Niki",
+        "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+        "respond_user_id": "1144554"
+       },
+       {
+        "idx": 6,
+        "label": "Nurain",
+        "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+        "respond_user_id": "1144604"
+       }
+      ],
+      "selection_context": "member_offer",
+      "date_filter_start": "2026-07-08",
+      "date_filter_end": "2026-07-08",
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "No delivery on 2026-07-08. cust yoo living has delivery on 2026-07-07 (DO RF2606-054); 2026-07-01 (DO 202607-0301); 2026-06-26 (DO 202606-4014). Reply with a date to continue, or would you like me to escalate to customer_service team?\n\nTo escalate, choose who to route to \u2014 reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nOr just reply 'yes' and we'll assign automatically.",
+     "quick_reply": "2026-07-07,2026-07-01,2026-06-26"
+    }
+   },
+   "test_run_id": "sim-9R-t1",
+   "ts": "2026-07-07T14:08:00.278-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "No delivery on 2026-07-08. cust yoo living has delivery on 2026-07-07 (DO RF2606-054); 2026-07-01 (DO 202607-0301); 2026-06-26 (DO 202606-4014). Reply with a date to continue, or would you like me to escalate to customer_service team?\n\nTo escalate, choose who to route to \u2014 reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nOr just reply 'yes' and we'll assign automatically.",
+    "quick_reply": "2026-07-07,2026-07-01,2026-06-26",
+    "result_set": [
+     {
+      "idx": 1,
+      "label": "Maryam Ariffin",
+      "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+      "respond_user_id": "1144607"
+     },
+     {
+      "idx": 2,
+      "label": "Cyndi",
+      "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+      "respond_user_id": "1144556"
+     },
+     {
+      "idx": 3,
+      "label": "Aisyah",
+      "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+      "respond_user_id": "1144561"
+     },
+     {
+      "idx": 4,
+      "label": "Balqis",
+      "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+      "respond_user_id": "1144558"
+     },
+     {
+      "idx": 5,
+      "label": "Niki",
+      "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+      "respond_user_id": "1144554"
+     },
+     {
+      "idx": 6,
+      "label": "Nurain",
+      "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+      "respond_user_id": "1144604"
+     }
+    ]
+   },
+   "test_run_id": "sim-9R-t1",
+   "ts": "2026-07-07T14:08:00.265-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840086",
+  "nodes_ran": 49,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "cust yoo living",
+     "hint": "customer",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [
+    "delivery"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": "2026-07-08",
+   "date_filter_end": "2026-07-08",
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the delivery status for cust yoo living for today"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "cust yoo living"
+   ],
+   "elapsed_ms": 112.26,
+   "intersection": [
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y066",
+     "uuid": "6991119d-6423-4d4c-84c6-7412c3933316",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C III]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y065",
+     "uuid": "207f2284-cec8-49a2-808d-ab20f2f9d898",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C I]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "DBR-59e57de1b7",
+     "uuid": "9a93220b-6064-4a8b-88ea-b04fb1553711",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C III] - PRICETAG",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y067",
+     "uuid": "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE [A/C IV]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-Y065",
+     "uuid": "613beac4-3877-4c1f-b274-cdd064acd0be",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "YOO LIVING HOUSE",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "customer": [
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y066",
+      "uuid": "6991119d-6423-4d4c-84c6-7412c3933316",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C III]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y065",
+      "uuid": "207f2284-cec8-49a2-808d-ab20f2f9d898",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C I]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "DBR-59e57de1b7",
+      "uuid": "9a93220b-6064-4a8b-88ea-b04fb1553711",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C III] - PRICETAG",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y067",
+      "uuid": "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE [A/C IV]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-Y065",
+      "uuid": "613beac4-3877-4c1f-b274-cdd064acd0be",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "YOO LIVING HOUSE",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "6991119d-6423-4d4c-84c6-7412c3933316",
+     "entity_type": "customer",
+     "code": "300-Y066"
+    },
+    {
+     "uuid": "207f2284-cec8-49a2-808d-ab20f2f9d898",
+     "entity_type": "customer",
+     "code": "300-Y065"
+    },
+    {
+     "uuid": "9a93220b-6064-4a8b-88ea-b04fb1553711",
+     "entity_type": "customer",
+     "code": "DBR-59e57de1b7"
+    },
+    {
+     "uuid": "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+     "entity_type": "customer",
+     "code": "300-Y067"
+    },
+    {
+     "uuid": "613beac4-3877-4c1f-b274-cdd064acd0be",
+     "entity_type": "customer",
+     "code": "300-Y065"
+    }
+   ],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 5
+   }
+  },
+  "get_results": {
+   "response": "No matching results found.",
+   "response_intro": "No matching results found.",
+   "answers": [],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": false,
+   "alternatives": [
+    {
+     "value": "2026-07-07",
+     "display": "2026-07-07 (DO RF2606-054)",
+     "order_number": "RF2606-054"
+    },
+    {
+     "value": "2026-07-01",
+     "display": "2026-07-01 (DO 202607-0301)",
+     "order_number": "202607-0301"
+    },
+    {
+     "value": "2026-06-26",
+     "display": "2026-06-26 (DO 202606-4014)",
+     "order_number": "202606-4014"
+    }
+   ],
+   "relaxed_axis": "date"
+  },
+  "get_results_sub_exec": "7840092",
+  "not_found_msg": {
+   "escalate_message": "Could not find order for customer cust yoo living from 2026-07-08 to 2026-07-08. Would you like me to escalate to customer_service team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": true,
+   "quick_reply": null,
+   "escalate_message": "Could not find order for customer cust yoo living from 2026-07-08 to 2026-07-08. Would you like me to escalate to customer_service team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": {
+   "response": "Could not find order for customer cust yoo living from 2026-07-08 to 2026-07-08. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+   "quick_reply": null,
+   "escalate_message": null
+  },
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to check the delivery status for cust yoo living for today",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "cust yoo living",
+     "hint": "customer",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "No delivery on 2026-07-08. cust yoo living has delivery on 2026-07-07 (DO RF2606-054); 2026-07-01 (DO 202607-0301); 2026-06-26 (DO 202606-4014). Reply with a date to continue, or would you like me to escalate to customer_service team?\n\nTo escalate, choose who to route to \u2014 reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nOr just reply 'yes' and we'll assign automatically.",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "label": "Maryam Ariffin",
+     "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "respond_user_id": "1144607"
+    },
+    {
+     "idx": 2,
+     "label": "Cyndi",
+     "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "respond_user_id": "1144556"
+    },
+    {
+     "idx": 3,
+     "label": "Aisyah",
+     "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "respond_user_id": "1144561"
+    },
+    {
+     "idx": 4,
+     "label": "Balqis",
+     "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "respond_user_id": "1144558"
+    },
+    {
+     "idx": 5,
+     "label": "Niki",
+     "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "respond_user_id": "1144554"
+    },
+    {
+     "idx": 6,
+     "label": "Nurain",
+     "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+     "respond_user_id": "1144604"
+    }
+   ],
+   "selection_context": "member_offer",
+   "date_filter_start": "2026-07-08",
+   "date_filter_end": "2026-07-08",
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "No delivery on 2026-07-08. cust yoo living has delivery on 2026-07-07 (DO RF2606-054); 2026-07-01 (DO 202607-0301); 2026-06-26 (DO 202606-4014). Reply with a date to continue, or would you like me to escalate to customer_service team?\n\nTo escalate, choose who to route to \u2014 reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nOr just reply 'yes' and we'll assign automatically.",
+   "quick_reply": "2026-07-07,2026-07-01,2026-06-26",
+   "result_set_len": 6,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "customer_ids": [
+      "6991119d-6423-4d4c-84c6-7412c3933316",
+      "207f2284-cec8-49a2-808d-ab20f2f9d898",
+      "9a93220b-6064-4a8b-88ea-b04fb1553711",
+      "8bd84c14-7e53-4e1e-84e0-229946e88ce1",
+      "613beac4-3877-4c1f-b274-cdd064acd0be"
+     ],
+     "_diagnostics": {
+      "entities_in": 5,
+      "total_uuids_passed": 5,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "actual_delivery_date_from": "2026-07-08",
+     "actual_delivery_date_to": "2026-07-08",
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "orders",
+        "intro": "No matching results found.",
+        "items": [],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": false,
+        "alternatives": [
+         {
+          "value": "2026-07-07",
+          "display": "2026-07-07 (DO RF2606-054)",
+          "order_number": "RF2606-054"
+         },
+         {
+          "value": "2026-07-01",
+          "display": "2026-07-01 (DO 202607-0301)",
+          "order_number": "202607-0301"
+         },
+         {
+          "value": "2026-06-26",
+          "display": "2026-06-26 (DO 202606-4014)",
+          "order_number": "202606-4014"
+         }
+        ],
+        "relaxed_axis": "date"
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "No matching results found.",
+     "response_intro": "No matching results found.",
+     "answers": [],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": false,
+     "alternatives": [
+      {
+       "value": "2026-07-07",
+       "display": "2026-07-07 (DO RF2606-054)",
+       "order_number": "RF2606-054"
+      },
+      {
+       "value": "2026-07-01",
+       "display": "2026-07-01 (DO 202607-0301)",
+       "order_number": "202607-0301"
+      },
+      {
+       "value": "2026-06-26",
+       "display": "2026-06-26 (DO 202606-4014)",
+       "order_number": "202606-4014"
+      }
+     ],
+     "relaxed_axis": "date"
+    }
+   }
+  }
+ }
+}

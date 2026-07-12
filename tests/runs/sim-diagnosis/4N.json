@@ -1,0 +1,493 @@
+{
+ "label": "4N",
+ "test_run_id": "sim-4N",
+ "text": "order status 202607-0227",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "order status 202607-0227"
+   },
+   "test_run_id": "sim-4N",
+   "ts": "2026-07-07T14:01:33.618-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to check the delivery order status for 202607-0227",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "202607-0227",
+        "hint": "customer_order",
+        "canonical_code": "202607-0227",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (order): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "202607-0227",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n_Data last updated: 07/07/2026 17:25:22_"
+    }
+   },
+   "test_run_id": "sim-4N",
+   "ts": "2026-07-07T14:01:33.614-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "202607-0227",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-4N",
+   "ts": "2026-07-07T14:01:33.599-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839526",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "202607-0227",
+     "hint": "order",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [
+    "delivery"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the delivery order status for 202607-0227"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "202607-0227"
+   ],
+   "elapsed_ms": 14.96,
+   "intersection": [
+    {
+     "entity_type": "customer_order",
+     "canonical_code": "202607-0227",
+     "uuid": "65b00fd7-6b3c-4775-aa0d-32b499afb4fa",
+     "match_field": "order_number",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]",
+      "actual_delivery_date": "2026-07-01",
+      "estimated_delivery_date": "2026-07-06"
+     }
+    }
+   ],
+   "by_entity_type": {
+    "customer_order": [
+     {
+      "entity_type": "customer_order",
+      "canonical_code": "202607-0227",
+      "uuid": "65b00fd7-6b3c-4775-aa0d-32b499afb4fa",
+      "match_field": "order_number",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]",
+       "actual_delivery_date": "2026-07-01",
+       "estimated_delivery_date": "2026-07-06"
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "65b00fd7-6b3c-4775-aa0d-32b499afb4fa",
+     "entity_type": "customer_order",
+     "code": "202607-0227"
+    }
+   ],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": {
+   "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "response_intro": "Here are the orders I found.",
+   "answers": [
+    {
+     "title": "202607-0227",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0227"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-02T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-01T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "18:06:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T17:25:22.310192",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839532",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to check the delivery order status for 202607-0227",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "202607-0227",
+     "hint": "customer_order",
+     "canonical_code": "202607-0227",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (order): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "202607-0227",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "order_ids": [
+      "65b00fd7-6b3c-4775-aa0d-32b499afb4fa"
+     ],
+     "_diagnostics": {
+      "entities_in": 1,
+      "total_uuids_passed": 1,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "orders",
+        "intro": "Here are the orders I found.",
+        "items": [
+         {
+          "title": "202607-0227",
+          "fields": [
+           {
+            "label": "Order Number",
+            "value": "202607-0227"
+           },
+           {
+            "label": "Customer",
+            "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+           },
+           {
+            "label": "Order Date",
+            "value": "2026-07-02T00:00:00"
+           },
+           {
+            "label": "Actual Delivery Date",
+            "value": "2026-07-01T00:00:00"
+           },
+           {
+            "label": "Status",
+            "value": "Picked Up / In Transit"
+           },
+           {
+            "label": "Pickup Time",
+            "value": "18:06:00"
+           },
+           {
+            "label": "Transporter",
+            "value": "SHUNTATT"
+           },
+           {
+            "label": "Driver",
+            "value": "DEVA"
+           },
+           {
+            "label": "Lorry Plate",
+            "value": "JUY9902"
+           },
+           {
+            "label": "Warehouse",
+            "value": "BRW"
+           },
+           {
+            "label": "Products",
+            "value": "SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-07-07T17:25:22.310192",
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+     "response_intro": "Here are the orders I found.",
+     "answers": [
+      {
+       "title": "202607-0227",
+       "fields": [
+        {
+         "label": "Order Number",
+         "value": "202607-0227"
+        },
+        {
+         "label": "Customer",
+         "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+        },
+        {
+         "label": "Order Date",
+         "value": "2026-07-02T00:00:00"
+        },
+        {
+         "label": "Actual Delivery Date",
+         "value": "2026-07-01T00:00:00"
+        },
+        {
+         "label": "Status",
+         "value": "Picked Up / In Transit"
+        },
+        {
+         "label": "Pickup Time",
+         "value": "18:06:00"
+        },
+        {
+         "label": "Transporter",
+         "value": "SHUNTATT"
+        },
+        {
+         "label": "Driver",
+         "value": "DEVA"
+        },
+        {
+         "label": "Lorry Plate",
+         "value": "JUY9902"
+        },
+        {
+         "label": "Warehouse",
+         "value": "BRW"
+        },
+        {
+         "label": "Products",
+         "value": "SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": "2026-07-07T17:25:22.310192",
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

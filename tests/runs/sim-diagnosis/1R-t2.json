@@ -1,0 +1,1985 @@
+{
+ "label": "1R-t2",
+ "test_run_id": "sim-1R-t2",
+ "text": "NEW STYLE LIGHTING (M) SDN BHD",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "NEW STYLE LIGHTING (M) SDN BHD"
+   },
+   "test_run_id": "sim-1R-t2",
+   "ts": "2026-07-07T13:52:32.233-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to route the order issue to NEW STYLE LIGHTING (M) SDN BHD",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "NEW STYLE LIGHTING (M) SDN BHD",
+        "hint": "customer",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (order): returned 20 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "202607-0737",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "202607-0788",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": null,
+        "label": "202607-0736",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": null,
+        "label": "202607-0583",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": null,
+        "label": "202607-0584",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": null,
+        "label": "202607-0227",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": null,
+        "label": "202606-4226",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": null,
+        "label": "202606-4125",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 9,
+        "uuid": null,
+        "label": "SAMPEL NEW STYLE",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 10,
+        "uuid": null,
+        "label": "202606-3492",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 11,
+        "uuid": null,
+        "label": "202606-3476",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 12,
+        "uuid": null,
+        "label": "202606-3121",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 13,
+        "uuid": null,
+        "label": "202606-2936",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 14,
+        "uuid": null,
+        "label": "202606-2563",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 15,
+        "uuid": null,
+        "label": "REP202606-0242",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 16,
+        "uuid": null,
+        "label": "202606-2426",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 17,
+        "uuid": null,
+        "label": "202606-2550",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 18,
+        "uuid": null,
+        "label": "202606-2545",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 19,
+        "uuid": null,
+        "label": "202606-2420",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 20,
+        "uuid": null,
+        "label": "202606-2419",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0737\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n2. *Order Number:* 202607-0788\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n3. *Order Number:* 202607-0736\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n4. *Order Number:* 202607-0583\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKT73SS-BL (7.0000), SRTKT73SS-BL (2.0000), SRT446-BL (6.0000), SRT446-BL (1.0000)\n\n5. *Order Number:* 202607-0584\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31513-NEW (1.0000), SRTMCB21411 (1.0000)\n\n6. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n7. *Order Number:* 202606-4226\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 29/06/2026\n*Status:* New Order\n*Pickup Time:* 13:46:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31514-NEW (1.0000)\n\n8. *Order Number:* 202606-4125\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 26/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* New Order\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n9. *Order Number:* SAMPEL NEW STYLE\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD\n*Order Date:* 25/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n10. *Order Number:* 202606-3492\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT346-ST-HP (12.0000), SRT346-ST-HP (2.0000)\n\n11. *Order Number:* 202606-3476\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT8013 (2.0000)\n\n12. *Order Number:* 202606-3121\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 23/06/2026\n*Status:* New Order\n*Pickup Time:* 15:43:00\n*Transporter:* SHUNTATT\n*Driver:* RINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTWT7202 (5.0000), SRTWT7202 (2.0000)\n\n13. *Order Number:* 202606-2936\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 22/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:56:00\n*Transporter:* SHUNTATT\n*Driver:* LINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31414-MBL (2.0000)\n\n14. *Order Number:* 202606-2563\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 19/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:32:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKS8845 (1.0000)\n\n15. *Order Number:* REP202606-0242\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* BFAL5163-NL (1.0000)\n\n16. *Order Number:* 202606-2426\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRT-FH12PVC-BL-DIY (3.0000), SRT-FH15PVC-BL-DIY (3.0000)\n\n17. *Order Number:* 202606-2550\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTKS6047-NEW (5.0000), SRTKS1035 (5.0000)\n\n18. *Order Number:* 202606-2545\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTWT7202-BL (5.0000), SRTWT7202-BL (2.0000)\n\n19. *Order Number:* 202606-2420\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* COMBO KS8051-BL-NL (10.0000)\n\n20. *Order Number:* 202606-2419\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTSS5732-GM (10.0000), SRTSH3303-DIY (10.0000)\n\n_Data last updated: 07/07/2026 17:25:22_"
+    }
+   },
+   "test_run_id": "sim-1R-t2",
+   "ts": "2026-07-07T13:52:32.230-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-0737\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n2. *Order Number:* 202607-0788\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n3. *Order Number:* 202607-0736\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n4. *Order Number:* 202607-0583\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKT73SS-BL (7.0000), SRTKT73SS-BL (2.0000), SRT446-BL (6.0000), SRT446-BL (1.0000)\n\n5. *Order Number:* 202607-0584\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31513-NEW (1.0000), SRTMCB21411 (1.0000)\n\n6. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n7. *Order Number:* 202606-4226\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 29/06/2026\n*Status:* New Order\n*Pickup Time:* 13:46:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31514-NEW (1.0000)\n\n8. *Order Number:* 202606-4125\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 26/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* New Order\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n9. *Order Number:* SAMPEL NEW STYLE\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD\n*Order Date:* 25/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n10. *Order Number:* 202606-3492\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT346-ST-HP (12.0000), SRT346-ST-HP (2.0000)\n\n11. *Order Number:* 202606-3476\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT8013 (2.0000)\n\n12. *Order Number:* 202606-3121\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 23/06/2026\n*Status:* New Order\n*Pickup Time:* 15:43:00\n*Transporter:* SHUNTATT\n*Driver:* RINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTWT7202 (5.0000), SRTWT7202 (2.0000)\n\n13. *Order Number:* 202606-2936\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 22/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:56:00\n*Transporter:* SHUNTATT\n*Driver:* LINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31414-MBL (2.0000)\n\n14. *Order Number:* 202606-2563\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 19/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:32:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKS8845 (1.0000)\n\n15. *Order Number:* REP202606-0242\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* BFAL5163-NL (1.0000)\n\n16. *Order Number:* 202606-2426\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRT-FH12PVC-BL-DIY (3.0000), SRT-FH15PVC-BL-DIY (3.0000)\n\n17. *Order Number:* 202606-2550\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTKS6047-NEW (5.0000), SRTKS1035 (5.0000)\n\n18. *Order Number:* 202606-2545\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTWT7202-BL (5.0000), SRTWT7202-BL (2.0000)\n\n19. *Order Number:* 202606-2420\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* COMBO KS8051-BL-NL (10.0000)\n\n20. *Order Number:* 202606-2419\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTSS5732-GM (10.0000), SRTSH3303-DIY (10.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "202607-0737",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "202607-0788",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": null,
+      "label": "202607-0736",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": null,
+      "label": "202607-0583",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": null,
+      "label": "202607-0584",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": null,
+      "label": "202607-0227",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": null,
+      "label": "202606-4226",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": null,
+      "label": "202606-4125",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 9,
+      "uuid": null,
+      "label": "SAMPEL NEW STYLE",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 10,
+      "uuid": null,
+      "label": "202606-3492",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 11,
+      "uuid": null,
+      "label": "202606-3476",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 12,
+      "uuid": null,
+      "label": "202606-3121",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 13,
+      "uuid": null,
+      "label": "202606-2936",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 14,
+      "uuid": null,
+      "label": "202606-2563",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 15,
+      "uuid": null,
+      "label": "REP202606-0242",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 16,
+      "uuid": null,
+      "label": "202606-2426",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 17,
+      "uuid": null,
+      "label": "202606-2550",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 18,
+      "uuid": null,
+      "label": "202606-2545",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 19,
+      "uuid": null,
+      "label": "202606-2420",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 20,
+      "uuid": null,
+      "label": "202606-2419",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-1R-t2",
+   "ts": "2026-07-07T13:52:32.217-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838752",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "NEW STYLE LIGHTING (M) SDN BHD",
+     "hint": "customer",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to route the order issue to NEW STYLE LIGHTING (M) SDN BHD"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "NEW STYLE LIGHTING (M) SDN BHD"
+   ],
+   "elapsed_ms": 233.92,
+   "intersection": [
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-N035",
+     "uuid": "2999f1ea-37c0-4ac1-ba4c-6f731379ffe0",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C III]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-N034",
+     "uuid": "de2f07bf-f2a7-40f6-9d17-76e114d7cb4b",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-N034",
+     "uuid": "5f39353a-01b7-4e92-a9c4-92c320e0959f",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "300-N036",
+     "uuid": "1086e5b5-a125-4bfb-8eff-b25aa6968943",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C IV]",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "DBR-4e4508b21d",
+     "uuid": "c11965a6-e68b-48ca-a394-e1fa9522f0be",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "customer",
+     "canonical_code": "DBR-43d5536388",
+     "uuid": "d946ae0a-1952-4cf5-b45f-50e1d16b68a7",
+     "match_field": "customer_code",
+     "match_tier": "and",
+     "display": {
+      "customer_name": "NEW STYLE LIGHTING (M) SDN BHD (SAMPLE)",
+      "phone_number": null,
+      "email": null,
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "customer": [
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-N035",
+      "uuid": "2999f1ea-37c0-4ac1-ba4c-6f731379ffe0",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C III]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-N034",
+      "uuid": "de2f07bf-f2a7-40f6-9d17-76e114d7cb4b",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-N034",
+      "uuid": "5f39353a-01b7-4e92-a9c4-92c320e0959f",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "300-N036",
+      "uuid": "1086e5b5-a125-4bfb-8eff-b25aa6968943",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD [A/C IV]",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "DBR-4e4508b21d",
+      "uuid": "c11965a6-e68b-48ca-a394-e1fa9522f0be",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "customer",
+      "canonical_code": "DBR-43d5536388",
+      "uuid": "d946ae0a-1952-4cf5-b45f-50e1d16b68a7",
+      "match_field": "customer_code",
+      "match_tier": "and",
+      "display": {
+       "customer_name": "NEW STYLE LIGHTING (M) SDN BHD (SAMPLE)",
+       "phone_number": null,
+       "email": null,
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "2999f1ea-37c0-4ac1-ba4c-6f731379ffe0",
+     "entity_type": "customer",
+     "code": "300-N035"
+    },
+    {
+     "uuid": "de2f07bf-f2a7-40f6-9d17-76e114d7cb4b",
+     "entity_type": "customer",
+     "code": "300-N034"
+    },
+    {
+     "uuid": "5f39353a-01b7-4e92-a9c4-92c320e0959f",
+     "entity_type": "customer",
+     "code": "300-N034"
+    },
+    {
+     "uuid": "1086e5b5-a125-4bfb-8eff-b25aa6968943",
+     "entity_type": "customer",
+     "code": "300-N036"
+    },
+    {
+     "uuid": "c11965a6-e68b-48ca-a394-e1fa9522f0be",
+     "entity_type": "customer",
+     "code": "DBR-4e4508b21d"
+    },
+    {
+     "uuid": "d946ae0a-1952-4cf5-b45f-50e1d16b68a7",
+     "entity_type": "customer",
+     "code": "DBR-43d5536388"
+    }
+   ],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 6
+   }
+  },
+  "get_results": {
+   "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-0737\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n2. *Order Number:* 202607-0788\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n3. *Order Number:* 202607-0736\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n4. *Order Number:* 202607-0583\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKT73SS-BL (7.0000), SRTKT73SS-BL (2.0000), SRT446-BL (6.0000), SRT446-BL (1.0000)\n\n5. *Order Number:* 202607-0584\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31513-NEW (1.0000), SRTMCB21411 (1.0000)\n\n6. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n7. *Order Number:* 202606-4226\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 29/06/2026\n*Status:* New Order\n*Pickup Time:* 13:46:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31514-NEW (1.0000)\n\n8. *Order Number:* 202606-4125\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 26/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* New Order\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n9. *Order Number:* SAMPEL NEW STYLE\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD\n*Order Date:* 25/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n10. *Order Number:* 202606-3492\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT346-ST-HP (12.0000), SRT346-ST-HP (2.0000)\n\n11. *Order Number:* 202606-3476\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT8013 (2.0000)\n\n12. *Order Number:* 202606-3121\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 23/06/2026\n*Status:* New Order\n*Pickup Time:* 15:43:00\n*Transporter:* SHUNTATT\n*Driver:* RINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTWT7202 (5.0000), SRTWT7202 (2.0000)\n\n13. *Order Number:* 202606-2936\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 22/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:56:00\n*Transporter:* SHUNTATT\n*Driver:* LINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31414-MBL (2.0000)\n\n14. *Order Number:* 202606-2563\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 19/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:32:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKS8845 (1.0000)\n\n15. *Order Number:* REP202606-0242\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* BFAL5163-NL (1.0000)\n\n16. *Order Number:* 202606-2426\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRT-FH12PVC-BL-DIY (3.0000), SRT-FH15PVC-BL-DIY (3.0000)\n\n17. *Order Number:* 202606-2550\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTKS6047-NEW (5.0000), SRTKS1035 (5.0000)\n\n18. *Order Number:* 202606-2545\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTWT7202-BL (5.0000), SRTWT7202-BL (2.0000)\n\n19. *Order Number:* 202606-2420\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* COMBO KS8051-BL-NL (10.0000)\n\n20. *Order Number:* 202606-2419\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTSS5732-GM (10.0000), SRTSH3303-DIY (10.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "response_intro": "Here are the orders I found.",
+   "answers": [
+    {
+     "title": "202607-0737",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0737"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "12:28:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9098"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202607-0788",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0788"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "12:28:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9098"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202607-0736",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0736"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C IV]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "12:28:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9098"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202607-0583",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0583"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-02T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-03T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "17:57:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTKT73SS-BL (7.0000), SRTKT73SS-BL (2.0000), SRT446-BL (6.0000), SRT446-BL (1.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202607-0584",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0584"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C III]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-02T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-03T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "17:57:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTBF31513-NEW (1.0000), SRTMCB21411 (1.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202607-0227",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-0227"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-02T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-01T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "18:06:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-4226",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-4226"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C III]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-30T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-29T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "New Order"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "13:46:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTBF31514-NEW (1.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-4125",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-4125"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C III]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-26T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-26T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "New Order"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "18:30:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DABA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SAMPEL NEW STYLE",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "SAMPEL NEW STYLE"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-25T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-26T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "18:30:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DABA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-3492",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-3492"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-23T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-25T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "New Order"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "15:18:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRT346-ST-HP (12.0000), SRT346-ST-HP (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-3476",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-3476"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-23T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-25T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "New Order"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "15:18:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRT8013 (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-3121",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-3121"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-22T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-23T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "New Order"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "15:43:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "RINGKAM"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTWT7202 (5.0000), SRTWT7202 (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2936",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2936"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C III]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-22T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-22T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "15:56:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "LINGKAM"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTBF31414-MBL (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2563",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2563"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-19T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "15:32:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SHUNTATT"
+      },
+      {
+       "label": "Driver",
+       "value": "DEVA"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "JUY9902"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTKS8845 (1.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "REP202606-0242",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "REP202606-0242"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C IV]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "11:52:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9080"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "BFAL5163-NL (1.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2426",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2426"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-16T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "11:52:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9080"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRT-FH12PVC-BL-DIY (3.0000), SRT-FH15PVC-BL-DIY (3.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2550",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2550"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-16T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "11:52:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9080"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTKS6047-NEW (5.0000), SRTKS1035 (5.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2545",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2545"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-16T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "11:52:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9080"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTWT7202-BL (5.0000), SRTWT7202-BL (2.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2420",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2420"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C IV]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-16T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "11:52:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9080"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "COMBO KS8051-BL-NL (10.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "202606-2419",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202606-2419"
+      },
+      {
+       "label": "Customer",
+       "value": "NEW STYLE LIGHTING (M) SDN BHD [A/C I]"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-06-16T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-06-18T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "11:52:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "WHT TRANSPORT"
+      },
+      {
+       "label": "Driver",
+       "value": "ALEX"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "MDP9080"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRTSS5732-GM (10.0000), SRTSH3303-DIY (10.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T17:25:22.310192",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7838760",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to route the order issue to NEW STYLE LIGHTING (M) SDN BHD",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "NEW STYLE LIGHTING (M) SDN BHD",
+     "hint": "customer",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (order): returned 20 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "202607-0737",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "202607-0788",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": null,
+     "label": "202607-0736",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": null,
+     "label": "202607-0583",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": null,
+     "label": "202607-0584",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": null,
+     "label": "202607-0227",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": null,
+     "label": "202606-4226",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": null,
+     "label": "202606-4125",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 9,
+     "uuid": null,
+     "label": "SAMPEL NEW STYLE",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 10,
+     "uuid": null,
+     "label": "202606-3492",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 11,
+     "uuid": null,
+     "label": "202606-3476",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 12,
+     "uuid": null,
+     "label": "202606-3121",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 13,
+     "uuid": null,
+     "label": "202606-2936",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 14,
+     "uuid": null,
+     "label": "202606-2563",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 15,
+     "uuid": null,
+     "label": "REP202606-0242",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 16,
+     "uuid": null,
+     "label": "202606-2426",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 17,
+     "uuid": null,
+     "label": "202606-2550",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 18,
+     "uuid": null,
+     "label": "202606-2545",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 19,
+     "uuid": null,
+     "label": "202606-2420",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 20,
+     "uuid": null,
+     "label": "202606-2419",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-0737\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n2. *Order Number:* 202607-0788\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n3. *Order Number:* 202607-0736\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 06/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:28:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9098\n*Warehouse:* BRW\n\n4. *Order Number:* 202607-0583\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKT73SS-BL (7.0000), SRTKT73SS-BL (2.0000), SRT446-BL (6.0000), SRT446-BL (1.0000)\n\n5. *Order Number:* 202607-0584\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 03/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:57:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31513-NEW (1.0000), SRTMCB21411 (1.0000)\n\n6. *Order Number:* 202607-0227\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 02/07/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:06:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTSH3304-GM-DIY (10.0000), SRT202-GM (10.0000), SRT202-GM (2.0000)\n\n7. *Order Number:* 202606-4226\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 30/06/2026\n*Actual Delivery Date:* 29/06/2026\n*Status:* New Order\n*Pickup Time:* 13:46:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31514-NEW (1.0000)\n\n8. *Order Number:* 202606-4125\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 26/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* New Order\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n9. *Order Number:* SAMPEL NEW STYLE\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD\n*Order Date:* 25/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 18:30:00\n*Transporter:* SHUNTATT\n*Driver:* DABA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n\n10. *Order Number:* 202606-3492\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT346-ST-HP (12.0000), SRT346-ST-HP (2.0000)\n\n11. *Order Number:* 202606-3476\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 23/06/2026\n*Actual Delivery Date:* 25/06/2026\n*Status:* New Order\n*Pickup Time:* 15:18:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRT8013 (2.0000)\n\n12. *Order Number:* 202606-3121\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 23/06/2026\n*Status:* New Order\n*Pickup Time:* 15:43:00\n*Transporter:* SHUNTATT\n*Driver:* RINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTWT7202 (5.0000), SRTWT7202 (2.0000)\n\n13. *Order Number:* 202606-2936\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C III]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 22/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:56:00\n*Transporter:* SHUNTATT\n*Driver:* LINGKAM\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTBF31414-MBL (2.0000)\n\n14. *Order Number:* 202606-2563\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 19/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:32:00\n*Transporter:* SHUNTATT\n*Driver:* DEVA\n*Lorry Plate:* JUY9902\n*Warehouse:* BRW\n*Products:* SRTKS8845 (1.0000)\n\n15. *Order Number:* REP202606-0242\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 18/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* BFAL5163-NL (1.0000)\n\n16. *Order Number:* 202606-2426\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRT-FH12PVC-BL-DIY (3.0000), SRT-FH15PVC-BL-DIY (3.0000)\n\n17. *Order Number:* 202606-2550\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTKS6047-NEW (5.0000), SRTKS1035 (5.0000)\n\n18. *Order Number:* 202606-2545\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTWT7202-BL (5.0000), SRTWT7202-BL (2.0000)\n\n19. *Order Number:* 202606-2420\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C IV]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* COMBO KS8051-BL-NL (10.0000)\n\n20. *Order Number:* 202606-2419\n*Customer:* NEW STYLE LIGHTING (M) SDN BHD [A/C I]\n*Order Date:* 16/06/2026\n*Actual Delivery Date:* 18/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 11:52:00\n*Transporter:* WHT TRANSPORT\n*Driver:* ALEX\n*Lorry Plate:* MDP9080\n*Warehouse:* BRW\n*Products:* SRTSS5732-GM (10.0000), SRTSH3303-DIY (10.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "quick_reply": null,
+   "result_set_len": 20,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

@@ -1,0 +1,173 @@
+{
+  "rollup": "Δ4 — merge date-suggest + CS member roster. UAC on clone txiPzSxy3Pclsz6v compile-current-state _merge branch (node 7a130a0c). Both a date suggest-offer AND a CS member roster in one turn now render BOTH (date list + numbered member picker), selection_context='member_offer', last_result_set=member roster, quick_reply=dates only.",
+  "date": "2026-07-07",
+  "tester": "sorento-tester",
+  "target": "TEST clone txiPzSxy3Pclsz6v (versionId==activeVersionId d60d7e2f-4707-4db6-877d-aca2c47b0622). Wiring: reformulator fork CpxE8LroLzCkrAQN, human-intervention fork vUfFUDjLAuMaeQE6, sendmsg sub aoydkG1dbItXR5jXFEQsP, get-results sub rysSPgUssLDf6xJc. Live spine 9qVyfUxmRQqrpGRMDLRuz UNTOUCHED. No workflow edited, no promotion.",
+  "scope": "get-results tier for RENDER/regression (real reformulator + real resolve-entity + real get-results reads; NO mock). parser tier for follow-ups A-D (real reformulator member-pick resolution). mode=regress-capture (zz-seed-hint hardcodes it); session from n8n_test respond_contacts_test[437264483], reset before each independent case.",
+  "drive": "psql reset/seed respond_contacts_test[437264483] -> POST /webhook/zz-seed-hint {text,test_run_id,scope} (zz-canary-seed 4eDGDBL3rEkGQuBV: clears main-message-list-test, pushes ONE item, contact 437264483 FULL, mode=regress-capture, NO mock) -> POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No fires clone, waitForSubWorkflow) -> search_executions latest -> get_execution(includeData). Egress = clone guard-*-record redis-push node inputs (authoritative record) + sub short-circuit verification.",
+  "member_roster_from_RENDER": "get-cs-members returned 11 CS members (customer_service/order_enquiries): 1.Maryam Ariffin 2.Cyndi 3.Ms Tan 4.Sandy Lim 5.Lin 6.Nur 7.Aisyah 8.Emily 9.Balqis 10.Niki 11.Nurain. Each has label+uuid+respond_user_id. This exact roster was seeded (as RENDER produced) for the member_offer follow-ups.",
+  "HEADLINE": "7/7 PASS. Δ4 merge renders exactly as designed on RENDER. FOLLOW-UP A (THE CRUX) PASSES: a date reply ('2026-07-06') while selection_context='member_offer' is classified by the reformulator as a business_query date-continuation (entity_op reuse, date_filter set, reference_positions [], person_mention null, is_escalation_confirmation false) and re-queries get-results (7 real Hanlim orders) — it is NOT misfired as a member pick, NO assignment. B/C/D resolve number/name/yes correctly and route through the GUARDED human-intervention fork (short-circuit, zero real assign). Regression-suggest stays suggest-only; regression-member (isolated via a zero-alternative token) stays member-only. §0 S1-S6 HELD on all 9 executions. NO HALT. No live-spine execution caused; live untouched.",
+  "cases": [
+    {
+      "case": 1,
+      "name": "RENDER (both-fire merge)",
+      "text": "check delivery for hanlim today",
+      "scope": "get-results",
+      "clone_exec": "7761748",
+      "refm_sub": "7761750",
+      "getresults_sub": "7761755 (rysSPgUssLDf6xJc; order date-relax read, returned 3 date alternatives)",
+      "sendmsg_sub": "7761757 (aoydkG1dbItXR5jXFEQsP, is_test=true short-circuit)",
+      "verdict": "PASS",
+      "asserts": {
+        "both_nodes_fired": "build-suggest-offer.suggest_offer=true (D2 date-axis, CS-order) AND build-cs-member-offer.member_offer=true -> compile _merge=true",
+        "user_response_has_date_list": true,
+        "user_response_has_numbered_member_picker_1..11": true,
+        "user_response_has_reply_yes_auto_assign": true,
+        "quick_reply": "2026-07-06,2026-07-03,2026-07-02 (dates ONLY; no member buttons, no Yes/No because isCsOrder date axis)",
+        "selection_context": "member_offer",
+        "last_result_set": "11-member roster, each {idx,label,uuid,respond_user_id}"
+      },
+      "S0": "S1 sendmsg guarded (is_test), no send-message-files/images/video. S2 human-intervention NOT called (offer, not confirmation). S3 save-session-vars/update-human-intervened orphaned/absent, session->n8n_test. S4 get-results order date read, never crm_it_support_ticket_create. S5 When Executed test_mode=true + sendmsg is_test=true + redis item consumed (input_message+test_run_id match). S6 reformulator 1 LLM call, get-results deterministic. HELD."
+    },
+    {
+      "case": 2,
+      "name": "FOLLOW-UP A (date reply) — THE CRUX",
+      "text": "2026-07-06",
+      "scope": "parser",
+      "seed": "member_offer session (RENDER roster) reset before run",
+      "clone_exec": "7761909",
+      "refm_sub": "7761910",
+      "getresults_sub": "7761916 (order read, has_result=true, 7 Hanlim orders for 2026-07-06)",
+      "sendmsg_sub": "7761917 (is_test=true)",
+      "verdict": "PASS (design risk point does NOT trigger)",
+      "asserts": {
+        "reformulator_message_type": "business_query",
+        "domain_hint": "order",
+        "date_filter_start_end": "2026-07-06",
+        "reference_positions": "[] (NO position mined from the date digits)",
+        "person_mention": null,
+        "escalation.is_escalation_confirmation": false,
+        "entity_op": "reuse (kept prior-turn customer Hanlim)",
+        "outcome": "re-queried the order for 2026-07-06 (business_query), selection_context cleared to null; NOT a member pick",
+        "human_intervention_called": false
+      },
+      "S0": "S1 sendmsg guarded. S2 NO human-intervention call (no assignment). S3 session->n8n_test. S4 get-results order read only. S5 is_test present. S6 reformulator 1 call. HELD.",
+      "note": "This is the merge's stated risk. A date button reply parses as a clear date/business_query, so the reformulator's _isNewQuery path skips the member-pick arm despite selection_context='member_offer'. No digit ('2026'/'07'/'06') was mined as a member position. SAFE."
+    },
+    {
+      "case": 3,
+      "name": "FOLLOW-UP B (number)",
+      "text": "3",
+      "scope": "parser",
+      "seed": "member_offer roster",
+      "clone_exec": "7761971",
+      "refm_sub": "7761972",
+      "hi_sub": "7761976 (vUfFUDjLAuMaeQE6)",
+      "verdict": "PASS",
+      "asserts": {
+        "resolves_to": "idx3 = Ms Tan",
+        "escalation.preferred_assignee_id": "1feb552a-0436-4ad8-999c-85ee19850eb0 (Ms Tan)",
+        "escalation.is_escalation_confirmation": true,
+        "human_intervention": "called with is_test=true, explicit_assignee_id=1feb552a..., team=customer_service, agent=order_enquiries"
+      },
+      "S0": "S2 FOCUS: human-intervention sub 7761976 ran ONLY [When Executed -> test-guard -> test-guard-record] then returned (lastNodeExecuted=test-guard-record). NO Assign/SLA/PIC-comment/assignee-queue/get-round-robin. sendmsg guarded. HELD."
+    },
+    {
+      "case": 4,
+      "name": "FOLLOW-UP C (name)",
+      "text": "Cyndi",
+      "scope": "parser",
+      "seed": "member_offer roster",
+      "clone_exec": "7762047",
+      "refm_sub": "7762048",
+      "hi_sub": "7762051",
+      "verdict": "PASS",
+      "asserts": {
+        "person_mention": "Cyndi",
+        "resolves_to": "idx2 = Cyndi",
+        "escalation.preferred_assignee_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9 (Cyndi)",
+        "escalation.is_escalation_confirmation": true
+      },
+      "S0": "S2: human-intervention sub 7762051 short-circuited (guard path only), explicit_assignee_id=12246ae8... guarded. sendmsg guarded. HELD."
+    },
+    {
+      "case": 5,
+      "name": "FOLLOW-UP D (yes)",
+      "text": "yes",
+      "scope": "parser",
+      "seed": "member_offer roster",
+      "clone_exec": "7762056",
+      "refm_sub": "7762057",
+      "hi_sub": "7762060",
+      "verdict": "PASS",
+      "asserts": {
+        "is_affirmative": true,
+        "escalation.is_escalation_confirmation": true,
+        "preferred_assignee_id": "ABSENT (round-robin)",
+        "person_mention": null,
+        "human_intervention": "called with explicit_assignee_id='' (round-robin), is_test=true"
+      },
+      "S0": "S2: human-intervention sub 7762060 short-circuited (guard path only), empty assignee (round-robin) guarded. sendmsg guarded. HELD."
+    },
+    {
+      "case": 6,
+      "name": "REGRESSION-suggest (suggest-only, no member roster)",
+      "text": "cwc605-rl have stock?",
+      "scope": "get-results",
+      "seed": "empty session",
+      "clone_exec": "7762135",
+      "sendmsg_sub": "7762142 (is_test=true)",
+      "verdict": "PASS",
+      "asserts": {
+        "routing": "warehouse / general_enquiries (inventory domain) -> cs-offer-gate FALSE -> build-cs-member-offer NOT run",
+        "build-suggest-offer.suggest_offer": true,
+        "mode": "product did-you-mean code-mode",
+        "selection_context": "suggest_offer (NOT member_offer)",
+        "quick_reply": "CWC609-RL,CWCX605-RL,CWC609-RL-UF,Yes escalate,No it's okay",
+        "last_result_set": "product candidates (suggest roster), no members"
+      },
+      "S0": "S1 sendmsg guarded. S2 no human-intervention. S4 get-results not reached (resolver miss). S5 is_test present. HELD. Confirms the merge did NOT hijack the plain suggest path."
+    },
+    {
+      "case": 7,
+      "name": "REGRESSION-member (member-only, no suggest)",
+      "text": "status of order ABCDEFGHXYZ (7c, isolating variant)",
+      "scope": "get-results",
+      "seed": "empty session",
+      "clone_exec": "7762349",
+      "sendmsg_sub": "7762357 (is_test=true)",
+      "verdict": "PASS",
+      "asserts": {
+        "build-suggest-offer.suggest_offer": "false (token ABCDEFGHXYZ -> resolutions matches:[] alternatives:[] -> no candidates)",
+        "build-cs-member-offer.member_offer": true,
+        "compile _merge": "false (_sug null) -> else if (_mem) branch",
+        "selection_context": "member_offer",
+        "user_response": "member-only text (Could not find order for ABCDEFGHXYZ. ... Please choose who to route to ... 1..11). NO date list, NO 'Reply with a date'.",
+        "quick_reply": "absent (plain member offer has none)",
+        "last_result_set": "11-member roster"
+      },
+      "S0": "S1 sendmsg guarded. S2 no human-intervention (offer). S4 get-results not reached (gate blocked, no entities). S5 is_test present. HELD. Confirms plain member path intact.",
+      "prior_attempts": [
+        {"exec": "7762146", "text": "status of order SMC202606-9999", "outcome": "trigram-matched to did-you-mean order codes -> suggest_offer=true -> merge (member_offer render). §0 HELD. Did NOT isolate member-only."},
+        {"exec": "7762246", "text": "check orders for Zxqmnbvlkjh Trading today", "outcome": "CRM fuzzy-matched gibberish customer to a real customer with deliveries -> date alternatives -> merge (member_offer render). §0 HELD. Did NOT isolate member-only."}
+      ]
+    }
+  ],
+  "zero_egress_S0": {
+    "verdict": "HELD on all 9 clone executions (7761748, 7761909, 7761971, 7762047, 7762056, 7762135, 7762146, 7762246, 7762349) + 3 human-intervention sub executions (7761976, 7762051, 7762060). NO HALT.",
+    "S1": "PASS - every user-facing reply recorded as a blocked sendmsg (sub aoydkG1dbItXR5jXFEQsP received is_test=true, short-circuit). NO api.respond.io/.../message POST. send-message-files/images/video never executed in any run (absent from runData; lastNodeExecuted=guard-h-record terminal).",
+    "S2": "PASS - human-intervention fork vUfFUDjLAuMaeQE6 called ONLY on B/C/D (member picks). Each sub execution ran exactly [When Executed by Another Workflow -> test-guard -> test-guard-record] then returned. NONE of Assign or unassign a Conversation1 / conversation-sla-tracking-create / sub-add-comment-respond / assignee-queue Redis push / get-round-robin-assignee executed. RENDER/A/6/7 did not call human-intervention (offer or new-query).",
+    "S3": "PASS - session write routed to n8n_test respond_contacts_test (regress-capture). Prod save-session-vars PUT + update-human-intervened orphaned/absent (never in runData); guard-d-record captured would_write only.",
+    "S4": "PASS - get-results (rysSPgUssLDf6xJc) reached on RENDER/A/7b(prior)/7c-not-reached; resolved order date-relax READ (returned order rows/alternatives), never crm_it_support_ticket_create nor any MCP write tool. Cases 3/4/5 (member picks) and 6/7c did not reach get-results.",
+    "S5": "PASS - When Executed by Another Workflow.json.test_mode===true on every run; redis item mode=regress-capture consumed (input_message + test_run_id match on sendmsg input); every invoked sub (reformulator fork, human-intervention fork, sendmsg sub) received is_test/test_mode===true.",
+    "S6": "PASS/bounded - reformulator fork = one OpenAI call per turn. get-results sub resolved deterministically (~300-430ms, read data) with its AI-agent path apparently unused/orphaned (no extra token sink). No new/unexpected token sink (e.g. reformulator reformulation) observed."
+  },
+  "followup_A_verdict": "PASS - THE CRUX HOLDS. Date reply under member_offer state is a date-continuation business_query, not a member pick; no wrong assign. This is the merge design's identified residual risk and it does not manifest with the real reformulator (date parses cleanly; no date digit mined as a member position; entity_op reuse retains the customer).",
+  "findings_for_planner_reviewer": [
+    "FINDING A (merge is the COMMON path, not an edge): CS-order not-founds almost always BOTH-fire. The order get-results tool relaxes on the date axis and returns date alternatives whenever the (fuzzy-matched) customer has ANY order; the CRM even fuzzy-matched pure-gibberish customer names (SMC202606-9999 -> did-you-mean order codes; 'Zxqmnbvlkjh Trading' -> a real customer with deliveries) to real records with orders. So Δ4's _merge branch is high-traffic. The plain member-only path (selection_context=member_offer WITHOUT suggest) is only reached when the token yields ZERO resolver alternatives (e.g. a no-digit order token like 'ABCDEFGHXYZ'). Safe, but reviewers should treat the merge render as the primary CS-order-miss experience.",
+    "FINDING B (crux resolved safe): a date reply while member_offer is open does NOT misfire as a member pick — verified end-to-end. The reformulator classifies it business_query/date and reuses the prior customer; reference_positions stays [] (no date digit mined). No assignment.",
+    "FINDING C (get-results LLM liveness / doc drift): the wired get-results sub is rysSPgUssLDf6xJc (NOT CLAUDE.md's documented Fss5aAaXthJSWpZCgKiKR — doc drift, also flagged in prior rollups). It resolved deterministically returning read data; the AI-agent/LLM path was not invoked (orphaned/unused). No token spent there.",
+    "NOTE (live untouched): live spine 9qVyfUxmRQqrpGRMDLRuz shows only its own ~1s idle redis-poll on the PROD list main-message-list (20-30ms empty pops) during the window. My tests only pushed to main-message-list-test via zz-* webhooks. No test caused a live-spine message run; live spine never edited."
+  ],
+  "acceptance": "PASS (all 7 cases functional + §0). Δ4 merge validated on the clone: RENDER shows both offers; date/number/name/yes follow-ups behave correctly and safely; regression suggest-only and member-only paths intact. Zero real egress. NO promotion performed (user-gated)."
+}

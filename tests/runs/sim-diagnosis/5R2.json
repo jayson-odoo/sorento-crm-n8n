@@ -1,0 +1,636 @@
+{
+ "label": "5R2",
+ "test_run_id": "sim-5R2",
+ "text": "Deluxe ceramic delivery 7/7/2026",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Deluxe ceramic delivery 7/7/2026"
+   },
+   "test_run_id": "sim-5R2",
+   "ts": "2026-07-07T14:02:40.458-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "trying to check the delivery order for Deluxe ceramic on 2026-07-07",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Deluxe ceramic",
+        "hint": "customer",
+        "canonical_code": "300-D051",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (order): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "202607-1180",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": "2026-07-07",
+      "date_filter_end": "2026-07-07",
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Here are the orders I found.\n\n1. *Order Number:* 202607-1180\n*Customer:* DELUXE CERAMIC MARKETING SDN BHD\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:39:00\n*Transporter:* SORENTO\n*Driver:* KAMARUL\n*Lorry Plate:* BNK1678\n*Warehouse:* BRW\n*Products:* SRT768-BL (1.0000)\n\n_Data last updated: 07/07/2026 17:25:22_"
+    }
+   },
+   "test_run_id": "sim-5R2",
+   "ts": "2026-07-07T14:02:40.454-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-1180\n*Customer:* DELUXE CERAMIC MARKETING SDN BHD\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:39:00\n*Transporter:* SORENTO\n*Driver:* KAMARUL\n*Lorry Plate:* BNK1678\n*Warehouse:* BRW\n*Products:* SRT768-BL (1.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "202607-1180",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-5R2",
+   "ts": "2026-07-07T14:02:40.443-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839622",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Deluxe ceramic",
+     "hint": "order",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "requested_attributes": [
+    "delivery"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": "2026-07-07",
+   "date_filter_end": "2026-07-07",
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the delivery order for Deluxe ceramic on 2026-07-07"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "Deluxe ceramic"
+   ],
+   "elapsed_ms": 556.82,
+   "resolutions": [
+    {
+     "token": "Deluxe ceramic",
+     "resolved": false,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "customer",
+       "canonical_code": "300-D051",
+       "uuid": "cef02630-613f-469c-928e-4d80f5d60112",
+       "match_field": "customer_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "customer_name": "DELUXE CERAMIC MARKETING SDN BHD",
+        "phone_number": null,
+        "email": null
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "300-D052",
+       "uuid": "226e6c2e-e26c-4ba0-8f63-e9fb66ddc126",
+       "match_field": "customer_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "customer_name": "DELUXE CERAMIC MARKETING SDN BHD (CERAMIC & ELLECI)",
+        "phone_number": null,
+        "email": null
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "300-D053",
+       "uuid": "c468a968-0ef3-49a5-a8dd-cd3b5560bb02",
+       "match_field": "customer_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "customer_name": "DELUXE CERAMIC MARKETING SDN BHD (SRT)",
+        "phone_number": null,
+        "email": null
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "300-D051",
+       "uuid": "232b8e87-042f-4fd9-b3f6-35719e63e684",
+       "match_field": "customer_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "customer_name": "DELUXE CERAMIC MARKETING SDN BHD [A/C I]",
+        "phone_number": null,
+        "email": null
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "300-D052",
+       "uuid": "d967edd7-e400-440f-b696-f90b91828ed5",
+       "match_field": "customer_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "customer_name": "DELUXE CERAMIC MARKETING SDN BHD [A/C III]",
+        "phone_number": null,
+        "email": null
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "DELUXE CERAMIC MARKETING SDN BHD",
+       "uuid": "cef02630-613f-469c-928e-4d80f5d60112",
+       "match_field": "debtor_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "debtor_name": "DELUXE CERAMIC MARKETING SDN BHD",
+        "debtor_code": "300-D051",
+        "source": "orders"
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "DELUXE CERAMIC MARKETING SDN BHD [A/C I]",
+       "uuid": "232b8e87-042f-4fd9-b3f6-35719e63e684",
+       "match_field": "debtor_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "debtor_name": "DELUXE CERAMIC MARKETING SDN BHD [A/C I]",
+        "debtor_code": "300-D051",
+        "source": "orders"
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "DELUXE CERAMIC MARKETING SDN BHD [A/C III]",
+       "uuid": "d967edd7-e400-440f-b696-f90b91828ed5",
+       "match_field": "debtor_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "debtor_name": "DELUXE CERAMIC MARKETING SDN BHD [A/C III]",
+        "debtor_code": "300-D052",
+        "source": "orders"
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "DELUXE CERAMIC MARKETING SDN BHD (CERAMIC & ELLECI)",
+       "uuid": "226e6c2e-e26c-4ba0-8f63-e9fb66ddc126",
+       "match_field": "debtor_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "debtor_name": "DELUXE CERAMIC MARKETING SDN BHD (CERAMIC & ELLECI)",
+        "debtor_code": "300-D052",
+        "source": "orders"
+       }
+      },
+      {
+       "entity_type": "customer",
+       "canonical_code": "DELUXE CERAMIC MARKETING SDN BHD (SRT)",
+       "uuid": "c468a968-0ef3-49a5-a8dd-cd3b5560bb02",
+       "match_field": "debtor_name",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "debtor_name": "DELUXE CERAMIC MARKETING SDN BHD (SRT)",
+        "debtor_code": "300-D053",
+        "source": "orders"
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "order"
+   ],
+   "fallback_types_found": [
+    "customer"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "cef02630-613f-469c-928e-4d80f5d60112",
+     "entity_type": "customer",
+     "code": "DELUXE CERAMIC MARKETING SDN BHD"
+    },
+    {
+     "uuid": "226e6c2e-e26c-4ba0-8f63-e9fb66ddc126",
+     "entity_type": "customer",
+     "code": "DELUXE CERAMIC MARKETING SDN BHD (CERAMIC & ELLECI)"
+    },
+    {
+     "uuid": "c468a968-0ef3-49a5-a8dd-cd3b5560bb02",
+     "entity_type": "customer",
+     "code": "DELUXE CERAMIC MARKETING SDN BHD (SRT)"
+    },
+    {
+     "uuid": "232b8e87-042f-4fd9-b3f6-35719e63e684",
+     "entity_type": "customer",
+     "code": "DELUXE CERAMIC MARKETING SDN BHD [A/C I]"
+    },
+    {
+     "uuid": "d967edd7-e400-440f-b696-f90b91828ed5",
+     "entity_type": "customer",
+     "code": "DELUXE CERAMIC MARKETING SDN BHD [A/C III]"
+    }
+   ],
+   "gate_debug": {
+    "domain": "order",
+    "allowed_lookup": [
+     "order",
+     "customer_order",
+     "transporter",
+     "customer",
+     "product"
+    ],
+    "entities_count": 5
+   }
+  },
+  "get_results": {
+   "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-1180\n*Customer:* DELUXE CERAMIC MARKETING SDN BHD\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:39:00\n*Transporter:* SORENTO\n*Driver:* KAMARUL\n*Lorry Plate:* BNK1678\n*Warehouse:* BRW\n*Products:* SRT768-BL (1.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "response_intro": "Here are the orders I found.",
+   "answers": [
+    {
+     "title": "202607-1180",
+     "fields": [
+      {
+       "label": "Order Number",
+       "value": "202607-1180"
+      },
+      {
+       "label": "Customer",
+       "value": "DELUXE CERAMIC MARKETING SDN BHD"
+      },
+      {
+       "label": "Order Date",
+       "value": "2026-07-06T00:00:00"
+      },
+      {
+       "label": "Actual Delivery Date",
+       "value": "2026-07-07T00:00:00"
+      },
+      {
+       "label": "Status",
+       "value": "Picked Up / In Transit"
+      },
+      {
+       "label": "Pickup Time",
+       "value": "09:39:00"
+      },
+      {
+       "label": "Transporter",
+       "value": "SORENTO"
+      },
+      {
+       "label": "Driver",
+       "value": "KAMARUL"
+      },
+      {
+       "label": "Lorry Plate",
+       "value": "BNK1678"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BRW"
+      },
+      {
+       "label": "Products",
+       "value": "SRT768-BL (1.0000)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T17:25:22.310192",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839628",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_order",
+   "domain_hint": "order",
+   "user_goal": "trying to check the delivery order for Deluxe ceramic on 2026-07-07",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Deluxe ceramic",
+     "hint": "customer",
+     "canonical_code": "300-D051",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (order): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "202607-1180",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": "2026-07-07",
+   "date_filter_end": "2026-07-07",
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Here are the orders I found.\n\n1. *Order Number:* 202607-1180\n*Customer:* DELUXE CERAMIC MARKETING SDN BHD\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:39:00\n*Transporter:* SORENTO\n*Driver:* KAMARUL\n*Lorry Plate:* BNK1678\n*Warehouse:* BRW\n*Products:* SRT768-BL (1.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "customer_ids": [
+      "cef02630-613f-469c-928e-4d80f5d60112",
+      "226e6c2e-e26c-4ba0-8f63-e9fb66ddc126",
+      "c468a968-0ef3-49a5-a8dd-cd3b5560bb02",
+      "232b8e87-042f-4fd9-b3f6-35719e63e684",
+      "d967edd7-e400-440f-b696-f90b91828ed5"
+     ],
+     "_diagnostics": {
+      "entities_in": 5,
+      "total_uuids_passed": 5,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "actual_delivery_date_from": "2026-07-07",
+     "actual_delivery_date_to": "2026-07-07",
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "orders",
+        "intro": "Here are the orders I found.",
+        "items": [
+         {
+          "title": "202607-1180",
+          "fields": [
+           {
+            "label": "Order Number",
+            "value": "202607-1180"
+           },
+           {
+            "label": "Customer",
+            "value": "DELUXE CERAMIC MARKETING SDN BHD"
+           },
+           {
+            "label": "Order Date",
+            "value": "2026-07-06T00:00:00"
+           },
+           {
+            "label": "Actual Delivery Date",
+            "value": "2026-07-07T00:00:00"
+           },
+           {
+            "label": "Status",
+            "value": "Picked Up / In Transit"
+           },
+           {
+            "label": "Pickup Time",
+            "value": "09:39:00"
+           },
+           {
+            "label": "Transporter",
+            "value": "SORENTO"
+           },
+           {
+            "label": "Driver",
+            "value": "KAMARUL"
+           },
+           {
+            "label": "Lorry Plate",
+            "value": "BNK1678"
+           },
+           {
+            "label": "Warehouse",
+            "value": "BRW"
+           },
+           {
+            "label": "Products",
+            "value": "SRT768-BL (1.0000)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-07-07T17:25:22.310192",
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "Here are the orders I found.\n\n1. *Order Number:* 202607-1180\n*Customer:* DELUXE CERAMIC MARKETING SDN BHD\n*Order Date:* 06/07/2026\n*Actual Delivery Date:* 07/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:39:00\n*Transporter:* SORENTO\n*Driver:* KAMARUL\n*Lorry Plate:* BNK1678\n*Warehouse:* BRW\n*Products:* SRT768-BL (1.0000)\n\n_Data last updated: 07/07/2026 17:25:22_",
+     "response_intro": "Here are the orders I found.",
+     "answers": [
+      {
+       "title": "202607-1180",
+       "fields": [
+        {
+         "label": "Order Number",
+         "value": "202607-1180"
+        },
+        {
+         "label": "Customer",
+         "value": "DELUXE CERAMIC MARKETING SDN BHD"
+        },
+        {
+         "label": "Order Date",
+         "value": "2026-07-06T00:00:00"
+        },
+        {
+         "label": "Actual Delivery Date",
+         "value": "2026-07-07T00:00:00"
+        },
+        {
+         "label": "Status",
+         "value": "Picked Up / In Transit"
+        },
+        {
+         "label": "Pickup Time",
+         "value": "09:39:00"
+        },
+        {
+         "label": "Transporter",
+         "value": "SORENTO"
+        },
+        {
+         "label": "Driver",
+         "value": "KAMARUL"
+        },
+        {
+         "label": "Lorry Plate",
+         "value": "BNK1678"
+        },
+        {
+         "label": "Warehouse",
+         "value": "BRW"
+        },
+        {
+         "label": "Products",
+         "value": "SRT768-BL (1.0000)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": "2026-07-07T17:25:22.310192",
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

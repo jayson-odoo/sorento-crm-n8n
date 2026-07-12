@@ -1,0 +1,420 @@
+[
+  {
+    "parameters": {
+      "workflowId": {
+        "__rl": true,
+        "value": "vUfFUDjLAuMaeQE6",
+        "mode": "list",
+        "cachedResultName": "sub-human-intervention TEST (delta3)"
+      },
+      "workflowInputs": {
+        "mappingMode": "defineBelow",
+        "value": {
+          "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+          "agent": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}",
+          "contact_phone_number": "={{ $('sorento-sub-respond-findcontact-respond').first().json.phone }}",
+          "team": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}",
+          "current_assignee": "={{ $('sorento-sub-respond-findcontact-respond').first().json.assignee.id }}",
+          "message_id": "={{ $('tf-message').first().json.message.messageId }}",
+          "contact": "={{ $('sorento-sub-respond-findcontact-respond').first().json }}",
+          "is_test": true,
+          "test_run_id": "={{ $('redis-pop-main-message-list').first().json.message.test_run_id }}",
+          "explicit_assignee_id": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.escalation.preferred_assignee_id || '' }}"
+        },
+        "matchingColumns": [],
+        "schema": [
+          {
+            "id": "contact_id",
+            "displayName": "contact_id",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "removed": false
+          },
+          {
+            "id": "agent",
+            "displayName": "agent",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": false
+          },
+          {
+            "id": "team",
+            "displayName": "team",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": false
+          },
+          {
+            "id": "contact_phone_number",
+            "displayName": "contact_phone_number",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": false
+          },
+          {
+            "id": "current_assignee",
+            "displayName": "current_assignee",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "removed": false
+          },
+          {
+            "id": "message_id",
+            "displayName": "message_id",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "removed": false
+          },
+          {
+            "id": "is_test",
+            "displayName": "is_test",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "boolean",
+            "removed": false
+          },
+          {
+            "id": "test_run_id",
+            "displayName": "test_run_id",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": false
+          },
+          {
+            "id": "input_message",
+            "displayName": "input_message",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": true
+          },
+          {
+            "id": "started_at",
+            "displayName": "started_at",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": true
+          },
+          {
+            "id": "contact",
+            "displayName": "contact",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "object",
+            "removed": false
+          },
+          {
+            "id": "explicit_assignee_id",
+            "displayName": "explicit_assignee_id",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "canBeUsedToMatch": true,
+            "type": "string",
+            "removed": false
+          }
+        ],
+        "attemptToConvertTypes": false,
+        "convertFieldsToString": true
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.executeWorkflow",
+    "typeVersion": 1.3,
+    "position": [
+      6928,
+      1264
+    ],
+    "id": "133fcc06-c002-49c4-9d3f-8bef06881e13",
+    "name": "Call 'sub-human-intervention'"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "not_found",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1392
+    ],
+    "id": "2f33c7f4-bbfd-4e3e-aa24-20c9701cd587",
+    "name": "tag-not-found"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "access_choice",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1504
+    ],
+    "id": "50739719-2cd0-41d1-8a88-4358b87cb02c",
+    "name": "tag-access-choice"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "demand_qty",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1632
+    ],
+    "id": "116f908f-a5e6-4104-8aa6-dd0cce15c84a",
+    "name": "tag-demand-qty"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "not_supported",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1744
+    ],
+    "id": "b870436a-57de-4d3c-b263-e039a8bcb466",
+    "name": "tag-not-supported"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "clarify_menu",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1872
+    ],
+    "id": "4214dfa2-f75a-476e-8f3a-38c04c6da4a1",
+    "name": "tag-clarify-menu"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "escalate_offer",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1984
+    ],
+    "id": "135a1d93-8602-4b71-a018-39e1488b5e70",
+    "name": "tag-escalate-offer"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "out_of_scope",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      2112
+    ],
+    "id": "3a2818e5-cc36-45d5-a0b8-c86d4edc640e",
+    "name": "tag-out-of-scope"
+  },
+  {
+    "parameters": {
+      "jsCode": "// ── escalate-catalog ──────────────────────────────────────────────\n// Single source of truth for escalation/error messages + their behavior flags.\n// Each upstream branch sets ONE field `branch_kind`; this node maps it to the\n// message + flags that compile-current-state used to derive via a 7-arm ladder.\n// Dynamic kinds (not_found, access_choice) pull their message by reference from\n// the upstream Code node that computed it.\nconst qf  = $('Call \\'sub-query-reformulator\\'').first().json.output;\nconst out = $input.first().json;\nconst kind = out.branch_kind;\n\nlet response = '';\nlet manualResponse = false;\nlet includeResponse = true;\nlet is_escalate_offer = false;\n\nswitch (kind) {\n  case 'not_found': {\n    const nf = $('not-found-error-message').first().json;\n    response       = nf.escalate_message;\n    manualResponse = !nf.require_specific;\n    is_escalate_offer = !nf.is_clarification;   // offer only when it's not a clarification prompt\n    break;\n  }\n  case 'access_choice':\n    response       = $('access-level-choice-message').first().json.escalate_message;\n    manualResponse = true;\n    break;\n  case 'demand_qty':\n    response       = 'Please specify your demand quantity';\n    manualResponse = true;\n    break;\n  case 'not_supported':\n    response       = \"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\";\n    manualResponse = true;\n    break;\n  case 'clarify_menu':\n    response       = `I see you're ${qf.user_goal}, Let me understand more.\\n\\nAre you asking about any of these?\\n\\n- Product (List Price, Dimension)\\n- Photos, Technical Specs, Cert\\n- Promotion\\n- Forms\\n- Stock\\n- Delivery order\\n- Incoming\\n- Catalogue, Warranty\\n\\nI can help with the topics listed above.`;\n    manualResponse = true;\n    break;\n  case 'escalate_offer':\n    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${qf.routing.suggested_team} team?`;\n    manualResponse = true;\n    is_escalate_offer = true;\n    break;\n  case 'out_of_scope':\n    response        = `Informed the user that request is out of scope and will proceed to escalate to the ${qf.routing.suggested_team} team`;\n    manualResponse  = true;\n    includeResponse = false;\n    break;\n}\n\nout.response          = response;\nout.manualResponse    = manualResponse;\nout.includeResponse   = includeResponse;\nout.is_escalate_offer = is_escalate_offer;\nreturn out;\n"
+    },
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+      4304,
+      1744
+    ],
+    "id": "escalate-catalog-node",
+    "name": "escalate-catalog"
+  },
+  {
+    "parameters": {
+      "conditions": {
+        "options": {
+          "caseSensitive": true,
+          "leftValue": "",
+          "typeValidation": "loose",
+          "version": 2
+        },
+        "combinator": "and",
+        "conditions": [
+          {
+            "id": "g1",
+            "leftValue": "={{ $('escalate-catalog').first().json.is_escalate_offer }}",
+            "rightValue": true,
+            "operator": {
+              "type": "boolean",
+              "operation": "true",
+              "singleValue": true
+            }
+          },
+          {
+            "id": "g2",
+            "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}",
+            "rightValue": "customer_service",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          },
+          {
+            "id": "g3",
+            "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}",
+            "rightValue": "order_enquiries",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          }
+        ]
+      },
+      "options": {}
+    },
+    "name": "cs-offer-gate",
+    "type": "n8n-nodes-base.if",
+    "typeVersion": 2.3,
+    "position": [
+      4400,
+      1904
+    ],
+    "id": "cs-offer-gate-node"
+  },
+  {
+    "parameters": {
+      "url": "=https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}&team_code={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}&tier=1",
+      "sendHeaders": true,
+      "headerParameters": {
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "value": "***REMOVED-CRM-API-KEY***"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "name": "get-cs-members",
+    "type": "n8n-nodes-base.httpRequest",
+    "typeVersion": 4.3,
+    "position": [
+      4640,
+      1824
+    ],
+    "id": "get-cs-members-node"
+  },
+  {
+    "parameters": {
+      "jsCode": "// ── build-cs-member-offer (Δ3) ──────────────────────────────────────\n// Runs only when the cs-offer-gate passed (is_escalate_offer + customer_service + order_enquiries).\n// Turns the live team-members roster into a numbered escalation offer, and stores the roster as\n// cs_last_result_set + selection_context so the NEXT turn's position pick resolves to a member.\n// Empty roster → fall back to the catalog's generic offer (round-robin on a bare \"yes\").\n// get-cs-members returns a JSON array; n8n may emit it as one item (json=array) OR split into\n// one item per element — handle both, then keep only real members.\nlet _raw = $('get-cs-members').all().map(i => i.json);\nlet members = (_raw.length === 1 && Array.isArray(_raw[0])) ? _raw[0] : _raw;\n// exclude members with no respond_user_id — respond.io conversation-assign can't reach them\nmembers = (Array.isArray(members) ? members : []).filter(m => m && m.user_id && m.respond_user_id);\nconst cat = $('escalate-catalog').first().json;\nconst out = { ...cat };\n\nif (members.length === 0) {\n  out.selection_context = null;\n  out.member_offer = false;\n  out.cs_last_result_set = [];\n  return out;\n}\n\nconst numbered = members.map((m, i) => `${i + 1}. ${m.name}`).join('\\n');\nout.response =\n  `Would you like me to escalate to customer_service team?\\n\\n` +\n  `Please choose who to route to (reply with the number):\\n${numbered}\\n\\n` +\n  `If you have no preference, just reply 'yes' and we'll assign automatically.`;\nout.member_offer = true;\nout.selection_context = 'member_offer';\nout.cs_last_result_set = members.map((m, i) => ({\n  idx: i + 1, label: m.name, uuid: m.user_id, respond_user_id: m.respond_user_id,\n}));\nout.manualResponse = true;     // member offer is a manual response (skip business-summary overwrite)\nout.includeResponse = true;\nreturn out;\n"
+    },
+    "name": "build-cs-member-offer",
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+      4864,
+      1824
+    ],
+    "id": "build-cs-member-offer-node"
+  }
+]

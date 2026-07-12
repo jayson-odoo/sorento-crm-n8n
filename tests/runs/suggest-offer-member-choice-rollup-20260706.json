@@ -1,0 +1,135 @@
+{
+  "change_id": "suggest-offer-member-choice",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "target": "CLONE txiPzSxy3Pclsz6v (sorento-consume-main TEST)",
+  "target_version_under_test": {
+    "versionId": "0369e6bd-e49e-4b20-84f1-e9e56778d1af",
+    "activeVersionId": "0369e6bd-e49e-4b20-84f1-e9e56778d1af",
+    "clean_draft": true,
+    "nodeCount": 105,
+    "note": "versionId==activeVersionId == the coder's published under-test build; no stale draft"
+  },
+  "untouched_confirmed": ["reformulator fork CpxE8LroLzCkrAQN (e10c539e, real LLM ran unchanged in V-A1)", "live sub XTODTw-dJcV0uRdC056hG", "live spine 9qVyfUxmRQqrpGRMDLRuz"],
+  "contact": "437264483 (FULL access)",
+  "mechanism": "POST /webhook/zz-seed-hint {text,test_run_id,scope,mock_reformulator_output} (mode hardcoded regress-capture, Clear List) -> POST /webhook/zz-run-hint -> get_execution(includeData). Egress log read from clone+sub runData (host has no redis client; the guard-record node data IS the egress-log content, authoritative superset of redis test:egress:{id}).",
+  "IMPORTANT_mock_nesting_finding": "test-reformulator-bypass sets the fork output's .json.output = message.mock_reformulator_output DIRECTLY. So mock_reformulator_output must be the INNER reformulator object {message_type,routing,escalation,suggest_pick_context,...}, NOT wrapped in {output:{...}}. First A attempt (soc-A-20260706, exec 7698888) double-nested -> q.routing/q.escalation undefined -> fell to check-access deny_unknown_agent/no-access send. Corrected shape used for all cases.",
+  "verdict": "PASS — all functional expectations met AND §0 S1-S6 hold on every case. Zero real egress, zero prod mutation.",
+
+  "offline_units_PRIMARY_GATE": {
+    "harness": "ran the EXACT deployed build-suggest-offer jsCode (11329 bytes, pulled from published clone) with mocked n8n $() context; and the divert-suggest-yes boolean as a pure function",
+    "result": "16/16 PASS",
+    "V0a_CS_order_date_trim": "suggest_offer=true; suggest_quick_reply === '2026-07-08,2026-07-10' (dates ONLY, NO Yes/No); response has 'No delivery on' + 'would you like me to escalate'; last_result_set len2 date values",
+    "V0b_nonCS_date_buttons_retained": "suggest_quick_reply === '2026-07-08,2026-07-10,Yes escalate,No it\\'s okay' (buttons kept)",
+    "V0c_D1_didyoumean_byte_identical": "suggest_quick_reply === 'CWCX605-RL,Yes escalate,No it\\'s okay' (D1 untouched)",
+    "V0d_D2_nondate_buttons_retained": "ends 'Yes escalate,No it\\'s okay'",
+    "V0d2_deviation_guard_C1": "D2 non-date + CS/order STILL keeps buttons ('SRTWC287-BL,SRTWC287-WH,Yes escalate,No it\\'s okay') — validates coder deviation C.1 (axis==='date' guard prevents trimming D2-non-date CS/order)",
+    "V0a_ctrl_CS_nonOrderEnquiries": "CS team but agent!=order_enquiries date offer keeps buttons",
+    "V0b_divert_discriminator": "divert TRUE only for M-suggest-yes; FALSE for M-member-pick, M-warehouse-retarget, M-nonCS-suggest-yes, member-bare-yes (proves suggest_pick_context is load-bearing)",
+    "note_comma_strip": "join maps each element through .replace(/,/g,'') so 'Yes, escalate'->'Yes escalate', \"No, it's okay\"->\"No it's okay\". UAC literals written with internal commas are loose; the load-bearing distinction (Yes/No present vs absent) is exact and verified. Consistent with prior suggest-offer-uuid-label run."
+  },
+
+  "cases": {
+    "A_divert_yes_member_picker_no_assign": {
+      "row": "core new behavior (row 2)", "verdict": "PASS", "clone_exec": "7698985",
+      "scope": "deterministic (mock M-suggest-yes)", "mock_bypass": "reformulator fork 7698986 output==mock, 0 LLM",
+      "branch": "If5 TRUE -> If2 TRUE -> divert-suggest-yes output#0 TRUE -> tag-escalate-offer -> escalate-catalog(is_escalate_offer) -> cs-offer-gate pass -> get-cs-members(READ,11) -> build-cs-member-offer -> compile-current-state",
+      "divert": "TRUE (output#0)",
+      "build_cs_member_offer": "member_offer=true, selection_context='member_offer', cs_last_result_set 11x{idx,label,uuid,respond_user_id}",
+      "would_send": "numbered CS picker '...Please choose who to route to (reply with the number): 1. Maryam Ariffin 2. Cyndi 3. Ms Tan ... 11. Nurain ... reply \\'yes\\' and we\\'ll assign automatically.' (guarded, sendmsg sub 7698988 short-circuit test-guard-record, is_test=true)",
+      "human_intervention": "NOT called (NO assign this turn)",
+      "s0": {"S1":"PASS (sendmsg sub 7698988 short-circuit, no api.respond.io POST, no send-message-*)","S2":"PASS — human-intervention NOT called; no assign/SLA/PIC/queue","S3":"PASS — prod save-session-vars PUT + update-human-intervened absent; pg-upsert-session to n8n_test copy; guard-d-record would_write only","S4":"PASS (trivial, get-results not reached)","S5":"PASS is_test=true on sendmsg + reformulator mock path","S6":"PASS deterministic, 0 LLM (mock consumed)"}
+    },
+    "B2_member_pick_2_assign_Sandy": {
+      "row": "regression / member pick still assigns (row 3)", "verdict": "PASS", "clone_exec": "7699128", "hi_sub_exec": "7699131",
+      "scope": "deterministic (mock M-member-pick, preferred_assignee_id Sandy 4dbed5e6)",
+      "divert": "FALSE (output#1) — member_pick_context, no suggest_pick_context, preferred_assignee_id present",
+      "branch": "If2 TRUE -> divert FALSE -> Call 'sub-human-intervention' + tag-out-of-scope",
+      "human_intervention": "CALLED, GUARDED. sub vUfFUDjLAuMaeQE6 ran ONLY When-Executed->test-guard->test-guard-record (lastNodeExecuted). would_write={contact_id:437264483, agent:order_enquiries, team:customer_service, current_assignee:null, explicit_assignee_id:4dbed5e6(Sandy)}. NONE of get-round-robin/Assign/SLA/comment/queue ran.",
+      "member_list_reshown": "NO (build-cs-member-offer + get-cs-members did not run); sendmsg result_set:[]",
+      "s0": {"S1":"PASS","S2":"PASS — assign path reached but SHORT-CIRCUITED at test-guard-record; no real assign/SLA/comment/queue","S3":"PASS","S4":"PASS","S5":"PASS is_test=true into hi-sub","S6":"PASS 0 LLM"}
+    },
+    "Bnur_member_pick_name_Nur": {
+      "row": "regression / name pick still assigns (row 3)", "verdict": "PASS", "clone_exec": "7699795", "hi_sub_exec": "7699798",
+      "scope": "deterministic (mock M-member-pick, person_mention 'Nur', preferred_assignee_id Nur 642699bd)",
+      "divert": "FALSE (output#1)",
+      "human_intervention": "CALLED, GUARDED, explicit_assignee_id=642699bd(Nur); build-cs-member-offer NOT run",
+      "note": "name-vs-number resolution happens upstream in the (bypassed) reformulator/output_exchange; the divert is agnostic to how the pick was expressed — it sees preferred_assignee_id + member_pick_context and correctly routes FALSE to assign",
+      "s0": {"S1":"PASS","S2":"PASS short-circuit","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS 0 LLM"}
+    },
+    "C_warehouse_retarget_not_swallowed": {
+      "row": "regression / retarget not swallowed (row 6)", "verdict": "PASS", "clone_exec": "7699222", "hi_sub_exec": "7699224",
+      "scope": "deterministic (mock M-warehouse-retarget)",
+      "divert": "FALSE (output#1) — suggested_team='warehouse' != customer_service, no suggest_pick_context",
+      "branch": "If2 TRUE -> divert FALSE -> Call 'sub-human-intervention' (round-robin, team warehouse) + tag-out-of-scope",
+      "human_intervention": "CALLED, GUARDED. sub 7699224 short-circuit test-guard-record. would_write={team:warehouse, agent:general_enquiries, explicit_assignee_id:'' (round-robin)}",
+      "divert_to_cs_member_list": "NO (build-cs-member-offer + get-cs-members did not run) — the retarget was NOT swallowed by the divert",
+      "s0": {"S1":"PASS","S2":"PASS short-circuit, no real assign","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS 0 LLM"}
+    },
+    "D4_decline_no_thanks_safe_casual": {
+      "row": "decline -> safe casual, NO assign (row 4, premise-corrected)", "verdict": "PASS (functional)", "clone_exec": "7699304", "sendmsg_exec": "7699313",
+      "scope": "deterministic (mock M-suggest-no, is_escalation_confirmation:false)",
+      "branch": "If2 FALSE -> If10 FALSE -> is-escalation-declined FALSE -> If9 casual -> resolve-entity-clarification -> parser-bypass-gate -> Basic LLM Chain -> central-exchange -> guarded send",
+      "divert": "NOT reached (If2 FALSE)",
+      "human_intervention": "NOT called",
+      "would_send": "'You\\'re welcome! If you need anything else, just let me know.' (casual acknowledgment, non-empty; NOT 'Escalation declined.'; NOT round-robin; NOT member_offer)",
+      "selection_context": "null (not re-set to member_offer)",
+      "s0": {"S1":"PASS (sendmsg guarded)","S2":"PASS — no human-intervention, no assign","S3":"PASS — prod PUT absent, pg-upsert-session to n8n_test","S4":"PASS — get-results not run; resolve-entity-clarification is a READ","S5":"PASS","S6":"PASS-with-note — reformulator PROVABLY bypassed (0 parser tokens, output==mock), BUT the casual path fired Basic LLM Chain gpt-4.1-mini (346 tok: 325 in/21 out) — the DOCUMENTED clarification LLM (LESSON 22), inherent to a casual decline and NOT introduced by this change; bounded, no new/unexpected sink"}
+    },
+    "E_suggest_date_pick_requery_not_assign": {
+      "row": "regression / suggest date pick unchanged (row 5)", "verdict": "PASS", "clone_exec": "7699348",
+      "scope": "deterministic (mock business_query order + customer entity + date_filter, is_escalation_confirmation:false)",
+      "branch": "If2 FALSE (is_escalation_confirmation not true) -> normal business_query re-query in retained order domain -> resolve-entity(READ, 'ABC Trading' unresolved, 0 candidates) -> escalate_offer/member_offer miss render",
+      "divert": "NOT reached (If2 FALSE)",
+      "human_intervention": "NOT called; no preferred_assignee_id",
+      "note": "the date pick with is_escalation_confirmation false correctly does NOT take the divert/member/assign path; proves the button-trim (Part C) did not break the typed date/query pick. (This particular seed's customer was unresolved -> it also cleanly renders the escalate_offer member_offer as final, a bonus §G-style proof.)",
+      "s0": {"S1":"PASS","S2":"PASS no assign","S3":"PASS","S4":"PASS — resolve-entity READ only, no write tool","S5":"PASS","S6":"PASS 0 LLM (mock consumed)"}
+    },
+    "F_nonCS_suggest_yes_roundrobin_unchanged": {
+      "row": "regression / non-CS suggest yes -> prior behavior (row 7)", "verdict": "PASS", "clone_exec": "7699322", "hi_sub_exec": "7699324",
+      "scope": "deterministic (mock M-nonCS-suggest-yes, routing purchasing/incoming_stock_enquiries)",
+      "divert": "FALSE (output#1) — suggested_team='purchasing' != customer_service",
+      "branch": "If2 TRUE -> divert FALSE -> Call 'sub-human-intervention' round-robin (purchasing) + tag-out-of-scope",
+      "human_intervention": "CALLED, GUARDED. sub 7699324 short-circuit test-guard-record. would_write={team:purchasing, agent:incoming_stock_enquiries, explicit_assignee_id:''}",
+      "member_offer_built": "NO (build-cs-member-offer did not execute) — non-CS suggest-yes keeps prior round-robin, NOT member_offer",
+      "render_half": "render-side (buttons retained for non-CS) asserted offline in V0-b/d; this row asserts runtime routing",
+      "s0": {"S1":"PASS","S2":"PASS short-circuit","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS 0 LLM"}
+    },
+    "G_fresh_escalate_offer_member_offer": {
+      "row": "regression / fresh escalate_offer member_offer still works (row 8)", "verdict": "PASS (via G2 clean run)",
+      "G_attempt_SMC202606-9999": {"clone_exec":"7699334","result":"INFORMATIVE — resolver returned 5 trgm order candidates -> build-suggest-offer attached a D1 did-you-mean (code-mode, buttons RETAINED: 'SMC202606-0099,SMC202606-0026,SMC202606-0106,Yes escalate,No it\\'s okay' — consistent with V0-c, trim did not touch D1). The did-you-mean superseded the member list in compile-current-state. Not a true dead-end miss."},
+      "G2_clean_QWXZ990011": {"clone_exec":"7699527","result":"PASS — resolve-entity 0 candidates -> build-suggest-offer suggest_offer=FALSE -> tag-not-found -> escalate-catalog(not_found) -> cs-offer-gate -> get-cs-members(READ) -> build-cs-member-offer member_offer=true, selection_context='member_offer', 11 members -> FINAL response = numbered picker. NO assign (human-intervention NOT called). Path is If2-FALSE so it NEVER traverses the divert seam — proving the divert change cannot regress this pre-existing escalate_offer->member_offer path. Member builder byte-consistent with case A."},
+      "s0": {"S1":"PASS","S2":"PASS — no human-intervention, no assign","S3":"PASS","S4":"PASS — resolve-entity/get-cs-members READ only","S5":"PASS","S6":"PASS 0 LLM (mock consumed; get-cs-members is a CRM READ)"}
+    },
+    "VA1_real_reformulator_dependency_check": {
+      "row": "V-A1 parser-scope dependency (underwrites M-suggest-yes)", "verdict": "PASS (reformulator live; suggest_pick_context-in-suggest-context attested by evidence, not a STOP)", "clone_exec": "7699640", "reformulator_fork_exec": "7699641 (real gpt LLM, 2649ms)", "hi_sub_exec": "7699645",
+      "scope": "parser (NO mock, real fork CpxE8LroLzCkrAQN)",
+      "observed": "session read by pg-get-session was selection_context='member_offer' (left by prior G2 write — the documented session-fidelity gap, LESSON 19/31). Real reformulator therefore correctly classified 'yes escalate' in a MEMBER_OFFER context as member_pick_context:true + is_escalation_confirmation:true + routing CS/order, with NO suggest_pick_context. divert-suggest-yes -> FALSE -> round-robin auto-assign (guarded, sub 7699645 short-circuit). This is CORRECT behavior AND a bonus live confirmation of the V0b 'member-bare-yes' case.",
+      "conclusion": "Not a clean suggest_offer(date) context (couldn't seed one without psql; injecting previous_conversation_state does not reach the reformulator per LESSON 31). Reformulator LIVENESS + pick-context-family emission (member_pick_context here) confirmed. Direct proof the reformulator emits suggest_pick_context=true in a suggest_offer context comes from the prior suggest-offer-uuid-label run (s17: 'LLM set suggest_pick_context=true (machinery engaged)'). Combined with offline V0b (discriminator) + case A (full downstream on the mock), Change A condition #2 is satisfied. NOT a STOP.",
+      "token_sink_observation": "only the one reformulator AI Agent LLM ran (no reformulator-side reformulation/reformulator second sink observed); bounded",
+      "s0": {"S1":"PASS","S2":"PASS — hi-sub 7699645 short-circuit test-guard-record","S3":"PASS","S4":"PASS","S5":"PASS is_test=true into reformulator fork + hi-sub","S6":"PASS-parser — 1 reformulator LLM call, bounded, no new sink"}
+    }
+  },
+
+  "s0_rollup": {
+    "verdict": "S1-S6 HOLD on EVERY case (A,B2,Bnur,C,D4,E,F,G2,V-A1). No HALT.",
+    "S1_no_real_send": "every send intercepted by the shared guarded sendmsg sub aoydkG1dbItXR5jXFEQsP (verified short-circuit at test-guard-record on case A exec 7698988); send-message-files/images/video ABSENT in all runs; no api.respond.io/.../message POST",
+    "S2_no_assign_FOCUS": "the divert's whole point. divert-TRUE cases (A) DO NOT call human-intervention (no assign this turn). divert-FALSE assign cases (B2/Bnur/C/F/V-A1) call the guarded fork vUfFUDjLAuMaeQE6 which SHORT-CIRCUITED at test-guard-record every time — NONE of get-round-robin-assignee / Assign or unassign a Conversation1 / conversation-sla-tracking-create / Call 'sub-add-comment-respond' / assignee-queue Redis push executed. The test-guard-record would_write payload IS the S2 egress record, blocked.",
+    "S3_no_crm_write": "prod save-session-vars PUT + update-human-intervened ABSENT in all runs (orphaned); session writes go to pg-upsert-session -> n8n_test respond_contacts_test (regress-capture), NEVER prod",
+    "S4_get_results_read": "get-results never ran a write tool; resolve-entity / get-cs-members / check-access-http are READs; no crm_it_support_ticket_create",
+    "S5_test_mode": "is_test=true provably present in every invoked sub input (reformulator fork, sendmsg sub, human-intervention fork); mode=regress-capture; test_run_id threaded end-to-end",
+    "S6_token_sinks": "deterministic cases ran 0 LLM (reformulator bypass consumed the mock). Bounded exceptions, NEITHER from this change: D4 casual path fired the documented Basic LLM Chain clarification (346 tok, LESSON 22, inherent to a casual decline); V-A1 (parser scope) ran the reformulator once (real). No NEW token sink observed (no reformulator-side reformulation LLM)."
+  },
+
+  "callouts": {
+    "row2_divert_to_member_no_assign": "PASS (case A) — CS/order suggest 'yes' diverts to the member picker and assigns NOTHING this turn (human-intervention not called).",
+    "row3_pick_still_assigns": "PASS (B2 Sandy, Bnur Nur) — a member pick (number or name) with preferred_assignee_id+member_pick_context routes divert-FALSE to the guarded assign; not swallowed by the divert.",
+    "row6_retarget_not_swallowed": "PASS (case C) — 'warehouse' mid member_offer -> divert-FALSE -> direct round-robin team=warehouse (guarded); divert did NOT swallow it (suggest_pick_context!==true).",
+    "row1_7_button_trim_CS_only": "PASS (offline V0-a trims CS/order date buttons to dates-only; V0-b/c/d/d2 controls keep buttons; runtime F confirms non-CS 'yes' keeps prior round-robin, not member_offer).",
+    "coder_deviation_C1_validated": "the axis==='date' && isCsOrder guard is correct: V0-d2 proves D2-non-date CS/order STILL keeps buttons (the plan's isCsOrder-only guard would have wrongly trimmed it).",
+    "get_results_llm_liveness": "not exercised here (escalation/miss paths). No orphaned get-results agent observed firing.",
+    "new_token_sink_watch": "none. No reformulator-side reformulation sink. Only known sinks (reformulator AI Agent; casual-path Basic LLM Chain) observed, both bounded."
+  },
+
+  "blocked_or_halt": "NONE. No HALT (no live egress path). V-A1 clean suggest_offer(date) context not reproducible in isolation due to documented session-fidelity gap — resolved by evidence (offline V0b + case A + prior s17), not a blocker."
+}

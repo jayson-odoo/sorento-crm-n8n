@@ -1,0 +1,276 @@
+{
+ "label": "3Nmulti",
+ "test_run_id": "sim-3Nmulti",
+ "text": "eta SRT79-SS-GM and ZZZ999XX",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "eta SRT79-SS-GM and ZZZ999XX"
+   },
+   "test_run_id": "sim-3Nmulti",
+   "ts": "2026-07-07T14:00:12.385-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for SRT79-SS-GM and ZZZ999XX",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRT79-SS-GM",
+        "hint": "product",
+        "canonical_code": "SRT79-SS-GM",
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "ZZZ999XX",
+        "hint": "inbound_shipment",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?"
+    }
+   },
+   "test_run_id": "sim-3Nmulti",
+   "ts": "2026-07-07T14:00:12.380-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-3Nmulti",
+   "ts": "2026-07-07T14:00:12.363-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839402",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRT79-SS-GM",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "ZZZ999XX",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the ETA for SRT79-SS-GM and ZZZ999XX"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "SRT79-SS-GM",
+    "ZZZ999XX"
+   ],
+   "elapsed_ms": 1771.18,
+   "resolutions": [
+    {
+     "token": "SRT79-SS-GM",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRT79-SS-GM",
+       "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRT79-SS-GM",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    },
+    {
+     "token": "ZZZ999XX",
+     "resolved": false,
+     "ambiguous": false,
+     "matches": [],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [
+    "ZZZ999XX"
+   ],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inbound_shipment",
+    "inbound_shipment"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "entity_type": "product",
+     "code": "SRT79-SS-GM"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for SRT79-SS-GM and ZZZ999XX",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRT79-SS-GM",
+     "hint": "product",
+     "canonical_code": "SRT79-SS-GM",
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "ZZZ999XX",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Could not find incoming for SRT79-SS-GM ZZZ999XX. Would you like me to escalate to purchasing team?",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

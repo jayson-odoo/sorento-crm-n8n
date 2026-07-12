@@ -1,0 +1,52 @@
+{
+  "run": "Friendly-suffix UAC Case A — master_products price lookup (positive)",
+  "change": "compile-current-state friendly domain disclaimers",
+  "verdict": "PASS",
+  "scope": "deterministic",
+  "mode": "uac",
+  "contact": "437264483 (FULL)",
+  "message": "what is the list price for SRTUFV101",
+  "executions": {
+    "seed": "7081091",
+    "run": "7081108",
+    "clone": "7081109",
+    "reformulator_sub": "7081110(CpxE8LroLzCkrAQN)",
+    "get_results_sub": "7081117(Fss5aAaXthJSWpZCgKiKR)",
+    "sendmsg_sub": "7081118(aoydkG1dbItXR5jXFEQsP)",
+    "egress_read": "7081244"
+  },
+  "branch": "happy (If6 -> central-exchange; isEscalateBranch=false)",
+  "domain_hint": "master_products",
+  "get_results_tool": "crm_master_products_list (READ)",
+  "last_result_set_len": 3,
+  "user_response_tail": "...\\n⚠️  *(PRODUCT DISCONTINUED)*\\n\\n_Data last updated: 30/06/2026 10:13:26_\\n\\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "suffix_verdict": "PASS — master_products P/S suffix appended",
+  "egress_log": [
+    {
+      "guard": "save-message-redis",
+      "kind": "would_log",
+      "blocked": true
+    },
+    {
+      "guard": "save-session-vars",
+      "kind": "would_write",
+      "target": "crm:conversation-variables:PUT",
+      "blocked": true
+    },
+    {
+      "guard": "sendmsg-sub",
+      "kind": "would_send",
+      "target": "437264483",
+      "blocked": true,
+      "message_ends_with": "...product catalogue* and I'll pull it up for you 😊"
+    }
+  ],
+  "safety_S0": {
+    "S1_zero_real_sends": "PASS",
+    "S2_zero_assignment_writes": "PASS",
+    "S3_zero_crm_writes": "PASS",
+    "S4_get_results_read_only": "PASS — tool crm_master_products_list",
+    "S5_test_mode_present": "PASS — sendmsg sub received is_test=true; egress records carry test_run_id",
+    "S6_token_bound": "PASS (deterministic) — reformulator BYPASSED (sub output === injected mock_reformulator_output, dispositive). No clarification Basic LLM Chain. NOTE: get-results sub ran as a real READ and produced formatted markdown; its internal agent LLM liveness was not separately instrumented."
+  }
+}

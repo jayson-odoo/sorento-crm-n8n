@@ -1,0 +1,46 @@
+{
+  "run": "UAC §11b (exact passthrough) + §12 (Fix-B not-found, no literal leak)",
+  "change": "fix-gate-render-notfound-msg",
+  "test_run_id": "uac11b12-det-20260628",
+  "date": "2026-06-28",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "scope_run": "DETERMINISTIC (mock_reformulator_output pinned -> reformulator bypassed at 0 tokens; resolve-entity + get-results real READS)",
+  "verdict": "PASS",
+  "message": "SPAN cert for SRTUFV101",
+  "contact": "437264483 (FULL access)",
+  "pinned_mock": "single product SRTUFV101 + attachment_type 'SPAN cert', domain_hint product_attachment (see fixtures/parser; chosen because the live reformulator tokenizes 'srtufv101 SPAN cert' non-deterministically — one run split 'SPAN cert' into SPAN(brand)+cert which matched products. Deterministic pin gives the intended clean scenario + 0-token proof).",
+  "execution_ids": { "clone": "6862097", "reformulator_sub": "6862098 (53ms, bypassed)", "egress_read": "6862156" },
+  "resolve_entity_real_read": {
+    "SRTUFV101": "SRTUFV101(exact) + SRTUFV101-WEPLS(prefix)",
+    "SPAN cert": "attachment_type Certification (single)"
+  },
+  "asserted_node_outputs": {
+    "disallowed-entity-gate": {
+      "gate_passed": true,
+      "require_specific": false,
+      "gate_clarification": "",
+      "compatible_entities": [ { "entity_type": "product", "code": "SRTUFV101" }, { "entity_type": "attachment_type", "code": "Certification" } ]
+    },
+    "not-found-error-message": { "escalate_message": "Could not find a SPAN cert for product SRTUFV101. Would you like me to escalate to purchasing_certification team?", "is_clarification": false }
+  },
+  "functional_assertions": {
+    "§11b_exact_passthrough": "PASS — require_specific=false; the -WEPLS prefix sibling did NOT trigger a prompt; SRTUFV101 passes as compatible_entity.",
+    "§11b_no_please_choose": "PASS — no output contains 'please choose' / 'search needs to be more specific'.",
+    "§12_FixB_no_literal_leak": "PASS — escalate_message does NOT contain 'product_attachment'.",
+    "§12_message_shape": "PASS — 'Could not find a SPAN cert for product SRTUFV101. Would you like me to escalate to purchasing_certification team?' (contains 'SPAN cert', 'product SRTUFV101', 'Would you like me to escalate to').",
+    "before_after": "Step-0 BEFORE (plan §4) had escalate_message containing 'product_attachment'; Fix B removed it."
+  },
+  "safety_S0_gate": {
+    "S1": "PASS — sendmsg-sub would_send (blocked) = the Fix-B message.",
+    "S2": "PASS — no escalation/assignment write.",
+    "S3": "PASS — save-session-vars would_write (blocked).",
+    "S4": "PASS — get-results tool crm_master_product_attachments_list (READ); has_result=false.",
+    "S5": "PASS — guard short-circuits fired (is_test=true); subs received is_test=true.",
+    "S6": "PASS (STRICT) — deterministic: reformulator bypassed (sub 53ms, 0 tokens); no other LLM ran."
+  },
+  "egress_log": [
+    { "guard": "save-message-redis", "kind": "would_log", "blocked": true },
+    { "guard": "save-session-vars", "kind": "would_write", "blocked": true },
+    { "guard": "sendmsg-sub", "kind": "would_send", "blocked": true, "message": "Could not find a SPAN cert for product SRTUFV101. Would you like me to escalate to purchasing_certification team?" }
+  ]
+}

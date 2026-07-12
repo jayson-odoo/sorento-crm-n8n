@@ -1,0 +1,223 @@
+{
+ "label": "7N-t2",
+ "test_run_id": "sim-7N-t2",
+ "text": "Sorento Dealer",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Sorento Dealer"
+   },
+   "test_run_id": "sim-7N-t2",
+   "ts": "2026-07-07T14:06:16.545-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to select Sorento Dealer for promotions",
+      "access_levels": [
+       "Sorento Dealer"
+      ],
+      "entities": [
+       {
+        "raw": "zzz999xx",
+        "hint": "promotion",
+        "canonical_code": null,
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?"
+    }
+   },
+   "test_run_id": "sim-7N-t2",
+   "ts": "2026-07-07T14:06:16.541-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-7N-t2",
+   "ts": "2026-07-07T14:06:16.522-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839939",
+  "nodes_ran": 41,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "zzz999xx",
+     "hint": "promotion",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to select Sorento Dealer for promotions"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "zzz999xx"
+   ],
+   "elapsed_ms": 863.63,
+   "resolutions": [
+    {
+     "token": "zzz999xx",
+     "resolved": false,
+     "ambiguous": false,
+     "matches": [],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [
+    "zzz999xx"
+   ],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": false,
+   "gate_reason": "Ambiguous result",
+   "gate_clarification": "",
+   "compatible_entities": [],
+   "gate_debug": {
+    "domain": "promotion",
+    "allowed_lookup": [
+     "product",
+     "promotion",
+     "category",
+     "brand"
+    ],
+    "entities_count": 0
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "user_goal": "trying to select Sorento Dealer for promotions",
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "entities": [
+    {
+     "raw": "zzz999xx",
+     "hint": "promotion",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Could not find promotion for zzz999xx for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

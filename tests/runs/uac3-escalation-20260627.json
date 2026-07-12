@@ -1,0 +1,29 @@
+{
+  "case": "UAC §3 — escalation / request-for-help (highest safety risk)",
+  "test_run_id": "uac3-escalation-20260627",
+  "contact": "437264483",
+  "clone_execution_id": "6742290",
+  "wrapper_execution_id": "6742289",
+  "verdict": "PASS",
+  "branch_reached": "check-access=allowed:true -> If5 TRUE -> If2 TRUE (message_type=request_for_help && domain_hint=order != portal_link) -> Call 'sub-human-intervention'(is_test=true) + Edit Fields8 -> compile-current-state -> sorento-sub-respond-sendmsg-respond2(guarded) + guard-d-record. resolve-entity/get-results/update-human-intervened/save-session-vars NOT executed.",
+  "subexecutions": {
+    "human-intervention rrYXzE61gCNUck_zmXe-G": "6742292 — When Executed -> test-guard(out0 TRUE) -> test-guard-record ONLY. NONE of get-round-robin-assignee / Assign or unassign a Conversation1 / conversation-sla-tracking-create / Call 'sub-add-comment-respond'/'1 / Redis(assignee-queue) / get-working-days executed.",
+    "send sub aoydkG1dbItXR5jXFEQsP (respond2)": "6742293 — short-circuited (confirmed via sendmsg-sub record only emitted on test-guard TRUE branch; same mechanism verified directly in §2 exec 6742130)"
+  },
+  "egress_log_key": "test:egress:uac3-escalation-20260627",
+  "egress_records": [
+    {"guard": "human-intervention-sub", "kind": "would_write", "target": "respondio:assign+crm:sla+respondio:comment", "payload": {"contact_id": "437264483", "agent": "general_enquiries", "team": "customer_service", "current_assignee": null}},
+    {"guard": "save-session-vars", "kind": "would_write", "response": "Informed the user that request is out of scope and will proceed to escalate to the customer_service team"},
+    {"guard": "sendmsg-sub", "kind": "would_send", "message": null, "result_set": []},
+    {"guard": "save-message-redis", "kind": "would_log", "note": "Guard H, malformed message value (cosmetic)"}
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": "PASS — send sub short-circuited; no api.respond.io 2xx",
+    "S2_zero_assignment_writes": "PASS (FOCUS) — human-intervention sub blocked at top guard; NO assign / SLA POST / PIC comment / assignee-queue push executed",
+    "S3_zero_crm_writes": "PASS — save-session-vars blocked (guard-d would_write); update-human-intervened not executed",
+    "S4_get_results_no_write": "PASS — get-results not reached",
+    "S5_test_mode_present": "PASS — is_test=true forwarded to human-intervention sub and send sub",
+    "S6_token_bound": "PASS — deterministic: reformulator bypassed (0 tokens)"
+  },
+  "orphaned_egress_nodes_executed": "NONE"
+}

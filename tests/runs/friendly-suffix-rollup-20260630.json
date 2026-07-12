@@ -1,0 +1,23 @@
+{
+  "rollup": "Friendly domain-disclaimer suffix (compile-current-state) — UAC smoke",
+  "target_clone": "txiPzSxy3Pclsz6v (sorento-consume-main TEST)",
+  "version": "862b088f-e858-4d35-a58e-1d2211cbcff2 (versionId == activeVersionId, matches published edit)",
+  "date": "2026-06-30",
+  "scope": "deterministic",
+  "mode": "uac (egress blocked, real reads)",
+  "contact": "437264483 (FULL)",
+  "overall_verdict": "PASS (4/4)",
+  "safety_gate": "§0 S1–S6 PASS for all 4 cases. Zero real egress: every send/write/file is a blocked guard record; no human-intervention/assign write anywhere; get-results tools all READ allowlist (master_products_list, resource_attachments_list, inventory_stock_balance_list), never crm_it_support_ticket_create.",
+  "cases": {
+    "A master_products positive": "PASS — P/S suffix appended",
+    "B resource_attachment catalogue positive": "PASS — catalogue Tip suffix appended; attachment flows as blocked would_send file",
+    "C inventory negative/no-leakage": "PASS — 8 results, neither suffix",
+    "D master_products escalate negative": "PASS — escalate offer, no suffix"
+  },
+  "observations": [
+    "Suffix gate keys correctly on domain_hint AND requires happy-path answered=true (last_result_set>0): proven by C (results but wrong domain -> no suffix) and D (right domain but escalate/no-result -> no suffix).",
+    "resolve-entity reconciled entity raw 'catalogue' is preserved (canonical_code added), so /catalog/i match holds for the Tip branch.",
+    "get-results LLM liveness NOT separately instrumented: the get-results sub (Fss5aAaXthJSWpZCgKiKR) ran as a real READ and emitted formatted markdown in A/B/C. For deterministic scope, the consume-main parser (reformulator) was provably BYPASSED (sub output === injected mock).",
+    "No new token sink observed in compile-current-state (pure string-append, no LLM)."
+  ]
+}

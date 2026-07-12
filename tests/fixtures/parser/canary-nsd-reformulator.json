@@ -1,0 +1,27 @@
+{
+  "_fixture": "mock_reformulator_output for UAC §4 not-supported-domain canary",
+  "_drives": "Call 'sub-query-reformulator' bypass (is_test=true + this mock => sub returns {output: <this>} at 0 tokens). consume-main reads $('Call 'sub-query-reformulator').first().json.output.*",
+  "_key_routers": {
+    "not-supported-domain.IF": "output.domain_hint == 'goods_receive' (or 'spo_allocation') => TRUE => canned not-supported reply",
+    "If9": "message_type 'business_query' + domain_hint non-null => stays FALSE (does not divert to casual/clarification path)",
+    "If2": "message_type != 'request_for_help' AND escalation.is_escalation_confirmation==false => no escalation",
+    "If10": "correction falsy => no correction path"
+  },
+  "output": {
+    "message_type": "business_query",
+    "intent_hint": "goods_receive_status",
+    "domain_hint": "goods_receive",
+    "user_goal": "What is the weather in KL today",
+    "access_levels": [],
+    "entities": [],
+    "escalation": { "is_escalation_confirmation": false },
+    "correction": false,
+    "routing": { "suggested_team": "purchasing", "suggested_agent": "general_enquiries" },
+    "date_mode": null,
+    "query_scope": null,
+    "match_mode": null,
+    "contains_flyer": false,
+    "date_filter_start": null,
+    "date_filter_end": null
+  }
+}

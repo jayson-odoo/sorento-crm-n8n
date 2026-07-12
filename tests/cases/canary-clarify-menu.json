@@ -1,0 +1,51 @@
+{
+  "_case": "UAC §8 — clarify_menu canary (branch_kind=clarify_menu, via If1 message_type=clarification)",
+  "_target_clone": "txiPzSxy3Pclsz6v",
+  "_redis_list": "main-message-list-test",
+  "_note": "Forces Edit Fields6 / clarify_menu. After Δ1 this branch must still emit the identical menu text. Control fields are siblings at item root, read at $('redis-pop-main-message-list').first().json.message.<field>.",
+  "item": {
+    "message": {
+      "message": { "text": "huh what can you do", "type": "text", "attachment": { "type": "text", "description": "" } },
+      "replyTo": {}
+    },
+    "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary", "custom_fields": [], "assignee": { "id": null } },
+    "messageId": "test-canary-clarify-20260628",
+    "replyTo": null,
+    "test_run_id": "canary-clarify-20260628",
+    "scope": "deterministic",
+    "mock_parser_output": {
+      "message_type": "clarification",
+      "intent_hint": null,
+      "domain_hint": null,
+      "user_goal": "asking what the assistant can help with",
+      "entities": [],
+      "access_levels": []
+    },
+    "mock_reformulator_output": {
+      "message_type": "clarification",
+      "intent_hint": null,
+      "domain_hint": null,
+      "user_goal": "asking what the assistant can help with",
+      "access_levels": [],
+      "entities": [],
+      "escalation": { "is_escalation_confirmation": false },
+      "correction": false,
+      "routing": { "suggested_team": null, "suggested_agent": null },
+      "date_mode": null,
+      "query_scope": null,
+      "match_mode": null,
+      "contains_flyer": false,
+      "date_filter_start": null,
+      "date_filter_end": null
+    }
+  },
+  "expected_route": [
+    "... -> If5(allowed) -> If2(FALSE) -> If10(FALSE: correction falsy) -> If9(FALSE: not casual/unknown/confirmation, not business_query+null-domain) -> If1(TRUE: message_type==clarification)",
+    "PRE-Δ1: Edit Fields6 (escalate_message=menu) -> compile-current-state",
+    "POST-Δ1: <branch_kind=clarify_menu setter> -> escalate-catalog -> compile-current-state"
+  ],
+  "branch_kind": "clarify_menu",
+  "expected_canned_reply_contains": ["I see you're", "Are you asking about any of these?", "I can help with the topics listed above."],
+  "expected_flags": { "manualResponse": true, "includeResponse": true, "is_escalate_offer": false },
+  "assert_egress": { "sendmsg-sub.would_send.message": "the clarify menu (non-empty)", "save-session-vars.would_write.response": "same menu text" }
+}

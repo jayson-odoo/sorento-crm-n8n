@@ -1,0 +1,2047 @@
+{
+ "label": "1G2-t1",
+ "test_run_id": "sim-1G2-t1",
+ "text": "check stock wc286",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "check stock wc286"
+   },
+   "test_run_id": "sim-1G2-t1",
+   "ts": "2026-07-07T13:53:25.097-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "trying to check stock for wc286",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "wc286",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (inventory): returned 30 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": null,
+        "label": "SRTWC286-SH-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": null,
+        "label": "SRTWC286-SH-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": null,
+        "label": "SRTWC286-SH-200",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": null,
+        "label": "SRTWC286-SH-150",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 9,
+        "uuid": null,
+        "label": "SRTWC286-SH-150",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 10,
+        "uuid": null,
+        "label": "SRTWC286-SH-150",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 11,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 12,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 13,
+        "uuid": null,
+        "label": "SRTWC286-SH-150",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 14,
+        "uuid": null,
+        "label": "SRTWC286-SH-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 15,
+        "uuid": null,
+        "label": "SRTWC286-SH-200",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 16,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 17,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 18,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 19,
+        "uuid": null,
+        "label": "SRTWC286-SH-200",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 20,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 21,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 22,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 23,
+        "uuid": null,
+        "label": "SRTWC286-SH-P",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 24,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 25,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 26,
+        "uuid": null,
+        "label": "SRTWC286-SH-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 27,
+        "uuid": null,
+        "label": "SRTWC286-SH-UF",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 28,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 29,
+        "uuid": null,
+        "label": "SRTWC286-SH-150",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 30,
+        "uuid": null,
+        "label": "SRTWC286-SH",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n3. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 2\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n6. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 1\n\n7. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 13\n\n8. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-SMC\n*Quantity On Hand:* 0\n\n9. *Product Code:* SRTWC286-SH-150\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 31\n\n10. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n11. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 4\n\n12. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n13. *Product Code:* SRTWC286-SH-150\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n14. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n15. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n16. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 1\n\n17. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 64\n\n18. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-HP\n*Quantity On Hand:* 9\n\n19. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n20. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-IB\n*Quantity On Hand:* 274\n\n21. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-ACTS\n*Quantity On Hand:* 0\n\n22. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n23. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n24. *Product Code:* SRTWC286-SH\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-IB\n*Quantity On Hand:* 1205\n\n25. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n26. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BILL\n*Quantity On Hand:* 0\n\n27. *Product Code:* SRTWC286-SH-UF\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IR\n*Quantity On Hand:* 8\n\n28. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IB\n*Quantity On Hand:* 4\n\n29. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n30. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_"
+    }
+   },
+   "test_run_id": "sim-1G2-t1",
+   "ts": "2026-07-07T13:53:25.093-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n3. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 2\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n6. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 1\n\n7. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 13\n\n8. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-SMC\n*Quantity On Hand:* 0\n\n9. *Product Code:* SRTWC286-SH-150\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 31\n\n10. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n11. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 4\n\n12. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n13. *Product Code:* SRTWC286-SH-150\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n14. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n15. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n16. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 1\n\n17. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 64\n\n18. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-HP\n*Quantity On Hand:* 9\n\n19. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n20. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-IB\n*Quantity On Hand:* 274\n\n21. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-ACTS\n*Quantity On Hand:* 0\n\n22. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n23. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n24. *Product Code:* SRTWC286-SH\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-IB\n*Quantity On Hand:* 1205\n\n25. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n26. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BILL\n*Quantity On Hand:* 0\n\n27. *Product Code:* SRTWC286-SH-UF\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IR\n*Quantity On Hand:* 8\n\n28. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IB\n*Quantity On Hand:* 4\n\n29. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n30. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": null,
+      "label": "SRTWC286-SH-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": null,
+      "label": "SRTWC286-SH-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": null,
+      "label": "SRTWC286-SH-200",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": null,
+      "label": "SRTWC286-SH-150",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 9,
+      "uuid": null,
+      "label": "SRTWC286-SH-150",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 10,
+      "uuid": null,
+      "label": "SRTWC286-SH-150",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 11,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 12,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 13,
+      "uuid": null,
+      "label": "SRTWC286-SH-150",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 14,
+      "uuid": null,
+      "label": "SRTWC286-SH-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 15,
+      "uuid": null,
+      "label": "SRTWC286-SH-200",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 16,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 17,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 18,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 19,
+      "uuid": null,
+      "label": "SRTWC286-SH-200",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 20,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 21,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 22,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 23,
+      "uuid": null,
+      "label": "SRTWC286-SH-P",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 24,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 25,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 26,
+      "uuid": null,
+      "label": "SRTWC286-SH-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 27,
+      "uuid": null,
+      "label": "SRTWC286-SH-UF",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 28,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 29,
+      "uuid": null,
+      "label": "SRTWC286-SH-150",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 30,
+      "uuid": null,
+      "label": "SRTWC286-SH",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-1G2-t1",
+   "ts": "2026-07-07T13:53:25.080-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838832",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "wc286",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check stock for wc286"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "wc286"
+   ],
+   "elapsed_ms": 32,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH",
+     "uuid": "0d0ed752-fd6f-4759-ad8f-0b40e0cbc601",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-PP",
+     "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-PP",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-NEW-150",
+     "uuid": "13ffa633-91db-4db6-9050-5de7a0deb9b8",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-NEW-150",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-150",
+     "uuid": "78c96bfa-edea-4695-a215-4a02cc0c53a0",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-150",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-NEW-P",
+     "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-NEW-P",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-NEW-200",
+     "uuid": "dcaeb074-6b9f-46bd-9e86-97a16e976b59",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-NEW-200",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-NEW",
+     "uuid": "77a5e4da-877a-462d-a0f8-cc558fdc5a51",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-NEW",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-UF",
+     "uuid": "d55d8829-5e3d-4386-ab77-6c93e26d73e7",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-UF",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-200",
+     "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-200",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTWC286-SH-P",
+     "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRTWC286-SH-P",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH",
+      "uuid": "0d0ed752-fd6f-4759-ad8f-0b40e0cbc601",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-PP",
+      "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-PP",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-NEW-150",
+      "uuid": "13ffa633-91db-4db6-9050-5de7a0deb9b8",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-NEW-150",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-150",
+      "uuid": "78c96bfa-edea-4695-a215-4a02cc0c53a0",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-150",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-NEW-P",
+      "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-NEW-P",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-NEW-200",
+      "uuid": "dcaeb074-6b9f-46bd-9e86-97a16e976b59",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-NEW-200",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-NEW",
+      "uuid": "77a5e4da-877a-462d-a0f8-cc558fdc5a51",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-NEW",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-UF",
+      "uuid": "d55d8829-5e3d-4386-ab77-6c93e26d73e7",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-UF",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-200",
+      "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-200",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTWC286-SH-P",
+      "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRTWC286-SH-P",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "0d0ed752-fd6f-4759-ad8f-0b40e0cbc601",
+     "entity_type": "product",
+     "code": "SRTWC286-SH"
+    },
+    {
+     "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-PP"
+    },
+    {
+     "uuid": "13ffa633-91db-4db6-9050-5de7a0deb9b8",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-NEW-150"
+    },
+    {
+     "uuid": "78c96bfa-edea-4695-a215-4a02cc0c53a0",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-150"
+    },
+    {
+     "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-NEW-P"
+    },
+    {
+     "uuid": "dcaeb074-6b9f-46bd-9e86-97a16e976b59",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-NEW-200"
+    },
+    {
+     "uuid": "77a5e4da-877a-462d-a0f8-cc558fdc5a51",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-NEW"
+    },
+    {
+     "uuid": "d55d8829-5e3d-4386-ab77-6c93e26d73e7",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-UF"
+    },
+    {
+     "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-200"
+    },
+    {
+     "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+     "entity_type": "product",
+     "code": "SRTWC286-SH-P"
+    }
+   ],
+   "gate_debug": {
+    "domain": "inventory",
+    "allowed_lookup": [
+     "product",
+     "category",
+     "brand"
+    ],
+    "entities_count": 10
+   }
+  },
+  "get_results": {
+   "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n3. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 2\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n6. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 1\n\n7. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 13\n\n8. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-SMC\n*Quantity On Hand:* 0\n\n9. *Product Code:* SRTWC286-SH-150\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 31\n\n10. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n11. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 4\n\n12. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n13. *Product Code:* SRTWC286-SH-150\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n14. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n15. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n16. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 1\n\n17. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 64\n\n18. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-HP\n*Quantity On Hand:* 9\n\n19. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n20. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-IB\n*Quantity On Hand:* 274\n\n21. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-ACTS\n*Quantity On Hand:* 0\n\n22. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n23. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n24. *Product Code:* SRTWC286-SH\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-IB\n*Quantity On Hand:* 1205\n\n25. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n26. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BILL\n*Quantity On Hand:* 0\n\n27. *Product Code:* SRTWC286-SH-UF\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IR\n*Quantity On Hand:* 8\n\n28. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IB\n*Quantity On Hand:* 4\n\n29. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n30. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_",
+   "response_intro": "Stock details found for the requested products.",
+   "answers": [
+    {
+     "title": "SRTWC286-SH-NEW-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-RSV"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 107
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "WH3 (PSM)"
+      },
+      {
+       "label": "System Location",
+       "value": "WH3-PSM"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BERSATU (PORT KLANG)"
+      },
+      {
+       "label": "System Location",
+       "value": "DC1"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 2
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-200",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-200"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BERSATU (PORT KLANG)"
+      },
+      {
+       "label": "System Location",
+       "value": "DC1"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-BB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 1
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-150",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-150"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 13
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-SMC"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-150",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-150"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 31
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-150",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-150"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BERSATU (PORT KLANG)"
+      },
+      {
+       "label": "System Location",
+       "value": "DC1"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-BB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 4
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-150",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-150"
+      },
+      {
+       "label": "Warehouse",
+       "value": "WH3 (PSM)"
+      },
+      {
+       "label": "System Location",
+       "value": "WH3-PSM"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-RSV"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-200",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-200"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-RSV"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH-BB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 1
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 64
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-HP"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 9
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-200",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-200"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH-IB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 274
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-ACTS"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-P",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-P"
+      },
+      {
+       "label": "Warehouse",
+       "value": "MERU"
+      },
+      {
+       "label": "System Location",
+       "value": "MWH-BB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": true,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BERSATU (PORT KLANG)"
+      },
+      {
+       "label": "System Location",
+       "value": "DC1-IB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 1205
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-NEW"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-BILL"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-UF",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-UF"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-IR"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 8
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-IB"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 4
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH-150",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH-150"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-RSV"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTWC286-SH",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTWC286-SH"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW-RSV"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 0
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T16:00:30.955074",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7838837",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "user_goal": "trying to check stock for wc286",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "wc286",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (inventory): returned 30 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": null,
+     "label": "SRTWC286-SH-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": null,
+     "label": "SRTWC286-SH-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": null,
+     "label": "SRTWC286-SH-200",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": null,
+     "label": "SRTWC286-SH-150",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 9,
+     "uuid": null,
+     "label": "SRTWC286-SH-150",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 10,
+     "uuid": null,
+     "label": "SRTWC286-SH-150",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 11,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 12,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 13,
+     "uuid": null,
+     "label": "SRTWC286-SH-150",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 14,
+     "uuid": null,
+     "label": "SRTWC286-SH-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 15,
+     "uuid": null,
+     "label": "SRTWC286-SH-200",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 16,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 17,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 18,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 19,
+     "uuid": null,
+     "label": "SRTWC286-SH-200",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 20,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 21,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 22,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 23,
+     "uuid": null,
+     "label": "SRTWC286-SH-P",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 24,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 25,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 26,
+     "uuid": null,
+     "label": "SRTWC286-SH-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 27,
+     "uuid": null,
+     "label": "SRTWC286-SH-UF",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 28,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 29,
+     "uuid": null,
+     "label": "SRTWC286-SH-150",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 30,
+     "uuid": null,
+     "label": "SRTWC286-SH",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 107\n\n2. *Product Code:* SRTWC286-SH\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n3. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 2\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n6. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 1\n\n7. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 13\n\n8. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-SMC\n*Quantity On Hand:* 0\n\n9. *Product Code:* SRTWC286-SH-150\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 31\n\n10. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n11. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 4\n\n12. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n13. *Product Code:* SRTWC286-SH-150\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\n14. *Product Code:* SRTWC286-SH-P\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n15. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n16. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 1\n\n17. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 64\n\n18. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-HP\n*Quantity On Hand:* 9\n\n19. *Product Code:* SRTWC286-SH-200\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n20. *Product Code:* SRTWC286-SH\n*Warehouse:* MERU\n*System Location:* MWH-IB\n*Quantity On Hand:* 274\n\n21. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-ACTS\n*Quantity On Hand:* 0\n\n22. *Product Code:* SRTWC286-SH-NEW-P\n*Warehouse:* MERU\n*System Location:* MWH\n*Quantity On Hand:* 0\n\n23. *Product Code:* SRTWC286-SH-P\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n24. *Product Code:* SRTWC286-SH\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-IB\n*Quantity On Hand:* 1205\n\n25. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n26. *Product Code:* SRTWC286-SH-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BILL\n*Quantity On Hand:* 0\n\n27. *Product Code:* SRTWC286-SH-UF\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IR\n*Quantity On Hand:* 8\n\n28. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IB\n*Quantity On Hand:* 4\n\n29. *Product Code:* SRTWC286-SH-150\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n30. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-RSV\n*Quantity On Hand:* 0\n\n_Data last updated: 07/07/2026 16:00:30_",
+   "quick_reply": null,
+   "result_set_len": 30,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

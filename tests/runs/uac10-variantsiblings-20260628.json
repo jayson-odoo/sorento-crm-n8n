@@ -1,0 +1,53 @@
+{
+  "run": "UAC §10 — single exact + variant siblings, no false prompt (Fix A)",
+  "change": "fix-gate-render-notfound-msg",
+  "test_run_id": "uac10b-parser-20260628",
+  "date": "2026-06-28",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "scope_run": "parser (real reformulator + real reads + applied fix)",
+  "verdict": "PASS",
+  "message": "SPAN cert for SRTUB5202",
+  "contact": "437264483 (FULL access)",
+  "execution_ids": { "clone": "6861707", "reformulator_sub": "6861709", "egress_read": "6861763" },
+  "note_first_attempt": "First attempt used 'image for SRTUB5202' (test_run_id uac10-parser-20260628, clone 6861535). The reformulator emitted an 'image' attachment_type token that the resolver matched to 15 literal attachment FILES named image.* (entity_type=attachment, genuinely ambiguous) -> gate correctly prompted (require_specific=true). That message confounds §10's intent (it introduced a real attachment ambiguity); the PRODUCT token SRTUB5202 still behaved correctly (exact picked, prefix sibling not prompted). Re-ran with an unambiguous attachment term to isolate §10.",
+  "real_reformulator_output": {
+    "domain_hint": "product_attachment",
+    "entities": [ { "raw": "SPAN", "hint": "attachment_type" }, { "raw": "SRTUB5202", "hint": "product" } ]
+  },
+  "resolve_entity_real_read": {
+    "SRTUB5202": "SRTUB5202(exact) + SRTUB5202-NZ(prefix) — ambiguous=true",
+    "SPAN": "single attachment 'SPAN - IKRAM ...pdf' (attachment_type Certification)"
+  },
+  "asserted_node_outputs": {
+    "disallowed-entity-gate": {
+      "gate_passed": true,
+      "require_specific": false,
+      "gate_clarification": "",
+      "compatible_entities": [
+        { "entity_type": "attachment", "code": "SPAN - IKRAM 04124FC - IWC - EXP 05 APRIL 2029.pdf" },
+        { "entity_type": "product", "code": "SRTUB5202" }
+      ]
+    },
+    "not-found-error-message": { "escalate_message": "Could not find a SPAN for product SRTUB5202. Would you like me to escalate to marketing_product team?", "is_clarification": false },
+    "tool-filter": { "resolved_tool": "crm_master_product_attachments_list" }
+  },
+  "functional_assertions": {
+    "no_false_prompt": "PASS — require_specific=false; the prefix sibling SRTUB5202-NZ did NOT trigger a 'please choose'. Exact SRTUB5202 passes.",
+    "compatible_entities_clean": "PASS — only the exact SRTUB5202 + the resolved SPAN attachment; NO -NZ variant, no union noise.",
+    "no_search_more_specific_string": "PASS — no output contains 'search needs to be more specific'.",
+    "FixB_no_literal_leak": "PASS — not-found message contains no 'product_attachment'."
+  },
+  "safety_S0_gate": {
+    "S1": "PASS — sendmsg-sub would_send (blocked) = the not-found message.",
+    "S2": "PASS — no escalation/assignment write.",
+    "S3": "PASS — save-session-vars would_write (blocked).",
+    "S4": "PASS — get-results tool crm_master_product_attachments_list (READ).",
+    "S5": "PASS — guard short-circuits fired (is_test=true).",
+    "S6": "parser scope — only reformulator LLM ran."
+  },
+  "egress_log": [
+    { "guard": "save-message-redis", "kind": "would_log", "blocked": true },
+    { "guard": "save-session-vars", "kind": "would_write", "blocked": true },
+    { "guard": "sendmsg-sub", "kind": "would_send", "blocked": true, "message": "Could not find a SPAN for product SRTUB5202. Would you like me to escalate to marketing_product team?" }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+ "label": "10G2",
+ "test_run_id": "sim-10G2",
+ "text": "I want to talk to a human",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "I want to talk to a human"
+   },
+   "test_run_id": "sim-10G2",
+   "ts": "2026-07-07T14:12:24.198-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "request_for_help",
+      "intent_hint": null,
+      "domain_hint": null,
+      "user_goal": "trying to talk to a human",
+      "access_levels": [],
+      "entities": [],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Informed the user that request is out of scope and will proceed to escalate to the customer_service team",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     }
+    }
+   },
+   "test_run_id": "sim-10G2",
+   "ts": "2026-07-07T14:12:24.195-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": null,
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-10G2",
+   "ts": "2026-07-07T14:12:24.179-04:00"
+  },
+  {
+   "guard": "human-intervention-sub",
+   "kind": "would_write",
+   "target": "respondio:assign+crm:sla+respondio:comment",
+   "payload": {
+    "contact_id": "437264483",
+    "agent": "general_enquiries",
+    "team": "customer_service",
+    "current_assignee": null,
+    "explicit_assignee_id": null
+   },
+   "test_run_id": "sim-10G2",
+   "ts": "2026-07-07T14:12:24.112-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send",
+  "would_write"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840450",
+  "nodes_ran": 26,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "request_for_help",
+   "intent_hint": null,
+   "domain_hint": null,
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to talk to a human"
+  },
+  "resolve_entity": null,
+  "gate": null,
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "request_for_help",
+   "intent_hint": null,
+   "domain_hint": null,
+   "user_goal": "trying to talk to a human",
+   "access_levels": [],
+   "entities": [],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Informed the user that request is out of scope and will proceed to escalate to the customer_service team",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-out-of-scope"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": null,
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

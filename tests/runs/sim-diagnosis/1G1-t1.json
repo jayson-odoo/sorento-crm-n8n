@@ -1,0 +1,323 @@
+{
+ "label": "1G1-t1",
+ "test_run_id": "sim-1G1-t1",
+ "text": "check stock srt86cr",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "check stock srt86cr"
+   },
+   "test_run_id": "sim-1G1-t1",
+   "ts": "2026-07-07T13:53:19.508-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "trying to check stock for SRT86CR",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "srt86cr",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (inventory): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRT86CR-HEAD ONLY",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRT86CR-HEAD ONLY\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 3\n\n_Data last updated: 07/07/2026 16:00:30_"
+    }
+   },
+   "test_run_id": "sim-1G1-t1",
+   "ts": "2026-07-07T13:53:19.504-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRT86CR-HEAD ONLY\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 3\n\n_Data last updated: 07/07/2026 16:00:30_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRT86CR-HEAD ONLY",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-1G1-t1",
+   "ts": "2026-07-07T13:53:19.488-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838819",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "srt86cr",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check stock for SRT86CR"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "srt86cr"
+   ],
+   "elapsed_ms": 33.15,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SPSRT86CR-HOLDER",
+     "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SPSRT86CR-HOLDER",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRT86CR-HEAD ONLY",
+     "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRT86CR-HEAD ONLY",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SPSRT86CR-HOLDER",
+      "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SPSRT86CR-HOLDER",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRT86CR-HEAD ONLY",
+      "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRT86CR-HEAD ONLY",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+     "entity_type": "product",
+     "code": "SPSRT86CR-HOLDER"
+    },
+    {
+     "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+     "entity_type": "product",
+     "code": "SRT86CR-HEAD ONLY"
+    }
+   ],
+   "gate_debug": {
+    "domain": "inventory",
+    "allowed_lookup": [
+     "product",
+     "category",
+     "brand"
+    ],
+    "entities_count": 2
+   }
+  },
+  "get_results": {
+   "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRT86CR-HEAD ONLY\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 3\n\n_Data last updated: 07/07/2026 16:00:30_",
+   "response_intro": "Stock details found for the requested products.",
+   "answers": [
+    {
+     "title": "SRT86CR-HEAD ONLY",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRT86CR-HEAD ONLY"
+      },
+      {
+       "label": "Warehouse",
+       "value": "BUKIT RAJA"
+      },
+      {
+       "label": "System Location",
+       "value": "BRW"
+      },
+      {
+       "label": "Quantity On Hand",
+       "value": 3
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T16:00:30.955074",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7838825",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_stock",
+   "domain_hint": "inventory",
+   "user_goal": "trying to check stock for SRT86CR",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "srt86cr",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (inventory): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRT86CR-HEAD ONLY",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Stock details found for the requested products.\n\n1. *Product Code:* SRT86CR-HEAD ONLY\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 3\n\n_Data last updated: 07/07/2026 16:00:30_",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

@@ -1,0 +1,307 @@
+{
+ "label": "3R1",
+ "test_run_id": "sim-3R1",
+ "text": "Srtpcat126 have eta",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Srtpcat126 have eta"
+   },
+   "test_run_id": "sim-3R1",
+   "ts": "2026-07-07T13:59:48.977-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for Srtpcat126",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Srtpcat126",
+        "hint": "product",
+        "canonical_code": "SRTPCAT126",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?"
+    }
+   },
+   "test_run_id": "sim-3R1",
+   "ts": "2026-07-07T13:59:48.974-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-3R1",
+   "ts": "2026-07-07T13:59:48.962-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839355",
+  "nodes_ran": 47,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Srtpcat126",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the ETA for Srtpcat126"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "Srtpcat126"
+   ],
+   "elapsed_ms": 1146.43,
+   "resolutions": [
+    {
+     "token": "Srtpcat126",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTPCAT126",
+       "uuid": "3b540cf9-34cc-4bce-82fb-6f9b95777afd",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTPCAT126",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inbound_shipment"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "3b540cf9-34cc-4bce-82fb-6f9b95777afd",
+     "entity_type": "product",
+     "code": "SRTPCAT126"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": {
+   "response": "No matching results found.",
+   "response_intro": "No matching results found.",
+   "answers": [],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": false,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839364",
+  "not_found_msg": {
+   "escalate_message": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for Srtpcat126",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Srtpcat126",
+     "hint": "product",
+     "canonical_code": "SRTPCAT126",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Could not find incoming for Srtpcat126. Would you like me to escalate to purchasing team?",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "product_ids": [
+      "3b540cf9-34cc-4bce-82fb-6f9b95777afd"
+     ],
+     "_diagnostics": {
+      "entities_in": 1,
+      "total_uuids_passed": 1,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "incoming_stock",
+        "intro": "No matching results found.",
+        "items": [],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "No matching results found.",
+     "response_intro": "No matching results found.",
+     "answers": [],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": false,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

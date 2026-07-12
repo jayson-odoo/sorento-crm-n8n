@@ -1,0 +1,49 @@
+{
+  "run": "Friendly-suffix UAC Case C — inventory stock check (negative / no-leakage)",
+  "change": "compile-current-state friendly domain disclaimers",
+  "verdict": "PASS",
+  "scope": "deterministic",
+  "mode": "uac",
+  "contact": "437264483 (FULL)",
+  "message": "do you have stock for SRTUFV101",
+  "executions": {
+    "seed": "7081422",
+    "run": "7081429",
+    "clone": "7081430",
+    "get_results_sub": "7081434",
+    "egress_read": "7081470"
+  },
+  "branch": "happy (If7 allowed -> central-exchange; isEscalateBranch=false)",
+  "domain_hint": "inventory",
+  "get_results_tool": "crm_inventory_stock_balance_list (READ)",
+  "last_result_set_len": 8,
+  "user_response_tail": "...8. *Product Code:* SRTWT03C ... *Quantity On Hand:* 1\\n⚠️  *(PRODUCT DISCONTINUED)*\\n\\n_Data last updated: 30/06/2026 02:23:19_",
+  "suffix_verdict": "PASS — NEITHER suffix appended (answered=true with 8 results, but domain inventory). No leakage onto other domains.",
+  "egress_log": [
+    {
+      "guard": "save-message-redis",
+      "kind": "would_log",
+      "blocked": true
+    },
+    {
+      "guard": "save-session-vars",
+      "kind": "would_write",
+      "blocked": true
+    },
+    {
+      "guard": "sendmsg-sub",
+      "kind": "would_send",
+      "target": "437264483",
+      "blocked": true,
+      "message_ends_with": "..._Data last updated: 30/06/2026 02:23:19_ (NO suffix)"
+    }
+  ],
+  "safety_S0": {
+    "S1_zero_real_sends": "PASS",
+    "S2_zero_assignment_writes": "PASS",
+    "S3_zero_crm_writes": "PASS",
+    "S4_get_results_read_only": "PASS — tool crm_inventory_stock_balance_list",
+    "S5_test_mode_present": "PASS — sendmsg sub received is_test=true; egress records carry test_run_id",
+    "S6_token_bound": "PASS (deterministic) — reformulator BYPASSED (sub output === injected mock_reformulator_output, dispositive). No clarification Basic LLM Chain. NOTE: get-results sub ran as a real READ and produced formatted markdown; its internal agent LLM liveness was not separately instrumented."
+  }
+}

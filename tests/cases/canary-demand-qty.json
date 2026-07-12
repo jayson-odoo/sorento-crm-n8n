@@ -1,0 +1,53 @@
+{
+  "_case": "UAC §10 — demand_qty canary (branch_kind=demand_qty, via If7->Edit Fields2->If8)",
+  "_target_clone": "txiPzSxy3Pclsz6v",
+  "_redis_list": "main-message-list-test",
+  "_note": "Forces Edit Fields4 / demand_qty. Requires contact custom_field is_allowed_stock=false (so If7 TRUE path sets not_allowed_check_stock) and demand_qty empty (If8 TRUE). After Δ1 must emit identical 'Please specify your demand quantity'. VERIFY If7 leftValue tolerates the custom_fields shape used here before relying on this case.",
+  "item": {
+    "message": {
+      "message": { "text": "do you have stock for SR-1234", "type": "text", "attachment": { "type": "text", "description": "" } },
+      "replyTo": {}
+    },
+    "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary", "custom_fields": [ { "name": "is_allowed_stock", "value": "false" }, { "name": "is_human_intervened", "value": "false" } ], "assignee": { "id": null } },
+    "messageId": "test-canary-demandqty-20260628",
+    "replyTo": null,
+    "test_run_id": "canary-demandqty-20260628",
+    "scope": "deterministic",
+    "mock_parser_output": {
+      "message_type": "business_query",
+      "intent_hint": "stock_check",
+      "domain_hint": "inventory",
+      "user_goal": "checking stock availability for SR-1234",
+      "entities": [ { "raw": "SR-1234", "hint": "product", "current_message": true } ],
+      "access_levels": [],
+      "demand_qty": null
+    },
+    "mock_reformulator_output": {
+      "message_type": "business_query",
+      "intent_hint": "stock_check",
+      "domain_hint": "inventory",
+      "user_goal": "checking stock availability for SR-1234",
+      "access_levels": [],
+      "entities": [ { "raw": "SR-1234", "hint": "product", "current_message": true } ],
+      "demand_qty": null,
+      "escalation": { "is_escalation_confirmation": false },
+      "correction": false,
+      "routing": { "suggested_team": "warehouse", "suggested_agent": "general_enquiries" },
+      "date_mode": null,
+      "query_scope": null,
+      "match_mode": null,
+      "contains_flyer": false,
+      "date_filter_start": null,
+      "date_filter_end": null
+    }
+  },
+  "expected_route": [
+    "... -> If5(allowed) -> If2(FALSE) -> If10(FALSE) -> ... -> If7(TRUE: is_allowed_stock==false && intent_hint==stock_check && entities notEmpty) -> Edit Fields2(not_allowed_check_stock=true) -> If8(TRUE: demand_qty empty)",
+    "PRE-Δ1: Edit Fields4 (escalate_message='Please specify your demand quantity') -> compile-current-state",
+    "POST-Δ1: <branch_kind=demand_qty setter> -> escalate-catalog -> compile-current-state"
+  ],
+  "branch_kind": "demand_qty",
+  "expected_canned_reply": "Please specify your demand quantity",
+  "expected_flags": { "manualResponse": true, "includeResponse": true, "is_escalate_offer": false },
+  "_risk": "If7 leftValue does .find(...).value?.toBoolean(); confirm it does not throw when custom_fields present. Edit Fields2 stays unchanged in Δ1 (not part of the 7 escalate setters)."
+}

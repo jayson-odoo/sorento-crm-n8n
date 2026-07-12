@@ -1,0 +1,57 @@
+{
+  "run": "UAC §11a — genuine ambiguity (WC286) -> SHORT list returned (Fix A regression guard)",
+  "change": "fix-gate-render-notfound-msg",
+  "test_run_id": "uac11a-parser-20260628",
+  "date": "2026-06-28",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "scope_run": "parser (real reformulator + real reads + applied fix)",
+  "verdict": "PASS (with a no-leak FINDING — see below)",
+  "message": "SPAN cert for WC286",
+  "contact": "437264483 (FULL access)",
+  "execution_ids": { "clone": "6861809", "reformulator_sub": "6861812", "egress_read": "6861864" },
+  "real_reformulator_output": {
+    "domain_hint": "product_attachment",
+    "entities": [ { "raw": "WC286", "hint": "product" }, { "raw": "SPAN cert", "hint": "attachment_type" } ],
+    "_confirmed": "WC286 emitted as a single product entity."
+  },
+  "resolve_entity_real_read": {
+    "WC286": "10 matches, ALL match_tier=substring, ZERO exact, ambiguous=true: SRTWC286-SH, -SH-PP, -SH-NEW-150, -SH-150, -SH-NEW-P, -SH-NEW-200, -SH-NEW, -SH-UF, -SH-200, -SH-P",
+    "SPAN cert": "attachment_type Certification (single)"
+  },
+  "asserted_node_outputs": {
+    "disallowed-entity-gate": {
+      "gate_passed": false,
+      "require_specific": true,
+      "gate_reason": "'product_attachment' ambiguous (no single exact match); user must pick",
+      "gate_clarification": "product_attachment search needs to be more specific. Multiple matches found — please choose:\n1. SRTWC286-SH\n2. SRTWC286-SH-PP\n3. SRTWC286-SH-NEW-150\n4. SRTWC286-SH-150\n5. SRTWC286-SH-NEW-P\n6. SRTWC286-SH-NEW-200\n7. SRTWC286-SH-NEW\n8. SRTWC286-SH-UF\n9. SRTWC286-SH-200\n10. SRTWC286-SH-P",
+      "compatible_entities_codes": ["SRTWC286-SH","SRTWC286-SH-PP","SRTWC286-SH-NEW-150","SRTWC286-SH-150","SRTWC286-SH-NEW-P","SRTWC286-SH-NEW-200","SRTWC286-SH-NEW","SRTWC286-SH-UF","SRTWC286-SH-200","SRTWC286-SH-P"]
+    },
+    "not-found-error-message": { "escalate_message": "== gate.gate_clarification (require_specific branch)", "is_clarification": false }
+  },
+  "functional_assertions": {
+    "ambiguity_preserved": "PASS — require_specific=true, gate_passed=false; legitimate disambiguation NOT killed by Fix A.",
+    "list_only_SRTWC286": "PASS — clarification lists ONLY the 10 SRTWC286-* codes (token-filter keeps them, each contains wc286).",
+    "no_union_noise": "PASS — NONE of the cross-token 18-union noise present (no AMS-FFAS9859-001500BT0, CB114, CB111, SHU8001, SRT0001). The Certification attachment_type is NOT in the list (it went to exact_entities).",
+    "compatible_entities_are_WC286_uuids": "PASS — exactly the 10 SRTWC286-* uuids.",
+    "escalate_equals_clarification": "PASS — not-found-error-message.escalate_message === gate.gate_clarification."
+  },
+  "FINDING_product_attachment_literal_in_clarification": {
+    "severity": "advisory (pre-existing; NOT introduced by this change)",
+    "what": "gate_clarification (and hence the would_send message) starts with the literal 'product_attachment' because the render uses `${domain} search needs to be more specific...`. The same string appears on ANY product_attachment ambiguity prompt (also seen in the §10 'image' attempt).",
+    "why": "Fix A changed only the SOURCE of the candidate list (token-filtered specific_options, no union clobber); it did not touch the `${domain}` prefix. Fix B de-literalized ONLY the not-found `else` branch, not the require_specific clarification branch.",
+    "impact": "The broad plan/UAC 'no-leak invariant' (no node output anywhere contains 'product_attachment') does NOT hold on require_specific=true clarification turns. §12's strict no-leak (Fix-B not-found message) DOES hold. Reviewer to decide whether to extend de-literalization to the gate_clarification `${domain}` prefix (e.g. 'attachment' / a human label)."
+  },
+  "safety_S0_gate": {
+    "S1": "PASS — sendmsg-sub would_send (blocked) = the SRTWC286 please-choose list.",
+    "S2": "PASS — no escalation/assignment write.",
+    "S3": "PASS — save-session-vars would_write (blocked); last_result_set = the 10 SRTWC286-* products.",
+    "S4": "PASS — clarification path; get-results not a write tool.",
+    "S5": "PASS — guard short-circuits fired (is_test=true).",
+    "S6": "parser scope — only reformulator LLM ran."
+  },
+  "egress_log": [
+    { "guard": "save-message-redis", "kind": "would_log", "blocked": true },
+    { "guard": "save-session-vars", "kind": "would_write", "blocked": true, "last_result_set_count": 10 },
+    { "guard": "sendmsg-sub", "kind": "would_send", "blocked": true, "message_lists_only_SRTWC286": true }
+  ]
+}

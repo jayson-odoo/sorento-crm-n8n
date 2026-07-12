@@ -1,0 +1,30 @@
+{
+  "suite": "cycle-1 UAC against sorento-consume-main TEST clone (txiPzSxy3Pclsz6v)",
+  "date": "2026-06-27",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "live_never_touched": "9qVyfUxmRQqrpGRMDLRuz",
+  "shared_subs_publish_state": {
+    "send aoydkG1dbItXR5jXFEQsP": "PUBLISHED + test-guard (is_test routes to record; real respond.io send on unreached FALSE branch)",
+    "human-intervention rrYXzE61gCNUck_zmXe-G": "PUBLISHED + test-guard (assign/SLA/comment/queue on unreached FALSE branch)",
+    "reformulator XTODTw-dJcV0uRdC056hG": "PUBLISHED + test-reformulator-bypass (is_test && mock -> 0-token mock output)"
+  },
+  "harness_mechanism": "zz-canary-seed (4eDGDBL3rEkGQuBV) clears main-message-list-test + RPUSHes case item; zz-canary-run (VtIV3TF3aw2Fx8No) Manual->Execute Workflow(clone, waitForSubWorkflow); clone sub-execution found via search_executions; zz-canary-read (LLIbMXAixexM9Cwc) reads test:egress:{test_run_id}. Helpers retargeted per case via update_workflow setNodeParameter. Unique test_run_id per case (fresh egress key).",
+  "results": [
+    {"case": "§4 not-supported-domain", "test_run_id": "canary-nsd-20260627", "contact": "437264483", "verdict": "PASS", "branch": "not-supported-domain TRUE -> canned reply -> guarded send + save-session-vars would_write", "egress": "sendmsg-sub would_send + save-session-vars would_write; no real send/write"},
+    {"case": "§2 no-access", "test_run_id": "uac2-noaccess-20260627", "contact": "457216562", "clone_exec": "6742128", "verdict": "PASS", "branch": "check-access allowed:false -> If5 FALSE -> respond5 denied send (no compile, no write)", "egress": "single sendmsg-sub would_send 'Sorry, you are not allowed to access general_enquiries'; no result set"},
+    {"case": "§3 escalation", "test_run_id": "uac3-escalation-20260627", "contact": "437264483", "clone_exec": "6742290", "verdict": "PASS", "branch": "If2 TRUE -> human-intervention sub (short-circuited) + escalation send", "egress": "human-intervention-sub would_write + sendmsg-sub(null) + save-session-vars would_write; NO assign/SLA/comment/queue executed (subexec 6742292)"},
+    {"case": "§5 entity-not-found", "test_run_id": "uac5-notfound-20260627", "contact": "437264483", "clone_exec": "6742420", "verdict": "PASS", "branch": "real resolve-entity miss (ZZ-0000) -> If3 TRUE -> not-found-error-message -> guarded send", "egress": "sendmsg-sub would_send not-found msg + save-session-vars would_write; get-results NOT reached"},
+    {"case": "§1 happy path", "test_run_id": "uac1-happy-20260627", "contact": "437264483", "clone_exec": "6742544", "verdict": "BLOCKED", "branch": "product SRTWC7405-RL did NOT resolve -> degraded to not-found; get-rag/get-results NOT exercised", "blocker": "needs a real resolvable product code from user"},
+    {"case": "§6 partial-access", "verdict": "NOT RUN", "blocker": "needs a partial-access dev contact (plan §7.1)"},
+    {"case": "§7 audio/transcription", "verdict": "NOT RUN", "note": "transcription is a real Whisper API cost unless stubbed; coder decision"},
+    {"case": "§8 attachment/media-send", "verdict": "NOT RUN this pass (not in coordinator's batch); media egress nodes are orphaned"}
+  ],
+  "safety_gate_summary": "S1-S6 held on every executed case (§4, §2, §3, §5, §1). ZERO real respond.io sends (every send sub short-circuited at test-guard), ZERO assignment/SLA/comment/queue writes (human-intervention sub short-circuited), ZERO CRM contact writes (save-session-vars + update-human-intervened never executed real calls; recorded as would_write), and NONE of the 5 orphaned egress nodes (update-human-intervened, save-session-vars, send-message-files/images/video) executed in any run. Real CRM READS (check-access, get-session-vars, resolve-entity) ran as in production = allowed.",
+  "findings_for_coder": [
+    "guard-h-record (Guard H, orphaned save-message-redis2) emits MALFORMED JSON: payload.message value is empty ('\"message\":  ,'), making that egress record non-parseable JSON. Cosmetic/log-only (it is a would_log, not an egress), but fix the expression so the record is valid JSON.",
+    "§1 happy path is blocked on a resolvable entity. Placeholders SRTWC7405-RL and SR-1234 do not resolve at /api/v1/system/references/resolve for domain 'incoming'. Need a known-good product code from the user to exercise get-rag -> get-results and verify S4.",
+    "§6 partial-access still blocked on a partial-access dev contact.",
+    "Egress records still lack a literal 'blocked:true' field (record presence + kind is the proof). Reviewer noted this; tester asserted on presence + kind."
+  ],
+  "helpers_to_archive": ["4eDGDBL3rEkGQuBV (zz-canary-seed)", "VtIV3TF3aw2Fx8No (zz-canary-run)", "LLIbMXAixexM9Cwc (zz-canary-read)"]
+}

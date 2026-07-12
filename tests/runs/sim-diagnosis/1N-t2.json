@@ -1,0 +1,150 @@
+{
+ "label": "1N-t2",
+ "test_run_id": "sim-1N-t2",
+ "text": "hi",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "hi"
+   },
+   "test_run_id": "sim-1N-t2",
+   "ts": "2026-07-07T13:54:23.241-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "casual",
+      "intent_hint": null,
+      "domain_hint": null,
+      "user_goal": "trying to greet",
+      "access_levels": [],
+      "entities": [],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Hello! How can I assist you today?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Hello! How can I assist you today?"
+    }
+   },
+   "test_run_id": "sim-1N-t2",
+   "ts": "2026-07-07T13:54:23.236-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Hello! How can I assist you today?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-1N-t2",
+   "ts": "2026-07-07T13:54:23.222-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7838920",
+  "nodes_ran": 31,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "casual",
+   "intent_hint": null,
+   "domain_hint": null,
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to greet"
+  },
+  "resolve_entity": null,
+  "gate": null,
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "casual",
+   "intent_hint": null,
+   "domain_hint": null,
+   "user_goal": "trying to greet",
+   "access_levels": [],
+   "entities": [],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Hello! How can I assist you today?",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [
+   "Basic LLM Chain"
+  ],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Hello! How can I assist you today?",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

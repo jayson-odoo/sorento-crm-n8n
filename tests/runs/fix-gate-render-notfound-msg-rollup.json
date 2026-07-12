@@ -1,0 +1,68 @@
+{
+  "rollup": "UAC for change fix-gate-render-notfound-msg (Fix A gate render + Fix B not-found message)",
+  "date": "2026-06-28",
+  "tester": "sorento-tester",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "live_spine_untouched": "9qVyfUxmRQqrpGRMDLRuz (never executed)",
+  "overall_verdict": "PARTIAL — §9 PASS (both fixes proven, S1-S6 hold, ZERO egress). §10/§11a/§11b/§12 BLOCKED by a concurrent regression-replay job sharing the redis input list. NO real egress observed anywhere; this is a test-isolation blocker, NOT a kill-switch leak.",
+
+  "fix_presence_verified": {
+    "disallowed-entity-gate": "Fix A present (A1 exact-dedup of specific_options + A2 optUuids-based compatible_entities; old clobber 'entities.filter(product)' / 'No product found for the requested item' absent).",
+    "not-found-error-message": "Fix B present (else if q.domain_hint==='product_attachment' branch building 'a {attachment raw} for product {raw...}'; literal 'product_attachment' never printed)."
+  },
+
+  "results": {
+    "§9_two_exact_codes_plus_missing_attachment": {
+      "verdict": "PASS",
+      "scope": "parser (Step-0 real-parser run; doubles as functional verdict)",
+      "run_file": "uac9-twoexact-20260628.json",
+      "gate": { "require_specific": false, "gate_passed": true, "gate_clarification": "", "compatible_entities": ["Certification(attachment_type)", "SRTWT03C", "SRTUFV101"] },
+      "not_found": "Could not find a SPAN cert for product srtwt03C and SRTUFV101. Would you like me to escalate to purchasing_certification team?",
+      "deviation": "compatible_entities length 3 (not the UAC-literal 2) because the real reformulator emits 'SPAN cert' as an attachment_type entity the resolver resolves to a uuid — more correct, anti-bug assertions all hold."
+    },
+    "§10_single_exact_plus_variants_no_false_prompt": { "verdict": "BLOCKED", "reason": "concurrent-replay contention (see blocker)" },
+    "§11a_WC286_ambiguity_preserved": { "verdict": "BLOCKED", "reason": "concurrent-replay contention" },
+    "§11b_SRTUFV101_exact_passthrough": { "verdict": "BLOCKED", "reason": "concurrent-replay contention (shares M2 message with §12)" },
+    "§12_not_found_no_literal_leak": { "verdict": "BLOCKED", "reason": "concurrent-replay contention; M2 capture lost (egress test:egress:uac12-parser-20260628 empty)" }
+  },
+
+  "blocker": {
+    "what": "A regression-replay orchestrator (aROEBlQyyoQaB7a1, execution 6838283, status=running, started 2026-06-28T06:31:05Z, >2.5h) is concurrently and continuously firing clone (txiPzSxy3Pclsz6v) turns every ~30-60s. It seeds/pops the SAME redis list 'main-message-list-test' that the UAC harness uses.",
+    "evidence": [
+      "Clone exec 6847049 (fired during my §11b/§12 window) carries parentExecution=aROEBlQyyoQaB7a1/6838283 and processed a replay-corpus item ('sorento sample', contact 406994930) — not my seeded item.",
+      "My M2 item ('srtufv101 SPAN cert', test_run_id uac12-parser-20260628) produced an EMPTY egress log and the list drained to 0 — the item was consumed/lost to the replay, not processed under my id. Confirmed data loss => the seed-then-pop mechanism is not isolated under contention."
+    ],
+    "impact": "Cannot affirmatively verify S1-S5 per case for §10/§11/§12 while items cross-contaminate. Per the §0 mandate ('If S1-S5 cannot be affirmatively verified for any case -> FAIL and HALT'), halted new runs rather than report unreliable results.",
+    "self_inflicted_side_effect": "zz-canary-seed's 'Clear List' (n8n-nodes-base.redis delete on main-message-list-test) ran 3x during my session (seed execs 6846771, 6846886, 6847037). Each may have deleted an in-flight replay item, causing a few replay turns to pop empty. The running replay (6838283) may have a handful of corrupted/skipped turns around 08:51-08:57Z; its owner should review.",
+    "no_real_egress": "Every run observed (incl. the lost M2) was fail-closed: §9 egress = blocked records only; the concurrent replay is regress-replay mode (pinned, 0 egress). No api.respond.io send, no CRM write, no assignment fired."
+  },
+
+  "resolution_to_finish": {
+    "step1": "Pause/await the replay orchestrator aROEBlQyyoQaB7a1 (exec 6838283). Do not stop it forcibly without its owner's OK (it is an in-progress regression run).",
+    "step2": "Re-invoke the tester. Re-run §9 deterministic (0-token pin) + §10/§11a/§11b/§12 once the list is uncontended.",
+    "step3": "Use the ready payloads below. CRITICAL: the message text must be TRIPLE-nested (message.message.message.text) or the real reformulator receives empty text and misparses as 'casual' (LESSONS #12).",
+    "ready_messages": {
+      "§9_M1": "SPAN cert for srtwt03C or SRTUFV101 (mock_reformulator_output = fixtures/parser/span-cert-two-codes.json)",
+      "§10": "image for SRTUB5202",
+      "§11a": "SPAN cert for WC286  (expect require_specific=true; gate_clarification lists ONLY SRTWC286-* ; compatible_entities=WC286 uuids)",
+      "§11b_§12_M2": "srtufv101 SPAN cert  (expect require_specific=false passthrough §11b; Fix-B not-found message no literal leak §12)"
+    },
+    "seed_item_template_triple_nested": {
+      "message": { "message": { "message": { "text": "<USER TEXT>", "type": "text", "attachment": { "type": "text", "description": "" } } }, "replyTo": {} },
+      "contact": "<paste fixtures/contacts/437264483.json>",
+      "messageId": "test-<id>",
+      "replyTo": null,
+      "test_run_id": "<id>",
+      "scope": "deterministic",
+      "mock_reformulator_output": "<captured reformulator .output for this message>",
+      "mock_parser_output": "<same, for the clarification Basic-LLM-Chain bypass — keep 0-token if that path is hit>"
+    }
+  },
+
+  "harness_findings": {
+    "bypass_mechanism": "Reformulator (semantic parser feeding resolve-entity + gate + not-found.q) is bypassed via item.mock_reformulator_output passed INTO sub SB8wEXKdpITfhYXA (returns it as .output, 0 tokens). The clone-local parser-bypass-gate + mock-parser-output (item.mock_parser_output) is a SEPARATE bypass for the downstream clarification Basic LLM Chain only.",
+    "resolve-entity_is_noOp": "resolve-entity is a NoOp fed by the real resolve-entity-http read (replay-resolve-entity IF routes fixture vs http; uac/parser mode -> real http).",
+    "get-results_agent_orphaned": "S6 holds even reaching get-results: it returned via MCP read tool (crm_master_product_attachments_list) with no LLM-agent token spend in the §9 run.",
+    "no_new_token_sink_observed": "In the §9 run, the only LLM that executed was the reformulator (parser scope). No reformulator-side new sink; clarification chain and get-results agent did not fire."
+  }
+}

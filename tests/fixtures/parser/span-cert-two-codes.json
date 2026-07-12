@@ -1,0 +1,38 @@
+{
+  "_fixture": "mock_reformulator_output for UAC §9 (M1) — captured from the REAL reformulator (sub SB8wEXKdpITfhYXA) on clone txiPzSxy3Pclsz6v, exec 6846893, 2026-06-28.",
+  "_message": "SPAN cert for srtwt03C or SRTUFV101",
+  "_drives": "Pin at item.mock_reformulator_output so Call 'sub-query-reformulator'.output returns this at 0 tokens. resolve-entity-http then runs a REAL read on these tokens/entities.",
+  "_confirmation": "Real reformulator emits SPAN cert as a single attachment_type entity and srtwt03C / SRTUFV101 each as a single product entity (no free-text descriptor token). domain_hint=product_attachment.",
+  "output": {
+    "message_type": "business_query",
+    "intent_hint": "check_product_attachment",
+    "domain_hint": "product_attachment",
+    "scope_intent": "specific",
+    "is_affirmative": null,
+    "user_goal": "trying to check the certificate attachment for specific products",
+    "access_levels": ["End User"],
+    "date_mode": null,
+    "date_filter_start": null,
+    "date_filter_end": null,
+    "match_mode": "and",
+    "demand_qty": null,
+    "entities": [
+      { "raw": "SPAN cert", "hint": "attachment_type", "current_message": true },
+      { "raw": "srtwt03C", "hint": "product", "current_message": true },
+      { "raw": "SRTUFV101", "hint": "product", "current_message": true }
+    ],
+    "entity_op": "replace_combine",
+    "scope_exclusive": false,
+    "requested_attributes": [],
+    "contains_flyer": false,
+    "reference_positions": [],
+    "is_active": null,
+    "correction": false,
+    "routing": { "suggested_team": "purchasing_certification", "suggested_agent": "general_enquiries" },
+    "escalation": { "is_escalation_confirmation": false },
+    "scope_exclusive_applied": false,
+    "entity_op_applied": "replace_combine",
+    "entities_filtered": false,
+    "entities_emptied_by_filter": false
+  }
+}

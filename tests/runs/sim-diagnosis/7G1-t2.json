@@ -1,0 +1,575 @@
+{
+ "label": "7G1-t2",
+ "test_run_id": "sim-7G1-t2",
+ "text": "Sorento Dealer",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Sorento Dealer"
+   },
+   "test_run_id": "sim-7G1-t2",
+   "ts": "2026-07-07T14:06:10.149-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/promotion/506bc1a9-c6ea-4b74-8ea4-e02ce45afa36/SORENTO%20A3%20FLYER_DEALER%20USE_11062026.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260707%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260707T180609Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3f3fbb170a98f88bd0af1299c23946139a0b84ccd1bccfa0eb7488f1bfbf6d8b",
+    "filename": "SORENTO A3 FLYER_DEALER USE_11062026.pdf"
+   },
+   "test_run_id": "sim-7G1-t2",
+   "ts": "2026-07-07T14:06:10.115-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to select Sorento Dealer for promotions",
+      "access_levels": [
+       "Sorento Dealer"
+      ],
+      "entities": [
+       {
+        "raw": "srt79-ss",
+        "hint": "product",
+        "canonical_code": "SRT79-SS",
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (promotion): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "I have attached the file(s) below.\n\n1. *Promotion:* SORENTO A3 FLYER_DEALER USE_11062026.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n_Data last updated: 07/07/2026 11:23:10_"
+    }
+   },
+   "test_run_id": "sim-7G1-t2",
+   "ts": "2026-07-07T14:06:09.819-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "I have attached the file(s) below.\n\n1. *Promotion:* SORENTO A3 FLYER_DEALER USE_11062026.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n_Data last updated: 07/07/2026 11:23:10_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-7G1-t2",
+   "ts": "2026-07-07T14:06:09.804-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_send",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839926",
+  "nodes_ran": 53,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [
+   "get-presigned-url"
+  ],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "srt79-ss",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to select Sorento Dealer for promotions"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "srt79-ss"
+   ],
+   "elapsed_ms": 26.91,
+   "intersection": [
+    {
+     "entity_type": "promotion",
+     "canonical_code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+     "uuid": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+     "match_field": "promotion_membership",
+     "match_tier": "via_product",
+     "similarity": null,
+     "display": {
+      "description": "_SORENTO A3 FLYER 2025-2026_compressed",
+      "is_active": false,
+      "products": [
+       "SRT79-SS-GM",
+       "SRT79-SS",
+       "SRT79-SS-BL"
+      ]
+     }
+    },
+    {
+     "entity_type": "promotion",
+     "canonical_code": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+     "uuid": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+     "match_field": "promotion_membership",
+     "match_tier": "via_product",
+     "similarity": null,
+     "display": {
+      "description": "@ SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+      "is_active": true,
+      "products": [
+       "SRT79-SS-GM",
+       "SRT79-SS",
+       "SRT79-SS-BL"
+      ]
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRT79-SS-GM",
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRT79-SS-GM",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRT79-SS",
+     "uuid": "d950f4f4-8239-4b86-b6a3-c3fee7c7ee4c",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRT79-SS",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRT79-SS-BL",
+     "uuid": "eff3f8ad-4e71-4e1f-861c-133ee5bd4225",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRT79-SS-BL",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "promotion": [
+     {
+      "entity_type": "promotion",
+      "canonical_code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+      "uuid": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+      "match_field": "promotion_membership",
+      "match_tier": "via_product",
+      "similarity": null,
+      "display": {
+       "description": "_SORENTO A3 FLYER 2025-2026_compressed",
+       "is_active": false,
+       "products": [
+        "SRT79-SS-GM",
+        "SRT79-SS",
+        "SRT79-SS-BL"
+       ]
+      }
+     },
+     {
+      "entity_type": "promotion",
+      "canonical_code": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+      "uuid": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+      "match_field": "promotion_membership",
+      "match_tier": "via_product",
+      "similarity": null,
+      "display": {
+       "description": "@ SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+       "is_active": true,
+       "products": [
+        "SRT79-SS-GM",
+        "SRT79-SS",
+        "SRT79-SS-BL"
+       ]
+      }
+     }
+    ],
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRT79-SS-GM",
+      "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRT79-SS-GM",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRT79-SS",
+      "uuid": "d950f4f4-8239-4b86-b6a3-c3fee7c7ee4c",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRT79-SS",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRT79-SS-BL",
+      "uuid": "eff3f8ad-4e71-4e1f-861c-133ee5bd4225",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRT79-SS-BL",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+     "entity_type": "promotion",
+     "code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d"
+    },
+    {
+     "uuid": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+     "entity_type": "promotion",
+     "code": "e265f3b5-0e0d-4b1b-a601-781b75f695fd"
+    },
+    {
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "entity_type": "product",
+     "code": "SRT79-SS-GM"
+    },
+    {
+     "uuid": "d950f4f4-8239-4b86-b6a3-c3fee7c7ee4c",
+     "entity_type": "product",
+     "code": "SRT79-SS"
+    },
+    {
+     "uuid": "eff3f8ad-4e71-4e1f-861c-133ee5bd4225",
+     "entity_type": "product",
+     "code": "SRT79-SS-BL"
+    }
+   ],
+   "gate_debug": {
+    "domain": "promotion",
+    "allowed_lookup": [
+     "product",
+     "promotion",
+     "category",
+     "brand"
+    ],
+    "entities_count": 5
+   }
+  },
+  "get_results": {
+   "response": "I have attached the file(s) below.\n\n1. *Promotion:* SORENTO A3 FLYER_DEALER USE_11062026.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n_Data last updated: 07/07/2026 11:23:10_",
+   "response_intro": "I have attached the file(s) below.",
+   "answers": [
+    {
+     "title": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+     "fields": [
+      {
+       "label": "Promotion",
+       "value": "SORENTO A3 FLYER_DEALER USE_11062026.pdf"
+      },
+      {
+       "label": "Start Date",
+       "value": "2026-06-01"
+      },
+      {
+       "label": "End Date",
+       "value": "2026-09-30"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [
+    {
+     "url": "https://cdn-sorento.com/promotion/506bc1a9-c6ea-4b74-8ea4-e02ce45afa36/SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+     "filename": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+     "mimeType": "application/pdf",
+     "attachmentType": "Promotion"
+    }
+   ],
+   "action_links": [],
+   "last_updated_at": "2026-07-07T11:23:10.208779",
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7839932",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "user_goal": "trying to select Sorento Dealer for promotions",
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "entities": [
+    {
+     "raw": "srt79-ss",
+     "hint": "product",
+     "canonical_code": "SRT79-SS",
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (promotion): returned 1 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "I have attached the file(s) below.\n\n1. *Promotion:* SORENTO A3 FLYER_DEALER USE_11062026.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n_Data last updated: 07/07/2026 11:23:10_",
+   "quick_reply": null,
+   "result_set_len": 1,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "promotion_ids": [
+      "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+      "e265f3b5-0e0d-4b1b-a601-781b75f695fd"
+     ],
+     "product_ids": [
+      "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+      "d950f4f4-8239-4b86-b6a3-c3fee7c7ee4c",
+      "eff3f8ad-4e71-4e1f-861c-133ee5bd4225"
+     ],
+     "_diagnostics": {
+      "entities_in": 5,
+      "total_uuids_passed": 5,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [
+      "Sorento Dealer"
+     ],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "promotions",
+        "intro": "I have attached the file(s) below.",
+        "items": [
+         {
+          "title": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+          "fields": [
+           {
+            "label": "Promotion",
+            "value": "SORENTO A3 FLYER_DEALER USE_11062026.pdf"
+           },
+           {
+            "label": "Start Date",
+            "value": "2026-06-01"
+           },
+           {
+            "label": "End Date",
+            "value": "2026-09-30"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [
+         {
+          "url": "https://cdn-sorento.com/promotion/506bc1a9-c6ea-4b74-8ea4-e02ce45afa36/SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+          "filename": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+          "mimeType": "application/pdf",
+          "attachmentType": "Promotion"
+         }
+        ],
+        "action_links": [],
+        "last_updated_at": "2026-07-07T11:23:10.208779",
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "I have attached the file(s) below.\n\n1. *Promotion:* SORENTO A3 FLYER_DEALER USE_11062026.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n_Data last updated: 07/07/2026 11:23:10_",
+     "response_intro": "I have attached the file(s) below.",
+     "answers": [
+      {
+       "title": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+       "fields": [
+        {
+         "label": "Promotion",
+         "value": "SORENTO A3 FLYER_DEALER USE_11062026.pdf"
+        },
+        {
+         "label": "Start Date",
+         "value": "2026-06-01"
+        },
+        {
+         "label": "End Date",
+         "value": "2026-09-30"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [
+      {
+       "url": "https://cdn-sorento.com/promotion/506bc1a9-c6ea-4b74-8ea4-e02ce45afa36/SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+       "filename": "SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+       "mimeType": "application/pdf",
+       "attachmentType": "Promotion"
+      }
+     ],
+     "action_links": [],
+     "last_updated_at": "2026-07-07T11:23:10.208779",
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

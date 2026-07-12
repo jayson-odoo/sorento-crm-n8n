@@ -1,0 +1,49 @@
+{
+  "run": "Friendly-suffix UAC Case D — master_products nonexistent code -> escalate (negative)",
+  "change": "compile-current-state friendly domain disclaimers",
+  "verdict": "PASS",
+  "scope": "deterministic",
+  "mode": "uac",
+  "contact": "437264483 (FULL)",
+  "message": "what is the list price for ZZ-0000",
+  "executions": {
+    "seed": "7081507",
+    "run": "7081515",
+    "clone": "7081516",
+    "egress_read": "7081557"
+  },
+  "branch": "escalate offer (resolve-entity ZZ-0000 unresolved -> If3 TRUE -> not-found-error-message -> escalate-catalog; isEscalateBranch=true)",
+  "domain_hint": "master_products",
+  "get_results_tool": "N/A — get-results not reached",
+  "last_result_set_len": 0,
+  "user_response_tail": "Could not find master_products for ZZ-0000. Would you like me to escalate to purchasing_product team?",
+  "suffix_verdict": "PASS — NO suffix (isEscalateBranch=true => answered=false). Confirms suffix never appended on escalate/no-result master_products.",
+  "human_intervention": "NOT executed — escalate OFFER (is_escalation_confirmation:false), If2 not taken",
+  "egress_log": [
+    {
+      "guard": "save-message-redis",
+      "kind": "would_log",
+      "blocked": true
+    },
+    {
+      "guard": "save-session-vars",
+      "kind": "would_write",
+      "blocked": true
+    },
+    {
+      "guard": "sendmsg-sub",
+      "kind": "would_send",
+      "target": "437264483",
+      "blocked": true,
+      "message": "Could not find master_products for ZZ-0000. Would you like me to escalate to purchasing_product team?"
+    }
+  ],
+  "safety_S0": {
+    "S1_zero_real_sends": "PASS",
+    "S2_zero_assignment_writes": "PASS",
+    "S3_zero_crm_writes": "PASS",
+    "S4_get_results_read_only": "PASS — get-results not reached (escalate offer)",
+    "S5_test_mode_present": "PASS — sendmsg sub received is_test=true; egress records carry test_run_id",
+    "S6_token_bound": "PASS (deterministic) — reformulator BYPASSED (sub output === injected mock_reformulator_output, dispositive). No clarification Basic LLM Chain. NOTE: get-results sub ran as a real READ and produced formatted markdown; its internal agent LLM liveness was not separately instrumented."
+  }
+}

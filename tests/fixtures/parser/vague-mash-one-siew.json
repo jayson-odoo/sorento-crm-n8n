@@ -1,0 +1,31 @@
+{
+  "_fixture": "mock_parser_output for UAC §13a-det (vague mash). Pinned from the REAL reformulator copy SB8wEXKdpITfhYXA AI-Agent raw output, exec 6971041 (2026-06-29): one `order` entity raw 'One siew srtkt72ss' with confident:false. current_message normalized to true so the deterministic clone path exercises the CURRENT-turn vague-clarify (the live parser run was masked by a polluted prod session_vars forcing the output_exchange reuse path — see run log).",
+  "_message": "One siew srtkt72ss already delivered?",
+  "_drives": "Injected at message.mock_parser_output -> parser-bypass-gate TRUE -> Call 'sub-query-reformulator'.output returns this (0 parser tokens). resolve-entity then runs a REAL read on token 'One siew srtkt72ss' (returns unresolved).",
+  "output": {
+    "message_type": "business_query",
+    "intent_hint": "check_order",
+    "domain_hint": "order",
+    "scope_intent": "specific",
+    "is_affirmative": null,
+    "user_goal": "trying to check whether the order for One siew srtkt72ss has already been delivered",
+    "access_levels": ["End User"],
+    "date_mode": null,
+    "date_filter_start": null,
+    "date_filter_end": null,
+    "match_mode": "and",
+    "demand_qty": null,
+    "entities": [
+      { "raw": "One siew srtkt72ss", "hint": "order", "current_message": true, "confident": false }
+    ],
+    "entity_op": "replace_combine",
+    "scope_exclusive": false,
+    "requested_attributes": ["delivery"],
+    "contains_flyer": false,
+    "reference_positions": [],
+    "is_active": null,
+    "correction": false,
+    "routing": { "suggested_team": "customer_service", "suggested_agent": "order_enquiries" },
+    "escalation": { "is_escalation_confirmation": false }
+  }
+}

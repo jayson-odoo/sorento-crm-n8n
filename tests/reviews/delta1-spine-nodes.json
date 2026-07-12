@@ -1,0 +1,176 @@
+[
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "not_found",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1392
+    ],
+    "id": "2f33c7f4-bbfd-4e3e-aa24-20c9701cd587",
+    "name": "tag-not-found"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "access_choice",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1504
+    ],
+    "id": "50739719-2cd0-41d1-8a88-4358b87cb02c",
+    "name": "tag-access-choice"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "demand_qty",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1632
+    ],
+    "id": "116f908f-a5e6-4104-8aa6-dd0cce15c84a",
+    "name": "tag-demand-qty"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "not_supported",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1744
+    ],
+    "id": "b870436a-57de-4d3c-b263-e039a8bcb466",
+    "name": "tag-not-supported"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "clarify_menu",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1872
+    ],
+    "id": "4214dfa2-f75a-476e-8f3a-38c04c6da4a1",
+    "name": "tag-clarify-menu"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "escalate_offer",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      1984
+    ],
+    "id": "135a1d93-8602-4b71-a018-39e1488b5e70",
+    "name": "tag-escalate-offer"
+  },
+  {
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "ed706470-88d6-4809-a288-208156d1f4a9",
+            "name": "branch_kind",
+            "value": "out_of_scope",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+      4064,
+      2112
+    ],
+    "id": "3a2818e5-cc36-45d5-a0b8-c86d4edc640e",
+    "name": "tag-out-of-scope"
+  },
+  {
+    "parameters": {
+      "jsCode": "// ── escalate-catalog ──────────────────────────────────────────────\n// Single source of truth for escalation/error messages + their behavior flags.\n// Each upstream branch sets ONE field `branch_kind`; this node maps it to the\n// message + flags that compile-current-state used to derive via a 7-arm ladder.\n// Dynamic kinds (not_found, access_choice) pull their message by reference from\n// the upstream Code node that computed it.\nconst qf  = $('Call \\'sub-query-reformulator\\'').first().json.output;\nconst out = $input.first().json;\nconst kind = out.branch_kind;\n\nlet response = '';\nlet manualResponse = false;\nlet includeResponse = true;\nlet is_escalate_offer = false;\n\nswitch (kind) {\n  case 'not_found': {\n    const nf = $('not-found-error-message').first().json;\n    response       = nf.escalate_message;\n    manualResponse = !nf.require_specific;\n    is_escalate_offer = !nf.is_clarification;   // offer only when it's not a clarification prompt\n    break;\n  }\n  case 'access_choice':\n    response       = $('access-level-choice-message').first().json.escalate_message;\n    manualResponse = true;\n    break;\n  case 'demand_qty':\n    response       = 'Please specify your demand quantity';\n    manualResponse = true;\n    break;\n  case 'not_supported':\n    response       = \"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\";\n    manualResponse = true;\n    break;\n  case 'clarify_menu':\n    response       = `I see you're ${qf.user_goal}, Let me understand more.\\n\\nAre you asking about any of these?\\n\\n- Product (List Price, Dimension)\\n- Photos, Technical Specs, Cert\\n- Promotion\\n- Forms\\n- Stock\\n- Delivery order\\n- Incoming\\n- Catalogue, Warranty\\n\\nI can help with the topics listed above.`;\n    manualResponse = true;\n    break;\n  case 'escalate_offer':\n    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${qf.routing.suggested_team} team?`;\n    manualResponse = true;\n    is_escalate_offer = true;\n    break;\n  case 'out_of_scope':\n    response        = `Informed the user that request is out of scope and will proceed to escalate to the ${qf.routing.suggested_team} team`;\n    manualResponse  = true;\n    includeResponse = false;\n    break;\n}\n\nout.response          = response;\nout.manualResponse    = manualResponse;\nout.includeResponse   = includeResponse;\nout.is_escalate_offer = is_escalate_offer;\nreturn out;\n"
+    },
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+      4304,
+      1744
+    ],
+    "id": "escalate-catalog-node",
+    "name": "escalate-catalog"
+  }
+]

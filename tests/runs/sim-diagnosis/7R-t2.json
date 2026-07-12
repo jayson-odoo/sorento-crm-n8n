@@ -1,0 +1,318 @@
+{
+ "label": "7R-t2",
+ "test_run_id": "sim-7R-t2",
+ "text": "Sorento Dealer",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Sorento Dealer"
+   },
+   "test_run_id": "sim-7R-t2",
+   "ts": "2026-07-07T14:06:04.664-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to select Sorento Dealer for promotions",
+      "access_levels": [
+       "Sorento Dealer"
+      ],
+      "entities": [
+       {
+        "raw": "srt79ss",
+        "hint": "promotion",
+        "canonical_code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?"
+    }
+   },
+   "test_run_id": "sim-7R-t2",
+   "ts": "2026-07-07T14:06:04.660-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-7R-t2",
+   "ts": "2026-07-07T14:06:04.648-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839916",
+  "nodes_ran": 41,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "srt79ss",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to select Sorento Dealer for promotions"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "srt79ss"
+   ],
+   "elapsed_ms": 23.56,
+   "resolutions": [
+    {
+     "token": "srt79ss",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "promotion",
+       "canonical_code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+       "uuid": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+       "match_field": "promotion_membership",
+       "match_tier": "via_product",
+       "similarity": null,
+       "display": {
+        "description": "_SORENTO A3 FLYER 2025-2026_compressed",
+        "is_active": false,
+        "products": [
+         "SRT79-SS-GM",
+         "SRT79-SS",
+         "SRT79-SS-BL"
+        ]
+       }
+      },
+      {
+       "entity_type": "promotion",
+       "canonical_code": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+       "uuid": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+       "match_field": "promotion_membership",
+       "match_tier": "via_product",
+       "similarity": null,
+       "display": {
+        "description": "@ SORENTO A3 FLYER_DEALER USE_11062026.pdf",
+        "is_active": true,
+        "products": [
+         "SRT79-SS-GM",
+         "SRT79-SS",
+         "SRT79-SS-BL"
+        ]
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRT79-SS",
+       "uuid": "d950f4f4-8239-4b86-b6a3-c3fee7c7ee4c",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRT79-SS",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRT79-SS-GM",
+       "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRT79-SS-GM",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRT79-SS-BL",
+       "uuid": "eff3f8ad-4e71-4e1f-861c-133ee5bd4225",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRT79-SS-BL",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": false,
+   "gate_reason": "Ambiguous result",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+     "entity_type": "promotion",
+     "code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d"
+    },
+    {
+     "uuid": "e265f3b5-0e0d-4b1b-a601-781b75f695fd",
+     "entity_type": "promotion",
+     "code": "e265f3b5-0e0d-4b1b-a601-781b75f695fd"
+    },
+    {
+     "uuid": "d950f4f4-8239-4b86-b6a3-c3fee7c7ee4c",
+     "entity_type": "product",
+     "code": "SRT79-SS"
+    },
+    {
+     "uuid": "5f925bcf-1fde-4f4b-bd55-b3989b051710",
+     "entity_type": "product",
+     "code": "SRT79-SS-GM"
+    },
+    {
+     "uuid": "eff3f8ad-4e71-4e1f-861c-133ee5bd4225",
+     "entity_type": "product",
+     "code": "SRT79-SS-BL"
+    }
+   ],
+   "gate_debug": {
+    "domain": "promotion",
+    "allowed_lookup": [
+     "product",
+     "promotion",
+     "category",
+     "brand"
+    ],
+    "entities_count": 5
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "user_goal": "trying to select Sorento Dealer for promotions",
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "entities": [
+    {
+     "raw": "srt79ss",
+     "hint": "promotion",
+     "canonical_code": "26ff9ed1-2f21-44db-a9bb-bded38ea110d",
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Could not find promotion for srt79ss for Sorento Dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

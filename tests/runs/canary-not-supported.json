@@ -1,0 +1,76 @@
+{
+  "run": "canary — UAC §4 not-supported-domain",
+  "test_run_id": "canary-nsd-20260627",
+  "date": "2026-06-27",
+  "target_clone": "txiPzSxy3Pclsz6v (sorento-consume-main TEST)",
+  "verdict": "BLOCKED — plumbing partially proven (seed OK); clone RUN step gated by auto-mode classifier; ZERO-EGRESS not yet empirically confirmed (no clone execution produced).",
+
+  "preconditions_verified": {
+    "send_sub_published_and_guarded": {
+      "id": "aoydkG1dbItXR5jXFEQsP",
+      "status": "PASS",
+      "evidence": "versionId == activeVersionId (c5547583-...). Published activeVersion graph contains node 'test-guard' (if v2.3, leftValue $json.is_test, op boolean/true, loose). Wiring: When Executed -> test-guard; TRUE/out0 -> test-guard-record (redis push to test:egress:{test_run_id}, record {guard:'sendmsg-sub',kind:'would_send',...}); FALSE/out1 -> If -> real 'Send a Message' (respondio) / 'HTTP Request' (api.respond.io quick_reply). is_test=true (clone passes literal true) => TRUE branch => NO real send. Reviewer BLOCKER #1 CLEARED for send sub."
+    },
+    "reformulator_sub_published_and_bypassed": {
+      "id": "XTODTw-dJcV0uRdC056hG",
+      "status": "PASS",
+      "evidence": "versionId == activeVersionId (b3979d8e-...). Published graph: When Executed -> test-reformulator-bypass (if v2.3 AND of is_test==true AND !!mock_reformulator_output, loose). TRUE => mock-reformulator-output (0 tokens). FALSE => AI Agent (OpenAI Chat Model gpt-5.x). Clone call site passes is_test=true + mock_reformulator_output => bypass => deterministic, 0 tokens."
+    },
+    "clone_egress_nodes_orphaned": {
+      "status": "PASS (static, per cycle-1-harness diff)",
+      "nodes": ["update-human-intervened", "save-session-vars", "send-message-files", "send-message-images", "send-message-video"],
+      "evidence": "Per tests/diffs/cycle-1-harness.md final verification: inbound_count=0 each (unreachable). To be re-confirmed empirically from the clone execution (none yet)."
+    },
+    "redis_credential_present": {
+      "status": "PASS",
+      "evidence": "zz-canary-seed (4eDGDBL3rEkGQuBV) executionId 6730537 SUCCESS: 'Clear List' (delete main-message-list-test) + 'Push Item' (push to main-message-list-test) both succeeded => sorento-redis (H5w6o7tptzTPMVdy) is attached and functional on the seed redis nodes. (Read API redacts creds, so guard-d-record / redis-pop creds not directly readable, but the same instance/cred works.)"
+    }
+  },
+
+  "plumbing": {
+    "seed": "EXECUTED OK — execution 6730537 (zz-canary-seed). main-message-list-test cleared then seeded with the canary item.",
+    "run": "NOT EXECUTED — see blocker. Clone txiPzSxy3Pclsz6v cannot be invoked directly: manual mode errors ('Only workflows with Schedule/Webhook/Form/Chat/Manual Trigger can be executed' — clone has only executeWorkflowTrigger); production mode errors ('no published (active) version'). The only trigger path is the wrapper zz-canary-run (VtIV3TF3aw2Fx8No: Manual Trigger -> Execute Workflow(txiPzSxy3Pclsz6v, waitForSubWorkflow:true)).",
+    "egress_log_read": "NOT PERFORMED — depends on run. Reader helper zz-canary-read (LLIbMXAixexM9Cwc) is ready (reads test:egress:canary-nsd-20260627 + main-message-list-test length)."
+  },
+
+  "blocker": {
+    "what": "Executing wrapper zz-canary-run (VtIV3TF3aw2Fx8No) was DENIED by the Claude Code auto-mode classifier ([Modify Shared Resources]): it executes a workflow other than the explicitly-named clone and the classifier could not verify the chain as fail-closed.",
+    "why_safe": "zz-canary-run has exactly 2 nodes: Manual Trigger -> Execute Workflow node pointing ONLY at the authorized fail-closed clone txiPzSxy3Pclsz6v (waitForSubWorkflow:true). It contains no respond.io / CRM / send nodes itself. The clone it calls is the coordinator-verified fail-closed target.",
+    "resolution_options": [
+      "User/coordinator approves executing zz-canary-run (VtIV3TF3aw2Fx8No) once (or runs it from the n8n UI), then re-invoke the tester to read get_execution + zz-canary-read.",
+      "Add a permission allow-rule for executing VtIV3TF3aw2Fx8No (and LLIbMXAixexM9Cwc reader).",
+      "Alternatively the coordinator confirms the wrapper as an authorized fail-closed runner so a subsequent tester run is permitted."
+    ]
+  },
+
+  "execution_ids": {
+    "seed (zz-canary-seed 4eDGDBL3rEkGQuBV)": "6730537 (success)",
+    "run (clone txiPzSxy3Pclsz6v)": null,
+    "wrapper (zz-canary-run VtIV3TF3aw2Fx8No)": null
+  },
+
+  "egress_log": {
+    "key": "test:egress:canary-nsd-20260627",
+    "records": "NOT READ (run did not occur)",
+    "expected_on_success": [
+      "{guard:'sendmsg-sub', kind:'would_send', payload.message=<canned not-supported reply>, test_run_id:'canary-nsd-20260627'} (from send sub test-guard-record)",
+      "{guard:'save-session-vars', kind:'would_write', target:'crm:conversation-variables:PUT', test_run_id:'canary-nsd-20260627'} (from clone guard-d-record)"
+    ]
+  },
+
+  "safety_assertions_status": {
+    "S1_zero_real_sends": "PENDING run; structurally guaranteed (send sub FALSE-branch real-send unreachable when is_test=true; verified from published graph).",
+    "S2_zero_assignment_writes": "N/A for this path (human-intervention sub not on not-supported route).",
+    "S3_zero_crm_writes": "PENDING run; save-session-vars orphaned + guard-d-record records would_write.",
+    "S4_get_results_no_write": "N/A for this path (get-results not reached).",
+    "S5_test_mode_present": "Control rides redis item (test_run_id, mocks). is_test=true passed literally at all sub call sites.",
+    "S6_token_bound": "deterministic — both LLM tiers bypassed (parser not reached on this branch; reformulator bypassed). 0 tokens expected."
+  },
+
+  "helpers_created_by_coder": {
+    "zz-canary-seed": "4eDGDBL3rEkGQuBV (clear+push item) — USED",
+    "zz-canary-run": "VtIV3TF3aw2Fx8No (invoke clone) — BLOCKED",
+    "zz-canary-read": "LLIbMXAixexM9Cwc (read test:egress + list len) — UNUSED",
+    "_cleanup": "All three are zz- prefixed 'Safe to archive' scaffolding; archive after the canary completes."
+  }
+}

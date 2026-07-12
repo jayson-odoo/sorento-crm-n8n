@@ -1,0 +1,1423 @@
+{
+ "label": "9R2-t2",
+ "test_run_id": "sim-9R2-t2",
+ "text": "thank you",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "thank you"
+   },
+   "test_run_id": "sim-9R2-t2",
+   "ts": "2026-07-07T14:09:02.833-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": null,
+      "domain_hint": "forms",
+      "user_goal": "trying to thank the assistant",
+      "access_levels": [],
+      "entities": [],
+      "routing": {
+       "suggested_team": "marketing_form",
+       "suggested_agent": "marketing_form"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (forms): returned 18 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "uuid": null,
+        "label": "DISPLAY STANDEE APPLICATION FORM (MOCHA)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 4,
+        "uuid": null,
+        "label": "DISPLAY STANDEE APPLICATION FORM (SORENTO)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 5,
+        "uuid": null,
+        "label": "DEALERS ANNUAL DINNER FORM (SORENTO)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 6,
+        "uuid": null,
+        "label": "SALES ACTIVITY FORM (SORENTO)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 7,
+        "uuid": null,
+        "label": "SALES ACTIVITY FORM (MOCHA)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 8,
+        "uuid": null,
+        "label": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 9,
+        "uuid": null,
+        "label": "EXHIBITION FORM (SORENTO)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 10,
+        "uuid": null,
+        "label": "EXHIBITION FORM (MOCHA)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 11,
+        "uuid": null,
+        "label": "CONCEPT RENOVATION FORM (MOCHA)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 12,
+        "uuid": null,
+        "label": "CONCEPT RENOVATION FORM (SORENTO)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 13,
+        "uuid": null,
+        "label": "NAMECARD REQUEST FORM",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 14,
+        "uuid": null,
+        "label": "GRAND OPENING FLOWER FORM 2026",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 15,
+        "uuid": null,
+        "label": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 16,
+        "uuid": null,
+        "label": "CUSTOMER WEDDING ANG PAU FORM 2026",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 17,
+        "uuid": null,
+        "label": "KOL REQUEST FORM",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 18,
+        "uuid": null,
+        "label": "CUSTOMER CONDOLENCE FORM",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Here are the forms I found.\n\n1. *Form Name:* Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n2. *Form Name:* Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n3. *Form Name:* DISPLAY STANDEE APPLICATION FORM (MOCHA)\n\n4. *Form Name:* DISPLAY STANDEE APPLICATION FORM (SORENTO)\n\n5. *Form Name:* DEALERS ANNUAL DINNER FORM (SORENTO)\n\n6. *Form Name:* SALES ACTIVITY FORM (SORENTO)\n\n7. *Form Name:* SALES ACTIVITY FORM (MOCHA)\n\n8. *Form Name:* DEALERS ANNUAL DINNER FORM (MOCHA)\n\n9. *Form Name:* EXHIBITION FORM (SORENTO)\n\n10. *Form Name:* EXHIBITION FORM (MOCHA)\n\n11. *Form Name:* CONCEPT RENOVATION FORM (MOCHA)\n\n12. *Form Name:* CONCEPT RENOVATION FORM (SORENTO)\n\n13. *Form Name:* NAMECARD REQUEST FORM\n\n14. *Form Name:* GRAND OPENING FLOWER FORM 2026\n\n15. *Form Name:* FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)\n\n16. *Form Name:* CUSTOMER WEDDING ANG PAU FORM 2026\n\n17. *Form Name:* KOL REQUEST FORM\n\n18. *Form Name:* CUSTOMER CONDOLENCE FORM"
+    }
+   },
+   "test_run_id": "sim-9R2-t2",
+   "ts": "2026-07-07T14:09:02.813-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Here are the forms I found.\n\n1. *Form Name:* Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n2. *Form Name:* Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n3. *Form Name:* DISPLAY STANDEE APPLICATION FORM (MOCHA)\n\n4. *Form Name:* DISPLAY STANDEE APPLICATION FORM (SORENTO)\n\n5. *Form Name:* DEALERS ANNUAL DINNER FORM (SORENTO)\n\n6. *Form Name:* SALES ACTIVITY FORM (SORENTO)\n\n7. *Form Name:* SALES ACTIVITY FORM (MOCHA)\n\n8. *Form Name:* DEALERS ANNUAL DINNER FORM (MOCHA)\n\n9. *Form Name:* EXHIBITION FORM (SORENTO)\n\n10. *Form Name:* EXHIBITION FORM (MOCHA)\n\n11. *Form Name:* CONCEPT RENOVATION FORM (MOCHA)\n\n12. *Form Name:* CONCEPT RENOVATION FORM (SORENTO)\n\n13. *Form Name:* NAMECARD REQUEST FORM\n\n14. *Form Name:* GRAND OPENING FLOWER FORM 2026\n\n15. *Form Name:* FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)\n\n16. *Form Name:* CUSTOMER WEDDING ANG PAU FORM 2026\n\n17. *Form Name:* KOL REQUEST FORM\n\n18. *Form Name:* CUSTOMER CONDOLENCE FORM",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "uuid": null,
+      "label": "DISPLAY STANDEE APPLICATION FORM (MOCHA)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 4,
+      "uuid": null,
+      "label": "DISPLAY STANDEE APPLICATION FORM (SORENTO)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 5,
+      "uuid": null,
+      "label": "DEALERS ANNUAL DINNER FORM (SORENTO)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 6,
+      "uuid": null,
+      "label": "SALES ACTIVITY FORM (SORENTO)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 7,
+      "uuid": null,
+      "label": "SALES ACTIVITY FORM (MOCHA)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 8,
+      "uuid": null,
+      "label": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 9,
+      "uuid": null,
+      "label": "EXHIBITION FORM (SORENTO)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 10,
+      "uuid": null,
+      "label": "EXHIBITION FORM (MOCHA)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 11,
+      "uuid": null,
+      "label": "CONCEPT RENOVATION FORM (MOCHA)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 12,
+      "uuid": null,
+      "label": "CONCEPT RENOVATION FORM (SORENTO)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 13,
+      "uuid": null,
+      "label": "NAMECARD REQUEST FORM",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 14,
+      "uuid": null,
+      "label": "GRAND OPENING FLOWER FORM 2026",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 15,
+      "uuid": null,
+      "label": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 16,
+      "uuid": null,
+      "label": "CUSTOMER WEDDING ANG PAU FORM 2026",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 17,
+      "uuid": null,
+      "label": "KOL REQUEST FORM",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 18,
+      "uuid": null,
+      "label": "CUSTOMER CONDOLENCE FORM",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-9R2-t2",
+   "ts": "2026-07-07T14:09:02.779-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840185",
+  "nodes_ran": 43,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": null,
+   "domain_hint": "forms",
+   "scope_intent": null,
+   "is_affirmative": null,
+   "entities": [],
+   "routing": {
+    "suggested_team": "marketing_form",
+    "suggested_agent": "marketing_form"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to thank the assistant"
+  },
+  "resolve_entity": {
+   "tokens": [],
+   "elapsed_ms": 0,
+   "resolutions": [],
+   "unresolved_tokens": [],
+   "ambiguous_tokens": []
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "no entities; 'forms' permits broad query",
+   "gate_clarification": "",
+   "compatible_entities": [],
+   "gate_debug": {
+    "domain": "forms",
+    "allowed_lookup": [
+     "form"
+    ],
+    "entities_count": 0
+   }
+  },
+  "get_results": {
+   "response": "Here are the forms I found.\n\n1. *Form Name:* Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n2. *Form Name:* Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n3. *Form Name:* DISPLAY STANDEE APPLICATION FORM (MOCHA)\n\n4. *Form Name:* DISPLAY STANDEE APPLICATION FORM (SORENTO)\n\n5. *Form Name:* DEALERS ANNUAL DINNER FORM (SORENTO)\n\n6. *Form Name:* SALES ACTIVITY FORM (SORENTO)\n\n7. *Form Name:* SALES ACTIVITY FORM (MOCHA)\n\n8. *Form Name:* DEALERS ANNUAL DINNER FORM (MOCHA)\n\n9. *Form Name:* EXHIBITION FORM (SORENTO)\n\n10. *Form Name:* EXHIBITION FORM (MOCHA)\n\n11. *Form Name:* CONCEPT RENOVATION FORM (MOCHA)\n\n12. *Form Name:* CONCEPT RENOVATION FORM (SORENTO)\n\n13. *Form Name:* NAMECARD REQUEST FORM\n\n14. *Form Name:* GRAND OPENING FLOWER FORM 2026\n\n15. *Form Name:* FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)\n\n16. *Form Name:* CUSTOMER WEDDING ANG PAU FORM 2026\n\n17. *Form Name:* KOL REQUEST FORM\n\n18. *Form Name:* CUSTOMER CONDOLENCE FORM",
+   "response_intro": "Here are the forms I found.",
+   "answers": [
+    {
+     "title": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "DISPLAY STANDEE APPLICATION FORM (MOCHA)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "DISPLAY STANDEE APPLICATION FORM (MOCHA)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "DISPLAY STANDEE APPLICATION FORM (SORENTO)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "DISPLAY STANDEE APPLICATION FORM (SORENTO)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "DEALERS ANNUAL DINNER FORM (SORENTO)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "DEALERS ANNUAL DINNER FORM (SORENTO)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SALES ACTIVITY FORM (SORENTO)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "SALES ACTIVITY FORM (SORENTO)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SALES ACTIVITY FORM (MOCHA)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "SALES ACTIVITY FORM (MOCHA)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "DEALERS ANNUAL DINNER FORM (MOCHA)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "EXHIBITION FORM (SORENTO)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "EXHIBITION FORM (SORENTO)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "EXHIBITION FORM (MOCHA)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "EXHIBITION FORM (MOCHA)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "CONCEPT RENOVATION FORM (MOCHA)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "CONCEPT RENOVATION FORM (MOCHA)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "CONCEPT RENOVATION FORM (SORENTO)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "CONCEPT RENOVATION FORM (SORENTO)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "NAMECARD REQUEST FORM",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "NAMECARD REQUEST FORM"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "GRAND OPENING FLOWER FORM 2026",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "GRAND OPENING FLOWER FORM 2026"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "CUSTOMER WEDDING ANG PAU FORM 2026",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "CUSTOMER WEDDING ANG PAU FORM 2026"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "KOL REQUEST FORM",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "KOL REQUEST FORM"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "CUSTOMER CONDOLENCE FORM",
+     "fields": [
+      {
+       "label": "Form Name",
+       "value": "CUSTOMER CONDOLENCE FORM"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7840192",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": null,
+   "domain_hint": "forms",
+   "user_goal": "trying to thank the assistant",
+   "access_levels": [],
+   "entities": [],
+   "routing": {
+    "suggested_team": "marketing_form",
+    "suggested_agent": "marketing_form"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (forms): returned 18 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 3,
+     "uuid": null,
+     "label": "DISPLAY STANDEE APPLICATION FORM (MOCHA)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 4,
+     "uuid": null,
+     "label": "DISPLAY STANDEE APPLICATION FORM (SORENTO)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 5,
+     "uuid": null,
+     "label": "DEALERS ANNUAL DINNER FORM (SORENTO)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 6,
+     "uuid": null,
+     "label": "SALES ACTIVITY FORM (SORENTO)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 7,
+     "uuid": null,
+     "label": "SALES ACTIVITY FORM (MOCHA)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 8,
+     "uuid": null,
+     "label": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 9,
+     "uuid": null,
+     "label": "EXHIBITION FORM (SORENTO)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 10,
+     "uuid": null,
+     "label": "EXHIBITION FORM (MOCHA)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 11,
+     "uuid": null,
+     "label": "CONCEPT RENOVATION FORM (MOCHA)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 12,
+     "uuid": null,
+     "label": "CONCEPT RENOVATION FORM (SORENTO)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 13,
+     "uuid": null,
+     "label": "NAMECARD REQUEST FORM",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 14,
+     "uuid": null,
+     "label": "GRAND OPENING FLOWER FORM 2026",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 15,
+     "uuid": null,
+     "label": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 16,
+     "uuid": null,
+     "label": "CUSTOMER WEDDING ANG PAU FORM 2026",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 17,
+     "uuid": null,
+     "label": "KOL REQUEST FORM",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 18,
+     "uuid": null,
+     "label": "CUSTOMER CONDOLENCE FORM",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Here are the forms I found.\n\n1. *Form Name:* Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n2. *Form Name:* Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n3. *Form Name:* DISPLAY STANDEE APPLICATION FORM (MOCHA)\n\n4. *Form Name:* DISPLAY STANDEE APPLICATION FORM (SORENTO)\n\n5. *Form Name:* DEALERS ANNUAL DINNER FORM (SORENTO)\n\n6. *Form Name:* SALES ACTIVITY FORM (SORENTO)\n\n7. *Form Name:* SALES ACTIVITY FORM (MOCHA)\n\n8. *Form Name:* DEALERS ANNUAL DINNER FORM (MOCHA)\n\n9. *Form Name:* EXHIBITION FORM (SORENTO)\n\n10. *Form Name:* EXHIBITION FORM (MOCHA)\n\n11. *Form Name:* CONCEPT RENOVATION FORM (MOCHA)\n\n12. *Form Name:* CONCEPT RENOVATION FORM (SORENTO)\n\n13. *Form Name:* NAMECARD REQUEST FORM\n\n14. *Form Name:* GRAND OPENING FLOWER FORM 2026\n\n15. *Form Name:* FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)\n\n16. *Form Name:* CUSTOMER WEDDING ANG PAU FORM 2026\n\n17. *Form Name:* KOL REQUEST FORM\n\n18. *Form Name:* CUSTOMER CONDOLENCE FORM",
+   "quick_reply": null,
+   "result_set_len": 18,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "_diagnostics": {
+      "entities_in": 0,
+      "total_uuids_passed": 0,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "forms",
+        "intro": "Here are the forms I found.",
+        "items": [
+         {
+          "title": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "DISPLAY STANDEE APPLICATION FORM (MOCHA)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "DISPLAY STANDEE APPLICATION FORM (MOCHA)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "DISPLAY STANDEE APPLICATION FORM (SORENTO)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "DISPLAY STANDEE APPLICATION FORM (SORENTO)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "DEALERS ANNUAL DINNER FORM (SORENTO)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "DEALERS ANNUAL DINNER FORM (SORENTO)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "SALES ACTIVITY FORM (SORENTO)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "SALES ACTIVITY FORM (SORENTO)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "SALES ACTIVITY FORM (MOCHA)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "SALES ACTIVITY FORM (MOCHA)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "DEALERS ANNUAL DINNER FORM (MOCHA)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "EXHIBITION FORM (SORENTO)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "EXHIBITION FORM (SORENTO)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "EXHIBITION FORM (MOCHA)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "EXHIBITION FORM (MOCHA)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "CONCEPT RENOVATION FORM (MOCHA)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "CONCEPT RENOVATION FORM (MOCHA)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "CONCEPT RENOVATION FORM (SORENTO)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "CONCEPT RENOVATION FORM (SORENTO)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "NAMECARD REQUEST FORM",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "NAMECARD REQUEST FORM"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "GRAND OPENING FLOWER FORM 2026",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "GRAND OPENING FLOWER FORM 2026"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "CUSTOMER WEDDING ANG PAU FORM 2026",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "CUSTOMER WEDDING ANG PAU FORM 2026"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "KOL REQUEST FORM",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "KOL REQUEST FORM"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "CUSTOMER CONDOLENCE FORM",
+          "fields": [
+           {
+            "label": "Form Name",
+            "value": "CUSTOMER CONDOLENCE FORM"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true,
+        "fallback_used": false
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "Here are the forms I found.\n\n1. *Form Name:* Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n2. *Form Name:* Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties\n\n3. *Form Name:* DISPLAY STANDEE APPLICATION FORM (MOCHA)\n\n4. *Form Name:* DISPLAY STANDEE APPLICATION FORM (SORENTO)\n\n5. *Form Name:* DEALERS ANNUAL DINNER FORM (SORENTO)\n\n6. *Form Name:* SALES ACTIVITY FORM (SORENTO)\n\n7. *Form Name:* SALES ACTIVITY FORM (MOCHA)\n\n8. *Form Name:* DEALERS ANNUAL DINNER FORM (MOCHA)\n\n9. *Form Name:* EXHIBITION FORM (SORENTO)\n\n10. *Form Name:* EXHIBITION FORM (MOCHA)\n\n11. *Form Name:* CONCEPT RENOVATION FORM (MOCHA)\n\n12. *Form Name:* CONCEPT RENOVATION FORM (SORENTO)\n\n13. *Form Name:* NAMECARD REQUEST FORM\n\n14. *Form Name:* GRAND OPENING FLOWER FORM 2026\n\n15. *Form Name:* FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)\n\n16. *Form Name:* CUSTOMER WEDDING ANG PAU FORM 2026\n\n17. *Form Name:* KOL REQUEST FORM\n\n18. *Form Name:* CUSTOMER CONDOLENCE FORM",
+     "response_intro": "Here are the forms I found.",
+     "answers": [
+      {
+       "title": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "Sorento_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "DISPLAY STANDEE APPLICATION FORM (MOCHA)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "DISPLAY STANDEE APPLICATION FORM (MOCHA)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "DISPLAY STANDEE APPLICATION FORM (SORENTO)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "DISPLAY STANDEE APPLICATION FORM (SORENTO)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "DEALERS ANNUAL DINNER FORM (SORENTO)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "DEALERS ANNUAL DINNER FORM (SORENTO)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "SALES ACTIVITY FORM (SORENTO)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "SALES ACTIVITY FORM (SORENTO)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "SALES ACTIVITY FORM (MOCHA)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "SALES ACTIVITY FORM (MOCHA)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "DEALERS ANNUAL DINNER FORM (MOCHA)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "EXHIBITION FORM (SORENTO)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "EXHIBITION FORM (SORENTO)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "EXHIBITION FORM (MOCHA)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "EXHIBITION FORM (MOCHA)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "CONCEPT RENOVATION FORM (MOCHA)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "CONCEPT RENOVATION FORM (MOCHA)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "CONCEPT RENOVATION FORM (SORENTO)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "CONCEPT RENOVATION FORM (SORENTO)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "NAMECARD REQUEST FORM",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "NAMECARD REQUEST FORM"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "GRAND OPENING FLOWER FORM 2026",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "GRAND OPENING FLOWER FORM 2026"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "FREE GIFT MARKETING ACTIVITIES DEALER FORM (SORENTO)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "CUSTOMER WEDDING ANG PAU FORM 2026",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "CUSTOMER WEDDING ANG PAU FORM 2026"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "KOL REQUEST FORM",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "KOL REQUEST FORM"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "CUSTOMER CONDOLENCE FORM",
+       "fields": [
+        {
+         "label": "Form Name",
+         "value": "CUSTOMER CONDOLENCE FORM"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

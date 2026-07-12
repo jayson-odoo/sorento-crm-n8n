@@ -1,0 +1,28 @@
+{
+  "case": "UAC §5 — entity-not-found / clarification",
+  "test_run_id": "uac5-notfound-20260627",
+  "contact": "437264483",
+  "clone_execution_id": "6742420",
+  "wrapper_execution_id": "6742419",
+  "verdict": "PASS",
+  "branch_reached": "If5 TRUE -> If2 F -> If10 F -> If9 F -> If1 F -> not-supported-domain F -> If F -> If7 F -> resolve-entity(REAL, 4126ms) returns unresolved_tokens:['ZZ-0000'], no matches -> disallowed-entity-gate(gate_passed:true, compatible_entities:[]) -> If3 TRUE (unresolved>0) -> not-found-error-message -> Edit Fields1 -> compile-current-state -> respond2(guarded) + guard-d-record. Execute 'sub-get-rag' and Call 'sub-get-results' NOT executed.",
+  "resolve_entity_result": {"tokens": ["ZZ-0000"], "resolutions": [{"token": "ZZ-0000", "resolved": false, "matches": []}], "unresolved_tokens": ["ZZ-0000"]},
+  "would_send_message": "Could not find incoming for ZZ-0000. Would you like me to escalate to customer_service team?",
+  "last_result_set": [],
+  "subexecutions": {
+    "send sub aoydkG1dbItXR5jXFEQsP (respond2)": "6742428 — short-circuited (sendmsg-sub record present; no real send)"
+  },
+  "egress_log_key": "test:egress:uac5-notfound-20260627",
+  "egress_records": [
+    {"guard": "sendmsg-sub", "kind": "would_send", "message": "Could not find incoming for ZZ-0000. Would you like me to escalate to customer_service team?", "result_set": []},
+    {"guard": "save-session-vars", "kind": "would_write", "last_result_set": []},
+    {"guard": "save-message-redis", "kind": "would_log", "note": "Guard H (cosmetic malformed message)"}
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": "PASS", "S2_zero_assignment_writes": "PASS (no escalation branch)",
+    "S3_zero_crm_writes": "PASS — save-session-vars blocked (guard-d would_write)",
+    "S4_get_results_no_write": "PASS — get-results not reached",
+    "S5_test_mode_present": "PASS", "S6_token_bound": "PASS — reformulator bypassed; resolve-entity is a real CRM READ (allowed)"
+  },
+  "orphaned_egress_nodes_executed": "NONE"
+}

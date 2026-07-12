@@ -1,0 +1,49 @@
+{
+  "test_run_id": "csmember-offer-t1-20260630",
+  "purpose": "Investigation (not a UAC pass/fail case): empirically capture the member_offer last_result_set row shape (does it carry a NAME field?) and the turn-2 name-resolution behavior of the parser.",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "clone_execution_id": "7071078",
+  "mode": "uac",
+  "scope": "deterministic",
+  "tier_notes": "reformulator LLM BYPASSED via mock_reformulator_output (test-reformulator-bypass fired) -> 0 token. get-cs-members is a real CRM READ (allowed).",
+  "trigger_message": "where is my order srtks72-ss",
+  "mock_reformulator_output": {
+    "routing": { "suggested_team": "customer_service", "suggested_agent": "order_enquiries" },
+    "correction": true,
+    "escalation": { "is_escalation_confirmation": false }
+  },
+  "route_executed": [
+    "If2(FALSE)", "If10(TRUE: correction)", "tag-escalate-offer(branch_kind=escalate_offer)",
+    "escalate-catalog(is_escalate_offer=true)", "cs-offer-gate(TRUE: customer_service & order_enquiries)",
+    "get-cs-members(5 members)", "build-cs-member-offer(member_offer=true)",
+    "compile-current-state(last_result_set=cs_last_result_set, selection_context=member_offer)",
+    "session-save-gate(FALSE in uac -> no save)", "guard-d-record", "guard-h-record"
+  ],
+  "last_result_set_field_shape": ["idx", "label (CS member NAME)", "uuid (CRM user_id)", "respond_user_id (respond.io assign target)"],
+  "name_field_present": true,
+  "name_field_key": "label",
+  "last_result_set_verbatim_row0": { "idx": 1, "label": "Ms Tan", "uuid": "1feb552a-0436-4ad8-999c-85ee19850eb0", "respond_user_id": "1097739" },
+  "last_result_set_full": [
+    { "idx": 1, "label": "Ms Tan", "uuid": "1feb552a-0436-4ad8-999c-85ee19850eb0", "respond_user_id": "1097739" },
+    { "idx": 2, "label": "Sandy Lim", "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f", "respond_user_id": "1136807" },
+    { "idx": 3, "label": "Lin", "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e", "respond_user_id": "1136805" },
+    { "idx": 4, "label": "Nur", "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2", "respond_user_id": "1136799" },
+    { "idx": 5, "label": "Emily", "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5", "respond_user_id": "1136808" }
+  ],
+  "egress_log_key": "test:egress:csmember-offer-t1-20260630",
+  "egress_log": [
+    { "guard": "save-message-redis", "kind": "would_log", "blocked": true },
+    { "guard": "save-session-vars", "kind": "would_write", "target": "crm:conversation-variables:PUT", "blocked": true, "note": "body contains the verbatim last_result_set that WOULD be frozen into session vars" },
+    { "guard": "sendmsg-sub", "kind": "would_send", "target": "437264483", "blocked": true }
+  ],
+  "main_message_list_test_len_after": 0,
+  "safety_gate": {
+    "S1_no_real_send": "PASS (sendmsg-sub got is_test=true; would_send only)",
+    "S2_no_assign_escalation_write": "PASS (Call 'sub-human-intervention' never executed)",
+    "S3_no_crm_contact_write": "PASS (save-session-vars would_write only; pg-upsert-session did not run; session-save-gate FALSE in uac)",
+    "S4_get_results_no_write_tool": "N/A (Call 'sub-get-results' never executed on escalate path)",
+    "S5_test_mode_present": "PASS (sendmsg sub received is_test=true; trigger carried test_run_id)",
+    "S6_token_sinks_bounded": "PASS (reformulator bypassed via mock -> 0 LLM token; AI Agent did not execute)"
+  },
+  "verdict": "PASS (zero egress; member_offer last_result_set carries a NAME field 'label')"
+}

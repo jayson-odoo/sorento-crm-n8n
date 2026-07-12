@@ -1,0 +1,318 @@
+{
+ "label": "6R-t1",
+ "test_run_id": "sim-6R-t1",
+ "text": "Srtub905 ETA",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Srtub905 ETA"
+   },
+   "test_run_id": "sim-6R-t1",
+   "ts": "2026-07-07T14:03:39.912-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for Srtub905",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Srtub905",
+        "hint": "product",
+        "canonical_code": "SRTUB905-BI-P",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (incoming): returned 2 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "7ecf0ee6-a40a-41e6-8125-fe2145b5830f",
+        "label": "SRTUB905-BI-P",
+        "entity_type": "product",
+        "product": "SRTUB905-BI-P",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": "63840468-76c8-43ac-b952-fbee040546ac",
+        "label": "SRTUB905-BI",
+        "entity_type": "product",
+        "product": "SRTUB905-BI",
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "disambiguation",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTUB905-BI-P\n2. SRTUB905-BI"
+    }
+   },
+   "test_run_id": "sim-6R-t1",
+   "ts": "2026-07-07T14:03:39.908-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTUB905-BI-P\n2. SRTUB905-BI",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": "7ecf0ee6-a40a-41e6-8125-fe2145b5830f",
+      "label": "SRTUB905-BI-P",
+      "entity_type": "product",
+      "product": "SRTUB905-BI-P",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": "63840468-76c8-43ac-b952-fbee040546ac",
+      "label": "SRTUB905-BI",
+      "entity_type": "product",
+      "product": "SRTUB905-BI",
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-6R-t1",
+   "ts": "2026-07-07T14:03:39.891-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839711",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Srtub905",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the ETA for Srtub905"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "Srtub905"
+   ],
+   "elapsed_ms": 489.17,
+   "resolutions": [
+    {
+     "token": "Srtub905",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTUB905-BI-P",
+       "uuid": "7ecf0ee6-a40a-41e6-8125-fe2145b5830f",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTUB905-BI-P",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTUB905-BI",
+       "uuid": "63840468-76c8-43ac-b952-fbee040546ac",
+       "match_field": "product_code",
+       "match_tier": "prefix",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTUB905-BI",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inbound_shipment"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": true,
+   "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+   "gate_clarification": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTUB905-BI-P\n2. SRTUB905-BI",
+   "compatible_entities": [
+    {
+     "uuid": "7ecf0ee6-a40a-41e6-8125-fe2145b5830f",
+     "entity_type": "product",
+     "code": "SRTUB905-BI-P"
+    },
+    {
+     "uuid": "63840468-76c8-43ac-b952-fbee040546ac",
+     "entity_type": "product",
+     "code": "SRTUB905-BI"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 2
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTUB905-BI-P\n2. SRTUB905-BI",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTUB905-BI-P\n2. SRTUB905-BI"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for Srtub905",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Srtub905",
+     "hint": "product",
+     "canonical_code": "SRTUB905-BI-P",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (incoming): returned 2 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": "7ecf0ee6-a40a-41e6-8125-fe2145b5830f",
+     "label": "SRTUB905-BI-P",
+     "entity_type": "product",
+     "product": "SRTUB905-BI-P",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": "63840468-76c8-43ac-b952-fbee040546ac",
+     "label": "SRTUB905-BI",
+     "entity_type": "product",
+     "product": "SRTUB905-BI",
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": "disambiguation",
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SRTUB905-BI-P\n2. SRTUB905-BI",
+   "quick_reply": null,
+   "result_set_len": 2,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

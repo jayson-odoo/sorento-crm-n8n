@@ -1,0 +1,23 @@
+{
+  "rollup": "warehouse-escalation-while-member_offer (CURRENT behavior, no fix)",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "target": "TEST clone txiPzSxy3Pclsz6v (reformulator fork CpxE8LroLzCkrAQN). Live spine 9qVyfUxmRQqrpGRMDLRuz UNTOUCHED.",
+  "scope": "parser (real reformulator, no mock). Mode regress-capture; session from n8n_test respond_contacts_test[437264483] pre-seeded member_offer.",
+  "cases": ["wh-esc-1-20260706.json", "wh-esc-2-20260706.json"],
+  "headline": "Both messages CLOBBERED to customer_service; NEITHER routes to warehouse; neither escalates. The real LLM correctly emits message_type=request_for_help + routing.suggested_team=warehouse for BOTH, but output_exchange's member_pick_context path (selection_context==member_offer + reply is not a valid numeric/name pick nor an affirmative) OVERRIDES: message_type->business_query, routing->prior customer_service/order_enquiries (reused), escalation.member_reprompt forced 'out_of_range', correction->true. Result: the bot re-offers the SAME customer_service CS-member list on both turns. msg2's 'don't want' sets is_affirmative=false but does NOT trip any decline/cancel arm - identical out_of_range reprompt.",
+  "answers_to_watch_items": {
+    "classified_request_for_help?": "LLM yes (both), but FINAL (clone-visible) message_type = business_query for both - output_exchange downgrades it. So downstream the clone treats them as business_query, not request_for_help.",
+    "msg2_is_affirmative_false_trips_decline_arm?": "NO. is_affirmative=false is set and preserved, but there is no member_offer decline arm; message_type does NOT become casual and escalation is NOT cancelled. Same out_of_range member reprompt as msg1.",
+    "final_routing_warehouse_or_clobbered?": "CLOBBERED to customer_service on BOTH (routing warehouse discarded; prior member_offer routing reused via entity_op:reuse + member_pick_context). Matches the task's predicted current behavior."
+  },
+  "zero_egress_gate_S0": "HELD on BOTH cases. S1 PASS (sendmsg subs 7675054/7675303 short-circuited at test-guard, is_test=true, no api.respond.io message POST; no send-message-files/images/video). S2 PASS (no human-intervention sub invoked - escalation false - so no assign/SLA/PIC-comment/assignee-queue write). S3 PASS (save-session-vars + update-human-intervened orphaned/absent -> guard-d-record would_write only; session write went to n8n_test respond_contacts_test, not prod). S4 PASS trivially (get-results never reached). S5 PASS (is_test=true on trigger + reformulator fork + sendmsg sub). S6 PASS (parser tier: exactly ONE reformulator AI Agent LLM call per turn; Basic LLM Chain dark; no new/unexpected token sink). NO HALT.",
+  "token_sink_note": "1 reformulator LLM per turn only; no reformulator-of-reformulator, Basic LLM Chain stayed dark. get-results LLM liveness NOT exercised this run (get-results never reached on either turn).",
+  "findings_for_planner_reviewer": [
+    "FINDING A (behavior): a user who, mid member_offer, asks to escalate to a DIFFERENT team (warehouse) is dead-ended into an infinite re-offer of the customer_service member list. The LLM understood intent (request_for_help + warehouse) but output_exchange's member_pick_context out_of_range logic discards both the new team-routing and the request_for_help classification and just re-prompts the customer_service list. Neither a valid team-switch nor an escalation-to-human happens.",
+    "FINDING B (decline not handled): 'don't want' (is_affirmative=false) inside member_offer is not treated as a decline/cancel - it produces the same out_of_range reprompt. There is no member_offer exit/cancel path for a negative reply; the only escapes are a valid numeric/name pick or 'yes'.",
+    "FINDING C (mechanism): the clobber is entirely in the reformulator's output_exchange (member_pick_context branch). deriveRouting/the LLM routing are bypassed for member_offer turns. Any fix to allow a mid-offer team-switch or decline must live in output_exchange, and (being inside the reformulator) is invisible to a mock_reformulator_output - it needs the real/rebased fork.",
+    "FINDING D (wiring, unchanged from prior runs): clone calls reformulator fork CpxE8LroLzCkrAQN and sendmsg sub aoydkG1dbItXR5jXFEQsP; both guarded (is_test short-circuit). Live spine untouched.",
+    "NOTE: LESSON 31's 'host psql unavailable / .env placeholder' is stale for reads/writes - host psql with .env password 'your_secure_password' works against n8n_test (seed/read confirmed current_database()=n8n_test)."
+  ]
+}

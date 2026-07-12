@@ -1,0 +1,18 @@
+{
+  "test_run_id": "mor-row4-20260706",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "case": "Row 4 (priority, §10 Gap B / V6+V9) — member_offer plain decline",
+  "reply": "no thanks",
+  "contact": "437264483",
+  "scope": "parser (real fork CpxE8LroLzCkrAQN @ a5900ed0; OMIT mock). mode=regress-capture.",
+  "clone_exec": "7682982", "refm_sub_exec": "7682983", "sendmsg_sub_exec": "7682987 (aoydkG1dbItXR5jXFEQsP)",
+  "verdict": "PASS",
+  "fork_output_exchange": {"message_type":"casual","is_affirmative":false,"escalation":{"is_escalation_confirmation":false,"escalation_declined":true},"correction":false,"member_reprompt":"ABSENT","member_pick_context":true},
+  "spine_branch": "If2 FALSE -> If10[out1 FALSE] -> is-escalation-declined[out0 TRUE] -> tag-escalation-declined(branch_kind=escalation_declined) -> escalate-catalog(escalation_declined: response='Escalation declined.', manualResponse=true, includeResponse=true, is_escalate_offer=false) -> cs-offer-gate[out1 FALSE] -> compile-current-state (response='Escalation declined.')",
+  "final_response": "Escalation declined.",
+  "basic_llm_chain": "N — absent from runData (HARD-ASSERT PASS)",
+  "not_executed": ["Basic LLM Chain","get-cs-members","build-cs-member-offer","Call 'sub-human-intervention'","Assign or unassign a Conversation1","get-results"],
+  "egress_log": {"guard-d-record":"would_write (prod save-session-vars PUT blocked)","guard-h-record":"would_log (save-message-redis blocked)","sendmsg_sub_7682987":"would_send 'Escalation declined.' with is_test=true (short-circuit)","media_guards_e_f_g":"NEVER executed","human_intervention":"NOT called","session_write":"pg-upsert-session -> n8n_test respond_contacts_test (NOT prod)"},
+  "S0": {"S1":"PASS","S2":"PASS (no human-intervention)","S3":"PASS","S4":"PASS (get-results not reached)","S5":"PASS (is_test/test_mode true)","S6":"PASS (1 fork LLM; Basic LLM Chain dark)"}
+}

@@ -1,0 +1,266 @@
+{
+ "label": "2C",
+ "test_run_id": "sim-2C",
+ "text": "Sorento wall hung WC certificate",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "Sorento wall hung WC certificate"
+   },
+   "test_run_id": "sim-2C",
+   "ts": "2026-07-07T13:56:27.580-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_product_attachment",
+      "domain_hint": "product_attachment",
+      "user_goal": "trying to get the certificate for Sorento wall hung WC",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "Sorento wall hung WC",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "certificate",
+        "hint": "attachment_type",
+        "canonical_code": "Certification",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing_certification",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?"
+    }
+   },
+   "test_run_id": "sim-2C",
+   "ts": "2026-07-07T13:56:27.575-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "sim-2C",
+   "ts": "2026-07-07T13:56:27.560-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7839107",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "Sorento wall hung WC",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "certificate",
+     "hint": "attachment_type",
+     "canonical_code": "certificate",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_certification",
+    "suggested_agent": "general_enquiries"
+   },
+   "requested_attributes": [],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to get the certificate for Sorento wall hung WC"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "Sorento wall hung WC",
+    "certificate"
+   ],
+   "elapsed_ms": 717.64,
+   "resolutions": [
+    {
+     "token": "Sorento wall hung WC",
+     "resolved": false,
+     "ambiguous": false,
+     "matches": [],
+     "alternatives": []
+    },
+    {
+     "token": "certificate",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4599",
+       "match_field": "type_name",
+       "match_tier": "substring",
+       "similarity": null,
+       "display": {
+        "code": null,
+        "type_name": "Certification",
+        "description": "Certification, Cert, Certificate, Watermark Cert, WCM, PPS, Ikram by Purchasing"
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [
+    "Sorento wall hung WC"
+   ],
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "1439736c-20ca-4bba-b387-b242ff4a4599",
+     "entity_type": "attachment_type",
+     "code": "Certification"
+    }
+   ],
+   "gate_debug": {
+    "domain": "product_attachment",
+    "allowed_lookup": [
+     "product",
+     "attachment",
+     "attachment_type",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_product_attachment",
+   "domain_hint": "product_attachment",
+   "user_goal": "trying to get the certificate for Sorento wall hung WC",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "Sorento wall hung WC",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    },
+    {
+     "raw": "certificate",
+     "hint": "attachment_type",
+     "canonical_code": "Certification",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing_certification",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?",
+   "last_result_set": [],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "Could not find a certificate for product Sorento wall hung WC. Would you like me to escalate to purchasing_certification team?",
+   "quick_reply": null,
+   "result_set_len": 0,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

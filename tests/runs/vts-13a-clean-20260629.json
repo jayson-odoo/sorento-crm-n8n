@@ -1,0 +1,81 @@
+{
+  "case": "13a-clean (G1 pre-promote gate closure)",
+  "change": "vague-token-clarify-split",
+  "uac": "n8n-workflows-init/tests/UAC.md §13a",
+  "gate": "G1 (HARD pre-promote) — clean-session parser-tier 13a e2e",
+  "date": "2026-06-29",
+  "tester": "sorento-tester",
+  "scope": "parser (real reformulator, no mock_reformulator_output)",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "reformulator_copy": "SB8wEXKdpITfhYXA (sub-query-reformulator TEST delta2; versionId==activeVersionId 177a0c71)",
+  "live_untouched": ["9qVyfUxmRQqrpGRMDLRuz", "XTODTw-dJcV0uRdC056hG"],
+  "trigger": {"text": "one siew srtkt72ss already delivered?", "contact_id": "437264483", "test_run_id": "vts-13a-clean-20260629", "scope": "parser", "mode": "regress-capture"},
+
+  "session_source_mechanism": {
+    "chosen": "(b) clean session via n8n_test, mode=regress-capture",
+    "why_not_a": "Option (a) [inject previous_conversation_state in the redis item] is STRUCTURALLY INEFFECTIVE: the clone's Call 'sub-query-reformulator' sources previous_conversation_state from $('get-session-vars').first().json.session_vars.variables (the session read), NOT from the redis item. No gate consumes injected redis state over the session read. So (a) cannot bypass the prod conversation-variables read in uac mode — confirming the documented masking.",
+    "mechanism": "mode=regress-capture -> session-get-gate TRUE -> pg-get-session reads respond_contacts_test (n8n_test, isolated). I reset respond_contacts_test[437264483] to {\"variables\":{},\"referenced_result_set\":[]} (backup saved) so previous_conversation_state.variables={}. session-save-gate TRUE -> pg-upsert-session writes the new session to respond_contacts_test (n8n_test). The prod conversation-variables PUT node (save-session-vars) is orphaned and only logged would_write.",
+    "zero_prod_session": "CONFIRMED. get-session-vars output = {\"variables\":{},\"referenced_result_set\":[]} (from n8n_test, NOT prod). Session save landed in n8n_test (respond_contacts_test[437264483] updated_at 15:46:15 now holds the 'one siew' capture). NO prod conversation-variables read, NO prod conversation-variables PUT, NO respond_contacts.session_vars write."
+  },
+
+  "chat_memory_finding": "The reformulator copy's 'Postgres Chat Memory' node is bound to PROD sorento-crm-db (cred ETJL5KoaA1UpkDip, default table n8n_chat_histories) — BUT it is ORPHANED: its ai_memory output is [[]] (not wired to the AI Agent). Empirically confirmed by sub-exec 6977980 AI Agent tracing: ai.agent.memory.loads=0, ai.agent.memory.saves=0; the Postgres Chat Memory node did not execute. => the real reformulator did ZERO prod chat-memory read AND ZERO prod chat-memory write. This corrects the prior rollup's worry that chat memory (keyed by contact_id) co-drives reuse — it does not, because it is disconnected. The ONLY reuse driver is previous_conversation_state (the session read), which is fully controlled via n8n_test.",
+
+  "executions": {
+    "seed": "6977968 (zz-canary-seed)",
+    "run_wrapper": "6977977 (zz-canary-run)",
+    "clone_exec": "6977978 (popped MY item; real reformulator ran ~9s)",
+    "reformulator_subexec": "6977980 (SB8wEXKdpITfhYXA; AI Agent ran 3045ms, OpenAI Chat Model 1 call)",
+    "egress_read": "6978049 (zz-canary-read)"
+  },
+
+  "verdict": "PASS — G1 GREEN",
+
+  "assertions": {
+    "A1_reformulator_emission": {
+      "status": "PASS",
+      "ai_agent_raw_output": "entities=[{raw:'one siew srtkt72ss', hint:'order', current_message:true, confident:false}]; entity_op='replace_combine'; message_type='business_query'; domain_hint='order'",
+      "note": "entity_op is replace_combine (NOT reuse); no entity_op_corrected flag (LLM emitted replace_combine directly). current_message:true and confident:false BOTH genuinely emitted by the live LLM on a FRESH turn (previous_conversation_state:{} passed in)."
+    },
+    "A2_output_exchange_preserves_confident": {
+      "status": "PASS",
+      "evidence": "Call 'sub-query-reformulator' output (post output_exchange) = entities[0]={raw:'one siew srtkt72ss', hint:'order', current_message:true, confident:false}. The current-message/replace_combine arm preserved confident:false (no reuse-arm rebuild). This is the live-equivalent mechanism the masking previously defeated."
+    },
+    "A3_branch_to_vague_clarify": {
+      "status": "PASS",
+      "resolve_entity": "real http read (elapsed 888ms); unresolved_tokens=['one siew srtkt72ss'] (resolved:false, matches:[])",
+      "If3": "TRUE (gate_passed:false, domain order, entities_count:0 -> not-found)",
+      "not_found_error_message": {"is_clarification": true, "require_specific": false, "escalate_message": "I captured \"one siew srtkt72ss\" but couldn't tell which part is which. For a order enquiry, please give me a labeled specific — e.g. order, customer_order, transporter, customer, or product."},
+      "escalate_catalog": {"is_escalate_offer": false, "manualResponse": true, "branch_kind": "not_found"},
+      "no_escalate_substring": "CONFIRMED — final message contains NO 'escalate to' / 'Would you like me to escalate'; carries domain labels {order, customer_order, transporter, customer, product}.",
+      "final_user_response": "I captured \"one siew srtkt72ss\" but couldn't tell which part is which. For a order enquiry, please give me a labeled specific — e.g. order, customer_order, transporter, customer, or product."
+    }
+  },
+
+  "safety_gate_S0": {
+    "verdict": "S1-S6 PASS (zero real egress, zero prod write)",
+    "egress_log_test_egress_vts-13a-clean-20260629": [
+      {"guard": "save-message-redis", "kind": "would_log", "blocked": true},
+      {"guard": "save-session-vars", "kind": "would_write", "target": "crm:conversation-variables:PUT", "blocked": true, "note": "prod PUT node orphaned; real save went to n8n_test via pg-upsert-session"},
+      {"guard": "sendmsg-sub", "kind": "would_send", "target": "437264483", "message": "the clarify ask", "result_set": [], "blocked": true}
+    ],
+    "S1": "PASS — sendmsg-sub would_send blocked; no api.respond.io message POST.",
+    "S2": "PASS — escalation branch NOT taken (If2 not taken; vague-clarify is not_found path). No assign/SLA/comment/assignee-queue/human-intervention.",
+    "S3": "PASS — save-session-vars (prod conversation-variables PUT) blocked/orphaned; session save went to n8n_test (isolated). Zero prod session read (get-session-vars sourced n8n_test) and zero prod session write.",
+    "S4": "PASS (trivial) — get-results never ran (If3 TRUE -> direct not-found). No MCP write tool, no crm_it_support_ticket_create.",
+    "S5": "PASS — reformulator sub received is_test:true (When Executed by Another Workflow.is_test=true); all egress blocked/logged.",
+    "S6": "PASS — parser tier: only the reformulator LLM (1 OpenAI Chat Model call) executed. No get-results LLM, no Basic LLM Chain. Prod chat memory orphaned (0 loads/0 saves)."
+  },
+
+  "concurrency_incident": {
+    "what": "An active sibling regression replay (orchestrator aROEBlQyyoQaB7a1 exec 6974683, label 'replay-vagueA-20260629-1502', started ~15:02) was concurrently consuming the shared redis list main-message-list-test (~36s cadence, mode=regress-replay).",
+    "first_attempt_collision": "My first seed+run (seed 6977658 @15:40:57, run 6977671 @15:41:10) straddled a replay tick: clone 6977672 popped a REPLAY item (replay:34404, contact 404285551) instead of mine; my item produced no egress. The zz-canary-seed 'Clear List' step + the ~13s seed->run latency caused the race; replay turn 34404 was processed by my run (minor disruption to the sibling replay — deterministic/pinned, zero prod egress, re-runnable).",
+    "successful_retry": "Re-fired seed (6977968) + run (6977977) back-to-back mid-gap (list llen=0); clone 6977978 cleanly popped MY item. No further collision.",
+    "flag_for_owner": "Running UAC seed/zz-canary-seed (which does Clear List on main-message-list-test) while a regression replay is active will corrupt the replay. Recommend: serialize UAC vs replay, or give the replay its own redis list. The sibling 'replay-vagueA' run may have one mis-processed turn (chat_history_id 34404)."
+  },
+
+  "scaffold_state": {
+    "zz-canary-seed Push Item.messageData": "currently holds the 13a-clean regress-capture item (left as-is). Do NOT run zz-canary-seed while a replay is active (its Clear List wipes the shared list).",
+    "zz-canary-read Read Egress.key": "currently test:egress:vts-13a-clean-20260629.",
+    "n8n_test backup": "/private/tmp scratchpad 437264483_session_backup_pre13aclean.json (pre-reset polluted session); current respond_contacts_test[437264483] holds the new clean 'one siew' capture."
+  }
+}

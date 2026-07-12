@@ -1,0 +1,77 @@
+{
+ "suite": "SIM diagnosis (sorento-consume-main TEST txiPzSxy3Pclsz6v, live parser XTODTw, uac mode)",
+ "date": "2026-07-08",
+ "driver_workflow": "zz-sim-drive (wWAEz1CHmyTRHAPC): webhook seed full item -> run clone (waitForSubWorkflow) -> read test:egress:{id}",
+ "safety_gate_S0": "PASS ALL 53 runs. Every egress entry would_* (would_log/would_write/would_send). NO real-egress node ran in any run (send-message-*/update-human-intervened/real save-session-vars PUT never executed). human-intervention-sub + save-session-vars only ever would_write. is_test=true propagated. get-presigned-url = benign CloudFront asset READ ran on 6 attachment cases (not a contact/CRM egress).",
+ "issues": {
+  "1_casual_clear_entity_carryover": {
+   "repro_confirmed": true,
+   "evidence": "1R: T1 'Check new style lighting order srt104 GY delivery' -> reformulator lumped ONE entity 'lighting order srt104 GY'(order,confident=false), NOT a customer didyoumean; T1 dead-ends not-found+CS roster. T2 'NEW STYLE LIGHTING (M) SDN BHD' re-parsed as FRESH customer query (entity_op replace, current_message=true) -> returned all 20 NEW STYLE LIGHTING orders UNFILTERED. srt104 GY DROPPED. Confirmed.",
+   "regression": "G1 T2 'hi' after stock query -> mtype=casual, entities cleared, 'Hello! How can I help you today?' PASS. G2 T2 '1' numbered pick from 30-item refset -> resolved SRTWC286-SH-NEW-P, returned stock. PASS.",
+   "negative": "N mid-offer T2 'hi' (ZZZ999XX escalate offer pending) -> mtype=casual, entities cleared, no escalate/retain. PASS (boundary holds).",
+   "note": "No case produced a customer 'didyoumean picker'; multi-match returns all rows directly (no picker at product/customer resolve)."
+  },
+  "2A_attachment_type_product_parse": {
+   "repro_confirmed": true,
+   "definitive": "Which entity failed: the ATTACHMENT_TYPE (certificate) was NOT emitted when product is descriptive. 2A-R 'Send me all Sorento WC certificate' -> entities=[Sorento(brand),WC(category)] ONLY; 'certificate' dropped, product degraded to brand+category(ambiguous) -> gate_passed=false -> asks 'Please provide the attachment type' (is_clarification=true).",
+   "evidence": "Contrast: with a specific code the attachment_type IS emitted. 2A-G1 'SRTKT1934SS certificate' -> [SRTKT1934SS(product)+certificate(attachment_type)] (product ambiguous 2 variants -> picker). 2A-G2 'photo for SRTWC8383' -> [SRTWC8383(product)+photo(attachment_type)] photo parsed OK (product ambiguous 8 -> picker).",
+   "negative": "2A-N 'Send me Sorento WC' (no attach word) -> domain=master_products, returned product catalog; NO certificate injected. PASS."
+  },
+  "2B_2C_roster_carry_literal": {
+   "repro_confirmed": true,
+   "evidence": "2B-R T2 'Certificate' (refset=T1 14-WC roster): reformulator carried Sorento(brand,cm=false)+WC(category,cm=false)+certificate(attachment_type) BUT RE-SEARCHED (produced a DIFFERENT 14 candidates: SORENTO CATALOGUE/BAG/WC7019...); did NOT apply cert to the retained T1 roster. Roster carry FAILS. 2B-G T2 'photo' -> DROPPED 'photo', re-asked attachment type (is_clarification=true) -- bare 'photo' follow-up not parsed (whereas bare 'Certificate' was).",
+   "resolve_2C": "2C 'Sorento wall hung WC certificate' -> product token 'Sorento wall hung WC' UNRESOLVED (0 matches, NOT a family) + certificate resolved -> not-found 'Could not find a certificate for product Sorento wall hung WC'. Answer: 0 (not family).",
+   "negative": "2B-N T2 'SRTBF11705 photo' (NEW query) -> fresh [SRTBF11705(product,cm=true)+photo(attachment_type,cm=true)], did NOT reuse old roster, returned the photo attachment. PASS (get-presigned-url benign read ran; real send orphaned)."
+  },
+  "3_truthful_notfound": {
+   "repro_confirmed": true,
+   "definitive": "not-found messages use the RAW token for inbound_shipment hint and do NOT distinguish resolved-but-no-incoming from not-found. 3R1 'Srtpcat126 have eta' -> resolver RESOLVED SRTPCAT126(exact) BUT get-results has_result=false -> message 'Could not find incoming for Srtpcat126' (RAW case, no 'found X but no incoming'). 3G-data 'check eta SRTUB905-BI' (product hint) -> 'Could not find incoming for product SRTUB905-BI' (canonical).",
+   "regression": "3R2 'Srt79ss GM ETA' -> resolves SRT79-SS-GM and HAS incoming (ETA 2026-07-19 qty192) -> returns data (not a not-found in current data). ZZZ999XX(smoke/1N-t1) truly-unknown -> 'Could not find incoming for ZZZ999XX'. PASS.",
+   "negative": "3Nmulti 'eta SRT79-SS-GM and ZZZ999XX' -> did NOT itemize; lumped both raw tokens into ONE not-found 'Could not find incoming for SRT79-SS-GM ZZZ999XX' and get-results NOT called (even though SRT79-SS-GM resolves+has data). Itemization boundary FAILS."
+  },
+  "4_dealer_delivery_clarify": {
+   "repro_confirmed": true,
+   "evidence": "4R-t1 'Send me William dealer only delivery 7/7/2026' -> NO dual-domain clarify; domain=order directly, entity William(customer)+date; 'dealer only' dropped (no promotion branch, no access_level). William has no order on 7/7 -> not-found+CS roster. Clarify quick-reply does NOT fire.",
+   "regression": "4G1 'delivery for William 7/7/2026' -> order directly, no clarify. PASS. 4G2 'send me dealer flyer' -> promotion directly, returned 10 dealer flyers. PASS.",
+   "negative": "4N 'order status 202607-0227' -> resolved order, returned status, no clarify. PASS."
+  },
+  "5_silent_customer_drop": {
+   "repro_confirmed": false,
+   "definitive": "Date-only leak does NOT reproduce in current build. 5R 'Delxue ceramic delivery 7/7/2026'(typo) -> entity lumped confident=false -> gate_passed=FALSE ('no entities and order requires a scoping entity') -> get-results NOT called (gr_sub=None; NO customer_ids, NO date-only query) -> not-found+CS roster. NO SKY-PURE date-only dump.",
+   "regression": "5R2 'Deluxe ceramic delivery 7/7/2026'(correct) -> resolved customer DELUXE CERAMIC, get-results scoped to that customer, returned 1 order. 5G 'YOO LIVING delivery 7/7/2026' -> resolved, returned 2 YOO LIVING orders. PASS.",
+   "negative": "5N 'delivery 7/7/2026' (no customer) -> entities=[], gate_passed=FALSE -> clarification 'please specify a order/customer/product...' (is_clarification=true), get-results NOT called. NO all-customer dump. PASS."
+  },
+  "6_prefetch_picker_availability": {
+   "repro_confirmed": true,
+   "evidence": "6R-t1 'Srtub905 ETA' -> ambiguous picker '...please choose: 1. SRTUB905-BI-P 2. SRTUB905-BI' with NO data-availability annotation. 6R-t2 pick '1' -> SRTUB905-BI-P resolved, get-results has_result=false -> DEAD-END 'Could not find incoming for SRTUB905-BI-P'. Picker never pre-checked availability; pick dead-ends.",
+   "regression": "6G1 'SRTUB905-BI ETA' -> gate passed but SRTUB905-BI has NO incoming currently -> not-found (the 'has incoming' premise does not hold in current data).",
+   "negative_G2": "data-constrained: could not construct a picker where a candidate provably HAS incoming (both SRTUB905 candidates empty). 6R-t1 is effectively the all-candidates-empty case and it does NOT annotate 'none have incoming'."
+  },
+  "7_ambiguity_not_variant_spelling": {
+   "repro_confirmed": true,
+   "definitive": "At T1 both srt79ss and srt79-ss go IDENTICALLY to access-level-choice (promotion needs access level; resolver NOT called). Divergence appears at T2 (after access level): 7R-t2 'srt79ss'+Sorento Dealer -> resolver resolutions[0].ambiguous=TRUE (matches 2 promotions + products SRT79-SS/-GM/-BL) -> gate_passed=FALSE 'Ambiguous result' -> MISS 'Could not find promotion for srt79ss'. 7G1-t2 'srt79-ss'+Sorento Dealer -> gate_passed=TRUE -> promotion PDF returned. Resolver does NOT return the same: dashless=ambiguous, dashed=clean.",
+   "regression": "7G1 srt79-ss hit (PDF). 7G2 'check stock srt86cr'(1G1-t1) resolves+returns stock. PASS.",
+   "negative": "7N-t2 'zzz999xx'+Sorento Dealer -> resolver 0 matches, gate_passed=FALSE -> not-found; did NOT false-pick. BUT message 'Could not find promotion for zzz999xx for Sorento Dealer' does NOT say 'zzz999xx not found in the system' (truthfulness gap, ties to #3)."
+  },
+  "8_sibling_alternatives_on_miss": {
+   "repro_confirmed": true,
+   "definitive": "8R 'check eta SRTBF11705' -> resolver KNOWS the sibling (resolutions.matches has SRTBF11705 + SRTBF11705-NEW) but gate picks SRTBF11705(exact); get-results RAW 'alternatives':[] is EMPTY, relaxed_axis=null -> not-found with NO sibling. SRTBF11705-NEW is NOT in alternatives[] despite HAVING incoming (8G1: 277+23 qty). Sibling-alternatives NOT surfaced.",
+   "regression": "8G1 'check eta SRTBF11705-NEW' -> returns data (2 containers), no alternatives block. PASS. (any code with incoming: 3R2/8G1 return data, alternatives absent).",
+   "negative": "8N 'check eta SRTZZ0001' (no siblings/no data) -> plain not-found, no fake alternatives. PASS.",
+   "note": "alternatives[]/relaxed_axis DOES work for ORDER-date axis (9R-t1 returned date alternatives) but NOT for incoming product siblings."
+  },
+  "9_gratitude_closing_regression": {
+   "repro_confirmed": true,
+   "definitive": "9R-t2 'okay thankyou' (order state) -> mtype=business_query(NOT casual), affirm=true, tag-out-of-scope, send message=NULL, AND human-intervention would_write => WOULD-ASSIGN to customer_service (order_enquiries). A bare thank-you triggers a staff assignment. 9R2-t2 'thank you' (forms state) -> RE-LISTS all 18 forms.",
+   "regression": "9G1-t2 'and its ETA?' (from srt86cr stock) -> stays BUSINESS: domain=incoming, carried srt86cr(cm=false) -> incoming picker. Stickiness intact PASS. 9G2-t2 'yes' (ZZZ999XX escalate offer) -> tag-out-of-scope + human-intervention would_write to PURCHASING (escalation FIRES) though mtype=casual + message null.",
+   "negative": "9N 'thanks, can you also check SRT79-SS-GM stock' -> domain=inventory, returned stock (qty 0). Gratitude+request stays BUSINESS. PASS.",
+   "safety_note": "All human-intervention writes are would_write (is_test guarded); NO real assign. But demonstrates prod severity: a plain closing would assign staff."
+  },
+  "10_replyto_escalation_team": {
+   "repro_confirmed": true,
+   "definitive": "LLM does NOT emit domain=incoming from the injected replyTo (domain_hint=None in EVERY reply-to turn). 10R-t2 'Nobody reply me' replyTo=incoming ETA answer -> domain_hint=None, mtype=request_for_help, team=PURCHASING (inherited from prior routing, NOT derived from replyTo), human-intervention would_write to purchasing/incoming_stock_enquiries. => team is state-inherited, not replyTo-derived (points to a downstream/state fix, not a prompt-derivation).",
+   "regression": "10G1-t2 order-miss + 'Nobody reply me' -> domain=None, team=customer_service (inherited), would-assign CS. PASS. 10G2 'I want to talk to a human' (no context) -> mtype=request_for_help, team=customer_service (default), would-assign CS, no crash. PASS.",
+   "negative": "10N-t2 'Nobody reply me' replyTo=master_products delivered list -> mtype=casual (Basic LLM Chain), 'I see no one has replied yet...', NO human-intervention would_write, NO forced team. PASS (delivered non-escalation answer does not force a team)."
+  }
+ }
+}

@@ -1,0 +1,597 @@
+{
+ "label": "8G1",
+ "test_run_id": "sim-8G1",
+ "text": "check eta SRTBF11705-NEW",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "check eta SRTBF11705-NEW"
+   },
+   "test_run_id": "sim-8G1",
+   "ts": "2026-07-07T14:07:15.962-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/packing_list/7de883ee-5e09-4557-b8c7-673dc31a2ad1/UETU5327003.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260707%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260707T180715Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1cb02d68d0754d833493c0d6476db01b18bcffb02321c47ab3e1c372e9b33fc3",
+    "filename": "UETU5327003.xlsx"
+   },
+   "test_run_id": "sim-8G1",
+   "ts": "2026-07-07T14:07:15.949-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/packing_list/2fe0ffb3-19f1-41f5-92de-38bed5c8cb9b/GXYU5115422.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260707%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260707T180715Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1de5a35a3fcd49071b2b96fbded646de76e21c012809ee940a61526cdf984807",
+    "filename": "GXYU5115422.xlsx"
+   },
+   "test_run_id": "sim-8G1",
+   "ts": "2026-07-07T14:07:15.907-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for SRTBF11705-NEW",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "SRTBF11705-NEW",
+        "hint": "product",
+        "canonical_code": "SRTBF11705-NEW",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (incoming): returned 2 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "SRTBF11705-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": null,
+        "label": "SRTBF11705-NEW",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705-NEW\n*Container:* GXYU5115422\n*Estimated Arrival Date:* 2026-06-21\n*Incoming Quantity:* 277\n*Warehouse Allocations:* BRW (277)\n\n2. *Product Code:* SRTBF11705-NEW\n*Container:* UETU5327003\n*Estimated Arrival Date:* 2026-07-02\n*Incoming Quantity:* 23\n*Warehouse Allocations:* BRW (23)"
+    }
+   },
+   "test_run_id": "sim-8G1",
+   "ts": "2026-07-07T14:07:15.697-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705-NEW\n*Container:* GXYU5115422\n*Estimated Arrival Date:* 2026-06-21\n*Incoming Quantity:* 277\n*Warehouse Allocations:* BRW (277)\n\n2. *Product Code:* SRTBF11705-NEW\n*Container:* UETU5327003\n*Estimated Arrival Date:* 2026-07-02\n*Incoming Quantity:* 23\n*Warehouse Allocations:* BRW (23)",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "SRTBF11705-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": null,
+      "label": "SRTBF11705-NEW",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-8G1",
+   "ts": "2026-07-07T14:07:15.683-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_send",
+  "would_send",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840022",
+  "nodes_ran": 50,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [
+   "get-presigned-url"
+  ],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "SRTBF11705-NEW",
+     "hint": "inbound_shipment",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "replace_combine",
+   "correction": false,
+   "user_goal": "trying to check the ETA for SRTBF11705-NEW"
+  },
+  "resolve_entity": {
+   "tokens": [
+    "SRTBF11705-NEW"
+   ],
+   "elapsed_ms": 534.08,
+   "resolutions": [
+    {
+     "token": "SRTBF11705-NEW",
+     "resolved": true,
+     "ambiguous": false,
+     "matches": [
+      {
+       "entity_type": "product",
+       "canonical_code": "SRTBF11705-NEW",
+       "uuid": "6c5596dc-53ac-4026-a693-9f9d4f95b556",
+       "match_field": "product_code",
+       "match_tier": "exact",
+       "similarity": null,
+       "display": {
+        "product_name": "SRTBF11705-NEW",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "inbound_shipment"
+   ],
+   "fallback_types_found": [
+    "product"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "6c5596dc-53ac-4026-a693-9f9d4f95b556",
+     "entity_type": "product",
+     "code": "SRTBF11705-NEW"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 1
+   }
+  },
+  "get_results": {
+   "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705-NEW\n*Container:* GXYU5115422\n*Estimated Arrival Date:* 2026-06-21\n*Incoming Quantity:* 277\n*Warehouse Allocations:* BRW (277)\n\n2. *Product Code:* SRTBF11705-NEW\n*Container:* UETU5327003\n*Estimated Arrival Date:* 2026-07-02\n*Incoming Quantity:* 23\n*Warehouse Allocations:* BRW (23)",
+   "response_intro": "I have attached the file(s) below.",
+   "answers": [
+    {
+     "title": "SRTBF11705-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTBF11705-NEW"
+      },
+      {
+       "label": "Container",
+       "value": "GXYU5115422"
+      },
+      {
+       "label": "Estimated Arrival Date",
+       "value": "2026-06-21"
+      },
+      {
+       "label": "Incoming Quantity",
+       "value": 277
+      },
+      {
+       "label": "Warehouse Allocations",
+       "value": "BRW (277)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    },
+    {
+     "title": "SRTBF11705-NEW",
+     "fields": [
+      {
+       "label": "Product Code",
+       "value": "SRTBF11705-NEW"
+      },
+      {
+       "label": "Container",
+       "value": "UETU5327003"
+      },
+      {
+       "label": "Estimated Arrival Date",
+       "value": "2026-07-02"
+      },
+      {
+       "label": "Incoming Quantity",
+       "value": 23
+      },
+      {
+       "label": "Warehouse Allocations",
+       "value": "BRW (23)"
+      }
+     ],
+     "flags": {
+      "discontinued": false,
+      "expired": false
+     }
+    }
+   ],
+   "attachments": [
+    {
+     "url": "https://cdn-sorento.com/packing_list/2fe0ffb3-19f1-41f5-92de-38bed5c8cb9b/GXYU5115422.xlsx",
+     "filename": "GXYU5115422.xlsx",
+     "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "attachmentType": null
+    },
+    {
+     "url": "https://cdn-sorento.com/packing_list/7de883ee-5e09-4557-b8c7-673dc31a2ad1/UETU5327003.xlsx",
+     "filename": "UETU5327003.xlsx",
+     "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     "attachmentType": null
+    }
+   ],
+   "action_links": [],
+   "last_updated_at": null,
+   "has_result": true,
+   "alternatives": [],
+   "relaxed_axis": null
+  },
+  "get_results_sub_exec": "7840029",
+  "not_found_msg": null,
+  "build_suggest_offer": null,
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for SRTBF11705-NEW",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "SRTBF11705-NEW",
+     "hint": "product",
+     "canonical_code": "SRTBF11705-NEW",
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (incoming): returned 2 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": null,
+     "label": "SRTBF11705-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": null,
+     "label": "SRTBF11705-NEW",
+     "entity_type": null,
+     "product": null,
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705-NEW\n*Container:* GXYU5115422\n*Estimated Arrival Date:* 2026-06-21\n*Incoming Quantity:* 277\n*Warehouse Allocations:* BRW (277)\n\n2. *Product Code:* SRTBF11705-NEW\n*Container:* UETU5327003\n*Estimated Arrival Date:* 2026-07-02\n*Incoming Quantity:* 23\n*Warehouse Allocations:* BRW (23)",
+   "quick_reply": null,
+   "result_set_len": 2,
+   "is_test": true
+  },
+  "get_results_params": {
+   "nodes": [
+    "When Executed by Another Workflow",
+    "entity-ids-transformer",
+    "MCP Client1",
+    "output-structurer"
+   ],
+   "candidate_outputs": {
+    "entity-ids-transformer": {
+     "product_ids": [
+      "6c5596dc-53ac-4026-a693-9f9d4f95b556"
+     ],
+     "_diagnostics": {
+      "entities_in": 1,
+      "total_uuids_passed": 1,
+      "skipped": [],
+      "unmapped_types": []
+     },
+     "view": "render",
+     "date_mode": null,
+     "contact_id": "437264483",
+     "space_id": "364817",
+     "access_levels": [],
+     "is_active": null
+    },
+    "MCP Client1": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "result_type": "incoming_stock",
+        "intro": "I have attached the file(s) below.",
+        "items": [
+         {
+          "title": "SRTBF11705-NEW",
+          "fields": [
+           {
+            "label": "Product Code",
+            "value": "SRTBF11705-NEW"
+           },
+           {
+            "label": "Container",
+            "value": "GXYU5115422"
+           },
+           {
+            "label": "Estimated Arrival Date",
+            "value": "2026-06-21"
+           },
+           {
+            "label": "Incoming Quantity",
+            "value": 277
+           },
+           {
+            "label": "Warehouse Allocations",
+            "value": "BRW (277)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         },
+         {
+          "title": "SRTBF11705-NEW",
+          "fields": [
+           {
+            "label": "Product Code",
+            "value": "SRTBF11705-NEW"
+           },
+           {
+            "label": "Container",
+            "value": "UETU5327003"
+           },
+           {
+            "label": "Estimated Arrival Date",
+            "value": "2026-07-02"
+           },
+           {
+            "label": "Incoming Quantity",
+            "value": 23
+           },
+           {
+            "label": "Warehouse Allocations",
+            "value": "BRW (23)"
+           }
+          ],
+          "flags": {
+           "discontinued": false,
+           "expired": false
+          }
+         }
+        ],
+        "attachments": [
+         {
+          "url": "https://cdn-sorento.com/packing_list/2fe0ffb3-19f1-41f5-92de-38bed5c8cb9b/GXYU5115422.xlsx",
+          "filename": "GXYU5115422.xlsx",
+          "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "attachmentType": null
+         },
+         {
+          "url": "https://cdn-sorento.com/packing_list/7de883ee-5e09-4557-b8c7-673dc31a2ad1/UETU5327003.xlsx",
+          "filename": "UETU5327003.xlsx",
+          "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "attachmentType": null
+         }
+        ],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+       }
+      }
+     ]
+    },
+    "output-structurer": {
+     "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTBF11705-NEW\n*Container:* GXYU5115422\n*Estimated Arrival Date:* 2026-06-21\n*Incoming Quantity:* 277\n*Warehouse Allocations:* BRW (277)\n\n2. *Product Code:* SRTBF11705-NEW\n*Container:* UETU5327003\n*Estimated Arrival Date:* 2026-07-02\n*Incoming Quantity:* 23\n*Warehouse Allocations:* BRW (23)",
+     "response_intro": "I have attached the file(s) below.",
+     "answers": [
+      {
+       "title": "SRTBF11705-NEW",
+       "fields": [
+        {
+         "label": "Product Code",
+         "value": "SRTBF11705-NEW"
+        },
+        {
+         "label": "Container",
+         "value": "GXYU5115422"
+        },
+        {
+         "label": "Estimated Arrival Date",
+         "value": "2026-06-21"
+        },
+        {
+         "label": "Incoming Quantity",
+         "value": 277
+        },
+        {
+         "label": "Warehouse Allocations",
+         "value": "BRW (277)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      },
+      {
+       "title": "SRTBF11705-NEW",
+       "fields": [
+        {
+         "label": "Product Code",
+         "value": "SRTBF11705-NEW"
+        },
+        {
+         "label": "Container",
+         "value": "UETU5327003"
+        },
+        {
+         "label": "Estimated Arrival Date",
+         "value": "2026-07-02"
+        },
+        {
+         "label": "Incoming Quantity",
+         "value": 23
+        },
+        {
+         "label": "Warehouse Allocations",
+         "value": "BRW (23)"
+        }
+       ],
+       "flags": {
+        "discontinued": false,
+        "expired": false
+       }
+      }
+     ],
+     "attachments": [
+      {
+       "url": "https://cdn-sorento.com/packing_list/2fe0ffb3-19f1-41f5-92de-38bed5c8cb9b/GXYU5115422.xlsx",
+       "filename": "GXYU5115422.xlsx",
+       "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+       "attachmentType": null
+      },
+      {
+       "url": "https://cdn-sorento.com/packing_list/7de883ee-5e09-4557-b8c7-673dc31a2ad1/UETU5327003.xlsx",
+       "filename": "UETU5327003.xlsx",
+       "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+       "attachmentType": null
+      }
+     ],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": true,
+     "alternatives": [],
+     "relaxed_axis": null
+    }
+   }
+  }
+ }
+}

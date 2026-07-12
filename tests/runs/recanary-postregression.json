@@ -1,0 +1,46 @@
+{
+  "suite": "post-surgery regression gate — UAC re-run in uac mode (mode ABSENT)",
+  "date": "2026-06-27",
+  "target_clone": "txiPzSxy3Pclsz6v (now 97 nodes; was 81)",
+  "live_never_touched": "9qVyfUxmRQqrpGRMDLRuz",
+  "surgery_under_test": "Three read nodes (resolve-entity, check-access, get-session-vars) + also get-access-types and get-results rebuilt as: IF <mode> gate -> [fixture/pg branch (out0) | real -http call (out1)] -> NoOp re-named to ORIGINAL name so $('resolve-entity') etc. still resolve. uac mode (mode absent) => gate FALSE/out1 => real -http -> NoOp(orig).",
+  "verdict": "PASS — uac behavior byte-identical post-surgery on all three cases. uac confirmed intact; safe to proceed to orchestrator.",
+  "gate_wiring_verified_from_clone": {
+    "replay-check-access": "out0->fixture-check-access, out1->check-access-http(real). uac took out1.",
+    "replay-resolve-entity": "out0->fixture-resolve-entity, out1->resolve-entity-http(real). (not on §4/§2/§3 path)",
+    "session-get-gate": "out0->pg-get-session, out1->get-session-vars-http(real). uac took out1 (NOT pg).",
+    "session-save-gate": "out0->pg-upsert-session ONLY; out1 (uac branch) DEAD-ENDS (no connection). Real save-session-vars PUT has 0 inbound (still orphaned). No write path in uac mode.",
+    "replay-get-access-types / replay-get-results": "present for regression mode; real branch in uac (not on these 3 paths)."
+  },
+  "cases": [
+    {
+      "case": "§4 not-supported-domain", "contact": "437264483", "test_run_id": "re4-nsd-20260627",
+      "clone_exec": "6750022", "verdict": "PASS",
+      "rebuilt_reads": "session-get-gate FALSE -> get-session-vars-http(real, returned session_vars) -> get-session-vars NoOp(forwarded unchanged); replay-check-access FALSE -> check-access-http(real, allowed:true) -> check-access NoOp(forwarded). Consumers (reformulator call, If5) got correct data, no undefined/errors.",
+      "branch": "not-supported-domain TRUE -> Edit Fields5 -> compile -> respond2(guarded) + guard-d",
+      "egress_identical_to": "canary-not-supported.json — sendmsg-sub 'Sorry, we don't support direct goods receive & SPO...' + save-session-vars would_write (same response). MATCH.",
+      "byte_identical": true
+    },
+    {
+      "case": "§2 no-access", "contact": "457216562", "test_run_id": "re2-noaccess-20260627",
+      "clone_exec": "6750181", "verdict": "PASS",
+      "rebuilt_reads": "session-get-gate FALSE -> get-session-vars-http(real, {}) -> NoOp; replay-check-access FALSE -> check-access-http(real, allowed:false/deny_no_access) -> check-access NoOp forwarded allowed:false to If5 correctly.",
+      "branch": "If5 FALSE -> sorento-sub-respond-sendmsg-respond5(guarded) -> Execution Data. resolve-entity/get-results NOT reached.",
+      "egress_identical_to": "uac2-noaccess-20260627.json — single sendmsg-sub 'Sorry, you are not allowed to access general_enquiries', no result set. MATCH.",
+      "byte_identical": true
+    },
+    {
+      "case": "§3 escalation (assignment guard)", "contact": "437264483", "test_run_id": "re3-escalation-20260627",
+      "clone_exec": "6750260", "verdict": "PASS",
+      "rebuilt_reads": "check-access-http(real, allowed:true) -> check-access NoOp -> If5 TRUE -> If2 TRUE.",
+      "branch": "Call 'sub-human-intervention'(subexec 6750263, is_test=true) SHORT-CIRCUITED at test-guard -> test-guard-record ONLY; NONE of get-round-robin-assignee/Assign/conversation-sla-tracking-create/sub-add-comment/Redis-queue executed. + Edit Fields8 -> compile -> respond2(guarded) + guard-d.",
+      "egress_identical_to": "uac3-escalation-20260627.json — human-intervention-sub would_write + save-session-vars would_write + sendmsg-sub(null) + save-message-redis log. MATCH.",
+      "byte_identical": true
+    }
+  ],
+  "safety_gate_postsurgery": "S1 all send subs short-circuited (no api.respond.io 2xx); S2 human-intervention sub short-circuited (no assign/SLA/comment/queue); S3 save-session-vars real PUT 0-inbound + session-save-gate uac branch dead-ends (recorded as would_write only); S4 get-results not reached on these paths; S5 is_test=true on all sub calls; S6 reformulator bypassed (0 tokens). NONE of the 5 orphaned egress nodes executed. All runs status=success, no node errors.",
+  "findings": [
+    "Pre-existing guard-h-record malformed-JSON bug persists (payload.message empty) across all runs — cosmetic, log-only.",
+    "NEW save-session-vars surgery is safe: real PUT still orphaned (0 inbound); session-save-gate's uac (out1) branch is unconnected, only the regression pg branch (out0->pg-upsert-session) is wired."
+  ]
+}

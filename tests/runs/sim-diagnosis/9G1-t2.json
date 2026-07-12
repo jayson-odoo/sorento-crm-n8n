@@ -1,0 +1,327 @@
+{
+ "label": "9G1-t2",
+ "test_run_id": "sim-9G1-t2",
+ "text": "and its ETA?",
+ "mode": "uac",
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "and its ETA?"
+   },
+   "test_run_id": "sim-9G1-t2",
+   "ts": "2026-07-07T14:09:36.980-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for it",
+      "access_levels": [],
+      "entities": [
+       {
+        "raw": "srt86cr",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (incoming): returned 2 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+        "label": "SPSRT86CR-HOLDER",
+        "entity_type": "product",
+        "product": "SPSRT86CR-HOLDER",
+        "attachment_type": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+        "label": "SRT86CR-HEAD ONLY",
+        "entity_type": "product",
+        "product": "SRT86CR-HEAD ONLY",
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "disambiguation",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false
+     },
+     "user_response": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SPSRT86CR-HOLDER\n2. SRT86CR-HEAD ONLY"
+    }
+   },
+   "test_run_id": "sim-9G1-t2",
+   "ts": "2026-07-07T14:09:36.974-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SPSRT86CR-HOLDER\n2. SRT86CR-HEAD ONLY",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+      "label": "SPSRT86CR-HOLDER",
+      "entity_type": "product",
+      "product": "SPSRT86CR-HOLDER",
+      "attachment_type": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+      "label": "SRT86CR-HEAD ONLY",
+      "entity_type": "product",
+      "product": "SRT86CR-HEAD ONLY",
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "sim-9G1-t2",
+   "ts": "2026-07-07T14:09:36.956-04:00"
+  }
+ ],
+ "egress_kinds": [
+  "would_log",
+  "would_write",
+  "would_send"
+ ],
+ "SAFETY_gate": {
+  "S_all_would": true,
+  "S_no_real_egress_node": true,
+  "unsafe_kinds": [],
+  "real_egress_nodes_ran": [],
+  "PASS": true
+ },
+ "capture": {
+  "exec_id": "7840231",
+  "nodes_ran": 38,
+  "real_egress_nodes_ran": [],
+  "benign_reads_ran": [],
+  "reformulator": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "entities": [
+    {
+     "raw": "srt86cr",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "requested_attributes": [
+    "eta"
+   ],
+   "person_mention": null,
+   "order_status": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "access_levels": [],
+   "entity_op": "reuse",
+   "correction": false,
+   "user_goal": "trying to check the ETA for it"
+  },
+  "resolve_entity": {
+   "match_mode": "and",
+   "tokens": [
+    "srt86cr"
+   ],
+   "elapsed_ms": 25.99,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SPSRT86CR-HOLDER",
+     "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SPSRT86CR-HOLDER",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRT86CR-HEAD ONLY",
+     "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "display": {
+      "product_name": "SRT86CR-HEAD ONLY",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SPSRT86CR-HOLDER",
+      "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SPSRT86CR-HOLDER",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRT86CR-HEAD ONLY",
+      "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "display": {
+       "product_name": "SRT86CR-HEAD ONLY",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "gate_passed": false,
+   "require_specific": true,
+   "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+   "gate_clarification": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SPSRT86CR-HOLDER\n2. SRT86CR-HEAD ONLY",
+   "compatible_entities": [
+    {
+     "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+     "entity_type": "product",
+     "code": "SPSRT86CR-HOLDER"
+    },
+    {
+     "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+     "entity_type": "product",
+     "code": "SRT86CR-HEAD ONLY"
+    }
+   ],
+   "gate_debug": {
+    "domain": "incoming",
+    "allowed_lookup": [
+     "product",
+     "inbound_shipment",
+     "category",
+     "brand"
+    ],
+    "entities_count": 2
+   }
+  },
+  "get_results": null,
+  "get_results_sub_exec": null,
+  "not_found_msg": {
+   "escalate_message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SPSRT86CR-HOLDER\n2. SRT86CR-HEAD ONLY",
+   "is_clarification": false
+  },
+  "build_suggest_offer": {
+   "suggest_offer": false,
+   "quick_reply": null,
+   "escalate_message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SPSRT86CR-HOLDER\n2. SRT86CR-HEAD ONLY"
+  },
+  "access_level_choice": null,
+  "cs_member_offer": null,
+  "compile_state_vars": {
+   "message_type": "business_query",
+   "intent_hint": "check_incoming",
+   "domain_hint": "incoming",
+   "user_goal": "trying to check the ETA for it",
+   "access_levels": [],
+   "entities": [
+    {
+     "raw": "srt86cr",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": false,
+     "confident": true
+    }
+   ],
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "incoming_stock_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "response": "Previous turn (incoming): returned 2 records",
+   "last_result_set": [
+    {
+     "idx": 1,
+     "uuid": "cbf6c239-6eef-4b18-829f-81c974705ace",
+     "label": "SPSRT86CR-HOLDER",
+     "entity_type": "product",
+     "product": "SPSRT86CR-HOLDER",
+     "attachment_type": null,
+     "filename": null
+    },
+    {
+     "idx": 2,
+     "uuid": "d4f067ad-d744-48d2-82e5-95abfeecfbed",
+     "label": "SRT86CR-HEAD ONLY",
+     "entity_type": "product",
+     "product": "SRT86CR-HEAD ONLY",
+     "attachment_type": null,
+     "filename": null
+    }
+   ],
+   "selection_context": "disambiguation",
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "date_mode": null,
+   "match_mode": "and",
+   "contains_flyer": false
+  },
+  "tags_ran": [
+   "tag-not-found"
+  ],
+  "llm_ran": [],
+  "send": {
+   "node": "sorento-sub-respond-sendmsg-respond2",
+   "message": "incoming search needs to be more specific. Multiple matches found \u2014 please choose:\n1. SPSRT86CR-HOLDER\n2. SRT86CR-HEAD ONLY",
+   "quick_reply": null,
+   "result_set_len": 2,
+   "is_test": true
+  },
+  "get_results_params": null
+ }
+}

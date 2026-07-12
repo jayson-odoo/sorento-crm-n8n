@@ -1,0 +1,14 @@
+{
+  "test_run_id": "mor-v8-clarify-20260706",
+  "date": "2026-07-06",
+  "tester": "sorento-tester",
+  "case": "V8 genuine-clarify regression guard — prove the new is-escalation-declined IF did NOT starve the real Basic LLM Chain clarify path",
+  "contact": "437264483",
+  "scope": "parser (real fork; OMIT mock). mode=regress-capture.",
+  "attempts": [
+    {"reply":"huh what do you mean","session":"member_offer","clone_exec":"7683433","classified":"clarification","result":"is-escalation-declined[FALSE] -> If9[out1 FALSE] -> If1 -> tag-clarify-menu (deterministic menu). Basic LLM Chain NOT reached (clarification routes to menu, same as row 9).","basic_llm_chain":"N","note":"Confirms is-escalation-declined[FALSE]->If9 fires, but does NOT exercise Basic LLM Chain — not a valid V8 exercise."},
+    {"reply":"haha ok thanks","session":"neutral/empty (NOT member_offer)","clone_exec":"7683639","refm_sub":"7683640","classified":"casual","spine_branch":"is-escalation-declined[out1 FALSE] -> If9[out0 TRUE] -> resolve-entity-clarification -> construct-user-prompt -> parser-bypass-gate[out1] -> Basic LLM Chain EXECUTED -> central-exchange -> compile-current-state","basic_llm_chain":"Y (EXECUTED — llm.tokens.total=353)","response":"Thanks for your message! Let me know if you need anything else.","note":"VALID V8 exercise. Genuine casual/clarify path still reaches Basic LLM Chain post-rewire; no 'Escalation declined.' leak."}
+  ],
+  "verdict": "PASS (V8) — Basic LLM Chain reachable via is-escalation-declined[FALSE]->If9[TRUE]->...->parser-bypass-gate->Basic LLM Chain; the deterministic decline branch does not swallow the legitimate clarify LLM path.",
+  "S0": {"S1":"PASS (sendmsg is_test)","S2":"PASS (no human-intervention)","S3":"PASS (session -> n8n_test)","S4":"PASS (no get-results)","S5":"PASS","S6":"PASS/bounded — Basic LLM Chain fired legitimately (353 tokens), designed clarify path not a new sink"}
+}
