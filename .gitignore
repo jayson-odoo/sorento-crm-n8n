@@ -1,7 +1,28 @@
-# prod deploy backups (written by scripts/deploy.sh on the prod box)
-scripts/backups/
-
-# per-instance credential alias overrides (names only, no secrets) — example is committed
-scripts/cred-aliases.json
-
+# === Secrets (NEVER commit) ===
+# .env = connection facts + creds
 .env
+.env.*
+# .mcp.json holds a live n8n MCP Bearer JWT
+.mcp.json
+# GCP service-account key
+teh-jayson-*.json
+*-service-account*.json
+
+# === Docker runtime volumes (bind-mounted state, huge, machine-local) ===
+mongodb_data/
+mongodb_config/
+n8n_data/
+postgres_data/
+redis_data/
+
+# === Large DB dumps / data (not source) ===
+# ~729MB pg dump
+sorento_embedding.sql
+*.dump
+
+# === Claude Code machine-local overrides ===
+.claude/settings.local.json
+
+# === OS / editor cruft ===
+.DS_Store
+*.swp
