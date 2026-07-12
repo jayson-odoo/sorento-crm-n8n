@@ -82,6 +82,7 @@ Webhooks: `/webhook/zz-dispatch-test` (fire), `/webhook/zz-seed-conc`, `/webhook
 - **T1 FIFO drain** (2 msgs, 1 token, 2 sequential fires): fire#1 drained `t1-1` "FIRST" (qlen 2→1, token rearmed, lock released); fire#2 drained `t1-2` "SECOND" (qlen→0, no rearm). Order preserved.
 - **T2 single-flight** (2 msgs, 2 tokens, 2 CONCURRENT fires): winner ran spine 4.8s; loser finished 79ms via GET fast-path (`lockval:"1"`) → `rearm-busy`, **never incr'd** (no TTL refresh), **no spine call**. Exactly ONE spine execution. Race prevented.
 - **T3 error release** (call-spine → `zz-throw`): spine threw → error branch ran `del-lock`+`rearm-more`; lock released, token rearmed, dispatcher itself finished `success`.
+- **T4 cross-contact parallel** (2 contacts A=`437264483`/B=`999000002`, 1 token+1 msg each, 2 CONCURRENT fires; 2026-07-12): fire#1 popped A → spine success 9.0s; fire#2 popped B → spine ran **inside** A's window (B 17.09–17.53 nested in A 16.78–25.74) = independent `lock:{c}`, no serialization across contacts. No cross-contamination (each fire's `call-spine` got its own id), both queues drained, both locks released (A via success out[0], B via error out[1]), no rearm, zero egress. Full evidence: `tests/runs/concurrency-xcontact-20260712.md`. (Seed helper `zz-seed-conc` gained a `clear_ready:false` flag so multiple contacts can be staged without wiping the ready list.)
 
 **Gotcha (n8n redis):** `pop`/`get` auto-parse a numeric phone id into a **JS number**. Key concats tolerate it, but `push` messageData and the `executeWorkflow` string input reject a number → wrap `String(...)` (`CS` in the SDK) and set contact-check If to `typeValidation: loose`. Redis node output shapes (verified via probe): `get`→`{propertyName: val|null}` (replaces json, no upstream fields), `incr`/`llen`→`{ "<key>": N }` (read `Object.values($json)[0]`), `pop`→`{propertyName: val}`.
 
@@ -90,7 +91,28 @@ Webhooks: `/webhook/zz-dispatch-test` (fire), `/webhook/zz-seed-conc`, `/webhook
 2. New **prod dispatcher** from `dispatcher.sdk.js` with: keys de-`-test` (`ready-contacts`, `test:q:`→`q:`, `test:lock:`→`lock:`), `call-spine`→live spine `9qVyfUxmRQqrpGRMDLRuz`, trigger = **Schedule 1s** (drop the test webhook), guards intact (error branch stays).
 3. **Live spine** `9qVyfUxmRQqrpGRMDLRuz`: remove Schedule trigger + retarget `redis-pop-main-message-list`.list → `=q:{{ $json.contact }}` + add `contact` trigger input. (Same 2 edits as the clone.)
 4. **Live push** `sorento-main` `NwMOBEQ1NW7LVky5`: replace `Redis2 PUSH main-message-list` with `PUSH q:{{contact.id}}` (tail=true) + `PUSH ready-contacts` (tail=true, value contact.id). contact.id = `$('If1').first().json.id`.
-5. Cutover order: push+spine+dispatcher must flip together (drain `main-message-list` first, or accept a brief in-flight gap). Publish each; verify a live 2-fast-message contact serializes.
+5. Cutover — see the drain-then-flip runbook below (the naive "publish each" leaks in-flight messages).
+
+## Cutover runbook (LIVE — the risky moment, do NOT wing it)
+
+**Risk:** during the flip the producer (`sorento-main` push) and consumer (spine) read/write **different redis keys** — old world = single `main-message-list`; new world = per-contact `q:{c}` + `ready-contacts`. If they're partially flipped, messages land on a list nobody pops → silently stuck/lost. The spine's Schedule trigger is also being removed the instant the dispatcher's Schedule takes over — a gap or an overlap there = dropped or double-processed messages.
+
+**Pre-flight**
+1. Backup live spine `9qVyfUxmRQqrpGRMDLRuz` version + live push `sorento-main` `NwMOBEQ1NW7LVky5` version (export JSON to `backups/`).
+2. Stage (do NOT publish) the 3 edited workflows as drafts: prod dispatcher (keys de-`-test`, `call-spine`→live spine, trigger=**Schedule 1s**), spine (drop Schedule + retarget pop `=q:{{ $json.contact }}` + add `contact` input), push (`main-message-list` PUSH → `PUSH q:{{contact.id}}` tail=true + `PUSH ready-contacts` tail=true).
+3. Pick a low-traffic window.
+
+**Flip sequence (order matters — quiesce, drain, swap, arm)**
+1. **Stop new intake into the old list.** Unpublish/disable the **live spine's Schedule trigger first** (or unpublish the spine) so nothing pops `main-message-list` while you work. Producer still pushes to `main-message-list` (old key) — that's fine, it's a buffer.
+2. **Drain `main-message-list` to empty.** Either let the still-running old spine finish it before step 1, or temporarily re-enable one drain pass. Confirm `LLEN main-message-list == 0` **and** no spine executions in flight.
+3. **Flip the producer.** Publish the new **push** (`sorento-main`) → new messages now go to `q:{c}` + `ready-contacts`. Old list stays empty (nothing writes it anymore).
+4. **Flip the consumer.** Publish the edited **spine** (Schedule removed, pop retargeted to `q:{c}`, `contact` input) — it is now trigger-less, only callable by the dispatcher.
+5. **Arm the dispatcher.** Publish the prod **dispatcher** with its Schedule 1s. It starts popping `ready-contacts` → acquiring `lock:{c}` → calling the spine.
+6. **Verify live:** send 2 fast messages from one test contact → assert FIFO order + single-flight (one spine at a time for that contact) + a different contact processes in parallel. Watch `ready-contacts` length stays bounded and no `lock:{c}` is stuck > TTL.
+
+**Rollback (any step fails):** unpublish dispatcher + new push; republish the backed-up spine (Schedule intact) + backed-up push (writes `main-message-list`); drain any `q:{c}`/`ready-contacts` residue back onto `main-message-list` (or just let the restored spine ignore them — they're orphaned, no data loss if you re-push those contacts' messages). Old world fully restored.
+
+**Watch after cutover:** `ready-contacts` steady-state length (should hover near live-contact burst count, not grow unbounded → a growing list = a stuck lock); any `lock:{c}` older than TTL=120s (crashed holder / spine p99 > TTL → revisit risk #1).
 
 ## Open / watch
 - TTL=120s must exceed p99 spine duration (else same-contact overlap returns). Revisit if slow RAG/MCP.
