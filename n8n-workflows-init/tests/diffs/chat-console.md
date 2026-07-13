@@ -103,6 +103,15 @@ POST https://automate-sorento.foundryx.my/webhook/zz-chat-read
 ```
 Expect `parts[]` with the bot reply (`type:'text'`/`quick_reply`), an `escalation` marker for escalation prompts, and `attachment` markers for media.
 
+## Webpage front-end (added 2026-07-13)
+
+The raw webhooks needed a UI. Two attempts:
+- **`zz-chat-page` `BsYe25n1QSk8HbAx` (ABANDONED)** — an n8n webhook serving a static HTML chat page whose JS `fetch`es the two webhooks. **Does not work:** n8n force-injects `Content-Security-Policy: sandbox …` (WITHOUT `allow-same-origin`) on every HTML webhook response, giving the page a `null` origin; the webhooks' ACAO is pinned to the host (ignores `allowedOrigins`), so every fetch is CORS-blocked. Overriding the CSP via `responseHeaders` is ignored. Superseded — safe to archive.
+- **`zz-chat` `oyYfVvZHRZpWubTy` (WORKING)** — native n8n **Chat Trigger** (public hostedChat, `responseMode:lastNode`). n8n's first-party chat widget talks to its own backend → no CORS/CSP fight. Flow: `chat` → `build-item` (chat_id = chat `sessionId`, contact 437264483) → `push-queue` (`test:q:437264483`) → `push-ready` (`ready-contacts-test`) → `fire-dispatch` (POST dispatcher webhook) → `wait-reply` (12s) → `read-list` (`chat:reply:{sessionId}`, keyType list) → `del-list` → `format-out` (emits `{output}` = joined reply, escalation lines prefixed ⚠️). **Synchronous** UX: type → ~13s spinner → reply inline.
+  - **URL:** `https://automate-sorento.foundryx.my/webhook/58a0adb6-3c45-42cf-bf1c-bf09c430a142/chat`
+  - Verified in a real browser (Playwright): "do you have plywood in stock" → "Could not find inventory for plywood. Would you like me to escalate to warehouse team?" (screenshot `chat-console-working.png`).
+  - Reuses the same gated subs → same zero-egress guarantees as the webhook path.
+
 Zero-egress assertions the tester should confirm:
 1. respondio `Send a Message` / `HTTP Request` in `sub-sendmsg-CHAT` did NOT execute (chat branch taken).
 2. No real assign/SLA/PIC write in the HI fork (escalation → `chat:reply` marker only).
