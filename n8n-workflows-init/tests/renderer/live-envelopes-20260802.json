@@ -1,0 +1,302 @@
+{
+  "_source": "captured from the live CRM MCP server (localhost:8765) against the live backend + dev database. Real rows, no fixtures. Regenerate with sorento_crm scratchpad/capture.py after any presenter change.",
+  "_captured_at": "2026-08-02",
+  "_crm_branch": "feat/incoming-allocation-signal",
+  "envelopes": [
+    {
+      "name": "L1 incoming list — partial + pending in one envelope",
+      "tool": "crm_incoming_stock_list",
+      "args": {
+        "product_ids": [
+          "c18fa9ea-ad6b-46c4-88a7-d7423d4229e0"
+        ],
+        "limit": 3,
+        "view": "render"
+      },
+      "envelope": {
+        "result_type": "incoming_stock",
+        "intro": "Here is the incoming stock I found.",
+        "items": [
+          {
+            "title": "RPACC",
+            "fields": [
+              {
+                "label": "Product Code",
+                "value": "RPACC"
+              },
+              {
+                "label": "Shipment",
+                "value": "FJ25476991"
+              },
+              {
+                "label": "Container",
+                "value": "TIIU4090481"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2025-11-11"
+              },
+              {
+                "label": "Incoming Quantity",
+                "value": 69
+              },
+              {
+                "label": "Warehouse Allocations",
+                "value": "BRW (2)"
+              },
+              {
+                "label": "Unallocated Quantity",
+                "value": 67
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": false,
+              "partially_allocated": true
+            }
+          },
+          {
+            "title": "RPACC",
+            "fields": [
+              {
+                "label": "Product Code",
+                "value": "RPACC"
+              },
+              {
+                "label": "Container",
+                "value": "TGBU9807730"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2026-07-19"
+              },
+              {
+                "label": "Incoming Quantity",
+                "value": 1
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": true,
+              "partially_allocated": false
+            }
+          }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+      }
+    },
+    {
+      "name": "L2 incoming by-product — same two states, product-rooted shape",
+      "tool": "crm_incoming_stock_by_product",
+      "args": {
+        "product_ids": [
+          "c18fa9ea-ad6b-46c4-88a7-d7423d4229e0"
+        ],
+        "view": "render"
+      },
+      "envelope": {
+        "result_type": "incoming_stock",
+        "intro": "Here is the incoming stock I found.",
+        "items": [
+          {
+            "title": "RPACC",
+            "fields": [
+              {
+                "label": "Product Code",
+                "value": "RPACC"
+              },
+              {
+                "label": "Shipment Container",
+                "value": "TIIU4090481"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2025-11-11"
+              },
+              {
+                "label": "Incoming Quantity",
+                "value": 69
+              },
+              {
+                "label": "Warehouse Allocations",
+                "value": "BRW (2)"
+              },
+              {
+                "label": "Unallocated Quantity",
+                "value": 67
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": false,
+              "partially_allocated": true
+            }
+          },
+          {
+            "title": "RPACC",
+            "fields": [
+              {
+                "label": "Product Code",
+                "value": "RPACC"
+              },
+              {
+                "label": "Shipment Container",
+                "value": "TGBU9807730"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2026-07-19"
+              },
+              {
+                "label": "Incoming Quantity",
+                "value": 1
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": true,
+              "partially_allocated": false
+            }
+          }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+      }
+    },
+    {
+      "name": "L3 incoming shipments — shipment level, carries no allocations",
+      "tool": "crm_incoming_stock_shipments",
+      "args": {
+        "eta_from": "2026-07-01",
+        "eta_to": "2026-07-31",
+        "limit": 2,
+        "view": "render"
+      },
+      "envelope": {
+        "result_type": "incoming_shipments",
+        "intro": "Here are the incoming shipments I found.",
+        "items": [
+          {
+            "title": null,
+            "fields": [
+              {
+                "label": "Container",
+                "value": "CSNU7568570"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2026-07-02"
+              },
+              {
+                "label": "Total Incoming Quantity",
+                "value": 420
+              },
+              {
+                "label": "Distinct Products",
+                "value": 1
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": false,
+              "partially_allocated": false
+            }
+          },
+          {
+            "title": null,
+            "fields": [
+              {
+                "label": "Container",
+                "value": "OOCU8630645"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2026-07-02"
+              },
+              {
+                "label": "Total Incoming Quantity",
+                "value": 17019
+              },
+              {
+                "label": "Distinct Products",
+                "value": 35
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": false,
+              "partially_allocated": false
+            }
+          }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+      }
+    },
+    {
+      "name": "L4 incoming list — fully allocated, must stay badge-free",
+      "tool": "crm_incoming_stock_list",
+      "args": {
+        "product_ids": [
+          "94137042-2999-4077-ada6-9a5afc2186fc"
+        ],
+        "limit": 2,
+        "view": "render"
+      },
+      "envelope": {
+        "result_type": "incoming_stock",
+        "intro": "Here is the incoming stock I found.",
+        "items": [
+          {
+            "title": "SRTKT1831SS",
+            "fields": [
+              {
+                "label": "Product Code",
+                "value": "SRTKT1831SS"
+              },
+              {
+                "label": "Container",
+                "value": "TRHU5311703"
+              },
+              {
+                "label": "Estimated Arrival Date",
+                "value": "2026-07-02"
+              },
+              {
+                "label": "Incoming Quantity",
+                "value": 267
+              },
+              {
+                "label": "Warehouse Allocations",
+                "value": "BRW (267)"
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "unallocated": false,
+              "partially_allocated": false
+            }
+          }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": null,
+        "has_result": true
+      }
+    }
+  ]
+}
