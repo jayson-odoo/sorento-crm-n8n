@@ -1,0 +1,1 @@
+return $('redis-pop-main-message-list').first().json.message.contact
