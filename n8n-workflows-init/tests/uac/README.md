@@ -60,6 +60,7 @@
 | `CD.md` | §CD ×12 | — | carried-certificate dump — B1 attachment-subject-gate (`deterministic`) + B2 certificate-axis-carry (`parser`). Plan: `plans/carried-certificate-dump-plan.md` |
 | `PP.md` | §PP-0…9 ×43 | — | **promotion picker** — require a `promo_scope` on the bare ask, drop the access-level prompt, numbered list + file on pick. §PP-0b is the RED (stale carried access level); §PP-7c is the vacuous-fixture gate; §PP-8 guards the shared `last_result_set`. Plan: `plans/promotion-picker-plan.md` |
 | `IH.md` | §IH ×16 + §IH-FP ×12 | — | **immortal-hint class** — C1 `immortal-hint-axis` (`parser`) + C2 `no-domain-name-hints` (`parser`) + C3 `multitoken-d1-annotate` (`deterministic`). Root cause is a CODE writer (`output_exchange` reference-positions `hint = domain_hint`), **not** the LLM. Plan: `plans/immortal-hint-class-plan.md` |
+| `TA.md` | §TA ×15 | — | **tier-only access ask** — brand×tier split, numbered multi-select tier ask (fires only when >1 tier entitled + none stated), always-attach answers, compat mapper. §TA-7 is the non-persistence gate; §TA-11 the brand-gate fail-closed; §TA-14 the roster-collision guard. Plan: `plans/access-tier-ask-plan.md` |
 
 ---
 
