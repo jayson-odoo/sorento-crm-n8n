@@ -65,7 +65,8 @@ fail-open cannot write prod `chat_histories`. **Revert at promote** — this is 
 
 ### Offline unit — `tests/unit/sendmsg-quickreply-chunk.test.js`
 
-16 cases, **16 passed**. Mutation pass: 7 mutants, each caught by the specific test meant to catch it
+23 cases, **23 passed**. Mutation pass (`sendmsg-quickreply-chunk.mutate.py`): 19 mutants,
+**18 caught + 1 justified survivor**, each caught by the specific test meant to catch it
 (no vacuous assertions — see [[green-that-cannot-fail]]).
 
 | mutant | caught by |
@@ -79,7 +80,7 @@ fail-open cannot write prod `chat_histories`. **Revert at promote** — this is 
 | proportional plain-path floor (R1) | plain-path byte-identity test |
 
 The **shipping** node body was extracted back out of the built workflow, wrapped in a `$()` shim, and
-run against the same 16 cases — **16 passed**. The tested logic and the deployed logic are the same
+run against the same 23 cases — **23 passed**. The tested logic and the deployed logic are the same
 code, not a claim.
 
 Measured on the real turn:
@@ -224,3 +225,52 @@ Its top-level `message` input still read the trigger while `data.message` read t
 disagreed and the head parts would have been logged with the whole reply text. The plain-path
 sibling uses the part in both. Cause: the build script patched only inside the `data` JSON. Both
 loggers now read `$('Loop Over Items').item.json.message` in both places.
+
+
+### R4 — the char-based cap is not sufficient; replies are multi-byte (FIXED)
+
+Found by applying LESSONS §72's *"100% on first run is a smell"* heuristic and hunting survivors.
+A broader sweep produced **4 survivors out of 9**, three of which were real gaps.
+
+`LIMIT = 1000` counts **characters**. Customer-facing text is full of multi-byte glyphs:
+
+```
+crossdomain-render.js:110   line += '\n⚠️  *(PRODUCT DISCONTINUED)*';     ⚠️ = 6 bytes
+build-suggest-offer.js:100  `${i+1}. ${s.code} — ${...}`                  — = 3 bytes
+not-found-error-message.js:206  `• ${et}: ${codes[0]}`                    • = 3 bytes
+compile-current-state.js:236  '… catalogue* and I'll pull it up 😊'       😊 = 4 bytes
+```
+
+Meta documents the cap as 1024 **characters**, but its validators are inconsistent about chars vs
+UTF-8 bytes across endpoints, and that cannot be settled from here. A 900-char run of em-dashes is
+2700 bytes — char-legal, byte-illegal. If the cap is bytes, the original fix would still 400 and
+the turn would still die.
+
+Byte-capping is strictly dominant: a no-op if the limit really is characters, and the difference
+between working and a dead turn if it is bytes. Added `BYTE_CAP = quickReply ? 1000 : Infinity`
+with a shrink loop, **button path only** so the plain path keeps live's exact boundaries (R1).
+
+Also added a surrogate-pair guard: the hard-cut branch (`at = lim`, reached when there is no
+newline or space in the window) could slice an astral glyph in half and emit a lone surrogate.
+
+**`TextEncoder` availability was the risk that mattered** — if n8n's Code sandbox did not expose
+it, the node would throw on every buttoned turn. Verified in the real runtime: fork exec
+`12039174`, `executionStatus: "success"`, emoji-heavy payload, 715 chars / 815 bytes → 1 part
+(correct, both caps satisfied).
+
+### R5 / R6 — two assertions were near-vacuous (FIXED)
+
+The survivor hunt showed that dropping `.trim()` on each part and setting the button-path `FLOOR`
+to 0 both went undetected: the "no text lost" test normalised whitespace away, and the
+"no mid-line cut" test used a regex loose enough to pass either way. Replaced with assertions on
+the **chosen boundary** (parts must end on a record boundary), on exact trimming, and on the
+hard-cut/early-newline branches that were previously unreachable by any fixture.
+
+### R7 — my own mutation sweep scored a crash as a survivor (FIXED)
+
+The first sweep mis-escaped a regex anchor; the anchor assertion fired, the mutant was never
+applied, the suite ran against unmutated code and passed — and the sweep printed `SURVIVED`. That
+is precisely §72's failure mode reproduced in a new harness. The committed
+`sendmsg-quickreply-chunk.mutate.py` therefore separates three outcomes (`caught` / `SURVIVED` /
+`ERROR`), hard-fails on anchor-miss and zero-byte mutations, refuses to run when `after()` has
+drifted from the deployed node body, and does **not** count a justified survivor as a detection.

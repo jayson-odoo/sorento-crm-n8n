@@ -1,6 +1,6 @@
 # TOPOLOGY — sub-sendmsg-QRCHUNK  (`aQUmwMVplmNcyUVc`)
 
-- versionId **f7e7ed27-2b76-4225-b1ee-efc75bcaae55** · activeVersionId **f7e7ed27-2b76-4225-b1ee-efc75bcaae55** · DRAFT == ACTIVE
+- versionId **51fed3d1-9a92-469a-9b7a-d77e56f8d302** · activeVersionId **51fed3d1-9a92-469a-9b7a-d77e56f8d302** · DRAFT == ACTIVE
 - 24 nodes
 
 ## Edges
@@ -74,5 +74,5 @@ is-last-quickreply[1] -> guard-text
 
 | node | lines |
 |---|---|
-| Code in JavaScript | 53 |
+| Code in JavaScript | 69 |
 | chat-build-parts | 37 |
