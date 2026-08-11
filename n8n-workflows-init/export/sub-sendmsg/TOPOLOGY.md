@@ -1,27 +1,28 @@
 # TOPOLOGY — sorento-sub-respond-sendmsg-respond  (`aoydkG1dbItXR5jXFEQsP`)
 
-- versionId **c712e218-31a7-4fe3-803b-5827af31c54f** · activeVersionId **c712e218-31a7-4fe3-803b-5827af31c54f** · DRAFT == ACTIVE
+- versionId **91171ac3-ddad-4452-ace5-98da59480c48** · activeVersionId **c712e218-31a7-4fe3-803b-5827af31c54f** · ⚠️ DRAFT != ACTIVE
 - 17 nodes
 
 ## Edges
-_15 edge groups_
+_16 edge groups_
 
 ```
+Call 'sub-respond-save-message-redis' (quick_reply)[0] -> Loop Over Items
 Call 'sub-respond-save-message-redis'1[0] -> Loop Over Items
 Code in JavaScript[0] -> If1
 Find a Message[0] -> Switch1
-HTTP Request[0] -> Chat Memory Manager, Call 'sub-respond-save-message-redis' (quick_reply)
-If[0] -> Code in JavaScript
-If[1] -> HTTP Request
+HTTP Request[0] -> Call 'sub-respond-save-message-redis' (quick_reply)
 If1[0] -> Loop Over Items
 Loop Over Items[0] -> Chat Memory Manager
-Loop Over Items[1] -> Send a Message
+Loop Over Items[1] -> is-last-quickreply
 Send a Message[0] -> Call 'sub-respond-save-message-redis'1
 Switch1[1] -> Send Template
 Wait[0] -> Find a Message
 When Executed by Another Workflow[0] -> test-guard
+is-last-quickreply[0] -> HTTP Request
+is-last-quickreply[1] -> Send a Message
 test-guard[0] -> test-guard-record
-test-guard[1] -> If
+test-guard[1] -> Code in JavaScript
 ```
 
 ## Read BY NAME (`$('x')` / `$("x")`)
@@ -29,7 +30,7 @@ test-guard[1] -> If
 > Rewiring alone does NOT redirect these. Repoint the expression too.
 
 - **HTTP Request** ← Call 'sub-respond-save-message-redis' (quick_reply)
-- **Loop Over Items** ← Call 'sub-respond-save-message-redis'1
+- **Loop Over Items** ← Call 'sub-respond-save-message-redis' (quick_reply), Call 'sub-respond-save-message-redis'1
 - **Send a Message** ← Call 'sub-respond-save-message-redis'1
 - **When Executed by Another Workflow** ← Call 'sub-respond-save-message-redis' (quick_reply), Call 'sub-respond-save-message-redis'1, Chat Memory Manager, Code in JavaScript, Postgres Chat Memory1, Send a Message, test-guard, test-guard-record
 
@@ -61,4 +62,4 @@ test-guard[1] -> If
 
 | node | lines |
 |---|---|
-| Code in JavaScript | 37 |
+| Code in JavaScript | 69 |

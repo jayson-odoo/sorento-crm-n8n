@@ -400,9 +400,13 @@ out.require_specific = require_specific;
     const _TIER_LABEL = { dealer: 'dealer', office: 'office', end_user: 'end user' };
     out.access_denied_levels = (_statedT.length > 0 && _heldT.length === 0) ? _statedT : [];
     out.brand_gate_empty = _tg.brand_gate_empty === true;
+    // F1: NOTICE keys on brand_unheld, SUPPRESSION on brand_gate_empty. They are different
+    // questions — "you named a brand you don't hold" vs "nothing may be sent" — and while one
+    // flag answered both, a brandless contact was told what they have and then shown nothing.
+    out.brand_unheld = _tg.brand_unheld === true;
     if (out.access_denied_levels.length) {
       out.access_notice = `You don't have access to ${_statedT.map(t => _TIER_LABEL[t] || t).join(', ')} promotions — here's what you do have:`;
-    } else if (out.brand_gate_empty) {
+    } else if (out.brand_unheld) {
       // R5/TA-11: the customer named brand(s) they hold no entitlement for. tier-gate sent
       // [] to get-results (FAIL-CLOSED — the CRM returns nothing), so the not-found path
       // renders; it prepends this notice, which is the WHY.
@@ -422,6 +426,7 @@ out.require_specific = require_specific;
     out.access_notice = out.access_denied_levels.length
       ? `You don't have access to ${_stated.join(', ')} promotions — here's what you do have:` : '';
     out.brand_gate_empty = false;
+    out.brand_unheld = false;
   }
 }
 

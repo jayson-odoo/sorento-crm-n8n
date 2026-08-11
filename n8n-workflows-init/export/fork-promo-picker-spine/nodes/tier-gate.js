@@ -8,7 +8,7 @@
 // This node is ALSO the single place the tier×brand→compound recomposition happens
 // (plan §3): `access_levels_recomposed` is what Call 'sub-get-results' sends to the CRM
 // (semantic_input + user_prompt both read it), and disallowed-entity-gate's Q23 held-check
-// reads `tier_stated` / `entitled_tiers` / `brand_gate_empty` / `query_brands`.
+// reads `tier_stated` / `entitled_tiers` / `brand_gate_empty` / `brand_unheld` / `query_brands`.
 //
 // The block between the markers is a BYTE-COPY of tests/offline/access-tier/mapper.js
 // (source of truth — 30/30 probe, 7/7 mutations; probe.js EB-* enforces byte identity).
@@ -46,11 +46,13 @@ function recompose(tiers, queryBrands, entitled) {
     .map(b => String(b ?? '').trim().toLowerCase()).filter(b => BRANDS.includes(b));
   const ent = Array.isArray(entitled) ? entitled : [];
   const entMap = mapEntitlement(ent);
-  const brandGateEmpty = qb.length > 0 && !qb.some(b => entMap.brands.includes(b));
-  // brand_gate_empty ⇒ allow NOTHING (probe R5): falling back to the full entitlement here would
+  // "unheld" is only a meaningful claim when the contact HAS brand-scoped entitlement to compare
+  // against. entMap.brands empty ⇒ no brand axis for this contact ⇒ nothing to deny (R10/R11).
+  const brandUnheld = qb.length > 0 && entMap.brands.length > 0 && !qb.some(b => entMap.brands.includes(b));
+  // unheld ⇒ allow NO brand-scoped name (probe R5): falling back to the full entitlement here would
   // silently answer a Cabana ask with Sorento files — the exact widen the flag exists to stop.
   const allowBrands = qb.length
-    ? (brandGateEmpty ? [] : qb.filter(b => entMap.brands.includes(b)))
+    ? (brandUnheld ? [] : qb.filter(b => entMap.brands.includes(b)))
     : entMap.brands;
   const out = [];
   for (const n of ent) {
@@ -61,7 +63,10 @@ function recompose(tiers, queryBrands, entitled) {
     if (p.brand && !allowBrands.includes(p.brand)) continue;
     if (!out.includes(n)) out.push(n);
   }
-  return { access_levels: out, brand_gate_empty: brandGateEmpty };
+  // Suppress ONLY when the denial left nothing to send. If a brandless level survived, the contact
+  // still has something they may legitimately see: notice AND answer (the Q23 shape), never notice
+  // and silence.
+  return { access_levels: out, brand_gate_empty: brandUnheld && out.length === 0, brand_unheld: brandUnheld };
 }
 
 function needsTierAsk(domain, stated, entitledTiers, opts) {
@@ -120,7 +125,7 @@ const tier_proceed = names.length > 0 && !tier_ask;
 
 // ── recomposition (plan §3) — the compound access_levels the CRM understands TODAY ──
 const _chosen = tier_stated.length ? tier_stated : entMap.tiers;
-let access_levels_recomposed, brand_gate_empty = false;
+let access_levels_recomposed, brand_gate_empty = false, brand_unheld = false;
 if (_chosen.length === 0) {
   // entitlement holds no mappable tier (unknown names only): legacy full passthrough —
   // the mapper never guesses an unknown level, so the split model simply does not apply.
@@ -128,6 +133,10 @@ if (_chosen.length === 0) {
 } else {
   const _r = recompose(_chosen, query_brands, names);
   brand_gate_empty = _r.brand_gate_empty;
+  // F1: the NOTICE signal, separate from the SUPPRESSION signal. disallowed-entity-gate renders
+  // from this one; only `brand_gate_empty` may suppress. Merging them told a brandless contact
+  // "here's what you do have:" and then sent nothing (exec 12045520).
+  brand_unheld = _r.brand_unheld;
   access_levels_recomposed = _r.access_levels;
   if (access_levels_recomposed.length === 0 && !brand_gate_empty && tier_stated.length) {
     // Q23: a stated tier the contact does not hold — answer at their REAL entitlement;
@@ -151,4 +160,5 @@ return {
   tier_proceed,
   access_levels_recomposed,
   brand_gate_empty,
+  brand_unheld,
 };

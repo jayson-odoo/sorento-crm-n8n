@@ -32,9 +32,18 @@ mutate "stated-tier no longer suppresses ask" tier-gate.js \
   "TG-2a"
 
 # 2. brand gate widens again (the R5 leak: Cabana ask answered with Sorento files)
-mutate "brand_gate_empty widens again" tier-gate.js \
-  "s/\(brandGateEmpty \? \[\] : qb\.filter\(b => entMap\.brands\.includes\(b\)\)\)/qb.filter(b => entMap.brands.includes(b)).length ? qb : entMap.brands/" \
+mutate "unheld brand widens to full entitlement again" tier-gate.js \
+  "s/\(brandUnheld \? \[\] : qb\.filter\(b => entMap\.brands\.includes\(b\)\)\)/entMap.brands/" \
   "TG-6"
+
+# F1 regressions: re-merging the two flags, in either direction
+mutate "brandless entitlement can be brand-denied again (F1)" tier-gate.js \
+  "s/qb\.length > 0 && entMap\.brands\.length > 0 && !qb\.some/qb.length > 0 \&\& !qb.some/" \
+  "F1-1"
+
+mutate "notice keys on the suppression flag again" disallowed-entity-gate.js \
+  "s/} else if \(out\.brand_unheld\) {/} else if (out.brand_gate_empty) {/" \
+  "F1-6"
 
 # 3. Q23 unheld-tier fallback deleted (customer gets a bare not-found for an entitlement problem)
 mutate "Q23 unheld-tier fallback deleted" tier-gate.js \

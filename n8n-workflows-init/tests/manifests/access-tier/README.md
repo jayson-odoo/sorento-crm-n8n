@@ -93,3 +93,33 @@ CS-BUILD — only its two input expressions changed), redis nodes, guards, trigg
   probe EB-* re-verifies byte identity on every run.
 - Legacy suite reconciled to the new contract: `tests/offline/promo-picker` **73/73** probe,
   **26/26** mutants — after fixing a pre-existing VACUOUS harness there (see node-diff §find).
+
+## Round 3 — F1 fix (2026-08-11, main agent; the coder agent died mid-task on a session limit)
+
+| | round 2 | round 3 (current, ACTIVE) |
+|---|---|---|
+| spine `RnpxEnAV3g20MmKj` | `bba611fa` | **`2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e`** |
+| parser `RJ326g9dwe3bTWyf` | `668cd772` | unchanged (`668cd772`) |
+
+Post-death check before any write: all four workflows at their expected versions with
+`versionId == activeVersionId` — the killed agent wrote nothing (memory
+`agent-death-leaves-active-mutated`).
+
+Changed: `tier-gate` (surfaces `brand_unheld`; re-embedded mapper), `disallowed-entity-gate`
+(notice keys on `brand_unheld`, suppression still on `brand_gate_empty`). `promo-picker` untouched —
+its D10 guard already keys on `brand_gate_empty` only. §71 param-hash sweep over every node: exactly
+those two changed, no nodes added/removed, connections byte-identical.
+
+Rollback: `publish_workflow(RnpxEnAV3g20MmKj, "bba611fa-e8c9-469f-abe3-bc5d64011a94")`.
+
+Evidence: tier-ask 118/118 + 27/27 mutations; neighbours re-run after resync —
+promo-partial 45/45, promo-scope-dym 21/21, brand-routing 81/81 + 10/10, promo-picker 73/73,
+access-tier mapper 43/43 + 11/11. Byte-gate: both bodies re-fetched and compared byte-for-byte.
+
+⚠️ Two probe-authoring defects of mine, caught and recorded (LESSONS §72/§73 class, third and
+fourth instances this session):
+1. The F1 cases were first appended AFTER the probe's verdict loop — counted in the total but never
+   evaluated, so they could not fail. Moved before the loop.
+2. Once running, they still passed against the pre-fix body because the fixture omitted
+   `query_brands`, so the buggy predicate never executed. Fixed by modelling what the post-D9 parser
+   actually emits. Only after both fixes did F1-1/2/3/5/6 go red pre-fix.
