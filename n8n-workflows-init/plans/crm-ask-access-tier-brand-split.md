@@ -56,6 +56,35 @@ tier ask (office / dealer / end user, multi-selectable) when the contact holds >
 4. Existing open item 4 (promotion rows carry `brand` in resolver display) folds into this —
    same field, now load-bearing rather than display-only.
 
+## 🔴 Amendment 2026-08-11 — brand is NOT expressible as company (peer evidence)
+
+The CRM already has a per-contact **company** scope (`respond_contact_companies`, admin-managed,
+fail-closed to zero rows when empty — that is what produced our "resolver returns nothing for one
+contact" report). It is tempting to conclude the brand axis is redundant. It is not:
+
+- Companies are **Sorento** and **Mocha**; products are duplicated per company (~11.4k each since
+  the 2026-07-26 duplication).
+- **Cabana has no company of its own.** Our resolver rows confirm it: `company_name` is only ever
+  "Sorento" or "Mocha", and the Cabana product CBS212-WH resolves with company **"Sorento"**
+  (exec 11894257).
+- Therefore company scoping can express "Mocha only" but **cannot** express "Cabana but not
+  Sorento". Mapping brand→company would leave Cabana entitlement inexpressible — the exact case
+  that motivated this ask.
+
+Two more facts that must shape the migration:
+
+1. **Today's compound level names do not gate brand access — company membership does.** Every
+   contact we sampled holds all seven names including "Cabana Dealer" and "Mocha Dealer". The brand
+   word in a level name is a LABEL ON THE DOCUMENT, not a permission. A migration that derives
+   brand entitlement from the existing level names would grant everyone every brand.
+2. **Two gates can now disagree** (company scope at CRM, brand gate in n8n). A Mocha-only contact
+   asking for a Cabana promo must get ONE coherent answer. n8n needs to distinguish "scoped out of
+   everything" from "genuinely no matching promotion" — the peer's proposed additive
+   `scope: "contact_empty"` on a zero-company scope covers it. **Agreed, and it should land with
+   this contract, not separately** (same read, same failure mode). Consumption rule per #121:
+   absence must mean NO CLAIM, never "scope was fine", or we must consume it fail-open and it stops
+   discriminating.
+
 ## What we need back from you
 
 - Agreement (or counter-proposal) on the field names/shapes above for: contact entitlement,
