@@ -1,6 +1,6 @@
 # UAC — quick-reply chunking (WhatsApp 1024-char interactive body cap)
 
-**Status:** built + tested on the fork, **promote HELD** (user-gated).
+**Status:** built + tested on the fork, all review findings closed, **cleared for promote**.
 **Date:** 2026-08-11
 
 ## Defect
@@ -146,14 +146,9 @@ degrades to a domain-correct re-ask, not a stateless one. Taps quote the part th
 
 ## Coverage gap
 
-The `is_test:false` variant of exec `12036346` — proving the buttoned part routes to `HTTP Request`
-and plain parts to `Send a Message` — was **blocked by the Claude Code classifier** and not run.
-(`test_workflow` pins both nodes, so it would not have sent anything, but the block was not worked
-around.) Residual risk is low: the wiring `guard-qr[1] -> HTTP Request` / `guard-text[1] -> Send a
-Message` is verified in the read-back GET, and both If outputs are exercised elsewhere in the same
-execution. **Not empirically proven.**
+~~The `is_test:false` variant~~ **CLOSED by exec `12052223`** — see R2 above.
 
-Also unproven: real WhatsApp delivery ordering of N parts, and that a real button tap arrives with
+Still unproven: real WhatsApp delivery ordering of N parts, and that a real button tap arrives with
 `replyTo` pointing at the buttoned message. Both need a send to a real contact — user's call.
 
 ## Promote checklist (HELD — user-gated)
@@ -196,7 +191,7 @@ Fixed to `quickReply ? 450 : 800`, so the plain path is byte-identical to live. 
 regression case sweeping newline positions 780–830 and asserting `AFTER == BEFORE`; it fails when
 the proportional floor is restored.
 
-### R2 — `$('Loop Over Items').item` in the quick_reply logger is UNVERIFIED (OPEN)
+### R2 — `$('Loop Over Items').item` in the quick_reply logger (CLOSED — exec `12052223`)
 
 The `(quick_reply)` save-message node now sits inside the loop and reaches back with
 `$('Loop Over Items').item`. This is **new**: on live that node is not in a loop and read the
@@ -215,9 +210,32 @@ Assessment: risk is low but real. Live's plain-path sibling uses the identical i
 `pairedItem` surviving both If nodes. The only unverified hop is `HTTP Request`, the same class of
 hop as `Send a Message` in the proven path.
 
-To close it: one `test_workflow` run with `is_test:false`, `HTTP Request` + `Send a Message` pinned
-and the save-message nodes **left unpinned** so their expressions actually evaluate. Egress stays
-nil — the loggers point at the harness fork `tWm5DYLxfypmVC1T`, whose sink nothing consumes.
+**CLOSED.** Exec `12052223`, `is_test:false`, senders pinned, save-message nodes left unpinned so
+their expressions evaluated for real:
+
+```
+Call '…(quick_reply)'  executionStatus: success      <- the paired item RESOLVED
+  message : part 2 text (buttoned part), not the full reply   <- R3 fix confirmed live
+  result  : all 10 rows                                       <- whole set on the buttoned part
+  subExec : 12052225 -> tWm5DYLxfypmVC1T                      <- harness sink, not the prod logger
+Call '…redis'1         message: part 1, result: []            <- per-part subset preserved
+HTTP Request           {"status":"PINNED-NOT-SENT"}  <- reached from guard-qr output 1
+Send a Message         {"status":"PINNED-NOT-SENT"}  <- reached from guard-text output 1
+```
+
+No "Can't determine which item to use". This run also closes the coverage gap below: the real-send
+routing (buttoned part -> HTTP Request, plain parts -> Send a Message) is now empirically proven,
+with both senders pinned so nothing was transmitted.
+
+**Egress audit for this run** (asked before running, verified not asserted):
+- both senders pinned — `PINNED-NOT-SENT` echoed back in their runData, respond.io never called;
+- `Chat Memory Manager` + `Postgres Chat Memory1` (binds **prod** `sorento-crm-db`) pinned — verified
+  returning the pin value rather than inserting;
+- the unpinned loggers call `tWm5DYLxfypmVC1T`, which is **2 nodes**: trigger + one RPUSH to
+  `sorento-respond-message-TEST`. No HTTP node, no respond.io node;
+- enumerated **all 110 workflows over REST** (MCP hides archived — [[mcp-hides-archived-workflows]]):
+  the only reader of that list is `zz-canary-read`, **inactive**, 8 Redis reads, no send node. Dead end;
+- contact was `437264483`, the dev contact.
 
 ### R3 — quick_reply logger passed the FULL message, not the part (FIXED)
 

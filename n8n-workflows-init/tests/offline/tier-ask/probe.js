@@ -562,11 +562,59 @@ function runSI({ nodes }) {
 }
 
 // ── report ────────────────────────────────────────────────────────────────────
+{
+  // F1 customer-visible half: brand named but not held, yet a brandless level SURVIVED.
+  // The notice must render (brand_unheld) while suppression stays off (brand_gate_empty false),
+  // so the contact gets the explanation AND the promos they may legitimately see.
+  const o = runGQ({ tierGate: { brand_unheld: true, brand_gate_empty: false, query_brands: ['cabana'],
+                                tier_stated: [], access_levels_recomposed: ['End User'] } });
+  ck('F1-6', 'notice renders from brand_unheld, not from the suppression flag',
+     /don't have access to cabana promotions/.test(o.access_notice || ''), o.access_notice);
+  ck('F1-7', 'and suppression is NOT asserted alongside it',
+     o.brand_gate_empty === false, `brand_gate_empty=${o.brand_gate_empty}`);
+}
+// ── F1 (exec 12045520) — a BRANDLESS entitlement must never be brand-denied ────────────────
+// ⚠️ query_brands MUST be passed explicitly. My first version of these five cases omitted it,
+// so qb was empty, the unheld predicate never ran, and all five passed against the PRE-FIX embed —
+// vacuous, in the same file where §73 was written about exactly this. Post-D9 the parser emits
+// query_brands across the sub boundary; the fixture must model that or the case proves nothing.
+// Live symptom: entitlement ['End User'], "office promo for SRTBF11710" -> the LLM inferred a
+// brand, mapEntitlement(['End User']).brands was [], the unheld predicate was therefore
+// unconditionally true, and D10's guard erased the answer. The customer read
+// "…here's what you do have:" followed by nothing.
+// Fix under test: two flags (brand_unheld drives the NOTICE, brand_gate_empty drives SUPPRESSION)
+// plus the invariant brand_gate_empty => access_levels is empty.
+{
+  const o = runTG({ names: ['End User'], qf: { access_levels: ['Sorento Office'], query_brands: ['sorento'] } });
+  ck('F1-1', 'brandless entitlement + inferred brand -> gate NOT closed',
+     o.brand_gate_empty === false, `brand_gate_empty=${o.brand_gate_empty}`);
+  ck('F1-2', 'and no false "you do not have access to that brand" claim',
+     o.brand_unheld === false, `brand_unheld=${o.brand_unheld}`);
+}
+{
+  // a real denial that still leaves something sendable: notice AND answer, never notice + silence
+  const o = runTG({ names: ['Sorento Dealer', 'End User'], qf: { access_levels: ['end_user'], query_brands: ['cabana'] } });
+  ck('F1-3', 'INVARIANT brand_gate_empty => access_levels empty',
+     !(o.brand_gate_empty === true && (o.access_levels_recomposed || []).length > 0),
+     `gate=${o.brand_gate_empty} levels=${JSON.stringify(o.access_levels_recomposed)}`);
+}
+{
+  // the bound: a genuine full denial must STILL close the gate (F1's fix must not disarm D10)
+  const o = runTG({ names: ['Sorento Dealer', 'End User'], qf: { access_levels: ['dealer'], query_brands: ['cabana'] } });
+  ck('F1-4', 'genuine cross-brand denial still closes the gate (D10 not disarmed)',
+     o.brand_gate_empty === true && (o.access_levels_recomposed || []).length === 0,
+     `gate=${o.brand_gate_empty} levels=${JSON.stringify(o.access_levels_recomposed)}`);
+  ck('F1-5', 'and still reports the unheld brand for the notice',
+     o.brand_unheld === true, `brand_unheld=${o.brand_unheld}`);
+}
+
+
 let bad = 0;
 for (const c of checks) {
   if (!c.p) bad++;
   console.log(`${c.p ? 'PASS' : 'FAIL'}  ${c.id}  ${c.d}`);
   if (!c.p) console.log(`        ${c.x}`);
 }
+
 console.log(`\n${checks.length - bad}/${checks.length} passed`);
 process.exit(bad ? 1 : 0);
