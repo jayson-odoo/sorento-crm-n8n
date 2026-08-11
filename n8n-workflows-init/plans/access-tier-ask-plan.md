@@ -159,3 +159,57 @@ Traffic-derived fixtures can never contain these shapes — the narrow holders b
 spine-level cases from the histogram above rather than waiting for traffic: end_user-only,
 `['dealer']` legacy, and the same-tier cross-brand pair. Today only the mapper unit-tests them
 (M2/M3/R5/R6/A2); TA-6R is the sole narrow case at the spine level, and it uses a pinned fixture.
+
+## 8. Company scope vs entitlement — the two gates DO disagree, live (2026-08-11)
+
+CRM peer, answering our two-gates question:
+
+- `apply_company_scope` is a **router-level dependency on every `/api/v1/*` request**; an ORM filter
+  enforces it on every query. Resolver, promotion read, attachments — one mechanism, no opt-out.
+- **Every promotion in the system is owned by the Sorento company** (Sorento 29, Mocha 0), including
+  all 14 Cabana-described promos. Brand ⊥ company cuts painfully here.
+- Therefore a contact company-scoped to **Mocha only sees ZERO promotions, ever**, no matter what
+  access levels they hold. Entitlement says yes; company scope silently says no; the response is a
+  well-formed empty. **No ask can repair this** — rows are filtered out before entitlement is
+  consulted.
+
+### Live impact check (ours, n8n side)
+
+Swept every contact with token-bearing turns in recent live history (26 contacts): **none shows the
+all-empty signature.** Every one resolves at least some turns; the partial empties are ordinary
+misses. So no real customer is currently stuck in the empty-scope state on the promotion path.
+
+The one contact that IS in it is our own test contact `437264483`, and the timing corroborates the
+peer's membership hypothesis rather than a code cause:
+
+```
+05:08:53Z  LIVE  contact 437264483  -> 8 matches   ✓
+06:50:29Z  FORK  contact 437264483  -> 0 matches   ✗
+06:51:04Z  FORK  contact 477071889  -> 2 matches   ✓  (same lane, same tokens, 35s later)
+```
+
+Same URL construction on both lanes (`?contact_id=…&space_id=364817`, verified) — so the lane is not
+the variable; the contact's membership changing between 05:08 and 06:50 is.
+
+### What this means for THIS feature
+
+On an empty-scope contact the tier ask makes the experience **worse, not better**: today they get
+"no promotion found" in one turn; with the ask they are asked to pick a tier and *then* told nothing
+was found — a wasted round-trip on a query that was guaranteed empty before it ran.
+
+🔴 **Do NOT build an n8n heuristic for this** (e.g. inferring empty-scope from zero-matches, or from
+the slow-and-empty latency signature). Both are guesses about another system's internal state, and
+the last time we encoded an assumption about CRM empty-semantics as if it were fact, it shipped as
+D10's fail-open. The correct fix is the CRM's additive `scope: "contact_empty"` discriminator, which
+lets us render "I couldn't verify your account — escalating" instead of "no promotion found".
+Until it exists, this degradation is **accepted and documented**, not worked around.
+
+Business question raised to the CRM peer's user, not ours to decide: if Mocha-branded promotions are
+meant to reach Mocha-company contacts, either promotions need company re-stamping / multi-company
+visibility, or those contacts need Sorento membership for promo purposes.
+
+### Fixture addition (synthesized, per §7's fixture debt)
+
+Add a **Mocha-company-scoped contact** shape: non-empty entitlement, zero rows returned. It is the
+one shape that guarantees an empty answer to an entitled ask, and no traffic fixture will ever
+contain it — such contacts get nothing worth screenshotting.
