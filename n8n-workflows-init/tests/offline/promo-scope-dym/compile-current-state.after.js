@@ -218,7 +218,21 @@ const _promo = (() => {
   } catch (e) { return null; }
 })();
 if (!_merge && !_sug && !_mem && _promo) { last_result_set = _promo.suggest_last_result_set; }
-const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_promo ? 'suggest_offer' : (_isDisambig ? 'disambiguation' : null))));
+// tier-ask (access-tier-ask-plan §4): the ask turn persists the TIER roster so the parser
+// fork's tier_offer reconciliation resolves "2" / "1 and 2" / "all" to TIER TOKENS next
+// turn. LOWEST precedence by construction: member/suggest/cs/promo rosters must all win a
+// stray number (TA-14) — and the ask turn cannot co-occur with any of them anyway (If4
+// FALSE bypasses resolve-entity/get-results entirely). D4: the tier itself is NEVER
+// persisted — only the offer roster is, and only for this one round-trip.
+const _tier = (() => {
+  try { const n = $('access-level-choice-message');
+        if (!n.isExecuted) return null;
+        const t = n.first().json;
+        return (t && t.tier_offer === true && Array.isArray(t.tier_last_result_set) && t.tier_last_result_set.length) ? t : null;
+  } catch (e) { return null; }
+})();
+if (!_merge && !_sug && !_mem && !_promo && _tier) { last_result_set = _tier.tier_last_result_set; }
+const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_promo ? 'suggest_offer' : (_tier ? 'tier_offer' : (_isDisambig ? 'disambiguation' : null)))));
 
 // ── friendly domain disclaimers (append to user-facing text on the happy path only) ──
 // master_products answered → nudge toward the catalogue for attributes not shown.

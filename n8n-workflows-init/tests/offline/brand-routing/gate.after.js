@@ -384,16 +384,45 @@ out.require_specific = require_specific;
   // turn it is unexecuted, _entitled is [] and EVERY stated level looked unheld — producing a
   // false "You don't have access to End User promotions" on e.g. a stock question. Require the
   // promotion domain AND a real entitlement read before claiming anything about access.
-  let _aggOk = false, _entitled = [];
-  try { _aggOk = $('Aggregate').isExecuted; if (_aggOk) _entitled = $('Aggregate').first().json.name || []; } catch (e) { _aggOk = false; }
-  const _stated = (domain === 'promotion' && _aggOk)
-    ? (Array.isArray(parser.access_levels) ? parser.access_levels : []).map(a => String(a || '').trim()).filter(Boolean)
-    : [];
-  const _lc = _entitled.map(a => String(a).toLowerCase());
-  const _held = _stated.filter(a => _lc.includes(a.toLowerCase()));
-  out.access_denied_levels = (_stated.length > 0 && _held.length === 0) ? _stated : [];
-  out.access_notice = out.access_denied_levels.length
-    ? `You don't have access to ${_stated.join(', ')} promotions — here's what you do have:` : '';
+  //
+  // access-tier-ask-plan §4: stated values are TIER TOKENS now (the parser fork emits
+  // ['dealer']). tier-gate — always executed when Aggregate is, same lane — already
+  // normalised them (compound "Sorento Dealer" included, via parseLevel) and mapped the
+  // entitlement to tiers. Held is checked AT TIER LEVEL: a contact holding any *Dealer
+  // name "holds" dealer. The legacy exact-name check is kept as the fallback when
+  // tier-gate is absent, so nothing regresses off this fork.
+  let _tg = null;
+  try { _tg = $('tier-gate').isExecuted ? $('tier-gate').first().json : null; } catch (e) { _tg = null; }
+  if (domain === 'promotion' && _tg) {
+    const _statedT = Array.isArray(_tg.tier_stated) ? _tg.tier_stated : [];
+    const _entT = Array.isArray(_tg.entitled_tiers) ? _tg.entitled_tiers : [];
+    const _heldT = _statedT.filter(t => _entT.includes(t));
+    const _TIER_LABEL = { dealer: 'dealer', office: 'office', end_user: 'end user' };
+    out.access_denied_levels = (_statedT.length > 0 && _heldT.length === 0) ? _statedT : [];
+    out.brand_gate_empty = _tg.brand_gate_empty === true;
+    if (out.access_denied_levels.length) {
+      out.access_notice = `You don't have access to ${_statedT.map(t => _TIER_LABEL[t] || t).join(', ')} promotions — here's what you do have:`;
+    } else if (out.brand_gate_empty) {
+      // R5/TA-11: the customer named brand(s) they hold no entitlement for. tier-gate sent
+      // [] to get-results (FAIL-CLOSED — the CRM returns nothing), so the not-found path
+      // renders; it prepends this notice, which is the WHY.
+      out.access_notice = `You don't have access to ${(Array.isArray(_tg.query_brands) ? _tg.query_brands : []).join(', ')} promotions.`;
+    } else {
+      out.access_notice = '';
+    }
+  } else {
+    let _aggOk = false, _entitled = [];
+    try { _aggOk = $('Aggregate').isExecuted; if (_aggOk) _entitled = $('Aggregate').first().json.name || []; } catch (e) { _aggOk = false; }
+    const _stated = (domain === 'promotion' && _aggOk)
+      ? (Array.isArray(parser.access_levels) ? parser.access_levels : []).map(a => String(a || '').trim()).filter(Boolean)
+      : [];
+    const _lc = _entitled.map(a => String(a).toLowerCase());
+    const _held = _stated.filter(a => _lc.includes(a.toLowerCase()));
+    out.access_denied_levels = (_stated.length > 0 && _held.length === 0) ? _stated : [];
+    out.access_notice = out.access_denied_levels.length
+      ? `You don't have access to ${_stated.join(', ')} promotions — here's what you do have:` : '';
+    out.brand_gate_empty = false;
+  }
 }
 
 out.gate_reason = gate_reason;
