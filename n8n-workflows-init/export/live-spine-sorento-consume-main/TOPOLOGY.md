@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **8a1e1270-112f-4e33-8bea-d44952ca7f06** · activeVersionId **8a1e1270-112f-4e33-8bea-d44952ca7f06** · DRAFT == ACTIVE
+- versionId **2524fbbd-9bc8-46b0-86db-57d21fb9b6b9** · activeVersionId **2524fbbd-9bc8-46b0-86db-57d21fb9b6b9** · DRAFT == ACTIVE
 - 116 nodes
 
 ## Edges
@@ -151,7 +151,7 @@ whisper-transcribe[0] -> patch-transcript
 
 > Rewiring alone does NOT redirect these. Repoint the expression too.
 
-- **Aggregate** ← Call 'sub-get-results', If4, crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-incoming, resolve-entity-clarification, sibling-probe
+- **Aggregate** ← Call 'sub-get-results', crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-incoming, resolve-entity-clarification, sibling-probe
 - **Edit Fields2** ← validator
 - **Remove Duplicates** ← presign-fail-notice
 - **Split Out** ← Switch

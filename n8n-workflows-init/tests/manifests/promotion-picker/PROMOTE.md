@@ -7,6 +7,25 @@
 | parser sub `XTODTw-dJcV0uRdC056hG` | `c829509d` | `bb875580` |
 | live spine `9qVyfUxmRQqrpGRMDLRuz` | `8a1e1270` | `d1b3f29e` |
 
+### 🔴 Hotfix same day — TWO HUNKS THE REVIEW MISSED (live regression, real contacts)
+
+Contacts 477071889 + 404285551: every promo follow-up ("all", picks) re-asked the access level.
+S3 deleted the access-level carry, but the two changes that made the prompt unnecessary never
+shipped — **both live outside `nodes/*.js`**, which is all the review diffed:
+
+1. `If4` (If node) — fork: proceed when `name.length > 0` (any entitlement, never ask);
+   live still had stated∩entitled OR single-entitlement. Multi-level contacts re-prompted forever.
+2. `Call 'sub-get-results'` → `workflowInputs.value.semantic_input` (executeWorkflow input) —
+   the S2b entitlement-union expression (stated→case-insensitive intersection with entitlement,
+   fallback to full entitlement; unstated→full entitlement).
+
+Published **`2524fbbd`** (supersedes 8a1e1270 as spine rollforward id; rollback chain
+`2524fbbd` → `8a1e1270` → `d1b3f29e`). get-results target left at live's own `rysSPg`.
+Verified: full param-hash sweep fork-vs-live now shows ZERO non-harness diffs.
+
+**Class lesson: a "reviewed business-logic diff" built from `nodes/*.js` + connections is blind
+to If/executeWorkflow/httpRequest parameter changes. Promote reviews must param-hash EVERY node.**
+
 Order honoured (parser first). Every promoted node byte-gated active == fork file
 (6 spine bodies + new `promo-picker` + splice; parser `output_exchange`). Exports refreshed
 and `--verify` green. Transport note: node bodies landed via MCP `update_workflow`; the final

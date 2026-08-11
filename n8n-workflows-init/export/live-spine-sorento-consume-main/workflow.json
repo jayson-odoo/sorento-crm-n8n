@@ -1,6 +1,6 @@
 {
   "active": true,
-  "activeVersionId": "8a1e1270-112f-4e33-8bea-d44952ca7f06",
+  "activeVersionId": "2524fbbd-9bc8-46b0-86db-57d21fb9b6b9",
   "connections": {
     "Aggregate": {
       "main": [
@@ -2793,26 +2793,16 @@
       "name": "If4",
       "parameters": {
         "conditions": {
-          "combinator": "or",
+          "combinator": "and",
           "conditions": [
-            {
-              "id": "e6818373-74f0-4d0b-bc45-cf863ae44125",
-              "leftValue": "={{ $('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels) }}",
-              "operator": {
-                "operation": "notEmpty",
-                "singleValue": true,
-                "type": "array"
-              },
-              "rightValue": "="
-            },
             {
               "id": "50d7c5dd-def2-4c29-a43f-2be5324b66bd",
               "leftValue": "={{ $json.name.length }}",
               "operator": {
-                "operation": "equals",
+                "operation": "gt",
                 "type": "number"
               },
-              "rightValue": 1
+              "rightValue": 0
             }
           ],
           "options": {
@@ -3098,7 +3088,7 @@
           "value": {
             "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
             "entities": "={{ $('disallowed-entity-gate').first().json.compatible_entities }}",
-            "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
+            "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  // F9: the gate's held-check is case-insensitive; this was not. A level differing only in case\n  // produced NO notice (gate: held) AND an empty intersection that fell back to the FULL\n  // entitlement \u2014 the customer believed they had filtered and silently got every level.\n  const _lcStated = _stated.map(a => String(a).toLowerCase());\n  const _inter = aggExecuted ? _entitled.filter(a => _lcStated.includes(String(a).toLowerCase())) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
             "tool": "={{ $json.name }} ",
             "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('disallowed-entity-gate').first().json.compatible_entities) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  "
           }
@@ -5820,5 +5810,5 @@
       "recurrenceRules": []
     }
   },
-  "versionId": "8a1e1270-112f-4e33-8bea-d44952ca7f06"
+  "versionId": "2524fbbd-9bc8-46b0-86db-57d21fb9b6b9"
 }

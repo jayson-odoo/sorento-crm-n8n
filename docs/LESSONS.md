@@ -444,3 +444,32 @@ This is the same class as §61 (an assertion never shown red is not an instrumen
 the *harness* needs a discriminator — a value that changes only when the intended version is
 loaded — plus a mutation that it is shown to catch. Sixth instance in one day of a green that meant
 "nothing was compared" rather than "nothing changed".
+
+## A promote review built from nodes/*.js is blind to non-Code-node parameters (2026-08-11)
+
+**§71.** The promotion-picker promote shipped 6 Code-node bodies + 1 connection splice and called
+that "the whole diff" — because the review compared `export/<wf>/nodes/*.js` (Code nodes only) plus
+`connections`. Two load-bearing hunks lived elsewhere and were silently dropped:
+
+1. `If4` — an **If node's** condition (fork: `name.length > 0`, never ask for an access level).
+2. `Call 'sub-get-results'` — the S2b entitlement-union expression inside an **executeWorkflow
+   node's** `workflowInputs.value.semantic_input`.
+
+Result on live, same day, real customers (477071889, 404285551): S3 had deleted the access-level
+carry, so with the prompt-removal hunks missing, every promo follow-up ("all", a numbered pick)
+re-asked "Please specify which access level…" forever. The dev contact never hit it — single
+entitlement passes the old If4 — so the smoke tests were green while every multi-entitlement
+contact was broken. Same failure shape as §61/§70: the artifact reviewed ("the diff") promised
+more than the mechanism (Code files + edges) delivered.
+
+Rule: **a promote diff must param-hash EVERY node** (If, Switch, executeWorkflow inputs,
+httpRequest bodies/URLs, redis lists, triggers), not just Code bodies. The 10-line sweep:
+hash `json.dumps(node.parameters, sort_keys=True)` per node on both sides, then classify each
+mismatch as business vs harness BY HAND. That sweep, run after the incident, found exactly the two
+missed hunks and nothing else. Candidate tooling fix: export TOPOLOGY.md already lists code-node
+inventory — add a per-node param-hash table so `git diff` shows non-Code drift too.
+
+Transport corollary (same promote): hand-transcribing multi-KB node bodies through MCP drifted ±2
+chars on long `─` comment banners five times; the byte-gate caught every one. File-driven writes
+(GET → replace jsCode from the export file → PUT) are deterministic — prefer them for big bodies,
+and keep the byte-gate regardless, because it is the only thing that caught both failure classes.
