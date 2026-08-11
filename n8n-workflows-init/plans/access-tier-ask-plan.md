@@ -22,7 +22,7 @@ against today's data via the compat mapper (§3). Live stays on the entitlement-
 
 1. "promo for SRTBF11710" — contact entitled {Sorento Dealer, Sorento Office, End User}
    → tiers {dealer, office, end_user} >1, none stated →
-   "Which price level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\"."
+   "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\"."
 2. "2" → re-run with tier=dealer (+ brand from entities if any) → answer WITH files attached
    (both dealer PDFs in the SRTBF11710 case). No roster gate.
 3. "promo for SRTBF11710 dealer" → no ask, straight to files.
