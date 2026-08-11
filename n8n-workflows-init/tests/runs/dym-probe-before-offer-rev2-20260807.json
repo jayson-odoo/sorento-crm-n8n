@@ -1,0 +1,137 @@
+{
+ "run": "dym-probe-before-offer \u00a7DP re-run (rev 2, post-review)",
+ "date": "2026-08-07",
+ "tester": "sorento-tester",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "78a72682-96fd-4720-8c2b-e4d0ff65c03e",
+  "previous": "9aa24cc9",
+  "rollback": "545210e7",
+  "live_spine": "f03086ac UNTOUCHED \u2014 export --verify green at start and end"
+ },
+ "scope": "affected slice only (ordering / suggest_quick_reply / \u00a7DP-2 / \u00a7DP-FP-2) + the \u00a7DP-1 live-positive gap",
+ "delta_verified_in_published_bytes": {
+  "dym sort": "build-suggest-offer.js:312-320 \u2014 comparator is now `return hb - ha;`, tiebreak DELETED, stable partition",
+  "D3 sort untouched": "clone line 90 `sibs.sort((a,b)=>(Number(b.has)-Number(a.has))||localeCompare)` is byte-identical to LIVE line 81",
+  "offline suites re-sha'd against the NEW published bytes": "build-suggest-offer.js / dym-transform.js / dym-annotate.js == clone export; live-bso.js == live export"
+ },
+ "offline": {
+  "harness.js": "85/85 PASS",
+  "byteid.js": "10/10 PASS"
+ },
+ "cases": [
+  {
+   "id": "R2-A1",
+   "uac": "\u00a7DP-2 nobody-has, NON-ALPHABETICAL resolver fixture (inventory)",
+   "exec": "11471680",
+   "msg": "Have stock SRTUB2232-1600?",
+   "verdict": "PASS",
+   "resolver_order": "SRTBT2232-1600 (sim .579), SRTBT2231-1600 (sim .429) \u2014 not alphabetical, so the fixture CAN distinguish the comparators",
+   "rev1_rendered": "1. SRTBT2231-1600  2. SRTBT2232-1600   (alphabetical \u2014 the F-RANK bug, exec 11468043)",
+   "rev2_rendered": "1. SRTBT2232-1600  2. SRTBT2231-1600   (resolver similarity order preserved)"
+  },
+  {
+   "id": "R2-A2",
+   "uac": "\u00a7DP-2 nobody-has, the exact F-RANK case (product_attachment)",
+   "exec": "11471706",
+   "msg": "SRTWC1930 certificate",
+   "verdict": "PASS",
+   "resolver_order": "SRTWC193 (sim .727), SRTWC190, SRTWC191",
+   "rev1_rendered": "1. SRTWC190  2. SRTWC191  3. SRTWC193   (best match demoted to line 3)",
+   "rev2_rendered": "1. SRTWC193  2. SRTWC190  3. SRTWC191   (best match back at line 1)"
+  },
+  {
+   "id": "R2-B3",
+   "uac": "\u2605 \u00a7DP-1 LIVE POSITIVE + \u00a7DP-0b envelope",
+   "exec": "11471806",
+   "sub_exec": "11471820",
+   "msg": "mwc7625-sh-s11 cert",
+   "verdict": "PASS",
+   "rendered": "1. MWC7625-SH-S10 \u2014 has certificate / 2. MWC7625-SH-S12 \u2014 no certificate / 3. MWC7625-SH-P \u2014 no certificate",
+   "dym-annotate": {
+    "ok": true,
+    "answer_count": 6,
+    "probed": [
+     "mwc7625-sh-s10",
+     "mwc7625-sh-s12",
+     "mwc7625-sh-p"
+    ],
+    "dym_available_codes": [
+     "mwc7625-sh-s10"
+    ]
+   },
+   "\u00a7DP-0b envelope VERIFIED LIVE": "answers[].title == 'MWC7625-SH-S10' (a product code); fields carry BOTH 'Product Code' AND 'Attachment Type'='Certification' on all 6 rows. The plan's presenters.py-derived assumption is now empirically confirmed.",
+   "has-first sort": "MWC7625-SH-S10 was already resolver-first, so this case does not by itself separate has-first from stability; R2-B8 below does.",
+   "determinism": "reproduced twice more (R2-B3r1, R2-B3r2) \u2014 identical output"
+  },
+  {
+   "id": "R2-B8 (=B6)",
+   "uac": "\u00a7DP-2 SOME-have with a real positive (inventory)",
+   "exec": "11472046-ish",
+   "msg": "Have stock mwc7625-sh-s11?",
+   "verdict": "PASS",
+   "rendered": "1. MWC7625-SH-S10 \u2014 has stock / 2. MWC7625-SH-S12 \u2014 no stock / 3. MWC7625-SH-P \u2014 no stock"
+  },
+  {
+   "id": "R2-B4/B5",
+   "uac": "same product, different near-miss token",
+   "exec": "11471825 / 11471844",
+   "msg": "MWC7625-SH-S100 certificate / mwc7625-sh-s10x cert",
+   "verdict": "FINDING (see F-DUPE)",
+   "rendered": "1. MWC7625-SH-S10 \u2014 NO certificate  <-- contradicts R2-B3 for the SAME product code"
+  },
+  {
+   "id": "R2-B7",
+   "uac": "F-DUPE mirror in the inventory domain",
+   "msg": "Have stock MWC7625-SH-S100?",
+   "verdict": "FINDING",
+   "rendered": "1. MWC7625-SH-S10 \u2014 no stock  <-- contradicts R2-B6 for the same code"
+  },
+  {
+   "id": "\u00a7DP-11a/b re-assert",
+   "uac": "ordering + quick_reply after the NEW sort",
+   "verdict": "PASS",
+   "population": "11 annotated offers (non-empty population stated deliberately)",
+   "clauses": "regex, no em-dash, entries==picks+2, suggest_quick_reply[i]==suggest_last_result_set[i].value, rendered line i+1 names the same code \u2014 all PASS on all 11"
+  }
+ ],
+ "fail_on_purpose": {
+  "\u00a7DP-FP-2 F-RANK mirror": {
+   "first_attempt": "VOID \u2014 my perl pattern `return (hb - ha);` did not match the real source `return hb - ha;`. grep -c returned 0 and the suite reported ALL PASS. That green was meaningless and is recorded rather than discarded.",
+   "corrected": "substitution confirmed applied (grep -c == 1). Re-adding `|| localeCompare` turns RED: `DP-2 resolver order preserved` and `DP-2 order matches un-annotated (LIVE) order`. \u00a7DP-2 IS an instrument.",
+   "byteid under the same mutation": "0 failures \u2014 CORRECT, byteid only covers un-annotated paths; the annotated ordering contract is \u00a7DP-2's job alone."
+  },
+  "carried_from_rev1": "ctrl-key strip, un-annotated render, has-first sort deletion, quick_reply leak, no_candidate_uuid gate, qty_gt_zero predicate \u2014 all previously observed RED"
+ },
+ "F-DUPE": {
+  "severity": "HIGH for the product_attachment half; present in inventory too",
+  "caused_by_this_change": false,
+  "made_customer_visible_by_this_change": true,
+  "root_cause": "resolve-entity returns the SAME canonical_code TWICE with two different uuids at identical similarity. From exec 11471806 resolve-entity runData: alternatives[0] = {MWC7625-SH-S10, uuid 0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8, sim 0.75}; alternatives[1] = {MWC7625-SH-S10, uuid a7dfc428-f106-4367-8a59-3be98d2510e4, sim 0.75}. tokenCandidates() dedups by CODE and keeps whichever came first; which one comes first varies by token.",
+  "observed": {
+   "token mwc7625-sh-s11": "kept 0f2fe976 -> probe answer_count 6 -> '\u2014 has certificate' (TRUE)",
+   "token MWC7625-SH-S100": "kept a7dfc428 -> probe answer_count 0 -> '\u2014 no certificate' (FALSE: the product has 6 certificates)",
+   "inventory mirror": "same split \u2014 '\u2014 has stock' vs '\u2014 no stock' for the same code"
+  },
+  "why_it_matters": "Deterministic per token but arbitrary across tokens. The label is computed per-UUID while the customer sees a product CODE, so the bot makes a confidently WRONG factual claim about a product that demonstrably has 6 certificates. Today the bot makes no such claim ('Did you mean MWC7625-SH-S10?'), so this is the 'worse than today' mode the plan's F1 set out to avoid. It also breaks the pick round-trip: the pick is on the code string, so a correct '\u2014 has' can still resolve to the other uuid and dead-end.",
+  "suggested_remedy_NOT_implemented": "dym-transform dedups candidates by code for RENDERING; it should send EVERY uuid of a kept code to the probe (union), so has/no is answered at CODE level, matching what the customer is shown. Small, local to dym-transform. Alternative: fix the duplicate product rows in the CRM (out of scope here).",
+  "reviewer_decision_needed": true
+ },
+ "safety_scorecard_rev2": {
+  "S1": "PASS \u2014 11/11 runs: send-message-files/images/video never in runData; every send is a `would_send` egress row. Guard census: save-message-redis 11, save-session-vars 11, sendmsg-sub 11; zero rows with a kind other than would_log/would_write/would_send.",
+  "S2": "PASS \u2014 no escalation turn in this slice; Call 'sub-human-intervention' absent from runData on all 11.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData on all 11; sink still tWm5DYLxfypmVC1T -> literal `sorento-respond-message-TEST` (re-asserted from JSON).",
+  "S4": "PASS \u2014 dym-probe tool resolved only to crm_master_product_attachments_list / crm_inventory_stock_balance_list; sub-exec 11471820 shows MCP Client1 invoked the attachments _list read tool. Never a _create.",
+  "S5": "PASS \u2014 trigger test_mode===true; dym-probe carries no is_test by design, containment = fork target rysSPgUssLDf6xJc (unchanged, re-verified).",
+  "S6": "PASS \u2014 no Basic LLM Chain / OpenAI Chat Model in runData; the change still adds ZERO token cost (dym-probe's sub runs entity-ids-transformer + MCP Client1 + output-structurer only, no AI Agent).",
+  "S7a": "PASS \u2014 TEST sink 576 -> 587 across 11 canary runs = exactly +1 per run, continuing unbroken from the rev-1 window which ended at 576. Brackets: 11471662 576->577, 11472060 586->587.",
+  "S7b": "PARTIAL (unchanged from rev 1, stated not glossed) \u2014 prod `sorento-respond-message` LLEN 0 before AND after on both sampled brackets; no non-zero delta, so no attribution triggered. Per-poll consumer pop-payload series NOT collected. Rests on structural containment: no redis node added, and dym-probe's sub contains no redis node.",
+  "S8": "PASS \u2014 no node of type respondio / httpRequest / memoryPostgresChat added."
+ },
+ "still_open_after_rev2": {
+  "\u00a7DP-3b unscoped_probe live": "STILL NOT OBSERVED. Every live attachment probe that returned rows returned them WITH an 'Attachment Type' field, so layer 2 never tripped. Offline-only.",
+  "\u00a7DP-14 discriminating half": "OFFLINE-ONLY \u2014 still no product whose stock rows exist and sum to exactly 0.",
+  "\u00a7DP-4/\u00a7DP-8 probe ERROR": "NOT INDUCED LIVE (needs a workflow edit, outside tester role). Static config + offline sentinel only.",
+  "\u00a7DP-9 live, \u00a7DP-13b dynamic, \u00a7DP-12 sibling-probe[0] inbound": "NOT RUN."
+ }
+}

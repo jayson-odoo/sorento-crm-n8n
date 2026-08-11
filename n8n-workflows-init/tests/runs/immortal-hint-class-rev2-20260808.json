@@ -1,0 +1,157 @@
+{
+ "run": "immortal-hint-class rev 2 \u2014 F1/F3 verification + gap closure (tester pass 3)",
+ "date": "2026-08-08",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v @ a2422bb9 (rev2)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 184882c1 (rev2)",
+  "rev1_tested_previously": "clone 544138ca / fork aab47959",
+  "live_spine": "f9205b03 \u2014 UNTOUCHED, --verify green at start and end",
+  "live_parser": "8a813ddc \u2014 UNTOUCHED, --verify green at start and end"
+ },
+ "executions": 14,
+ "sink_delta": "706 -> 720 = +14, exactly one save per run",
+ "P1_F1_inventory_cap_5_to_3": {
+  "verdict": "PASS live \u2014 annotation survives, live-proven \u00a7IH-13 behaviour undisturbed",
+  "static": "dym-transform + dym-transform-partial BYTE-IDENTICAL to each other; product_attachment probe_cap still 8, inventory now 3",
+  "cases": [
+   {
+    "exec": "11649556",
+    "rev1_counterpart": "11646225",
+    "evidence": "probe_cap_applied true, dym_candidate_codes = 3 (was 5), dym_capped_codes = 6; dym_probe_meta.ok TRUE, reason null, answer_count 13 -> ANNOTATION SURVIVES; candidates 1-3 annotated, 4-9 BARE; numbering 1..9 global-contiguous unchanged"
+   },
+   {
+    "exec": "11649580",
+    "rev1_counterpart": "11646346",
+    "evidence": "identical shape; probe_cap_applied true, 3 probed / 6 capped, meta.ok true, answer_count 13, annotation survives, numbering unchanged"
+   }
+  ],
+  "byte_comparison": "the annotated lines for candidates 1-3 are byte-identical to rev1 ('1. SRTWC8317-RL - has stock details / 2. ... - no stock details / 3. ... - no stock details')",
+  "HONEST_LIMIT": "neither shape would have saturated at rev1's cap of 5 either (they returned 15 and 17 rows). So I confirm LIVE that annotation survives at cap 3 and that \u00a7IH-13 is undisturbed; the 'rev1 would have saturated' half stays COUNTERFACTUAL and is covered only by c3-probe.js \u00a7IH-13b plus the arithmetic from my measured grain. I could not build a live turn that saturates at 5 \u2014 that is \u00a7IH-14, still open."
+ },
+ "P2_F3_dormant_carried_entities": {
+  "verdict": "PASS live",
+  "exec": "11649608",
+  "rev1_counterpart": "11645628 (identical fixture)",
+  "evidence": "unknown_entity_hints == ['product_attachment'] \u2014 the dormant carried M2399 is now COUNTED, where rev1 emitted nothing at all",
+  "diagnostic_only_confirmed": "final entity set, carried_attachment_evicted (absent) and user_response are otherwise identical to rev1 \u2014 \u00a7IH-4 arm A unchanged",
+  "coder_gate_detail_REPRODUCED": "node ih-probe.js oe.rev1-aab47959.js -> RED 1/16, REDKEYS: IH-3-CTRL. IH-3 stays GREEN. Confirms the coder's claim that IH-3 could never have caught F3 (there the executor's prior-filter classifies the entity on its way to evicting it, so the diagnostic fires either way) and that IH-3-CTRL is the real gate.",
+  "rev2_body": "node ih-probe.js <published fork body> -> GREEN 16/16"
+ },
+ "P3_IH14": {
+  "verdict": "STILL BLOCKED \u2014 and the reason has CHANGED",
+  "attempts": [
+   {
+    "exec": "11649902",
+    "fixture": "stock for srtwb7099x",
+    "note": "3 candidates ALL stocked (dym_available_codes = all 3) -> answer_count 16"
+   },
+   {
+    "exec": "11650110",
+    "fixture": "stock for mwc7601",
+    "note": "answered directly, no picker"
+   },
+   {
+    "exec": "11650127",
+    "fixture": "stock for srtwb70",
+    "note": "answered directly, no picker"
+   }
+  ],
+  "arithmetic": "at the measured grain (13 rows for the heaviest single candidate) the inventory cap of 3 bounds any probe at 39 rows; product_attachment cap 8 x ~1.3 = ~10 rows. Best live measurement across all attempts: 16 rows.",
+  "conclusion": "the F1 fix has bounded BOTH lanes below the 50-row threshold BY CONSTRUCTION, so a real saturating probe is no longer producible through any lane. That is the correct product outcome, but it means the page-saturation branch is unexercised-live defence-in-depth. Offline coverage stands: c3-probe.js 50-row synthetic + 49-row boundary + \u00a7IH-FP-9 mutation.",
+  "recommendation": "record \u00a7IH-14 as PERMANENTLY BLOCKED-BY-DESIGN at these caps rather than as an outstanding test debt; it becomes testable again only if a cap is raised."
+ },
+ "P4_CD_fixtures_live_against_rev2": [
+  {
+   "id": "\u00a7CD-5",
+   "exec": "11649825",
+   "verdict": "PASS",
+   "evidence": "CARRIED_CLEAN + 'srtwc8317-rl1 cert' -> entities are exactly srtwc8317-rl1(product) + certificate(attachment_type); NO certificate hint; carried MWC7602-RL-P and PC 000078 both gone; reply is the annotated did-you-mean, no PC 000078"
+  },
+  {
+   "id": "\u00a7CD-7c",
+   "exec": "11649848",
+   "verdict": "PASS at the parser (the fixture's point)",
+   "evidence": "entities_deduped == 4 \u2014 the five PC 000078 rows collapsed to ONE and it KEPT the uuid aa10fd73-...; hintCount certificate == 1. Part-5 dedupe verified live for the first time.",
+   "caveat": "customer boundary diverged: the real LLM routed the bare follow-up 'and the validity?' to the promotion domain, so the reply is an access-level prompt. LLM variance on a bare follow-up, not a regression from this change."
+  },
+  {
+   "id": "\u00a7CD-7c2",
+   "exec": "11649863",
+   "verdict": "PASS \u2014 strongest of the set",
+   "evidence": "dym_slot '11400340' present => applyDymPick applied; carried_attachment_evicted lists all FIVE PC 000078 rows; entities_deduped == 1 with the surviving MWC7601 keeping uuid p0000000-...-dead; hintCount attachment_type == 1; no certificate hint; no PC 000078 in the reply"
+  },
+  {
+   "id": "\u00a7CD-2",
+   "exec": "11649772",
+   "verdict": "PASS at the customer boundary; NOT REPRODUCIBLE at the parser",
+   "evidence": "reply correctly lists PC 000078's products with the PDF, nothing dropped. But the real LLM types 'PC000078' as hint 'product', not 'certificate' \u2014 the certificate typing appears later, via the spine's reconcileEntities. So the fixture's 'hintCount certificate == 1' cannot be asserted live, and the eviction risk CD-2 guards is simply absent on this turn."
+  },
+  {
+   "id": "\u00a7CD-2b",
+   "exec": "11649798",
+   "verdict": "PASS at the customer boundary; same parser-shape caveat as CD-2",
+   "evidence": "CARRIED_CLEAN seeded; carried entities removed by axis collision, reply correct, no loss"
+  },
+  {
+   "id": "\u00a7FP8-D",
+   "exec": "11649882",
+   "verdict": "PARTIAL",
+   "evidence": "load-bearing half PASSES \u2014 carried_attachment_evicted == ['certificate:PC 000078'], MWC7601 present, no PC 000078. The attachment_type-retention half does NOT reproduce live: the real LLM switched domain_hint away from product_attachment on the bare-code follow-up, so block (B)'s re-attach never fired and the turn answered as master_products.",
+   "attribution": "pre-existing, already-filed backlog 'bare-code domain carry' \u2014 unrelated to C1/C2/C3/M2"
+  }
+ ],
+ "P4_other_gaps": [
+  {
+   "id": "require-specific PICKER render",
+   "verdict": "CLOSED \u2014 reached twice",
+   "evidence": [
+    "exec 11649922 ('certificate for tap'): probe_lane 'picker', 2 candidates, both annotated '- no certificate', meta.ok true, answer_count 0",
+    "exec 11649863 (\u00a7CD-7c2): probe_lane 'picker', 7 candidates, annotated '1. MWC7601-SC - has certificate / 2. MWC7601-RL-S10 - no certificate / ...'"
+   ],
+   "note": "the picker render carries the dym annotation correctly \u2014 this was the surface LESSONS \u00a763 records as having been missed twice before"
+  },
+  {
+   "id": "probe cap coverage of the picker lane",
+   "verdict": "VERIFIED FROM SOURCE \u2014 no gap",
+   "detail": "the cap block sits in the shared `else { \u2026 }` branch after `_picks` is assigned, common to all three lanes; probe_lane only selects how _picks is built. CD-7c2's `probe_cap_applied: false` at 7 candidates is simply 7 < 8 (cap applied, did not bind). I raised this as a possible scope gap and then closed it against the code rather than leaving it open."
+  },
+  {
+   "id": "partial-resolution offer lane end-to-end",
+   "verdict": "STILL NOT REACHED",
+   "evidence": "exec 11649941 ('stock for srtwc8317') and 11650127 ('stock for srtwb70') both ANSWERED with stock instead of offering; dym-transform-partial reports probe_skip_reason 'no_d1_candidates'"
+  },
+  {
+   "id": "\u00a7IH-15 partial-lane multi-token fixture live",
+   "verdict": "STILL NOT REACHED (blocked by the same inability to force the partial offer lane). Static half holds: the twins are byte-identical, asserted by diff."
+  },
+  {
+   "id": "\u00a7IH-2 / \u00a7IH-7 / \u00a7IH-8 / \u00a7IH-9 byte-identity arms live",
+   "verdict": "STILL OFFLINE ONLY \u2014 GREEN 16/16 against the published rev2 body"
+  }
+ ],
+ "MUTATION_SUITES_what_they_printed": {
+  "ih-mutate.sh": "ALL MUTATIONS BEHAVED AS DECLARED. Per-step occurrence-count-before and digest-before/after printed (base digest 536f8fb67d3a). IH-FP-1 RED='IH-3 IH-3-CTRL'; IH-FP-2 RED='IH-3'; IH-FP-3 RED='IH-4a'; IH-FP-3b RED='IH-4b'; IH-FP-4 RED='IH-4b IH-6 IH-8b IH-9'; IH-FP-5 RED='IH-8a'; IH-FP-6 RED='IH-9'; NEW IH-FP-F3 (remove the dormant-carried sweep) RED='IH-3-CTRL' = expected; IH-FP-CTRL RED='<none>' = expected.",
+  "c3-mutate.sh": "ALL MUTATIONS BEHAVED AS DECLARED. NEW IH-FP-F1 (restore the unsafe inventory cap of 5) RED='\u00a7IH-13b' = expected; IH-FP-10 (disable the cap) RED='\u00a7IH-13 \u00a7IH-13b \u00a7IH-15'; IH-FP-11 RED='\u00a7IH-15'; IH-FP-9 RED='fail-open \u00a7IH-14'; IH-FP-CTRL RED='<none>'.",
+  "c3-probe.js": "ALL PASS 78/78, compared population printed. \u00a7IH-13b's nine assertions all green, including '3 x 13 = 39 rows under the 50 budget', 'annotation SURVIVES at the measured grain', the counterfactual 'the OLD cap of 5 would saturate (5 x 13 = 65 >= 50)', and 'product_attachment cap still 8'.",
+  "oe-probe.js (11 \u00a7CD fixtures) vs the published rev2 fork body": "GREEN 11/11"
+ },
+ "SAFETY_SCORECARD_S1_S9": {
+  "S1": "PASS \u2014 14 executions, no respondio node in any runData; only send path is sorento-sub-respond-sendmsg-respond2 -> ublq9nSlrpz63xan with is_test true, logged as guard 'sendmsg-sub'",
+  "S2": "PASS \u2014 no human-intervention sub, no Assign*, no sla node in any runData",
+  "S3": "PASS \u2014 5 orphans (send-message-files/images/video, update-human-intervened, save-session-vars) inbound == [] in the published clone JSON; Call 'sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T whose Redis.list is the literal 'sorento-respond-message-TEST'; none of the 5 appear in any runData",
+  "S4": "PASS \u2014 every resolved tool is crm_master_product_attachments_list or crm_inventory_stock_balance_list; no *_create/_update/_delete string anywhere; crm_it_support_ticket_create never appears",
+  "S5": "PASS \u2014 trigger test_mode === true on all 14; sub calls carry is_test true",
+  "S6": "PASS \u2014 zero LLM nodes in the clone runData on all 14; parser-tier cases ran the real reformulator in the fork (populated per-turn _parser_raw). No new token sink.",
+  "S7a": "PASS, exact \u2014 TEST sink 706 -> 720 = +14",
+  "S7b": "PASS WITH ATTRIBUTION \u2014 HALT triggered and discharged. exec 11650110 showed llen-prod-before == 1 (non-zero), so the run halted pending attribution per the binding rule. Window 04:12:00-04:22:30Z covers the run window 04:14:40-04:19:53Z. 113 covering consumer executions of Srs08P0Ha3Cv--YPx0-Yn, 0 unretrievable. Per-poll LLEN series: 84@0, 8@1, 5@2, 3@3, 1@4. Per-poll pop payloads: 68 non-empty, and a programmatic scan found the ONLY contact_id present is 477071889 ('Chong', +60162291178) running '6045 stock' / '6047 stock' / '5047 stock' and order queries. ZERO occurrences of contact 437264483 and ZERO occurrences of any of the 14 test_run_ids across all 113 executions. Attributable to an unrelated live producer => run resumed.",
+  "S8": "PASS \u2014 no is_test:false run performed; no node added to either artifact",
+  "S9": "PASS \u2014 both suites enforced and printed occurrence-count-before + digest-before/after per step, each with a negative control reddening nothing"
+ },
+ "STILL_OPEN": [
+  "\u00a7IH-14 \u2014 recommend reclassifying as BLOCKED-BY-DESIGN at caps 8/3 (see P3)",
+  "the partial-resolution offer lane end-to-end, and therefore \u00a7IH-15's live partial-lane multi-token fixture",
+  "\u00a7IH-2 / \u00a7IH-7 / \u00a7IH-8 / \u00a7IH-9 as live executions (offline green)",
+  "\u00a7CD-2 / \u00a7CD-2b parser-level entity shape \u2014 not reproducible live because the real LLM types a certificate number as `product`; the certificate hint is produced by the spine's reconcileEntities, not the parser. The offline fixtures encode a shape the live parser does not emit; worth reconciling so the suite is not testing a premise reality does not hold.",
+  "\u00a7FP8-D's attachment_type-retention half \u2014 blocked by the pre-existing bare-code domain-carry backlog item"
+ ]
+}

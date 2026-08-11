@@ -1,0 +1,103 @@
+{
+  "run": "dym-v3-zerostock REVISED #3 (customer-REFERENCED requested set) — tester re-verification",
+  "date": "2026-08-01",
+  "tester": "sorento-tester",
+  "target_clone_only": "spine txiPzSxy3Pclsz6v @ versionId 61050154 (active); parser fork wI5RkNGW3EOJfBdo @ b31839e6 (unchanged). LIVE spine 9qVyfUxmRQqrpGRMDLRuz @ a505f2e1 and LIVE parser XTODTw @ 8d5f7c2d NEVER touched (sha-confirmed unchanged). No promote performed. No workflow edited.",
+  "deployed_build_integrity": {
+    "method": "REST GET of node body -> jq -r piped to shasum -a256, first16 (jq's trailing newline included; matches coder diff-doc method)",
+    "clone.compile-current-state": {"got": "39e2478b8c279d79", "expected": "39e2478b8c279d79", "match": true},
+    "clone.build-suggest-offer": {"got": "2cc445251bbfeaf7", "expected": "2cc445251bbfeaf7 (MUST be unchanged)", "match": true},
+    "clone.parser-fork.AI-Agent.systemMessage": {"got": "fb7f1258d5ea16c8", "expected": "fb7f1258d5ea16c8", "match": true},
+    "clone.parser-fork.output_exchange": {"got": "df86832677b36b7b", "expected": "df86832677b36b7b", "match": true},
+    "LIVE.compile-current-state": {"got": "7d4532bc5225e96a", "note": "== build-record baseline; LIVE untouched"},
+    "LIVE.parser.systemMessage": {"got": "f2b53abba6b66a7d", "note": "LIVE untouched"}
+  },
+  "driver": "zz-chat-console (POST /webhook/zz-chat-console {text,chat_id,contact_id,mode:'regress-capture'}) -> per-contact dispatcher (test:q:{contact} + ready-contacts-test) -> clone; reply async in chat:reply. NOTE: zz-sim-drive is STALE (pushes main-message-list-test; the clone now pops test:q:{contact} via the per-contact dispatcher) — do not use it. zz-reset-437 is ARCHIVED (cannot reset the n8n_test session via it); relied on explicit-query non-carry-forward for a clean per-turn result.",
+
+  "PRIMARY_1_match_tier": {
+    "verdict": "PRESENT — but shape/value is RESOLVER-MODE-DEPENDENT. NOT a HALT (field survives, #3 does not break, output correct in both modes), but the plan's risk model is INVERTED for single bare codes — surface to reviewer/user.",
+    "single_bare_code (check stock for SRTWT902, exec 10813567)": "AND-MODE. resolve-entity output has NO resolutions[]; match_mode='and'; intersection[]/by_entity_type carry the 5-product family (SRTWT902 + -GM/-GY/-FRG/-GM-NL); match_tier is UNIFORMLY 'and' on EVERY match — there is NO exact/prefix tier discrimination. #3 falls to its AND-mode fallback (norm(canonical_code) in resolver.tokens) -> requested set = {SRTWT902} only; the 4 expansion siblings are excluded (their canonical_codes are not tokens).",
+    "multi_token (check stock for SRTWT902, C2181XUW-P-ENG, exec 10813936)": "OR-MODE. resolutions[] PRESENT; token 'SRTWT902' -> matches [SRTWT902 match_tier:exact, SRTWT902-GM prefix, -GY prefix, -FRG prefix, -GM-NL prefix]; token 'C2181XUW-P-ENG' -> [C2181XUW-P-ENG exact]. EXACTLY the plan's §Q1' example — the typed code is 'exact', the expansion siblings are 'prefix'. #3's OR-mode family-suppression branch engages as designed.",
+    "implication": "The plan claims OR-mode is the common path and AND-mode is 'rare (R-ZS3 degradation)'. LIVE shows the OPPOSITE for a SINGLE bare code (the exact §ZS-1b repro shape): it is AND-mode. So the flagship OR-mode family-suppression logic is only reached for MULTI-token queries; single-bare-code correctness rests on the AND-mode fallback (R-ZS3). Both paths are empirically correct here, but R-ZS3 is a COMMON path, not rare."
+  },
+
+  "PRIMARY_2_ZS1b_variant_suppression_real_e2e": {
+    "verdict": "PASS (HARD). The OLD bug is definitively fixed.",
+    "exec": 10813567,
+    "input": "check stock for SRTWT902 (bare, AND-mode; family SRTWT902-GM/-GY have stock, bare SRTWT902 has stock, -FRG/-GM-NL empty)",
+    "result": "user_response has NO 'No stock records found for:' line at all (grep count = 0). -FRG and -GM-NL NEVER appear. No SRTWT902 family variant named.",
+    "before_after": "PRIOR cycle (OBS-1, rollup-20260801.json) emitted 'No stock records found for: SRTWT902-FRG, SRTWT902-GM-NL.' on this SAME query. REVISED #3 emits nothing. This is the exact user-rejected behavior, proven gone.",
+    "mechanism_note": "The no-line outcome here comes from the AND-mode fallback: requested={SRTWT902}, and bare SRTWT902 HAS stock -> satisfied. The HARD sibling-non-recurrence (no -FRG/-GM-NL) holds UNCONDITIONALLY (they are never in the requested set). The 'no line at all' half is contingent on bare SRTWT902 having stock (see OBS-B).",
+    "offline_fail_on_purpose": "harness.js + andtest.js: repin answers to a NON-family code -> SRTWT902 IS named (family gate can go red). PASS."
+  },
+
+  "PRIMARY_3_ZS1_typed_plus_empty_real_e2e": {
+    "verdict": "PASS — flagship OR-mode family-suppression working exactly as designed on real data.",
+    "exec": 10813936,
+    "input": "check stock for SRTWT902, C2181XUW-P-ENG (OR-mode)",
+    "result": "user_response ends exactly 'No stock records found for: C2181XUW-P-ENG.' — ONLY the typed-exact zero-row code named; SRTWT902 family-suppressed (SRTWT902-GM returned a row); prefix siblings -GM/-GY/-FRG/-GM-NL NOT named. Exactly one code named.",
+    "old_bug_contrast": "OLD compatible_entities-sourced #3 would have named SRTWT902-FRG, SRTWT902-GM-NL (empty prefix siblings) AND C2181XUW-P-ENG. Revised names only C2181XUW-P-ENG."
+  },
+
+  "PRIMARY_4_ZS2_picked_empty_strict": {
+    "verdict": "PASS OFFLINE (deterministic gate); real repro NOT naturally triggered (data-dependent).",
+    "offline": "harness.js §ZS-2 + andtest pick-strictness: dym_offer.picked=[C2181XUW-P-ENG,SRTWCY8605,P4,P6,P7], returned={P4,P6,P7,SRTWCY8605-PJ} -> 'No stock records found for: C2181XUW-P-ENG, SRTWCY8605.' Picks named STRICTLY even when a picked code's sibling (SRTWCY8605-PJ) is stocked (family suppression does NOT apply to picks). PASS.",
+    "real": "Real dym multi-pick mechanism proven working (T2 '1,4'/'1 and 4' resolved SRTWT808 + SRTWT809 and flowed to get-results, execs 10814836/10814992) — but those picks resolved to STOCKED products, so no zero-stock pick #3 line fired naturally. A real picked->zero-stock repro is data-dependent and was not forced; offline is the gate."
+  },
+
+  "bundle_5_classifier_2v3_real_reformulator": {
+    "verdict": "PASS — dym 3/3, result 2/2 = 5/5, 0 misroutes. Marker + dym_last_result_set persist path INTACT after compile republish.",
+    "T1_partial_miss (exec 10814518)": "check stock for SRTWT902, SRTW808, SRTW809 -> stock rows + numbered 'Couldn't find these:' (1-3 SRTW808, 4-6 SRTW809); parser-facing response marker = '[6 did-you-mean suggestions active]' (SINGLE bracket, NO [results numbered]); dym_last_result_set persisted 6 rows idx1..6 each with for_raw.",
+    "reference_target_values": {
+      "'2' (exec 10814585)": "_parser_raw.reference_target=dym, positions [2]; output dym_pick_applied=true, dym_offer_pick_code=SRTWT1808 (dym#2); SRTWT902 retained",
+      "'1, 4' (exec 10814836)": "_parser_raw.reference_target=dym, positions [1,4]; BOTH picks resolved (entities=[SRTWT902,SRTWT808,SRTWT809], accumulate not clobber)",
+      "'1 and 4' (exec 10814992)": "_parser_raw.reference_target=dym, positions [1,4]; both picks resolved",
+      "'the 2nd one' (exec 10814886)": "_parser_raw.reference_target=result, positions [2]; dym handler SKIPPED; resolved 2nd STOCK row (SRTWT902-GM)",
+      "'product 2' (exec 10814938)": "_parser_raw.reference_target=result, positions [2]; dym handler SKIPPED; resolved 2nd STOCK row"
+    },
+    "canary_ratio": "dym 3/3 (2, 1-4, 1-and-4), result 2/2 (the 2nd one, product 2) = 100% (5/5), 0 misroutes"
+  },
+
+  "bundle_6_MT1_MTR": {
+    "verdict": "PASS — build-suggest-offer byte-unchanged (sha 2cc445251bbfeaf7 confirmed == current deployed AND == prior-cycle harness body, diff empty). §MT harness re-run: 23/23 PASS.",
+    "cases": "§MT-1 (3 per-token blocks, contiguous 1..7, dym_offer.candidates len7 per-token for_raw, quick_reply 'Yes escalate,No it's okay'); §MT-R (single-token clone==live BYTE-IDENTICAL, HARD, + fail-on-purpose single!=multi); §MT-cap (>5 -> 5 blocks); §MT-drop (bare-uuid token dropped, idx contiguous)."
+  },
+
+  "bundle_7_regression_byte_identical_HARD": {
+    "verdict": "PASS (structural + real + negative control).",
+    "diff_clone_vs_live_compile": "The ONLY change to shared live-originated logic is one line (225c444): _newOffer fallback ': null' -> ': (_partialOffer || null)'. Everything else is PURE INSERTION (the #3 IIFE, the #2 block, their let-decls, the tail conditional emit). On a no-dym/all-resolved turn: #3 no-ops (missing=[]), #2 no-ops (surfaced=[]), _partialOffer stays null -> line 225 == live, _dymLastResultSet null -> tail emit skipped -> output byte-identical to LIVE.",
+    "real": "exec 10813567 (check stock for SRTWT902, no-dym, all-resolved) produced a clean stock answer with NO #3 and NO #2 additions.",
+    "negative_control": "exec 10813936 (miss) DOES append the #3 line -> the byte-diff is non-empty on a miss fixture (instrument can go red).",
+    "offline": "§ZS-3 (all-stocked -> userResponse byte-identical, no #3 line) PASS + fail-on-purpose (dropping a row adds the line)."
+  },
+
+  "bundle_8_ZS_byte_identical_noop": "PASS — all-stocked query -> missing=[] -> no #3 line (§ZS-3 offline; real exec-mt on a fully-stocked family emitted no #3 line).",
+
+  "offline_deterministic_units": {
+    "harness.js (against freshly-extracted deployed #3 IIFE, byte-identical to deployed except 2 inert instrumentation lines)": "§ZS-1b (no line), §ZS-1b fail-on-purpose (SRTWT902 named), §ZS-2 (C2181XUW-P-ENG, SRTWCY8605 strict), §ZS-2b (pick beats stocked sibling), §ZS-1 (C2181XUW-P-ENG only), §ZS-3 (no-op), §ZS-4 (gated), §ZS-4b (order domain) — ALL PASS.",
+    "andtest.js (EXACT deployed body, AND-mode = the live single-token path)": "7/7 PASS — AND-mode bare stocked -> no line + siblings never named; R-ZS3 degradation (bare-empty+sibling-stocked -> SRTWT902 named, siblings still never named); by_entity_type fallback."
+  },
+
+  "safety_§0": {
+    "S1_no_real_send": "PASS — CHAT fork sub-exec 10813578 ran chat-push (reply to chat:reply:zsmt-...) only; the credentialed respondio 'Send a Message' node did NOT run. No api.respond.io message POST. Verified per real turn.",
+    "S2_no_assign_escalation": "PASS — human-intervention sub NEVER invoked (not the escalation branch) across all turns; HI fork carries 1 respondio assign node but never executed.",
+    "S3_no_crm_write": "PASS — save-session-vars + update-human-intervened both orphaned (0 inbound, verified from clone JSON); session persisted only to n8n_test (pg-upsert-session). Sink fork workflowId==tWm5DYLxfypmVC1T; its Redis.list=='sorento-respond-message-TEST' (unconsumed).",
+    "S4_getresults_read_only": "PASS — resolved tool = crm_inventory_stock_balance_list (READ allowlist); never crm_it_support_ticket_create.",
+    "S5_test_mode_present": "PASS — clone hardcodes is_test=true on ALL sendmsg/human-intervention/reformulator sub-call nodes (static from clone JSON); mode=regress-capture in the redis item.",
+    "S6_token_sinks": "PASS — only the reformulator (gpt-5.4-mini) LLM ran per turn (real e2e = parser tier, expected). No Basic LLM Chain, no get-results LLM agent, no reformulator-side extra token sink observed.",
+    "S7a_test_sink_delta": "PASS — sink fork tWm5DYLxfypmVC1T (exec 10815003) pushed the incoming-save blob to sorento-respond-message-TEST carrying MY turn_id=10814992, contact_id=437264483, message='1 and 4'.",
+    "S7b_prod_sink_attribution": "PASS with attribution — prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn scanned across 60 polls (11:54:05-11:59:00). Both signals recorded: per-poll LLEN series (sorento-respond-message = 1,2,3,4,0; max 4) AND per-poll pop payloads. EVERY non-empty prod-sink payload is contact_id 445239414 ('Tera', +60197293963), turn_id 10815096, msg 'SRTWCX8608 & SRTWCY8608 has stock?' — a REAL production customer, NOT my run. ZERO occurrences of my contact 437264483, zero 'chatcon-' markers, zero of my run's turn_ids. Structural backstop: the clone has NO node that writes sorento-respond-message (sink fork -> -TEST only; sendmsg CHAT -> chat:reply + log-chat-history-n8ntest). No harness leak.",
+    "S8_credentialed_send_forks": "NOTE — sendmsg CHAT fork ublq9nSlrpz63xan STILL contains a credentialed respondio 'Send a Message' + an HTTP Request node (the known STALE fork). Runs here are FULL-CLONE at is_test:true (not isolated is_test:false fork runs), and S1 empirically confirmed the respondio Send did NOT fire. But the CHAT fork is NOT structurally S8-clean; its containment rests on the runtime is_test guard, which was verified to hold this cycle. HI fork vUfFUDjLAuMaeQE6 also carries 1 respondio assign node (never ran)."
+  },
+
+  "observations_surfaced": [
+    "OBS-A (HEADLINE, design/risk inversion): single bare-code stock queries resolve in AND-mode (match_mode='and', no resolutions[], match_tier uniformly 'and') — so the flagship OR-mode family-suppression logic is UNREACHED for the exact §ZS-1b repro on live; correctness rests on the AND-mode fallback (R-ZS3), which the plan labeled a 'rare degradation'. It is in fact the COMMON single-token path. OR-mode with exact/prefix tiers appears for MULTI-token queries. Reviewer/user should re-weight R-ZS3 from 'rare' to 'common' and confirm intended.",
+    "OBS-B (uncovered edge, from OBS-A): in AND-mode R-ZS3 there is no family suppression, so a BARE typed code with NO stock but a STOCKED sibling WOULD be named ('No stock records found for: SRTWT902.'). Did not occur here (bare SRTWT902 had stock). This is the exact edge the plan's family suppression targets, now uncovered on the common single-token path. LESSER severity than the OLD bug: it names the code the customer ACTUALLY typed (not un-typed siblings) — the un-typed-sibling bug stays fixed in ALL modes.",
+    "OBS-C (harness): zz-sim-drive is STALE (pushes main-message-list-test; the clone pops test:q:{contact} via the per-contact dispatcher). Correct lane = zz-chat-console (regress-capture) -> dispatcher. zz-reset-437 is ARCHIVED and cannot be activated ('Cannot activate an archived workflow') — no in-harness n8n_test session reset available this cycle; host psql password is a placeholder. Relied on explicit-query non-carry-forward (clean results confirmed).",
+    "OBS-D (get-results LLM liveness, per task): no get-results LLM agent executed in any run; get-results ran the deterministic MCP-read + output-structurer path (central-exchange). Consistent with the get-results agent being orphaned.",
+    "OBS-E (no new token sink): only the reformulator parser LLM ran per turn. The reformulator output carries _parser_raw (state-monitor C2 diagnostic, already live) — no additional LLM/token sink.",
+    "OBS-F (async fetch race): get_execution mid-flight returns empty runData with status 'running'; must poll status until success before reading (cost one wasted fetch)."
+  ],
+
+  "final_verdict": "ALL PROMOTE-GATING CASES PASS on the REVISED #3. Real e2e: §ZS-1b (no bad line, siblings never named — OLD bug fixed), §ZS-1 (only typed-exact empty named, family-suppressed). Offline deterministic §ZS-1/1b/2/3/4/4b + AND-mode 7/7 all PASS. #2-v3 classifier 5/5 (0 misroutes), marker+dym persist intact. #1 §MT 23/23. Regression byte-identical (structural+real+neg-control). §0 S1-S7 all hold (S7b attributed to a real customer, no leak); S8 CHAT/HI forks carry credentialed send nodes but the runtime guard held empirically. HEADLINE ANOMALY (OBS-A/B, NON-BLOCKING but must be reviewed): live returns AND-mode for single bare codes, inverting the plan's OR-mode-common assumption — flagship family-suppression only engages for multi-token; single-bare-code relies on R-ZS3, which the plan called rare. Not a HALT (match_tier present, #3 correct on all tested inputs, no leak, no un-typed sibling ever named)."
+}

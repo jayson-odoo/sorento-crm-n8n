@@ -1,0 +1,2 @@
+=Previous response: {{ String($('When Executed by Another Workflow').first().json.previous_conversation_state?.response ?? '').replace(/^Previous turn \([a-z_]+\)/i, 'Previous turn') }}
+Current user message: {{ $('When Executed by Another Workflow').first().json.latest_user_message }}

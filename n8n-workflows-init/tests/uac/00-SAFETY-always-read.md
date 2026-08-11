@@ -54,6 +54,22 @@ A case PASSES only if all of these hold, asserted from `get_execution(includeDat
   by T+3s and the count reads back equal). A gate that can report PASS while a prod write occurred
   manufactures confidence. It is replaced by a **two-part** gate; **both parts are mandatory**.
 
+  **⚠️ S7b INSTRUMENT NOTES (added 2026-08-09, container-status cycle) — read before asserting S7.**
+
+  **(i) The depth value is keyed by the LIST NAME, not by anything resembling a length.** The prod
+  consumer's `Redis1` node emits `{"sorento-respond-message": 0}`. A scan looking for a `len` /
+  `count` / `depth` key finds nothing and reads as "instrument unavailable" — which invites skipping
+  S7b rather than running it. Read `Redis1`'s output object and take the value under the list name.
+
+  **(ii) S7b HAS AN ~8-MINUTE RETENTION HORIZON, so it MUST be snapshotted during or immediately
+  after the run.** The consumer polls every 5 s and n8n retains ~100 of its executions, so the depth
+  series only reaches ~8 minutes into the past. Older runs CANNOT be assessed retrospectively — the
+  samples have aged out. Without this rule S7b can be "asserted" hours later against a window that
+  does not contain the run at all, and it comes back clean every time: a gate that passes because it
+  is measuring nothing. Same defect class that retired the original LLEN-equality S7 and the
+  consumer-execution-count method. **If the window does not demonstrably contain the run's
+  timestamps, S7b is NOT asserted — say so.**
+
   **S7a — TEST-sink delta is the positive signal.** The harness writes only to the unconsumed sink
   `sorento-respond-message-TEST` (via `tWm5DYLxfypmVC1T`). Snapshot `LLEN
   sorento-respond-message-TEST` immediately before and after the run. Every save the case expects
@@ -150,6 +166,31 @@ A case PASSES only if all of these hold, asserted from `get_execution(includeDat
   prevent.
   - **S3 extension (same change).** Additionally assert the HI fork `vUfFUDjLAuMaeQE6` and whichever
     sendmsg fork the case targets contain **zero credentialed send nodes**. From JSON, not memory.
+
+- **S9 — a fail-on-purpose mutation MUST be proven to have applied** (added 2026-08-07,
+  `dym-probe-before-offer` reviewer §6.3; **fifth instance** of the "green that cannot fail" class,
+  LESSONS §61).
+
+  Every §*-FP step mutates code, expects the suite to go RED, and then scores the gate as a
+  working instrument. **If the substitution never applies, the suite prints ALL PASS — which is
+  indistinguishable from "the suite genuinely resisted the mutation".** The mutation harness then
+  becomes itself an uninstrumented instrument, and the fail-positive procedure certifies a gate it
+  never actually tested. This is exactly what happened here: the mutation targeted
+  `return (hb - ha);` while the source reads `return hb - ha;` (no parentheses), `sed` matched
+  nothing, and the run printed ALL PASS.
+
+  **Binding procedure for every mutation step. All three, in order:**
+  1. assert the search string occurs **exactly N > 0 times** in the target file **before**
+     substituting (literal match, count every occurrence — `grep -Fo … | wc -l`);
+  2. assert the file **digest changed** after substituting;
+  3. **abort loudly** on either failure and **do not run the suite** — a suite result obtained
+     without both assertions is **void**, not merely unconvincing.
+
+  A green suite following a mutation whose application was not proven **may not be recorded as
+  evidence in either direction**. Rerun it.
+
+  Reference implementation (enforces all three, and refuses to run the suite otherwise):
+  `tests/offline/dym-probe-before-offer/mutate.sh`.
 
 > If S1–S5, S7 or S8 cannot be affirmatively verified for a case, treat as **FAIL and halt the run** —
 > do not proceed to later cases (a real egress means the kill-switch is leaking).

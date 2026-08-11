@@ -119,6 +119,328 @@ Hard-won knowledge. Read before editing workflows or building harness pieces —
 
 61. **The dominant defect class here is verification that CANNOT FAIL — prove every assertion can go red before trusting it.** Four instances in one session, each producing the *comfortable* answer nobody investigates: (a) `continueErrorOutput` nodes with an unwired `main[1]` — a 401 reports `status:success`; **worse than a dead-end, MEASURED** (clone `get-access-types`, exec 9523682): the node emits the AxiosError to the swallowed `main[1]` AND emits `{}` on `main[0]`, which flows downstream to a **confidently WRONG customer reply** ("you have no access levels") with the execution green and `search_executions status:error` seeing zero. (b) `jq … 2>/dev/null || true` treated as PASS — can't tell "nothing changed" from "check didn't run". (c) stale fixtures that still produce plausible runs because a mock fabricates a believable branch. (d) the `grep -rl` false-negative (§59c). **Rules:** assert on **payload shape** (a named domain key present AND `error` explicitly ABSENT), never on execution status; never let empty checker output mean PASS (print the compared-population count); prefer a check whose positive result can't be faked (a 404 body proving auth passed beats a 200 that could be anything); and run the assertion against a real induced fault once — an assertion never shown to fail is not an instrument. This is why the auth gate's payload-shape clause was the only one of four that caught the induced 401.
 
+61b. **FIFTH INSTANCE of §61, and the worst-placed one: the *fail-on-purpose harness itself* was
+    uninstrumented** (`dym-probe-before-offer`, 2026-08-07). A mutation step targeted
+    `return (hb - ha);`; the source reads `return hb - ha;` (no parentheses). `sed` matched
+    nothing, the file was unchanged, the suite ran against pristine code and printed **ALL PASS** —
+    a result identical to "the suite genuinely resisted the mutation". Note where this sits: the
+    fail-positive procedure exists *specifically* to prove other gates can go red, so a blind
+    mutation harness silently certifies every gate it touches. **Binding rule (now UAC §0 S9):
+    every mutation must (1) assert the search string occurs exactly N>0 times BEFORE substituting,
+    (2) assert the file digest CHANGED after, and (3) abort without running the suite if either
+    fails. A suite result obtained without both assertions is VOID, not weak.** Reference
+    implementation: `tests/offline/dym-probe-before-offer/mutate.sh` (proven: it aborts on the
+    exact no-op above, and goes red on the correct string). Generalises past n8n — it applies to
+    any mutation-testing or chaos step anywhere in this repo.
+
+61c. **A "duplicate row" in a multi-tenant CRM is usually not a duplicate — check the uniqueness
+    constraint before designing a dedup** (`dym-probe-before-offer` F-DUPE, 2026-08-07).
+    `app/models/product.py:182` is `UNIQUE(company_id, product_code)`: product codes are unique
+    **per company**, so one code under two uuids is two *different companies'* products, by schema
+    invariant. A run log called it "duplicate CRM rows needing cleanup"; there was nothing to clean
+    up. Three consequences the wrong root cause would have hidden: (a) the "obvious" fix
+    (union the uuids and probe them together) **cannot** work, because the answer envelope carries
+    no product id (`presenters.py` emits code/name/type/file fields, never the uuid) while the pick
+    path resolves exactly one uuid — so it would promise "has" and then dead-end on the empty twin,
+    strictly worse than the silent dead-end being fixed; (b) all unioned entities are `product` and
+    mappable, so the unscoped-read guard does **not** catch it — mechanically safe, semantically
+    wrong, **it tests green**; (c) the correct fix is to *exclude* the ambiguous code from the
+    claim, not to resolve it. Corollary for company-scoped tools: a sub that omits
+    `contact_id`/`space_id` calls them **unscoped**, so "which sub does this node target" is a
+    correctness question, not a plumbing one.
+
+63. **WRONG-OBJECT ASSERTIONS — a class distinct from §61's "green that cannot fail", and it beat every
+    gate in this repo three times in one change** (`dym-probe-before-offer`, 2026-08-07). §61 is about
+    assertions that *cannot* go red. This is different and nastier: **the assertions are sound, they
+    can go red, they are simply pointed at the wrong OBJECT.** All three instances have the identical
+    signature — *computed correctly, rendered bare, every gate green*:
+    (a) a second renderer (`compile-current-state`'s partial-resolution block) was never annotated
+    because coverage was enumerated by graph inbound; (b) a fourth renderer (the require-specific
+    picker in `disallowed-entity-gate`) likewise; (c) worst, the picker annotation was computed
+    correctly by `build-suggest-offer` and then **thrown away**, because `escalate-catalog` re-sources
+    `escalate_message` **by name** from the node UPSTREAM of the entire chain
+    (`$('not-found-error-message')`). Note (c) is just **LESSONS §5 / the TOPOLOGY "Read BY NAME"
+    warning** — *`$('x')` reads are NOT redirected by rewiring* — biting on the READ side rather than
+    the write side. Reachability analysis proved the payload *reached* the renderer, which was true
+    and irrelevant: nothing checked where the **rendered text** was *sourced from* downstream. And
+    because the producer correctly **spreads rather than mutates**, the annotated object simply went
+    unconsumed — no error, no diff, nothing to see.
+    **Rules.** (i) **Assert on what the customer receives** — `save-session-vars.user_response`, the
+    sendmsg payload, or the terminal consumer's output — *in addition to* the producing node's object.
+    A suite that only asserts the producer cannot see this class at all. (ii) **Enumerate renderers by
+    RENDERED STRING** (grep the user-facing phrase across every Code node), never by graph inbound;
+    inbound-enumeration missed two of four surfaces here. (iii) For every field you annotate, find who re-sources it **by name**
+    downstream — that set, not the edge list, is the true consumer list. **A line-based
+    `grep "$('"` is NOT sufficient guidance and will miss the case that caused this defect.**
+    Scan for all THREE forms:
+      (a) single-hop, same line — `$('X').first().json.key`;
+      (b) quote variant — `$("X")` (a single-quote-only grep already produced a wrong answer once,
+          LESSONS §62);
+      (c) **two-hop, split across lines** — `const v = $('X'); const j = v.first().json; … j.key`.
+    Form (c) is what hid the rev-5 defect (`escalate-catalog` binds `nfNode` on one line and reads
+    `nf.escalate_message` two lines later) and is exactly what a line-based grep cannot see. Bind
+    the node handle to a variable and follow the variable, or grep the FIELD name and walk back to
+    its source. Credit: the tester's scan in this form found two further readers
+    (`attach-merge.js`, `presign-fail-notice.js`, both reading `user_response` from
+    `crossdomain-compose`) that a single-hop scan missed — both were then shown safe from the graph,
+    but they were invisible to the search form I had prescribed. (iv) Make the rendered-text gate **discriminating**: run the pre-fix consumer body
+    against the post-fix producer output and assert it comes back WITHOUT the annotation, so the gate
+    proves it can distinguish the two rather than being taken on trust.
+
+64. **A published change can be SILENTLY REVERTED on the clone by a UI save — and a later fix
+    downstream can MASK its absence, so every behavioural check keeps passing.**
+    (`carried-certificate-dump` B1, reverted 2026-08-07, found 2026-08-08.) Two mechanisms
+    compounding, and the pair is what made it survive a coder, two testers and a reviewer:
+    (a) **The revert.** A UI save from a stale editor tab — the same window in which the user
+    deliberately removed `get-presigned-url` — rewrote `disallowed-entity-gate` back to its pre-B1
+    body. This is LESSONS §24's revert-landmine (*"editing in the UI silently creates/updates a
+    draft; a later publish ships everything in it"*) biting the **clone**, where nobody was
+    watching for it. Every clone version from `b94eea53` (08-07 07:46) to `879d0f68` (08-08 04:41)
+    carried the pre-B1 sha `7626c83e`, for over a day.
+    (b) **The mask.** B2′ (parser-side certificate eviction) shipped in between. B2′ removes the
+    *cause* — the carried certificate — so the 26-row dump B1 guards against **cannot occur
+    whether or not B1 is present**. Every B1 regression check (`srtwc8317-rl1 cert` →
+    did-you-mean, no dump) therefore kept passing, **correctly, in both states.**
+    **This is a THIRD class, distinct from §61 and §63.** §61 is an assertion that *cannot go red*.
+    §63 is a sound assertion pointed at the *wrong object*. This one is a sound assertion, pointed
+    at the right object, that simply **cannot discriminate the two states** — the observable it
+    reads is identical either side of the thing it is supposed to prove. Redundant fixes for one
+    symptom create this hazard **by construction**: the moment two changes independently suppress
+    the same user-visible outcome, any test written against that outcome stops being evidence for
+    either one.
+    **Rules.** (i) **Verify the change is still PRESENT — by node sha against the recorded
+    post-build value — at the START of every test pass**, not just that the behaviour looks right.
+    "It still behaves correctly" is not evidence the code is still there. Reference:
+    `tests/offline/carried-certificate-dump/assert-b1-present.sh` (PASS/`reverted`/`someone else
+    edited it` are three distinct outcomes, not two). (ii) **Record the post-build sha in the
+    node-diff** so there is a value to check against — a diff without one cannot support this gate.
+    (iii) **When two changes suppress the same symptom, at least one assertion per change must key
+    on something the OTHER change does not affect.** Here the discriminator is **execution shape,
+    not text**: B1 dead-ends before `Call 'sub-get-results'` is invoked, so the sub is **absent
+    from runData**; with B1 gone but B2′ active the sub runs and returns a correctly-scoped result
+    with the *same* reply text. Prove such an assertion RED against the actual defective artifact
+    before trusting it (done here against the live B1-absent clone body). (iv) Assert absence of
+    the **node in runData**, never a status and never the rendered string (§61a, §63 rule i).
+
 ## Diagnosing "why is this slow" — measure the loop before optimising it (dev-velocity work, 2026-08-04)
 
 62. **A performance diagnosis made from plausibility instead of measurement will point at the wrong thing — and here it pointed at the wrong thing by 4x.** Asked why n8n work is slower than CRM work, I blamed the obvious suspect: MCP round-trips and remote execution. Then I measured, and every number contradicted me. **A single remote clone turn is 8 seconds**, not the 30–45s I'd assumed; the 70-execution tool-loop suite was **~9 min of a 48-min tester run (~19%)**, the 38-execution XA suite **~5 min of 28 (~18%)**, and the three live PUTs that promoted a full day's work cost **~6 min of ~246 min total agent wall-clock**. The write mechanism was never the bottleneck. The real cost was **agent reading and re-derivation, repeated cold on every invocation**: `tests/UAC.md` at 3,986 lines/297 KB, a ~600-line plan, and the live spine JSON at **444 KB** pulled 2–3× per agent. Fourteen agent invocations each re-ingested substantially the same corpus, and ~6 of them independently re-derived the same "who reads `compile-current-state` by name" fact — one getting it **wrong** by grepping only `$('x')` and missing the `$("x")` form. **The fix that follows from the measurement is different from the fix that follows from the guess:** not "fewer/faster remote calls" (worth ~nothing — they're 8s) but **smaller derived artifacts and diffs instead of blobs** — a generated `TOPOLOGY.md` (12 KB, **46× smaller** than the workflow JSON, carrying edges + the by-name reader map + orphans + sub-calls) and a per-family UAC split (**3,986 → ~478 lines**, ~8×). Two corollaries worth keeping: (a) **a local cache of remote truth must carry a loud staleness gate or it is a liability** — `normalized-workflows/` was deleted from this repo precisely because a stale copy got silently trusted, so the export writes `versionId`+per-node sha256 into `MANIFEST.json` and `--verify` exits **1** on drift (proven by corrupting a manifest on purpose); and (b) **artifact-level wins are not end-to-end wins** — 46× on structure and 8× on reading do NOT compose into 46× or 8× overall, because a real share of any session is irreducible *discovery* (the reviewer finding F1 was 4 arms not 1, FP1 exposing that the A-COUNT instrument was blind, my own wrong premise that `central-exchange` runs on a total-miss turn). I claimed ~2x, could only defend 1.2–1.4x, and said so; the honest close is to **bank the baseline (planner ~27m, coder ~15m, tester ~48m, reviewer ~18m) and measure the next change against it, stopping if it doesn't move.** Tooling: `scripts/export-workflows.py`, `scripts/split-uac.py`.
+
+64. **Synthetic prior-state fixtures omit what real session state carries — derive them from a real
+    `get-session-vars` payload instead of hand-building them** (`immortal-hint-class`, 2026-08-08;
+    **second instance**). M2 hinged on whether `ordinal` persists into the next turn. Every
+    `sim-inject` fixture in the harness was hand-built and **all 11 carried zero `ordinal`**, while
+    **17 real `pg-get-session` rows carried it** — so the harness could not have reproduced the bug
+    it was built to test, and the premise had to be settled from live executions instead
+    (`11555030`, `11642553`). The first instance was the same shape: `sim-inject-session` coerces an
+    absent `referenced_result_set` to `[]`, and `output_exchange` guards with `Array.isArray(...)`,
+    which `[]` passes — so the `prevState.last_result_set` fallback never runs and every positional-
+    pick fixture is **silently vacuous while reporting green** (live has that key absent in 62 of 67
+    executions, so the shapes genuinely differ). **Rule: seed prior state by copying a real
+    `get-session-vars` payload and editing it, never by writing the object from the field list in a
+    plan.** A hand-built fixture encodes what the author *believes* state contains, which is exactly
+    the belief under test. Corollary: when a fixture and production disagree about whether a key is
+    present-but-empty vs absent, the guard style (`Array.isArray` vs truthiness) decides whether the
+    difference is inert or fatal — check the guard, not just the key.
+
+## Right assertion, wrong object — and the tests that agree with you (container-status, 2026-08-09)
+
+65. **A measurement is only as good as the object you measured it on, and the clone is not live.** I
+    "optimised" `Switch` by replacing `$('Split Out').item` (an n8n paired-item lineage walk, ~1.5 s
+    per item across a 148-node run) with `$json.mimeType`, and measured a real 36.7 s → 4.2 s win. It
+    was wrong for live. **The clone has `get-presigned-url` DELETED; live has it between
+    `Loop Over Items1[1]` and `Switch`** — and the presign response body (`presigned_url`, `file_path`,
+    `filename`, `expires_in`, `storage_provider`) carries **no `mimeType`**. On live `$json.mimeType`
+    is `undefined`, both rules go false, and every attachment falls to `fallbackOutput`. The paired-item
+    walk was not waste — it was *buying the field `$json` genuinely lacks on live*. Worse, no evidence
+    on hand could have caught it: across ~30 runs only the files branch ever fired (every fixture was
+    xlsx/pdf), so the image and video branches were never executed and the passing observable is
+    identical to the broken one. **Rule: before promoting a hunk verified on the clone, diff the
+    clone's INBOUND EDGES for that node against live's** — a deleted upstream node changes what `$json`
+    means without changing a line of the node you tested. Reverting the clone to live's expression
+    beats excluding the hunk at promote time: an exclusion has to survive a checklist, a revert cannot
+    leak.
+
+66. **A mutation test pointed at a fixture that cannot discriminate returns the comfortable answer —
+    and then you write the wrong conclusion into shipping code.** I built a mutant with the
+    `!_isTimeline` denial guard removed, saw the suite stay green, concluded the guard was redundant,
+    and put "proven redundant by mutant" in a comment destined for two live subs. Both the conclusion
+    and the proof were wrong: `_isTimeline` is `.some(k === '__all__')` — **CONTAINS the sentinel, not
+    IS the sentinel alone**. The prompt tells the LLM to emit it alone, but *that is an instruction,
+    not an invariant*, and the code tolerates a mixed array on purpose. Under
+    `requested_attributes: ['__all__','eta_delay_date']` with that key denied, removing the guard
+    **does** emit the note. Every fixture used the sentinel alone — the one shape that cannot see the
+    difference. **Rule: a mutant that survives is a claim about your FIXTURES first and your code
+    second.** Before concluding "redundant", enumerate the input shapes the guard's condition can
+    distinguish and check one of each. Corollary: when a test cannot be made to discriminate, label it
+    an INVARIANT in its own name (`T3 [invariant, not discriminating]`) rather than letting a green
+    imply proof.
+
+67. **An unknown parameter is dropped SILENTLY, and the tool then answers without ever calling the
+    backend.** `crm_resource_attachments_list` takes `attachment_type_id` (singular scalar); we sent
+    `attachment_type_ids` (plural array). The unknown key was discarded, taking the only narrowing
+    filter with it, so `TOOL_REQUIRED_NARROWING_FILTERS` short-circuited to an empty page **without
+    reaching the backend** — rendering as "no such document" for a document sitting in the library.
+    Two follow-ons worth more than the fix: (a) the **shape** fails as silently as the **name**, so
+    guard both (`SCALAR_PARAMS` set, not a special case); and (b) the discriminator has a blind spot —
+    a real call carries `fallback_used` and the short-circuit does not (measured 882 vs 208 bytes),
+    **but an `attachment_type_code` naming a type that does not exist does NOT drop the filter**: the
+    service substitutes an impossible-id predicate, so the call reaches the backend, `fallback_used`
+    is present, and the result is still zero rows. `fallback_used` answers *"did we call the backend"*,
+    never *"is this empty legitimate"*.
+
+68. **A filter whose trigger is "the data looks like X" will fire on anything that starts looking like
+    X.** The requested-attribute projection was gated on *"does any field carry a `key`"*. When the CRM
+    keyed resource attachments (`original_filename`, `uploaded_at`) — neither an identity key nor ever
+    requested — the projection would have dropped **both** fields of every document answer and rendered
+    a bare `1.`, with `requested_attributes: []`, i.e. the *emptiest* possible request was the most
+    destructive. Caught pre-emptively only because a contract change was announced. **Rule: gate on
+    what the envelope IS (`result_type === 'incoming_stock'`), not on what its data happens to look
+    like.** Also record the load-bearing near-miss: `crm_incoming_stock_by_product` ALSO reports
+    `incoming_stock` and IS projected — a no-op today *only* because every field it emits is an
+    identity key. One keyed non-identity field added there and it drops silently.
+
+69. **Single-turn fixtures cannot see cross-domain carry — and real usage found it in one turn.**
+    Every UAC case, offline probe and e2e run started from clean state, so all of them passed while
+    live exec `11818957` failed: a promotion turn left `brand='Sorento'` / `category='pop up waste'` in
+    session state, the next turn "Container status report" routed **correctly** to
+    `resource_attachment` but carried both (`current_message: false`), `Sorento` fuzzy-matched
+    promotion PDFs, and the customer got *"Couldn't pin down Sorento"* + three promo PDFs instead of
+    the file. Root cause was one missing pair: `DOMAIN_BLOCKED_HINTS.resource_attachment` blocked 16
+    hints but not `brand`/`category`, which `order` and `incoming` already block. The argument for
+    blocking rather than patching: **`crm_resource_attachments_list` has no brand or category param at
+    all**, so those hints can never narrow a document lookup — only pollute it. **Rule: for any change
+    that reads carried state, write at least one regression that INJECTS a realistic
+    `previous_conversation_state` from another domain.** Assert on the mechanism (inject the state),
+    not by replaying two turns, so the test cannot drift with whatever the previous turn produces —
+    and prove it red against the unfixed body before trusting it
+    (`tests/offline/container-status/regression-carry-promotion-to-document.py`).
+
+70. **A reviewer finding is a hypothesis too — verify it before acting, and before repeating it.** The
+    reviewer called promoting the `contact_id`/`space_id` tail to `Fss5aAa` an outage: `.trim()` on an
+    absent `contact_id` throws, and the four probes "pass no `contact_id`". I relayed that to the user
+    as a P0. Both of us were wrong: **all six callers pass `contact_id` at TOP LEVEL**
+    (`={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ` — and the trailing space is
+    exactly what the `.trim()` cleans), and `semantic_input.space_id` was already `"364817"`, so the
+    tail is behaviour-neutral. The finding was reasoned from the FUNCTION without checking the CALLERS
+    — correct reading of the code, wrong conclusion about the system, which is the same shape as §65
+    pointed the other way. It stayed stripped, but as hygiene (live's `semantic_input?.x` is
+    optional-chained and single-sourced), not as an emergency. Related: **merged is not deployed** —
+    CRM PR #109 merged and its markers were still absent from the running MCP because FastMCP registers
+    tools at startup; assert the CONTRACT against a live envelope, never against a merge commit.
+
+## Patch the outcome, not the mechanism — and assert the WHOLE reply (promo-scope-dym, 2026-08-10)
+
+**§67 — a per-mechanism fix to a shared filter never converges.** `compile-current-state`'s
+partial-miss block ("Couldn't find these: … did you mean") had already been patched once, for
+container-status, by naming the mechanism that had resolved the token
+(`resolved_by === 'document-class-narrowing'`). A second mechanism promoted tokens a different way
+— `disallowed-entity-gate` lifting a resolution's ambiguous `matches` straight into
+`compatible_entities` — and the bug came back wearing a different hat: `"6047 promo"` returned the
+right 10 promotions and then offered three rows **of that same list** back as "did you mean".
+
+The mechanism is not the invariant. The **outcome** is: *a token whose own candidates appear in
+the answer was answered, not missed.* One predicate, keyed per token, and a sixth promotion
+mechanism needs no sixth patch. When you find yourself adding a second special case to the same
+filter, the second special case is the signal — stop and find the property both cases share.
+
+Corollary for the resolver contract: `resolved: false` from `resolve-entity` means *this node did
+not resolve it*, **not** *nobody did*. Any downstream node that reads `resolutions[].resolved` as
+"the customer got no answer for this token" is reading a node-local fact as a system-wide one —
+the same shape as §65.
+
+**§68 — assert the whole customer reply, not the part you built.** 60 offline assertions and a
+full end-to-end pass all went green while the customer was reading a wrong paragraph, because
+every one of them asserted the promotion list or the picked file. Neither was wrong. Something
+*else* was appended underneath, and no assertion looked at the reply as a whole. The cheap
+instrument that would have caught it: on every case that claims an answered turn, assert the reply
+does **not** contain any other section's marker string (`Couldn't find these`, `Multiple matches
+found`, an escalation offer). Add the negative to the positive — a renderer suite that only ever
+checks for presence cannot see an intruder.
+
+**§69 — once a fix ships, the export stops being a RED baseline.** An offline suite whose `before`
+mode loads the node body from `export/` silently turns green the moment the fix is published: the
+export IS the fix. Freeze the pre-fix body as a committed `*.before.js` and read `after` from the
+export (byte-gated, `node-source` doctrine §63). Then `before` stays reproducibly red and `after`
+stays provably deployed.
+
+## A signal that reads authoritative but reports something narrower than its name (2026-08-10)
+
+**§70.** Two independent bugs the same day, found from opposite directions, same shape:
+
+- CRM `match_tier: "and"` on a promotion row **names the probe that produced it**, not what the row
+  satisfied. AND-mode is really max-coverage: `_and_max_tier_filter` keeps rows equal to the GLOBAL
+  MAX word-count, so `"cabana bathtub"` (no row has both) keeps every `cabana` row and reports them
+  all as `and`. Measured: `"cabana car"` returns 12 rows containing only `cabana` and 3 containing
+  only `car` — **zero containing both** — under one `and` label.
+- A **fresh n8n `sessionId` claims isolation it does not have.** Conversation state is per CONTACT.
+  A resolver baseline captured with one sessionId per phrase was silently polluted by the previous
+  phrase: `"promotion flyer"` came back with `tokens: ['cabana','kitchen tap']`.
+
+Both fail GREEN. Neither errors, neither looks wrong in isolation, and both produce output that a
+reviewer reads as authoritative because the field name asserts more than the code checks.
+
+The defence is the same in both cases and it is cheap: **assert the name against the thing it
+claims.** For the resolver, check the returned row actually contains the queried words (no test did
+— that is why it shipped). For the baseline, fail the capture if any resolver token contains a word
+its phrase does not. One line each; both were absent precisely because the signal looked
+trustworthy.
+
+Corollary for baselines: **a phrase with an empty result set cannot detect a regression** — there
+is nothing to lose. `TT440s` was added to pin the plural-fallback path, returns 0 rows, and pins
+nothing. Say so in the artifact rather than counting it as coverage.
+
+Corollary for cross-repo work: when a peer session says a change is deployed, check `origin/main`,
+not their working tree — and remember an MCP registers tools at process start, so merged + deployed
+is still not callable until it restarts. A merged-but-not-restarted MCP is indistinguishable from
+not-deployed.
+
+**§70a — third instance, same day: a cap without an ordering.** The CRM resolver caps AND-mode
+probes at 200 across 10 unordered call sites, and — the one that actually bites — **prefix/substring
+probes at 20 across 29 unordered call sites**, which is the OR-mode path most enquiries take. "The
+top 20" is "20 arbitrary ones", and the subset moves with query plans, autovacuum and concurrent
+writes. Promotions are immune today (29 rows vs the 200 AND cap); larger corpora pass 20 easily.
+Same shape as §70: it fails green — you get rows, they look fine, they are a different 20 next time.
+Build a regression baseline over a capped unordered query and a LOST row is unattributable, so the
+baseline is decoration.
+
+**§70b — the correction IS the lesson.** Two claims in §70a's first telling were wrong, and both
+came from a grep. "Zero `ORDER BY` in the file" was really "zero SQLAlchemy `.order_by()` calls" —
+8 raw-SQL `ORDER BY` clauses existed and the grep could not see them, because the thing had two
+spellings and the search knew one. On that basis "product did-you-mean is unstable" was one step
+from being written down as fact. It is not: that path carries a full tiebreak
+(`is_variant DESC, sim DESC, product_code`) and is stable. **A warning stricter than the code
+deserves is its own defect** — it gets designed around, and it spends the credibility of the
+warnings that are true.
+
+The grep's name promised "all ordering here" and delivered "all ordering of one spelling" — §70's
+failure one level up, in the tool used to investigate rather than in the code. It surfaced only
+because the finding was relayed to someone who said they had recorded it. **State a finding to a
+second party before hardening it into a doc**; that is what caught it, and it is cheaper than the
+retraction.
+
+**§70c — two shape constraints on the resolver payload, from the n8n consumer side.** Worth
+recording because they are invisible from the CRM repo:
+
+1. **Never add a key inside `by_entity_type`.** `not-found-error-message.js:5` does
+   `Object.keys(r.by_entity_type)` and treats every key as a RESOLVED ENTITY TYPE, which is
+   rendered to the customer ("Here's what you want: • promotion: …"). A metadata key added there
+   would be announced as a type the customer asked for. It is the only key-set iteration over
+   resolver output in the whole spine — everything else reads by name.
+2. **Top-level keys ride further than you would expect.** `disallowed-entity-gate` does
+   `const out = $input.first().json` — it MUTATES the incoming item, so every resolver key is
+   carried forward; `build-suggest-offer` then starts from `{...$input.first().json}`. The only
+   thing that stops resolver keys reaching the persisted CRM session is `compile-current-state`
+   building a FRESH object literal, a hand-maintained invariant whose own header says a spread
+   there would persist harness keys into every customer session. So new top-level fields are
+   survivable but ride a long chain guarded by one comment; **nested under the per-token structure
+   is strictly safer.**
+
+**§70d — a before/after harness needs a control that FAILS.** A peer's no-regression capture
+compared only fields provably invariant to the change (the new data was never serialised into
+them), so identical output was guaranteed a priori — running old code, new code, or the same code
+twice all produced the same green. It could not have detected a regression or proved one absent.
+This is the same class as §61 (an assertion never shown red is not an instrument) but one level up:
+the *harness* needs a discriminator — a value that changes only when the intended version is
+loaded — plus a mutation that it is shown to catch. Sixth instance in one day of a green that meant
+"nothing was compared" rather than "nothing changed".

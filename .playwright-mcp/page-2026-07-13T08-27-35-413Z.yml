@@ -1,0 +1,85 @@
+- generic [ref=f13e2]:
+  - 'heading "Failover Console mode: test" [level=1] [ref=f13e3]'
+  - generic [ref=f13e4]: Drive the failover backlog against the clone (zero egress). Dev contact 437264483.
+  - generic [ref=f13e5]:
+    - generic [ref=f13e6]:
+      - generic [ref=f13e7]:
+        - text: Cutoff (MYT) — seed messages at/after this time
+        - textbox [ref=f13e8]: 2026-07-13T00:00
+      - button "Seed backlog" [ref=f13e9] [cursor=pointer]
+      - generic [ref=f13e10]: enabled
+    - generic [ref=f13e11]:
+      - generic [ref=f13e12]: pending 4
+      - generic [ref=f13e13]: needs answer 1
+      - generic [ref=f13e14]: skipped media 1
+  - generic [ref=f13e15]:
+    - generic [ref=f13e16]:
+      - generic [ref=f13e17]: Backlog — label each
+      - button "Refresh" [ref=f13e19] [cursor=pointer]
+    - table [ref=f13e20]:
+      - rowgroup [ref=f13e21]:
+        - row [ref=f13e22]:
+          - columnheader "Arrived (MYT)" [ref=f13e23]
+          - columnheader "Contact" [ref=f13e24]
+          - columnheader "Message" [ref=f13e25]
+          - columnheader "Label" [ref=f13e26]
+      - rowgroup [ref=f13e27]:
+        - row [ref=f13e28]:
+          - cell "2026-07-13 07:06" [ref=f13e29]
+          - cell "Jayson 437264483" [ref=f13e30]:
+            - generic [ref=f13e31]: Jayson
+            - generic [ref=f13e32]: "437264483"
+          - cell "Hi" [ref=f13e33]
+          - cell [ref=f13e34]:
+            - text: needs answer
+            - button "undo" [ref=f13e36] [cursor=pointer]
+        - row [ref=f13e37]:
+          - cell "2026-07-13 11:49" [ref=f13e38]
+          - cell "Jayson 437264483" [ref=f13e39]:
+            - generic [ref=f13e40]: Jayson
+            - generic [ref=f13e41]: "437264483"
+          - cell "Hi" [ref=f13e42]
+          - cell [ref=f13e43]:
+            - generic [ref=f13e44]:
+              - button "Answered" [ref=f13e45] [cursor=pointer]
+              - button "Needs answer" [ref=f13e46] [cursor=pointer]
+        - row [ref=f13e47]:
+          - cell "2026-07-13 11:51" [ref=f13e48]
+          - cell "Jayson 437264483" [ref=f13e49]:
+            - generic [ref=f13e50]: Jayson
+            - generic [ref=f13e51]: "437264483"
+          - cell "Hi" [ref=f13e52]
+          - cell [ref=f13e53]:
+            - generic [ref=f13e54]:
+              - button "Answered" [ref=f13e55] [cursor=pointer]
+              - button "Needs answer" [ref=f13e56] [cursor=pointer]
+        - row [ref=f13e57]:
+          - cell "2026-07-13 12:58" [ref=f13e58]
+          - cell "Jayson 437264483" [ref=f13e59]:
+            - generic [ref=f13e60]: Jayson
+            - generic [ref=f13e61]: "437264483"
+          - cell "Hi bro" [ref=f13e62]
+          - cell [ref=f13e63]:
+            - generic [ref=f13e64]:
+              - button "Answered" [ref=f13e65] [cursor=pointer]
+              - button "Needs answer" [ref=f13e66] [cursor=pointer]
+        - row [ref=f13e67]:
+          - cell "2026-07-13 12:59" [ref=f13e68]
+          - cell "Jayson 437264483" [ref=f13e69]:
+            - generic [ref=f13e70]: Jayson
+            - generic [ref=f13e71]: "437264483"
+          - cell "Hihi" [ref=f13e72]
+          - cell [ref=f13e73]:
+            - generic [ref=f13e74]:
+              - button "Answered" [ref=f13e75] [cursor=pointer]
+              - button "Needs answer" [ref=f13e76] [cursor=pointer]
+  - generic [ref=f13e77]:
+    - generic [ref=f13e78]:
+      - button "Go live — inject \"needs answer\"" [ref=f13e80] [cursor=pointer]
+      - button "Stop" [ref=f13e82] [cursor=pointer]
+      - button "Tick dispatcher →" [ref=f13e84] [cursor=pointer]
+    - generic [ref=f13e85]:
+      - generic [ref=f13e86]: queue 0
+      - generic [ref=f13e87]: replies captured 7
+      - generic [ref=f13e88]: done — 7 guarded replies, 0 real egress
+  - generic [ref=f13e91]: All egress guarded → recorded to test:egress:fo-golive, never sent. TEST harness; live promote separate.

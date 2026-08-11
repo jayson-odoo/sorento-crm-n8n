@@ -1,0 +1,223 @@
+{
+  "_change_id": "turn-id-threading-completion",
+  "_plan": "plans/turn-id-threading-completion.md (REV 2)",
+  "_diff": "tests/diffs/turn-id-threading-completion.md",
+  "_date": "2026-07-21",
+  "_tester_window_utc": ["2026-07-21T07:10:02Z", "2026-07-21T07:33:40Z"],
+  "_scope": "deterministic — mock_reformulator_output injected on the clone case; zero parser tokens; zero LLM nodes executed anywhere",
+  "_rollup": "turn-id-threading-completion-rollup-20260721.json",
+
+  "_sink_accounting": {
+    "baseline_T0": {"at": "2026-07-21T07:14:37Z", "sorento-respond-message": 0, "sorento-respond-message-TEST": 7, "main-message-list": 0, "main-message-list-test": 1},
+    "final_T1": {"at": "2026-07-21T07:33:40Z", "sorento-respond-message": 0, "sorento-respond-message-TEST": 13, "main-message-list": 0, "main-message-list-test": 1},
+    "TEST_sink_delta": "+6 — exactly the 6 expected saves (OBS-9 x1, OBS-10 x1, OBS-13/14 x1, OBS-12 incoming x1, OBS-15 x1, OBS-16 x1). Every new payload carries this cycle's turn_id.",
+    "prod_sink_delta_observed": "+2 transient (0 -> 2 at 07:18:55, drained to 0 by 07:19:49). HALTED per S7b, then ATTRIBUTED and resumed.",
+    "prod_queue_main-message-list": "0 -> 0, unchanged at every sample. No movement on the real spine queue.",
+    "main-message-list-test": "1 -> 1, untouched (clone pops test:q:{contact}, not this list)."
+  },
+
+  "_S7b_attribution": {
+    "verdict": "ATTRIBUTED TO AN UNRELATED PRODUCER — case resumed, not a leak",
+    "binding_halt_honoured": true,
+    "consumer_workflow": "Srs08P0Ha3Cv--YPx0-Yn (redis-consume-queue-mongo, 5s poll)",
+    "consumer_executions_inspected": ["9423110", "9423117"],
+    "payload_1": {"exec": "9423110", "contact_id": "423729094", "phone_number": "+60162281179", "message": "tq", "type": "incoming", "message_id": "1784618323000000", "turn_id": "9423087", "test_run_id": "ABSENT"},
+    "payload_2": {"exec": "9423117", "contact_id": "423729094", "message": "You're very welcome! If you need anything else, just let me know.", "type": "outgoing", "message_id": "1784618335580302", "turn_id": "9423087", "test_run_id": "ABSENT"},
+    "reasoning": "Different contact (423729094 vs our fixture 437264483); no test_run_id; message_ids absent from every fixture in this cycle; turn_id 9423087 is a LIVE spine execution, not any execution this cycle produced. A real customer's 'tq' turn landed mid-run. Both rows retrieved and read in full — nothing UNATTRIBUTABLE, so S7b's FAIL clause was not reached.",
+    "bonus_finding": "These two prod rows are independent live evidence that the cycle-1 C1/C3 threading works in production on the happy path: incoming and outgoing share turn_id 9423087."
+  },
+
+  "_static_gates": {
+    "S8_node_type_check": {
+      "zz-sub-sendmsg-BLOBTEST 69RhomhiCH4bpY1w": "PASS — 0 respondio, 0 httpRequest, 0 memoryPostgresChat. 'Send a Message' and 'HTTP Request' are n8n-nodes-base.code stand-ins with names preserved. Both save calls target tWm5DYLxfypmVC1T.",
+      "zz-sub-sendmsg-STANDIN lJ4IZEGwoTh6aay4": "PASS — 3 nodes, no banned type, no executeWorkflow at all.",
+      "sub-sendmsg-OBS sJI3DbsLCG01JfRs": "NOT RUN, NOT FETCHED FOR EXECUTION. Honoured as DO-NOT-RUN.",
+      "sub-human-intervention TEST vUfFUDjLAuMaeQE6": "carries credentialed respondio + httpRequest nodes, so it was NOT run naked — see OBS-9/10 routing control."
+    },
+    "V-T-q_ingress_clone_containment": {
+      "Redis2 on both clones": "0 inbound connections AND parameters.list repointed to zz-dead-main-message-list-TEST. Absent from runData in both Hop-3 runs.",
+      "sendmsg target on both clones": "lJ4IZEGwoTh6aay4 (STANDIN) — not live aoydkG1dbItXR5jXFEQsP",
+      "save target on both clones": "tWm5DYLxfypmVC1T — not live UrETd-jm46tFj3Xw7w8vL",
+      "findcontact D62_NHUOrugeULSFwfjEJ": "permitted CRM read; PINNED in both runs so not even read",
+      "in-failover? typeValidation (main clone)": "loose — mirrors PRODUCTION active 952fc09a, not the strict draft",
+      "verdict": "PASS"
+    },
+    "clone_inactivity": {
+      "4kfNkL6afjidbP4D": {"active": false, "activeVersionId": null, "before": true, "after": true, "updatedAt_unchanged": "2026-07-21T06:33:41.975Z"},
+      "ucf8g8sON5n4v0ry": {"active": false, "activeVersionId": null, "before": true, "after": true, "updatedAt_unchanged": "2026-07-21T06:33:44.643Z"},
+      "verdict": "PASS — neither clone was ever published, and updatedAt proves neither was edited by the tester"
+    },
+    "V-T-c_static": "PASS — all three HI sendmsg callers (a1ea185e, c5dd9961, 0ca5413f) carry turn_id: ={{ $('When Executed by Another Workflow').first().json.turn_id }} and all three target 69RhomhiCH4bpY1w."
+  },
+
+  "OBS-8": {
+    "verdict": "PASS",
+    "title": "turn_id reaches sub-human-intervention (PRIMARY, guard-closed, zero-egress)",
+    "mechanism": "zz-canary-run webhook -> spine clone txiPzSxy3Pclsz6v, mode uac, is_test true, mock_reformulator_output = request_for_help / domain order",
+    "runner_exec": "9423741",
+    "spine_clone_exec": "9423742",
+    "hi_fork_exec": "9423747",
+    "egress_record": {"guard": "human-intervention-sub", "kind": "would_write", "turn_id": "9423742", "test_run_id": "tidc-obs812-20260721", "payload": {"contact_id": "437264483", "agent": "general_enquiries", "team": "customer_service", "current_assignee": null, "explicit_assignee_id": null}},
+    "assertions": [
+      "egress turn_id === \"9423742\" === the spine clone execution id — STRING EQUALITY, not 'both present' PASS",
+      "Call 'sub-human-intervention' input carried turn_id \"9423742\" AND is_test true — Hop 1a live PASS",
+      "HI fork's own execution id 9423747 !== 9423742 — the sub forwards, it does not mint (V-T-b) PASS",
+      "test-guard TRUE branch taken; execution terminated at test-guard-record PASS"
+    ],
+    "safety": {"S1": "PASS — sendmsg recorded as would_send, blocked", "S2": "PASS — Assign / conversation-sla-tracking-create / Call 'sub-add-comment-respond'(x2) / assignee-queue Redis all ABSENT from runData", "S3": "PASS — save-session-vars would_write recorded, orphaned", "S4": "PASS — get-results never reached", "S5": "PASS — is_test true observed in the HI sub's own input", "S6": "PASS — zero LLM nodes", "S7a": "PASS — TEST sink 10 -> 11 (+1, the incoming row)", "S7b": "PASS — prod LLEN 0 -> 0 captured atomically inside the runner"}
+  },
+
+  "OBS-9": {
+    "verdict": "PASS",
+    "title": "HI forwards turn_id to sendmsg caller #9 (-pic2), asserted INSIDE the rendered save blob",
+    "mechanism": "test_workflow on HI fork vUfFUDjLAuMaeQE6 at is_test:false, three sendmsg callers pointing at BLOBTEST 69RhomhiCH4bpY1w",
+    "hi_fork_exec": "9422875",
+    "blobtest_sub_exec": "9422876",
+    "input_turn_id": "9999101",
+    "rendered_save_blob": {"contact_id": "437264483", "phone_number": "+60123456789", "message": "Your request is out of the scope of my ability and require human assistance. We are directing your enquiry to the correct person. Please wait for a moment.", "sent_at": 1784618204159, "first_name": "Jayson", "last_name": "Tester", "type": "outgoing", "message_id": "1784618204159000", "turn_id": "9999101", "result": []},
+    "assertions": [
+      "blob turn_id === \"9999101\" — STRING EQUALITY against the injected value PASS",
+      "9999101 !== HI fork exec id 9422875 (V-T-b inequality 1) PASS",
+      "9999101 !== BLOBTEST sub exec id 9422876 (V-T-b inequality 2) PASS",
+      "type === 'outgoing' PASS",
+      "sent_at 1784618204159 === Math.floor(1784618204159000 / 1000) — EXACT, integer, not NaN PASS",
+      "phone_number/first_name/last_name populated — H4 optional chaining is inert where contact exists (V-T-f control) PASS",
+      "row landed at the TEST sink (verified by LRANGE, not just by node output) PASS"
+    ],
+    "safety": {"S1": "PASS — zero credentialed send node in BLOBTEST; 'Send a Message' is a code stand-in", "S2": "PASS — see routing control below", "S3": "PASS", "S4": "n/a", "S5": "n/a (deliberate guard-open sub-level run, S8 structural gate applies instead)", "S6": "PASS", "S7a": "PASS — TEST sink 7 -> 9 with OBS-10", "S7b": "HALT then ATTRIBUTED — see _S7b_attribution"},
+    "routing_control_for_S2": "get-round-robin-assignee PINNED to {is_already_assigned:true, is_working_hours:false}. This forces if-conversation-unassigned FALSE and comment-switch output 1 (A_NW), which is the ONLY route through the sub that reaches a sendmsg caller without traversing Call 'sub-add-comment-respond' or 'sub-add-comment-respond'1. Confirmed from runData: Assign or unassign a Conversation1, conversation-sla-tracking-create, and BOTH add-comment nodes are ABSENT."
+  },
+
+  "OBS-10": {
+    "verdict": "PASS",
+    "title": "Out-of-hours caller #10 (-pic1, c5dd9961) also threads",
+    "mechanism": "same execution as OBS-9 — the A_NW route traverses Redis(pinned) -> get-working-days(pinned) -> -pic1",
+    "hi_fork_exec": "9422875",
+    "blobtest_sub_exec": "9422879",
+    "rendered_save_blob": {"contact_id": "437264483", "phone_number": "+60123456789", "message": "We have noted down your enquiries. We are outside of our working hours, we will notify the respective PIC once they get back to work.\n\nOur operating hours (except public holidays):\nMonday - Friday\n09:00 - 18:00", "sent_at": 1784618204439, "first_name": "Jayson", "last_name": "Tester", "type": "outgoing", "message_id": "1784618204439000", "turn_id": "9999101"},
+    "assertions": [
+      "blob turn_id === \"9999101\" PASS",
+      "!== HI exec 9422875, !== sub exec 9422879 PASS",
+      "sent_at 1784618204439 === Math.floor(1784618204439000 / 1000) PASS",
+      "type === 'outgoing' PASS"
+    ],
+    "deviation": "Plan asked for a distinct turn_id \"9999102\". Callers #9 and #10 are reached in ONE execution off ONE trigger input, so they necessarily share the injected turn_id. Asserting 9999101 on both is strictly stronger for the acceptance criterion (it is the same-turn-same-id property). Blobs are told apart by message text.",
+    "observation_not_a_regression": "This caller's blob has NO 'result' key at all, where #9's has 'result': []. Cause is the pre-existing latent bug the plan already flagged: -pic1 maps result_set from last_result_set, which is NOT a declared trigger input, so it is always undefined and JSON.stringify drops the key. Confirmed empirically. Pre-existing, out of scope, backlog.",
+    "safety": {"all": "PASS — same execution as OBS-9"}
+  },
+
+  "OBS-11": {
+    "verdict": "NOT RUN — BLOCKED (safety), not a failure of the change",
+    "title": "Working-hours caller #11 (-pic, 0ca5413f) threads",
+    "reason": "0ca5413f has exactly two inbound edges: return-assignee (fed by Call 'sub-add-comment-respond') and Call 'sub-add-comment-respond'1. BOTH predecessors are the add-comment sub. prepare_test_pin_data(vUfFUDjLAuMaeQE6) lists both add-comment nodes under nodesSkipped — i.e. executeWorkflow nodes are NOT pinnable on this MCP surface and execute for real. Reaching #11 dynamically therefore REQUIRES a real respond.io PIC comment on contact 437264483, which is a direct S2 violation (staff notification ripple).",
+    "plan_correction": "Plan section 9.2 OBS-11 states 'the set is only three and all are reachable'. That is incorrect under the zero-egress constraint. #11 is reachable only through an escalation write.",
+    "substituted_evidence": "Static: 0ca5413f carries turn_id: ={{ $('When Executed by Another Workflow').first().json.turn_id }} — the identical expression string proven live on #9 and #10 in OBS-9/10, and it targets 69RhomhiCH4bpY1w. V-T-c PASS for all three.",
+    "residual_risk": "LOW. The three callers share one expression, one trigger source and one target; two of three are proven dynamically."
+  },
+
+  "OBS-12": {
+    "verdict": "PASS — ACCEPTANCE 1 (V-T-a) SATISFIED",
+    "title": "End-to-end pairing: escalation turn's incoming and outgoing rows share ONE turn_id == spine execution id",
+    "spine_clone_exec": "9423742",
+    "sink_sub_exec": "9423749",
+    "incoming_blob": {"contact_id": "437264483", "phone_number": "60100000000", "message": "I need to speak to a human about my order", "sent_at": 1784618900000, "first_name": "Jayson", "last_name": "Canary", "reply_to_message_id": null, "reply_to_message": null, "type": "incoming", "message_id": "1784618900000000", "turn_id": "9423742"},
+    "assertions": [
+      "incoming blob turn_id \"9423742\" === OBS-8 egress record turn_id \"9423742\" === spine clone exec id 9423742 — all three STRING EQUAL PASS",
+      "both non-null, not '', not 'undefined' PASS",
+      "sent_at 1784618900000 === Math.floor(1784618900000000 / 1000) PASS",
+      "message_id === the seeded messageId PASS",
+      "reply_to_message_id renders JSON null from replyTo: null PASS",
+      "V-T-d: key set of the incoming blob is byte-identical in shape to cycle 1's OBS-1 blob; only turn_id's provenance changed PASS"
+    ],
+    "caveat": "The OUTGOING half of this specific turn is the HI sub's send, proven separately in OBS-9/10. The spine clone's own 8 sendmsg callers still point at sub-sendmsg-CHAT (ublq9nSlrpz63xan), whose test-guard-record predates C3 and emits NO turn_id key — visible in this run's egress log as a sendmsg-sub record with turn_id absent entirely. See findings F3.",
+    "safety": {"all": "PASS", "S7a": "TEST sink 10 -> 11", "S7b": "prod LLEN 0 -> 0 atomic"}
+  },
+
+  "OBS-13": {
+    "verdict": "PASS",
+    "title": "Proactive callers (#12/#13 2-key shape) still emit JSON null (negative case)",
+    "mechanism": "test_workflow directly on BLOBTEST 69RhomhiCH4bpY1w with caller #12/#13's exact 2-key shape: contact_identifer + message only. No turn_id, no contact, no is_test.",
+    "blobtest_exec": "9423455",
+    "sink_sub_exec": "9423456",
+    "rendered_save_blob": {"contact_id": "437264483", "message": "Your inquiry has been routed to the PIC. (OBS-13/14 contactless 2-key shape)", "sent_at": 1784618564357, "type": "outgoing", "message_id": "1784618564357000", "turn_id": null},
+    "assertions": [
+      "turn_id is JSON null — NOT the string 'undefined', NOT '', NOT absent PASS",
+      "test-guard took FALSE with is_test unset (loose boolean) PASS",
+      "sent_at 1784618564357 === Math.floor(1784618564357000 / 1000) PASS",
+      "static: sorento-main, sorento-main-INJECT, respond-close-convo, schedule-working-day-detection all unmodified and unpublished — the tester touched none of them PASS"
+    ],
+    "safety": {"all": "PASS"}
+  },
+
+  "OBS-14": {
+    "verdict": "PASS WITH DEFECT — see H4 scoring",
+    "title": "H4: contactless caller produces a complete row instead of crashing",
+    "hunk": "H4 (separately rejectable)",
+    "blobtest_exec": "9423455",
+    "assertions": [
+      "the run did NOT throw — status success. Cycle 1's documented crash (F5) is fixed PASS",
+      "a row WAS produced where cycle 1 produced none PASS",
+      "Loop Over Items completed all iterations (noItemsLeft true, done true) — the loop-back edge through the save node is intact PASS",
+      "control: OBS-9's contact-bearing blob populates phone_number/first_name/last_name normally — optional chaining is inert where contact exists (V-T-f) PASS"
+    ],
+    "DEFECT": {
+      "severity": "MEDIUM — contract, not safety",
+      "observed": "phone_number, first_name and last_name are ABSENT KEYS in the rendered blob, not null.",
+      "cause": "contact?.phone evaluates to undefined, and JSON.stringify DROPS undefined-valued keys. The plan and UAC OBS-14 both expect 'renders with phone_number/first_name/last_name as null (or the agreed sentinel)'. Absent is not null.",
+      "internal_inconsistency": "The very same object literal writes \"turn_id\": ...turn_id ?? null one line below, which DOES render an explicit null. H4 guards three siblings with ?. but does not give them the ?? null the adjacent key gets.",
+      "recommended_fix": "contact?.phone ?? null, contact?.firstName ?? null, contact?.lastName ?? null in both blobs (6 sites), matching the existing turn_id pattern. Same one-character-class edit, same zero blast radius.",
+      "why_it_matters": "The downstream consumer redis-consume-queue-mongo feeds output-parser then insert-message. A row with three columns silently missing is a different shape from a row with three explicit nulls, and this hunk exists precisely to change row VOLUME — new rows now reach the CRM in a shape nobody has validated. Confirm with the CRM side before promoting H4.",
+      "blast_radius_if_shipped_as_is": "Affects only the newly-created rows from contactless callers #5, #6, #12, #13 — rows that do not exist today. No existing row changes shape. So this is a defect in a new capability, not a regression."
+    },
+    "H4_SEPARATE_SCORE": "CONDITIONAL PASS — the crash is genuinely fixed and the control proves inertness, but the null-rendering contract is not met. Recommend REQUEST-CHANGES on H4 alone (add ?? null), which the plan explicitly permits: rejecting H4 breaks neither Hop 1 nor Hop 3."
+  },
+
+  "OBS-15": {
+    "verdict": "PASS (with a coverage caveat on assertion 2)",
+    "title": "ACCEPTANCE 2 (V-T-j) — rate-limit turn logs BOTH rows on one turn_id, sorento-main TEST",
+    "clone": "ucf8g8sON5n4v0ry",
+    "clone_exec": "9423983",
+    "sink_sub_exec": "9423984",
+    "standin_sub_exec": "9423985",
+    "mechanism": "test_workflow, Redis1 pinned to {\"437264483\": 31} so If takes output 1. NEVER execute_workflow on an ingress clone. Live-webhook-shape fixture with replyTo ABSENT.",
+    "incoming_blob": {"contact_id": "437264483", "phone_number": "60100000000", "message": "rate limit probe OBS-15", "sent_at": 1784619000000, "first_name": "Jayson", "last_name": "Canary", "reply_to_message_id": null, "reply_to_message": null, "type": "incoming", "message_id": "1784619000000000", "turn_id": "9423983"},
+    "outgoing_record": {"guard": "sendmsg-standin", "turn_id": "9423983", "test_run_id": "9423983", "payload.is_test": true, "payload.contact": {"id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary"}, "payload.message": "Each contact is only allowed to send MAXIMUM 10 messages to the chatbot every minute. Please try again later."},
+    "assertions": [
+      "1. incoming: type 'incoming' PASS; turn_id '9423983' === this ingress execution's own id, STRING EQUALITY PASS; message_id === fixture messageId PASS; message === fixture text PASS; sent_at 1784619000000 === Math.floor(messageId/1000) PASS; contact_id/phone_number/first_name/last_name all populated from If1 PASS",
+      "2. outgoing: turn_id '9423983' === THE SAME STRING PASS. V-T-k: contact arrived as a real JSON OBJECT with populated fields — not stringified, not '[object Object]' PASS",
+      "3. turn_id non-null, not 'undefined', not '' PASS",
+      "4. Redis2 ABSENT from runData — the prod queue push never ran PASS",
+      "5. save-then-send order confirmed: save-ratelimit-incoming executionIndex 11 precedes the sendmsg caller at 12 PASS",
+      "6. reply_to_message_id renders JSON null from an ABSENT replyTo key PASS"
+    ],
+    "COVERAGE_CAVEAT": "Assertion 2 is proven from the STANDIN's egress record, not from a rendered outgoing save blob at the TEST sink. Both ingress clones point their sendmsg caller at lJ4IZEGwoTh6aay4 (STANDIN), which has NO save blobs at all. So 'phone_number/first_name/last_name populated in the OUTGOING blob' is established INDIRECTLY: the contact object provably arrives intact and correctly shaped, and OBS-9 proves that same object renders those three fields correctly through the real blob. To close this directly the clones' sendmsg callers would need repointing to BLOBTEST 69RhomhiCH4bpY1w — a one-leaf change per clone the tester is not authorised to make. Recorded as gap G1.",
+    "safety": {"S1": "PASS — STANDIN has zero credentialed nodes, no message can reach 437264483", "S2": "PASS — no assign/SLA/comment path exists on the ingress clones", "S3": "PASS — save target is the TEST sink; Redis2 orphaned AND repointed to zz-dead-main-message-list-TEST; findcontact pinned so not even read", "S4": "n/a", "S5": "PASS — sendmsg sub received is_test true", "S6": "PASS — zero LLM", "S7a": "PASS — TEST sink +1", "S7b": "PASS — prod 0, main-message-list 0"}
+  },
+
+  "OBS-16": {
+    "verdict": "PASS (same coverage caveat as OBS-15)",
+    "title": "V-T-j on the LIVE path — INJECT twin behaves identically for failover-injected traffic",
+    "clone": "4kfNkL6afjidbP4D",
+    "clone_exec": "9424189",
+    "sink_sub_exec": "9424190",
+    "standin_sub_exec": "9424191",
+    "fixture_shape": "injected: contact.firstName/lastName/phone all EMPTY STRINGS in the body, event_id 'failover-live-tidc-obs16-20260721', replyTo EXPLICITLY null, no channel/sender keys",
+    "incoming_blob": {"contact_id": "437264483", "phone_number": "60100000000", "message": "rate limit probe OBS-16 injected", "sent_at": 1784619100000, "first_name": "Jayson", "last_name": "Canary", "reply_to_message_id": null, "reply_to_message": null, "type": "incoming", "message_id": "1784619100000000", "turn_id": "9424189"},
+    "assertions": [
+      "row shape byte-identical to OBS-15 — same 11 keys, same order, same types PASS",
+      "THE POINT OF USER DECISION 4: phone_number '60100000000', first_name 'Jayson', last_name 'Canary' are populated FROM If1, NOT from the empty body contact. Failover-injected traffic gets identical chat-history semantics to live traffic PASS",
+      "turn_id '9424189' === this ingress execution's own id, shared by both rows, STRING EQUALITY PASS",
+      "sent_at 1784619100000 === Math.floor(1784619100000000/1000) PASS",
+      "reply_to_message_id renders JSON null from an EXPLICIT replyTo: null — together with OBS-15's absent-key path, both branches covered PASS",
+      "outgoing egress record turn_id '9424189' === the same string; contact arrived as an object (V-T-k) PASS",
+      "Redis2 ABSENT from runData PASS"
+    ],
+    "safety": {"all": "PASS", "S7a": "TEST sink +1", "S7b": "prod 0, main-message-list 0"}
+  },
+
+  "OBS-17": {
+    "verdict": "NOT RUN — CORRECT",
+    "title": "H6: #12 writes no row at all",
+    "reason": "H6 was dropped by user decision and was never built (diff B5). Plan section 2.2.4 recommends against it. Running it would be meaningless — there is no skip_log input on any artifact. Not a gap."
+  }
+}

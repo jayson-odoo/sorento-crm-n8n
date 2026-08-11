@@ -1,0 +1,80 @@
+- generic [ref=f4e2]:
+  - 'heading "Failover Console mode: test" [level=1] [ref=f4e3]'
+  - generic [ref=f4e4]: Drive the failover backlog against the clone (zero egress). Dev contact 437264483.
+  - generic [ref=f4e5]:
+    - generic [ref=f4e6]:
+      - generic [ref=f4e7]:
+        - text: Cutoff (MYT) — seed messages at/after this time
+        - textbox [ref=f4e8]: 2026-07-13T00:00
+      - button "Seed backlog" [ref=f4e9] [cursor=pointer]
+      - generic [ref=f4e10]: disabled
+    - generic [ref=f4e11]:
+      - generic [ref=f4e12]: pending 5
+      - generic [ref=f4e13]: needs answer 2
+  - generic [ref=f4e14]:
+    - generic [ref=f4e15]:
+      - generic [ref=f4e16]: Backlog — label each
+      - button "Refresh" [ref=f4e18] [cursor=pointer]
+    - table [ref=f4e19]:
+      - rowgroup [ref=f4e20]:
+        - row [ref=f4e21]:
+          - columnheader "Arrived (MYT)" [ref=f4e22]
+          - columnheader "Message" [ref=f4e23]
+          - columnheader "Label" [ref=f4e24]
+      - rowgroup [ref=f4e25]:
+        - row [ref=f4e26]:
+          - cell "2026-07-12 14:18" [ref=f4e27]
+          - cell "Pls check ETA srt79ss-gm" [ref=f4e28]
+          - cell [ref=f4e29]:
+            - text: needs answer
+            - button "undo" [ref=f4e31] [cursor=pointer]
+        - row [ref=f4e32]:
+          - cell "2026-07-12 22:51" [ref=f4e33]
+          - cell "Hi" [ref=f4e34]
+          - cell [ref=f4e35]:
+            - generic [ref=f4e36]:
+              - button "Answered" [ref=f4e37] [cursor=pointer]
+              - button "Needs answer" [ref=f4e38] [cursor=pointer]
+        - row [ref=f4e39]:
+          - cell "2026-07-13 07:06" [ref=f4e40]
+          - cell "Hi" [ref=f4e41]
+          - cell [ref=f4e42]:
+            - generic [ref=f4e43]:
+              - button "Answered" [ref=f4e44] [cursor=pointer]
+              - button "Needs answer" [ref=f4e45] [cursor=pointer]
+        - row [ref=f4e46]:
+          - cell "2026-07-13 11:49" [ref=f4e47]
+          - cell "Hi" [ref=f4e48]
+          - cell [ref=f4e49]:
+            - generic [ref=f4e50]:
+              - button "Answered" [ref=f4e51] [cursor=pointer]
+              - button "Needs answer" [ref=f4e52] [cursor=pointer]
+        - row [ref=f4e53]:
+          - cell "2026-07-13 11:51" [ref=f4e54]
+          - cell "Hi" [ref=f4e55]
+          - cell [ref=f4e56]:
+            - generic [ref=f4e57]:
+              - button "Answered" [ref=f4e58] [cursor=pointer]
+              - button "Needs answer" [ref=f4e59] [cursor=pointer]
+        - row [ref=f4e60]:
+          - cell "2026-07-13 12:58" [ref=f4e61]
+          - cell "Hi bro" [ref=f4e62]
+          - cell [ref=f4e63]:
+            - text: needs answer
+            - button "undo" [ref=f4e65] [cursor=pointer]
+        - row [ref=f4e66]:
+          - cell "2026-07-13 12:59" [ref=f4e67]
+          - cell "Hihi" [ref=f4e68]
+          - cell [ref=f4e69]:
+            - generic [ref=f4e70]:
+              - button "Answered" [ref=f4e71] [cursor=pointer]
+              - button "Needs answer" [ref=f4e72] [cursor=pointer]
+  - generic [ref=f4e73]:
+    - generic [ref=f4e74]:
+      - button "Go live — inject \"needs answer\"" [ref=f4e76] [cursor=pointer]
+      - button "Stop" [ref=f4e78] [cursor=pointer]
+      - button "Tick dispatcher →" [ref=f4e80] [cursor=pointer]
+    - generic [ref=f4e81]:
+      - generic [ref=f4e82]: queue 0
+      - generic [ref=f4e83]: replies captured 0
+  - generic [ref=f4e85]: All egress guarded → recorded to test:egress:fo-golive, never sent. TEST harness; live promote separate.

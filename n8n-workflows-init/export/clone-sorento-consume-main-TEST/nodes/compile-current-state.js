@@ -1,3 +1,17 @@
+// 🔴 FRESH OBJECT LITERAL — LOAD-BEARING, DO NOT CHANGE TO A SPREAD OF $input.
+// dym-transform-partial sits directly upstream on the results lane and APPENDS 14 harness
+// control keys to the item this node receives (dym_probe_entities, dym_candidate_codes,
+// dym_excluded_codes, dym_capped_codes, probe_cap_applied, probe_tool, probe_noun,
+// probe_predicate, probe_needed, probe_skip_reason, probe_lane, _dym_probe_input, plus
+// dym_available_codes / dym_probe_meta added downstream by dym-annotate-partial).
+// This node needs no strip list ONLY because it builds its output from scratch and copies
+// named fields across. (Count was stale at 10 through the dym-probe and C3 changes — reviewer
+// F-STRIP. Keep it accurate: it is the evidence the invariant was re-checked.)
+// Refactoring this to `{...$input.first().json}` would carry every one of those keys into
+// crossdomain-compose, which feeds save-session-vars — the conversation-variables PUT sends
+// `JSON.stringify($json)`, the WHOLE item — persisting harness keys into every real customer
+// session. It would also be INVISIBLE on the clone, because save-session-vars is orphaned
+// there. Gate: tests/offline/dym-probe-before-offer/parity.js (F-CCS-STRIP).
 let output = {};
 const qf = $('Call \'sub-query-reformulator\'').first().json.output;
 const contact = $('sorento-sub-respond-findcontact-respond').first().json;
@@ -319,11 +333,70 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
 
   // Genuine-miss tokens (their OWN resolution, no exact match). Excludes the resolved answer token.
   const unresolved = Array.isArray(r?.unresolved_tokens) ? r.unresolved_tokens : [];
+  // ── honour the gate's document-class narrowing (container-status S1) ────────────────
+  // `r` is the RAW resolver node, so a token the GATE resolved still looks unresolved here.
+  // This is the FOURTH surface that builds a did-you-mean from `resolutions`, and the one the
+  // customer actually saw: "container status list" returned the right file AND "Couldn't find
+  // these: ... did you mean Packing List, Stock_List, container_status" underneath it.
+  // Narrow by construction: only tokens stamped `resolved_by === 'document-class-narrowing'`.
+  const _gateResolvedTokens = (() => {
+    try {
+      const _g = $('disallowed-entity-gate').first().json ?? {};
+      return new Set((_g.resolutions ?? [])
+        .filter(x => x && x.resolved === true && x.resolved_by === 'document-class-narrowing')
+        .map(x => String(x.token ?? '').trim().toLowerCase())
+        .filter(Boolean));
+    } catch (e) { return new Set(); }
+  })();
+  // ── a token whose OWN candidates BECAME the answer is not a miss (promo-scope-dym) ──
+  // FIFTH surface of the class the `document-class-narrowing` narrowing above patched fourth.
+  // That one names the MECHANISM; this one names the OUTCOME, so a sixth promotion mechanism
+  // needs no sixth patch. Measured on exec 11889275 ("6047 promo"): resolve-entity returns
+  // `{ token: "6047", resolved: false, ambiguous: true, matches: [15 promotions, every one
+  // match_tier "via_product" and therefore never `isExact`] }`, disallowed-entity-gate lifts all
+  // 15 into `compatible_entities` — which IS the list the customer was shown — and nobody writes
+  // `resolved` back. So this filter offered three rows of the customer's own answer back to them
+  // as "did you mean". Same on the "all" pick turn for "bathroom furniture".
+  //
+  // Keyed PER TOKEN on that token's own candidates, never on "something was answered": a genuine
+  // miss contributes nothing to compatible_entities and is still surfaced, and an empty
+  // compatible_entities suppresses nothing. Gate: tests/offline/promo-scope-dym/probe.js
+  // (A1-A5 the defect, C1-C4 the surviving feature, D1 the no-blanket-mute bound).
+  const _answerCodes = (() => {
+    const s = new Set();
+    try {
+      for (const e of ($('disallowed-entity-gate').first().json.compatible_entities ?? [])) {
+        for (const v of [e && e.uuid, e && e.code]) {
+          const k = String(v ?? '').trim().toLowerCase();
+          if (k) s.add(k);
+        }
+      }
+    } catch (e) { /* gate not executed -> no answer set -> suppress nothing */ }
+    return s;
+  })();
+  // `intersection` is the THIRD place an answer set hides. resolve-entity returns two envelopes:
+  // the per-token `resolutions[]` shape, and a legacy blob { tokens, intersection, alternatives,
+  // unresolved_tokens, ... } with NO `resolutions` at all — that is the one the legacy arm below
+  // renders. Measured on exec 11891721 ("dealer version only"): `unresolved_tokens: ["6047"]`
+  // alongside `intersection: [8 products, match_tier "brand_access_fallback",
+  // display.via_token: "6047"]`, i.e. the token that "failed" is the token that produced the
+  // answer. Reading only matches/alternatives left this envelope unprotected and the customer got
+  // `"6047" — not found.` under four correct rows.
+  const _tokenWasAnswered = (res) => {
+    if (!_answerCodes.size) return false;
+    const cands = [].concat(Array.isArray(res?.matches) ? res.matches : [],
+                            Array.isArray(res?.alternatives) ? res.alternatives : [],
+                            Array.isArray(res?.intersection) ? res.intersection : []);
+    return cands.some(m => [m && m.uuid, m && m.canonical_code]
+      .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _answerCodes.has(k); }));
+  };
   let missResolutions = [];
   if (Array.isArray(r?.resolutions)) {
     missResolutions = r.resolutions.filter(res => res && res.resolved !== true
-      && !(Array.isArray(res.matches) && res.matches.some(isExact)));
-  } else if (unresolved.length) {
+      && !(Array.isArray(res.matches) && res.matches.some(isExact))
+      && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
+      && !_tokenWasAnswered(res));
+  } else if (unresolved.length && !_tokenWasAnswered(r)) {
     missResolutions = [r];   // legacy single-resolution shape
   }
   const surfaced = missResolutions.slice(0, 5);   // cap missed tokens shown at 5
@@ -331,6 +404,40 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
 
   // Render each surfaced token (numbered when it has candidates, else a plain not-found line).
   // Global CONTIGUOUS idx 1..M across tokens; per-token candidates via its OWN matches/alternatives.
+  // ── dym-probe-before-offer, 2nd consumer: has-it annotation for the PARTIAL-RESOLUTION
+  // renderer. Identical contract to build-suggest-offer's D1 block — same _dymOk/_dymHas/
+  // _dymProbed/_dymNoun names, same fail-open rule, same "not probed ⇒ NO suffix" rule.
+  // Two lanes reach here: the results lane (central-exchange → dym-*-partial) and the
+  // not-found lane (… → dym-annotate → … → cs-offer-gate[1]). Prefer whichever executed.
+  // 🔴 NO SORT HERE. This block assigns a GLOBAL CONTIGUOUS idx across tokens that
+  // _numbered/_dymCands are keyed on, and _numbered carries the for_raw/for_hint/
+  // for_canonical pick-linkage. Reordering would renumber across token blocks and break the
+  // round-trip. Annotation is suffix-only and order-preserving; has-first is D1's alone.
+  const _dymNorm = (s) => String(s ?? '').trim().toLowerCase();
+  const _dymAnn = (() => {
+    for (const n of ['dym-annotate-partial', 'dym-annotate']) {
+      try { const x = $(n); if (x.isExecuted) return x.first().json || {}; } catch (e) { /* not on this path */ }
+    }
+    return null;
+  })();
+  const _dymOk     = !!(_dymAnn && _dymAnn.dym_probe_meta && _dymAnn.dym_probe_meta.ok === true);
+  const _dymHas    = new Set(_dymOk ? (_dymAnn.dym_available_codes || []).map(_dymNorm) : []);
+  const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_dymNorm) : []);
+  const _dymAttNoun = () => {
+    if (qf?.domain_hint !== 'product_attachment') return null;
+    const at = Array.isArray(qf?.entities)
+      ? qf.entities.find(e => String(e.hint || '').toLowerCase() === 'attachment_type') : null;
+    return (at && at.raw) ? at.raw : 'document';
+  };
+  const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
+  const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || _dymAttNoun()) : null;
+  const _dymSfx = (code) => {
+    if (!_dymOk) return '';
+    const k = _dymNorm(code);
+    if (!_dymProbed.has(k)) return '';          // never a misleading "no" for an unprobed code
+    return _dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`;
+  };
+
   const _entities = Array.isArray(qf.entities) ? qf.entities : [];
   let idx = 0;
   const _lines = [];
@@ -349,7 +456,9 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
         const _forRaw = token;
         const _forHint = p.m.entity_type || (_srcEnt && _srcEnt.hint) || null;
         const _forCanon = (_srcEnt && _srcEnt.canonical_code) || null;
-        _lines.push(`  ${idx}. ${p.label}`);
+        // dym-probe-before-offer: suffix only, keyed on the CODE (never the label), so a
+        // uuid-coded candidate rendered by name is simply not probed and gets nothing.
+        _lines.push(`  ${idx}. ${p.label}${_dymSfx(p.m.canonical_code)}`);
         // superset row: display shape (idx/label/value/product/uuid/entity_type) + pick-linkage
         // (for_raw/for_hint/for_canonical) so the numbered-DYM handler in output_exchange can run the
         // SAME in-place replacement tryDymPick does.

@@ -14,8 +14,16 @@ const TYPE_TO_PARAM = {
   form:             'form_ids',
   shipment:         'shipment_ids',
   inbound_shipment: 'shipment_ids',
+  // SINGULAR, and it is not a typo. `crm_resource_attachments_list` exposes
+  // `attachment_type_id` (one string) — there is no plural form. The plural name we used to
+  // send was an UNKNOWN key, and an unknown key is dropped silently; with it went the only
+  // narrowing filter, so TOOL_REQUIRED_NARROWING_FILTERS short-circuited to an empty page
+  // WITHOUT CALLING THE BACKEND. That renders as "no such document" for a document that
+  // exists. Tell the two apart in the raw MCP response: a real backend call carries
+  // `fallback_used`, the short-circuit does not (measured: 208 bytes vs 882).
   attachment_type:  'attachment_type_ids',
-  attachment: 'attachment_ids'
+  attachment: 'attachment_ids',
+  certificate: 'certificate_ids'
 };
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -42,12 +50,24 @@ for (const e of entities) {
   add(param, uuid);
 }
 
+// Params the tool takes as a SCALAR string rather than a list. Sending an array here is the
+// same silent-drop failure as sending the wrong name, so the shape matters as much as the spelling.
+const SCALAR_PARAMS = new Set(['attachment_type_id']);
 const out = {};
-for (const [param, set] of Object.entries(params)) out[param] = [...set];
+const truncated = [];
+for (const [param, set] of Object.entries(params)) {
+  const vals = [...set];
+  if (!SCALAR_PARAMS.has(param)) { out[param] = vals; continue; }
+  out[param] = vals[0];
+  // The gate normally narrows document-class to exactly one. If more than one ever arrives we
+  // must not pretend we filtered by all of them — record it rather than truncate in silence.
+  if (vals.length > 1) truncated.push({ param, kept: vals[0], dropped: vals.slice(1) });
+}
 
 out._diagnostics = {
   entities_in: entities.length,
-  total_uuids_passed: Object.values(out).reduce((n, a) => n + (Array.isArray(a) ? a.length : 0), 0),
+  total_uuids_passed: Object.values(out).reduce((n, a) => n + (Array.isArray(a) ? a.length : (a ? 1 : 0)), 0),
+  scalar_truncated: truncated,
   skipped,
   unmapped_types: unmappedTypes,
 };
@@ -86,5 +106,6 @@ const ORDER_TOOLS = new Set(['crm_order_management_orders_list', 'crm_order_mana
 if (ORDER_TOOLS.has(toolName) && (semantic_input?.order_status === 'outstanding' || semantic_input?.order_status === 'delivered')) {
   out.order_status = semantic_input.order_status;
 }
-
+out.contact_id = $input.first().json.contact_id.trim().toString()
+out.space_id = "364817"
 return out;

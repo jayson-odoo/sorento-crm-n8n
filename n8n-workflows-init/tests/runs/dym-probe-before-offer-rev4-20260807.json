@@ -1,0 +1,128 @@
+{
+ "run": "dym-probe-before-offer \u00a7DP re-run (rev 4 \u2014 third renderer, wording, separator)",
+ "date": "2026-08-07",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "1b664006-0b91-4da1-8a19-faacb89912d1",
+  "previous": "18429d54",
+  "rollback": "545210e7",
+  "live_spine": "533499f4 at start AND end \u2014 the mid-cycle move f03086ac->533499f4 was already in place when I started; no further drift during this pass"
+ },
+ "offline": {
+  "harness.js": "ALL PASS",
+  "byteid.js": "ALL PASS (12)",
+  "ccs-harness.js": "ALL PASS (26)"
+ },
+ "headline": {
+  "case": "R4-U1 \u2014 the user's exact failing turn `srtwc8317-rl1 cert`",
+  "verdict": "PASS",
+  "exec": "11511877",
+  "rendered": "1. SRTWC8317-RL - has certificate / 2. SRTWC8317-P-RL - no certificate / 3. SRTWC8317-SH - no certificate",
+  "note": "In MY clean-session lane this turn takes the D1 not-found lane, not the partial lane. The partial renderer had to be provoked explicitly (R4-P1/P2/P3) \u2014 the user hit it because their session carried a prior resolved entity. Worth knowing: the failing surface is session-dependent."
+ },
+ "both_renderers_agree": {
+  "verdict": "PASS \u2014 this is the defect rev 4 exists for, and it is closed",
+  "attachment": {
+   "D1 (R4-U1)": "SRTWC8317-RL - has certificate / SRTWC8317-P-RL - no certificate / SRTWC8317-SH - no certificate",
+   "PARTIAL (R4-P1, exec 11512051)": "identical three lines under `Couldn't find these:`"
+  },
+  "inventory": {
+   "D1 (R4-U3)": "SRTBT2232-1600 - no stock details / SRTBT2231-1600 - no stock details",
+   "PARTIAL (R4-P3)": "identical two lines"
+  },
+  "partial lane runData": "central-exchange[0] -> dym-transform-partial (idx39) -> dym-gate-partial (40, out 0) -> dym-probe-partial (41, sub 11512064 @ rysSPgUssLDf6xJc) -> dym-annotate-partial (42) -> compile-current-state. dym-annotate-partial re-sourced the ANSWERED payload (SRTWT2214's rows) and appended dym_available_codes/dym_probe_meta \u2014 it did not overwrite it with the probe payload."
+ },
+ "wording_changes": {
+  "hyphen": "CONFIRMED live on all 12 rendered offers \u2014 ' - has '/' - no '; zero em-dash suffixes. D3's `\u2014 has incoming` and the `\"tok\" \u2014 did you mean:` header keep theirs (seen intact in R4-P1/P3).",
+  "stock details": "CONFIRMED \u2014 `- no stock details` / `- has stock details`; dym_probe_meta.noun == 'stock details'. D2's separate NOUN map untouched.",
+  "not corrected": "The label deliberately under-describes qty_gt_zero \u2014 user's call, left alone. See \u00a7DP-14 below for the now-measured consequence."
+ },
+ "DP14_CLOSED": {
+  "verdict": "\u2605 CLOSED \u2014 the predicate in force is qty_gt_zero, proven on live data",
+  "fixture_discovery": "R4-Z2/Z3 swept 11 products; found three with rows present and qty summing to 0: MWC7601-RL-S10 (1 row, 0), SRTWC8318-RL-BL (1 row, 0), SRTWC8318-RL-GY (1 row, 0).",
+  "discriminating_run": {
+   "case": "R4-D14b `Have stock SRTWC8318-RL-BL1?`",
+   "exec": "11512474",
+   "probe_sub": "11512484",
+   "probe returned": "answer_count 1 \u2014 ONE row for SRTWC8318-RL-BL, Quantity On Hand 0 (numeric), has_result true, discontinued true",
+   "dym_available_codes": "[] \u2014 the code with a present row and zero qty is NOT available",
+   "rendered": "1. SRTWC8318-RL-BL - no stock details"
+  },
+  "why_this_discriminates": "answer_count > 0, so row-presence and qty_gt_zero give OPPOSITE answers here. Row-presence would have put srtwc8318-rl-bl in dym_available_codes and rendered '- has stock details'. It did not.",
+  "consequence_for_the_wording": "The user's label under-describes the predicate: a product with a warehouse stock record showing 0 on hand is reported '- no stock details' even though a stock detail exists. Known accepted gap \u2014 reported as fact, not corrected.",
+  "note": "This was the last long-standing offline-only gap from rev 1."
+ },
+ "coder_flags_verified": {
+  "1_scope_limit": {
+   "verdict": "CONFIRMED, and quantified live",
+   "evidence": "R4-Z1 (`stock for SRTWC190 SRTWC191 SRTWC195 MWC7625-SH-S12 MWC7625-SH-P`) produced a TWO-token partial miss rendered COMPLETELY BARE \u2014 `\"MWC7625-SH-S12\" \u2014 did you mean: 1..3` and `\"MWC7625-SH-P\" \u2014 did you mean: 4..6`, global contiguous idx, zero suffixes.",
+   "quantification": "probe_needed requires _survivors.length === 1. The partial renderer surfaces up to 5 missed tokens, so 2-5-token misses are unannotated: 4 of the 5 possible token-counts on this renderer, and 0 of them on D1's multi-token arm (also excluded). Annotation covers exactly the single-missed-token case on 2 of the (now) 4 dym surfaces."
+  },
+  "2_plan_3.7_false": {
+   "verdict": "CONFIRMED FALSE, latency measured",
+   "measurement": "On the answered turn R4-P1: dym-transform-partial 20ms + dym-gate-partial 1ms + dym-probe-partial 361ms + dym-annotate-partial 35ms = ~417ms added inline to the main answer path.",
+   "probe cost distribution across this cycle": "232, 234, 244, 291, 361, 458 ms typical; one 1900ms outlier observed in rev 1 (exec 11468043).",
+   "against budget": "The stated contract constraint is spine p99 < lock TTL 120s (per-contact dispatcher). Observed rev-4 turn totals 5.8-18.4s. +0.4s worst-typical is ~0.35% of TTL and well inside; the 1.9s outlier is still ~1.6%. No budget breach. Recorded so the reviewer can update plan \u00a73.7 rather than leave a false claim."
+  },
+  "3_fourth_surface": {
+   "verdict": "\u2605 YES \u2014 a 4th dym surface exists and is UNANNOTATED on an ENABLED domain",
+   "method": "enumerated by RENDERED STRING across every Code node in both exports, not by node name",
+   "surfaces": [
+    "build-suggest-offer.js \u2014 D1 code mode ('Did you mean:'), D1 numbered ('Here are the closest matches:'), D2 ('Try:'), D3 sibling ('Related products:') \u2014 ANNOTATED (D1 code mode only)",
+    "compile-current-state.js:408 \u2014 partial resolution ('Couldn't find these:') \u2014 ANNOTATED as of rev 4",
+    "disallowed-entity-gate.js:209 \u2014 require-specific picker ('<domain> search needs to be more specific. Multiple matches found \u2014 please choose:') \u2014 \u26a0\ufe0f NOT ANNOTATED",
+    "crossdomain-render.js:117 / crossdomain-compose.js:47-56 \u2014 cross-domain composer; reproduces 'Try:', 'Did you mean', 'Here are the closest matches:' as MARKERS and splices blocks around them (does not enumerate its own candidates)"
+   ],
+   "the_gap_demonstrated_live": {
+    "case": "R4-S4 `cert for SRTWC19`",
+    "exec": "11512191",
+    "rendered": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\\n1. SRTWC193\\n2. SRTWC190\\n3. SRTWC195\\n4. SRTWC191-G2\\n5. SRTWC191-250MM\\n6. SRTWC191\\n7. SRTWC192-300\\n8. SRTWC192",
+    "why it matters": "product_attachment IS a REQUIRE_SPECIFIC domain and IS an enabled probe domain. SRTWC193/190/191 are the SAME codes D1 annotates in R4-U5/rev-3 W-runs. So the identical contradiction the user reported still exists on this surface: annotated on one path, bare on another.",
+    "precedent that it is annotatable": "the incoming domain's version of this exact picker IS annotated ('\u2014 no incoming') via annotate-incoming-picker \u2014 so the surface supports annotation; product_attachment simply is not wired.",
+    "not_a_regression": "pre-existing, unchanged by rev 4. Reported as the remaining instance of the defect class, not as a defect introduced here."
+   },
+   "inventory_not_affected": "inventory is not in REQUIRE_SPECIFIC_DOMAINS \u2014 R4-S4b `stock for SRTWC19` answered directly rather than prompting."
+  }
+ },
+ "If6_rejection_verified": {
+  "coder_claim": "moving the chain above If6 would alter Aggregate1's input cardinality and silently change the not-found payload; a second lane was required",
+  "verdict": "REJECTION WAS CORRECT, and the new lane is proven non-perturbing",
+  "evidence": [
+   "dym-transform emits exactly ONE item (confirmed in every runData this cycle) and If6[1] -> Aggregate1 exists to collapse N->1, so a 1-item node above Aggregate1 would change what it aggregates \u2014 the coder's cardinality objection is real",
+   "the built lane sits on If6[0] (results arm) where central-exchange already emits a single object, so no cardinality concern applies there",
+   "empirically disjoint: on the partial turn R4-P1, Aggregate1 and dym-transform (not-found lane) are BOTH ABSENT from runData \u2014 the new lane cannot have perturbed either",
+   "compile-current-state reads $('central-exchange') BY NAME, and by-name reads are not redirected by rewiring, so the results envelope resolves as before (confirmed: central-exchange runData idx38 identical in shape to dym-transform-partial's input)"
+  ]
+ },
+ "assertions": {
+  "\u00a7DP-11a/b + separator sweep": "PASS on 12 rendered offers across BOTH renderers (7 D1, 5 partial). Clauses: no ' - has '/' - no '/em-dash in suggest_quick_reply; hyphen separator used; no em-dash suffix; and on D1 additionally qr regex, entries==picks+2, qr[i]==suggest_last_result_set[i].value.",
+  "rev-3 regression": "R4-U4 (MWC7625-SH-S100) still excludes MWC7625-SH-S10 -> bare; R4-U2 (mwc7602-rl-p) excludes MWC7602-P -> bare with both siblings '- no certificate'; R4-U5 (srtwt22151) still 'has/has/no' with both carriers first; R4-U6 non-enabled order domain unchanged.",
+  "S9_mutations_all_via_mutate.sh": {
+   "S9-F shared-body claim (partial noun -> 'STOCKX')": "occ 1/1, digest d4fb0db33a2b->eebad4b245c5, ccs-harness RED x4. gate works.",
+   "S9-G partial suffix removed": "occ 1/1, digest 7bdbfeca88d3->e9396487ecc5, ccs-harness RED x5. gate works.",
+   "S9-H stock wording reverted ('stock details'->'stock')": "occ 1/1, digest d4fb0db33a2b->a17c8c3d28e0, harness RED x3. gate works.",
+   "note": "no ABORTs this pass \u2014 every search literal was checked against the real source first."
+  }
+ },
+ "safety_scorecard_rev4": {
+  "S1": "PASS \u2014 and better evidenced than any prior pass. Guard census over 16 runs: save-message-redis 16, save-session-vars 16, sendmsg-sub 16, send-message-files 5; zero rows with a kind other than would_*. The send-message-files rows are NEW this cycle and were checked before being accepted: (a) the CLONE's send-message-files / -images / -video nodes are still ORPHANED (0 inbound, re-asserted from the published JSON \u2014 5 orphaned + 1 sinked unchanged); (b) the rows are `would_send` guard records emitted by the sendmsg sub's file-send path, carrying the presigned CDN URL as a BLOCKED payload \u2014 exactly what \u00a70 S1 prescribes. They appear now only because rev-4 was the first pass to exercise attachment-RETURNING turns (certificates). So this is new S1 coverage of a path never previously exercised, not a containment change.",
+  "S2": "PASS \u2014 Call 'sub-human-intervention' absent from runData on all 16.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData on all 16 and orphaned in JSON; sink Call 'sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T -> literal sorento-respond-message-TEST unchanged.",
+  "S4": "PASS \u2014 probe tools only crm_master_product_attachments_list / crm_inventory_stock_balance_list, on BOTH lanes; dym-probe-partial targets rysSPgUssLDf6xJc (sub-exec 11512064), same fork as dym-probe.",
+  "S5": "PASS \u2014 trigger test_mode===true; neither probe passes is_test (by design; containment = fork target, which is the same fork on both lanes).",
+  "S6": "PASS \u2014 no Basic LLM Chain / OpenAI Chat Model in runData. The new lane adds a CRM read, not a token sink: dym-probe-partial's sub ran entity-ids-transformer + MCP Client1 + output-structurer only.",
+  "S7a": "PASS \u2014 TEST sink 604 -> 620 across 16 canary runs = exactly +1 per run, continuing unbroken from rev 3 (which ended at 596; the 596->604 gap is the coder's own ccs runs, outside my window). Brackets: 11511876 604->605, 11512473 619->620.",
+  "S7b": "PARTIAL (unchanged, stated not glossed) \u2014 prod LLEN 0 before and after on both brackets; per-poll consumer pop-payload series NOT collected; rests on structural containment. NOTE: rev 4 adds a second executeWorkflow node (dym-probe-partial) \u2014 re-checked, its sub contains no Redis node, so the structural argument still holds.",
+  "S8": "PASS \u2014 dym-probe-partial is n8n-nodes-base.executeWorkflow; no banned node type added.",
+  "S9": "PASS \u2014 every fail-on-purpose ran through mutate.sh with occurrence-count and digest assertions."
+ },
+ "still_open": {
+  "4th surface (disallowed-entity-gate require-specific picker, product_attachment)": "UNANNOTATED \u2014 recommend a separate change; the incoming precedent shows it is annotatable.",
+  "multi-token partial miss (2-5 tokens)": "unannotated by design; contradiction narrowed, not eliminated.",
+  "\u00a7DP-15b all-ambiguous live": "offline-only.",
+  "\u00a7DP-3b unscoped_probe live": "still never observed \u2014 every live attachment probe returning rows carried Attachment Type.",
+  "\u00a7DP-4/\u00a7DP-8 probe error": "not induced live (needs a workflow edit).",
+  "\u00a7DP-9 live, \u00a7DP-13b dynamic, \u00a7DP-12 sibling-probe[0] inbound": "not run."
+ },
+ "note_on_egress_payloads": "The send-message-files guard payloads contain short-lived (1h) presigned CDN URLs. They are deliberately NOT reproduced in this run file; see the egress log in redis if needed."
+}

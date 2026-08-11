@@ -1,0 +1,72 @@
+{
+ "run": "\u00a7DP-4/\u00a7DP-8 induced probe failure \u2014 BLOCKED before any turn was driven",
+ "date": "2026-08-07",
+ "status": "BLOCKED \u2014 containment verified, run not executed. No result is reported for the fail-open path.",
+ "live_spine": "f9205b03 at start and end \u2014 no drift.",
+ "clone_under_test": "b79ef8c4 (untouched this pass)",
+ "CONTAINMENT_verified_on_the_new_artifacts": {
+  "note": "re-asserted directly on both throwaways, not inherited from b79ef8c4, as instructed",
+  "zz-THROWAWAY-sub-always-throws (yHUqYrFuWCF1Plr3)": {
+   "nodes": 2,
+   "types": [
+    "n8n-nodes-base.executeWorkflowTrigger",
+    "n8n-nodes-base.code"
+   ],
+   "banned types (respondio / httpRequest / memoryPostgresChat)": "NONE \u2014 asserted on node TYPE, which is the sound proxy since MCP redacts credentials",
+   "throw is unconditional": "CONFIRMED \u2014 the Code node's only statement is `throw new Error(...)`; there is no branch and no input that can reach a return, so it cannot produce an empty success",
+   "published": "versionId == activeVersionId (cb2e4240)",
+   "verdict": "PASS"
+  },
+  "zz-THROWAWAY-dym-probe-fail (Es4WwjMHOEy9j62V)": {
+   "nodes": 149,
+   "published": "versionId == activeVersionId",
+   "triggers": "exactly one \u2014 'When Executed by Another Workflow' (executeWorkflowTrigger). No webhook, no schedule, no respondioTrigger.",
+   "5 egress orphans": "send-message-files / -images / -video / update-human-intervened / save-session-vars \u2014 ALL present with inbound == 0. PASS",
+   "sink": "Call 'sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T. PASS",
+   "probe retarget": "dym-probe -> yHUqYrFuWCF1Plr3 AND dym-probe-partial -> yHUqYrFuWCF1Plr3. PASS",
+   "other four get-results callers unchanged": "Call 'sub-get-results', probe-incoming, sibling-probe, crossdomain-probe all still -> rysSPgUssLDf6xJc. PASS",
+   "human-intervention": "-> vUfFUDjLAuMaeQE6 (guarded fork). PASS",
+   "sendmsg (8 callers)": "-> ublq9nSlrpz63xan. PASS",
+   "verdict": "PASS with two discrepancies vs the brief \u2014 see DISCREPANCIES"
+  }
+ },
+ "DISCREPANCIES_vs_the_brief": [
+  {
+   "claim": "`active:false`",
+   "observed": "`active: true` on Es4WwjMHOEy9j62V",
+   "assessment": "INERT IN PRACTICE, but the stated precondition is wrong and I am not going to record it as met. Its only trigger is an executeWorkflowTrigger, and n8n's own triggerInfo says 'no production triggers \u2026 can only be executed in manual mode', so active:true cannot pull external traffic. Flagging because \u00a70 preconditions should be true as written, not true-by-accident."
+  },
+  {
+   "claim": "the throwing sub holds no banned node types",
+   "observed": "true for the SUB; but the COPY contains `update-human-intervened`, which IS a banned type (respond.io node)",
+   "assessment": "NOT a new hazard \u2014 that node exists on the real clone too and is one of the five orphans (inbound == 0), which is precisely the containment design. Recording it so the reviewer does not read my 'banned types: NONE' line for the sub as a statement about the copy."
+  }
+ ],
+ "BLOCKER": {
+  "what": "the throwaway copy cannot be driven by any mechanism available to me",
+  "evidence": "mcp__n8n-mcp__execute_workflow(Es4WwjMHOEy9j62V) returns: 'Only workflows with the following trigger nodes can be executed: Schedule Trigger, Webhook Trigger, Form Trigger, Chat Trigger.' This is the known constraint (LESSONS \u00a71 / memory n8n-execute-requires-webhook-publish): MCP cannot fire an executeWorkflowTrigger-only workflow, and it cannot pass custom JSON to one either.",
+  "why_the_existing_harness_does_not_help": "every driver hardcodes the target \u2014 zz-canary-run's `Run Target`, zz-sim-drive and zz-dispatcher-test all point at txiPzSxy3Pclsz6v. None takes a workflowId parameter, and I may not edit them.",
+  "what_I_tried": "seeded test:q:437264483 with the three lane fixtures via zz-seed-conc (which seeds WITHOUT running a target), then attempted execute_workflow on the copy \u2014 refused as above.",
+  "WHAT_I_NEED": "either (a) add a Webhook trigger to the THROWAWAY copy Es4WwjMHOEy9j62V wired to the same first node as its executeWorkflowTrigger \u2014 safe, it is disposable and the real clone is untouched; or (b) publish a 6-node `zz-run-throwaway` mirroring zz-canary-run (llen-prod/sink before -> clear-q -> clear-egress -> seed-q -> Run Target=Es4WwjMHOEy9j62V -> llen after -> read-egress) so I keep the same S7 instrumentation and the same customer-boundary egress rows. **(b) is strongly preferred** \u2014 it preserves the sink/prod LLEN brackets and the test:egress log, so \u00a70 S7 and the customer-boundary assertion work exactly as they do for every other case.",
+  "what_I_will_run_once_unblocked": "the three lane fixtures already prepared \u2014 D1 `SRTWC1930 certificate`, picker `cert for SRTWC19`, partial `certificate for SRTWT2214 and SRTWC1930` \u2014 asserting per lane at the customer boundary (save-session-vars.user_response + sendmsg egress), plus the explicit void-check below."
+ },
+ "VOID_CHECK_I_will_apply_before_scoring": {
+  "condition": "dym_probe_meta.ok === true with answer_count === 0",
+  "meaning": "the sub returned an empty success instead of throwing \u2014 the F-EMPTY path, not the failure path. The whole observation would be void.",
+  "action": "if seen, report VOID and do not score \u00a7DP-4/\u00a7DP-8. This is the same shape as my rev-3 false RED, so it gets an explicit gate rather than a glance."
+ },
+ "residue_disclosure": {
+  "seeded": "3 items into test:q:437264483 via zz-seed-conc",
+  "cleaned": "re-invoked zz-seed-conc with texts:[] \u2014 clear-q ran (the clear precedes build-items), then the workflow 500'd on the empty item set. Verified afterwards via zz-inspect-conc: qlen == 0. No queue residue.",
+  "one thing I did leave": "zz-seed-conc computes `const n = body.tokens || 1`, so my `tokens:0` became 1 and it pushed ONE token onto ready-contacts-test (readylen == 1). Harmless \u2014 if zz-dispatcher-test pops it, the queue is empty and it exits \u2014 but it is residue I introduced and I am disclosing it rather than claiming a clean exit."
+ },
+ "carried_forward": [
+  "\u00a7DP-4/\u00a7DP-8 \u2014 still UNPROVEN on a genuine sub failure; blocked as above",
+  "\u00a7DP-15b live",
+  "\u00a7DP-3b unscoped_probe live",
+  "\u00a7DP-9 live",
+  "\u00a7DP-13b dynamic",
+  "\u00a7DP-12 sibling-probe[0] inbound"
+ ],
+ "note_on_prior_pass": "rev 6's own results (Priority 1 at the customer, four-surface agreement, multi-token lift live, S7 series) are unaffected by this blocker and stand as reported in dym-probe-before-offer-rev6-20260807.json."
+}

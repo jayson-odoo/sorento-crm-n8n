@@ -1,0 +1,49 @@
+{
+  "run": "dym-v3-zerostock offline deterministic units (CHANGE #2 v3 partial-disambiguation + CHANGE #3 zerostock + #1 MT re-run)",
+  "date": "2026-08-01",
+  "tester": "sorento-tester",
+  "target": {
+    "clone_spine": "txiPzSxy3Pclsz6v @ activeVersionId 48a96720-381f-4183-90a5-903280b34d57",
+    "clone_parser_fork": "wI5RkNGW3EOJfBdo @ activeVersionId b31839e6-fd03-4304-aaee-7082aa56dcbd",
+    "LIVE (untouched, baseline)": "spine 9qVyfUxmRQqrpGRMDLRuz @ a505f2e1 ; parser XTODTw-dJcV0uRdC056hG @ 8d5f7c2d"
+  },
+  "deployed_sha_verification": {
+    "method": "jq -r of node body -> sha256 first16 (matches coder diff-doc method)",
+    "clone.compile-current-state": {"got": "81d28fe3b4c42cda", "expected": "81d28fe3b4c42cda", "match": true},
+    "clone.build-suggest-offer": {"got": "2cc445251bbfeaf7", "expected": "2cc445251bbfeaf7 (MUST be unchanged)", "match": true},
+    "clone.output_exchange": {"got": "df86832677b36b7b", "expected": "df86832677b36b7b", "match": true},
+    "clone.AI Agent systemMessage": {"got": "fb7f1258d5ea16c8", "expected": "fb7f1258d5ea16c8", "match": true},
+    "LIVE.compile-current-state": {"got": "7d4532bc5225e96a", "note": "== build-record baseline; LIVE untouched"},
+    "LIVE.output_exchange": {"got": "faf39d353ace0cf4", "note": "LIVE untouched"},
+    "LIVE.AI Agent systemMessage": {"got": "f2b53abba6b66a7d", "note": "LIVE untouched"},
+    "LIVE.build-suggest-offer": {"got": "00e59cab73c51347", "note": "pre-#1; clone carries the #1 multitoken change (differs, expected)"}
+  },
+  "method": "Extracted the DEPLOYED clone node bodies + the LIVE baselines via MCP get_workflow_details; ran each Code node body in a faithful offline harness (mock $, $input, $execution, $json) and diffed changed-clone vs baseline-live on identical fixtures. Every gate carries a negative control / fail-on-purpose proving the instrument can go RED.",
+  "results": {
+    "compile-current-state (49 assertions, 0 fail)": {
+      "§PD0 partial-miss (plan §9 fixture)": "PASS — user_response = stock answer + numbered 'Couldn't find these:' 1..4; last_result_set == STOCK rows (NOT overwritten); selection_context null; dym_last_result_set len4 idx1..4 per-token for_raw; dym_offer {id,domain:inventory,ttl3,candidates[4],picked[]} SURVIVED answered kill; response = 'Previous turn (inventory): returned 1 records [4 did-you-mean suggestions active]' SINGLE bracket, NO [results numbered]; quick_reply null. NEGCTRL: LIVE produces NO marker, NO dym set, NO Couldn't-find block, dym_offer null.",
+      "§PD-compile-R no-miss BYTE-IDENTICAL (HARD)": "PASS — changed clone == LIVE byte-for-byte on no-miss; FAIL-ON-PURPOSE confirms clone != LIVE on the miss fixture (instrument real).",
+      "§ZS-1 one resolved-empty (PRIMARY)": "PASS — user_response ends exactly '\\n\\nNo stock records found for: C2181XUW-P-ENG.'; SRTWT902 not named; response/last_result_set/dym_offer/selection_context/quick_reply byte-identical clone==live; NEGCTRL live has no #3 line.",
+      "§ZS-2 two resolved-empty (repro)": "PASS — 'No stock records found for: C2181XUW-P-ENG, SRTWCY8605.' in query order; with-stock codes not named.",
+      "§ZS-3 all-resolved byte-identical (HARD)": "PASS — clone==live byte-identical when all products have rows; FAIL-ON-PURPOSE: dropping one row DOES add the #3 line.",
+      "§ZS-4 total-zero -> #3 does NOT fire": "PASS — last_result_set===[]; no #3 line; FAIL-ON-PURPOSE: a 1-row answer flips the gate and names the empty code.",
+      "§ZS-4b non-inventory domain gate": "PASS — order domain: no #3 line; clone==live byte-identical.",
+      "§ZS-5 #2+#3 combined": "PASS — order stock -> #3 -> #2; #3 names only the resolved-empty code; unresolved dym token only in #2 block; disjoint."
+    },
+    "build-suggest-offer #1 MT re-run (23 assertions, 0 fail)": {
+      "§MT-1 multi-token numbered multi-block": "PASS — 3 per-token blocks, contiguous 1..7 (A=1-3,B=4,C=5-7), suggest_last_result_set len7, dym_offer.candidates len7 per-token for_raw, quick_reply 'Yes escalate,No it\\'s okay'.",
+      "§MT-R single-token BYTE-IDENTICAL clone==live (HARD)": "PASS — byte-identical clone(2cc44525) vs LIVE(00e59cab); exact code-mode message; FAIL-ON-PURPOSE single!=multi.",
+      "§MT-cap": "PASS — >5 tokens capped at 5 blocks, idx contiguous.",
+      "§MT-drop": "PASS — bare-uuid middle token dropped, idx contiguous 1..6, no Bravat candidate."
+    },
+    "output_exchange DEPLOYED handler resolution (18 assertions, 0 fail)": {
+      "multi '1,4' (diff for_raw)": "PASS — both SRTW8081-P & SRTW8091-P present, SRTWT902 retained, positions cleared, dym_pick_applied.",
+      "single '2'": "PASS — SRTW8082-P replaces its for_raw slot; SRTWT902 & SRTW809 retained.",
+      "R-v3-1 ADD-BOTH '1,2' (SAME for_raw)": "PASS — BOTH SRTW8081-P & SRTW8082-P present (not last-wins).",
+      "result-qualified": "PASS — handler SKIPPED (no dym_pick_applied), byIdx path used.",
+      "backbone guard (empty dym set)": "PASS — inert, reference_positions NOT cleared -> byIdx path unchanged (covers §PD-fullmiss + §PD-noref-R output_exchange).",
+      "out-of-range position": "PASS — skipped, no pick."
+    }
+  },
+  "verdict": "ALL OFFLINE DETERMINISTIC GATES PASS (90/90 assertions). Negative controls + fail-on-purpose all confirmed."
+}

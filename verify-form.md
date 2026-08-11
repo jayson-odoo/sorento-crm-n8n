@@ -1,0 +1,22 @@
+- generic [active] [ref=f6e1]:
+  - button "Open Next.js Dev Tools" [ref=f6e12] [cursor=pointer]
+  - alert [ref=f6e2]
+  - generic [ref=f6e18]:
+    - heading "Verify your identity" [level=3] [ref=f6e20]
+    - generic [ref=f6e21]:
+      - alert [ref=f6e22]:
+        - generic [ref=f6e26]: Verify with a one-time code to open your portal.
+      - paragraph [ref=f6e27]: We'll send a code to your WhatsApp +60••••7321
+      - paragraph [ref=f6e28]: Code sent. It expires in 10 minutes. Please do not share it with anyone.
+      - generic [ref=f6e29]:
+        - text: Verification code
+        - textbox "Verification code" [ref=f6e30]:
+          - /placeholder: 6-digit code
+      - generic [ref=f6e31]:
+        - button "Resend code" [ref=f6e38] [cursor=pointer]
+        - button "Verify and continue" [ref=f6e32] [cursor=pointer]
+      - generic [ref=f6e33]:
+        - paragraph [ref=f6e34]: No code after a minute? WhatsApp sometimes blocks messages from us until you message first. Send us any message, then tap Resend.
+        - link "Message us on WhatsApp" [ref=f6e35] [cursor=pointer]:
+          - /url: https://wa.me/601116731179?text=Hi%2C%20I%20need%20my%20portal%20link.
+  - region "Notifications alt+T"

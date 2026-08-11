@@ -18,8 +18,28 @@ switch (kind) {
     // Normal not-found path uses not-found-error-message. The incoming-picker
     // availability branch bypasses it (annotate-incoming-picker computes the same
     // escalate_message/require_specific/is_clarification), so fall back to that node.
+    // dym-probe-before-offer (rev 6): PREFER THE ANNOTATED COPY.
+    // build-suggest-offer is the annotation authority for the require-specific picker; it
+    // SPREADS rather than mutates, so reading not-found-error-message by name here returns
+    // the PRE-annotation string and silently discards the suffixes — computed correctly,
+    // rendered bare. This is the same by-name landmine the annotate-incoming-picker
+    // fallback below was added for; the suffix is NOT recomputed here.
+    // Source order: build-suggest-offer (annotated) -> not-found-error-message ->
+    // annotate-incoming-picker. Every source carries escalate_message, require_specific and
+    // is_clarification on the SAME object, so the flags below stay coherent with the text
+    // regardless of which one wins. Fail-open by construction: a missing, unexecuted or
+    // malformed preferred source falls through to exactly today's behaviour.
+    const _annotated = (() => {
+      try {
+        const n = $('build-suggest-offer');
+        if (!n.isExecuted) return null;
+        const j = n.first().json;
+        return (j && typeof j.escalate_message === 'string' && j.escalate_message) ? j : null;
+      } catch (e) { return null; }
+    })();
     const nfNode = $('not-found-error-message');
-    const nf = nfNode.isExecuted ? nfNode.first().json : $('annotate-incoming-picker').first().json;
+    const nf = _annotated
+            || (nfNode.isExecuted ? nfNode.first().json : $('annotate-incoming-picker').first().json);
     response       = nf.escalate_message;
     manualResponse = !nf.require_specific;
     is_escalate_offer = !nf.is_clarification;   // offer only when it's not a clarification prompt

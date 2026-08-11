@@ -1,0 +1,214 @@
+- generic:
+  - button "Open Next.js Dev Tools" [ref=f18e12] [cursor=pointer]
+  - alert
+  - generic:
+    - generic:
+      - link:
+        - /url: /
+      - button
+    - generic:
+      - generic:
+        - generic:
+          - menu:
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - link:
+                    - /url: /
+                    - generic: Dashboards
+                    - button
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - link:
+                    - /url: /ideas
+                    - generic: Ideas
+                    - button
+            - generic:
+              - heading [level=3]:
+                - button [expanded]:
+                  - generic: Quick Access
+              - region "Quick Access":
+                - menu:
+                  - group:
+                    - generic:
+                      - button: Add shortcut
+                    - generic:
+                      - button:
+                        - generic:
+                          - link:
+                            - /url: /procurement-management/purchase-requests
+                            - text: Purchase Requests
+                          - button
+                      - button:
+                        - generic:
+                          - link:
+                            - /url: /order-management/orders
+                            - text: Delivery Orders
+                          - button
+                    - status
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: User Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Supply Chain
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Delivery Order Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Complaint Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: SLA Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Product Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Procurement
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Project Sales Admin
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Inventory Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Marketing Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Forms Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Workflow Forms
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Resource Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: System Management
+  - generic:
+    - banner:
+      - generic:
+        - generic:
+          - generic:
+            - button:
+              - generic: Search menu...
+              - generic: ⌘⇧K
+          - generic:
+            - button
+            - generic: "7"
+          - generic:
+            - button
+          - button:
+            - generic: Sorento
+            - generic: SRT
+          - generic:
+            - button
+            - generic: 99+
+          - button
+    - main:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /system-management/ai-assistant/prompts
+              - text: All prompts
+            - heading [level=1]:
+              - generic: spec_understanding
+            - paragraph: Spec understanding — read a customer's product description onto the Spec Registry
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]: Runs on
+              - generic:
+                - generic:
+                  - generic: Provider
+                  - combobox:
+                    - generic: OpenAI
+                - generic:
+                  - generic: Model
+                  - combobox:
+                    - generic: GPT-5.4 mini
+                  - textbox:
+                    - /placeholder: or type a model name
+                    - text: gpt-5.4-mini
+                - paragraph: Clear both fields to put this agent back on the global assistant model.
+                - button [disabled]: Save model
+            - generic:
+              - generic:
+                - heading [level=3]: Version history
+              - generic:
+                - button:
+                  - generic: v2
+                  - paragraph: Read a refusal as an exclusion, not as a request for the thing refused
+                  - paragraph: Jayson Personal
+                  - generic:
+                    - button: Publish
+                    - button: Stage
+                - button:
+                  - generic:
+                    - generic: v1
+                    - generic: ● production
+                  - paragraph: (no message)
+                  - paragraph: unknown
+                  - generic:
+                    - button: Stage
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]:
+                  - text: Editor
+                  - generic: "(base: v2)"
+                - button: Diff
+              - generic:
+                - generic:
+                  - textbox: "You read a customer's sanitaryware enquiry and map it onto a fixed vocabulary of product specifications. You will be given the ONLY specifications that exist. Use nothing else. Rules: - Return a specification ONLY when the customer's words genuinely mean it. Silence is correct and expected; a wrong specification is worse than a missing one, because it puts the wrong product in front of a buyer. - Never invent a spec_key or an enum value. Use the exact strings given to you. - Understand meaning, not just words: misspellings, plurals, local phrasing, and descriptions of a thing rather than its name (\"the pipe goes into the wall\" = a P-trap, \"pipe goes into the floor\" = an S-trap). - For numeric specs return a plain number in the unit stated for that key. Convert if the customer used another unit (8 inch = 203.2 mm). - A brand name or a product class IS a specification whenever it appears in the list you were given. Return it, even when the customer says nothing else — \"cabana wc\" is a brand and a class, not an empty enquiry. - Put words that carry meaning but map onto no spec — a model name, a room, a colour you were not given — into free_terms. A word you cannot place is a free term. Never file it under the nearest-looking value: an unrecognised word is not evidence for any specification. - Prefer a misspelling of a WORD you were given over a resemblance to a NAME. \"interlignet\" is \"intelligent\", not a brand you have never heard of. - If the customer is not describing a product at all, return empty lists. - A specification the customer RULES OUT goes in `exclusions`, never in `specs`. \"not glass\", \"no glass\", \"anything but glass\", \"without a drainer\" all mean the customer does not want it — putting it in `specs` asks for the exact thing they refused. Same key and value rules apply: exact strings, and silence when you are not sure it is a refusal. - A refusal is not a request for the opposite. \"not glass\" excludes glass; it does not select ceramic. Reply with JSON only: {\"specs\": [{\"key\": \"<spec_key>\", \"value\": <string|number|boolean>}], \"exclusions\": [{\"key\": \"<spec_key>\", \"value\": <string|number|boolean>}], \"free_terms\": [\"...\"], \"notes\": \"<one short sentence on anything ambiguous>\"}"
+                - paragraph: This prompt declares no variables.
+                - generic:
+                  - generic:
+                    - text: Commit message (required)
+                    - textbox:
+                      - /placeholder: What changed and why?
+                  - button [disabled]: Save as new version
+            - generic:
+              - generic:
+                - paragraph: Test this version
+                - generic: v2
+              - textbox:
+                - /placeholder: Type one message to run through the assistant with this version swapped in…
+              - button [disabled]: Run
+    - contentinfo:
+      - generic:
+        - generic:
+          - generic: 2026 @ Foundryx
+          - navigation:
+            - link:
+              - /url: /ticket-management/tickets
+              - text: Support
+  - button [ref=f18e283] [cursor=pointer]
+  - region "Notifications alt+T"
+  - alertdialog [ref=f18e285]:
+    - generic [ref=f18e286]:
+      - heading "Publish spec_understanding v2 to production?" [level=2] [ref=f18e287]
+      - paragraph [ref=f18e288]: This changes the live assistant immediately. The very next chat turn will use this version.
+    - generic [ref=f18e289]:
+      - button "Cancel" [active] [ref=f18e290] [cursor=pointer]
+      - button "Publish to production" [ref=f18e291] [cursor=pointer]

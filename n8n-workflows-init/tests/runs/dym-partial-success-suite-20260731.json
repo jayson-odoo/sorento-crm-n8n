@@ -1,0 +1,122 @@
+{
+  "run": "dym-partial-success (CHANGE #2) §PS suite + §MT re-run (CHANGE #1 regression). Tester cycle.",
+  "date": "2026-07-31",
+  "role": "tester",
+  "scope": "deterministic — single-node business diff: compile-current-state (clone 7a130a0c / live 0804657c)",
+  "HEADLINE_VERDICT": "REQUEST-CHANGES / HALT. §PS-safety FAILS: a bare number ALREADY resolves a (stock) row today on a plain-answered turn with selection_context=null and NO menu. The last_result_set repurpose is therefore UNSAFE as designed and needs a guard. Change #2 MUST NOT promote in its current form. Change #1 (build-suggest-offer) re-run PASSES and is unaffected.",
+  "promote": "NOT promoted. Live spine 9qVyfUxmRQqrpGRMDLRuz UNTOUCHED. No workflow edited by tester. No execute_workflow/test_workflow/publish run.",
+  "targets": {
+    "clone": {"id": "txiPzSxy3Pclsz6v", "versionId": "b7f8ddf8-15bf-4246-9b00-3e3973d43382", "activeVersionId": "b7f8ddf8-15bf-4246-9b00-3e3973d43382", "draft_eq_active": true},
+    "live": {"id": "9qVyfUxmRQqrpGRMDLRuz", "activeVersionId": "a505f2e1-74ef-4fb3-9c87-c4818689b21b", "read_only": true},
+    "parser_fork_clone_calls": {"id": "wI5RkNGW3EOJfBdo", "output_exchange_node": "847a1173", "read_only": true}
+  },
+  "artifact_identity": {
+    "compile-current-state_clone_sha256": "58a5d9eaca9c6e011d79851a728630b8772a3cc4c7ce17b6b3ce210ec128f21d (== coder deployed artifact — sha-gated)",
+    "compile-current-state_live_sha256": "7d4532bc5225e96ab411205ee01c209db4185a7e14153b87587d7a3f23197c68 (pre-#2 baseline + negative control)",
+    "build-suggest-offer_clone_sha256": "2cc445251bbfeaf7fe2ce8041621afeb0054a0da0aedc1f583c6b479d7f95393 (== change-#1 validated artifact — UNCHANGED under the bundle)",
+    "build-suggest-offer_live_sha256": "00e59cab73c51347a8bc59f1e1882ff2175ef08698d21376152592d64efd9198",
+    "output_exchange_fork_sha256": "faf39d353ace0cf44d7696e2d7f3d0ebd5bfc5471bd174183cc3cf51a57a6ab5 (UNEDITED by this change)"
+  },
+  "mechanism": {
+    "type": "offline unit (plan V-PS0 / UAC §PS0 PRIMARY GATE) + production golden-data mining for §PS-safety.",
+    "how": "Extracted the exact deployed clone jsCode + live jsCode + fork output_exchange via read-only get_workflow_details. Ran each in pure Node against faithful fixtures. §PS-safety additionally mined golden_nodes ('Call sub-query-reformulator' captured outputs) in n8n_test for real bare-number turns.",
+    "executions_run_on_n8n": 0,
+    "writes": "NONE. Read-only get_workflow_details + prepare_test_pin_data (schema only) + read-only SELECT on n8n_test. No execute/test/publish.",
+    "harness": "scratchpad/ps_harness.js, ps_run.js (compile-current-state + build-suggest-offer), oe_run.js (output_exchange §PS-safety); results ps_results.json, oe_results.json"
+  },
+  "S0_safety_gate": {
+    "realization": "OFFLINE UNIT + read-only DB SELECT. Categorical zero-egress: no n8n node executed => no redis I/O, no send/assign/SLA/PIC/CRM-PUT, no LLM call. S7 is satisfied BY CONSTRUCTION (no execution => nothing to write to any redis list => nothing to attribute) — NOT a bare LLEN-equality gate (LESSON 45).",
+    "S1_send": "PASS by construction (no execution).",
+    "S2_assign": "PASS by construction.",
+    "S3_crm_write": "PASS by construction. Static (clone JSON, prior cycle): save-session-vars + update-human-intervened orphaned; save-redis fork = tWm5DYLxfypmVC1T (TEST sink).",
+    "S4_get_results_readonly": "PASS by construction (get-results not invoked).",
+    "S5_test_mode": "N/A — no trigger/sub invoked in an offline unit.",
+    "S6_token_sinks": "PASS — deterministic scope, ZERO tokens (pure Code offline; NO real LLM run performed — the reformulator behavior was established from PRODUCTION golden data, not a new LLM call).",
+    "S7_prod_ingest": "PASS by construction — no execution touched any redis list; prod ingest sorento-respond-message and TEST sink sorento-respond-message-TEST both untouched. No before/after LLEN needed; there is nothing to attribute (categorical, per the change-#1 run and LESSON 45).",
+    "S8_no_is_test_false_credentialed_run": "N/A — no sub executed. NOTE: I deliberately did NOT run the parser fork in isolation for §PS-safety: the fork wI5RkNGW3EOJfBdo contains a memoryPostgresChat node (S8-banned type) so an is_test:false run is barred, and an is_test:true run without a mock is not needed — production golden data already answers the question definitively."
+  },
+  "PS_safety": {
+    "verdict": "FAIL — HALT GATE TRIPPED. A bare numeric reply ALREADY resolves a row on a plain-answered turn today (selection_context=null, no numbered menu, no quote-reply). The design's safety premise is factually wrong; a guard is required.",
+    "the_two_conjuncts": {
+      "conjunct1_parser_emits_reference_positions": "YES — PROVEN in production golden_nodes.",
+      "conjunct2_output_exchange_arms_pick_without_suggest_offer": "YES — PROVEN by code + offline unit; output_exchange's byIdx block (fork lines 399-446) resolves reference_positions -> last_result_set entities with NO selection_context/_pickCtx gate (only !is_menu_label && reference_positions.length>0). _pickCtx (line 371) gates ONLY the 'all/semua' expansion (line 376), NOT the positional resolution."
+    },
+    "why_the_machinery_is_present_on_a_plain_stock_answer": [
+      "compile-current-state saves variables.response = 'Previous turn (inventory): returned N records' on a plain stock answer (line 142).",
+      "The parser (AI Agent) prompt template feeds previous_conversation_state.response as 'Previous response'. The prompt's POSITIONAL REFERENCES rule (parser_prompt line 339-349) triggers on \"'Previous response' ... returned N records\" + a positional reference — NOT on selection_context.",
+      "compile-current-state saves variables.last_result_set = the indexed stock rows (idx+label) on a plain stock answer (line 143). selection_context is null on that turn.",
+      "On the NEXT turn, output_exchange resolves any parser reference_positions against that carried last_result_set (byIdx, ungated by pick-context)."
+    ],
+    "production_evidence_golden_nodes": {
+      "note": "golden_nodes.node_name='Call \\'sub-query-reformulator\\'' = the real captured parser+output_exchange output; input carries session_vars.variables (prev state). Filter: bare-number incoming (message ~ '^#?\\d{1,2}$'), reference_positions non-empty, selection_context null, NO referenced_result_set.",
+      "resolved_rows_selection_context_NULL_no_quote_reply": [
+        "tid 37895: msg '1', domain 'order', prev 'Previous turn (order): returned 1 records', selection_context NULL, referenced_result_set ABSENT -> resolved entity ordinal 1 canonical_code '202606-3640'.",
+        "tid 37697: msg '1', domain 'product_attachment', prev 'returned 10 records', selctx NULL, no quote-reply -> resolved ordinal 1 'SRTWC286-SH'.",
+        "tid 36965: msg '3', product_attachment, selctx NULL -> resolved ordinal 3 'SRTKS7547-BL'.",
+        "tid 37701: msg '7', product_attachment, selctx NULL -> resolved ordinal 7 'SRTWC8517-SH-UF'."
+      ],
+      "stock_inventory_domain_confirmation": "tid 38226: msg '5', domain 'incoming' (stock), prev 'Previous turn (incoming): returned 3 records', selection_context NULL -> parser EMITTED reference_positions=[5]; resolved EMPTY only because 5 > 3 rows (out_of_range) — NOT because it was gated. An in-range bare number in this same context resolves the stock row (identical machinery; byIdx is domain-agnostic).",
+      "why_no_in_range_inventory_row": "Corpus artifact only: the one inventory null-context bare-number turn happened to be '5' against a 3-row set. The order/product_attachment null-context rows are IN-RANGE and DID resolve, on the SAME code path (output_exchange byIdx, no domain gate). A plain inventory answer carries last_result_set rows with a label -> byIdx.get(pos) returns the stock row -> resolves."
+    },
+    "offline_confirmatory_output_exchange_unit": {
+      "method": "UNEDITED fork output_exchange (sha faf39d35): prevState.selection_context=null, last_result_set=[3 stock rows], NO referenced_result_set, reply '2'.",
+      "variantA_reference_positions_empty": "entities = [] (no row resolved) — this is the plan's ASSUMED behavior; proves the assertion CAN go red (fail-on-purpose valid).",
+      "variantB_reference_positions_[2]_(production-observed)": "entities = [{raw:'SRTWT902-B', ordinal:2, canonical_code:'SRTWT902-B'}] — STOCK ROW 2 RESOLVED with selection_context=null and no suggest_offer/quote-reply.",
+      "conclusion": "The deterministic node resolves the stock row iff the parser emits reference_positions; production proves the parser DOES emit it for a bare number on a plain (incl. stock) answer. => bare number ALREADY resolves a stock row today."
+    },
+    "impact_of_the_change": "On the partial-miss answered path (M>=1), compile-current-state now OVERWRITES the (positionally-pickable) stock last_result_set with the dym candidates and arms selection_context='suggest_offer', WHILE leaving variables.response = 'Previous turn (inventory): returned N records' unchanged. So (a) a following bare number that today resolves a STOCK row now resolves a DYM candidate (behavior change on a live affordance), and (b) a NEW mis-resolution surface is created: the compressed response still advertises 'N records' (stock count) to the parser while last_result_set holds the M dym candidates, so a customer referencing stock-record-K by number gets dym-candidate-K. No guard prevents either.",
+    "plan_claim_refuted": "Plan §2.4 / UAC §PS-1 verified-claim-B / plan Claim B assert the repurpose 'regresses nothing that was ever pickable' because '_pickCtx requires selection_context in {disambiguation,suggest_offer} or a quote-reply'. That is FALSE for the positional resolution: output_exchange's byIdx block is NOT gated by _pickCtx. The safety rationale does not hold.",
+    "required_fix_options_for_planner_coder": [
+      "Do NOT repurpose last_result_set on the answered path; use a separate namespaced pick slot the positional/byIdx path does not read; OR",
+      "When arming the dym pick, also REWRITE variables.response so the parser no longer sees 'returned N records' (so a bare number is not classified positionally against the now-dym last_result_set); OR",
+      "Add an explicit guard/selection_context distinct from the stock positional path and update output_exchange to disambiguate — i.e. the guard the HALT calls for. Any option must be re-gated by a fresh §PS-safety."
+    ]
+  },
+  "PS_functional_cases_INFORMATIONAL_ONLY": {
+    "note": "Run offline for the reviewer's completeness. NOT a sign-off — the change is BLOCKED by §PS-safety regardless of functional correctness.",
+    "PS-1": {
+      "functional_verdict": "logic correct (all 6 acceptance points hold) BUT BLOCKED by §PS-safety",
+      "user_response": "SRTWT902 — 42 units in KL warehouse.\n\nCouldn't find these:\n\"SRTW808\" — did you mean:\n  1. SRTW8081-P\n  2. SRTW8082-P\n  3. SRTW8083-P\n\"SRTW809\" — did you mean:\n  4. SRTW8091-P\n\nReply a number to check it, or ask again.",
+      "variables.response_compressed": "Previous turn (inventory): returned 1 records (UNCHANGED)",
+      "last_result_set": "length 4, idx 1..4, value/product = [SRTW8081-P,SRTW8082-P,SRTW8083-P,SRTW8091-P], entity_type product; selection_context='suggest_offer'",
+      "dym_offer": "{id:'EXEC_PS1', domain:'inventory', ttl:3, candidates:[4], picked:[]} — SURVIVED the _answered kill; candidates for_raw rows1-3='SRTW808', row4='SRTW809', for_hint 'product'; dym_candidates mirrors (len 4)",
+      "quick_reply": "undefined (unset)"
+    },
+    "PS-1_negative_control": {
+      "verdict": "VALID — assertions are real instruments",
+      "method": "pre-#2 live jsCode (sha 7d4532bc) on the SAME §PS-1 fixture",
+      "result": "user_response = stock text ONLY (no dym block appended); selection_context null; last_result_set = the single SRTWT902 stock row; dym_offer null (rule 5 killed it). All §PS-1 append/arm/survival asserts correctly go RED on pre-#2 code."
+    },
+    "PS-R": {
+      "verdict": "PASS (byte-identical) — HARD REGRESSION GATE",
+      "result": "no-miss (SRTWT902 alone): clone output === live output byte-identical (JSON.stringify equal). user_response = stock text only; selection_context null; last_result_set = stock row; dym_offer null. Confirms no-miss happy path is a pure no-op."
+    },
+    "PS-zerocand": {
+      "verdict": "PASS (functional)",
+      "result": "missed token ZZZQ999 (empty matches+alternatives): user_response gains plain '\"ZZZQ999\" — not found.' under 'Couldn't find these:' with footer 'Ask again with the correct code.' (no-number invite); last_result_set UNCHANGED (SRTWT902 stock row); selection_context null; dym_offer null (M===0 arms nothing)."
+    },
+    "PS-roundtrip": {
+      "verdict": "SKIPPED / UNVERIFIED (plan V-PS-roundtrip provision) AND MOOT under HALT",
+      "rationale": "E2E regression guard, not the gate; output_exchange unedited; requires forcing a real reformulator partial-resolve with If3 proceeding. Moot because the change is blocked pending the §PS-safety guard, which will change the pick wiring."
+    }
+  },
+  "MT_rerun_change1_regression": {
+    "purpose": "Confirm change #1 (build-suggest-offer 7972abd8) STILL PASSES after change #2 landed on the same clone (bundled state).",
+    "build-suggest-offer_sha_unchanged": "2cc44525... (byte-identical to the change-#1 validated artifact — no revert/alteration by change #2)",
+    "MT-1": {
+      "verdict": "PASS",
+      "result": "suggest_offer true; suggest_selection_context 'suggest_offer'; 3 per-token blocks; global idx 1..7 (A=1-3,B=4,C=5-7); suggest_last_result_set len 7 values [C2181XUW-P-ENG..SRTWC8605-SC-RL]; dym_offer {id:EXEC_MT1,domain:inventory,ttl:3,candidates:7,picked:[]}; for_raw per token (1-3 C21263, 4 Bravat, 5-7 Sorento); suggest_quick_reply 'Yes escalate,No it's okay'. Identical to change-#1 run."
+    },
+    "MT-R": {
+      "verdict": "PASS (byte-identical clone vs live)",
+      "result": "single-token: clone output === live output byte-identical. code-mode message 'Couldn't find \"C21263XUW-P-ENG\". Did you mean C2181XUW-P-ENG, C21131XUW-P-ENG, or C21132XUW-P-ENG? ...'; suggest_quick_reply = 3 codes + Yes escalate + No it's okay; suggest_last_result_set len 3; dym_candidates len 3 all for_raw 'C21263XUW-P-ENG'."
+    },
+    "conclusion": "Change #1 is INTACT and unregressed under the bundle."
+  },
+  "anomalies_surfaced": [
+    "PLAN SAFETY PREMISE WRONG (primary): output_exchange byIdx positional resolution is NOT gated by _pickCtx/selection_context — the plan's Claim B / §2.4 rationale that a plain-stock last_result_set 'was never pickable' is false. A bare in-range number resolves the row via the parser's reference_positions on any plain-answered turn (proven in production for order/product_attachment; parser emits it in inventory too).",
+    "NEW MIS-RESOLUTION SURFACE from the repurpose: variables.response stays 'returned N records' (stock count) while last_result_set is overwritten with M dym candidates -> a positional reference by number now maps to a dym candidate, not the stock record the count advertises. No guard.",
+    "get-results LLM liveness / reformulator token-sink: NOT exercised this cycle (deterministic offline). No new token sink observed in the edited node (compile-current-state is pure Code, 0 tokens).",
+    "The fork wI5RkNGW3EOJfBdo (clone's reformulator) contains a memoryPostgresChat node (S8-banned type) — an is_test:false isolated run is barred; recorded so a future E2E §PS-roundtrip uses the full clone in regress-capture, not the isolated fork."
+  ]
+}

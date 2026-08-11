@@ -5,7 +5,7 @@ const resolver = $('resolve-entity').first().json ?? {};
 
 const ALLOWED = {
   master_products:    ['product', 'category', 'brand'],
-  product_attachment: ['product', 'attachment', 'attachment_type', 'category', 'brand'],
+  product_attachment: ['product', 'attachment', 'attachment_type', 'category', 'brand', 'certificate'],
   promotion:          ['product', 'promotion', 'category', 'brand'],
   inventory:          ['product', 'category', 'brand'],
   order:              ['order', 'customer_order', 'transporter', 'customer', 'product'],
@@ -72,6 +72,28 @@ if (gate_passed && Array.isArray(REQUIRED_TYPES[domain])) {
         ? `Please specify which type of attachment you need for ${subject} — e.g. ${TYPE_PROMPT.attachment_type}.`
         : `Please specify the ${t}.`
     ).join(' ');
+  }
+}
+
+// ── B1 attachment-subject-gate ─────────────────────────────────────────
+// The named subject product MISSED. A carried certificate / attachment_type must not be
+// allowed to scope the lookup on its own: certificate_ids alone satisfies the tool's narrowing
+// tuple (server.py:40, OR semantics) and returns every product carrying that certificate.
+// Observed: exec 11509873, 26 unrelated products + a PDF. Dead-end to not-found so the
+// did-you-mean the customer actually needs is what gets rendered.
+// Predicate is resolver-derived (unresolved_tokens ∩ parser product raws) on purpose — NOT
+// `current_message`, which is a known-corrupted signal (plan §5 B4).
+if (gate_passed && domain === 'product_attachment') {
+  const _n = s => String(s ?? '').trim().toLowerCase();
+  const _unresolved = (resolver.unresolved_tokens ?? []).map(_n);
+  const _productRaws = new Set((parser.entities ?? [])
+    .filter(e => String(e.hint || '').toLowerCase() === 'product')
+    .map(e => _n(e.raw)));
+  const _missedSubject = _unresolved.some(t => _productRaws.has(t));
+  const _haveProduct   = compatible_entities.some(e => e.entity_type === 'product');
+  if (_missedSubject && !_haveProduct) {
+    gate_passed = false;
+    gate_reason = `'product_attachment' subject product did not resolve; refusing to scope on carried entities`;
   }
 }
 
@@ -221,7 +243,72 @@ if (specific_options.length > 0) {
   }
 }
 
+// ── document-class precision (container-status S1) ──────────────────────
+// The CRM resolver answers an attachment miss with a word-tier fallback over
+// attachment_type: "container status list" returns Packing List (word:list),
+// Stock_List (word:list) AND container_status (word:status). All three reach
+// attachment_type_id, so a contact GRANTED container status is handed three
+// document types when they asked for one. (Measured: exec 11661198.)
+//
+// The parser already named the class it meant — an `attachment` entity carries
+// canonical_code "container status". Use it to pick.
+//
+// FAIL-OPEN by design: if the parser named nothing, or nothing matches, keep the
+// full set. Over-broad is today's behaviour; a wrong narrowing would silently
+// answer about the wrong document.
+const _dcNorm = s => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const _dcWanted = new Set(
+  (parser.entities ?? [])
+    .filter(e => ['attachment', 'attachment_type'].includes(String(e.hint || '').toLowerCase()))
+    .map(e => _dcNorm(e.canonical_code))
+    .filter(Boolean)
+);
+let _dcSoleUuid = null;   // set when narrowing lands on exactly ONE document class
+if (_dcWanted.size > 0) {
+  const _dcTypeMatches = compatible_entities.filter(e => e.entity_type === 'attachment_type');
+  if (_dcTypeMatches.length > 1) {
+    // `code` is the slug ("container_status"); display.type_name is the human label
+    // ("Container Status"). Either may carry the class, so check both — Packing List
+    // and Stock_List have code null and only a type_name.
+    const _dcNameByUuid = {};
+    for (const m of flat) if (m && m.uuid) _dcNameByUuid[m.uuid] = m.display && m.display.type_name;
+    const _dcKeep = _dcTypeMatches.filter(e =>
+      _dcWanted.has(_dcNorm(e.code)) || _dcWanted.has(_dcNorm(_dcNameByUuid[e.uuid])));
+    if (_dcKeep.length > 0) {
+      const _dcKeepUuids = new Set(_dcKeep.map(e => e.uuid));
+      compatible_entities = compatible_entities.filter(
+        e => e.entity_type !== 'attachment_type' || _dcKeepUuids.has(e.uuid));
+      gate_reason += `; document-class narrowed to [${_dcKeep.map(e => e.code || _dcNameByUuid[e.uuid]).join(', ')}]`;
+      if (_dcKeep.length === 1) _dcSoleUuid = _dcKeep[0].uuid;
+    }
+  }
+}
+
 const out = $input.first().json;
+
+// ── record the narrowing in `resolutions`, not just in `compatible_entities` ──────────
+// Narrowing above fixes WHICH document we ask the CRM for, but the resolver's own verdict for
+// the token is still {resolved:false, ambiguous:true} — and dym-transform picks its did-you-mean
+// candidates straight off `resolutions` (dym-transform.js:155, `res.resolved !== true`). Left
+// alone the customer gets BOTH the file and "Couldn't find 'container status list' — did you
+// mean Packing List, Stock_List, container_status" in one message, which reads as broken even
+// though the answer above it is correct. Measured on the clone after the param fix.
+//
+// Only claim resolution when the narrowing was UNAMBIGUOUS (exactly one class survived) AND this
+// token's own matches actually contain that uuid — otherwise a second, genuinely-missed token in
+// the same turn would be silently marked resolved and lose its did-you-mean.
+if (_dcSoleUuid && Array.isArray(out.resolutions)) {
+  for (const res of out.resolutions) {
+    if (!res || res.resolved === true) continue;
+    const ms = Array.isArray(res.matches) ? res.matches : [];
+    const hit = ms.find(m => m && m.uuid === _dcSoleUuid);
+    if (!hit) continue;
+    res.resolved  = true;
+    res.ambiguous = false;
+    res.matches   = [hit];            // the class we actually asked for, not the word-tier spray
+    res.resolved_by = 'document-class-narrowing';
+  }
+}
 out.gate_passed = gate_passed;
 out.require_specific = require_specific;
 out.gate_reason = gate_reason;

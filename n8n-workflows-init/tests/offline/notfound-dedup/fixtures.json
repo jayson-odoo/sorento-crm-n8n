@@ -1,0 +1,701 @@
+{
+ "D1": {
+  "qf": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "user_goal": "trying to check promotions for Mocha Dealer",
+   "access_levels": [
+    "Mocha Dealer"
+   ],
+   "date_mode": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "match_mode": "and",
+   "demand_qty": null,
+   "entities": [
+    {
+     "raw": "Mocha Dealer",
+     "hint": "brand",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "entity_op": "replace_combine",
+   "scope_exclusive": false,
+   "requested_attributes": [],
+   "contains_flyer": false,
+   "reference_positions": [],
+   "reference_target": null,
+   "person_mention": null,
+   "is_active": null,
+   "order_status": null,
+   "correction": false,
+   "routing": {
+    "suggested_team": "marketing_promotion_mocha",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "domain_signal_source": "intent_explicit",
+   "scope_exclusive_applied": false,
+   "entity_op_applied": "replace_combine",
+   "entities_filtered": false,
+   "entities_emptied_by_filter": false
+  },
+  "r": {
+   "tokens": [
+    "Mocha Dealer"
+   ],
+   "elapsed_ms": 1659.49,
+   "resolutions": [
+    {
+     "token": "Mocha Dealer",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "form",
+       "canonical_code": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+       "uuid": "2e66a4a0-6175-4a7a-a028-2cb00784ca85",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "form_name": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "form",
+       "canonical_code": "CONCEPT_RENOVATION_FORM_MOCHA",
+       "uuid": "d00a85b3-9d3b-484b-8f23-9675c38f6aa7",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "CONCEPT_RENOVATION_FORM_MOCHA",
+        "form_name": "CONCEPT RENOVATION FORM (MOCHA)",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "form",
+       "canonical_code": "DEALERS_ANNUAL_DINNER_FORM_MOCHA",
+       "uuid": "ae28e8dd-73c3-4493-8ac1-552c01e57674",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "DEALERS_ANNUAL_DINNER_FORM_MOCHA",
+        "form_name": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "brand"
+   ],
+   "fallback_types_found": [
+    "form"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+  },
+  "gate": {
+   "tokens": [
+    "Mocha Dealer"
+   ],
+   "elapsed_ms": 1659.49,
+   "resolutions": [
+    {
+     "token": "Mocha Dealer",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "form",
+       "canonical_code": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+       "uuid": "2e66a4a0-6175-4a7a-a028-2cb00784ca85",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "form_name": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "form",
+       "canonical_code": "CONCEPT_RENOVATION_FORM_MOCHA",
+       "uuid": "d00a85b3-9d3b-484b-8f23-9675c38f6aa7",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "CONCEPT_RENOVATION_FORM_MOCHA",
+        "form_name": "CONCEPT RENOVATION FORM (MOCHA)",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "form",
+       "canonical_code": "DEALERS_ANNUAL_DINNER_FORM_MOCHA",
+       "uuid": "ae28e8dd-73c3-4493-8ac1-552c01e57674",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "DEALERS_ANNUAL_DINNER_FORM_MOCHA",
+        "form_name": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "brand"
+   ],
+   "fallback_types_found": [
+    "form"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+   "gate_passed": false,
+   "require_specific": false,
+   "gate_reason": "types [form] incompatible with 'promotion'",
+   "gate_clarification": "",
+   "compatible_entities": [],
+   "gate_debug": {
+    "domain": "promotion",
+    "allowed_lookup": [
+     "product",
+     "promotion",
+     "category",
+     "brand"
+    ],
+    "entities_count": 3
+   }
+  },
+  "input": {
+   "tokens": [
+    "Mocha Dealer"
+   ],
+   "elapsed_ms": 1659.49,
+   "resolutions": [
+    {
+     "token": "Mocha Dealer",
+     "resolved": false,
+     "ambiguous": true,
+     "matches": [
+      {
+       "entity_type": "form",
+       "canonical_code": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+       "uuid": "2e66a4a0-6175-4a7a-a028-2cb00784ca85",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "form_name": "Mocha_-_Racking_and_Signage_Sponsorship_Agreement_-_2_parties",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "form",
+       "canonical_code": "CONCEPT_RENOVATION_FORM_MOCHA",
+       "uuid": "d00a85b3-9d3b-484b-8f23-9675c38f6aa7",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "CONCEPT_RENOVATION_FORM_MOCHA",
+        "form_name": "CONCEPT RENOVATION FORM (MOCHA)",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      },
+      {
+       "entity_type": "form",
+       "canonical_code": "DEALERS_ANNUAL_DINNER_FORM_MOCHA",
+       "uuid": "ae28e8dd-73c3-4493-8ac1-552c01e57674",
+       "match_field": "form_name",
+       "match_tier": "tokenized",
+       "similarity": null,
+       "company_id": null,
+       "company_name": null,
+       "display": {
+        "form_code": "DEALERS_ANNUAL_DINNER_FORM_MOCHA",
+        "form_name": "DEALERS ANNUAL DINNER FORM (MOCHA)",
+        "form_type": "marketing",
+        "is_active": true
+       }
+      }
+     ],
+     "alternatives": []
+    }
+   ],
+   "unresolved_tokens": [],
+   "fallback_applied": true,
+   "fallback_requested_types": [
+    "brand"
+   ],
+   "fallback_types_found": [
+    "form"
+   ],
+   "fallback_per_token": true,
+   "fallback_match_mode": "or",
+   "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+   "gate_passed": false,
+   "require_specific": false,
+   "gate_reason": "types [form] incompatible with 'promotion'",
+   "gate_clarification": "",
+   "compatible_entities": [],
+   "gate_debug": {
+    "domain": "promotion",
+    "allowed_lookup": [
+     "product",
+     "promotion",
+     "category",
+     "brand"
+    ],
+    "entities_count": 3
+   },
+   "escalate_message": "Could not find promotion for Mocha Dealer for Mocha Dealer. Would you like me to escalate to marketing_promotion_mocha team?",
+   "is_clarification": false,
+   "found_summary": ""
+  },
+  "rendered": "Could not find promotion for Mocha Dealer for Mocha Dealer. Would you like me to escalate to marketing_promotion_mocha team?"
+ },
+ "D2": {
+  "qf": {
+   "message_type": "business_query",
+   "intent_hint": "check_promotion",
+   "domain_hint": "promotion",
+   "scope_intent": "specific",
+   "is_affirmative": null,
+   "user_goal": "trying to check the promotion for SRTSH1040 for Sorento Dealer",
+   "access_levels": [
+    "Sorento Dealer"
+   ],
+   "date_mode": null,
+   "date_filter_start": null,
+   "date_filter_end": null,
+   "match_mode": "and",
+   "demand_qty": null,
+   "entities": [
+    {
+     "raw": "SRTSH1040",
+     "hint": "product",
+     "canonical_code": null,
+     "current_message": true,
+     "confident": true
+    }
+   ],
+   "entity_op": "replace_combine",
+   "scope_exclusive": false,
+   "requested_attributes": [],
+   "contains_flyer": false,
+   "reference_positions": [],
+   "reference_target": null,
+   "person_mention": null,
+   "is_active": null,
+   "order_status": null,
+   "correction": false,
+   "routing": {
+    "suggested_team": "marketing_promotion_sorento",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "domain_signal_source": "intent_explicit",
+   "scope_exclusive_applied": false,
+   "entity_op_applied": "replace_combine",
+   "entities_filtered": false,
+   "entities_emptied_by_filter": false
+  },
+  "r": {
+   "match_mode": "and",
+   "tokens": [
+    "SRTSH1040"
+   ],
+   "elapsed_ms": 42.86,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040-T",
+     "uuid": "41f2c6c4-7323-498a-b3c4-6ea11eb0543a",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040-T",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040",
+     "uuid": "cde2c67e-6a74-4de6-a45d-73edf0b06404",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040CP",
+     "uuid": "71b19ebf-7468-4370-819d-2f452c6c93c9",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040CP",
+      "is_active": false
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040-NL",
+     "uuid": "b295fdc9-6a77-42eb-9e9a-958cbf02714b",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040-NL",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040-ECO",
+     "uuid": "ad96bee2-65ed-4734-9cd6-afd45e2dfc3c",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040-ECO",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040-T",
+      "uuid": "41f2c6c4-7323-498a-b3c4-6ea11eb0543a",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040-T",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040",
+      "uuid": "cde2c67e-6a74-4de6-a45d-73edf0b06404",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040CP",
+      "uuid": "71b19ebf-7468-4370-819d-2f452c6c93c9",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040CP",
+       "is_active": false
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040-NL",
+      "uuid": "b295fdc9-6a77-42eb-9e9a-958cbf02714b",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040-NL",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040-ECO",
+      "uuid": "ad96bee2-65ed-4734-9cd6-afd45e2dfc3c",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040-ECO",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": []
+  },
+  "gate": {
+   "match_mode": "and",
+   "tokens": [
+    "SRTSH1040"
+   ],
+   "elapsed_ms": 42.86,
+   "intersection": [
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040-T",
+     "uuid": "41f2c6c4-7323-498a-b3c4-6ea11eb0543a",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040-T",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040",
+     "uuid": "cde2c67e-6a74-4de6-a45d-73edf0b06404",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040CP",
+     "uuid": "71b19ebf-7468-4370-819d-2f452c6c93c9",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040CP",
+      "is_active": false
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040-NL",
+     "uuid": "b295fdc9-6a77-42eb-9e9a-958cbf02714b",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040-NL",
+      "is_active": true
+     }
+    },
+    {
+     "entity_type": "product",
+     "canonical_code": "SRTSH1040-ECO",
+     "uuid": "ad96bee2-65ed-4734-9cd6-afd45e2dfc3c",
+     "match_field": "product_code",
+     "match_tier": "and",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "display": {
+      "product_name": "SRTSH1040-ECO",
+      "is_active": true
+     }
+    }
+   ],
+   "by_entity_type": {
+    "product": [
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040-T",
+      "uuid": "41f2c6c4-7323-498a-b3c4-6ea11eb0543a",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040-T",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040",
+      "uuid": "cde2c67e-6a74-4de6-a45d-73edf0b06404",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040CP",
+      "uuid": "71b19ebf-7468-4370-819d-2f452c6c93c9",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040CP",
+       "is_active": false
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040-NL",
+      "uuid": "b295fdc9-6a77-42eb-9e9a-958cbf02714b",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040-NL",
+       "is_active": true
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "SRTSH1040-ECO",
+      "uuid": "ad96bee2-65ed-4734-9cd6-afd45e2dfc3c",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "SRTSH1040-ECO",
+       "is_active": true
+      }
+     }
+    ]
+   },
+   "empty": false,
+   "unresolved_tokens": [],
+   "alternatives": [],
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "gate_clarification": "",
+   "compatible_entities": [
+    {
+     "uuid": "41f2c6c4-7323-498a-b3c4-6ea11eb0543a",
+     "entity_type": "product",
+     "code": "SRTSH1040-T"
+    },
+    {
+     "uuid": "cde2c67e-6a74-4de6-a45d-73edf0b06404",
+     "entity_type": "product",
+     "code": "SRTSH1040"
+    },
+    {
+     "uuid": "71b19ebf-7468-4370-819d-2f452c6c93c9",
+     "entity_type": "product",
+     "code": "SRTSH1040CP"
+    },
+    {
+     "uuid": "b295fdc9-6a77-42eb-9e9a-958cbf02714b",
+     "entity_type": "product",
+     "code": "SRTSH1040-NL"
+    },
+    {
+     "uuid": "ad96bee2-65ed-4734-9cd6-afd45e2dfc3c",
+     "entity_type": "product",
+     "code": "SRTSH1040-ECO"
+    }
+   ],
+   "gate_debug": {
+    "domain": "promotion",
+    "allowed_lookup": [
+     "product",
+     "promotion",
+     "category",
+     "brand"
+    ],
+    "entities_count": 5
+   }
+  },
+  "input": {
+   "response_intro": [
+    "No matching results found."
+   ],
+   "escalate_message": "Here's what you want:\n\u2022 product: SRTSH1040-T (+4 more)\n\nBut no promotion for Sorento Dealer matched these. Would you like me to escalate to marketing_promotion_sorento team?",
+   "is_clarification": false,
+   "found_summary": "\u2022 product: SRTSH1040-T (+4 more)"
+  },
+  "rendered": "Here's what you want:\n\u2022 product: SRTSH1040-T (+4 more)\n\nBut no promotion for Sorento Dealer matched these. Would you like me to escalate to marketing_promotion_sorento team?"
+ }
+}

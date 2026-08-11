@@ -1,0 +1,232 @@
+{
+  "suite": "crossdomain-stock-incoming",
+  "plan": "plans/cross-domain-stock-incoming-plan.md",
+  "created": "2026-08-03",
+  "target": "clone txiPzSxy3Pclsz6v",
+  "drive": "POST {N8N_BASE_URL}/webhook/zz-run-hint  (zz-canary-run VtIV3TF3aw2Fx8No), mode=uac, contact 437264483",
+  "envelope_source": "REAL clone runs captured 2026-08-03 (xd-red-1..4). NOT hand-authored — see [[stale-case-fixtures-false-green]].",
+  "ground_truth": {
+    "SRTWT5800": {
+      "incoming": "NONE (all 3 siblings also none)",
+      "siblings": [
+        "SRTWT5800",
+        "SRTWT5800-FH",
+        "SRTWT5800-HEAD"
+      ],
+      "sibling_uuids": {
+        "SRTWT5800": "f3f2f74e-a1a2-4b5c-8706-3e304aa85431",
+        "SRTWT5800-FH": "37946fa7-449c-4ca9-848d-c78411901f05",
+        "SRTWT5800-HEAD": "bd33bdd4-3f20-4092-8d94-ed05e4c37e06"
+      },
+      "stock_rows_real": [
+        {
+          "warehouse": "BUKIT RAJA",
+          "system_location": "BRW-BB",
+          "qty": 0
+        },
+        {
+          "warehouse": "BUKIT RAJA",
+          "system_location": "BRW-NTC",
+          "qty": 236
+        },
+        {
+          "warehouse": "BUKIT RAJA",
+          "system_location": "BRW-AM",
+          "qty": 7
+        },
+        {
+          "warehouse": "BUKIT RAJA",
+          "system_location": "BRW-IR",
+          "qty": 4
+        },
+        {
+          "warehouse": "BUKIT RAJA",
+          "system_location": "BRW",
+          "qty": 317
+        },
+        {
+          "warehouse": "BUKIT RAJA",
+          "system_location": "BRW-RSV",
+          "qty": 0
+        }
+      ],
+      "total_on_hand": 564,
+      "note": "DRIFT-SENSITIVE: quantities are live. Tester re-captures before asserting exact numbers; assert SHAPE + ordering rule, and the numbers as of the run."
+    },
+    "SRTWC286-SH-NEW-200": {
+      "stock": "NONE (miss → D2 alternatives path)",
+      "incoming_real": {
+        "container": "FFAU3176932",
+        "eta": "2026-07-22",
+        "qty": 200,
+        "flag": "PENDING ALLOCATION"
+      },
+      "alternatives_today": [
+        "SRTWC286-SH-NEW",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-150"
+      ]
+    }
+  },
+  "render_rules": {
+    "row_order": "DETERMINISTIC sort — stock: quantity DESC; incoming: soonest ETA. CRM order is NOT stable between calls.",
+    "zero_qty_rows": "SHOWN (2026-08-03 parity fix) — every location the real stock answer shows. Decision (d) governs EMPTY probes (zero ROWS), not qty-0 rows.",
+    "cap": "NONE (user decision 2026-08-03) — every location / shipment renders. Hiding rows behind '…and N more' can hide the only stock reachable for that person's location.",
+    "bullets": "'- ' prefix, NEVER numbered (Q12/N1 — numbers are D3's contract with last_result_set)",
+    "wording": "always 'on hand' / 'incoming', NEVER the bare word 'stock' (Q13b)",
+    "placement": "immediately after the miss sentence, ABOVE 'Try:' (D2) and 'Related products:' (D3)",
+    "negatives": "NEVER printed. An empty probe is not evidence of absence (same empty envelope for 'nothing there' and 'read failed').",
+    "format": "CANONICAL — re-render the probe item's own fields (same as output-structurer), incl. flags. Bullets, never numbers."
+  },
+  "cases": [
+    {
+      "id": "X1",
+      "name": "incoming total miss, asked product HAS stock — the screenshot case",
+      "input": "Pls check eta SRTWT5800",
+      "red_baseline_run": "xd-red-1 (2026-08-03)",
+      "red_actual": "No incoming stock (ETA) found for SRTWT5800. Related products:\n1. SRTWT5800 — no incoming\n2. SRTWT5800-FH — no incoming\n3. SRTWT5800-HEAD — no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to purchasing team.",
+      "expect_green": "No incoming stock (ETA) found for SRTWT5800.\n- SRTWT5800 — 317 pcs on hand: BUKIT RAJA / BRW\n- SRTWT5800 — 236 pcs on hand: BUKIT RAJA / BRW-NTC\n- SRTWT5800 — 7 pcs on hand: BUKIT RAJA / BRW-AM\n- SRTWT5800 — 4 pcs on hand: BUKIT RAJA / BRW-IR\nRelated products:\n1. SRTWT5800 — no incoming\n2. SRTWT5800-FH — no incoming\n3. SRTWT5800-HEAD — no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to purchasing team.",
+      "assert": [
+        "cross block present, bullets not numbers",
+        "ALL non-zero locations render — NO '…and N more' (cap removed 2026-08-03)",
+        "BRW-BB (0) and BRW-RSV (0) ABSENT",
+        "sibling picker intact and UNCHANGED below the block",
+        "last_result_set still the 3 siblings (NOT stock rows)",
+        "quick_reply unchanged: 'Yes escalate,No it's okay'"
+      ]
+    },
+    {
+      "id": "X2",
+      "name": "incoming total miss, both axes empty — renders NO block (decision (d))",
+      "input": "check eta SRTWT5800-FH",
+      "expect_green": "today's message byte-identical: miss line + sibling picker + escalate to purchasing team. NO cross-domain block — an empty probe is not evidence of absence.",
+      "assert": [
+        "NO block line at all (supersedes Q17 row 7)",
+        "message byte-identical to the RED baseline",
+        "team = purchasing (origin domain, Q2)"
+      ]
+    },
+    {
+      "id": "X3",
+      "name": "inventory miss, asked product HAS incoming (mirror direction, D2 path)",
+      "input": "check stock SRTWC286-SH-NEW-200",
+      "red_baseline_run": "xd-red-3 (2026-08-03)",
+      "red_actual": "No stock for SRTWC286-SH-NEW-200. Try: SRTWC286-SH-NEW, SRTWC286-SH-NEW-P, SRTWC286-SH-NEW-150. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+      "expect_green": "No stock for SRTWC286-SH-NEW-200.\n- SRTWC286-SH-NEW-200 — incoming 200 pcs, ETA 22/07/2026\nTry: SRTWC286-SH-NEW, SRTWC286-SH-NEW-P, SRTWC286-SH-NEW-150. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+      "assert": [
+        "block composes with D2 'Try:' line, inserted ABOVE it",
+        "team = warehouse (origin domain inventory, Q2)",
+        "D2 alternatives + code-pick roster UNCHANGED"
+      ]
+    },
+    {
+      "id": "X4",
+      "name": "PARTIAL incoming turn — A answered, B empty with stock",
+      "input": "check eta for SRTWT5800 and SRTWC286-SH-NEW-200",
+      "red_baseline_run": "xd-red-4 (2026-08-03)",
+      "red_actual_msg": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWC286-SH-NEW-200\n*Container:* FFAU3176932\n*Estimated Arrival Date:* 2026-07-22\n*Incoming Quantity:* 200\n🚩  *(PENDING ALLOCATION)*\n\nNo stock records found for: SRTWT5800.",
+      "red_actual_state_response": "Previous turn (incoming): returned 1 records",
+      "expect_green_msg": "<unchanged answer for SRTWC286-SH-NEW-200>\n\nNo stock records found for: SRTWT5800.\n- SRTWT5800 — 317 pcs on hand: BUKIT RAJA / BRW\n- SRTWT5800 — 236 pcs on hand: BUKIT RAJA / BRW-NTC\n- SRTWT5800 — 7 pcs on hand: BUKIT RAJA / BRW-AM\n- SRTWT5800 — 4 pcs on hand: BUKIT RAJA / BRW-IR\n\nWould you like me to escalate to purchasing team?",
+      "expect_green_state_response": "Previous turn (incoming): returned 1 records. Would you like me to escalate to purchasing team?",
+      "assert": [
+        "live #3 line present as 'No incoming records found for: SRTWT5800.' (domain-aware noun)",
+        "escalate phrase in BOTH userResponse AND state response (E1 — this is the whole reconciliation contract)",
+        "quick_reply added: 'Yes escalate,No it's okay'",
+        "last_result_set UNCHANGED (still the 1 answered item)",
+        "selection_context UNCHANGED"
+      ]
+    },
+    {
+      "id": "X5",
+      "name": "PARTIAL inventory turn — mirror of X4",
+      "input": "check stock for SRTWT5800 and SRTWC286-SH-NEW-200",
+      "expect_green": "stock answer for SRTWT5800 + '#3' line naming SRTWC286-SH-NEW-200 + '- SRTWC286-SH-NEW-200 — incoming 200 pcs, ETA 22/07/2026' + 'Would you like me to escalate to warehouse team?'",
+      "assert": [
+        "team = warehouse",
+        "same block rendering as X4 (Q8 unified wording)"
+      ]
+    },
+    {
+      "id": "X6",
+      "name": "reconciliation — 'yes' after X4",
+      "input": "yes",
+      "precondition": "X4 ran, state response carries the phrase",
+      "assert": [
+        "parser output_exchange sets escalation.is_escalation_confirmation === true",
+        "routing team = purchasing (carried via priorRouting)"
+      ]
+    },
+    {
+      "id": "X7",
+      "name": "decline — \"no it's okay\" after X4",
+      "input": "No it's okay",
+      "assert": [
+        "escalation_declined === true",
+        "reply = 'Escalation declined.'"
+      ]
+    },
+    {
+      "id": "X8",
+      "name": "number-pick after X1 still resolves to the SIBLING, not a cross-domain row",
+      "input": "2",
+      "precondition": "X1 ran",
+      "assert": [
+        "resolves SRTWT5800-FH from last_result_set",
+        "cross-domain rows are NOT in last_result_set (Q12/Q15 proof)"
+      ]
+    },
+    {
+      "id": "X9",
+      "name": "container-only ETA — no-op",
+      "input": "check eta for container FFAU3176932",
+      "assert": [
+        "byte-identical to live",
+        "no cross block (Q17 row 4 — containers never cross-probed)"
+      ]
+    },
+    {
+      "id": "X10",
+      "name": "fully-answered stock turn — no-op",
+      "input": "check stock SRTWT5800",
+      "red_baseline_run": "xd-red-2 (2026-08-03)",
+      "assert": [
+        "byte-identical to live baseline",
+        "NO escalate phrase in userResponse OR state response",
+        "no quick_reply added"
+      ]
+    },
+    {
+      "id": "X11",
+      "name": "HOIST regression — #3's line: byte-identical on INVENTORY turns; domain-aware noun on INCOMING",
+      "input": "check eta for SRTWT5800 and SRTWC286-SH-NEW-200",
+      "assert": [
+        "inventory turn: 'No stock records found for: …' byte-identical to live",
+        "incoming turn: 'No incoming records found for: …' (INTENTIONAL change 2026-08-03)",
+        "variants: dym-picked turn, prefix-family turn, AND-mode turn"
+      ]
+    }
+  ],
+  "fail_on_purpose": [
+    {
+      "id": "FP1",
+      "what": "force crossdomain-probe to error",
+      "expect": "message byte-identical to the RED baseline (F1 fail-silent). PROVEN 2026-08-03 with a soft-failed read; an earlier 'pass' was a FALSE PASS caused by the post-publish race."
+    },
+    {
+      "id": "FP2",
+      "what": "mutate the escalate phrase by one word",
+      "expect": "X6 MUST FAIL — proves the regex contract is what makes 'yes' work"
+    },
+    {
+      "id": "FP3",
+      "what": "perturb shared-node returnedCodes (drop one code)",
+      "expect": "shadow diff MUST fire — proves the hoist gate has teeth"
+    },
+    {
+      "id": "FP4",
+      "what": "append a cross row to last_result_set",
+      "expect": "X8 MUST FAIL — proves the display-only discipline is actually enforced"
+    }
+  ],
+  "zero_egress": "Every run asserts §0: egress rows are would_log/would_write/would_send ONLY. Verified on xd-red-1..4 (2026-08-03) — all guarded, no real send."
+}

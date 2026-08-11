@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **8ee3fbf1-4b7d-4d64-8a69-2443f0fc6e06** · activeVersionId **8ee3fbf1-4b7d-4d64-8a69-2443f0fc6e06** · DRAFT == ACTIVE
-- 107 nodes
+- versionId **629fe5d0-3559-4792-8aeb-4f76b547333b** · activeVersionId **d1b3f29e-5244-4f65-85e5-f082d1766de9** · ⚠️ DRAFT != ACTIVE
+- 115 nodes
 
 ## Edges
-_128 edge groups_
+_137 edge groups_
 
 ```
 Aggregate[0] -> If4
@@ -46,8 +46,8 @@ If8[0] -> tag-demand-qty
 If8[1] -> resolve-entity
 If9[0] -> resolve-entity-clarification
 If9[1] -> If1
-Loop Over Items1[1] -> Switch
-Remove Duplicates[0] -> get-presigned-url
+Loop Over Items1[1] -> get-presigned-url
+Remove Duplicates[0] -> Loop Over Items1
 Schedule Trigger[0] -> redis-pop-main-message-list
 Split Out[0] -> Remove Duplicates
 Switch[0] -> send-message-images
@@ -61,7 +61,7 @@ attach-merge[0] -> if-got-attachments
 build-cs-member-offer[0] -> compile-current-state
 build-ideate-reply[0] -> compile-current-state
 build-suggest-offer[0] -> tag-not-found
-central-exchange[0] -> compile-current-state
+central-exchange[0] -> dym-transform-partial
 check-access[0] -> If5
 compile-current-state[0] -> crossdomain-compose
 construct-user-prompt[0] -> Basic LLM Chain
@@ -76,13 +76,22 @@ cs-offer-gate[1] -> compile-current-state
 disallowed-entity-gate[0] -> If3
 divert-suggest-yes[0] -> tag-escalate-offer
 divert-suggest-yes[1] -> Call 'sub-human-intervention', tag-out-of-scope
+dym-annotate[0] -> build-suggest-offer
+dym-annotate-partial[0] -> compile-current-state
+dym-gate[0] -> dym-probe
+dym-gate[1] -> build-suggest-offer
+dym-gate-partial[0] -> dym-probe-partial
+dym-gate-partial[1] -> compile-current-state
+dym-probe[0] -> dym-annotate
+dym-probe-partial[0] -> dym-annotate-partial
+dym-transform[0] -> dym-gate
+dym-transform-partial[0] -> dym-gate-partial
 escalate-catalog[0] -> cs-offer-gate
 family-fetch[0] -> sibling-transform
 fetch-audio[0] -> whisper-transcribe
 get-access-types[0] -> Aggregate
 get-cs-members[0] -> build-cs-member-offer
-get-presigned-url[0] -> Loop Over Items1
-get-presigned-url[1] -> presign-fail-notice
+get-presigned-url[0] -> Switch
 get-session-vars[0] -> Call 'sub-query-reformulator'
 ideate-turn-http[0] -> build-ideate-reply
 if-audio-in[0] -> if-voice-allowed
@@ -114,7 +123,7 @@ send-message-video[1] -> sorento-sub-respond-sendmsg-respond4
 set-human-intervened[0] -> if-message-is-audio
 set-ran-query-formulator[0] -> sorento-sub-respond-sendmsg-respond
 sibling-gate[0] -> family-fetch
-sibling-gate[1] -> build-suggest-offer
+sibling-gate[1] -> dym-transform
 sibling-probe[0] -> build-suggest-offer
 sibling-transform[0] -> sibling-probe
 sorento-sub-respond-findcontact-respond[0] -> is-human-intervened, if-transcribed-confirm
@@ -141,7 +150,7 @@ whisper-transcribe[0] -> patch-transcript
 
 > Rewiring alone does NOT redirect these. Repoint the expression too.
 
-- **Aggregate** ← Call 'sub-get-results', If4, crossdomain-probe, probe-incoming, resolve-entity-clarification, sibling-probe
+- **Aggregate** ← Call 'sub-get-results', If4, crossdomain-probe, dym-probe, dym-probe-partial, probe-incoming, resolve-entity-clarification, sibling-probe
 - **Edit Fields2** ← validator
 - **Remove Duplicates** ← presign-fail-notice
 - **Split Out** ← Switch
@@ -150,14 +159,17 @@ whisper-transcribe[0] -> patch-transcript
 - **annotate-incoming-picker** ← escalate-catalog
 - **build-cs-member-offer** ← compile-current-state
 - **build-ideate-reply** ← compile-current-state
-- **build-suggest-offer** ← compile-current-state
-- **central-exchange** ← attach-merge, compile-current-state
+- **build-suggest-offer** ← compile-current-state, escalate-catalog
+- **central-exchange** ← attach-merge, compile-current-state, dym-transform, dym-transform-partial
 - **check-access** ← If5
 - **construct-user-prompt** ← Basic LLM Chain
 - **crossdomain-compose** ← Call 'sub-respond-save-message-redis'2, attach-merge, presign-fail-notice, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond2
 - **crossdomain-render** ← attach-merge, crossdomain-compose
 - **crossdomain-zeroset** ← compile-current-state, crossdomain-render
-- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, family-fetch, not-found-error-message, probe-incoming, sibling-gate, sibling-transform, tool-filter
+- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, dym-transform, dym-transform-partial, family-fetch, not-found-error-message, probe-incoming, sibling-gate, sibling-transform, tool-filter
+- **dym-annotate** ← build-suggest-offer
+- **dym-transform** ← dym-probe
+- **dym-transform-partial** ← dym-probe-partial
 - **escalate-catalog** ← build-cs-member-offer, compile-current-state, cs-offer-gate
 - **get-cs-members** ← build-cs-member-offer
 - **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, compile-current-state, construct-user-prompt, crossdomain-zeroset, ideate-turn-http
@@ -167,14 +179,15 @@ whisper-transcribe[0] -> patch-transcript
 - **patch-transcript** ← send-transcript-confirm
 - **probe-incoming** ← annotate-incoming-picker
 - **redis-pop-main-message-list** ← fetch-audio, if-transcribed-confirm, if-voice-allowed, patch-transcript, send-voice-not-allowed, sorento-sub-respond-findcontact-respond, sorento-sub-respond-sendmsg-presign-fail
-- **resolve-entity** ← If3, build-suggest-offer, compile-current-state, crossdomain-zeroset, disallowed-entity-gate, not-found-error-message
+- **resolve-entity** ← If3, build-suggest-offer, compile-current-state, crossdomain-zeroset, disallowed-entity-gate, dym-transform, dym-transform-partial, not-found-error-message
 - **resolve-entity-clarification** ← construct-user-prompt
 - **set-ran-query-formulator** ← sorento-sub-respond-sendmsg-respond
 - **sibling-probe** ← build-suggest-offer
 - **sibling-transform** ← build-suggest-offer, sibling-probe
-- **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-incoming, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
+- **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-incoming, resolve-entity, resolve-entity-clarification, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, construct-user-prompt, get-session-vars, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **validator** ← If6, compile-current-state, crossdomain-render, sibling-gate
+- **x** ← dym-transform, dym-transform-partial  ⚠️ TARGET NOT IN THIS WORKFLOW
 
 ## Zero inbound (orphaned / triggers)
 
@@ -182,6 +195,7 @@ whisper-transcribe[0] -> patch-transcript
 - OpenAI Chat Model
 - Schedule Trigger
 - When Executed by Another Workflow
+- presign-fail-notice
 - sorento-sub-respond-sendmsg-respond3
 
 ## Sub-workflow calls
@@ -194,6 +208,8 @@ whisper-transcribe[0] -> patch-transcript
 | Call 'sub-respond-save-message-redis'2 | `UrETd-jm46tFj3Xw7w8vL` | sub-respond-save-message-redis |
 | Execute 'sub-get-rag' | `tWP33QOFT7SxThfT` | sub-get-rag |
 | crossdomain-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
+| dym-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
+| dym-probe-partial | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | probe-incoming | `rysSPgUssLDf6xJc` | sub-get-results TEST |
 | send-transcript-confirm | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | send-voice-not-allowed | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
@@ -233,14 +249,18 @@ whisper-transcribe[0] -> patch-transcript
 
 | node | lines |
 |---|---|
-| compile-current-state | 463 |
-| build-suggest-offer | 417 |
+| build-suggest-offer | 540 |
+| compile-current-state | 529 |
+| dym-transform | 410 |
+| dym-transform-partial | 410 |
+| disallowed-entity-gate | 318 |
 | not-found-error-message | 247 |
-| disallowed-entity-gate | 231 |
-| crossdomain-render | 134 |
+| crossdomain-render | 165 |
+| dym-annotate | 144 |
+| dym-annotate-partial | 144 |
 | crossdomain-zeroset | 104 |
+| escalate-catalog | 86 |
 | crossdomain-compose | 86 |
-| escalate-catalog | 66 |
 | presign-fail-notice | 62 |
 | tool-filter | 59 |
 | attach-merge | 51 |

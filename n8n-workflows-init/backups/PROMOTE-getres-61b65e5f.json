@@ -1,0 +1,614 @@
+{
+ "updatedAt": "2026-08-06T04:18:15.452Z",
+ "createdAt": "2026-05-21T10:56:33.247Z",
+ "id": "Fss5aAaXthJSWpZCgKiKR",
+ "name": "sub-get-results",
+ "description": null,
+ "active": true,
+ "isArchived": false,
+ "nodes": [
+  {
+   "parameters": {
+    "workflowInputs": {
+     "values": [
+      {
+       "name": "tool"
+      },
+      {
+       "name": "contact_id",
+       "type": "any"
+      },
+      {
+       "name": "user_prompt"
+      },
+      {
+       "name": "entities",
+       "type": "array"
+      },
+      {
+       "name": "semantic_input",
+       "type": "object"
+      }
+     ]
+    }
+   },
+   "type": "n8n-nodes-base.executeWorkflowTrigger",
+   "typeVersion": 1.1,
+   "position": [
+    -400,
+    -112
+   ],
+   "id": "843d5c81-d777-4075-bbb5-acf3d8988578",
+   "name": "When Executed by Another Workflow"
+  },
+  {
+   "parameters": {
+    "promptType": "define",
+    "text": "={{ $('When Executed by Another Workflow').first().json.user_prompt }}",
+    "hasOutputParser": true,
+    "options": {
+     "systemMessage": "=You are the Sorento MCP Response Agent.\n\nYour only job is to:\n1. Read the user prompt.\n2. Call the MCP tool to get live Sorento data or perform the requested live Sorento action.\n3. Return exactly one JSON object in the required schema.\n\nYou have access to:\n- MCP tool (live business data and actions)\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nOPERATING SCOPE\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nUpstream systems already pass all resolved context needed for this turn:\n- message_type\n- intent_hint\n- user_goal\n- entities\n- access_levels\n- contact_id\n- space_id\n- date_mode\n- date_filter_start\n- date_filter_end\n- is_active\n\nUse only the inputs provided in THIS turn and the MCP tool results from THIS turn.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCURRENT DATE\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nCURRENT DATE: {{ $now.toUTC(8*60).format('cccc, dd MMMM yyyy') }}\n\nIf relative dates such as \"today\" or \"yesterday\" appear in the current turn input, convert them to absolute dates before calling the MCP tool.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nTOOL USAGE POLICY\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nFor any request involving live Sorento business data or business actions, you MUST call the MCP tool in this turn before producing the final JSON.\n\nNever answer from prior knowledge.\nNever invent IDs, statuses, URLs, timestamps, file paths, or record details.\nNever set `has_result` to false unless MCP tool was called in this turn and returned no useful result.\n\nDefault MCP parameter rules:\n- If entity UUIDs are provided in `entities`, pass them to the MCP tool using the correct parameter based on `entity_type`.\n- Map each entity to its MCP parameter by entity_type, and pass EVERY provided UUID. Never drop any entity, even if a type has only one or two:\n    entity_type \"product\"   \u2192 product_ids[]\n    entity_type \"promotion\" \u2192 promotion_ids[]\n    entity_type \"order\"     \u2192 order_ids[]\n    entity_type \"customer_order\" \u2192 order_ids[]\n    entity_type \"order_number\" \u2192 order_ids[]\n    entity_type \"customer\"  \u2192 customer_ids[]\n    entity_type \"transporter\"  \u2192 transporter_ids[]\n    (list every type your tool accepts)\n- When entities of MULTIPLE types are present, you MUST populate ALL corresponding parameters in the SAME tool call. Passing only the most common type is WRONG.\n- Group all UUIDs of one entity_type into that type's array.\n- Before calling the tool, verify the total count of UUIDs you are passing equals the number of entities provided. If they differ, you have dropped some \u2014 add the missing ones.\n- If multiple entity UUIDs apply to the same parameter, pass them as an array in one MCP call instead of making repeated calls.\n- If optional MCP parameters are not available, omit them and still call the tool with the minimum valid arguments.\n- If a truly required argument is missing and cannot be derived from this turn\u2019s provided inputs, ask for clarification by returning a JSON response with `has_result: false`.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nOUTPUT BEHAVIOR\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nAfter the MCP tool returns:\n1. Format the tool result.\n2. Return exactly one JSON object.\n3. Do not wrap the JSON in markdown.\n4. Do not add explanations outside the JSON.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nANSWERS ARRAY (STRICT)\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nReturn EVERY result, never a sample. The `answers` array must account for every\nrecord the tool returned \u2014 including records nested inside other records.\n\n- One answer per RECORD. If a record contains a nested list, the nested items ARE the records:\n  emit ONE answer per nested item, repeating the parent's identifying fields on each. Never show only the first nested item.\n- NEVER merge multiple records into one `description` (one description = one item).\n- NEVER drop, sample, summarize, or cap records. Return all of them.\n- Do NOT pre-number items inside `description`.\n\nCOUNT CHECK before returning: count the total records, expanding every nested list.\nThe length of `answers` MUST equal that total. If your count is short, you dropped\nrecords; add them.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nATTACHMENTS (STRICT)\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n- Extract ALL attachment/file objects from the MCP tool response across ALL returned records.\n- `attachments` MUST contain ONE element per source attachment object.\n- Never merge, summarize, or drop attachments.\n- Preserve source order.\n- Only deduplicate when the exact same `file_path` appears more than once.\n- Do not mention attachment URLs in `answers` or `response_intro`.\n- If attachments exist, set `response_intro` to exactly:\n  `I have attached the file(s) below.`\n- If no attachments exist, return `\"attachments\": []`.\n\nEach attachment object MUST map directly from MCP tool data:\n- `url` <- `file_path`\n- `filename` <- `stored_filename`\n- `mimeType` <- `mime_type`\n- `attachmentType` <- `attachment_type->description`\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nIDENTIFIERS \u2014 NEVER EXPOSE (STRICT)\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nUUIDs and internal record IDs are SYSTEM-INTERNAL. They MUST NEVER appear in\n`description`, `response_intro`, `action_links.label`, or any user-visible field.\n\n- A UUID looks like: 8-4-4-4-12 hex (e.g. 09348eda-9d24-4473-ab81-c9ee4f1ef5a5).\n  NEVER write one into any text field, in any position, under any label.\n- Display only human-readable values: product CODE (e.g. SRTSCBD333-UF), product\n  name, promotion name, order number, dates, prices.\n- If the MCP record's only identifier for a field is a UUID and there is NO\n  human-readable equivalent, OMIT that field entirely \u2014 do not print the UUID,\n  do not print an empty label.\n- Do NOT echo any UUID from the input `entities` into the output. Those are\n  lookup keys, not display values.\n- This applies even if a UUID appears inside a file path or URL: never surface it\n  in description text.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nFIELD RULES\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n- `response_intro`: short opening line; if attachments exist, must be exactly `I have attached the file(s) below.`\n- `answers[].description`: multi-line string using `\\n` between fields; format labels in bold, for example `*Product Code:* 123\\n*Link:* https://...`\n- Do NOT include discontinued and expired status in `description`.\n- Do NOT include portal links in `description`.\n- `answers[].is_discontinued`: true if the record OR ANY nested item within it is\n  discontinued. The flag may be nested so check the nested object not only the top-level record.\n- `answers[].is_expired`: same rule \u2014 true if the record or any nested item is expired.\n- `last_updated_at`: the latest `updated_at` datetime found in the MCP tool data.\n- `has_result`: true only if MCP returned useful result records relevant to the user goal; otherwise false.\n- `escalate_team`: populate only if explicitly justified by MCP result or request handling rules; otherwise empty string.\n- `escalated_agent`: populate only if explicitly justified by MCP result or request handling rules; otherwise empty string.\n- `action_links`: include only links explicitly returned by the MCP tool or explicitly defined by the request handling rule. Never invent URLs.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nNO-RESULT BEHAVIOR\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nIf the MCP tool returns no useful result:\n- return `has_result: false`\n- return `answers: []`\n- return `attachments: []`\n- return the safest valid values for the other fields\n- do not fabricate fallback business data\n\nIf a required field is truly missing before any valid MCP call can be made:\n- return `has_result: false`\n- explain the missing required input briefly in `response_intro`\n- do not invent parameters\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nOUTPUT SCHEMA\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nReturn exactly one JSON object with this structure:\n\n{\n  \"response_intro\": \"short opening line\",\n  \"answers\": [\n    {\n      \"description\": \"A multi-line string detailing exactly one item.\",\n      \"is_discontinued\": false\n      \"is_expired\": false\n    }\n  ],\n  \"escalate_team\": \"purchasing|marketing_product|marketing_promotion|warehouse|marketing_form|customer_service|\",\n  \"escalated_agent\": \"general_enquiries|order_enquiries|incoming_stock_enquiries|marketing_form|\",\n  \"action_links\": [\n    {\n      \"label\": \"Complaint Submission Portal\",\n      \"url\": \"https://...\",\n      \"type\": \"portal_link\"\n    }\n  ],\n  \"attachments\": [\n    {\n      \"url\": \"file path from MCP result\",\n      \"filename\": \"stored filename from MCP result\",\n      \"mimeType\": \"mime type from MCP result\"\n      \"attachmentType\": \"attachment type description from MCP result\"\n    }\n  ],\n  \"last_updated_at\": \"latest updated_at datetime in MCP tool data\",\n  \"has_result\": true,\n}"
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.agent",
+   "typeVersion": 3.1,
+   "position": [
+    -32,
+    80
+   ],
+   "id": "4a9d9137-eeee-4415-88e4-9ca263dc6292",
+   "name": "AI Agent",
+   "retryOnFail": true,
+   "waitBetweenTries": 5000,
+   "maxTries": 3
+  },
+  {
+   "parameters": {
+    "endpointUrl": "http://72.62.195.20:8765/mcp",
+    "include": "selected",
+    "includeTools": "={{ $('When Executed by Another Workflow').first().json.tool.trim().split() }}",
+    "options": {}
+   },
+   "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+   "typeVersion": 1.2,
+   "position": [
+    112,
+    304
+   ],
+   "id": "7b7839e7-4c63-4c7d-91a9-b4f0cca3370c",
+   "name": "MCP Client"
+  },
+  {
+   "parameters": {
+    "model": {
+     "__rl": true,
+     "value": "gpt-5.4-mini",
+     "mode": "list",
+     "cachedResultName": "gpt-5.4-mini"
+    },
+    "responsesApiEnabled": false,
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+   "typeVersion": 1.3,
+   "position": [
+    -32,
+    304
+   ],
+   "id": "21f3c440-6211-4263-bbb8-221f5aa5a6f8",
+   "name": "OpenAI Chat Model",
+   "retryOnFail": false,
+   "credentials": {
+    "openAiApi": {
+     "id": "o130We0PEJ77Z1lH",
+     "name": "sorento-openai"
+    }
+   }
+  },
+  {
+   "parameters": {
+    "mode": "runOnceForEachItem",
+    "jsCode": "// =============================================================================\n  // n8n Code node: output_exchange\n  // Mode: Run Once for All Items\n  // Parses AI Agent JSON output, sanitizes it, and stitches a single response\n  // string for the messaging channel.\n  // =============================================================================\nfunction cleanDescription(text) {\n    const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';\n    const ID_LABEL_LINE = /^\\s*\\*+\\s*[A-Za-z ]*\\bid\\b\\s*:\\s*\\*+\\s*\\S.*$/i;\n\n    return String(text || '')\n      .replace(/\\n?\\*?(?:Is )?Discontinued:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n?\\*?(?:Is )?Expired:\\*?\\s*(true|false)\\s*/gi, '')\n      .split('\\n')\n      .filter(line =>\n        !ID_LABEL_LINE.test(line) &&\n        !new RegExp(UUID_RE, 'i').test(line)\n      )\n      .join('\\n')\n      .replace(new RegExp(UUID_RE, 'gi'), '')\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .trim(); \n  }\n  \n  let output;\n\n  // 1. Parse the JSON safely\n  if ($json.output && typeof $json.output === 'object') {\n    output = $json.output;\n  } else {  \n    let raw = String($json.output || '');\n\n    // Strip markdown code fences if present.\n    raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n      match.replace(/```json?|```/g, '')\n    );\n\n    const idx = raw.indexOf('{');\n    if (idx === -1) { \n      output = { response: raw };\n      output.quick_reply = $json.quick_reply;\n    } else {\n      const startSlice = raw.slice(idx);\n      const last = startSlice.lastIndexOf('}');\n      let cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n\n      let prev;\n      do {\n        prev = cleanSlice;\n        cleanSlice = cleanSlice.replace(/\"\\s*\\+\\s*\"/g, '');\n      } while (cleanSlice !== prev);\n\n      try {\n        output = JSON.parse(cleanSlice);\n      } catch (e) {\n        output = { response: cleanSlice };\n      }\n    }\n  }\n\n  // \u2500\u2500 De-dupe identical answers (same description + same discontinued & expired flag) \u2500\u2500\n  if (output && Array.isArray(output.answers)) {\n    const seen = new Set();\n    output.answers = output.answers.filter(ans => {\n      const sig = `${String(ans.description || '').trim()}||${ans.is_discontinued === true || ans.is_discontinued === 'true'}||${ans.is_expired === true || ans.is_expired === 'true'}`;\n      if (seen.has(sig)) return false;\n      seen.add(sig);\n      return true;\n    });\n  }\n\n  // Helper: remove discontinued & expired line from description\n  function cleanDescription(text) {\n    return String(text || '')\n      .replace(/\\n?\\*?(?:Is )?Discontinued:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n?\\*?(?:Is )?Expired:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .trim();\n  }\n\n  // Helper: format timestamp to dd/MM/yyyy HH:mm:ss\n  function formatTimestamp(isoString) {\n    if (!isoString) return null;\n    const date = new Date(isoString);\n    const day = String(date.getDate()).padStart(2, '0');\n    const month = String(date.getMonth() + 1).padStart(2, '0');\n    const year = date.getFullYear();\n    const hours = String(date.getHours()).padStart(2, '0');\n    const minutes = String(date.getMinutes()).padStart(2, '0');\n    const seconds = String(date.getSeconds()).padStart(2, '0');\n    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;\n  }\n\n  // Optional: clean answers in the structured output itself\n  if (output && Array.isArray(output.answers)) {\n    output.answers = output.answers.map(ans => ({\n      ...ans,\n      description: cleanDescription(ans.description),\n    }));\n  }\n\n  // 2. Stitch the new structured components into a single 'response' string\n  if (output && output.response_intro) {\n    let finalMessage = output.response_intro.trim() + '\\n\\n';\n\n    if (output.query_used) {\n      finalMessage += `_Query: ${String(output.query_used).trim()}_\\n\\n`;\n    }\n  \n    if (Array.isArray(output.action_links) && output.action_links.length > 0) {\n      output.action_links.forEach((link, index) => {\n        finalMessage += `${index + 1}. *${link.label || 'Link'}:* ${link.url}\\n`;\n      });   \n      finalMessage += '\\n';\n    }\n  \n    if (Array.isArray(output.answers) && output.answers.length > 0) {\n        output.answers.forEach((ans, index) => {\n        let desc = cleanDescription(ans.description);\n        let extra = '';\n    \n        if (ans.product) {\n          extra += `\\n*Product:* ${ans.product}`;\n        }\n    \n        if (ans.stock_qty !== undefined && ans.stock_qty !== null && ans.stock_qty !== '') {\n          extra += `\\n*Quantity:* ${ans.stock_qty}`;\n        }\n    \n        let line = `${index + 1}. ${desc}${extra}`;\n    \n        if (ans.is_discontinued === true || ans.is_discontinued === 'true') {\n          line += '  \u26a0\ufe0f  *(PRODUCT DISCONTINUED)*';\n        }\n          \n        if (ans.is_expired === true || ans.is_expired === 'true') {\n          line += '  \u26a0\ufe0f  *(PROMO EXPIRED)*';\n        }\n    \n        finalMessage += line + '\\n';\n      });\n    \n      finalMessage += '\\n';\n    }\n\n    if (output.suggested_next_action) {\n      finalMessage += output.suggested_next_action.trim() + '\\n\\n';\n    }\n\n    const timestamp = output?.last_updated_at;\n    if (timestamp) {\n      const formatted = formatTimestamp(timestamp);\n      if (formatted) {\n        finalMessage += `_Data last updated: ${formatted}_`;\n      }\n    }\n\n    output.response = cleanDescription(finalMessage.trim());\n  }\n\n// in output_exchange, after parsing \u2014 repair agent-mangled attachment URLs.\n// The agent corrupts the FILENAME segment (spaces\u2192underscores) but gets the base\n// path right. Keep the base from its url, swap the last segment for the real filename.\nif (output && Array.isArray(output.attachments)) {\n  output.attachments = output.attachments.map(a => {\n    if (a.url && a.filename) {\n      const lastSlash = a.url.lastIndexOf('/');\n      if (lastSlash !== -1) {\n        const base = a.url.slice(0, lastSlash + 1);   // keep whatever folder it used\n        return { ...a, url: base + a.filename };       // trustworthy filename, spaces intact\n      }\n    }\n    return a;\n  });\n}\n\n  return output;"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    320,
+    80
+   ],
+   "id": "1970e24e-334c-4b7c-a987-d002f766b2f5",
+   "name": "output_exchange"
+  },
+  {
+   "parameters": {
+    "jsCode": "// =============================================================================\n// n8n Code node: build_mcp_ids\n// Input is the gate's compatible_entities: a flat, already-resolved list of\n// { uuid, entity_type, code }. No resolver-shape handling needed.\n// =============================================================================\nconst TYPE_TO_PARAM = {\n  product:          'product_ids',\n  promotion:        'promotion_ids',\n  order:            'order_ids',\n  customer_order:   'order_ids',\n  order_number:     'order_ids',\n  customer:         'customer_ids',\n  transporter:      'transporter_ids',\n  form:             'form_ids',\n  shipment:         'shipment_ids',\n  inbound_shipment: 'shipment_ids',\n  attachment_type:  'attachment_type_ids',\n  attachment: 'attachment_ids',\n  certificate: 'certificate_ids'\n};\nconst UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\n\nconst trig = $('When Executed by Another Workflow').first().json || {};\nconst semantic_input = trig.semantic_input;\n\n// entities come straight from the gate \u2014 already resolved & deduped\nconst entities = trig.entities\n\nconst params = {};\nconst seenUuids = new Set();\nconst unmappedTypes = [];\nconst skipped = [];\nconst add = (param, uuid) => (params[param] || (params[param] = new Set())).add(uuid);\n\nfor (const e of entities) {\n  const type = e && e.entity_type;\n  const uuid = e && e.uuid;\n  if (!uuid || !UUID_RE.test(String(uuid))) { skipped.push({ code: e && e.code, reason: 'missing_or_bad_uuid' }); continue; }\n  if (seenUuids.has(uuid)) continue;\n  const param = TYPE_TO_PARAM[type];\n  if (!param) { unmappedTypes.push({ entity_type: type, uuid }); continue; }\n  seenUuids.add(uuid);\n  add(param, uuid);\n}\n\nconst out = {};\nfor (const [param, set] of Object.entries(params)) out[param] = [...set];\n\nout._diagnostics = {\n  entities_in: entities.length,\n  total_uuids_passed: Object.values(out).reduce((n, a) => n + (Array.isArray(a) ? a.length : 0), 0),\n  skipped,\n  unmapped_types: unmappedTypes,\n};\n\n// ---- trailing fields (unchanged) ----\nout.view = 'render';\nout.date_mode = semantic_input?.date_mode;\n\nconst DATE_PARAMS = {\n  crm_order_management_orders_list:            ['actual_delivery_date_from', 'actual_delivery_date_to'],\n  crm_order_management_orders_by_product_list: ['actual_delivery_date_from', 'actual_delivery_date_to'],\n  crm_incoming_stock_list:                     ['eta_from', 'eta_to'],\n  crm_incoming_stock_by_product:               ['eta_from', 'eta_to'],\n  crm_incoming_stock_shipments:                ['eta_from', 'eta_to'],\n  crm_marketing_promotions_list:               ['period_from', 'period_to'],\n  crm_resource_attachments_list:               ['uploaded_at_from', 'uploaded_at_to'],\n  crm_resource_attachments_catalogue:          ['uploaded_at_from', 'uploaded_at_to'],\n  crm_sla_conversation_event_logs_list:        ['date_from', 'date_to'],\n};\nconst toolName = trig.tool ? String(trig.tool).trim() : '';\nconst start = (semantic_input && semantic_input.date_filter_start) || trig.date_filter_start;\nconst end   = (semantic_input && semantic_input.date_filter_end)   || trig.date_filter_end;\nconst dp = DATE_PARAMS[toolName];\nif (dp) {\n  if (start) out[dp[0]] = start;\n  if (end)   out[dp[1]] = end;\n}\n\nout.contact_id = semantic_input?.contact_id;\nout.space_id = semantic_input?.space_id;\nout.access_levels = semantic_input?.access_levels;\nout.is_active = semantic_input?.is_active;\n\n// order_status filter (order tools only): \"outstanding\" | \"delivered\"; omit when null (all).\nconst ORDER_TOOLS = new Set(['crm_order_management_orders_list', 'crm_order_management_orders_by_product_list']);\nif (ORDER_TOOLS.has(toolName) && (semantic_input?.order_status === 'outstanding' || semantic_input?.order_status === 'delivered')) {\n  out.order_status = semantic_input.order_status;\n}\n\nreturn out;"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    -160,
+    -112
+   ],
+   "id": "35ee95d6-5e73-4c36-9bbc-c09ecdf12561",
+   "name": "entity-ids-transformer"
+  },
+  {
+   "parameters": {
+    "endpointUrl": "http://72.62.195.20:8765/mcp",
+    "tool": {
+     "__rl": true,
+     "value": "={{ $('When Executed by Another Workflow').first().json.tool.trim() }}",
+     "mode": "id"
+    },
+    "inputMode": "json",
+    "jsonInput": "={{ $json }}",
+    "options": {}
+   },
+   "type": "@n8n/n8n-nodes-langchain.mcpClient",
+   "typeVersion": 1,
+   "position": [
+    16,
+    -112
+   ],
+   "id": "7a263e19-4293-4393-afd4-70b250e42a47",
+   "name": "MCP Client1"
+  },
+  {
+   "parameters": {
+    "jsCode": "// output-structurer \u2014 generic renderer for the MCP render envelope (view=render)\n  // Also handles the raw portal-link shape {token, portal_url} (no view param).\n  function safe(s){ try { return JSON.parse(s); } catch (e) { return null; } }\n  function asObj(v){ return typeof v === 'string' ? safe(v) : (v && typeof v === 'object' ? v : null); }\n\n  function findPayload(j){\n    if (!j) return null;\n    if (Array.isArray(j.items) || j.portal_url || j.token) return j;\n    for (const k of ['result','response','toolResult','output','json','text']) {\n      const o = asObj(j[k]); if (o && (Array.isArray(o.items) || o.portal_url || o.token)) return o;\n    }\n    if (Array.isArray(j.content)) for (const c of j.content) {\n      const o = asObj(c && c.text); if (o && (Array.isArray(o.items) || o.portal_url || o.token)) return o;\n    }\n    return null;\n  }\n  function extractEnvelope(j){\n    const empty = { items: [], attachments: [], action_links: [], intro: 'No matching results found.',\n  has_result: false };\n    const p = findPayload(j);\n    if (!p) return empty;\n    if (Array.isArray(p.items)) return p;                 // render envelope\n    if (p.portal_url) {                                   // raw portal-link tool\n      return { items: [], attachments: [],\n        action_links: [{ label: 'Portal Link', url: p.portal_url, type: 'portal_link' }],\n        intro: 'Here is your portal link.', has_result: true };\n    }\n    return empty;\n  }\n  function fmtTs(iso){\n    if (!iso) return null;\n    const d = new Date(iso); if (isNaN(d.getTime())) return null;\n    const p = n => String(n).padStart(2,'0');\n    const date = `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;\n    const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();\n    if (h === 0 && m === 0 && s === 0) return date;              // midnight \u2192 date only\n    return `${date} ${p(h)}:${p(m)}:${p(s)}`;\n  }\n  const ISO_RE = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/;\n  function fmtValue(v){\n    if (v === null || v === undefined || v === '') return '\u2014';\n    if (typeof v === 'string')  return ISO_RE.test(v) ? (fmtTs(v) || v) : v;\n    if (typeof v === 'number')  return String(v);\n    if (typeof v === 'boolean') return v ? 'Yes' : 'No';\n    if (Array.isArray(v))       return v.map(fmtValue).join(', ');\n    if (typeof v === 'object'){\n      const parts = Object.values(v).filter(x => x !== null && x !== undefined && x !== '')\n        .map(x => (typeof x === 'object' ? fmtValue(x) : String(x)));\n      return parts.length ? parts.join(' \u2014 ') : '\u2014';\n    }\n    return String(v);\n  }\n\n  const e = extractEnvelope($('MCP Client1').first().json);\n  try {\n  const _si = $('When Executed by Another Workflow').first().json.semantic_input;\n  const _sio = (typeof _si === 'string' ? JSON.parse(_si) : _si);\n  const _os = _sio && _sio.order_status;\n  if (e && e.has_result && Array.isArray(e.items) && e.items.length && (_os === 'outstanding' || _os === 'delivered')) {\n    e.intro = _os === 'outstanding' ? 'Here are the outstanding orders I found.' : 'Here are the delivered orders I found.';\n  }\n} catch (err) {}\nlet msg = (e.intro || 'Here are the results.').trim() + '\\n\\n';\n\n  (e.action_links || []).forEach((l, i) => { msg += `${i+1}. *${l.label || 'Link'}:* ${l.url}\\n`; });\n  if ((e.action_links || []).length) msg += '\\n';\n\n  (e.items || []).forEach((it, i) => {\n    const fieldLines = (it.fields || []).map(f => `*${f.label}:* ${fmtValue(f.value)}`).join('\\n');\n    let line = `${i+1}. ${fieldLines}`;\n    if (it.flags && it.flags.discontinued) line += '\\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*';\n    if (it.flags && it.flags.expired)      line += '\\n\u26a0\ufe0f  *(EXPIRED)*';\n    if (it.flags && it.flags.unallocated)            line += '\\n\ud83d\udea9  *(PENDING ALLOCATION)*';\n    else if (it.flags && it.flags.partially_allocated) line += '\\n\ud83d\udea9  *(PARTIAL ALLOCATION)*';\n    msg += line + '\\n\\n';\n  });\n\n  const ts = fmtTs(e.last_updated_at);\n  if (ts) msg += `_Data last updated: ${ts}_`;\n\n  return [{ json: {\n    response: msg.trim(),\n    response_intro: e.intro,\n    answers: e.items,\n    attachments: e.attachments || [],\n    action_links: e.action_links || [],\n    last_updated_at: e.last_updated_at || null,\n    has_result: !!e.has_result,\n    alternatives: Array.isArray(e.alternatives) ? e.alternatives : [],\n    relaxed_axis: e.relaxed_axis ?? null,\n  } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    288,
+    -112
+   ],
+   "id": "c50716ea-e1e5-4366-bdd7-2d3c1e805b27",
+   "name": "output-structurer"
+  }
+ ],
+ "connections": {
+  "MCP Client": {
+   "ai_tool": [
+    [
+     {
+      "node": "AI Agent",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "OpenAI Chat Model": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "AI Agent",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "When Executed by Another Workflow": {
+   "main": [
+    [
+     {
+      "node": "entity-ids-transformer",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "AI Agent": {
+   "main": [
+    [
+     {
+      "node": "output_exchange",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    []
+   ]
+  },
+  "entity-ids-transformer": {
+   "main": [
+    [
+     {
+      "node": "MCP Client1",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "MCP Client1": {
+   "main": [
+    [
+     {
+      "node": "output-structurer",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "availableInMCP": true,
+  "callerPolicy": "workflowsFromSameOwner",
+  "binaryMode": "separate"
+ },
+ "staticData": null,
+ "meta": {
+  "aiBuilderAssisted": true,
+  "builderVariant": "mcp"
+ },
+ "nodeGroups": [],
+ "pinData": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "tool": "crm_order_management_orders_list ",
+     "contact_id": "437264483 ",
+     "user_prompt": "message_type: business_query  \nintent_hint: check_order  \ndomain_hint: order  \nuser_goal: Check the order records for HANLIM and SRTSH1040  \nentities: [{\"uuid\":\"3c15f4e4-be46-4fd7-9de8-3430a9b1217a\",\"entity_type\":\"customer\",\"code\":\"HANLIM TRADING SDN BHD\"},{\"uuid\":\"2d0cd958-9f5e-4eee-8b6e-ed31a94bee44\",\"entity_type\":\"customer\",\"code\":\"HANLIM TRADING SDN BHD (CERAMIC & ELLECI)\"},{\"uuid\":\"2a4575e0-836b-4a5d-8566-73223465020d\",\"entity_type\":\"customer\",\"code\":\"HANLIM TRADING SDN BHD [A/C IV]\"},{\"uuid\":\"c2f38bdf-767a-4b04-b92d-1c0d56cfd4d3\",\"entity_type\":\"customer\",\"code\":\"HANLIM TRADING SDN BHD [A/C I]\"},{\"uuid\":\"6b52807a-537b-437d-9f55-12f7fda29df8\",\"entity_type\":\"customer\",\"code\":\"HANLIM TRADING SDN BHD [A/C III]\"},{\"uuid\":\"cde2c67e-6a74-4de6-a45d-73edf0b06404\",\"entity_type\":\"product\",\"code\":\"SRTSH1040\"},{\"uuid\":\"71b19ebf-7468-4370-819d-2f452c6c93c9\",\"entity_type\":\"product\",\"code\":\"SRTSH1040CP\"},{\"uuid\":\"ad96bee2-65ed-4734-9cd6-afd45e2dfc3c\",\"entity_type\":\"product\",\"code\":\"SRTSH1040-ECO\"},{\"uuid\":\"41f2c6c4-7323-498a-b3c4-6ea11eb0543a\",\"entity_type\":\"product\",\"code\":\"SRTSH1040-T\"},{\"uuid\":\"b295fdc9-6a77-42eb-9e9a-958cbf02714b\",\"entity_type\":\"product\",\"code\":\"SRTSH1040-NL\"}] \naccess level: [\"Sorento Dealer\"] \ncontact_id: 437264483 \nspace_id: 364817\ndate_mode:  \ndate_filter_start:   \ndate_filter_end:   \nis_active:   ",
+     "entities": [
+      {
+       "uuid": "3c15f4e4-be46-4fd7-9de8-3430a9b1217a",
+       "entity_type": "customer",
+       "code": "HANLIM TRADING SDN BHD"
+      },
+      {
+       "uuid": "2d0cd958-9f5e-4eee-8b6e-ed31a94bee44",
+       "entity_type": "customer",
+       "code": "HANLIM TRADING SDN BHD (CERAMIC & ELLECI)"
+      },
+      {
+       "uuid": "2a4575e0-836b-4a5d-8566-73223465020d",
+       "entity_type": "customer",
+       "code": "HANLIM TRADING SDN BHD [A/C IV]"
+      },
+      {
+       "uuid": "c2f38bdf-767a-4b04-b92d-1c0d56cfd4d3",
+       "entity_type": "customer",
+       "code": "HANLIM TRADING SDN BHD [A/C I]"
+      },
+      {
+       "uuid": "6b52807a-537b-437d-9f55-12f7fda29df8",
+       "entity_type": "customer",
+       "code": "HANLIM TRADING SDN BHD [A/C III]"
+      },
+      {
+       "uuid": "cde2c67e-6a74-4de6-a45d-73edf0b06404",
+       "entity_type": "product",
+       "code": "SRTSH1040"
+      },
+      {
+       "uuid": "71b19ebf-7468-4370-819d-2f452c6c93c9",
+       "entity_type": "product",
+       "code": "SRTSH1040CP"
+      },
+      {
+       "uuid": "ad96bee2-65ed-4734-9cd6-afd45e2dfc3c",
+       "entity_type": "product",
+       "code": "SRTSH1040-ECO"
+      },
+      {
+       "uuid": "41f2c6c4-7323-498a-b3c4-6ea11eb0543a",
+       "entity_type": "product",
+       "code": "SRTSH1040-T"
+      },
+      {
+       "uuid": "b295fdc9-6a77-42eb-9e9a-958cbf02714b",
+       "entity_type": "product",
+       "code": "SRTSH1040-NL"
+      }
+     ],
+     "semantic_input": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "Check the order records for HANLIM and SRTSH1040",
+      "access_levels": [
+       "Sorento Dealer"
+      ],
+      "contact_id": "437264483",
+      "space_id": "364817",
+      "date_mode": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "is_active": null,
+      "requested_attributes": []
+     }
+    },
+    "pairedItem": {
+     "item": 0
+    }
+   }
+  ]
+ },
+ "versionId": "61b65e5f-2974-42cc-988b-c12f01897dc5",
+ "activeVersionId": "61b65e5f-2974-42cc-988b-c12f01897dc5",
+ "versionCounter": 115,
+ "triggerCount": 0,
+ "sourceWorkflowId": null,
+ "shared": [
+  {
+   "updatedAt": "2026-05-21T10:56:33.247Z",
+   "createdAt": "2026-05-21T10:56:33.247Z",
+   "role": "workflow:owner",
+   "workflowId": "Fss5aAaXthJSWpZCgKiKR",
+   "projectId": "0HJOI5FmkQeIVfH8",
+   "project": {
+    "updatedAt": "2026-02-03T13:27:34.210Z",
+    "createdAt": "2026-02-03T13:26:47.249Z",
+    "id": "0HJOI5FmkQeIVfH8",
+    "name": "Teh Jayson <jayson@foundryx.my>",
+    "type": "personal",
+    "icon": null,
+    "description": null,
+    "customTelemetryTags": [],
+    "creatorId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+   }
+  }
+ ],
+ "tags": [],
+ "activeVersion": {
+  "updatedAt": "2026-08-06T04:18:16.898Z",
+  "createdAt": "2026-08-06T04:18:15.453Z",
+  "versionId": "61b65e5f-2974-42cc-988b-c12f01897dc5",
+  "workflowId": "Fss5aAaXthJSWpZCgKiKR",
+  "nodes": [
+   {
+    "parameters": {
+     "workflowInputs": {
+      "values": [
+       {
+        "name": "tool"
+       },
+       {
+        "name": "contact_id",
+        "type": "any"
+       },
+       {
+        "name": "user_prompt"
+       },
+       {
+        "name": "entities",
+        "type": "array"
+       },
+       {
+        "name": "semantic_input",
+        "type": "object"
+       }
+      ]
+     }
+    },
+    "type": "n8n-nodes-base.executeWorkflowTrigger",
+    "typeVersion": 1.1,
+    "position": [
+     -400,
+     -112
+    ],
+    "id": "843d5c81-d777-4075-bbb5-acf3d8988578",
+    "name": "When Executed by Another Workflow"
+   },
+   {
+    "parameters": {
+     "promptType": "define",
+     "text": "={{ $('When Executed by Another Workflow').first().json.user_prompt }}",
+     "hasOutputParser": true,
+     "options": {
+      "systemMessage": "=You are the Sorento MCP Response Agent.\n\nYour only job is to:\n1. Read the user prompt.\n2. Call the MCP tool to get live Sorento data or perform the requested live Sorento action.\n3. Return exactly one JSON object in the required schema.\n\nYou have access to:\n- MCP tool (live business data and actions)\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nOPERATING SCOPE\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nUpstream systems already pass all resolved context needed for this turn:\n- message_type\n- intent_hint\n- user_goal\n- entities\n- access_levels\n- contact_id\n- space_id\n- date_mode\n- date_filter_start\n- date_filter_end\n- is_active\n\nUse only the inputs provided in THIS turn and the MCP tool results from THIS turn.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCURRENT DATE\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nCURRENT DATE: {{ $now.toUTC(8*60).format('cccc, dd MMMM yyyy') }}\n\nIf relative dates such as \"today\" or \"yesterday\" appear in the current turn input, convert them to absolute dates before calling the MCP tool.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nTOOL USAGE POLICY\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nFor any request involving live Sorento business data or business actions, you MUST call the MCP tool in this turn before producing the final JSON.\n\nNever answer from prior knowledge.\nNever invent IDs, statuses, URLs, timestamps, file paths, or record details.\nNever set `has_result` to false unless MCP tool was called in this turn and returned no useful result.\n\nDefault MCP parameter rules:\n- If entity UUIDs are provided in `entities`, pass them to the MCP tool using the correct parameter based on `entity_type`.\n- Map each entity to its MCP parameter by entity_type, and pass EVERY provided UUID. Never drop any entity, even if a type has only one or two:\n    entity_type \"product\"   \u2192 product_ids[]\n    entity_type \"promotion\" \u2192 promotion_ids[]\n    entity_type \"order\"     \u2192 order_ids[]\n    entity_type \"customer_order\" \u2192 order_ids[]\n    entity_type \"order_number\" \u2192 order_ids[]\n    entity_type \"customer\"  \u2192 customer_ids[]\n    entity_type \"transporter\"  \u2192 transporter_ids[]\n    (list every type your tool accepts)\n- When entities of MULTIPLE types are present, you MUST populate ALL corresponding parameters in the SAME tool call. Passing only the most common type is WRONG.\n- Group all UUIDs of one entity_type into that type's array.\n- Before calling the tool, verify the total count of UUIDs you are passing equals the number of entities provided. If they differ, you have dropped some \u2014 add the missing ones.\n- If multiple entity UUIDs apply to the same parameter, pass them as an array in one MCP call instead of making repeated calls.\n- If optional MCP parameters are not available, omit them and still call the tool with the minimum valid arguments.\n- If a truly required argument is missing and cannot be derived from this turn\u2019s provided inputs, ask for clarification by returning a JSON response with `has_result: false`.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nOUTPUT BEHAVIOR\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nAfter the MCP tool returns:\n1. Format the tool result.\n2. Return exactly one JSON object.\n3. Do not wrap the JSON in markdown.\n4. Do not add explanations outside the JSON.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nANSWERS ARRAY (STRICT)\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nReturn EVERY result, never a sample. The `answers` array must account for every\nrecord the tool returned \u2014 including records nested inside other records.\n\n- One answer per RECORD. If a record contains a nested list, the nested items ARE the records:\n  emit ONE answer per nested item, repeating the parent's identifying fields on each. Never show only the first nested item.\n- NEVER merge multiple records into one `description` (one description = one item).\n- NEVER drop, sample, summarize, or cap records. Return all of them.\n- Do NOT pre-number items inside `description`.\n\nCOUNT CHECK before returning: count the total records, expanding every nested list.\nThe length of `answers` MUST equal that total. If your count is short, you dropped\nrecords; add them.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nATTACHMENTS (STRICT)\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n- Extract ALL attachment/file objects from the MCP tool response across ALL returned records.\n- `attachments` MUST contain ONE element per source attachment object.\n- Never merge, summarize, or drop attachments.\n- Preserve source order.\n- Only deduplicate when the exact same `file_path` appears more than once.\n- Do not mention attachment URLs in `answers` or `response_intro`.\n- If attachments exist, set `response_intro` to exactly:\n  `I have attached the file(s) below.`\n- If no attachments exist, return `\"attachments\": []`.\n\nEach attachment object MUST map directly from MCP tool data:\n- `url` <- `file_path`\n- `filename` <- `stored_filename`\n- `mimeType` <- `mime_type`\n- `attachmentType` <- `attachment_type->description`\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nIDENTIFIERS \u2014 NEVER EXPOSE (STRICT)\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nUUIDs and internal record IDs are SYSTEM-INTERNAL. They MUST NEVER appear in\n`description`, `response_intro`, `action_links.label`, or any user-visible field.\n\n- A UUID looks like: 8-4-4-4-12 hex (e.g. 09348eda-9d24-4473-ab81-c9ee4f1ef5a5).\n  NEVER write one into any text field, in any position, under any label.\n- Display only human-readable values: product CODE (e.g. SRTSCBD333-UF), product\n  name, promotion name, order number, dates, prices.\n- If the MCP record's only identifier for a field is a UUID and there is NO\n  human-readable equivalent, OMIT that field entirely \u2014 do not print the UUID,\n  do not print an empty label.\n- Do NOT echo any UUID from the input `entities` into the output. Those are\n  lookup keys, not display values.\n- This applies even if a UUID appears inside a file path or URL: never surface it\n  in description text.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nFIELD RULES\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n- `response_intro`: short opening line; if attachments exist, must be exactly `I have attached the file(s) below.`\n- `answers[].description`: multi-line string using `\\n` between fields; format labels in bold, for example `*Product Code:* 123\\n*Link:* https://...`\n- Do NOT include discontinued and expired status in `description`.\n- Do NOT include portal links in `description`.\n- `answers[].is_discontinued`: true if the record OR ANY nested item within it is\n  discontinued. The flag may be nested so check the nested object not only the top-level record.\n- `answers[].is_expired`: same rule \u2014 true if the record or any nested item is expired.\n- `last_updated_at`: the latest `updated_at` datetime found in the MCP tool data.\n- `has_result`: true only if MCP returned useful result records relevant to the user goal; otherwise false.\n- `escalate_team`: populate only if explicitly justified by MCP result or request handling rules; otherwise empty string.\n- `escalated_agent`: populate only if explicitly justified by MCP result or request handling rules; otherwise empty string.\n- `action_links`: include only links explicitly returned by the MCP tool or explicitly defined by the request handling rule. Never invent URLs.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nNO-RESULT BEHAVIOR\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nIf the MCP tool returns no useful result:\n- return `has_result: false`\n- return `answers: []`\n- return `attachments: []`\n- return the safest valid values for the other fields\n- do not fabricate fallback business data\n\nIf a required field is truly missing before any valid MCP call can be made:\n- return `has_result: false`\n- explain the missing required input briefly in `response_intro`\n- do not invent parameters\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nOUTPUT SCHEMA\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nReturn exactly one JSON object with this structure:\n\n{\n  \"response_intro\": \"short opening line\",\n  \"answers\": [\n    {\n      \"description\": \"A multi-line string detailing exactly one item.\",\n      \"is_discontinued\": false\n      \"is_expired\": false\n    }\n  ],\n  \"escalate_team\": \"purchasing|marketing_product|marketing_promotion|warehouse|marketing_form|customer_service|\",\n  \"escalated_agent\": \"general_enquiries|order_enquiries|incoming_stock_enquiries|marketing_form|\",\n  \"action_links\": [\n    {\n      \"label\": \"Complaint Submission Portal\",\n      \"url\": \"https://...\",\n      \"type\": \"portal_link\"\n    }\n  ],\n  \"attachments\": [\n    {\n      \"url\": \"file path from MCP result\",\n      \"filename\": \"stored filename from MCP result\",\n      \"mimeType\": \"mime type from MCP result\"\n      \"attachmentType\": \"attachment type description from MCP result\"\n    }\n  ],\n  \"last_updated_at\": \"latest updated_at datetime in MCP tool data\",\n  \"has_result\": true,\n}"
+     }
+    },
+    "type": "@n8n/n8n-nodes-langchain.agent",
+    "typeVersion": 3.1,
+    "position": [
+     -32,
+     80
+    ],
+    "id": "4a9d9137-eeee-4415-88e4-9ca263dc6292",
+    "name": "AI Agent",
+    "retryOnFail": true,
+    "waitBetweenTries": 5000,
+    "maxTries": 3
+   },
+   {
+    "parameters": {
+     "endpointUrl": "http://72.62.195.20:8765/mcp",
+     "include": "selected",
+     "includeTools": "={{ $('When Executed by Another Workflow').first().json.tool.trim().split() }}",
+     "options": {}
+    },
+    "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+    "typeVersion": 1.2,
+    "position": [
+     112,
+     304
+    ],
+    "id": "7b7839e7-4c63-4c7d-91a9-b4f0cca3370c",
+    "name": "MCP Client"
+   },
+   {
+    "parameters": {
+     "model": {
+      "__rl": true,
+      "value": "gpt-5.4-mini",
+      "mode": "list",
+      "cachedResultName": "gpt-5.4-mini"
+     },
+     "responsesApiEnabled": false,
+     "options": {
+      "timeout": 30000
+     }
+    },
+    "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+    "typeVersion": 1.3,
+    "position": [
+     -32,
+     304
+    ],
+    "id": "21f3c440-6211-4263-bbb8-221f5aa5a6f8",
+    "name": "OpenAI Chat Model",
+    "retryOnFail": false,
+    "credentials": {
+     "openAiApi": {
+      "id": "o130We0PEJ77Z1lH",
+      "name": "sorento-openai"
+     }
+    }
+   },
+   {
+    "parameters": {
+     "mode": "runOnceForEachItem",
+     "jsCode": "// =============================================================================\n  // n8n Code node: output_exchange\n  // Mode: Run Once for All Items\n  // Parses AI Agent JSON output, sanitizes it, and stitches a single response\n  // string for the messaging channel.\n  // =============================================================================\nfunction cleanDescription(text) {\n    const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';\n    const ID_LABEL_LINE = /^\\s*\\*+\\s*[A-Za-z ]*\\bid\\b\\s*:\\s*\\*+\\s*\\S.*$/i;\n\n    return String(text || '')\n      .replace(/\\n?\\*?(?:Is )?Discontinued:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n?\\*?(?:Is )?Expired:\\*?\\s*(true|false)\\s*/gi, '')\n      .split('\\n')\n      .filter(line =>\n        !ID_LABEL_LINE.test(line) &&\n        !new RegExp(UUID_RE, 'i').test(line)\n      )\n      .join('\\n')\n      .replace(new RegExp(UUID_RE, 'gi'), '')\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .trim(); \n  }\n  \n  let output;\n\n  // 1. Parse the JSON safely\n  if ($json.output && typeof $json.output === 'object') {\n    output = $json.output;\n  } else {  \n    let raw = String($json.output || '');\n\n    // Strip markdown code fences if present.\n    raw = raw.replace(/```[\\s\\S]*?```/g, match =>\n      match.replace(/```json?|```/g, '')\n    );\n\n    const idx = raw.indexOf('{');\n    if (idx === -1) { \n      output = { response: raw };\n      output.quick_reply = $json.quick_reply;\n    } else {\n      const startSlice = raw.slice(idx);\n      const last = startSlice.lastIndexOf('}');\n      let cleanSlice = last !== -1 ? startSlice.slice(0, last + 1) : startSlice;\n\n      let prev;\n      do {\n        prev = cleanSlice;\n        cleanSlice = cleanSlice.replace(/\"\\s*\\+\\s*\"/g, '');\n      } while (cleanSlice !== prev);\n\n      try {\n        output = JSON.parse(cleanSlice);\n      } catch (e) {\n        output = { response: cleanSlice };\n      }\n    }\n  }\n\n  // \u2500\u2500 De-dupe identical answers (same description + same discontinued & expired flag) \u2500\u2500\n  if (output && Array.isArray(output.answers)) {\n    const seen = new Set();\n    output.answers = output.answers.filter(ans => {\n      const sig = `${String(ans.description || '').trim()}||${ans.is_discontinued === true || ans.is_discontinued === 'true'}||${ans.is_expired === true || ans.is_expired === 'true'}`;\n      if (seen.has(sig)) return false;\n      seen.add(sig);\n      return true;\n    });\n  }\n\n  // Helper: remove discontinued & expired line from description\n  function cleanDescription(text) {\n    return String(text || '')\n      .replace(/\\n?\\*?(?:Is )?Discontinued:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n?\\*?(?:Is )?Expired:\\*?\\s*(true|false)\\s*/gi, '')\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .trim();\n  }\n\n  // Helper: format timestamp to dd/MM/yyyy HH:mm:ss\n  function formatTimestamp(isoString) {\n    if (!isoString) return null;\n    const date = new Date(isoString);\n    const day = String(date.getDate()).padStart(2, '0');\n    const month = String(date.getMonth() + 1).padStart(2, '0');\n    const year = date.getFullYear();\n    const hours = String(date.getHours()).padStart(2, '0');\n    const minutes = String(date.getMinutes()).padStart(2, '0');\n    const seconds = String(date.getSeconds()).padStart(2, '0');\n    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;\n  }\n\n  // Optional: clean answers in the structured output itself\n  if (output && Array.isArray(output.answers)) {\n    output.answers = output.answers.map(ans => ({\n      ...ans,\n      description: cleanDescription(ans.description),\n    }));\n  }\n\n  // 2. Stitch the new structured components into a single 'response' string\n  if (output && output.response_intro) {\n    let finalMessage = output.response_intro.trim() + '\\n\\n';\n\n    if (output.query_used) {\n      finalMessage += `_Query: ${String(output.query_used).trim()}_\\n\\n`;\n    }\n  \n    if (Array.isArray(output.action_links) && output.action_links.length > 0) {\n      output.action_links.forEach((link, index) => {\n        finalMessage += `${index + 1}. *${link.label || 'Link'}:* ${link.url}\\n`;\n      });   \n      finalMessage += '\\n';\n    }\n  \n    if (Array.isArray(output.answers) && output.answers.length > 0) {\n        output.answers.forEach((ans, index) => {\n        let desc = cleanDescription(ans.description);\n        let extra = '';\n    \n        if (ans.product) {\n          extra += `\\n*Product:* ${ans.product}`;\n        }\n    \n        if (ans.stock_qty !== undefined && ans.stock_qty !== null && ans.stock_qty !== '') {\n          extra += `\\n*Quantity:* ${ans.stock_qty}`;\n        }\n    \n        let line = `${index + 1}. ${desc}${extra}`;\n    \n        if (ans.is_discontinued === true || ans.is_discontinued === 'true') {\n          line += '  \u26a0\ufe0f  *(PRODUCT DISCONTINUED)*';\n        }\n          \n        if (ans.is_expired === true || ans.is_expired === 'true') {\n          line += '  \u26a0\ufe0f  *(PROMO EXPIRED)*';\n        }\n    \n        finalMessage += line + '\\n';\n      });\n    \n      finalMessage += '\\n';\n    }\n\n    if (output.suggested_next_action) {\n      finalMessage += output.suggested_next_action.trim() + '\\n\\n';\n    }\n\n    const timestamp = output?.last_updated_at;\n    if (timestamp) {\n      const formatted = formatTimestamp(timestamp);\n      if (formatted) {\n        finalMessage += `_Data last updated: ${formatted}_`;\n      }\n    }\n\n    output.response = cleanDescription(finalMessage.trim());\n  }\n\n// in output_exchange, after parsing \u2014 repair agent-mangled attachment URLs.\n// The agent corrupts the FILENAME segment (spaces\u2192underscores) but gets the base\n// path right. Keep the base from its url, swap the last segment for the real filename.\nif (output && Array.isArray(output.attachments)) {\n  output.attachments = output.attachments.map(a => {\n    if (a.url && a.filename) {\n      const lastSlash = a.url.lastIndexOf('/');\n      if (lastSlash !== -1) {\n        const base = a.url.slice(0, lastSlash + 1);   // keep whatever folder it used\n        return { ...a, url: base + a.filename };       // trustworthy filename, spaces intact\n      }\n    }\n    return a;\n  });\n}\n\n  return output;"
+    },
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+     320,
+     80
+    ],
+    "id": "1970e24e-334c-4b7c-a987-d002f766b2f5",
+    "name": "output_exchange"
+   },
+   {
+    "parameters": {
+     "jsCode": "// =============================================================================\n// n8n Code node: build_mcp_ids\n// Input is the gate's compatible_entities: a flat, already-resolved list of\n// { uuid, entity_type, code }. No resolver-shape handling needed.\n// =============================================================================\nconst TYPE_TO_PARAM = {\n  product:          'product_ids',\n  promotion:        'promotion_ids',\n  order:            'order_ids',\n  customer_order:   'order_ids',\n  order_number:     'order_ids',\n  customer:         'customer_ids',\n  transporter:      'transporter_ids',\n  form:             'form_ids',\n  shipment:         'shipment_ids',\n  inbound_shipment: 'shipment_ids',\n  attachment_type:  'attachment_type_ids',\n  attachment: 'attachment_ids',\n  certificate: 'certificate_ids'\n};\nconst UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\n\nconst trig = $('When Executed by Another Workflow').first().json || {};\nconst semantic_input = trig.semantic_input;\n\n// entities come straight from the gate \u2014 already resolved & deduped\nconst entities = trig.entities\n\nconst params = {};\nconst seenUuids = new Set();\nconst unmappedTypes = [];\nconst skipped = [];\nconst add = (param, uuid) => (params[param] || (params[param] = new Set())).add(uuid);\n\nfor (const e of entities) {\n  const type = e && e.entity_type;\n  const uuid = e && e.uuid;\n  if (!uuid || !UUID_RE.test(String(uuid))) { skipped.push({ code: e && e.code, reason: 'missing_or_bad_uuid' }); continue; }\n  if (seenUuids.has(uuid)) continue;\n  const param = TYPE_TO_PARAM[type];\n  if (!param) { unmappedTypes.push({ entity_type: type, uuid }); continue; }\n  seenUuids.add(uuid);\n  add(param, uuid);\n}\n\nconst out = {};\nfor (const [param, set] of Object.entries(params)) out[param] = [...set];\n\nout._diagnostics = {\n  entities_in: entities.length,\n  total_uuids_passed: Object.values(out).reduce((n, a) => n + (Array.isArray(a) ? a.length : 0), 0),\n  skipped,\n  unmapped_types: unmappedTypes,\n};\n\n// ---- trailing fields (unchanged) ----\nout.view = 'render';\nout.date_mode = semantic_input?.date_mode;\n\nconst DATE_PARAMS = {\n  crm_order_management_orders_list:            ['actual_delivery_date_from', 'actual_delivery_date_to'],\n  crm_order_management_orders_by_product_list: ['actual_delivery_date_from', 'actual_delivery_date_to'],\n  crm_incoming_stock_list:                     ['eta_from', 'eta_to'],\n  crm_incoming_stock_by_product:               ['eta_from', 'eta_to'],\n  crm_incoming_stock_shipments:                ['eta_from', 'eta_to'],\n  crm_marketing_promotions_list:               ['period_from', 'period_to'],\n  crm_resource_attachments_list:               ['uploaded_at_from', 'uploaded_at_to'],\n  crm_resource_attachments_catalogue:          ['uploaded_at_from', 'uploaded_at_to'],\n  crm_sla_conversation_event_logs_list:        ['date_from', 'date_to'],\n};\nconst toolName = trig.tool ? String(trig.tool).trim() : '';\nconst start = (semantic_input && semantic_input.date_filter_start) || trig.date_filter_start;\nconst end   = (semantic_input && semantic_input.date_filter_end)   || trig.date_filter_end;\nconst dp = DATE_PARAMS[toolName];\nif (dp) {\n  if (start) out[dp[0]] = start;\n  if (end)   out[dp[1]] = end;\n}\n\nout.contact_id = semantic_input?.contact_id;\nout.space_id = semantic_input?.space_id;\nout.access_levels = semantic_input?.access_levels;\nout.is_active = semantic_input?.is_active;\n\n// order_status filter (order tools only): \"outstanding\" | \"delivered\"; omit when null (all).\nconst ORDER_TOOLS = new Set(['crm_order_management_orders_list', 'crm_order_management_orders_by_product_list']);\nif (ORDER_TOOLS.has(toolName) && (semantic_input?.order_status === 'outstanding' || semantic_input?.order_status === 'delivered')) {\n  out.order_status = semantic_input.order_status;\n}\n\nreturn out;"
+    },
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+     -160,
+     -112
+    ],
+    "id": "35ee95d6-5e73-4c36-9bbc-c09ecdf12561",
+    "name": "entity-ids-transformer"
+   },
+   {
+    "parameters": {
+     "endpointUrl": "http://72.62.195.20:8765/mcp",
+     "tool": {
+      "__rl": true,
+      "value": "={{ $('When Executed by Another Workflow').first().json.tool.trim() }}",
+      "mode": "id"
+     },
+     "inputMode": "json",
+     "jsonInput": "={{ $json }}",
+     "options": {}
+    },
+    "type": "@n8n/n8n-nodes-langchain.mcpClient",
+    "typeVersion": 1,
+    "position": [
+     16,
+     -112
+    ],
+    "id": "7a263e19-4293-4393-afd4-70b250e42a47",
+    "name": "MCP Client1"
+   },
+   {
+    "parameters": {
+     "jsCode": "// output-structurer \u2014 generic renderer for the MCP render envelope (view=render)\n  // Also handles the raw portal-link shape {token, portal_url} (no view param).\n  function safe(s){ try { return JSON.parse(s); } catch (e) { return null; } }\n  function asObj(v){ return typeof v === 'string' ? safe(v) : (v && typeof v === 'object' ? v : null); }\n\n  function findPayload(j){\n    if (!j) return null;\n    if (Array.isArray(j.items) || j.portal_url || j.token) return j;\n    for (const k of ['result','response','toolResult','output','json','text']) {\n      const o = asObj(j[k]); if (o && (Array.isArray(o.items) || o.portal_url || o.token)) return o;\n    }\n    if (Array.isArray(j.content)) for (const c of j.content) {\n      const o = asObj(c && c.text); if (o && (Array.isArray(o.items) || o.portal_url || o.token)) return o;\n    }\n    return null;\n  }\n  function extractEnvelope(j){\n    const empty = { items: [], attachments: [], action_links: [], intro: 'No matching results found.',\n  has_result: false };\n    const p = findPayload(j);\n    if (!p) return empty;\n    if (Array.isArray(p.items)) return p;                 // render envelope\n    if (p.portal_url) {                                   // raw portal-link tool\n      return { items: [], attachments: [],\n        action_links: [{ label: 'Portal Link', url: p.portal_url, type: 'portal_link' }],\n        intro: 'Here is your portal link.', has_result: true };\n    }\n    return empty;\n  }\n  function fmtTs(iso){\n    if (!iso) return null;\n    const d = new Date(iso); if (isNaN(d.getTime())) return null;\n    const p = n => String(n).padStart(2,'0');\n    const date = `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;\n    const h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();\n    if (h === 0 && m === 0 && s === 0) return date;              // midnight \u2192 date only\n    return `${date} ${p(h)}:${p(m)}:${p(s)}`;\n  }\n  const ISO_RE = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/;\n  function fmtValue(v){\n    if (v === null || v === undefined || v === '') return '\u2014';\n    if (typeof v === 'string')  return ISO_RE.test(v) ? (fmtTs(v) || v) : v;\n    if (typeof v === 'number')  return String(v);\n    if (typeof v === 'boolean') return v ? 'Yes' : 'No';\n    if (Array.isArray(v))       return v.map(fmtValue).join(', ');\n    if (typeof v === 'object'){\n      const parts = Object.values(v).filter(x => x !== null && x !== undefined && x !== '')\n        .map(x => (typeof x === 'object' ? fmtValue(x) : String(x)));\n      return parts.length ? parts.join(' \u2014 ') : '\u2014';\n    }\n    return String(v);\n  }\n\n  const e = extractEnvelope($('MCP Client1').first().json);\n  try {\n  const _si = $('When Executed by Another Workflow').first().json.semantic_input;\n  const _sio = (typeof _si === 'string' ? JSON.parse(_si) : _si);\n  const _os = _sio && _sio.order_status;\n  if (e && e.has_result && Array.isArray(e.items) && e.items.length && (_os === 'outstanding' || _os === 'delivered')) {\n    e.intro = _os === 'outstanding' ? 'Here are the outstanding orders I found.' : 'Here are the delivered orders I found.';\n  }\n} catch (err) {}\nlet msg = (e.intro || 'Here are the results.').trim() + '\\n\\n';\n\n  (e.action_links || []).forEach((l, i) => { msg += `${i+1}. *${l.label || 'Link'}:* ${l.url}\\n`; });\n  if ((e.action_links || []).length) msg += '\\n';\n\n  (e.items || []).forEach((it, i) => {\n    const fieldLines = (it.fields || []).map(f => `*${f.label}:* ${fmtValue(f.value)}`).join('\\n');\n    let line = `${i+1}. ${fieldLines}`;\n    if (it.flags && it.flags.discontinued) line += '\\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*';\n    if (it.flags && it.flags.expired)      line += '\\n\u26a0\ufe0f  *(EXPIRED)*';\n    if (it.flags && it.flags.unallocated)            line += '\\n\ud83d\udea9  *(PENDING ALLOCATION)*';\n    else if (it.flags && it.flags.partially_allocated) line += '\\n\ud83d\udea9  *(PARTIAL ALLOCATION)*';\n    msg += line + '\\n\\n';\n  });\n\n  const ts = fmtTs(e.last_updated_at);\n  if (ts) msg += `_Data last updated: ${ts}_`;\n\n  return [{ json: {\n    response: msg.trim(),\n    response_intro: e.intro,\n    answers: e.items,\n    attachments: e.attachments || [],\n    action_links: e.action_links || [],\n    last_updated_at: e.last_updated_at || null,\n    has_result: !!e.has_result,\n    alternatives: Array.isArray(e.alternatives) ? e.alternatives : [],\n    relaxed_axis: e.relaxed_axis ?? null,\n  } }];"
+    },
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "position": [
+     288,
+     -112
+    ],
+    "id": "c50716ea-e1e5-4366-bdd7-2d3c1e805b27",
+    "name": "output-structurer"
+   }
+  ],
+  "connections": {
+   "MCP Client": {
+    "ai_tool": [
+     [
+      {
+       "node": "AI Agent",
+       "type": "ai_tool",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "OpenAI Chat Model": {
+    "ai_languageModel": [
+     [
+      {
+       "node": "AI Agent",
+       "type": "ai_languageModel",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "When Executed by Another Workflow": {
+    "main": [
+     [
+      {
+       "node": "entity-ids-transformer",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "AI Agent": {
+    "main": [
+     [
+      {
+       "node": "output_exchange",
+       "type": "main",
+       "index": 0
+      }
+     ],
+     []
+    ]
+   },
+   "entity-ids-transformer": {
+    "main": [
+     [
+      {
+       "node": "MCP Client1",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "MCP Client1": {
+    "main": [
+     [
+      {
+       "node": "output-structurer",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   }
+  },
+  "nodeGroups": [],
+  "authors": "Teh Jayson",
+  "name": "Version 61b65e5f",
+  "description": "",
+  "autosaved": true,
+  "workflowPublishHistory": [
+   {
+    "createdAt": "2026-08-06T04:18:16.895Z",
+    "id": 2611,
+    "workflowId": "Fss5aAaXthJSWpZCgKiKR",
+    "versionId": "61b65e5f-2974-42cc-988b-c12f01897dc5",
+    "event": "activated",
+    "userId": "255a2898-010b-4cba-85bb-7d5a87422e1e"
+   }
+  ]
+ }
+}

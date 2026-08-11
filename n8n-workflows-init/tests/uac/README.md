@@ -2,6 +2,15 @@
 
 `00-SAFETY-always-read.md` (§0) is mandatory for every case. Then open only the §-file for your change.
 
+> 🔴 **DO NOT RE-RUN `scripts/split-uac.py`. `../UAC.md` IS STALE.**
+> The script regenerates `tests/uac/*` **from** the monolith, and the monolith no longer contains
+> what these files hold. Measured 2026-08-08: `§MC-` appears **0×** in `UAC.md` vs 48× here,
+> `§CD-11` **0×** vs 15×, `§DP-19` **0×** vs 6×, `§CD-BLIND` **0×** vs 6×. Re-running it today would
+> **destroy the entire §MC family and the B2′ / dym rev-4..6 work.**
+> **The split files are now the source of truth**; the monolith is provenance for pre-split sections
+> only. Add new families by writing `tests/uac/<FAMILY>.md` directly and adding a row below.
+> Reconciling or retiring the monolith is filed in `plans/immortal-hint-class-plan.md` §10.
+
 | file | sections | lines | what it covers |
 |---|---|---|---|
 | `00-SAFETY-always-read.md` | §0 | 160 | **mandatory safety gate, every case** |
@@ -46,6 +55,11 @@
 | `DS.md` | §DS ×1 | 142 | Domain-switch-word cases |
 | `TL.md` | §TL ×16 | 296 | Structural gates |
 | `XA.md` | §XA ×14 | 292 | ⚠️ SCOPE NARROWED 2026-08-04 |
+| `DP.md` | §DP ×21 | 537 | dym-probe-before-offer; 4 renderers; §DP-19 rendered-text gate |
+| `MC.md` | §MC ×15 | — | multi-company resolution — company grouping on 6 renderers. 🔴 Gated on CRM A-0 (resolver raw-SQL isolation leak). Plan: `plans/multi-company-resolution-plan.md` |
+| `CD.md` | §CD ×12 | — | carried-certificate dump — B1 attachment-subject-gate (`deterministic`) + B2 certificate-axis-carry (`parser`). Plan: `plans/carried-certificate-dump-plan.md` |
+| `PP.md` | §PP-0…9 ×43 | — | **promotion picker** — require a `promo_scope` on the bare ask, drop the access-level prompt, numbered list + file on pick. §PP-0b is the RED (stale carried access level); §PP-7c is the vacuous-fixture gate; §PP-8 guards the shared `last_result_set`. Plan: `plans/promotion-picker-plan.md` |
+| `IH.md` | §IH ×16 + §IH-FP ×12 | — | **immortal-hint class** — C1 `immortal-hint-axis` (`parser`) + C2 `no-domain-name-hints` (`parser`) + C3 `multitoken-d1-annotate` (`deterministic`). Root cause is a CODE writer (`output_exchange` reference-positions `hint = domain_hint`), **not** the LLM. Plan: `plans/immortal-hint-class-plan.md` |
 
 ---
 

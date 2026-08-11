@@ -48,6 +48,29 @@ const fieldVal = (it, label) => {
   const f = ((it && it.fields) || []).find(x => String((x && x.label) || '').trim().toLowerCase() === label);
   return f ? f.value : null;
 };
+// KEY-FIRST lookup (S0). A CRM display LABEL is not a stable join key: `227c13d0f` renamed
+// "Estimated Arrival Date" -> "ETA" on crm_incoming_stock_list and silently killed the ETA sort
+// below, after which cross-domain incoming rows rendered in raw CRM order. `key` names the
+// semantic and does not move when the label is reworded.
+// CONTRACT (sorento_crm_mcp PR #109): `key` is OMITTED, never null, when a presenter has no
+// source key -> test PRESENCE, not `=== null`. Keyed result types today: incoming_stock (both
+// presenters) + stock. Everything else still emits {label, value}, hence the label fallback.
+const fieldByKey = (it, k) => {
+  const f = ((it && it.fields) || []).find(
+    x => x && Object.prototype.hasOwnProperty.call(x, 'key') && x.key === k);
+  return f ? f.value : null;
+};
+// key first, then each label in order. Labels are the CURRENT live vocabulary, so this fixes the
+// sort before #109 lands and keeps working after.
+const fieldPref = (it, k, ...labels) => {
+  const v = fieldByKey(it, k);
+  if (v !== null && v !== undefined) return v;
+  for (const l of labels) {
+    const lv = fieldVal(it, l);
+    if (lv !== null && lv !== undefined) return lv;
+  }
+  return null;
+};
 
 const byCode = new Map();
 for (const it of items) {
@@ -65,8 +88,16 @@ for (const m of (zs.missing || [])) {
   // Deterministic order. The CRM does NOT return a stable row order between calls (observed: the same
   // product came back in two different location orders), so sort rather than inherit the jitter:
   // stock -> biggest quantity first; incoming -> soonest ETA first.
-  const _qty = it => Number(fieldVal(it, 'quantity on hand') ?? NaN);
-  const _eta = it => String(fieldVal(it, 'estimated arrival date') ?? '');
+  // A PRESENT key is not a present number. `_stock` always renders Warehouse / System Location /
+  // Quantity On Hand so every stock row has the same shape, using the "—" placeholder when
+  // absent — and the key rides along on the placeholder. Number('—') is NaN, which is exactly
+  // what makes the branch test below fall through to ETA instead of pretending to sort. Do NOT
+  // "fix" that by coercing to 0 here.
+  const _qty = it => Number(fieldPref(it, 'quantity_on_hand', 'quantity on hand') ?? NaN);
+  // 'eta' precedes the old label: 'ETA' is what live emits TODAY for crm_incoming_stock_list.
+  const _eta = it => String(fieldPref(it, 'estimated_arrival_date', 'eta', 'estimated arrival date') ?? '');
+  // `|| 0` is deliberate: in a MIXED set a placeholder row sorts as 0 — last in descending
+  // order, indistinguishable from a genuine 0 on hand. That is the intended behaviour.
   if (rows.some(it => !Number.isNaN(_qty(it)))) rows.sort((a, b) => (_qty(b) || 0) - (_qty(a) || 0));
   else if (rows.some(it => _eta(it))) rows.sort((a, b) => _eta(a).localeCompare(_eta(b)));
   for (const it of rows) {

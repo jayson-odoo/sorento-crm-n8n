@@ -54,9 +54,15 @@ if (missingAttachmentType) {
 
 } else {
   const tokens     = Array.isArray(r?.tokens) ? r.tokens : [];
-  const tokenText  = tokens.join(' ');
+  // #11: the access-level phrase ("Mocha Dealer") arrives as a resolver TOKEN, and the
+  // `access` suffix below already names it. Without this filter the level prints twice:
+  // "Could not find promotion for Mocha Dealer for Mocha Dealer."
+  const _accessSet = new Set((Array.isArray(q?.access_levels) ? q.access_levels : [])
+    .map(a => String(a ?? '').trim().toLowerCase()).filter(Boolean));
+  const _notAccess = t => !_accessSet.has(String(t ?? '').trim().toLowerCase());
+  const tokenText  = tokens.filter(_notAccess).join(' ');
   // tokens the user gave that didn't resolve — name them so the miss is concrete
-  const unresolvedText = unresolved.join(', ');
+  const unresolvedText = unresolved.filter(_notAccess).join(', ');
 
   let requested;
   if (resolvedTypes.length && tokenText) {
@@ -66,16 +72,22 @@ if (missingAttachmentType) {
   } else if (unresolvedText) {
     requested = unresolvedText;
   } else {
-    const entities = Array.isArray(q?.entities) ? q.entities : [];
+    const entities = (Array.isArray(q?.entities) ? q.entities : []).filter(e => _notAccess(e?.raw));
+    // #11: '' (not 'the requested item') so the " for ..." segment can be dropped entirely —
+    // the access suffix already says what was searched for.
     requested = entities.length
       ? entities.map(e => `${e.hint || 'item'} ${e.raw}`).join(', ')
-      : 'the requested item';
+      : '';
   }
 
   const dateRange = (q.date_filter_start && q.date_filter_end)
     ? ` from ${q.date_filter_start} to ${q.date_filter_end}` : '';
-  const access = q.intent_hint === 'check_promotion'
-    ? ` for ${q.access_levels?.join(', ') || 'End User'}` : '';
+  // S2 (promotion-picker): the spine now sends the contact's ENTITLEMENT UNION when the
+  // customer names no level, while q.access_levels (the parser's view) stays empty — so the
+  // old `|| 'End User'` fallback printed a level that was never searched ("no promotion for
+  // End User matched these"). Name a level only when the customer actually named one.
+  const access = (q.intent_hint === 'check_promotion' && Array.isArray(q.access_levels) && q.access_levels.length)
+    ? ` for ${q.access_levels.join(', ')}` : '';
   const team = q.routing?.suggested_team || 'customer_service';
   const active_inactive = q.is_active == true ? " active" : (q.is_active == false ? " inactive" : "")
   const allEnts = Array.isArray(q?.entities) ? q.entities : [];
@@ -94,13 +106,22 @@ if (missingAttachmentType) {
     ...(Array.isArray(r?.resolutions) ? r.resolutions : []).flatMap(x => x.matches ?? []),
   ];
   // uuid -> friendly display name (promotions have no code — their identifier is the description)
+  const _ORDER_TYPES = new Set(['order', 'customer_order', 'order_number']);
   const _dispByUuid = new Map();
   for (const m of _allMatches) {
     if (!m) continue;
     const d = m.display || {};
-    // attachment_type shows its type_name (e.g. "Certification"), NOT the long alias description.
-    // description stays ahead of canonical_code so promotions (code == uuid) still show their name.
-    const name = d.product_name || d.customer_name || d.debtor_name || d.type_name || d.description || m.canonical_code || '';
+    let name;
+    if (_ORDER_TYPES.has(m.entity_type)) {
+      // order-ish: the user identifies by the DO/order NUMBER — show the code, add the customer for context.
+      name = m.canonical_code
+        ? (d.customer_name ? `${m.canonical_code} (${d.customer_name})` : m.canonical_code)
+        : (d.customer_name || '');
+    } else {
+      // attachment_type shows its type_name (e.g. "Certification"), NOT the long alias description.
+      // description stays ahead of canonical_code so promotions (code == uuid) still show their name.
+      name = d.product_name || d.customer_name || d.debtor_name || d.type_name || d.description || m.canonical_code || '';
+    }
     if (m.uuid && name && !_dispByUuid.has(m.uuid)) _dispByUuid.set(m.uuid, name);
   }
   // tokens that ACTUALLY produced a compatible entity (via_token / resolution token) —
@@ -126,6 +147,14 @@ if (missingAttachmentType) {
     const arr = _byType.get(et);
     if (!arr.includes(label)) arr.push(label);
   }
+  // #12: when the customer typed a code that matches EXACTLY, that code must be the
+  // representative. `_compat` order is arbitrary, so codes[0] could name a sibling variant
+  // (SRTSH1040-T for a typed SRTSH1040), reading as if we looked up a different product.
+  const _tokSet = new Set(tokens.map(t => String(t ?? '').trim().toLowerCase()).filter(Boolean));
+  for (const arr of _byType.values()) {
+    const i = arr.findIndex(l => _tokSet.has(String(l).trim().toLowerCase()));
+    if (i > 0) arr.unshift(arr.splice(i, 1)[0]);
+  }
   const _foundLines = [];
   for (const [et, codes] of _byType) {
     // one representative per type + count; true ambiguity is handled by the gate (did-you-mean)
@@ -134,12 +163,15 @@ if (missingAttachmentType) {
   }
   _found_summary = _foundLines.join('\n');   // datemiss-summary: reused by build-suggest-offer
   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
-  const _notFoundToks = unresolved.filter(t => !_resolvedToks.has(normRaw(t))).map(t => `"${t}"`);
+  const _notFoundRaw = unresolved.filter(t => !_resolvedToks.has(normRaw(t)));
   const _useBreakdown = _foundLines.length > 0;
-  const buildBreakdownMsg = (domainWord) => {
+  // notFoundRaw override lets a branch fold some unresolved tokens into the searched noun
+  // instead of listing them as "couldn't find" (e.g. attachment qualifiers like "SPAN").
+  const buildBreakdownMsg = (domainWord, notFoundRaw) => {
+    const nf = (notFoundRaw ?? _notFoundRaw).map(t => `"${t}"`);
     const parts = [];
     if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
-    if (_notFoundToks.length) parts.push(`Couldn't find: ${_notFoundToks.join(', ')}.`);
+    if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
     parts.push(`But no${active_inactive} ${domainWord}${dateRange}${access} matched these. Would you like me to escalate to ${team} team?`);
     return parts.join('\n\n');
   };
@@ -177,27 +209,51 @@ if (missingAttachmentType) {
     // FIX B: natural, parser-driven phrasing — never leak the 'product_attachment' literal.
     const ents = Array.isArray(q?.entities) ? q.entities : [];
     const productRaws = ents.filter(e => e.hint === 'product').map(e => e.raw).filter(Boolean);
+    const attachRaws  = ents.filter(e => e.hint === 'attachment_type').map(e => e.raw).filter(Boolean);
     const attachEnt   = ents.find(e => e.hint === 'attachment_type');
     if (_useBreakdown) {
-      // itemize resolved products; close on the attachment type that wasn't found
-      escalate_message = buildBreakdownMsg(attachEnt?.raw || 'attachment');
+      // combine the attachment-type qualifiers into ONE searched noun ("SPAN certificate")
+      // and fold those qualifiers OUT of the "couldn't find" list (don't double-name them).
+      const attachNoun = attachRaws.length ? attachRaws.join(' ') : (attachEnt?.raw || 'attachment');
+      const attachSet  = new Set(attachRaws.map(normRaw));
+      const nfRaw      = _notFoundRaw.filter(t => !attachSet.has(normRaw(t)));
+      escalate_message = buildBreakdownMsg(attachNoun, nfRaw);
     } else {
       const prodText = productRaws.length ? `product ${productRaws.join(' and ')}` : '';
       let subject;
       if (attachEnt?.raw && prodText)      subject = `a ${attachEnt.raw} for ${prodText}`;
       else if (attachEnt?.raw)             subject = `a ${attachEnt.raw}`;
       else if (prodText)                   subject = `attachments for ${prodText}`;
-      else                                 subject = requested;   // fall back to the old token text
+      else                                 subject = requested || 'the requested item';   // fall back to the old token text
       escalate_message =
         `Could not find${active_inactive} ${subject}${dateRange}${access}. ` +
         `Would you like me to escalate to ${team} team?`;
     }
   } else {
-    if (_useBreakdown) {
+    // status-filter-aware: a SPECIFIC order/customer_order resolved (the DO exists) but the
+    // delivered/outstanding filter returned nothing => the order isn't a miss, it's just not in
+    // that status. Say so, using the resolved match's own status/dates.
+    const _orderMatch = _allMatches.find(m => m && _compatUuids.has(m.uuid) && _ORDER_TYPES.has(m.entity_type));
+    if (_orderMatch && (q.order_status === 'delivered' || q.order_status === 'outstanding')) {
+      const d = _orderMatch.display || {};
+      const label = `${_orderMatch.canonical_code}${d.customer_name ? ` (${d.customer_name})` : ''}`;
+      if (q.order_status === 'delivered') {
+        const eta = d.estimated_delivery_date ? ` (estimated delivery ${d.estimated_delivery_date})` : '';
+        const st  = d.status ? ` — current status: ${d.status}` : '';
+        escalate_message =
+          `Order ${label} hasn't been delivered yet${st}. ` +
+          `Would you like me to escalate to ${team} team?`;
+      } else {
+        escalate_message =
+          `Order ${label} has no outstanding items — it looks already delivered or closed. ` +
+          `Would you like me to escalate to ${team} team?`;
+      }
+    } else if (_useBreakdown) {
       escalate_message = buildBreakdownMsg(`${_statusLabel}${q.domain_hint}`);
     } else {
+      const _forRequested = requested ? ` for ${requested}` : '';
       escalate_message =
-      `Could not find${active_inactive} ${_statusLabel}${q.domain_hint} for ${requested}${dateRange}${access}. ` +
+      `Could not find${active_inactive} ${_statusLabel}${q.domain_hint}${_forRequested}${dateRange}${access}. ` +
       `Would you like me to escalate to ${team} team?`;
     }
   }
@@ -209,3 +265,4 @@ out.escalate_message = escalate_message;
 out.is_clarification = is_clarification;
 out.found_summary = _found_summary;   // datemiss-summary: resolved-entity bullets for the date arm
 return out;
+

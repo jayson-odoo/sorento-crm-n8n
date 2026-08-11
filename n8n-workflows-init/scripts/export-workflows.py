@@ -43,10 +43,25 @@ TARGETS = {
     "9qVyfUxmRQqrpGRMDLRuz": "live-spine-sorento-consume-main",
     "txiPzSxy3Pclsz6v":      "clone-sorento-consume-main-TEST",
     "XTODTw-dJcV0uRdC056hG": "sub-semantic-parser",
+    # The parser FORK the clone actually calls. Added 2026-08-08 (immortal-hint-class): it was
+    # outside the export set, so every agent re-pulled it via REST and the fork<->live delta had to
+    # be re-derived by hand each time (plan §0.2 / §6-IH-V5). Tracking it makes that delta a `git
+    # diff` of two exported files. It is NOT live — never promote from this directory (LESSONS §57).
+    "wI5RkNGW3EOJfBdo":      "sub-semantic-parser-FORK",
     "Fss5aAaXthJSWpZCgKiKR": "sub-get-results",
     "rysSPgUssLDf6xJc":      "sub-get-results-TEST",
+    # The fork the CLONE's 6 get-results callers actually point at (container-status build).
+    # Exported because an un-exported fork gets no staleness gate and no diffable artifact —
+    # exactly how the parser FORK drifted unnoticed. Promotion targets Fss5aAa AND rysSPgU.
+    "t4QvrtrPnTwRU6br":      "sub-get-results-CS-BUILD",
     "aoydkG1dbItXR5jXFEQsP": "sub-sendmsg",
     "77SG9jTdVKhwMwvR":      "sorento-dispatcher",
+    # promotion-picker build targets (plan `plans/promotion-picker-plan.md`, GH #3-#10).
+    # Spine fork is off the REBASED clone (c4c89ed1); parser fork is off LIVE (bb875580) — NOT off
+    # wI5RkNGW3EOJfBdo, which is behind live by `resource_attachment` in DOMAIN_BLOCKED_HINTS.order
+    # and .incoming. Registered on creation so the staleness gate covers them from day one.
+    "RnpxEnAV3g20MmKj":      "fork-promo-picker-spine",
+    "RJ326g9dwe3bTWyf":      "fork-promo-picker-parser",
 }
 
 # Volatile / duplicative keys: excluded from workflow.json so a re-export with no

@@ -1,0 +1,134 @@
+{
+ "run": "dym-probe-before-offer \u00a7DP re-run (rev 6 \u2014 escalate-catalog preference order)",
+ "date": "2026-08-07",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "b79ef8c4-f274-4b28-8c13-3621edcc0e9c",
+  "previous": "a22914d8",
+  "rollback": "545210e7",
+  "live_spine": "f9205b03 at start AND end \u2014 no drift during this pass (it moved twice in the hour before)"
+ },
+ "offline": {
+  "harness.js": 142,
+  "byteid.js": 12,
+  "ccs-harness.js": 30,
+  "total": 184,
+  "result": "ALL PASS"
+ },
+ "PRIORITY_1": {
+  "verdict": "PASS \u2014 asserted at the CUSTOMER, not the node",
+  "case": "R6-P1-picker `cert for SRTWC19`",
+  "method": "assertion is on save-session-vars.user_response AND the sendmsg-sub egress payload; the two are byte-equal on all 6 runs. build-suggest-offer's output was deliberately NOT used as the criterion \u2014 that object was correct all along and is what fooled 170 prior assertions.",
+  "delivered_to_customer": "product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:\\n1. SRTWC193 - no certificate\\n2. SRTWC190 - no certificate\\n3. SRTWC195 - has certificate\\n4. SRTWC191-G2 - has certificate\\n5. SRTWC191-250MM - no certificate\\n6. SRTWC191 - no certificate\\n7. SRTWC192-300 - has certificate\\n8. SRTWC192 - no certificate",
+  "shape": "header unchanged, numbering unchanged, nothing reordered, suggest_offer stays false, no suggest_quick_reply invented"
+ },
+ "CROSS_SURFACE_AGREEMENT": {
+  "verdict": "PASS \u2014 demonstrated end-to-end on real turns for the first time",
+  "family": "SRTWC19",
+  "surfaces": {
+   "picker": "R6-P1 `cert for SRTWC19` (8 candidates)",
+   "D1": "R6-X1 `SRTWC1930 certificate` (3 candidates)",
+   "partial": "R6-X2 `certificate for SRTWT2214 and SRTWC1930` (3 candidates)",
+   "incoming": "R6-X3 `when is SRTWC19 coming in` (8 candidates)"
+  },
+  "table": {
+   "SRTWC193": {
+    "picker": "no certificate",
+    "D1": "no certificate",
+    "partial": "no certificate",
+    "incoming": "no incoming"
+   },
+   "SRTWC190": {
+    "picker": "no certificate",
+    "D1": "no certificate",
+    "partial": "no certificate",
+    "incoming": "no incoming"
+   },
+   "SRTWC191": {
+    "picker": "no certificate",
+    "D1": "no certificate",
+    "partial": "no certificate",
+    "incoming": "no incoming"
+   },
+   "SRTWC195": {
+    "picker": "has certificate",
+    "incoming": "no incoming"
+   },
+   "SRTWC191-G2": {
+    "picker": "has certificate",
+    "incoming": "no incoming"
+   },
+   "SRTWC192-300": {
+    "picker": "has certificate",
+    "incoming": "no incoming"
+   }
+  },
+  "result": "the three certificate-domain surfaces DISAGREE ON NOTHING \u2014 every overlapping code carries the identical verdict. incoming answers a different question (incoming stock) and correctly keeps its own noun and its pre-existing EM-DASH.",
+  "note": "D1/partial offer 3 codes vs the picker's 8 because of cap3 \u2014 different candidate SELECTION, same candidate VERDICTS. That is the property the change promised."
+ },
+ "PRIORITY_2_backlog": {
+  "V2 multi-token partial miss LIVE": {
+   "verdict": "PASS \u2014 the lift now has live proof",
+   "case": "R6-P2-multitoken",
+   "delivered": "\"MWC7625-SH-S12\" \u2014 did you mean:\\n  1. MWC7623-SH-S12 - no stock details\\n  2. MWC7625-SH-S10\\n  3. MWC7627-SH-S12 - no stock details\\n\"MWC7625-SH-P\" \u2014 did you mean:\\n  4. MWC7623-SH-P - no stock details\\n  5. MWC7625-SH-S6 - no stock details\\n  6. MWC7625-SH-S8 - no stock details",
+   "asserts": "BOTH missed tokens annotated (was fully bare in rev 4); global contiguous idx 1-6 preserved across token blocks; no reordering; and MWC7625-SH-S10 still renders BARE \u2014 the F-DUPE multi-uuid exclusion composes correctly with the multi-token lift, which no offline case covers."
+  },
+  "non-enabled byte-identity LIVE": {
+   "verdict": "PASS",
+   "case": "R6-P3 `status of order PO-ZZZ-NOPE-991`",
+   "delivered": "escalate + 6-member CS roster, unchanged shape; no dym suffix anywhere"
+  },
+  "S7 series": {
+   "verdict": "PASS",
+   "detail": "TEST sink 626->627 (11515691) and 628->629 (11515728), +1 per run across 6 runs; prod sorento-respond-message LLEN 0 before AND after on both brackets"
+  }
+ },
+ "ENUMERATION_verified_independently": {
+  "claim": "exactly one surface was exposed to the by-name render-key landmine",
+  "verdict": "CONFIRMED \u2014 and my scan is stronger than a plain grep",
+  "method": "scanned every Code node for by-name reads of escalate_message / suggest_response / user_response in THREE forms: inline `$('X').first().json.key`, single-hop alias `const v=$('X'); \u2026 v.first().json.key`, and TWO-HOP `const v=$('X'); const j=v.first().json; \u2026 j.key`. The 2-hop form is exactly what hid the rev-5 defect and what a single-line grep misses.",
+  "findings": [
+   "escalate-catalog.js \u2014 escalate_message from $('build-suggest-offer') (2-hop) = THE FIX, and from $('access-level-choice-message') (inline) = pre-existing, its own authority",
+   "attach-merge.js \u2014 user_response from $('crossdomain-compose') (alias)",
+   "presign-fail-notice.js \u2014 user_response from $('crossdomain-compose') (alias)"
+  ],
+  "are_the_two_extra_files_a_risk": "NO \u2014 verified from the graph, not assumed. crossdomain-compose's only inbound is compile-current-state[0], and both readers are transitively DOWNSTREAM of compile-current-state, so they read the POST-annotation text. crossdomain-render is upstream but does not read any render key.",
+  "conclusion": "the coder's enumeration holds. I found two by-name readers they did not list, and both are safe by position."
+ },
+ "S9_mutations": {
+  "S9-K re-introduce the ORIGINAL rev-5 bug": "`const n = $('build-suggest-offer');` -> `$('not-found-error-message');`, occ 1/1, digest 5e7d80666740->e59a93cf603e, harness RED on 'RENDERED picker annotation reaches the customer' + 'RENDERED no-count'. The new rendered-level assertion is a real instrument \u2014 it catches the exact defect the previous 170 assertions missed.",
+  "S9-L the discriminator must not go blind": "copied the FIXED escalate-catalog over live-ec.js (simulating an accidental re-sync); harness went RED on 'RENDERED gate discriminates (LIVE consumer drops the annotation)'. The gate FAILS ITSELF if it stops discriminating \u2014 self-protecting, not decorative. Restored, ALL PASS.",
+  "live-ec.js integrity": "confirmed live-ec.js differs from the current escalate-catalog by exactly the preference-order hunk (the pre-fix body), so the A/B is genuine."
+ },
+ "PRIORITY_3_probe_failure": {
+  "status": "NOT EXERCISED \u2014 and I am asking rather than inferring",
+  "why": "inducing a genuine sub failure needs a workflow edit, which is outside my role. Every prior attempt to reason about behaviour from configuration produced a defect this cycle.",
+  "what_is_covered": "the failure path is covered IN CODE only (sentinel, error payload, missing answers, unscoped_probe, three escalate-catalog fail-open cases, all byte-identical to LIVE) plus the static assertion that dym-probe.onError === 'continueRegularOutput' and has no unwired main[1].",
+  "what_is_NOT_covered": "n8n's own onError:continueRegularOutput actually firing on a real sub failure, and what dym-annotate/escalate-catalog then render.",
+  "MY_REQUEST": "publish a deliberately-broken probe target on a THROWAWAY clone copy (e.g. point dym-probe.workflowId at a sub that throws) and let me drive one turn against it. I prefer that to waiting for a natural 504: the outage window is unpredictable, and a captured natural failure gives one uncontrolled sample whereas the broken target lets me assert the render on BOTH lanes (D1 and partial) and on the picker. Risk is contained \u2014 throwaway clone, no live target, no promote.",
+  "urgency": "the CRM origin threw Cloudflare 504s during my rev-5 pass and this change now issues reads on three lanes per not-found turn, so this path is likely to fire in production."
+ },
+ "safety_scorecard_rev6": {
+  "S1": "PASS \u2014 6 runs; guards save-message-redis 6, save-session-vars 6, sendmsg-sub 6, send-message-files 1 (the attachment-returning partial turn); zero rows with a kind other than would_*; clone's send-message-* nodes remain 0-inbound.",
+  "S2": "PASS \u2014 Call 'sub-human-intervention' absent from runData on all 6.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData; sink unchanged.",
+  "S4": "PASS \u2014 probe tools remain the two READ _list tools across all three lanes; fork target rysSPgUssLDf6xJc.",
+  "S5": "PASS \u2014 trigger test_mode===true.",
+  "S6": "PASS \u2014 no LLM node beyond the per-turn reformulator; the change still adds CRM reads, not token spend.",
+  "S7a": "PASS \u2014 sink +1 per run, 626->627 and 628->629.",
+  "S7b": "PARTIAL, unchanged and stated \u2014 prod LLEN 0 both brackets; per-poll pop-payload series still not collected; rests on structural containment (rev 6 adds no node, so no new write path).",
+  "S8": "PASS \u2014 no node added in rev 6.",
+  "S9": "PASS \u2014 both fail-on-purpose steps ran through mutate.sh with occurrence+digest assertions."
+ },
+ "mutate_sh_help_text_request": {
+  "for_the_coder": "add to mutate.sh's header: 'GATE IS BLIND is relative to the suite you aim it at. A suite that STUBS the mutated node cannot see the mutation \u2014 e.g. ccs-harness.js stubs dym-transform-partial output, so it gates the RENDERER, not the lane detection. Before filing a blindness report, re-run the mutation against the other suites.' This cost me a false alarm in rev 5."
+ },
+ "still_open": [
+  "\u00a7DP-4/\u00a7DP-8 genuine probe failure (see PRIORITY_3 request)",
+  "\u00a7DP-15b live",
+  "\u00a7DP-3b unscoped_probe live",
+  "\u00a7DP-9 live",
+  "\u00a7DP-13b dynamic",
+  "\u00a7DP-12 sibling-probe[0] inbound"
+ ]
+}

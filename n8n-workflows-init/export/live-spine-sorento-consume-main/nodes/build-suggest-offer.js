@@ -3,7 +3,21 @@
 // payload through and, when the miss carries CONCRETE candidates, attaches a
 // suggestion offer that compile-current-state renders. No candidates → suggest_offer
 // stays false and downstream is byte-identical to before this node existed.
+// dym-probe-before-offer: on the sibling-gate[1] inbound the payload now arrives via
+// dym-transform (gate FALSE) or dym-annotate (gate TRUE). Both PASS THE NOT-FOUND
+// PAYLOAD THROUGH and append their own control keys. Strip those keys here so the
+// object this node emits is byte-identical to pre-change on every un-annotated path.
+// (Deleting appended keys restores the original insertion order too.)
+const _DYM_CTRL_KEYS = ['dym_probe_entities', 'dym_candidate_codes', 'dym_excluded_codes',
+  'probe_tool', 'probe_noun', 'probe_predicate', 'probe_needed', 'probe_skip_reason',
+  'probe_lane', '_dym_probe_input', 'dym_available_codes', 'dym_probe_meta',
+  // C3: both emitted UNCONDITIONALLY by dym-transform, which runs on every not-found turn
+  // including every non-enabled domain. Omitting them leaked two stray keys into this node's
+  // output on most traffic (reviewer F-STRIP). ⚠️ ANY new dym-transform output key must be added
+  // here in the same commit that introduces it.
+  'dym_capped_codes', 'probe_cap_applied'];
 const out  = { ...$input.first().json };
+for (const _k of _DYM_CTRL_KEYS) delete out[_k];
 const q    = (() => { try { return $('Call \'sub-query-reformulator\'').first().json.output; } catch (e) { return {}; } })();
 const r    = (() => { try { return $('resolve-entity').first().json ?? {}; } catch (e) { return {}; } })();
 const gate = (() => { try { return $('disallowed-entity-gate').first().json ?? {}; } catch (e) { return {}; } })();
@@ -152,10 +166,29 @@ function tokenCandidates(res) {
 }
 
 // Build the list of genuine miss tokens (their own resolution, no exact match).
+
+// ── honour the gate's document-class narrowing (container-status S1) ──────────────────
+// `r` above is bound to the RAW resolver node, so a token the GATE resolved still looks
+// unresolved here. Measured: "please send me the container status list" returned the correct
+// file AND "Couldn't find 'container status list' — did you mean Packing List, Stock_List,
+// container_status" in the same message. The answer was right; the message read as broken.
+// Deliberately narrow: only tokens the gate stamped `resolved_by === 'document-class-narrowing'`
+// are dropped, so this cannot suppress an ordinary miss.
+const _gateResolvedTokens = (() => {
+  try {
+    const _g = $('disallowed-entity-gate').first().json ?? {};
+    return new Set((_g.resolutions ?? [])
+      .filter(x => x && x.resolved === true && x.resolved_by === 'document-class-narrowing')
+      .map(x => String(x.token ?? '').trim().toLowerCase())
+      .filter(Boolean));
+  } catch (e) { return new Set(); }
+})();
+
 let missResolutions = [];
 if (Array.isArray(r?.resolutions)) {
   missResolutions = r.resolutions.filter(res => res && res.resolved !== true
-    && !(Array.isArray(res.matches) && res.matches.some(isExact)));
+    && !(Array.isArray(res.matches) && res.matches.some(isExact))
+    && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase()));
 } else if (unresolved.length) {
   missResolutions = [r];   // legacy single-resolution shape
 }
@@ -174,6 +207,49 @@ if (!isClar && !requireSpec) {
     }
   }
   d1s = d1s.slice(0, 5);
+}
+
+// ── dym-probe-before-offer: has-it annotation inputs ──────────────────────────
+// dym-annotate (upstream, sibling-gate[1] path only) reports which of the offered
+// codes actually HAVE the thing the user asked for. If it did not run, failed, or
+// detected an unscoped probe, _dymOk is false and every render below is
+// byte-identical to pre-change. This can never dead-end a turn.
+// Scope: the single-token D1 CODE mode, the require-specific picker, and — since C3
+// (immortal-hint-class) — the MULTI-TOKEN D1 block. Single-token NUMBERED mode and D2
+// remain deliberately untouched.
+const _dymNorm = (s) => String(s ?? '').trim().toLowerCase();
+const _dymAnn = (() => { try {
+  const n = $('dym-annotate');
+  return n.isExecuted ? (n.first().json || {}) : null;
+} catch (e) { return null; } })();
+const _dymOk     = !!(_dymAnn && _dymAnn.dym_probe_meta && _dymAnn.dym_probe_meta.ok === true);
+const _dymHas    = new Set(_dymOk ? (_dymAnn.dym_available_codes || []).map(_dymNorm) : []);
+const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_dymNorm) : []);
+// The attachment domain's noun comes from the parser's raw word via attachmentNoun()
+// ("cert", "certs", "certification" …). Normalise the certificate family for the
+// customer-facing suffix ONLY — attachmentNoun() itself is left alone so D2's
+// "No {noun} for {code}" text stays byte-identical.
+const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
+const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || attachmentNoun()) : null;
+
+// ── dym-probe-before-offer, 4th surface: the REQUIRE-SPECIFIC PICKER ──────────
+// disallowed-entity-gate renders a numbered "needs to be more specific / please choose"
+// list into gate_clarification, which not-found-error-message copies verbatim into
+// escalate_message (not-found-error-message.js:175). D1 never fires on these turns
+// (requireSpec suppresses it), which is why this surface stayed bare while D1 annotated
+// the very same codes — the contradiction the user reported.
+// The `incoming` domain already annotates its copy of this picker via
+// annotate-incoming-picker; this is the same treatment for the other enabled domains,
+// reusing the SAME line regex so the two renderings cannot drift.
+// NO reordering — the numbers are the pick affordance; suffixes only.
+if (requireSpec && _dymOk && typeof out.escalate_message === 'string' && out.escalate_message) {
+  out.escalate_message = out.escalate_message.split('\n').map((line) => {
+    const m = line.match(/^\s*\d+\.\s+(.+?)\s*$/);
+    if (!m) return line;                                   // header / non-item line
+    const k = _dymNorm(m[1]);
+    if (!_dymProbed.has(k)) return line;                   // unprobed (e.g. multi-uuid) → BARE
+    return line + (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`);
+  }).join('\n');
 }
 
 // Renderable survivors: a token whose candidates ALL drop via humanLabel (bare uuid, no display
@@ -205,7 +281,21 @@ if (_survivors.length > 1) {
     for (const p of s.picks) {
       idx += 1;
       const isU = isUuid(p.m.canonical_code);
-      candLines.push(`  ${idx}. ${p.label}`);
+      // ── C3 (immortal-hint-class): annotate the RENDERED LINE ONLY. ────────────────────────────
+      // No sort is introduced: `idx` still increments once per pick in exactly the same order, so
+      // the numbering is preserved BY CONSTRUCTION and §IH-11 clause 3 (strip the suffixes, diff
+      // against the pre-change render) holds byte-for-byte.
+      // The suffix lands on `candLines`, a local array feeding ONLY suggest_response. It is never
+      // applied to `p.label`, so suggest_last_result_set[].label stays BARE and the numbered pick
+      // still round-trips on idx/value. dym_candidates (for_raw/for_hint/for_canonical) is a
+      // separate statement and is untouched.
+      // Unprobed ⇒ BARE, never a misleading `- no`: capped codes, multi-uuid exclusions and
+      // unmappable types are all absent from _dymProbed and all render with no suffix.
+      const _k = _dymNorm(p.m.canonical_code);
+      const _sfx = (_dymOk && _dymProbed.has(_k))
+        ? (_dymHas.has(_k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`)
+        : '';
+      candLines.push(`  ${idx}. ${p.label}${_sfx}`);
       out.suggest_last_result_set.push({
         idx, label: p.label, value: isU ? p.label : p.m.canonical_code,
         product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
@@ -266,11 +356,44 @@ if (d1) {
       }));
       out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
     } else {
-      // Code mode: all candidates have real product codes — BYTE-IDENTICAL to pre-fix.
+      // Code mode: all candidates have real product codes.
+      // dym-probe-before-offer: when the has-it probe succeeded AND at least one offered
+      // code was actually probed, SORT has-first (same comparator as D3) and render one
+      // labelled line per code. The sort runs BEFORE codes / suggest_last_result_set /
+      // dym_candidates are derived, so buttons, rendered lines and the pick round-trip
+      // stay index-consistent. A code that was NOT probed gets no suffix — never a
+      // misleading "no". When the probe is unavailable this whole block is inert and the
+      // render below is BYTE-IDENTICAL to pre-change.
+      // 🔴 suggest_quick_reply stays BARE CODES — the pick round-trips on that exact
+      // button string through output_exchange's tryDymPick. Annotation is text-only.
+      const _dymAnnotate = _dymOk && picks.some(p => _dymProbed.has(_dymNorm(p.m.canonical_code)));
+      if (_dymAnnotate) {
+        picks.sort((a, b) => {
+          const ha = _dymHas.has(_dymNorm(a.m.canonical_code)) ? 1 : 0;
+          const hb = _dymHas.has(_dymNorm(b.m.canonical_code)) ? 1 : 0;
+          // STABLE PARTITION, no tiebreak. Array.prototype.sort is stable, so (hb - ha)
+          // alone moves has-first while preserving the resolver's similarity order both
+          // within each group and, when nobody has the thing, across the whole list.
+          // A localeCompare tiebreak here would alphabetize and destroy that ranking.
+          return hb - ha;
+        });
+      }
       const codes = picks.map(p => p.m.canonical_code);
-      out.suggest_response =
-        `Couldn't find "${d1.token}". Did you mean ${humanList(codes)}? ` +
-        `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+      if (_dymAnnotate) {
+        const _dymLines = picks.map((p, i) => {
+          const c = String(p.m.canonical_code);
+          const k = _dymNorm(c);
+          const sfx = _dymProbed.has(k) ? (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`) : '';
+          return `${i + 1}. ${c}${sfx}`;
+        }).join('\n');
+        out.suggest_response =
+          `Couldn't find "${d1.token}". Did you mean:\n${_dymLines}\n` +
+          `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+      } else {
+        out.suggest_response =
+          `Couldn't find "${d1.token}". Did you mean ${humanList(codes)}? ` +
+          `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+      }
       out.suggest_quick_reply = [...codes,  YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
       out.suggest_last_result_set = picks.map((p, i) => ({
         idx: i + 1, label: p.m.canonical_code, value: p.m.canonical_code,

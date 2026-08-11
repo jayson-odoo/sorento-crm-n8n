@@ -114,3 +114,28 @@ Work flows **planner → coder → tester → reviewer** (custom subagents `sore
 - `n8n-workflows-init/plans/` — plan.md (UAC harness), regression-plan.md.
 - `n8n-workflows-init/tests/` — UAC.md, regression-UAC.md, diffs/, runs/, reviews/, regression/.
 - The separate Sorento CRM repo (read-only ref) at `/Users/tehjayson/Documents/foundryx/sorento_crm` — API/MCP contracts.
+
+## Agent skills
+
+Config the mattpocock engineering skills (`to-tickets`, `triage`, `to-spec`, `code-review`,
+`domain-modeling`, `wayfinder`, …) read from. Edit `docs/agents/*.md` directly to change any of it.
+
+### Issue tracker
+
+GitHub Issues on `jayson-odoo/sorento-crm-n8n`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles, unchanged: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`,
+`wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+⚠️ `CONTEXT.md` currently models **only** product-description search, not the whole repo; for anything else
+the domain authority is this file plus `docs/LESSONS.md`.
+
+> **⚠️ These skills do NOT override the safety rule above.** Any skill that would write to a workflow,
+> promote, or drive a test must still respect: never touch the live spine directly, never reach a real
+> contact, never mutate prod. `ready-for-agent` on an issue means "specified", NOT "safe to run unattended
+> against live" — promotion stays user-gated.

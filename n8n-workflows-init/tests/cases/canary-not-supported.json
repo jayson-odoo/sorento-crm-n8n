@@ -1,26 +1,57 @@
 {
-  "_case": "UAC §4 — not-supported-domain canary",
+  "_case": "UAC \u00a74 \u2014 not-supported-domain canary",
   "_target_clone": "txiPzSxy3Pclsz6v",
-  "_redis_list": "main-message-list-test",
+  "_redis_list": "test:q:437264483",
+  "_driver": "POST https://automate-sorento.foundryx.my/webhook/zz-run-hint {\"contact\":\"437264483\",\"test_run_id\":\"canary-nsd-20260721\",\"item\":<item>} (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q + test:egress, RPUSHes item, runs clone)",
   "_note": "This is the exact item the zz-canary-seed helper (4eDGDBL3rEkGQuBV) RPUSHes. Control fields (test_run_id, scope, mock_parser_output, mock_reformulator_output) are siblings at the item root and are read by the clone at $('redis-pop-main-message-list').first().json.message.<field>.",
   "item": {
     "message": {
-      "message": { "text": "What is the weather in KL today", "type": "text", "attachment": { "type": "text", "description": "" } },
-      "replyTo": {}
+      "event_type": "message.received",
+      "event_id": "canary-nsd-20260721",
+      "contact": {
+        "id": 437264483,
+        "firstName": "Jayson",
+        "lastName": "Canary",
+        "phone": "60100000000",
+        "status": "open",
+        "assignee": {
+          "id": null
+        }
+      },
+      "message": {
+        "messageId": 1784640000001000,
+        "channelMessageId": "canary-nsd-20260721",
+        "contactId": 437264483,
+        "channelId": 453209,
+        "traffic": "incoming",
+        "timestamp": 1784640000001,
+        "replyTo": null,
+        "message": {
+          "type": "text",
+          "text": "What is the weather in KL today",
+          "attachment": {
+            "type": "text",
+            "description": ""
+          }
+        }
+      }
     },
-    "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary", "custom_fields": [], "assignee": { "id": null } },
-    "messageId": "test-canary-nsd-20260627",
+    "contact": {
+      "id": "437264483",
+      "phone": "60100000000",
+      "firstName": "Jayson",
+      "lastName": "Canary",
+      "custom_fields": [],
+      "assignee": {
+        "id": null
+      }
+    },
+    "messageId": null,
     "replyTo": null,
-    "test_run_id": "canary-nsd-20260627",
+    "test_run_id": "canary-nsd-20260721",
     "scope": "deterministic",
-    "mock_parser_output": {
-      "message_type": "business_query",
-      "intent_hint": "goods_receive_status",
-      "domain_hint": "goods_receive",
-      "user_goal": "What is the weather in KL today",
-      "entities": [],
-      "access_levels": []
-    },
+    "test_mode": true,
+    "mode": "uac",
     "mock_reformulator_output": {
       "message_type": "business_query",
       "intent_hint": "goods_receive_status",
@@ -28,9 +59,14 @@
       "user_goal": "What is the weather in KL today",
       "access_levels": [],
       "entities": [],
-      "escalation": { "is_escalation_confirmation": false },
+      "escalation": {
+        "is_escalation_confirmation": false
+      },
       "correction": false,
-      "routing": { "suggested_team": "purchasing", "suggested_agent": "general_enquiries" },
+      "routing": {
+        "suggested_team": "purchasing",
+        "suggested_agent": "general_enquiries"
+      },
       "date_mode": null,
       "query_scope": null,
       "match_mode": null,
@@ -47,5 +83,6 @@
     "Edit Fields5 (escalate_message = canned not-supported reply) -> compile-current-state",
     "compile-current-state -> [sorento-sub-respond-sendmsg-respond2 (is_test=true => send sub short-circuits, records would_send), guard-d-record (records would_write save-session-vars)]"
   ],
-  "expected_canned_reply": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container"
+  "expected_canned_reply": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container",
+  "_envelope_grounding": "item.message.message.message.text is FOUR levels from the item root. Grounded on clone exec 9423742 runData (redis-pop-main-message-list -> tf-message) and on prepare_test_pin_data(txiPzSxy3Pclsz6v)'s redis-pop schema, which n8n derives from past execution output shapes. tf-message returns $input.first().json.message.message, i.e. ITEM.message (the webhook body); consumers then read .message.message.text off that."
 }

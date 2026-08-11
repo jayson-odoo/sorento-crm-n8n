@@ -1,25 +1,68 @@
 {
-  "_case": "UAC §8 — clarify_menu canary (branch_kind=clarify_menu, via If1 message_type=clarification)",
+  "_case": "UAC \u00a78 \u2014 clarify_menu canary (branch_kind=clarify_menu, via If1 message_type=clarification)",
   "_target_clone": "txiPzSxy3Pclsz6v",
-  "_redis_list": "main-message-list-test",
-  "_note": "Forces Edit Fields6 / clarify_menu. After Δ1 this branch must still emit the identical menu text. Control fields are siblings at item root, read at $('redis-pop-main-message-list').first().json.message.<field>.",
+  "_redis_list": "test:q:437264483",
+  "_driver": "POST https://automate-sorento.foundryx.my/webhook/zz-run-hint {\"contact\":\"437264483\",\"test_run_id\":\"canary-clarify-20260721\",\"item\":<item>} (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q + test:egress, RPUSHes item, runs clone)",
+  "_note": "Forces Edit Fields6 / clarify_menu. After \u03941 this branch must still emit the identical menu text. Control fields are siblings at item root, read at $('redis-pop-main-message-list').first().json.message.<field>.",
   "item": {
     "message": {
-      "message": { "text": "huh what can you do", "type": "text", "attachment": { "type": "text", "description": "" } },
-      "replyTo": {}
+      "event_type": "message.received",
+      "event_id": "canary-clarify-20260721",
+      "contact": {
+        "id": 437264483,
+        "firstName": "Jayson",
+        "lastName": "Canary",
+        "phone": "60100000000",
+        "status": "open",
+        "assignee": {
+          "id": null
+        }
+      },
+      "message": {
+        "messageId": 1784640000002000,
+        "channelMessageId": "canary-clarify-20260721",
+        "contactId": 437264483,
+        "channelId": 453209,
+        "traffic": "incoming",
+        "timestamp": 1784640000002,
+        "replyTo": null,
+        "message": {
+          "type": "text",
+          "text": "huh what can you do",
+          "attachment": {
+            "type": "text",
+            "description": ""
+          }
+        }
+      }
     },
-    "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary", "custom_fields": [], "assignee": { "id": null } },
-    "messageId": "test-canary-clarify-20260628",
+    "contact": {
+      "id": "437264483",
+      "phone": "60100000000",
+      "firstName": "Jayson",
+      "lastName": "Canary",
+      "custom_fields": [],
+      "assignee": {
+        "id": null
+      }
+    },
+    "messageId": null,
     "replyTo": null,
-    "test_run_id": "canary-clarify-20260628",
+    "test_run_id": "canary-clarify-20260721",
     "scope": "deterministic",
+    "test_mode": true,
+    "mode": "uac",
     "mock_parser_output": {
       "message_type": "clarification",
       "intent_hint": null,
       "domain_hint": null,
       "user_goal": "asking what the assistant can help with",
       "entities": [],
-      "access_levels": []
+      "access_levels": [],
+      "routing": {
+        "suggested_team": "purchasing",
+        "suggested_agent": "general_enquiries"
+      }
     },
     "mock_reformulator_output": {
       "message_type": "clarification",
@@ -28,9 +71,14 @@
       "user_goal": "asking what the assistant can help with",
       "access_levels": [],
       "entities": [],
-      "escalation": { "is_escalation_confirmation": false },
+      "escalation": {
+        "is_escalation_confirmation": false
+      },
       "correction": false,
-      "routing": { "suggested_team": null, "suggested_agent": null },
+      "routing": {
+        "suggested_team": "purchasing",
+        "suggested_agent": "general_enquiries"
+      },
       "date_mode": null,
       "query_scope": null,
       "match_mode": null,
@@ -41,11 +89,24 @@
   },
   "expected_route": [
     "... -> If5(allowed) -> If2(FALSE) -> If10(FALSE: correction falsy) -> If9(FALSE: not casual/unknown/confirmation, not business_query+null-domain) -> If1(TRUE: message_type==clarification)",
-    "PRE-Δ1: Edit Fields6 (escalate_message=menu) -> compile-current-state",
-    "POST-Δ1: <branch_kind=clarify_menu setter> -> escalate-catalog -> compile-current-state"
+    "PRE-\u03941: Edit Fields6 (escalate_message=menu) -> compile-current-state",
+    "POST-\u03941: <branch_kind=clarify_menu setter> -> escalate-catalog -> compile-current-state"
   ],
   "branch_kind": "clarify_menu",
-  "expected_canned_reply_contains": ["I see you're", "Are you asking about any of these?", "I can help with the topics listed above."],
-  "expected_flags": { "manualResponse": true, "includeResponse": true, "is_escalate_offer": false },
-  "assert_egress": { "sendmsg-sub.would_send.message": "the clarify menu (non-empty)", "save-session-vars.would_write.response": "same menu text" }
+  "expected_canned_reply_contains": [
+    "I see you're",
+    "Are you asking about any of these?",
+    "I can help with the topics listed above."
+  ],
+  "expected_flags": {
+    "manualResponse": true,
+    "includeResponse": true,
+    "is_escalate_offer": false
+  },
+  "assert_egress": {
+    "sendmsg-sub.would_send.message": "the clarify menu (non-empty)",
+    "save-session-vars.would_write.response": "same menu text"
+  },
+  "_envelope_grounding": "item.message.message.message.text is FOUR levels from the item root. Grounded on clone exec 9423742 runData (redis-pop-main-message-list -> tf-message) and on prepare_test_pin_data(txiPzSxy3Pclsz6v)'s redis-pop schema, which n8n derives from past execution output shapes. tf-message returns $input.first().json.message.message, i.e. ITEM.message (the webhook body); consumers then read .message.message.text off that.",
+  "_defect_3_fixed": "routing was {suggested_team:null,suggested_agent:null}; check-access-http then returns {allowed:false,decision:'deny_unknown_agent'} and If5 routes to the no-access denial, so the case could NEVER reach If1/clarify_menu. Observed on clone exec 9456309. Routing set to a valid agent."
 }

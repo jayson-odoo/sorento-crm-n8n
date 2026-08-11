@@ -1,0 +1,122 @@
+{
+  "run": "query-forward-sibling-picker PHASE 1 — UAC §Q1–§Q7",
+  "date": "2026-07-15",
+  "target_clone": "txiPzSxy3Pclsz6v",
+  "clone_active_version": "3246db0c-493f-46f6-8de1-f0e001a01135",
+  "reformulator_fork": "wI5RkNGW3EOJfBdo",
+  "get_results_test_fork": "rysSPgUssLDf6xJc",
+  "human_intervention_fork": "vUfFUDjLAuMaeQE6",
+  "scope": "deterministic (Code + HTTP-read + executeWorkflow-read); parser NOT edited",
+  "driver": "chat-stateful lane: execute_workflow(oyYfVvZHRZpWubTy,{type:chat,chatInput}) -> dispatcher 2D0cw2Y1aPW2LOlU -> clone -> chat:reply -> format-out; contact 437264483; session reset to {\"variables\":{}} in n8n_test.respond_contacts_test before each scenario turn-1",
+  "evidence_basis": "get_execution(includeData:true) runData on each clone exec + sub-execs. Reply read from format-out (redis chat:reply). Real-egress nodes ABSENT on every exec; get-results/sibling-probe -> TEST fork rysSPgUssLDf6xJc (READ crm_incoming_stock_list); human-intervention -> guarded fork vUfFUDjLAuMaeQE6 (is_test:true, short-circuited to chat lane); lastNodeExecuted=log-incoming-chat-history-n8ntest (n8n_test write, prod save-session-vars PUT orphaned).",
+
+  "V_Q1_ground_truth": {
+    "base": "cb88ss",
+    "family_fetch_url": "GET https://fe-sorento.foundryx.my/api/v1/master-data/products?query=CB88SS&variant_filter=all&limit=5000 (x-api-key) — READ",
+    "family_fetch_returned": "5 products, pagination.total=5, each with id(uuid)+product_code (V-Q1 shape CONFIRMED)",
+    "sibling_transform_family": [
+      {"code": "CB88SS", "uuid": "99cd9eea-6eee-4019-8c69-12fdb21e1638", "discontinued": true, "has_incoming": false},
+      {"code": "CB88SS-DIY", "uuid": "775c6cc1-bc83-465e-872e-8dda72064717", "has_incoming": false},
+      {"code": "CB88SS-BL-DIY", "uuid": "def532de-0328-4ad7-a03f-c7428728b1cd", "has_incoming": false},
+      {"code": "CB88SS-GM-DIY", "uuid": "cc9741b0-7582-4924-a312-a4c0019aeb45", "has_incoming": false},
+      {"code": "CB88SS-H", "uuid": "c1d08cf3-b5e5-45c2-a50c-05658379a2e8", "has_incoming": false}
+    ],
+    "sibling_probe": "batched crm_incoming_stock_list over all 5 uuids (sub 8696472) -> has_result:false, answers:[] -> NONE of the 5 have incoming",
+    "note": "cb88ss family has NOT drifted in membership (still the 5 planned members) BUT is an ALL-NO-INCOMING family (no has-incoming member). Valid FLAGSHIP for Q1/Q6-boundary but does NOT exercise the has-incoming annotation/has-first sort (Q3). Substitute hunt below."
+  },
+
+  "Q3_substitute_hunt": {
+    "srt79ss": "resolved SRT79-SS which HAS incoming (TGBU9807730, Qty384) -> HAPPY path, base has incoming, not sibling-picker",
+    "SRTWT7448": "HAS incoming (TGBU9807730, Qty200) -> HAPPY path",
+    "SRT79": "AMBIGUOUS (15 prefix matches) -> require_specific:true -> existing ambiguous incoming picker (Q7b). Revealed SRT79-SS / SRT79-SS-GM / SRT79-SS-BL all HAVE incoming; the rest no incoming.",
+    "conclusion": "No reachable single-exact no-incoming base with an incoming strict-prefix SIBLING exists in current data: the has-incoming products cluster in the SRT79-SS sub-family which is ALL-has-incoming (any exact query -> happy path); no-incoming bases (cb88ss, SRT7926, SRT7902...) have all-no-incoming families. This is exactly the V-Q1 drift the plan (P-Q1) flagged. The D3 has-incoming annotation + has-first sort could not be exercised via a LIVE sibling-picker family."
+  },
+
+  "verdicts": [
+    {
+      "case": "Q1 flagship — check eta cb88ss",
+      "chat_exec": "8696459", "clone_exec": "8696461",
+      "verdict": "PASS",
+      "branch": "gate exact-match-wins (require_specific:false, compatible=[CB88SS], gate_passed:true) -> If3[FALSE] -> get-results has_result:false -> If6[FALSE] -> Loop -> Aggregate1 -> not-found-error-message -> sibling-gate[TRUE] -> family-fetch (5, uncapped) -> sibling-transform (5) -> sibling-probe (batched, empty) -> build-suggest-offer D3",
+      "reply": "No incoming stock (ETA) found for CB88SS. Related products:\\n1. CB88SS — no incoming\\n2. CB88SS-BL-DIY — no incoming\\n3. CB88SS-DIY — no incoming\\n4. CB88SS-GM-DIY — no incoming\\n5. CB88SS-H — no incoming\\nReply with a number to check its incoming, or reply 'yes' to escalate to purchasing team.",
+      "assertions": "suggest_offer:true; suggest_selection_context:suggest_offer; ALL 5 siblings listed (no cap), exact CB88SS INCLUDED annotated '— no incoming'; sorted code-ascending (all no-incoming); escalate line names purchasing; suggest_quick_reply='Yes escalate,No it's okay' (2 buttons only, comma-stripped); suggest_last_result_set=5 with {idx,label,value,product,uuid,entity_type:product}; compile-current-state persists variables.last_result_set (5) + selection_context:suggest_offer + domain_hint:incoming",
+      "s0": "PASS — send-message-*/save-session-vars/update-human-intervened/sub-human-intervention/save-message-redis'2 ABSENT; get-results+sibling-probe -> TEST fork (reads); lastNode log-incoming-chat-history-n8ntest"
+    },
+    {
+      "case": "Q3 annotation + sort",
+      "clone_exec": "8696461 (cb88ss) + 8697207 (SRT79 machinery proof)",
+      "verdict": "PASS (annotation-consistency verified) / has-first-sort NOT LIVE-EXERCISED — FLAGGED",
+      "detail": "cb88ss: every sibling annotated '— no incoming' == batched-probe truth (empty answers) -> annotation-consistency PASS. has-incoming-first sort VACUOUS (no has-incoming member reachable). The has/no-incoming annotation machinery D3 reuses is LIVE-PROVEN by the SRT79 ambiguous picker (8697207): annotate-incoming-picker correctly flagged SRT79-SS/-GM/-BL '— has incoming' and the other 12 '— no incoming', matching probe-incoming answers. The D3-specific has-first sort with a has-incoming member is covered by the coder offline unit test case (a) (mixed family -> has-first) but NOT reproduced live due to data scarcity (see Q3_substitute_hunt).",
+      "s0": "PASS"
+    },
+    {
+      "case": "Q4 pick — reply '2'",
+      "chat_exec": "8696631", "clone_exec": "8696633",
+      "verdict": "PASS",
+      "reply": "No incoming stock (ETA) for CB88SS-BL-DIY. Try: CB61SS-BL-DIY, CB65SS-BL-DIY. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+      "detail": "reformulator fork (sub 8696634): previous_conversation_state.selection_context=suggest_offer -> reference_positions:[2], entity CB88SS-BL-DIY ordinal:2 uuid def532de (== picker idx2), domain_hint:incoming inherited (domain_reused_entityless:true, domain_inherited_compatible:true, suggest_pick_context:true), positions_resolved:1, message_type:business_query. Re-resolved CB88SS-BL-DIY exact -> re-queried crm_incoming_stock_list for THAT sibling -> has_result:false; family-fetch(CB88SS-BL-DIY)=self-only -> D3 zero-extras -> false -> D2 alternatives (CB61SS-BL-DIY,CB65SS-BL-DIY). Domain stayed incoming; positional resolution correct; NO mis-resolution.",
+      "s0": "PASS — Call 'sub-human-intervention' ABSENT (data re-query, no assign); send/save absent; get-results -> TEST fork read"
+    },
+    {
+      "case": "Q5 escalate — reply 'yes'",
+      "chat_exec": "8696833", "clone_exec": "8696838", "hi_sub_exec": "8696843",
+      "verdict": "PASS",
+      "reply": "⚠️ [escalated to purchasing team]",
+      "detail": "reformulator fork (sub 8696839): is_affirmative:true under selection_context suggest_offer -> escalation.is_escalation_confirmation:true, entities:[], routing.suggested_team:purchasing, domain_hint:incoming inherited. Call 'sub-human-intervention' -> GUARDED fork vUfFUDjLAuMaeQE6 (NOT live rrYXzE61), input is_test:true, test_run_id chatui-1784114050013, team purchasing.",
+      "s2_crux": "Inside vUfFUDjLAuMaeQE6 (8696843) only 3 nodes ran: When Executed by Another Workflow (is_test:true) -> chat? (gate) -> chat-escalation-push (redis chat lane). The REAL write nodes — Assign or unassign a Conversation1, conversation-sla-tracking-create (SLA POST), Call 'sub-add-comment-respond' (PIC), redis push sorento-respond-assignee-queue, get-round-robin-assignee — did NOT execute. Escalation pushed to chat lane, NO real assign.",
+      "s0": "PASS — S2 held (no real assign/SLA/PIC/queue); get-results not reached; send/save absent"
+    },
+    {
+      "case": "Q6 zero-siblings — check eta SRT7926",
+      "chat_exec": "8697408", "clone_exec": "8697410",
+      "verdict": "PASS (D3 zero-sibling no-op verified)",
+      "reply": "No incoming stock (ETA) for SRT7926. Try: SRT79-SS. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+      "detail": "gate: SRT7926 single-exact, require_specific:false, compatible=[SRT7926]. sibling-gate[TRUE] -> family-fetch(query=SRT7926) returned EXACTLY 1 (pagination.total=1, boundary rule correct — NO over-gather) -> sibling-transform sibling_count:1 (self only) -> D3 zero-extras guard -> return false -> fell through to pre-existing D2 (get-results alternative SRT79-SS). NO sibling picker rendered. The residual D2 did-you-mean is pre-existing build-suggest-offer behavior (get-results returned a trgm alternative), orthogonal to the D3 change; the byte-identical 'plain escalate' variant was not isolated (would need a code with zero fuzzy alternatives).",
+      "s0": "PASS — sibling-probe -> TEST fork read; no send/HI/save"
+    },
+    {
+      "case": "Q7a — order not-found (domain != incoming)",
+      "chat_exec": "8697543", "clone_exec": "8697545",
+      "verdict": "PASS",
+      "reply": "Could not find order for SOZZ99FAKE123. Would you like me to escalate to customer_service team? ... (CS member roster)",
+      "detail": "gate domain:order, gate_passed:false, compatible:[]. sibling-gate took output[1] FALSE branch (domain != incoming) -> build-suggest-offer suggest_offer:false (pre-existing plain escalate / CS-member-offer). family-fetch/sibling-probe ABSENT.",
+      "s0": "PASS — no send/HI/save; get-results not reached"
+    },
+    {
+      "case": "Q7b — ambiguous incoming (require_specific true) — check eta SRT79",
+      "chat_exec": "8697205", "clone_exec": "8697207",
+      "verdict": "PASS",
+      "reply": "incoming search needs to be more specific. Multiple matches found — please choose: 1..15 each annotated has/no incoming (SRT79-SS-GM/SS/SS-BL = has incoming)",
+      "detail": "gate require_specific:true, 15 ambiguous prefix matches -> If3[TRUE] -> If-incoming-picker[TRUE] -> probe-incoming (TEST fork sub 8697214, batched over 15 uuids, READ) -> annotate-incoming-picker -> build-suggest-offer. sibling-gate / family-fetch / sibling-probe ABSENT (existing picker path bypasses D3, unregressed). Annotation matches probe truth.",
+      "s0": "PASS — probe-incoming -> TEST fork read; no send/HI/save"
+    },
+    {
+      "case": "Q7c — unresolved incoming token (D1/no exact product) — check eta CWC604-S-RL",
+      "chat_exec": "8697627", "clone_exec": "8697629",
+      "verdict": "PASS",
+      "reply": "Could not find incoming for CWC604-S-RL. Would you like me to escalate to purchasing team?",
+      "detail": "gate domain:incoming, compatible:[] (token unresolved, resolver alternatives:[] this run -> plain escalate not D1 did-you-mean; parser/resolver-dependent). sibling-gate took output[1] FALSE branch (sg-prod fails: no exact product in compatible) -> build-suggest-offer suggest_offer:false unchanged. family-fetch/sibling-probe ABSENT.",
+      "s0": "PASS — no send/HI/save"
+    },
+    {
+      "case": "Q2 — multi-exact both no incoming (union)",
+      "verdict": "BLOCKED-deferred (phase-2)",
+      "detail": "PHASE 1 ships single family-fetch only (no family-loop node present; sibling-transform base_codes has 1 entry). Multi-product union is phase-2 per plan §3 / diff phase-boundary. Not failed."
+    }
+  ],
+
+  "s0_rollup": "PASS on all 8 clone execs (Q1,Q3,Q4,Q5,Q6,Q7a,Q7b,Q7c). S1 no respond.io send (reply always via chat:reply/format-out; send-message-*/sendmsg real POST never executed). S2 no real assign/SLA/PIC/queue (Q5 human-intervention fork short-circuited to chat-escalation-push; sub-human-intervention absent on all other cases). S3 no prod CRM/session write (save-session-vars/update-human-intervened orphaned/absent; session+logging to n8n_test). S4 get-results/sibling-probe/probe-incoming always -> TEST fork rysSPgUssLDf6xJc with READ tool crm_incoming_stock_list, never crm_it_support_ticket_create. S5 invoked subs are TEST/guarded forks: reformulator=fork wI5RkNGW3EOJfBdo, get-results=TEST fork rysSPgUssLDf6xJc (structurally read-only), human-intervention=guarded fork vUfFUDjLAuMaeQE6 with is_test:true (verified). S6 no new LLM token sink beyond the driver's one-per-turn reformulator fork; sibling-probe uses MCP read (no LLM); get-results returned deterministic structured reads (no free-text agent reformulation, no orphaned/hot agent observed).",
+
+  "flags": {
+    "over_under_gather": "NONE — cb88ss gathered exactly 5 (correct), SRT7926 exactly 1 (boundary rule, no over-gather). Q4 CB88SS-BL-DIY (deep variant) gathered self-only = the documented SAFE degradation (fell to D2 correctly).",
+    "wrong_sort": "NONE — cb88ss code-ascending correct; has-first sort not exercised live (data).",
+    "cap_applied": "NONE — cb88ss lists all 5 uncapped; family-fetch limit=5000.",
+    "reply2_misresolution": "NONE — position 2 correctly resolved CB88SS-BL-DIY (picker idx2 uuid match).",
+    "egress_leak": "NONE.",
+    "q3_data_scarcity": "FLAG — no reachable single-exact no-incoming base with an incoming strict-prefix sibling exists in current live data; D3 has-incoming annotation + has-first sort not exercised e2e (covered by SRT79 machinery proof + coder unit test).",
+    "get_results_llm_liveness": "get-results TEST fork returned deterministic structured reads on every case; no free-text LLM reformulation observed (agent path appears orphaned/not-hot, consistent with prior iterations).",
+    "s5_nuance": "get-results/sibling-probe subs route to the TEST fork rysSPgUssLDf6xJc but do NOT carry an explicit is_test flag (matches coder diff); safety is structural (TEST fork = read-only). Only the human-intervention fork explicitly received is_test:true."
+  },
+
+  "overall": "PHASE 1 PASS. 8/8 exercised cases PASS (Q1,Q4,Q5,Q6,Q7a,Q7b,Q7c + Q3 annotation-consistency). Q3 has-first sort NOT live-exercised (data scarcity, flagged). Q2 BLOCKED-deferred (phase-2). §0 zero-egress gate PASS on all execs; kill-switch held; no halt."
+}
