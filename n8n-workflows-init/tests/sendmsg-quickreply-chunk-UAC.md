@@ -1,6 +1,6 @@
 # UAC — quick-reply chunking (WhatsApp 1024-char interactive body cap)
 
-**Status:** built + tested on the fork, all review findings closed, **cleared for promote**.
+**Status:** ✅ **PROMOTED LIVE 2026-08-11** — `aoydkG1dbItXR5jXFEQsP` @ `91171ac3`, draft == active.
 **Date:** 2026-08-11
 
 ## Defect
@@ -151,9 +151,27 @@ degrades to a domain-correct re-ask, not a stateless one. Taps quote the part th
 Still unproven: real WhatsApp delivery ordering of N parts, and that a real button tap arrives with
 `replyTo` pointing at the buttoned message. Both need a send to a real contact — user's call.
 
-## Promote checklist (HELD — user-gated)
+## Promote — DONE 2026-08-11
 
-Target: live `aoydkG1dbItXR5jXFEQsP`. Hash-gate on `c712e218` first.
+Hash gate: live was `c712e218`, draft == active, matching the reviewed export baseline. Backup at
+`tests/backups/sub-sendmsg-PRE-qrchunk-c712e218.json`.
+
+16 operations applied to the draft, verified BEFORE publishing:
+
+- guard artifacts absent (`guard-qr`/`guard-text`/recorders/console branch): **none present**;
+- live's own `test-guard` + `test-guard-record` retained;
+- both save-message callers still target the **prod** logger `UrETd-jm46tFj3Xw7w8vL` (the harness
+  sink repoint was a fork-only guard and was NOT carried over);
+- old `If` removed, `is-last-quickreply` added, loop closes through both branches;
+- promoted `Code in JavaScript` is **byte-identical** to the tested fork body (comments/blank
+  normalised) and carries no `is_test` / `test_run_id` / `chat_id` reference;
+- the promoted body was re-shimmed and run against the 23-case suite: **23 passed**.
+
+Published `91171ac3`; re-read confirms `versionId == activeVersionId`. Exports re-synced.
+
+**Rollback:** publish `c712e218` (or PUT the backup file above).
+
+Original checklist, for reference:
 
 1. Back up live `sub-sendmsg` (export dir `sub-sendmsg/` is the pre-promote snapshot @ `c712e218`).
 2. Port hunks 1–5 to `Code in JavaScript` + the `(quick_reply)` save-message node.

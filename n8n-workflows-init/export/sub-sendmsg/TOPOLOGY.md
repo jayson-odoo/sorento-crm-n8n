@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-sub-respond-sendmsg-respond  (`aoydkG1dbItXR5jXFEQsP`)
 
-- versionId **91171ac3-ddad-4452-ace5-98da59480c48** · activeVersionId **c712e218-31a7-4fe3-803b-5827af31c54f** · ⚠️ DRAFT != ACTIVE
+- versionId **91171ac3-ddad-4452-ace5-98da59480c48** · activeVersionId **91171ac3-ddad-4452-ace5-98da59480c48** · DRAFT == ACTIVE
 - 17 nodes
 
 ## Edges
