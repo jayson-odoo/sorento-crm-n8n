@@ -1,5 +1,5 @@
 // Splits one bot turn into N WhatsApp messages. Buttons ride the LAST part.
-// Unit-tested offline: scratchpad/chunker/{after,test}.js (15 cases, 6 mutants).
+// Unit-tested offline: tests/unit/sendmsg-quickreply-chunk.test.js (16 cases, 7 mutants).
 const src = $('When Executed by Another Workflow').first().json;
 let text = src.message;
 if (text) { text = String(text).trim(); }
@@ -8,8 +8,12 @@ const quickReply = src.quick_reply || '';
 const contactId = src.contact_identifer;
 if (!text) return [{ json: { message: '' } }];
 
+// WhatsApp caps an interactive message's `body` at 1024; respond.io rejects a longer
+// one with "parameter value is not valid" and the 400 kills the whole turn.
 const LIMIT = quickReply ? 1000 : 1800;
-const FLOOR = Math.floor(LIMIT * 0.45);
+// 800 verbatim on the plain path so its split boundaries stay byte-identical to live;
+// only the button path needs a smaller floor, since its LIMIT is 1000.
+const FLOOR = quickReply ? 450 : 800;
 
 const parts = [];
 let rest = text;

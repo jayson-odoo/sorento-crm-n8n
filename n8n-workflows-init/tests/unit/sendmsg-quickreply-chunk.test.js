@@ -44,7 +44,7 @@ const result_set = LOCS.map(([wh, loc, qty], i) => ({
 
 const F = { message, quick_reply, result_set };
 
-// ── BEFORE: live c712e218 ──────────────────────────────────────────────
+// ── BEFORE: live c712e218 ──────────────────────────────────
 function before(src) {
   const LIMIT = 1800;
   let text = src.message;
@@ -80,7 +80,7 @@ function before(src) {
   });
 }
 
-// ── AFTER: deployed in sub-sendmsg-QRCHUNK ────────────────────────────
+// ── AFTER: deployed in sub-sendmsg-QRCHUNK @ 89817982 ─────────────
 function after(src) {
   let text = src.message;
   if (text) { text = String(text).trim(); }
@@ -90,7 +90,9 @@ function after(src) {
   if (!text) return [{ json: { message: '' } }];
 
   const LIMIT = quickReply ? 1000 : 1800;
-  const FLOOR = Math.floor(LIMIT * 0.45);
+  // 800 verbatim on the plain path so its split boundaries stay byte-identical to live;
+  // only the button path needs a smaller floor, since its LIMIT is 1000.
+  const FLOOR = quickReply ? 450 : 800;
 
   const parts = [];
   let rest = text;
@@ -222,6 +224,16 @@ t('AFTER == BEFORE for numbered per-part subsetting on a long plain message', ()
   assert.ok(b.length > 1, 'should split');
   assert.strictEqual(a.length, b.length);
   a.forEach((p, i) => assert.deepStrictEqual(p.json.result, b[i].json.result, `part ${i + 1}`));
+});
+t('AFTER: plain-path split boundaries are byte-identical to live (FLOOR regression)', () => {
+  // Regression guard: a proportional FLOOR (floor(1800*0.45)=810) silently changed the PLAIN
+  // path for any message whose only newline before LIMIT lands in [800,810).
+  for (let nl = 780; nl <= 830; nl++) {
+    const s = { message: 'a'.repeat(nl) + '\n' + 'b'.repeat(2000), quick_reply: '', result_set: [], contact_identifer: 'x' };
+    const b = before(s).map(p => p.json.message);
+    const a = after(s).map(p => p.json.message);
+    assert.deepStrictEqual(a, b, `newline@${nl}: plain path diverged from live`);
+  }
 });
 t('AFTER: plain path still uses LIMIT 1800 (unchanged chunk count)', () => {
   const s = { ...plain, message: F.message.repeat(3) };

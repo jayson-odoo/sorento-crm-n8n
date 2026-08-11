@@ -8,7 +8,7 @@ const quickReply = j.quick_reply || '';
 const ts = new Date().toISOString();
 
 const LIMIT = quickReply ? 1000 : 1800;
-const FLOOR = Math.floor(LIMIT * 0.45);
+const FLOOR = quickReply ? 450 : 800;
 const parts = [];
 let rest = message;
 while (rest.length > LIMIT) {

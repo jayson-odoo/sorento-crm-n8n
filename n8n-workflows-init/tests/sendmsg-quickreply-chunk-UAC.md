@@ -40,8 +40,9 @@ passes `is_test=true`, verified before repointing because the guard **fails open
 ## The 7 hunks
 
 1. `Code in JavaScript` — `LIMIT` 1000 when `quick_reply` non-empty, else 1800 (unchanged).
-2. Split-floor `800` → `Math.floor(LIMIT * 0.45)`, so a 1000-limit chunk still breaks on a line
-   boundary instead of hard-cutting mid-field.
+2. Split-floor becomes `quickReply ? 450 : 800`, so a 1000-limit chunk still breaks on a line
+   boundary instead of hard-cutting mid-field. **800 is kept verbatim on the plain path** — see
+   review finding R1.
 3. Each part carries `quick_reply` (**LAST part only**) + `contact_identifer` — `HTTP Request` now
    reads `$json` from the loop, not from the trigger.
 4. Buttoned part carries the **WHOLE** `result_set`. It is the message a tap quotes, so its quote
@@ -64,7 +65,7 @@ fail-open cannot write prod `chat_histories`. **Revert at promote** — this is 
 
 ### Offline unit — `tests/unit/sendmsg-quickreply-chunk.test.js`
 
-15 cases, **15 passed**. Mutation pass: 6 mutants, each caught by the specific test meant to catch it
+16 cases, **16 passed**. Mutation pass: 7 mutants, each caught by the specific test meant to catch it
 (no vacuous assertions — see [[green-that-cannot-fail]]).
 
 | mutant | caught by |
@@ -75,9 +76,10 @@ fail-open cannot write prod `chat_histories`. **Revert at promote** — this is 
 | drop the no-numbering fallback | reachability test |
 | drop `contact_identifer` carry | carry test |
 | whole set on every part (the rejected option) | duplication + subsetting tests |
+| proportional plain-path floor (R1) | plain-path byte-identity test |
 
 The **shipping** node body was extracted back out of the built workflow, wrapped in a `$()` shim, and
-run against the same 15 cases — **15 passed**. The tested logic and the deployed logic are the same
+run against the same 16 cases — **16 passed**. The tested logic and the deployed logic are the same
 code, not a claim.
 
 Measured on the real turn:
@@ -173,3 +175,52 @@ Target: live `aoydkG1dbItXR5jXFEQsP`. Hash-gate on `c712e218` first.
 
 Note `build-suggest-offer` emits `[...codes, YES, NO]` with no count cap; WhatsApp allows max 3 reply
 buttons. Separate failure mode, out of scope here.
+
+
+## Review findings
+
+Self-review before promote. Three findings, all in code I had written.
+
+### R1 — plain-path split boundaries silently changed (FIXED)
+
+Making the floor proportional (`Math.floor(LIMIT * 0.45)` = 810 for the plain path, up from 800)
+changed the **plain** path, which this change is supposed to leave alone. Any message whose only
+newline before 1800 falls in `[800, 810)` split differently:
+
+```
+newline@800..809   BEFORE parts=[800,1800,200]   AFTER parts=[1800,1001]
+```
+
+Fixed to `quickReply ? 450 : 800`, so the plain path is byte-identical to live. Locked by a new
+regression case sweeping newline positions 780–830 and asserting `AFTER == BEFORE`; it fails when
+the proportional floor is restored.
+
+### R2 — `$('Loop Over Items').item` in the quick_reply logger is UNVERIFIED (OPEN)
+
+The `(quick_reply)` save-message node now sits inside the loop and reaches back with
+`$('Loop Over Items').item`. This is **new**: on live that node is not in a loop and read the
+trigger instead.
+
+It could not be exercised. With `is_test=true` the guard blocks the send branch, so the node never
+runs; the `is_test=false` pinned run that would reach it was blocked by the Claude Code classifier
+and not worked around.
+
+If n8n cannot resolve the paired item it throws *"Can't determine which item to use"* — which
+would kill every buttoned turn, i.e. **the same symptom as the bug being fixed**.
+
+Assessment: risk is low but real. Live's plain-path sibling uses the identical idiom at
+`Loop → Send a Message → save-msg1` and works in production. Mine is
+`Loop → is-last-quickreply → guard-qr → HTTP Request → save-msg`, and exec `12036346` shows
+`pairedItem` surviving both If nodes. The only unverified hop is `HTTP Request`, the same class of
+hop as `Send a Message` in the proven path.
+
+To close it: one `test_workflow` run with `is_test:false`, `HTTP Request` + `Send a Message` pinned
+and the save-message nodes **left unpinned** so their expressions actually evaluate. Egress stays
+nil — the loggers point at the harness fork `tWm5DYLxfypmVC1T`, whose sink nothing consumes.
+
+### R3 — quick_reply logger passed the FULL message, not the part (FIXED)
+
+Its top-level `message` input still read the trigger while `data.message` read the part, so the two
+disagreed and the head parts would have been logged with the whole reply text. The plain-path
+sibling uses the part in both. Cause: the build script patched only inside the `data` JSON. Both
+loggers now read `$('Loop Over Items').item.json.message` in both places.
