@@ -31,6 +31,28 @@ The plugin was written for a normal application repo. Where it disagrees, this f
 4. **Verify before you read.** Any export artifact read without a green
    `export-workflows.py --verify` is untrusted. This is why `normalized-workflows/` was deleted.
 
+## Who executes each step (delegation is part of the order)
+
+Every step has a named executor and a model tier. Running a step in the wrong seat is the same
+process violation as skipping it. Deviations get recorded in the plan.
+
+- **Main session** (holds the grill context and every user-in-the-loop moment): steps 0–5
+  (verify-then-read, journey, grill, plan, UAC, plan review, tickets), step 9 promote, step 10
+  banking, and all orchestration. **Planning is NOT delegated for normal changes** — the grill
+  context dies at the subagent boundary, and a plan written without it re-asks questions you
+  already answered. For steps 2–4 switch the main model to **Fable** (`/model`), then switch back
+  before step 6; the reasoning tiers differently for design than for execution.
+- **`sorento-planner`** (`model: fable`): module-sized work ONLY, where independent sub-plans can
+  be charted in parallel. Not the default seat for step 3.
+- **`sorento-coder`** (`model: opus`): step 6, offline probe + clone build. Never live (LESSONS §58a).
+- **`sorento-tester`** (`model: sonnet`): step 7, UAC run against the clone. Asserts against UAC ids.
+- **`sorento-reviewer`** (`model: opus`) + `/code-review`: step 8. Then `/codex-review` (OpenAI
+  model family, second opinion) on anything headed for live.
+- **Codex** (`codex exec --sandbox read-only`): reviewer only, never an executor. It reads the
+  exported files; it has no path to the remote instance, the CRM, or `n8n_test`.
+- Trivial one-node tweaks may run inline in the main session — say so, instead of silently
+  absorbing a real slice.
+
 ## The pipeline
 
 ### Step 0 — Scope check
@@ -67,7 +89,10 @@ A plan whose first section is a node list is rejected.
   authority is `CLAUDE.md` + `docs/LESSONS.md`.
 - Pure flow/UX question → `/grilling`.
 
-### Step 3 — Plan + UAC (`sorento-planner`)
+### Step 3 — Plan + UAC (main session; `sorento-planner` only if module-sized)
+
+Write these yourself, in the session that ran the grill. Spawn `sorento-planner` only when the work
+is module-sized and splits into independent sub-plans that can be charted in parallel.
 
 - Plan: `n8n-workflows-init/plans/<slug>-plan.md` — measured baselines first (drive the clone in
   `uac` mode with `previous_conversation_state: {}`; uac mode otherwise reads 437264483's stale prod
@@ -90,6 +115,11 @@ slice ids match the plan's numbering.
 ### Step 6 — Offline probe FIRST, then build the clone (`sorento-coder`)
 
 This is the step that replaces Phase-1/Phase-2 and where the speed comes from.
+
+**The coder's prompt is paths only:** the plan path, the UAC family path, the slice id, and the
+build target id (clone or named fork). The files are the contract — do not paraphrase them into the
+prompt. A paraphrase is a second, unversioned spec, and when it drifts from the plan the coder
+follows the paraphrase.
 
 1. Pull the **real node body byte-exact** into `tests/offline/<slug>/` and drive it against pinned
    fixtures with a `*-probe.js`. No n8n, no network, seconds per iteration.
@@ -133,6 +163,11 @@ Node-diff correctness + zero-egress re-confirmation + plan/UAC adherence → APP
 REQUEST-CHANGES with a promote checklist. Run `/code-review` over the exported `nodes/*.js` as real
 files for the code-quality axis.
 
+Then, on **anything headed for live**, run `/codex-review` — a read-only `codex exec` pass over the
+same exported files for a second opinion from a different model family. Its output is candidate
+findings, verified against the real node body before they count; it cannot clear §0 (egress is
+proven from the run log, not from static files) and it never bypasses `CLAUDE.md` or the UAC.
+
 ### Step 9 — Promote gate (user-gated, never assistant-initiated)
 
 Preconditions, all of them:
@@ -161,26 +196,27 @@ Record the rollback versionId in the manifests README before the first write. Th
 
 ## Skill map (quick reference)
 
-| step | skill / agent |
-| ---- | ------------- |
-| 0 scope unknown | `/wayfinder` |
-| 1 verify-then-read | `export-workflows.py --verify` — manual, no skill |
-| 2 journey | manual — no skill |
-| 2 grill | `/grill-with-docs` (spec-search domain) or `/grilling` |
-| 2b terms shifting | `/domain-modeling` |
-| 3 plan + UAC | `sorento-planner`, `/to-spec` redirected to files |
-| 4 plan review | `/lavish` then `/grilling` |
-| 5 tickets | `/to-tickets` |
-| 6 offline probe + clone build | `sorento-coder` |
-| 7 UAC run | `sorento-tester` |
-| 8 review | `sorento-reviewer` + `/code-review` |
-| 9 promote | main agent only, user-gated |
-| bugs | `/triage` then `/diagnosing-bugs` |
-| research | `/research` |
+| step | skill / agent | executor (model) |
+| ---- | ------------- | ---------------- |
+| 0 scope unknown | `/wayfinder` | main session |
+| 1 verify-then-read | `export-workflows.py --verify` — manual, no skill | main session |
+| 2 journey | manual — no skill | main session (Fable) |
+| 2 grill | `/grill-with-docs` (spec-search domain) or `/grilling` | main session (Fable, user in loop) |
+| 2b terms shifting | `/domain-modeling` | main session |
+| 3 plan + UAC | `/to-spec` redirected to files | main session (Fable); `sorento-planner` (fable) only if module-sized |
+| 4 plan review | `/lavish` then `/grilling` | main session (user in loop) |
+| 5 tickets | `/to-tickets` | main session |
+| 6 offline probe + clone build | — | `sorento-coder` (opus), paths-only prompt |
+| 7 UAC run | — | `sorento-tester` (sonnet) |
+| 8 review | `/code-review`, then `/codex-review` if promoting | `sorento-reviewer` (opus) + codex (OpenAI) |
+| 9 promote | — | main session only, user-gated |
+| bugs | `/triage` then `/diagnosing-bugs` | main session |
+| research | `/research` | main session |
 
 ## Related
 
 - `CLAUDE.md` — the safety rule, the IDs, clone-vs-live, the export contract
 - `docs/LESSONS.md` — numbered lessons; §57 promote-as-hunks, §58 transport, §61 green-that-cannot-fail, §62 where the time actually goes
+- `.claude/skills/codex-review/SKILL.md` — the cross-model second opinion used at step 8
 - `n8n-workflows-init/tests/uac/00-SAFETY-always-read.md` — §0, mandatory for every case
 - `docs/agents/` — issue tracker, triage labels, domain doc rules

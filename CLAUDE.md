@@ -99,7 +99,18 @@ you need something the export genuinely lacks.
 
 ## Agent pipeline (project agents in `.claude/agents/`)
 
-Work flows **planner → coder → tester → reviewer** (custom subagents `sorento-planner/coder/tester/reviewer`). Each carries the safety rule, IDs, and role contract. When dispatching, tell the agent to **read this file + `docs/LESSONS.md`** first so it doesn't re-discover. Plans/UAC live in `plans/` + `tests/`.
+Work flows **plan → build → test → review** and each step has a **named seat + model tier**; running a step in the wrong seat is a process violation. `/feature` is the executable version of this — read it before dispatching anything.
+
+| seat | model | owns |
+|---|---|---|
+| main session | Fable for design (steps 2–4), then back | grill, plan, UAC, tickets, promote, all user-in-the-loop |
+| `sorento-planner` | `fable` | **module-sized parallel sub-plans only** — normal planning is NOT delegated; the grill context dies at the subagent boundary |
+| `sorento-coder` | `opus` | offline probe + clone build. Prompt is **paths only** (plan, UAC, slice id, target id) — never paraphrase the files |
+| `sorento-tester` | `sonnet` | UAC run on the clone, asserts per-node runData + egress |
+| `sorento-reviewer` | `opus` | node-diff + zero-egress + UAC adherence → APPROVE / REQUEST-CHANGES |
+| `codex exec` | OpenAI (read-only) | second-opinion review of the exported `nodes/*.js` — reviewer only, never an executor |
+
+Each agent carries the safety rule, IDs, and role contract. When dispatching, tell it to **read this file + `docs/LESSONS.md`** first so it doesn't re-discover. Plans/UAC live in `plans/` + `tests/`.
 
 ## Common tasks
 
@@ -119,6 +130,10 @@ Work flows **planner → coder → tester → reviewer** (custom subagents `sore
 
 Config the mattpocock engineering skills (`to-tickets`, `triage`, `to-spec`, `code-review`,
 `domain-modeling`, `wayfinder`, …) read from. Edit `docs/agents/*.md` directly to change any of it.
+
+Repo-local skills: **`/feature`** (the pipeline — the binding order) and **`/codex-review`**
+(cross-model second opinion via the OpenAI Codex CLI, read-only over the exported `nodes/*.js`;
+run it at step 8 on anything headed for live).
 
 ### Issue tracker
 
