@@ -103,32 +103,59 @@ One function, one place (spine, before get-results input):
 - File-count cap on answers (D5 — user: send them all).
 - Tier-only entitlement without a brand axis (cross-brand leak — rejected in Q6).
 
-## 7. OPEN — narrow-holder cross-brand ask (found 2026-08-11, after the population correction)
+## 7. Narrow-holder shapes — measured, and what they do NOT require (2026-08-11)
 
-Our fixtures all use the 7-name entitlement, sampled from **bot traffic** — which is the staff/test
-cluster, not the population. Real CRM distribution: 8 contacts hold 1 name, 3 hold 2, 2 hold 3,
-5 hold all 7. So the NARROW holder is the majority and is absent from every fixture we have.
-
-Reachable consequence, worked through the real mapper:
+Our fixtures all use the 7-name entitlement, sampled from **bot traffic** = the staff/test cluster.
+CRM shape histogram of the 13 narrow holders (peer, no identities):
 
 ```
-entitlement ["Cabana Dealer", "Sorento Office"]
-  ask renders  "1. Office  2. Dealer"
-  picks Dealer -> ["Cabana Dealer"]   (silently CABANA)
-  picks Office -> ["Sorento Office"]  (silently SORENTO)
+end_user-only  : 5   ['end_user']
+cross-brand    : 4   3x ['cabana_office','sorento_office']
+                     1x ['cabana_office','mocha_office','sorento_office']
+brand-coherent : 4   3x ['dealer']   (legacy unprefixed token MEANING Sorento Dealer)
+                     1x ['dealer','end_user','sorento_office']
 ```
 
-Filtering is CORRECT — the contact gets exactly what they hold. The *question* is what misleads: it
-presents a pure tier choice while secretly also switching brand. Under the all-seven assumption this
-shape cannot occur, which is why D1–D11 never considered it.
+**Cross-brand holders exist (4 of 13) — but they are SAME-TIER multi-brand.** The multi-tier
+cross-brand shape this section originally worried about (`Cabana Dealer` + `Sorento Office`, where
+a tier label silently switches brand) has **zero live instances**. Verified through the real mapper:
+every observed narrow shape resolves correctly, and only the two multi-tier shapes fire the ask.
 
-Decision needed before promote **only if cross-brand narrow holders actually exist** — asked the CRM
-peer for a shape histogram of the 13. If they exist:
-- label the option with its brand where the held set is cross-brand: `2. Dealer (Cabana)`;
-- keep the bare tier label when the held set is brand-coherent (the common case), so nothing
-  changes for anyone whose tiers all map to the same brand.
-If they do not exist, record that as the reason this stays unbuilt — not silence.
+### The brand axis does NOT need its own ask — measured, not assumed
 
-⚠️ Also a standing fixture debt: no offline case covers a 1-name or 2-name holder end-to-end
-(the mapper unit-tests them, the spine suites do not). TA-6R uses a pinned single-tier entitlement;
-that is the only narrow coverage we have.
+The peer predicted that a same-tier multi-brand holder gets no ask and is then sent every brand's
+copy, reviving the duplicate-file problem. The filter statement is true (`recompose` returns
+`["Cabana Office","Sorento Office"]`); the harm is not. Live exec 12031183, a PRODUCT-scoped promo
+answer under all-seven entitlement, returned:
+
+```
+2 promotions x 3 TIERS = 6 files, ALL SORENTO
+```
+
+Not one Cabana or Mocha row, despite the contact holding every brand's levels — because a product
+belongs to ONE brand and its promotions are that brand's. **Tier is the duplication axis; brand is
+not, for product-scoped queries.** That is why the tier ask alone takes this case from 6 files to 2.
+
+Brand still matters for **category-scoped / brand-less broad** queries, which do span brands
+("promotion for bathroom furniture" → 15). For a cross-brand holder that means seeing every brand
+they hold — judged CORRECT (distinct documents they are entitled to), not noisy (the tier case was
+a defect because it was the SAME document three times). Revisit only if that judgement is wrong.
+
+### What stays open
+
+- Multi-tier cross-brand labelling (`2. Dealer (Cabana)`): **conditional, currently unreachable.**
+  Post-split, any brands x tiers combination becomes expressible, so this moves from "cannot occur"
+  to merely "unpopulated" — a weaker guarantee. Build it the day such a holder is created.
+- **Two gates disagreeing** — asked the peer whether `respond_contact_companies` scoping also
+  filters the promotion read. If a cross-brand holder is company-scoped to Mocha only, do their
+  `Cabana Office` rows return anything? That is the one shape where "no brand ask" could still be
+  wrong.
+- Migration note handed to the CRM: the legacy unprefixed `['dealer']` token means **Sorento
+  Dealer**; a naive `split('_')` mangles it.
+
+### Fixture debt (now actionable)
+
+Traffic-derived fixtures can never contain these shapes — the narrow holders barely chat. Synthesize
+spine-level cases from the histogram above rather than waiting for traffic: end_user-only,
+`['dealer']` legacy, and the same-tier cross-brand pair. Today only the mapper unit-tests them
+(M2/M3/R5/R6/A2); TA-6R is the sole narrow case at the spine level, and it uses a pinned fixture.
