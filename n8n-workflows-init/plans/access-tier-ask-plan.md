@@ -213,3 +213,68 @@ visibility, or those contacts need Sorento membership for promo purposes.
 Add a **Mocha-company-scoped contact** shape: non-empty entitlement, zero rows returned. It is the
 one shape that guarantees an empty answer to an entitled ask, and no traffic fixture will ever
 contain it — such contacts get nothing worth screenshotting.
+
+## 9. Round-2 UAC — F1, and the flag that grew teeth (2026-08-11)
+
+Round 2 fixed D9/D10/D11 (verified: brand gate closed ⇒ 0 answers / 0 attachments / 0 file egress
+against a deliberately NON-empty pinned payload, so suppression is n8n's own). It introduced one
+regression, **F1**, and it is a mapper bug of mine that a probe pin was actively defending.
+
+**Symptom** (exec 12045520, entitlement `['End User']`, "office promo for SRTBF11710"):
+
+```
+You don't have access to office promotions — here's what you do have:
+(nothing follows)
+```
+
+**Mechanism.** `parseLevel('End User') → {brand: null}`, so `mapEntitlement(['End User']).brands`
+is `[]`. The old predicate `qb.length > 0 && !qb.some(b => brands.includes(b))` is therefore
+**unconditionally true for any brandless entitlement** once the LLM infers any brand — and D10's
+guard then deleted answers and attachments.
+
+**Why the suite defended it.** Probe R9 pinned
+`{access_levels:['End User'], brand_gate_empty:true}` and I reasoned only about the access_levels
+half. At the time the flag merely selected a notice, so `true` beside a non-empty list looked
+harmless. **D10 later gave that flag teeth** and the pin became a contradiction the suite enforced.
+Generalised lesson, now in LESSONS: *a pin that asserts only half of a value's meaning becomes a
+defect the day the other half gains consequences.*
+
+**Fix — split the flag, enforce an invariant** (`tests/offline/access-tier/mapper.js`, 43/43 probe,
+11/11 mutations incl. regression mutants for both halves):
+
+| flag | job |
+|---|---|
+| `brand_unheld` | the customer named a brand they hold no entitlement for → drives the NOTICE |
+| `brand_gate_empty` | nothing at all may be sent → drives SUPPRESSION (D10) |
+
+**INVARIANT: `brand_gate_empty ⇒ access_levels === []`.** A brandless level that survives the denial
+means the contact still has something they may legitimately see: notice AND answer (the Q23 shape),
+never notice and silence. Also: a brandless entitlement has no brand axis, so it can never be
+brand-denied. **Do not re-merge these two flags.**
+
+### Spine wiring still required (not yet built)
+
+- `disallowed-entity-gate`: render the notice from **`brand_unheld`**, not `brand_gate_empty`.
+- `promo-picker` D10 guard: keep keying on **`brand_gate_empty`** only.
+
+### Other round-2 findings, triaged
+
+- **F2 (accepted, documented):** the gate keys on a brand the LLM *inferred* from the product code,
+  not one the customer typed. Tester could not force a wrong denial in 3 attempts — inference tracks
+  the product prefix. Coupling recorded; not a live leak.
+- **F3 (open, pre-existing):** D9 fixed the access/routing half of the word-order dependency, not the
+  SEARCH half — only one phrasing yields a `hint:'brand'` entity, and the entity scopes the search.
+  `"cabana promo for CBS212-WH dealer"` → 2 files; `"cabana dealer promo for CBS212-WH"` → dead-end.
+- **F4 (open):** TA-8 half-fixed. No re-ask, but the follow-up re-widens from the dealer-scoped
+  answer (2 files) to the full entitlement (6), and "the august one" is not honoured.
+- **D9-FALLBACK is UNTESTED and the first attempt was VACUOUS** — `mock_parser_output` gates the
+  clarification LLM via `parser-bypass-gate`, not the semantic-parser sub, so the mock never ran and
+  both turns exercised the round-2 parser. Recorded as vacuous, not as a pass. Matters because the
+  promote order is parser-then-spine, i.e. there IS a window where a new spine meets an old parser.
+
+### 🚩 Harness debt to raise with the user
+
+The dev contact's resolver is still dead, so this cycle ran on `477071889` — **a real customer**,
+who was conversing with the live bot during the run (prod pops 07:56–07:57). Nothing of ours reached
+them and §0 held clean, but this is the second cycle leaning on a live customer's identity for
+testing. Fix the dev contact's membership or provision a dedicated test contact.

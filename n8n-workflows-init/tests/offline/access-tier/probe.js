@@ -33,27 +33,45 @@ eq('M4 unknown preserved, never guessed', mapEntitlement(['Sorento Dealer', 'Pla
 
 console.log('── recompose (tier × brand ∩ entitlement -> TODAY\'s compound names) ──');
 eq('R1 tier+brand', recompose(['dealer'], ['cabana'], ENTITLED_ALL),
-  { access_levels: ['Cabana Dealer'], brand_gate_empty: false });
+  { access_levels: ['Cabana Dealer'], brand_gate_empty: false, brand_unheld: false });
 eq('R2 tier, no brand -> all entitled brands', recompose(['dealer'], [], ENTITLED_ALL),
-  { access_levels: ['Cabana Dealer', 'Mocha Dealer', 'Sorento Dealer'], brand_gate_empty: false });
+  { access_levels: ['Cabana Dealer', 'Mocha Dealer', 'Sorento Dealer'], brand_gate_empty: false, brand_unheld: false });
 eq('R3 multi-tier + brand', recompose(['dealer', 'office'], ['sorento'], ENTITLED_ALL),
-  { access_levels: ['Sorento Dealer', 'Sorento Office'], brand_gate_empty: false });
+  { access_levels: ['Sorento Dealer', 'Sorento Office'], brand_gate_empty: false, brand_unheld: false });
 eq('R4 end_user tier -> the brandless name', recompose(['end_user'], [], ENTITLED_ALL),
-  { access_levels: ['End User'], brand_gate_empty: false });
+  { access_levels: ['End User'], brand_gate_empty: false, brand_unheld: false });
 eq('R5 brand gate: named brand with zero entitlement', recompose(['dealer'], ['cabana'], ['Sorento Dealer', 'End User']),
-  { access_levels: [], brand_gate_empty: true });
+  { access_levels: [], brand_gate_empty: true, brand_unheld: true });
 eq('R6 tier not entitled -> empty, no invention', recompose(['office'], [], ['Sorento Dealer', 'End User']),
-  { access_levels: [], brand_gate_empty: false });
+  { access_levels: [], brand_gate_empty: false, brand_unheld: false });
 eq('R7 selects from CONTACT names, never string-built', recompose(['dealer'], ['sorento'], ['sorento dealer']),
-  { access_levels: ['sorento dealer'], brand_gate_empty: false });
+  { access_levels: ['sorento dealer'], brand_gate_empty: false, brand_unheld: false });
 eq('R8 all three tiers ("all" pick) full entitlement', recompose(['dealer', 'office', 'end_user'], [], ENTITLED_ALL),
-  { access_levels: ENTITLED_ALL.slice().sort((a, b) => ENTITLED_ALL.indexOf(a) - ENTITLED_ALL.indexOf(b)), brand_gate_empty: false });
-// PINNED DECISION, not an accident: End User is BRANDLESS in today's data, so it survives a failed
-// brand gate — "cabana end user promo" from a Sorento-only contact still answers with End User
-// files, because that is exactly what today's CRM would serve them. The contract's item 3
-// (end_user brand-scoping) may flip this; when it does, this pin is the line that goes red.
-eq('R9 end_user survives brand gate (brandless today)', recompose(['end_user'], ['cabana'], ['Sorento Dealer', 'End User']),
-  { access_levels: ['End User'], brand_gate_empty: true });
+  { access_levels: ENTITLED_ALL.slice().sort((a, b) => ENTITLED_ALL.indexOf(a) - ENTITLED_ALL.indexOf(b)), brand_gate_empty: false, brand_unheld: false });
+// 🔴 R9 REWRITTEN 2026-08-11 — the original pin ENCODED A BUG and shipped it.
+// It asserted `{access_levels:['End User'], brand_gate_empty:true}` and I called that correct,
+// reasoning only about the access_levels half. At the time `brand_gate_empty` merely selected a
+// notice, so a true value beside a non-empty list looked harmless. Then D10 gave that flag teeth —
+// it now SUPPRESSES the answer and every attachment — and the pin became a self-contradiction the
+// suite was actively defending: "here is what you may see" + "send nothing".
+// Live symptom (exec 12045520, entitlement ['End User'], "office promo for SRTBF11710"):
+//   "You don't have access to office promotions — here's what you do have:"  …followed by nothing.
+// Lesson: a flag's blast radius can change under a pin that only asserted the other half.
+//
+// INVARIANT now enforced and asserted: brand_gate_empty ⇒ access_levels is empty. The two jobs are
+// split — `brand_unheld` drives the NOTICE, `brand_gate_empty` drives SUPPRESSION.
+eq('R9 end_user survives a named brand it does not hold: notice, but NOT suppression',
+  recompose(['end_user'], ['cabana'], ['Sorento Dealer', 'End User']),
+  { access_levels: ['End User'], brand_gate_empty: false, brand_unheld: true });
+eq('R10 brandless entitlement has NO brand restriction to enforce (F1)',
+  recompose(['end_user'], ['cabana'], ['End User']),
+  { access_levels: ['End User'], brand_gate_empty: false, brand_unheld: false });
+eq('R11 F1 exact shape: brandless contact, office tier, brand inferred by the LLM',
+  recompose(['office'], ['sorento'], ['End User']),
+  { access_levels: [], brand_gate_empty: false, brand_unheld: false });
+eq('R12 INVARIANT brand_gate_empty ⇒ nothing survived',
+  recompose(['dealer'], ['cabana'], ['Sorento Dealer', 'End User']),
+  { access_levels: [], brand_gate_empty: true, brand_unheld: true });
 
 console.log('── statedTiers ──');
 eq('S1 "promo for A dealer"', statedTiers('promo for SRTBF11710 dealer', []), ['dealer']);

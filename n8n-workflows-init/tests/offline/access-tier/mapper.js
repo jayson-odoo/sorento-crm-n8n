@@ -51,20 +51,31 @@ function mapEntitlement(names) {
 //   tiers:       tiers the customer chose/stated (['dealer'] / ['dealer','office'] / ...)
 //   queryBrands: brands named in the query ([] = no brand filter -> all entitled brands)
 //   entitled:    the raw Aggregate name[] for this contact
-// Returns { access_levels: [...], brand_gate_empty: bool }
-//   brand_gate_empty=true ⇒ the customer named brand(s) they hold NO entitlement for —
-//   caller renders the Q23-style notice instead of silently widening.
+// Returns { access_levels: [...], brand_unheld: bool, brand_gate_empty: bool }
+//
+// TWO FLAGS, TWO JOBS — they were one flag until F1 (exec 12045520) proved that fatal:
+//   brand_unheld      → the customer named a brand they hold no entitlement for. Drives the NOTICE.
+//   brand_gate_empty  → nothing at all may be sent. Drives SUPPRESSION (spine D10).
+// INVARIANT: brand_gate_empty ⇒ access_levels is empty. While one flag did both jobs, a contact
+// could be told "here's what you do have:" and then shown nothing, because the flag that selected
+// the notice also deleted the answer. Never merge them again.
+//
+// A BRANDLESS entitlement (End User only) carries NO brand restriction to enforce, so naming any
+// brand must not deny it — that was F1's mechanism: entMap.brands === [] made
+// `!qb.some(b => brands.includes(b))` unconditionally true, and D10 then erased the answer.
 function recompose(tiers, queryBrands, entitled) {
   const want = new Set((Array.isArray(tiers) ? tiers : []).map(t => String(t ?? '').trim().toLowerCase()));
   const qb = (Array.isArray(queryBrands) ? queryBrands : [])
     .map(b => String(b ?? '').trim().toLowerCase()).filter(b => BRANDS.includes(b));
   const ent = Array.isArray(entitled) ? entitled : [];
   const entMap = mapEntitlement(ent);
-  const brandGateEmpty = qb.length > 0 && !qb.some(b => entMap.brands.includes(b));
-  // brand_gate_empty ⇒ allow NOTHING (probe R5): falling back to the full entitlement here would
+  // "unheld" is only a meaningful claim when the contact HAS brand-scoped entitlement to compare
+  // against. entMap.brands empty ⇒ no brand axis for this contact ⇒ nothing to deny (R10/R11).
+  const brandUnheld = qb.length > 0 && entMap.brands.length > 0 && !qb.some(b => entMap.brands.includes(b));
+  // unheld ⇒ allow NO brand-scoped name (probe R5): falling back to the full entitlement here would
   // silently answer a Cabana ask with Sorento files — the exact widen the flag exists to stop.
   const allowBrands = qb.length
-    ? (brandGateEmpty ? [] : qb.filter(b => entMap.brands.includes(b)))
+    ? (brandUnheld ? [] : qb.filter(b => entMap.brands.includes(b)))
     : entMap.brands;
   const out = [];
   for (const n of ent) {
@@ -75,7 +86,10 @@ function recompose(tiers, queryBrands, entitled) {
     if (p.brand && !allowBrands.includes(p.brand)) continue;
     if (!out.includes(n)) out.push(n);
   }
-  return { access_levels: out, brand_gate_empty: brandGateEmpty };
+  // Suppress ONLY when the denial left nothing to send. If a brandless level survived, the contact
+  // still has something they may legitimately see: notice AND answer (the Q23 shape), never notice
+  // and silence.
+  return { access_levels: out, brand_gate_empty: brandUnheld && out.length === 0, brand_unheld: brandUnheld };
 }
 
 // ── tier derivation from the customer's words (parser-side helper) ──────────────────────

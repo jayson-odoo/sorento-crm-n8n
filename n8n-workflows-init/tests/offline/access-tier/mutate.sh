@@ -33,8 +33,8 @@ mutate "end-user parse deleted" \
   "P3"
 
 # 2. brand-gate widen regression (the bug R5 caught for real during build)
-mutate "brand_gate_empty widens again" \
-  "s/\(brandGateEmpty \? \[\] : qb\.filter\(b => entMap\.brands\.includes\(b\)\)\)/qb.filter(b => entMap.brands.includes(b)).length ? qb : entMap.brands/" \
+mutate "unheld brand widens to full entitlement again" \
+  "s/\(brandUnheld \? \[\] : qb\.filter\(b => entMap\.brands\.includes\(b\)\)\)/entMap.brands/" \
   "R5"
 
 # 3. recompose stops honouring the brand filter -> R1/R3 red
@@ -71,6 +71,16 @@ mutate "compound-level brand recovery dropped" \
 mutate "pendingPick exemption removed" \
   "s/if \(opts && opts\.pendingPick === true\) return false;//" \
   "A6"
+
+# 10. F1 regression: brandless entitlement denied again (the two-flag merge) -> R10/R11 red
+mutate "brandless entitlement can close the gate again" \
+  "s/qb\.length > 0 && entMap\.brands\.length > 0 && !qb\.some/qb.length > 0 \&\& !qb.some/" \
+  "R10"
+
+# 11. INVARIANT broken: suppress while something survived -> R9 red
+mutate "brand_gate_empty no longer implies empty access_levels" \
+  "s/brand_gate_empty: brandUnheld && out\.length === 0/brand_gate_empty: brandUnheld/" \
+  "R9"
 
 restore
 echo
