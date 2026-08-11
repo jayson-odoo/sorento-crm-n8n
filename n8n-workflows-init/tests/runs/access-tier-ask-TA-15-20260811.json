@@ -1,0 +1,197 @@
+{
+ "case": "TA-15",
+ "title": "non-promo never asks",
+ "verdict": "PASS (partial)",
+ "mode": "uac",
+ "prompt": "eta for SRTWC286-SH",
+ "execution": "12040965",
+ "rendered_reply_verbatim": "Could not find incoming for SRTWC286-SH. Would you like me to escalate to purchasing team?",
+ "quick_reply_key_present_in_sendmsg_payload": [
+  false
+ ],
+ "quick_reply_value": [
+  null
+ ],
+ "file_attachments_at_boundary": [],
+ "tier_gate": null,
+ "entitlement": null,
+ "If4_branch": null,
+ "persisted_selection_context": null,
+ "D4_access_levels_key_in_persisted_vars": false,
+ "get_results_ran": false,
+ "get_results_semantic_access_levels": null,
+ "nodes_run": [
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If-incoming-picker",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If5",
+  "If7",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "build-suggest-offer",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "cs-offer-gate",
+  "disallowed-entity-gate",
+  "dym-gate",
+  "dym-transform",
+  "escalate-catalog",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-found-error-message",
+  "not-supported-domain",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "resolve-entity-http",
+  "session-save-gate",
+  "sibling-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-not-found",
+  "tf-message"
+ ],
+ "S1_hard_egress_nodes_ran": [],
+ "S6_llm_nodes_ran": [],
+ "sendmsg_sub_nodes_run": [
+  [
+   "When Executed by Another Workflow",
+   "chat?",
+   "test-guard",
+   "test-guard-record"
+  ]
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "eta for SRTWC286-SH"
+   },
+   "test_run_id": "ta-15b",
+   "ts": "2026-08-11T02:55:10.800-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "user_goal": "trying to check the ETA for SRTWC286-SH",
+      "entities": [
+       {
+        "raw": "SRTWC286-SH",
+        "hint": "inbound_shipment",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Could not find incoming for SRTWC286-SH. Would you like me to escalate to purchasing team?",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "Could not find incoming for SRTWC286-SH. Would you like me to escalate to purchasing team?"
+    }
+   },
+   "test_run_id": "ta-15b",
+   "ts": "2026-08-11T02:55:10.795-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Could not find incoming for SRTWC286-SH. Would you like me to escalate to purchasing team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "ta-15b",
+   "ts": "2026-08-11T02:55:10.626-04:00"
+  }
+ ],
+ "notes": "Turn 1 'check stock srtwc286' (exec 12039710) and turn 2 'eta for SRTWC286-SH' (exec 12040965): tier-gate never executes on either, no tier ask on any non-promotion domain. The answers themselves are blocked by BLOCKER-1.",
+ "static_safety": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 407cbfb7 (versionId == activeVersionId, re-fetched before the run)",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 7c5ff7fd (versionId == activeVersionId)",
+  "live_spine": "9qVyfUxmRQqrpGRMDLRuz NEVER driven — read-only observation of pre-existing executions only",
+  "S3_from_JSON": "orphaned (0 inbound): send-message-files, send-message-images, send-message-video, update-human-intervened, save-session-vars. Sinked: Call 'sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T, whose Redis.list is the literal 'sorento-respond-message-TEST'",
+  "sendmsg": "all callers -> ublq9nSlrpz63xan (sub-sendmsg-CHAT). Every run: chat?[1] -> test-guard[0] -> test-guard-record. The credentialed respondio 'Send a Message' executed in ZERO sub-executions.",
+  "S5": "is_test:true is a literal on every sendmsg caller's workflowInputs; trigger json carries test_mode:true",
+  "S4": "Call 'sub-get-results' ran only in CRM-PROBE; tool resolved to a promotion READ; crm_it_support_ticket_create never invoked"
+ },
+ "S7": {
+  "S7a_TEST_sink": "every turn shows LLEN sorento-respond-message-TEST +1 (runner execs 12038829..12041890); no turn wrote anywhere else",
+  "S7b_method": "prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn — per-poll LLEN keyed by list name AND per-poll pop payload, snapshotted DURING/immediately after the run (both signals, per §0)",
+  "S7b_windows": [
+   {
+    "window": "06:33:00Z..06:52:35Z",
+    "polls": 236,
+    "unretrievable": 0,
+    "nonzero_llen": 40,
+    "nonempty_pop": 40,
+    "attribution": "all 40 -> LIVE spine turns for unrelated real contacts (477071889, 428334748, 445659708, 482766267, 423729473); turn_ids 12038725..12040669 are live-spine execution ids, none in this run's execution set; no test_run_id, no fixture message_id. HARNESS-ATTRIBUTABLE = 0 -> resumed"
+   },
+   {
+    "window": "06:52:30Z..07:04:35Z",
+    "polls": 146,
+    "unretrievable": 0,
+    "nonzero_llen": 27,
+    "nonempty_pop": 27,
+    "attribution": "all 27 -> LIVE spine turns for unrelated contacts (423729473, 477071891, 423882401, 445239409). HARNESS-ATTRIBUTABLE = 0"
+   },
+   {
+    "window": "07:04:00Z..07:05:25Z",
+    "polls": 18,
+    "unretrievable": 0,
+    "nonzero_llen": 0,
+    "nonempty_pop": 0,
+    "attribution": "prod-sink delta 0"
+   }
+  ]
+ }
+}

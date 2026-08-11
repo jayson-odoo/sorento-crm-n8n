@@ -62,6 +62,16 @@ mutate "unknown level invented" \
   "s/return m \? \{ brand: m\[1\], tier: m\[2\] \} : null;/return m ? { brand: m[1], tier: m[2] } : { brand: 'sorento', tier: 'dealer' };/" \
   "M4"
 
+# 8. BLOCKER-4 regression: brand recovered ONLY from entities again -> B1/B3 red
+mutate "compound-level brand recovery dropped" \
+  "s/if \(p && p\.brand\) out\.add\(p\.brand\);/;/" \
+  "B1"
+
+# 9. BLOCKER-3 regression: pendingPick no longer suppresses the ask -> A6 red
+mutate "pendingPick exemption removed" \
+  "s/if \(opts && opts\.pendingPick === true\) return false;//" \
+  "A6"
+
 restore
 echo
 echo "$((runs-fails))/$runs mutations caught"

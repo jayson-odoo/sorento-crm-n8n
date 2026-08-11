@@ -18,6 +18,24 @@ against today's data via the compat mapper (§3). Live stays on the entitlement-
 | D7 | Brand gate stays: contact's brand entitlement limits what they see. CRM will hold `brands[]` and `tiers[]` per contact; until then the compat mapper derives both from compound names. |
 | D8 | Zero downtime / inert rollout. Mapper consumes today's `name[]`; CRM's additive fields activate the clean path; mapper deleted at CRM cutover. |
 
+## 1b. Amendments from the first UAC run (2026-08-11, tester DO-NOT-PROMOTE)
+
+Three blockers; all three are additions to the decisions above, not reversals of them.
+
+| # | decision |
+|---|---|
+| D9 | **Brand is read from TWO sources, unioned**: brand entities AND the brand half of a COMPOUND stated access level. Measured: "cabana dealer promo for X" makes the LLM emit `access_levels:["Cabana Dealer"]` and NO brand entity, while "cabana promo for X dealer" emits the entity — an entities-only read made the brand gate depend on word order (fork execs 12041502/12041565). `parseLevel` already recovers the brand; consume it. This does NOT reverse D6 — still no new LLM field, still deterministic derivation. The union must run on the RAW LLM levels, before tier-token normalisation destroys the brand half. |
+| D10 | **The brand gate fails closed IN n8n**, never by trusting the CRM's response to `access_levels: []`. When `brand_gate_empty`, the answer block and ALL attachments are suppressed; the customer gets the notice + escalation offer only. An access boundary may not depend on another system's undocumented empty-filter semantics — the first build shipped that assumption as a comment asserting it as fact. |
+| D11 | **A pending non-tier pick outranks the ask.** `needsTierAsk` takes a `pendingPick` discriminator: a positional pick or continuation against a roster that is not the tier ask (suggest_offer / member_offer / disambiguation / a promo answer being followed up) suppresses the ask entirely. Without it the ask fired on top of an already-resolved pick and discarded it (execs 12041783, 12041879) — plan §2 row 5 was unimplementable as written. |
+
+Mapper (`tests/offline/access-tier/mapper.js`) already carries D9 + D11: `statedBrands()` and
+`needsTierAsk(..., {pendingPick})`, 40/40 probe, 9/9 mutations. D10 is a spine wiring change.
+
+Also open, NOT this feature's bug: the CRM entity resolver returns 0 matches / 0 alternatives for
+harness contact `437264483` while control contact `477071889` resolves the same tokens exact on the
+same lane (execs 12040466 vs 12040525); the pre-change clone reproduces it. Environment/CRM-side —
+raise with the CRM peer; it blocks the uac lane, not the design.
+
 ## 2. Journey (customer boundary first)
 
 1. "promo for SRTBF11710" — contact entitled {Sorento Dealer, Sorento Office, End User}

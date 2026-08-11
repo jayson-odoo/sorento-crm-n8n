@@ -93,11 +93,43 @@ function statedTiers(message, entities) {
   return ['dealer', 'office', 'end_user'].filter(t => found.has(t));
 }
 
+// ── brands the customer named THIS query ────────────────────────────────────────────────
+// TWO sources, unioned, because the LLM splits the same fact two ways depending on word order
+// (measured, fork execs 12041502 / 12041565):
+//   "cabana dealer promo for X" -> access_levels ["Cabana Dealer"], NO brand entity
+//   "cabana promo for X dealer" -> access_levels ["dealer"],        brand entity "Cabana"
+// Reading only entities made the brand gate phrasing-roulette on a security boundary: the first
+// phrasing answered a Cabana question with Sorento Dealer files and no notice. parseLevel already
+// recovers the brand half of a compound name — consume it instead of discarding it.
+// `rawLevels` must be the levels AS THE LLM EMITTED THEM (pre tier-token normalisation); once
+// normalised to "dealer" the brand is gone and cannot be recovered here.
+function statedBrands(entities, rawLevels) {
+  const out = new Set();
+  for (const e of (Array.isArray(entities) ? entities : [])) {
+    if (String((e && e.hint) || '').toLowerCase() !== 'brand') continue;
+    const s = String((e && (e.canonical_code || e.raw)) || '').toLowerCase();
+    const v = BRANDS.find(b => s.includes(b));
+    if (v) out.add(v);
+  }
+  for (const l of (Array.isArray(rawLevels) ? rawLevels : [])) {
+    const p = parseLevel(l);
+    if (p && p.brand) out.add(p.brand);
+  }
+  return BRANDS.filter(b => out.has(b));
+}
+
 // Ask-trigger (plan D2): promotion query AND nothing stated AND >1 distinct entitled tier.
-function needsTierAsk(domain, stated, entitledTiers) {
+// opts.pendingPick — this turn is a positional pick / continuation against a roster that is NOT
+// the tier ask (suggest_offer, member_offer, disambiguation, or a promo answer being followed up).
+// Without it the ask fired on top of a resolved pick and DISCARDED it (fork execs 12041783,
+// 12041879): the customer's "2" vanished and they were asked for an access level instead. Plan
+// §2 row 5 requires a continuation to stay a continuation; this is the discriminator that makes
+// that implementable. Defaults false ⇒ every existing call site is unchanged.
+function needsTierAsk(domain, stated, entitledTiers, opts) {
   if (domain !== 'promotion') return false;
+  if (opts && opts.pendingPick === true) return false;
   if (Array.isArray(stated) && stated.length > 0) return false;
   return (Array.isArray(entitledTiers) ? entitledTiers : []).length > 1;
 }
 
-module.exports = { parseLevel, mapEntitlement, recompose, statedTiers, needsTierAsk, BRANDS };
+module.exports = { parseLevel, mapEntitlement, recompose, statedTiers, statedBrands, needsTierAsk, BRANDS };
