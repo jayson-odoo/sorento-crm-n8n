@@ -61,8 +61,11 @@ switch (kind) {
     response       = `I see you're ${qf.user_goal}, Let me understand more.\n\nAre you asking about any of these?\n\n- Product (List Price, Dimension)\n- Photos, Technical Specs, Cert\n- Promotion\n- Forms\n- Stock\n- Delivery order\n- Incoming\n- Catalogue, Warranty\n\nI can help with the topics listed above.`;
     manualResponse = true;
     break;
-  case 'escalate_offer':
-    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${qf.routing.suggested_team} team?`;
+  case 'escalate_offer': {
+    // #9: prefer the resolved entity's company team over the parser's access-level guess.
+    const _ct = (() => { try { const g2 = $('disallowed-entity-gate'); return g2.isExecuted ? (g2.first().json.company_team || null) : null; } catch (e) { return null; } })();
+    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${_ct || qf.routing.suggested_team} team?`;
+  }
     manualResponse = true;
     is_escalate_offer = true;
     break;

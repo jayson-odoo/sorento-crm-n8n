@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **629fe5d0-3559-4792-8aeb-4f76b547333b** · activeVersionId **d1b3f29e-5244-4f65-85e5-f082d1766de9** · ⚠️ DRAFT != ACTIVE
-- 115 nodes
+- versionId **8a1e1270-112f-4e33-8bea-d44952ca7f06** · activeVersionId **8a1e1270-112f-4e33-8bea-d44952ca7f06** · DRAFT == ACTIVE
+- 116 nodes
 
 ## Edges
-_137 edge groups_
+_138 edge groups_
 
 ```
 Aggregate[0] -> If4
@@ -111,6 +111,7 @@ not-supported-domain[1] -> If
 patch-transcript[0] -> tf-message
 presign-fail-notice[0] -> sorento-sub-respond-sendmsg-presign-fail
 probe-incoming[0] -> annotate-incoming-picker
+promo-picker[0] -> crossdomain-zeroset
 redis-pop-main-message-list[0] -> if-audio-in
 resolve-entity[0] -> disallowed-entity-gate
 resolve-entity-clarification[0] -> construct-user-prompt
@@ -142,7 +143,7 @@ tag-not-supported[0] -> escalate-catalog
 tag-out-of-scope[0] -> escalate-catalog
 tf-message[0] -> sorento-sub-respond-findcontact-respond
 tool-filter[0] -> Call 'sub-get-results'
-validator[0] -> crossdomain-zeroset
+validator[0] -> promo-picker
 whisper-transcribe[0] -> patch-transcript
 ```
 
@@ -150,7 +151,7 @@ whisper-transcribe[0] -> patch-transcript
 
 > Rewiring alone does NOT redirect these. Repoint the expression too.
 
-- **Aggregate** ← Call 'sub-get-results', If4, crossdomain-probe, dym-probe, dym-probe-partial, probe-incoming, resolve-entity-clarification, sibling-probe
+- **Aggregate** ← Call 'sub-get-results', If4, crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-incoming, resolve-entity-clarification, sibling-probe
 - **Edit Fields2** ← validator
 - **Remove Duplicates** ← presign-fail-notice
 - **Split Out** ← Switch
@@ -166,7 +167,7 @@ whisper-transcribe[0] -> patch-transcript
 - **crossdomain-compose** ← Call 'sub-respond-save-message-redis'2, attach-merge, presign-fail-notice, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond2
 - **crossdomain-render** ← attach-merge, crossdomain-compose
 - **crossdomain-zeroset** ← compile-current-state, crossdomain-render
-- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, dym-transform, dym-transform-partial, family-fetch, not-found-error-message, probe-incoming, sibling-gate, sibling-transform, tool-filter
+- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, dym-transform, dym-transform-partial, escalate-catalog, family-fetch, not-found-error-message, probe-incoming, promo-picker, sibling-gate, sibling-transform, tool-filter
 - **dym-annotate** ← build-suggest-offer
 - **dym-transform** ← dym-probe
 - **dym-transform-partial** ← dym-probe-partial
@@ -178,8 +179,9 @@ whisper-transcribe[0] -> patch-transcript
 - **not-found-error-message** ← escalate-catalog
 - **patch-transcript** ← send-transcript-confirm
 - **probe-incoming** ← annotate-incoming-picker
+- **promo-picker** ← compile-current-state
 - **redis-pop-main-message-list** ← fetch-audio, if-transcribed-confirm, if-voice-allowed, patch-transcript, send-voice-not-allowed, sorento-sub-respond-findcontact-respond, sorento-sub-respond-sendmsg-presign-fail
-- **resolve-entity** ← If3, build-suggest-offer, compile-current-state, crossdomain-zeroset, disallowed-entity-gate, dym-transform, dym-transform-partial, not-found-error-message
+- **resolve-entity** ← If3, build-suggest-offer, compile-current-state, crossdomain-zeroset, disallowed-entity-gate, dym-transform, dym-transform-partial, not-found-error-message, promo-picker
 - **resolve-entity-clarification** ← construct-user-prompt
 - **set-ran-query-formulator** ← sorento-sub-respond-sendmsg-respond
 - **sibling-probe** ← build-suggest-offer
@@ -249,17 +251,18 @@ whisper-transcribe[0] -> patch-transcript
 
 | node | lines |
 |---|---|
-| build-suggest-offer | 540 |
-| compile-current-state | 529 |
+| compile-current-state | 607 |
+| build-suggest-offer | 557 |
+| promo-picker | 528 |
 | dym-transform | 410 |
 | dym-transform-partial | 410 |
-| disallowed-entity-gate | 318 |
-| not-found-error-message | 247 |
+| disallowed-entity-gate | 403 |
+| not-found-error-message | 319 |
 | crossdomain-render | 165 |
 | dym-annotate | 144 |
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 104 |
-| escalate-catalog | 86 |
+| escalate-catalog | 89 |
 | crossdomain-compose | 86 |
 | presign-fail-notice | 62 |
 | tool-filter | 59 |

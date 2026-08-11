@@ -24,7 +24,9 @@ const gate = (() => { try { return $('disallowed-entity-gate').first().json ?? {
 
 out.suggest_offer = false;
 
-const team = q?.routing?.suggested_team || 'customer_service';
+// #9: prefer the resolved entity's company team, so the offer text, the not-found text and
+// the actual escalation cannot name three different teams in one turn.
+const team = (gate && gate.company_team) || q?.routing?.suggested_team || 'customer_service';
 const YES  = 'Yes, escalate';
 const NO   = "No, it's okay";
 const cap3 = (a) => (Array.isArray(a) ? a.slice(0, 3) : []);
@@ -440,6 +442,21 @@ const anyUuidAlt = rawPicks.some(a => isUuid(a.value));
 const compat = Array.isArray(gate?.compatible_entities) ? gate.compatible_entities : [];
 const askedCode = (compat[0] && (compat[0].code || compat[0].canonical_code))
   || (Array.isArray(q?.entities) && q.entities[0] ? q.entities[0].raw : 'that item');
+// UUID LEAK (display only): promotions have no product code, so askedCode above IS a uuid and
+// the "No {noun} for {askedCode}" templates printed it straight to the customer
+// (observed: "No promotion for 3b9d6b74-5d4a-4b9f-b2b6-110599485332. Try: ..."). The existing
+// guard covered the CANDIDATES, never the subject.
+// askedCode itself is left untouched — it is the dym-candidate-map linkage key (for_raw); only
+// the rendered label changes.
+const askedLabel = (() => {
+  const c0 = compat[0] && (compat[0].code || compat[0].canonical_code);
+  if (c0 && !isUuid(c0)) return String(c0);
+  const d0 = (compat[0] && compat[0].display) || {};
+  const human = d0.description || d0.product_name || d0.name;
+  if (human) return String(human);
+  const raw = Array.isArray(q?.entities) && q.entities[0] ? q.entities[0].raw : null;
+  return raw ? String(raw) : 'that item';
+})();
 
 // Grammatical mass-noun for the "No {noun} for {code}" template (no article).
 const NOUN = { inventory: 'stock', incoming: 'incoming stock (ETA)', master_products: 'product info', promotion: 'promotion' };
@@ -470,7 +487,7 @@ if (!anyUuidAlt) {
       `Reply with a date to continue, or would you like me to escalate to ${team} team?`;
   } else {
     text =
-      `No ${noun} for ${askedCode}. Try: ${values.join(', ')}. ` +
+      `No ${noun} for ${askedLabel}. Try: ${values.join(', ')}. ` +
       `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
   }
 
@@ -515,7 +532,7 @@ const numbered = altPicks.map((p, i) => `${i + 1}. ${p.label}`).join('\n');
 out.suggest_offer = true;
 out.suggest_selection_context = 'suggest_offer';
 out.suggest_response =
-  `No ${noun} for ${askedCode}. Here are the closest matches:\n${numbered}\n` +
+  `No ${noun} for ${askedLabel}. Here are the closest matches:\n${numbered}\n` +
   `Reply with a number to continue, or would you like me to escalate to ${team} team?`;
 const altNums = altPicks.map((_, i) => String(i + 1));
 out.suggest_quick_reply = [...altNums, YES, NO].map(s => String(s).replace(/,/g, '')).join(',');

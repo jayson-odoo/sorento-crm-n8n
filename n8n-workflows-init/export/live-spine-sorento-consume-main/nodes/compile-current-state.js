@@ -206,7 +206,19 @@ if (_merge) { last_result_set = Array.isArray(_mem.cs_last_result_set) ? _mem.cs
 else if (_sug) { last_result_set = Array.isArray(_sug.suggest_last_result_set) ? _sug.suggest_last_result_set : []; }
 else if (_mem) { last_result_set = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : []; }
 const _isDisambig = (() => { try { const r = getResultObj(); return !!(r && r.require_specific === true && Array.isArray(r.compatible_entities) && r.compatible_entities.length > 0); } catch (e) { return false; } })();
-const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_isDisambig ? 'disambiguation' : null)));
+// promotion-picker S4: promo-picker builds its own roster, and the parser's ALL handler is
+// gated on selection_context === 'suggest_offer', so without an arm here "all" over a
+// promotion list silently does nothing (measured). LOWEST precedence on purpose — member,
+// suggest and cs rosters must still win a stray "2" (UAC §PP-8).
+const _promo = (() => {
+  try { const n = $('promo-picker');
+        if (!n.isExecuted) return null;
+        const j = n.first().json;
+        return (Array.isArray(j.suggest_last_result_set) && j.suggest_last_result_set.length) ? j : null;
+  } catch (e) { return null; }
+})();
+if (!_merge && !_sug && !_mem && _promo) { last_result_set = _promo.suggest_last_result_set; }
+const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_promo ? 'suggest_offer' : (_isDisambig ? 'disambiguation' : null))));
 
 // ── friendly domain disclaimers (append to user-facing text on the happy path only) ──
 // master_products answered → nudge toward the catalogue for attributes not shown.
@@ -348,12 +360,77 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
         .filter(Boolean));
     } catch (e) { return new Set(); }
   })();
+  // ── a token whose OWN candidates BECAME the answer is not a miss (promo-scope-dym) ──
+  // FIFTH surface of the class the `document-class-narrowing` narrowing above patched fourth.
+  // That one names the MECHANISM; this one names the OUTCOME, so a sixth promotion mechanism
+  // needs no sixth patch. Measured on exec 11889275 ("6047 promo"): resolve-entity returns
+  // `{ token: "6047", resolved: false, ambiguous: true, matches: [15 promotions, every one
+  // match_tier "via_product" and therefore never `isExact`] }`, disallowed-entity-gate lifts all
+  // 15 into `compatible_entities` — which IS the list the customer was shown — and nobody writes
+  // `resolved` back. So this filter offered three rows of the customer's own answer back to them
+  // as "did you mean". Same on the "all" pick turn for "bathroom furniture".
+  //
+  // Keyed PER TOKEN on that token's own candidates, never on "something was answered": a genuine
+  // miss contributes nothing to compatible_entities and is still surfaced, and an empty
+  // compatible_entities suppresses nothing. Gate: tests/offline/promo-scope-dym/probe.js
+  // (A1-A5 the defect, C1-C4 the surviving feature, D1 the no-blanket-mute bound).
+  const _answerCodes = (() => {
+    const s = new Set();
+    try {
+      for (const e of ($('disallowed-entity-gate').first().json.compatible_entities ?? [])) {
+        for (const v of [e && e.uuid, e && e.code]) {
+          const k = String(v ?? '').trim().toLowerCase();
+          if (k) s.add(k);
+        }
+      }
+    } catch (e) { /* gate not executed -> no answer set -> suppress nothing */ }
+    return s;
+  })();
+  // `intersection` is the THIRD place an answer set hides. resolve-entity returns two envelopes:
+  // the per-token `resolutions[]` shape, and a legacy blob { tokens, intersection, alternatives,
+  // unresolved_tokens, ... } with NO `resolutions` at all — that is the one the legacy arm below
+  // renders. Measured on exec 11891721 ("dealer version only"): `unresolved_tokens: ["6047"]`
+  // alongside `intersection: [8 products, match_tier "brand_access_fallback",
+  // display.via_token: "6047"]`, i.e. the token that "failed" is the token that produced the
+  // answer. Reading only matches/alternatives left this envelope unprotected and the customer got
+  // `"6047" — not found.` under four correct rows.
+  const _tokenWasAnswered = (res) => {
+    if (!_answerCodes.size) return false;
+    const cands = [].concat(Array.isArray(res?.matches) ? res.matches : [],
+                            Array.isArray(res?.alternatives) ? res.alternatives : [],
+                            Array.isArray(res?.intersection) ? res.intersection : []);
+    return cands.some(m => [m && m.uuid, m && m.canonical_code]
+      .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _answerCodes.has(k); }));
+  };
+  // ── one miss, one voice (2026-08-11) ─────────────────────────────────────────
+  // promo-picker now renders its own miss for promotion turns ("No promotion found for …").
+  // Without this, the same token was ALSO reported here: measured live, "cabana shower head promo"
+  // answered with the picker's miss AND "Couldn't find these: \"shower head\" — not found." — two
+  // voices, one miss. Skip any token the picker already reported. Guarded: on workflows without a
+  // promo-picker node (clone/live) the set is empty and this is byte-inert.
+  const _pickerReported = (() => {
+    const s2 = new Set();
+    try {
+      const pp = $('promo-picker');
+      if (pp.isExecuted) {
+        const o = pp.first().json || {};
+        for (const t of ((o._promo_notfound && o._promo_notfound.tokens) || []))
+          s2.add(String(t ?? '').trim().toLowerCase());
+        for (const t of (o._promo_unmatched || []))
+          s2.add(String(t ?? '').trim().toLowerCase());
+      }
+    } catch (e) { /* node absent -> empty set */ }
+    return s2;
+  })();
   let missResolutions = [];
   if (Array.isArray(r?.resolutions)) {
     missResolutions = r.resolutions.filter(res => res && res.resolved !== true
       && !(Array.isArray(res.matches) && res.matches.some(isExact))
-      && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase()));
-  } else if (unresolved.length) {
+      && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
+      && !_pickerReported.has(String(res.token ?? '').trim().toLowerCase())
+      && !_tokenWasAnswered(res));
+  } else if (unresolved.length && !_tokenWasAnswered(r)
+      && !unresolved.every(t => _pickerReported.has(String(t ?? '').trim().toLowerCase()))) {
     missResolutions = [r];   // legacy single-resolution shape
   }
   const surfaced = missResolutions.slice(0, 5);   // cap missed tokens shown at 5
@@ -488,7 +565,8 @@ output = {
     "domain_hint": qf.domain_hint,
     "user_goal": qf.user_goal,
     "query_scope": qf.query_scope,
-    "access_levels": qf.access_levels,
+    // S3 (promotion-picker): access_levels is NO LONGER session state. The parser carry was
+    // removed; persisting it here too would leave the stale value that D4 exists to eliminate.
     "entities": reconciledEntities,
     "routing": qf.routing,
     "escalation": qf.escalation,

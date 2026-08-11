@@ -1,5 +1,19 @@
 # PROMOTE checklist — promotion-picker bundle (final review 2026-08-11)
 
+## ✅ EXECUTED 2026-08-11
+
+| target | published versionId | rollback (publish this to revert) |
+|---|---|---|
+| parser sub `XTODTw-dJcV0uRdC056hG` | `c829509d` | `bb875580` |
+| live spine `9qVyfUxmRQqrpGRMDLRuz` | `8a1e1270` | `d1b3f29e` |
+
+Order honoured (parser first). Every promoted node byte-gated active == fork file
+(6 spine bodies + new `promo-picker` + splice; parser `output_exchange`). Exports refreshed
+and `--verify` green. Transport note: node bodies landed via MCP `update_workflow`; the final
+two comment-banner byte fixes + publish went via one REST PUT (auto-publishes) that wrote the
+export files' exact bytes — hand-transcribing long `─` banner runs drifted ±2 repeatedly and
+the byte-gate caught it every time.
+
 Reviewed diff: fork `RnpxEnAV3g20MmKj` @ `4f2df612` vs live spine @ active `d1b3f29e`
 (draft `629fe5d0` is a byte-identical no-op save — nodes+connections equal; publish will collapse it).
 Parser: fork `RJ326g9dwe3bTWyf` @ `1f784ae4` vs live sub `XTODTw…` @ `bb875580`.

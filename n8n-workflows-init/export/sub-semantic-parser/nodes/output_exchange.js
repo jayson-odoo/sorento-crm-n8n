@@ -916,8 +916,72 @@ if (offeredEscalation && isAffirmative) {
   output.output.message_type = 'casual';
 }
 
-if (output.output.access_levels.length == 0) {
-  output.output.access_levels = $('When Executed by Another Workflow').first().json.previous_conversation_state?.access_levels || []
+// ── S3 (promotion-picker): the access-level CARRY IS DELETED ────────────────────────────
+// It made a level chosen once sticky for the rest of the session: ask for office, then ask
+// for dealer, still get office (reproduced, PP-0b). Entitlement is now re-read from CRM every
+// turn (spine S2b), so there is nothing to go stale and nothing to carry.
+//
+// ── S5 (promotion-picker): a positional pick carries its own scope ──────────────────────
+// "1 and 2" resolves to reference_positions but entities:[] — entity_op is already 'reuse',
+// yet nothing reinstates the scope, so the gate sees a scope-less promotion ask and refuses
+// (measured exec 11827959). Reuse the PREVIOUS turn's entities so the SAME query re-runs and
+// the positions still line up with the roster the customer is looking at. Promotion domain
+// only, and only when this turn resolved no entity of its own.
+{
+  const _prev = $('When Executed by Another Workflow').first().json.previous_conversation_state || {};
+  const _picking = Array.isArray(output.output.reference_positions) && output.output.reference_positions.length > 0;
+  const _noScope = !Array.isArray(output.output.entities) || output.output.entities.length === 0;
+  // The pick must NOT become the new scope. The parser resolves positions into the PICKED
+  // promotion's own entities; letting that stand narrows the next query to that one promotion,
+  // so the roster collapses to 1 and every later number returns the same file (reproduced:
+  // 7 listed, "5" correct, then "3" returned #5 again).
+  // Reuse the previous turn's NON-promotion scope on every promotion pick — not only when this
+  // turn resolved nothing — so repeat picks keep addressing the list the customer can see.
+  // QUOTE-REPLY WINS. When the customer quote-replies an OLDER list, the parser has already
+  // resolved the position against `referenced_result_set` — that IS the right answer, and the
+  // scope reuse below would discard it and re-run the PREVIOUS turn's query instead, returning
+  // the wrong promotion (PP-7: quoted list #2 vs current list #2).
+  const _quoted = Array.isArray(parent_input.referenced_result_set) && parent_input.referenced_result_set.length > 0;
+  // F1: a numbered pick on a promotion DID-YOU-MEAN offer also arrives with reference_positions.
+  // The dym path has already resolved the customer's choice; overwriting entities with the
+  // previous turn's scope would discard the pick and re-run the failing query.
+  //
+  // ⚠️ `reference_target === 'dym'` is NOT that signal — it is the model's DEFAULT and comes back
+  // 'dym' on an ordinary promo-roster pick too (measured: reference_target 'dym', entities [],
+  // no dym set anywhere). Gating on it broke EVERY repeat pick. The real discriminator is whether
+  // a dym offer was actually PENDING in the previous state.
+  const _prevDym = (Array.isArray(_prev.dym_last_result_set) && _prev.dym_last_result_set.length > 0)
+                || !!(_prev.dym_offer && typeof _prev.dym_offer === 'object');
+  const _dymPick = _prevDym || output.output.dym_pick_applied === true;
+  // F10: do NOT drop promotion-hinted entities here. Q25 allows a list scoped BY A PROMOTION
+  // NAME; filtering those out left _prevScope empty, nothing was reused, the picked promotion
+  // became the new scope and the roster collapsed to 1 — the exact defect fixed for
+  // product-scoped lists, still live for promotion-name-scoped ones.
+  // Reusing prev.entities wholesale is safe because THIS block is what writes them: on every
+  // promotion pick we overwrite entities with the reused scope, so the persisted state carries
+  // the ORIGINAL scope, never the pick.
+  const _prevScope = (_quoted || _dymPick) ? [] : (Array.isArray(_prev.entities) ? _prev.entities : []);
+  if (output.output.domain_hint === 'promotion' && _picking && _prevScope.length > 0) {
+    output.output.entities = _prevScope.map(x => ({ ...x, current_message: false }));
+    output.output.entity_op = 'reuse';
+    output.output._promo_pick_scope_reused = true;
+    // N2: name WHICH rows were picked, from the roster the customer actually saw. promo-picker
+    // prefers these over a raw index — indexing assumes the re-run returns the same order as the
+    // turn that built the roster, and nothing guarantees that.
+    const _roster = _quoted
+      ? (Array.isArray(parent_input.referenced_result_set) ? parent_input.referenced_result_set : [])
+      : (Array.isArray(_prev.last_result_set) ? _prev.last_result_set : []);
+    if (_roster.length) {
+      output.output._promo_pick_labels = output.output.reference_positions
+        .map(n => (_roster[Number(n) - 1] || {}).label)
+        .filter(Boolean);
+    }
+  } else if (output.output.domain_hint === 'promotion' && _picking && _noScope && !_quoted && !_dymPick
+             && Array.isArray(_prev.entities) && _prev.entities.length > 0) {
+    output.output.entities = _prev.entities.map(x => ({ ...x, current_message: false }));
+    output.output.entity_op = 'reuse';
+    output.output._promo_pick_scope_reused = true;
+  }
 }
 
 const _engagesOffer = (isAffirmative || isDecline || _isPositionPick);

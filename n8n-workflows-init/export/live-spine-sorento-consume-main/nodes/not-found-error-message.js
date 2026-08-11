@@ -54,9 +54,15 @@ if (missingAttachmentType) {
 
 } else {
   const tokens     = Array.isArray(r?.tokens) ? r.tokens : [];
-  const tokenText  = tokens.join(' ');
+  // #11: the access-level phrase ("Mocha Dealer") arrives as a resolver TOKEN, and the
+  // `access` suffix below already names it. Without this filter the level prints twice:
+  // "Could not find promotion for Mocha Dealer for Mocha Dealer."
+  const _accessSet = new Set((Array.isArray(q?.access_levels) ? q.access_levels : [])
+    .map(a => String(a ?? '').trim().toLowerCase()).filter(Boolean));
+  const _notAccess = t => !_accessSet.has(String(t ?? '').trim().toLowerCase());
+  const tokenText  = tokens.filter(_notAccess).join(' ');
   // tokens the user gave that didn't resolve — name them so the miss is concrete
-  const unresolvedText = unresolved.join(', ');
+  const unresolvedText = unresolved.filter(_notAccess).join(', ');
 
   let requested;
   if (resolvedTypes.length && tokenText) {
@@ -66,16 +72,22 @@ if (missingAttachmentType) {
   } else if (unresolvedText) {
     requested = unresolvedText;
   } else {
-    const entities = Array.isArray(q?.entities) ? q.entities : [];
+    const entities = (Array.isArray(q?.entities) ? q.entities : []).filter(e => _notAccess(e?.raw));
+    // #11: '' (not 'the requested item') so the " for ..." segment can be dropped entirely —
+    // the access suffix already says what was searched for.
     requested = entities.length
       ? entities.map(e => `${e.hint || 'item'} ${e.raw}`).join(', ')
-      : 'the requested item';
+      : '';
   }
 
   const dateRange = (q.date_filter_start && q.date_filter_end)
     ? ` from ${q.date_filter_start} to ${q.date_filter_end}` : '';
-  const access = q.intent_hint === 'check_promotion'
-    ? ` for ${q.access_levels?.join(', ') || 'End User'}` : '';
+  // S2 (promotion-picker): the spine now sends the contact's ENTITLEMENT UNION when the
+  // customer names no level, while q.access_levels (the parser's view) stays empty — so the
+  // old `|| 'End User'` fallback printed a level that was never searched ("no promotion for
+  // End User matched these"). Name a level only when the customer actually named one.
+  const access = (q.intent_hint === 'check_promotion' && Array.isArray(q.access_levels) && q.access_levels.length)
+    ? ` for ${q.access_levels.join(', ')}` : '';
   const team = q.routing?.suggested_team || 'customer_service';
   const active_inactive = q.is_active == true ? " active" : (q.is_active == false ? " inactive" : "")
   const allEnts = Array.isArray(q?.entities) ? q.entities : [];
@@ -135,6 +147,58 @@ if (missingAttachmentType) {
     const arr = _byType.get(et);
     if (!arr.includes(label)) arr.push(label);
   }
+  // #12: when the customer typed a code that matches EXACTLY, that code must be the
+  // representative. `_compat` order is arbitrary, so codes[0] could name a sibling variant
+  // (SRTSH1040-T for a typed SRTSH1040), reading as if we looked up a different product.
+  const _tokSet = new Set(tokens.map(t => String(t ?? '').trim().toLowerCase()).filter(Boolean));
+  for (const arr of _byType.values()) {
+    const i = arr.findIndex(l => _tokSet.has(String(l).trim().toLowerCase()));
+    if (i > 0) arr.unshift(arr.splice(i, 1)[0]);
+  }
+  // ── entitlement miss ≠ data miss ─────────────────────────────────────────────
+  // "Here's what you want: • promotion: X … But no promotion matched these." names a promotion
+  // and then denies it in the same breath. Measured (exec 11917052): the resolver DID resolve
+  // `SORENTO PP PROMO COMBINE_29072026.pdf` this turn via promotion_membership, display.is_active
+  // TRUE, display.products ["SRTWB247"] — no stale carry. The contact's entitlement is
+  // Aggregate.name = ["End User"], get-results applied it, and the Office-only promo came back
+  // empty. Every fact needed to say so was already on the wire; only the sentence was wrong.
+  //
+  // Fires ONLY when a promotion was genuinely resolved and nothing came back. A turn that
+  // resolved no promotion at all is a real data miss and keeps the original wording (B7), and an
+  // INACTIVE promotion has ended rather than being withheld (B8) — blaming access there would be
+  // a second false statement, not a fix for the first.
+  const _entitlementMiss = (() => {
+    if (q.domain_hint !== 'promotion') return null;
+    const _promoMatches = [];
+    const _push = (arr) => { for (const m of (arr || [])) if (m && m.entity_type === 'promotion') _promoMatches.push(m); };
+    _push(r?.intersection);
+    _push(r?.by_entity_type?.promotion);
+    for (const res of (r?.resolutions || [])) _push(res?.matches);
+    if (!_promoMatches.length) return null;
+    const _seen = new Set(); const _uniq = [];
+    for (const m of _promoMatches) {
+      const k = m.uuid || m.canonical_code;
+      if (!k || _seen.has(k)) continue;
+      _seen.add(k); _uniq.push(m);
+    }
+    const _named = _uniq.map(m => (m.display && m.display.description) || null).filter(Boolean);
+    if (!_named.length) return null;
+    const _label = _named[0] + (_named.length > 1 ? ` and ${_named.length - 1} other${_named.length > 2 ? 's' : ''}` : '');
+    const _anyActive = _uniq.some(m => m.display && m.display.is_active !== false);
+    if (!_anyActive) {
+      return `${_label} has ended, so there is nothing to send. Would you like me to escalate to ${team} team?`;
+    }
+    // Entitlement comes from the CRM read, not from anything the customer said. Absent ⇒ do not
+    // invent a level (B9): say it is unavailable to them without naming one.
+    let _levels = [];
+    try {
+      const _agg = $('Aggregate');
+      if (_agg.isExecuted) _levels = (_agg.first().json.name || []).map(x => String(x || '').trim()).filter(Boolean);
+    } catch (e) { _levels = []; }
+    const _at = _levels.length ? ` at your access level (${_levels.join(', ')})` : ' to you';
+    return `${_label} is not available${_at}. Would you like me to escalate to ${team} team?`;
+  })();
+
   const _foundLines = [];
   for (const [et, codes] of _byType) {
     // one representative per type + count; true ambiguity is handled by the gate (did-you-mean)
@@ -152,7 +216,8 @@ if (missingAttachmentType) {
     const parts = [];
     if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
     if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
-    parts.push(`But no${active_inactive} ${domainWord}${dateRange}${access} matched these. Would you like me to escalate to ${team} team?`);
+    parts.push(_entitlementMiss
+      || `But no${active_inactive} ${domainWord}${dateRange}${access} matched these. Would you like me to escalate to ${team} team?`);
     return parts.join('\n\n');
   };
 
@@ -204,7 +269,7 @@ if (missingAttachmentType) {
       if (attachEnt?.raw && prodText)      subject = `a ${attachEnt.raw} for ${prodText}`;
       else if (attachEnt?.raw)             subject = `a ${attachEnt.raw}`;
       else if (prodText)                   subject = `attachments for ${prodText}`;
-      else                                 subject = requested;   // fall back to the old token text
+      else                                 subject = requested || 'the requested item';   // fall back to the old token text
       escalate_message =
         `Could not find${active_inactive} ${subject}${dateRange}${access}. ` +
         `Would you like me to escalate to ${team} team?`;
@@ -231,12 +296,19 @@ if (missingAttachmentType) {
     } else if (_useBreakdown) {
       escalate_message = buildBreakdownMsg(`${_statusLabel}${q.domain_hint}`);
     } else {
+      const _forRequested = requested ? ` for ${requested}` : '';
       escalate_message =
-      `Could not find${active_inactive} ${_statusLabel}${q.domain_hint} for ${requested}${dateRange}${access}. ` +
+      `Could not find${active_inactive} ${_statusLabel}${q.domain_hint}${_forRequested}${dateRange}${access}. ` +
       `Would you like me to escalate to ${team} team?`;
     }
   }
   }
+}
+
+// Q23: the customer named an access level they do not hold. The gate detects it; say so here
+// too, or an entitlement problem reads as an ordinary "couldn't find it".
+if (gate && gate.access_notice && escalate_message) {
+  escalate_message = `${gate.access_notice}\n\n${escalate_message}`;
 }
 
 const out = $input.first().json;

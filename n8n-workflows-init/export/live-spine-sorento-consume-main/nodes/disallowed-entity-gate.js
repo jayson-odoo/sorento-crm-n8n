@@ -14,7 +14,11 @@ const ALLOWED = {
   portal_link:        [],
 };
 const ALLOWS_EMPTY = {
-  promotion: true, incoming: true, forms: true, portal_link: true,
+  // S1 (promotion-picker): a promotion cannot be answered by a general search. Flipping this
+  // to false routes a scope-less promotion ask into not-found-error-message's EXISTING
+  // `needsScope` arm ("can't be answered with a general search — please specify a ..."),
+  // reusing that renderer rather than adding a second one.
+  promotion: false, incoming: true, forms: true, portal_link: true,
   master_products: false, product_attachment: false, inventory: false, order: false,
 };
 
@@ -311,6 +315,87 @@ if (_dcSoleUuid && Array.isArray(out.resolutions)) {
 }
 out.gate_passed = gate_passed;
 out.require_specific = require_specific;
+// ── #9 multi-company routing ────────────────────────────────────────────────
+// The resolver now stamps company_id/company_name on every match (CRM multi-company is
+// live). Derive the escalation team from the RESOLVED ENTITY'S company instead of guessing
+// from the customer's access levels — which is empty on an unqualified turn and made every
+// promotion escalation fall back to `sorento`, sending Mocha/Cabana enquiries to the wrong
+// team. Brand tokens already routed correctly; this covers product- and promotion-scoped
+// turns too. Falls back to the parser's routing when no company is resolvable.
+{
+  const _VALID = ['sorento', 'cabana', 'mocha'];
+  // ── #16 brand beats company ────────────────────────────────────────────────
+  // This block was written calling its variable `_brands` while reading `company_name`, and that
+  // conflation is a real bug once the model is stated: **Cabana is a BRAND under the Sorento
+  // COMPANY.** So `company_name` is only ever "Sorento" or "Mocha", the `cabana` arm above is
+  // unreachable, and every Cabana enquiry routes to the Sorento team (exec 11894257: CBS212-WH →
+  // company "Sorento" → marketing_promotion_sorento). The parser's own enum was already
+  // brand-keyed — `marketing_promotion_<brand>`, allowed sorento|cabana|mocha — so only the gate
+  // was wrong.
+  //
+  // Rule: brand names a team → that team; otherwise fall back to the COMPANY, which is what
+  // carries Mocha and is the right answer for every other brand ("if not cabana, then sorento").
+  //
+  // ⚠️ INERT until the CRM emits brand. Surveyed 35 product resolutions across every match path
+  // (exact/and/prefix/substring): not one carries `display.brand`. `_brandTok` returns null on
+  // every one of them, so this collapses to the previous company-only behaviour byte for byte.
+  // Gate: tests/offline/brand-routing/probe.js — 48 INERT assertions replay real recorded gate
+  // output fixture by fixture, so the day this stops being inert, they say so.
+  const _brandTok = (m) => {
+    const b = m && m.display && m.display.brand;
+    if (!b) return null;
+    const s = (typeof b === 'object')
+      ? `${b.brand_name || ''} ${b.brand_code || ''}`.toLowerCase()
+      : String(b).toLowerCase();
+    return _VALID.find(v => s.includes(v)) || null;   // unknown brand ⇒ defer to company
+  };
+  // ── the brand the CUSTOMER named, between row-brand and company ──────────────
+  // Promotion rows carry no `brand` (CRM ask item 4), so an all-Cabana promotion list fell all the
+  // way through to company — and company is "Sorento" for every Cabana product by definition, so
+  // it routed Cabana enquiries to the Sorento team even after #16. The parser already identifies
+  // the brand as an ENTITY (`{raw: "Cabana", hint: "brand"}`); prefer that over the company.
+  // Order: the row's own brand > the brand the customer named > the row's company.
+  const _parserBrand = (() => {
+    for (const e of (Array.isArray(parser.entities) ? parser.entities : [])) {
+      if (String((e && e.hint) || '').toLowerCase() !== 'brand') continue;
+      const v = _VALID.find(x => String((e && e.raw) || '').toLowerCase().includes(x));
+      if (v) return v;
+    }
+    return null;
+  })();
+  const _names = flat.map(m => String((m && m.company_name) || '').toLowerCase()).filter(Boolean);
+  const _brands = [...new Set(flat
+    .map(m => _brandTok(m) || _parserBrand || _VALID.find(v => String((m && m.company_name) || '').toLowerCase().includes(v)) || null)
+    .filter(Boolean))];
+  // Only when UNAMBIGUOUS — a mixed-company result set must not be collapsed to an arbitrary
+  // first match (the dedup-by-code failure shape).
+  out.resolved_company = _brands.length === 1 ? _brands[0] : null;
+  out.company_team = (domain === 'promotion' && _brands.length === 1)
+    ? `marketing_promotion_${_brands[0]}` : null;
+  out.resolved_companies = _brands;
+}
+
+// ── Q23 — a stated access level the contact does not hold ───────────────────
+// Say so, then still show what they DO have. Without this the intersection is empty, the CRM
+// returns nothing and the customer gets a generic "not found" for a question that was really
+// an entitlement problem.
+{
+  // F5: `Aggregate` only runs when intent_hint == 'check_promotion' (node `If`). On any other
+  // turn it is unexecuted, _entitled is [] and EVERY stated level looked unheld — producing a
+  // false "You don't have access to End User promotions" on e.g. a stock question. Require the
+  // promotion domain AND a real entitlement read before claiming anything about access.
+  let _aggOk = false, _entitled = [];
+  try { _aggOk = $('Aggregate').isExecuted; if (_aggOk) _entitled = $('Aggregate').first().json.name || []; } catch (e) { _aggOk = false; }
+  const _stated = (domain === 'promotion' && _aggOk)
+    ? (Array.isArray(parser.access_levels) ? parser.access_levels : []).map(a => String(a || '').trim()).filter(Boolean)
+    : [];
+  const _lc = _entitled.map(a => String(a).toLowerCase());
+  const _held = _stated.filter(a => _lc.includes(a.toLowerCase()));
+  out.access_denied_levels = (_stated.length > 0 && _held.length === 0) ? _stated : [];
+  out.access_notice = out.access_denied_levels.length
+    ? `You don't have access to ${_stated.join(', ')} promotions — here's what you do have:` : '';
+}
+
 out.gate_reason = gate_reason;
 out.gate_clarification = gate_clarification;   // '' when nothing to ask
 out.compatible_entities = compatible_entities;
