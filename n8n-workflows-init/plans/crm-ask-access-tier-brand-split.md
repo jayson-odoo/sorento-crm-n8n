@@ -73,10 +73,24 @@ contact" report). It is tempting to conclude the brand axis is redundant. It is 
 
 Two more facts that must shape the migration:
 
-1. **Today's compound level names do not gate brand access — company membership does.** Every
-   contact we sampled holds all seven names including "Cabana Dealer" and "Mocha Dealer". The brand
-   word in a level name is a LABEL ON THE DOCUMENT, not a permission. A migration that derives
-   brand entitlement from the existing level names would grant everyone every brand.
+1. 🔴 **CORRECTED 2026-08-11 — an earlier revision of this line was WRONG and would have driven a
+   destructive migration.** It read: *"every contact we sampled holds all seven names … the brand
+   word in a level name is a LABEL, not a permission … deriving brand entitlement from level names
+   would grant everyone every brand."* The first clause was a **sample presented as a population**.
+   Actual CRM distribution (peer, all 18 contacts with entitlements): **8 hold 1 name, 3 hold 2,
+   2 hold 3, 5 hold all 7**. So for **13 of 18 contacts the compound names ARE real, intentional
+   entitlement** — `cabana_dealer`-only contacts exist.
+
+   Why the two measurements disagreed, and it is not a contradiction: our sample was drawn from
+   **n8n execution history**, i.e. contacts that have actually messaged the bot (8 distinct, 7 of
+   them all-seven, one holding 6). The all-seven cluster is essentially the staff/test population;
+   the narrow 13 exist in the CRM but have not chatted recently. Both numbers are correct about
+   different populations — ours says nothing about entitlement design, only about who talks to us.
+
+   **Migration rule (supersedes both earlier versions):** SPLIT each narrow holder's compound names
+   into `{brands, tiers}` — never zero them, never ignore them. Do NOT auto-derive for the all-seven
+   holders: flag those (5 today) for explicit admin re-confirmation, since granting them every brand
+   is presumably not the intent. That is a short human decision list, not an automated step.
 2. **Two gates can now disagree** (company scope at CRM, brand gate in n8n). A Mocha-only contact
    asking for a Cabana promo must get ONE coherent answer. n8n needs to distinguish "scoped out of
    everything" from "genuinely no matching promotion" — the peer's proposed additive

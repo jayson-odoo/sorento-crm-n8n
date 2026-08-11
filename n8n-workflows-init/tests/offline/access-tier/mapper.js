@@ -4,8 +4,15 @@
 // `brands[]` / `tiers[]` fields — then this whole file is DEAD CODE and must be deleted.
 //
 // These exact bytes embed into the spine (get-results input lane). Keep dependency-free.
-// Fixtures: real entitlement from live execs 12031183 / 12024557 / 12020037 — every sampled
-// contact holds ALL SEVEN names, so the multi-tier ask path is the modal case, not an edge.
+//
+// ⚠️ FIXTURE POPULATION WARNING (corrected 2026-08-11). The 7-name entitlement used below is real
+// (live execs 12031183 / 12024557 / 12020037), but it is NOT representative. It was sampled from
+// n8n execution history = contacts that have messaged the bot, which is the staff/test cluster.
+// Across the whole CRM: 8 contacts hold 1 name, 3 hold 2, 2 hold 3, only 5 hold all 7. So the
+// NARROW holder is the majority and the single-tier silent path (needsTierAsk -> false) is the
+// common case for real customers, even though every fixture here exercises the ask.
+// Any claim of the form "the modal case is X" drawn from bot traffic is a claim about who talks
+// to us, not about the population. Keep narrow-holder cases (M2/M3/R5/R6/A2) first-class.
 
 const BRANDS = ['sorento', 'cabana', 'mocha'];
 const TIER_WORDS = { dealer: 'dealer', office: 'office', 'end user': 'end_user' };

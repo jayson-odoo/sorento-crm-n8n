@@ -102,3 +102,33 @@ One function, one place (spine, before get-results input):
 - Persistent tier carry (D4).
 - File-count cap on answers (D5 — user: send them all).
 - Tier-only entitlement without a brand axis (cross-brand leak — rejected in Q6).
+
+## 7. OPEN — narrow-holder cross-brand ask (found 2026-08-11, after the population correction)
+
+Our fixtures all use the 7-name entitlement, sampled from **bot traffic** — which is the staff/test
+cluster, not the population. Real CRM distribution: 8 contacts hold 1 name, 3 hold 2, 2 hold 3,
+5 hold all 7. So the NARROW holder is the majority and is absent from every fixture we have.
+
+Reachable consequence, worked through the real mapper:
+
+```
+entitlement ["Cabana Dealer", "Sorento Office"]
+  ask renders  "1. Office  2. Dealer"
+  picks Dealer -> ["Cabana Dealer"]   (silently CABANA)
+  picks Office -> ["Sorento Office"]  (silently SORENTO)
+```
+
+Filtering is CORRECT — the contact gets exactly what they hold. The *question* is what misleads: it
+presents a pure tier choice while secretly also switching brand. Under the all-seven assumption this
+shape cannot occur, which is why D1–D11 never considered it.
+
+Decision needed before promote **only if cross-brand narrow holders actually exist** — asked the CRM
+peer for a shape histogram of the 13. If they exist:
+- label the option with its brand where the held set is cross-brand: `2. Dealer (Cabana)`;
+- keep the bare tier label when the held set is brand-coherent (the common case), so nothing
+  changes for anyone whose tiers all map to the same brand.
+If they do not exist, record that as the reason this stays unbuilt — not silence.
+
+⚠️ Also a standing fixture debt: no offline case covers a 1-name or 2-name holder end-to-end
+(the mapper unit-tests them, the spine suites do not). TA-6R uses a pinned single-tier entitlement;
+that is the only narrow coverage we have.
