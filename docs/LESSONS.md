@@ -501,3 +501,34 @@ Detection heuristic worth internalising: **a mutation score of exactly 100% on f
 not a triumph.** Real suites have at least one mutant that survives and teaches you a missing
 assertion — when this harness was repaired, one genuinely-uncatchable mutant (the start-date
 tiebreak) surfaced immediately and became a new assertion.
+
+## A pin that asserts half a value becomes a defect when the other half gains teeth (2026-08-11)
+
+**§73.** `tests/offline/access-tier` pinned `recompose(...)` returning
+`{access_levels: ['End User'], brand_gate_empty: true}` and I signed it off, reasoning about the
+`access_levels` half only. At that moment `brand_gate_empty` merely selected which notice to render,
+so `true` sitting beside a non-empty list looked harmless — I even wrote a comment explaining why
+End User survives the gate.
+
+Two revisions later, D10 made that same flag **suppress the answer and every attachment**. The pin
+did not change, so the suite now actively defended a self-contradiction: *"here is what you may
+see"* + *send nothing*. Live symptom for any brandless contact: `"You don't have access to office
+promotions — here's what you do have:"` followed by silence.
+
+The pin was never wrong about what it asserted. It was wrong about what it **omitted** — and the
+omission became load-bearing when someone (me) widened the flag's blast radius elsewhere.
+
+Guards:
+1. **When you widen what a field DOES, re-read every assertion that mentions it** — not just the
+   ones that fail. A green pin on a field whose meaning you just changed is unexamined, not proven.
+2. **Prefer invariants over point pins for coupled fields.** The durable fix here was not a better
+   value but a rule: `brand_gate_empty ⇒ access_levels === []`. An invariant fails on shapes nobody
+   enumerated; a point pin only fails on the one row it names.
+3. **One flag, one job.** This flag had two (choose a notice; suppress output). Splitting it into
+   `brand_unheld` and `brand_gate_empty` made the contradiction unrepresentable rather than merely
+   untested — the §70b class again: a name that promises more than the mechanism delivers, here by
+   quietly acquiring a second mechanism.
+
+Same session, same file: the zero-byte-mutation guard from §72 immediately caught a stale mutant
+anchor created by this very refactor. Two independent instruments, both earning their keep on one
+change.
