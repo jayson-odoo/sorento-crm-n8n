@@ -31,4 +31,25 @@ if (output && output.output && prevState.selection_context === 'suggest_offer') 
   }
   _o.suggest_pick_context = true;
 }
+
+// ── unicode dash normalize ──────────────────────────────────────────────────
+// Excel/Word/Sheets/PDF copy-paste emits U+2212 MINUS SIGN, U+2013 EN DASH and
+// friends instead of ASCII '-'. Observed live (exec 12053189): "SRT332−GM" carrying
+// a U+2212 reached the resolver verbatim, missed the exact match because the CRM
+// stores that code with an ASCII hyphen, and only survived as a did-you-mean — one
+// tap away from a code the customer had already typed correctly.
+//
+// Sits at the END of the LAST node in the sub, so it folds whatever the whole
+// pipeline finally settled on, and resolve-entity + get-results both see the ASCII
+// form. Runs on EVERY turn — deliberately outside the suggest_offer branch above.
+// Covered by tests/unit/entity-dash-normalise.test.js (15 cases, 7 mutants).
+const _DASHES = /[‐-―−﹘﹣－]/g;
+if (output && output.output && Array.isArray(output.output.entities)) {
+  for (const e of output.output.entities) {
+    if (!e) continue;
+    if (typeof e.raw === 'string') e.raw = e.raw.replace(_DASHES, '-');
+    if (typeof e.canonical_code === 'string') e.canonical_code = e.canonical_code.replace(_DASHES, '-');
+  }
+}
+
 return output;

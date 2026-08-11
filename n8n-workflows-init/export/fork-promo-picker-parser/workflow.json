@@ -1,6 +1,6 @@
 {
   "active": true,
-  "activeVersionId": "668cd772-fb72-468f-810e-3aa2dccb5cc4",
+  "activeVersionId": "5dd1f43d-ed71-42b7-8a12-d1c3a8e09a49",
   "connections": {
     "AI Agent": {
       "main": [
@@ -67,7 +67,10 @@
   },
   "description": null,
   "id": "RJ326g9dwe3bTWyf",
-  "meta": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
   "name": "sub-semantic-parser PROMO-PICKER",
   "nodeGroups": [],
   "nodes": [
@@ -231,7 +234,7 @@
       "id": "00db72a7-103c-454a-9293-da0192547936",
       "name": "suggest-follow-up",
       "parameters": {
-        "jsCode": "// \u2500\u2500 suggest-offer follow-up (D4/D5) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Runs AFTER output_exchange (all entity-op / reference-position resolution done).\n// When the PREVIOUS turn was a suggest_offer: a tapped code / typed position \u2192 re-query\n// in the RETAINED domain (never a CS assign); plain \"yes\" \u2192 escalate; \"no\" \u2192 decline+stop.\n// Inert on every other turn \u2192 parser output byte-identical when selection_context differs.\nconst output = $input.first().json;\nconst parent_input = $('When Executed by Another Workflow').first().json;\nconst prevState = parent_input.previous_conversation_state || {};\nif (output && output.output && prevState.selection_context === 'suggest_offer') {\n  const _o = output.output;\n  const _hasEntityPick = Array.isArray(_o.entities) && _o.entities.some(e => e.current_message === true);\n  const _hasPosPick    = Array.isArray(_o.reference_positions) && _o.reference_positions.length > 0;\n  if (_hasEntityPick || _hasPosPick) {\n    // a bare code (button tap) or a position was given \u2192 keep prior domain when the\n    // reply carried no decisive domain term, then let normal processing re-query.\n    if (!_o.domain_hint && prevState.domain_hint) {\n      _o.domain_hint  = prevState.domain_hint;\n      _o.intent_hint  = _o.intent_hint || prevState.intent_hint;\n      _o.domain_inherited_for_suggest = true;\n    }\n    if (_o.domain_hint) _o.message_type = 'business_query';\n  } else if (_o.is_affirmative === true) {\n    // plain \"yes\" on a suggest_offer = escalate, ALWAYS (never a pick)\n    _o.escalation = { is_escalation_confirmation: true };\n    _o.entities = [];\n  } else if (_o.is_affirmative === false) {\n    // \"No, it's okay\" = decline + acknowledge + stop\n    _o.escalation = { is_escalation_confirmation: false, escalation_declined: true };\n    _o.message_type = 'casual';\n    _o.entities = [];\n  }\n  _o.suggest_pick_context = true;\n}\nreturn output;\n"
+        "jsCode": "// \u2500\u2500 suggest-offer follow-up (D4/D5) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Runs AFTER output_exchange (all entity-op / reference-position resolution done).\n// When the PREVIOUS turn was a suggest_offer: a tapped code / typed position \u2192 re-query\n// in the RETAINED domain (never a CS assign); plain \"yes\" \u2192 escalate; \"no\" \u2192 decline+stop.\n// Inert on every other turn \u2192 parser output byte-identical when selection_context differs.\nconst output = $input.first().json;\nconst parent_input = $('When Executed by Another Workflow').first().json;\nconst prevState = parent_input.previous_conversation_state || {};\nif (output && output.output && prevState.selection_context === 'suggest_offer') {\n  const _o = output.output;\n  const _hasEntityPick = Array.isArray(_o.entities) && _o.entities.some(e => e.current_message === true);\n  const _hasPosPick    = Array.isArray(_o.reference_positions) && _o.reference_positions.length > 0;\n  if (_hasEntityPick || _hasPosPick) {\n    // a bare code (button tap) or a position was given \u2192 keep prior domain when the\n    // reply carried no decisive domain term, then let normal processing re-query.\n    if (!_o.domain_hint && prevState.domain_hint) {\n      _o.domain_hint  = prevState.domain_hint;\n      _o.intent_hint  = _o.intent_hint || prevState.intent_hint;\n      _o.domain_inherited_for_suggest = true;\n    }\n    if (_o.domain_hint) _o.message_type = 'business_query';\n  } else if (_o.is_affirmative === true) {\n    // plain \"yes\" on a suggest_offer = escalate, ALWAYS (never a pick)\n    _o.escalation = { is_escalation_confirmation: true };\n    _o.entities = [];\n  } else if (_o.is_affirmative === false) {\n    // \"No, it's okay\" = decline + acknowledge + stop\n    _o.escalation = { is_escalation_confirmation: false, escalation_declined: true };\n    _o.message_type = 'casual';\n    _o.entities = [];\n  }\n  _o.suggest_pick_context = true;\n}\n\n// \u2500\u2500 unicode dash normalize \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Excel/Word/Sheets/PDF copy-paste emits U+2212 MINUS SIGN, U+2013 EN DASH and\n// friends instead of ASCII '-'. Observed live (exec 12053189): \"SRT332\u2212GM\" carrying\n// a U+2212 reached the resolver verbatim, missed the exact match because the CRM\n// stores that code with an ASCII hyphen, and only survived as a did-you-mean \u2014 one\n// tap away from a code the customer had already typed correctly.\n//\n// Sits at the END of the LAST node in the sub, so it folds whatever the whole\n// pipeline finally settled on, and resolve-entity + get-results both see the ASCII\n// form. Runs on EVERY turn \u2014 deliberately outside the suggest_offer branch above.\n// Covered by tests/unit/entity-dash-normalise.test.js (15 cases, 7 mutants).\nconst _DASHES = /[\u2010-\u2015\u2212\ufe58\ufe63\uff0d]/g;\nif (output && output.output && Array.isArray(output.output.entities)) {\n  for (const e of output.output.entities) {\n    if (!e) continue;\n    if (typeof e.raw === 'string') e.raw = e.raw.replace(_DASHES, '-');\n    if (typeof e.canonical_code === 'string') e.canonical_code = e.canonical_code.replace(_DASHES, '-');\n  }\n}\n\nreturn output;\n"
       },
       "position": [
         240,
@@ -250,5 +253,5 @@
     "timeSavedMode": "fixed"
   },
   "staticData": null,
-  "versionId": "668cd772-fb72-468f-810e-3aa2dccb5cc4"
+  "versionId": "5dd1f43d-ed71-42b7-8a12-d1c3a8e09a49"
 }
