@@ -473,3 +473,31 @@ Transport corollary (same promote): hand-transcribing multi-KB node bodies throu
 chars on long `─` comment banners five times; the byte-gate caught every one. File-driven writes
 (GET → replace jsCode from the export file → PUT) are deterministic — prefer them for big bodies,
 and keep the byte-gate regardless, because it is the only thing that caught both failure classes.
+
+## The mutation harness itself was the green that could not fail (2026-08-11)
+
+**§72.** `tests/offline/promo-picker/mutate.sh` reported **26/26 mutants caught** while being
+structurally incapable of catching any: `path.join(__dirname, '/tmp/mutant')` mangled the absolute
+path, the probe crashed on every mutant, and the "did it go red?" grep matched the crash output.
+Two compounding faults in the same file:
+
+- the frozen local `promo-picker.js` was **217 lines behind** the published fork, so every
+  assertion ran against code nobody was shipping (§64's stale-fixture class, one level up);
+- five sed anchors no longer matched anything, so those mutants left the body **byte-identical** —
+  a no-op "caught".
+
+This sat in the evidence chain for the promotion-picker promote that went to production. §61 says
+an assertion never shown red is not an instrument; §72 is the sharper form: **the instrument built
+to prove your assertions can fail is itself an assertion, and it needs the same treatment.**
+
+Two guards, both now in every mutate.sh in this repo:
+1. **Zero-byte-mutation hard fail** — `cmp -s` the mutant against the original; identical bytes
+   abort the run loudly. A stale anchor can never again be scored as a detection.
+2. **Resync before trusting** — diff the frozen offline body against the published node bytes at
+   the start of the run. Offline suites are caches; they decay exactly like `normalized-workflows/`
+   did (the export `--verify` gate exists for the same reason).
+
+Detection heuristic worth internalising: **a mutation score of exactly 100% on first run is a smell,
+not a triumph.** Real suites have at least one mutant that survives and teaches you a missing
+assertion — when this harness was repaired, one genuinely-uncatchable mutant (the start-date
+tiebreak) surfaced immediately and became a new assertion.
