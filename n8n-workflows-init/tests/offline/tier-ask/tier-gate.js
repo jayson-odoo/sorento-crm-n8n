@@ -64,8 +64,9 @@ function recompose(tiers, queryBrands, entitled) {
   return { access_levels: out, brand_gate_empty: brandGateEmpty };
 }
 
-function needsTierAsk(domain, stated, entitledTiers) {
+function needsTierAsk(domain, stated, entitledTiers, opts) {
   if (domain !== 'promotion') return false;
+  if (opts && opts.pendingPick === true) return false;
   if (Array.isArray(stated) && stated.length > 0) return false;
   return (Array.isArray(entitledTiers) ? entitledTiers : []).length > 1;
 }
@@ -89,15 +90,32 @@ const tier_stated = TIER_ORDER.filter(t => _statedSet.has(t));
 
 const entMap = mapEntitlement(names);
 
-// brands the customer named THIS query (D6: brand arrives only as an ENTITY, never a field)
-const query_brands = [...new Set((Array.isArray(parser.entities) ? parser.entities : [])
-  .filter(e => String((e && e.hint) || '').toLowerCase() === 'brand')
-  .map(e => BRANDS.find(v => String((e && (e.canonical_code || e.raw)) || '').toLowerCase().includes(v)))
-  .filter(Boolean))];
+// brands the customer named THIS query. D9: the parser derives this now (statedBrands = brand
+// entities ∪ the brand half of a COMPOUND stated level) because only the parser still has the
+// RAW LLM levels — by the time they reach here they are tier tokens and the brand is gone.
+// Fallback = the original entity-only scan, so an older/live parser degrades to yesterday's
+// behaviour instead of throwing.
+const query_brands = Array.isArray(parser.query_brands)
+  ? parser.query_brands.filter(b => BRANDS.includes(String(b ?? '').toLowerCase()))
+  : [...new Set((Array.isArray(parser.entities) ? parser.entities : [])
+      .filter(e => String((e && e.hint) || '').toLowerCase() === 'brand')
+      .map(e => BRANDS.find(v => String((e && (e.canonical_code || e.raw)) || '').toLowerCase().includes(v)))
+      .filter(Boolean))];
+
+// D11: a pick the parser ALREADY resolved outranks the ask. `_pending_pick` is the parser's own
+// discriminator (roster context + "named no new scope"); the three flags beside it are
+// spine-visible provenance, kept as defence in depth so a parser without `_pending_pick` still
+// cannot have a customer's pick discarded (execs 12041783 / 12041879). The tier-pick answer turn
+// is NOT a foreign pick — it states a tier and must proceed.
+const pendingPick = parser._tier_pick_scope_reused !== true && (
+  parser._pending_pick === true
+  || parser._promo_pick_scope_reused === true
+  || parser.dym_pick_applied === true
+  || parser.member_pick_context === true);
 
 // D2 ask trigger. A zero-entitlement contact keeps the no-access lane: tier_proceed is
 // false with names empty, and needsTierAsk's A5 bound means tier_ask stays false too.
-const tier_ask = needsTierAsk(parser.domain_hint, tier_stated, entMap.tiers);
+const tier_ask = needsTierAsk(parser.domain_hint, tier_stated, entMap.tiers, { pendingPick });
 const tier_proceed = names.length > 0 && !tier_ask;
 
 // ── recomposition (plan §3) — the compound access_levels the CRM understands TODAY ──
@@ -113,8 +131,11 @@ if (_chosen.length === 0) {
   access_levels_recomposed = _r.access_levels;
   if (access_levels_recomposed.length === 0 && !brand_gate_empty && tier_stated.length) {
     // Q23: a stated tier the contact does not hold — answer at their REAL entitlement;
-    // disallowed-entity-gate renders the notice that explains it. brand_gate_empty stays
-    // FAIL-CLOSED (probe R5): [] makes the CRM return nothing, never a silent widen.
+    // disallowed-entity-gate renders the notice that explains it. The brand gate does NOT
+    // widen here: it sends []. ⚠️ Sending [] is a narrowing REQUEST, not the enforcement —
+    // the first build claimed "[] makes the CRM return nothing" as fact and it was never
+    // verified (UAC BLOCKER-2). D10 puts the actual denial in promo-picker, which suppresses
+    // the answer and every attachment locally whatever the CRM returns.
     access_levels_recomposed = names.slice().sort();
   }
 }
@@ -125,6 +146,7 @@ return {
   entitled_tiers: entMap.tiers,
   entitled_unknown: entMap.unknown,
   query_brands,
+  pending_pick: pendingPick,
   tier_ask,
   tier_proceed,
   access_levels_recomposed,

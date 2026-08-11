@@ -1,9 +1,14 @@
 # Node-diff — tier-only access ask (access-tier-ask-plan.md, built 2026-08-11)
 
-Built on fork spine `RnpxEnAV3g20MmKj` @ `407cbfb7` (from `4f2df612`) and fork parser
-`RJ326g9dwe3bTWyf` @ `7c5ff7fd` (from `1f784ae4`). **Live untouched.** Hashes + rollback:
-`tests/manifests/access-tier/README.md`. Offline evidence: `tests/offline/tier-ask/`
-(RED 46/75 pre-change → GREEN 75/75; mutate 13/13). Acceptance targets: `tests/uac/TA.md`.
+**Round 2** — the three UAC blockers (plan §1b D9/D10/D11) are fixed; see the dedicated section
+at the end. Fork spine `RnpxEnAV3g20MmKj` @ **`bba611fa`**, fork parser `RJ326g9dwe3bTWyf` @
+**`668cd772`**. **Live untouched.** Hashes + rollback: `tests/manifests/access-tier/README.md`.
+Offline: `tests/offline/tier-ask/` (round 2: RED 24/109 → GREEN **111/111**, mutate **25/25**).
+Acceptance: `tests/uac/TA.md`. Round-2 sweep touched only `tier-gate`, `promo-picker`,
+`output_exchange` — no new nodes, no connection change.
+
+The sections below describe the feature as a whole (round 1 built it, round 2 corrected it);
+each round-2 change is also called out in its own node section.
 
 Per LESSONS §71 this diff covers EVERY changed node including non-Code params (If4,
 executeWorkflow inputs) — the full-workflow param-hash sweep found exactly these rows and
@@ -116,6 +121,78 @@ ALL handler) + nothing else
   default). `not-found-error-message`'s ` for ${access_levels}` echo now prints tier tokens
   ("for dealer") — an improvement, noted for the reviewer.
 
+## ROUND 2 — the three UAC blockers (plan §1b)
+
+### D9 — brand recovered from a COMPOUND stated level (`output_exchange`, `tier-gate`)
+
+Root cause is NOT "the LLM dropped the brand". Verified on `_parser_raw`, exec 12041502:
+the LLM emitted `access_levels: ["Cabana Dealer"]` **and** `routing.suggested_team:
+"marketing_promotion_cabana"`. My round-1 normalisation ran `parseLevel` and kept only
+`.tier`, discarding `.brand` — so `query_brands` was `[]` and the gate never fired. Word order
+decided whether a security boundary existed.
+
+**Where the union runs: the PARSER, not tier-gate.** Stated and justified as asked:
+(a) the raw compound only exists there — `_parser_raw_snapshot` is the frozen pre-mutation
+object, and one line later the levels are tier tokens; (b) D6 prescribes exactly this
+("normalized brand derived deterministically in `output_exchange`"); (c) the alternative —
+shipping raw levels across the sub boundary so the spine can re-derive — would put two
+representations of the same fact on the wire, which is the second-source-of-truth failure D6
+exists to prevent. `statedBrands(entities, rawLevels)` is embedded from the mapper byte-exact;
+its input is `_parser_raw_snapshot.access_levels` ∪ the current (still-raw) array.
+
+- `output_exchange`: emits `query_brands` in the same block that normalises tiers, immediately
+  BEFORE the normalisation destroys the brand.
+- `output_exchange` / `deriveRouting`: prefers `out.query_brands[0]` over the entity scan.
+  This repairs a round-1 regression I had only flagged as a note — the access-level brand
+  fallback went dead when levels became tier tokens, so a Cabana ask routed to the Sorento
+  team. Empty/absent `query_brands` ⇒ the original two rules verbatim.
+- `tier-gate`: consumes `parser.query_brands`; falls back to the round-1 entity-only scan when
+  the field is absent, so an older/live parser degrades instead of throwing.
+- Bounds asserted: the entity phrasing still works (D9-2a/2b, keeps TA-10R green) and a
+  brand-free query stays inert (D9-4).
+
+### D10 — the brand gate fails closed IN n8n (`promo-picker`)
+
+Round 1 rendered the notice and then still attached every file, resting on my own comment that
+`access_levels: []` makes the CRM return nothing. That was an assumption asserted as fact, it
+was never verified, and exec 12041565 showed the consequence: 6 Sorento PDFs for a Cabana ask
+under a notice saying the customer has no Cabana access.
+
+- New guard at the TOP of `promo-picker` (after the domain check, **before** the
+  envelope-shape branch, so no exit path can leak): `brand_gate_empty === true` ⇒
+  `answers = []`, `attachments = []`, response/intro = notice + `Would you like me to escalate
+  to <team> team?`, roster + selection_context cleared, `_brand_gate_closed` recorded.
+- `_escTeam` HOISTED above the shape check (pure move, same expression) so the denial can name
+  the right team; the strict-not-found block still reads the same binding.
+- `tier-gate` still sends `[]` — but the stale comment claiming that is the enforcement is
+  replaced by one saying it is a narrowing REQUEST, not the boundary.
+- Bounded: the tier-level Q23 notice still ANSWERS with files (D10-4); an open gate is
+  byte-inert (D10-3). Both directions have a mutant.
+- **Why this makes TA-11's true negative unnecessary for safety** (tester note (a)): with the
+  guard, the denial is decided entirely by `brand_gate_empty`, which is computed in n8n from
+  the contact's own entitlement — the CRM is never consulted about it. Arranging a contact
+  whose brands exclude the queried brand would now only re-confirm a locally-decided branch
+  the offline probe already drives directly (D10-1a…1h). It remains worth doing as a
+  behavioural confirmation, but it is no longer load-bearing for the access boundary.
+
+### D11 — a pending non-tier pick outranks the ask (`output_exchange`, `tier-gate`)
+
+- `output_exchange` emits `_pending_pick`, computed from TWO signals: an explicitly resolved
+  pick (`_promo_pick_scope_reused` / `dym_pick_applied` / `member_pick_context` /
+  `positions_resolved` / `select_all_expanded` / `reference_positions`), or a CONTINUATION —
+  a non-tier roster pending AND this turn named no new scope.
+- `tier-gate` passes `{pendingPick}` to the mapper's 4-arg `needsTierAsk`, ORing the parser
+  flag with the three spine-visible provenance flags (defence in depth if a parser without
+  `_pending_pick` is ever wired), and excluding the tier-pick answer turn itself.
+- **The bound is the point**: `!_ppNamedNewScope` is what keeps D4 alive — "promo for
+  CBS212-WH" with a roster pending is a NEW query and must re-ask (D11-3a/3b, D11-4 replay
+  TA-7's exact recorded prev-state). A mutant that removes the bound goes red on D11-3b.
+- `tier_offer` is excluded from "pending roster" in ONE place. I wrote a second, outer
+  `!== 'tier_offer'` guard and then deleted it: no mutation could turn it red because the
+  other two conditions already covered every case — a clause that cannot fail is the §61 smell,
+  so it went, and D11-8a/8b now pin the single remaining exclusion (customer ignores the ask
+  with an entity-less non-pick ⇒ the ask must re-fire, not answer at full entitlement).
+
 ## Found during build (report, not improvised around)
 
 1. **`tests/offline/promo-picker` mutate.sh was VACUOUS** — probe.js used
@@ -133,6 +210,14 @@ ALL handler) + nothing else
    (asserted CM-2a/2b).
 4. Concurrent activity: clone `txiPzSxy3Pclsz6v` moved `d9c1ce32` → `bd0023ac` during this
    session — not me (I never wrote to it); flagged for whoever owns that change.
+5. (round 2) The round-1 note "deriveRouting's brand-from-access fallback goes dead" was a
+   REAL REGRESSION I under-called as a note: it silently downgraded a Cabana ask to the
+   Sorento team (visible in exec 12041502's normalised output, where the LLM had said cabana).
+   D9 fixes it and D9-1e pins it. Lesson for my own reporting: "downstream note" was the wrong
+   register for a behaviour change with a customer-visible routing consequence.
+6. (round 2, NOT chased per instruction) contact `437264483` gets 0 matches/0 alternatives
+   from the CRM resolver while `477071889` resolves the same tokens — environment, tracked as
+   the plan's own open item.
 
 ## 🔴 MUST-NOT-PROMOTE (harness wiring that stays on the fork)
 

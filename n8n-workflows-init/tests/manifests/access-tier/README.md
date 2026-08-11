@@ -5,17 +5,23 @@ Coder build snapshot, 2026-08-11. Targets are the PROMO-PICKER **forks only** �
 
 ## versionIds (rollback = publish the *before* id)
 
-| workflow | before (rollback) | after (built, ACTIVE) |
-|---|---|---|
-| fork spine `RnpxEnAV3g20MmKj` (sorento-consume-main PROMO-PICKER) | `4f2df612-3ae8-4ac8-a695-ea4c698d30f1` | `407cbfb7-48e6-4793-9889-b933458b442b` |
-| fork parser `RJ326g9dwe3bTWyf` (sub-semantic-parser PROMO-PICKER) | `1f784ae4-8fcd-401d-ac4d-2e53fa0af95c` | `7c5ff7fd-9cb1-427e-82d4-8556311f4807` |
+| workflow | pre-build (full rollback) | round 1 (UAC: DO-NOT-PROMOTE) | round 2 — D9/D10/D11 (**current, ACTIVE**) |
+|---|---|---|---|
+| fork spine `RnpxEnAV3g20MmKj` | `4f2df612-3ae8-4ac8-a695-ea4c698d30f1` | `407cbfb7-48e6-4793-9889-b933458b442b` | `bba611fa-e8c9-469f-abe3-bc5d64011a94` |
+| fork parser `RJ326g9dwe3bTWyf` | `1f784ae4-8fcd-401d-ac4d-2e53fa0af95c` | `7c5ff7fd-9cb1-427e-82d4-8556311f4807` | `668cd772-fb72-468f-810e-3aa2dccb5cc4` |
 
-Rollback commands (MCP):
+Rollback commands (MCP) — full revert to pre-build:
 
 ```
 publish_workflow { workflowId: "RnpxEnAV3g20MmKj", versionId: "4f2df612-3ae8-4ac8-a695-ea4c698d30f1" }
 publish_workflow { workflowId: "RJ326g9dwe3bTWyf", versionId: "1f784ae4-8fcd-401d-ac4d-2e53fa0af95c" }
 ```
+
+Round-2-only revert (back to the rejected round-1 build) = publish `407cbfb7…` / `7c5ff7fd…`.
+🔴 Do not: round 1 is the build the tester rejected (leaks files past a closed brand gate).
+
+The round-2 baseline GET showed both forks still at exactly the round-1 ids, so nothing else
+edited them in between (LESSONS §64 revert-gate, checked before writing rather than after).
 
 Transport: structural ops + small bodies via MCP `update_workflow` (byte-audit showed **zero
 drift**); the three big Code bodies + parser body via one file-driven REST PUT each
@@ -32,24 +38,31 @@ The sweep hashed **every node in both workflows**; the rows below are the ONLY a
 
 ### fork spine `RnpxEnAV3g20MmKj`
 
-| node | param-hash before → after | jsCode sha256/16 (after) |
+Round-2 column is CURRENT. A node with no round-2 entry was not touched this round and its
+round-1 hash was re-verified against live after the round-2 PUT (shown in the sweep below).
+
+| node | param-hash pre-build → r1 → **r2** | jsCode sha256/16 (current) |
 |---|---|---|
-| `tier-gate` (NEW, Code) | (absent) → `10ad847a2f18d1e4` | `6a59ef819ccc5ede` |
-| `If4` (**If node**) | `99a1e022f68373c5` → `e457606a94c49cb9` | — |
-| `access-level-choice-message` | `ae3d01b3f2d06967` → `9613941002af044d` | `c29bbbae75beac0e` |
-| `promo-picker` | `5396eabfa23fbff1` → `ce1834e55a250fbc` | `f1525b22b0f7313c` |
-| `compile-current-state` | `5842b2a697a5af69` → `40c34936407782be` | `c975bee03a2a3b51` |
-| `disallowed-entity-gate` | `c01c682a81165d53` → `fc07d691810ec289` | `b1f7e297598899bb` |
-| `Call 'sub-get-results'` (**executeWorkflow inputs**: `semantic_input` + `user_prompt`) | `afefc9a04609e6cd` → `bebafe8fda5be745` | — |
+| `tier-gate` (NEW, Code) | (absent) → `10ad847a2f18d1e4` → **`fea867736b674f22`** | `9f2a32520576428a` |
+| `If4` (**If node**) | `99a1e022f68373c5` → `e457606a94c49cb9` → (unchanged) | — |
+| `access-level-choice-message` | `ae3d01b3f2d06967` → `9613941002af044d` → (unchanged) | `c29bbbae75beac0e` |
+| `promo-picker` | `5396eabfa23fbff1` → `ce1834e55a250fbc` → **`600c2ec0293d651d`** | `c7306fbffc06f4dd` |
+| `compile-current-state` | `5842b2a697a5af69` → `40c34936407782be` → (unchanged) | `c975bee03a2a3b51` |
+| `disallowed-entity-gate` | `c01c682a81165d53` → `fc07d691810ec289` → (unchanged) | `b1f7e297598899bb` |
+| `Call 'sub-get-results'` (**executeWorkflow inputs**) | `afefc9a04609e6cd` → `bebafe8fda5be745` → (unchanged) | — |
+
+Round-2 full sweep (every node, both workflows): spine changed = `tier-gate`, `promo-picker`;
+parser changed = `output_exchange`; **added: none; connections: unchanged** — the round-1 splice
+and every other node are byte-identical to what the tester ran.
 
 Connections delta (the ONLY edge change):
 `Aggregate→If4` removed; `Aggregate→tier-gate` + `tier-gate→If4` added.
 
 ### fork parser `RJ326g9dwe3bTWyf`
 
-| node | param-hash before → after | jsCode sha256/16 (after) |
+| node | param-hash pre-build → r1 → **r2** | jsCode sha256/16 (current) |
 |---|---|---|
-| `output_exchange` | `9967c784a6cd5f03` → `895189717345c5e5` | `70196c280c971ce3` |
+| `output_exchange` | `9967c784a6cd5f03` → `895189717345c5e5` → **`6c1ad691a401e0ec`** | `22a30278d92c3550` |
 
 ## Harness wiring untouched (safety)
 
@@ -59,7 +72,18 @@ sub-sendmsg-CHAT), `Call 'sub-respond-save-message-redis'2` (still TEST sink
 CS-BUILD — only its two input expressions changed), redis nodes, guards, triggers,
 `is_test` passing, settings (`callerPolicy`/`availableInMCP` verified identical).
 
-## Offline evidence (tests/offline/tier-ask/)
+## Offline evidence — round 2 (D9/D10/D11)
+
+- RED first: the 26 new assertions were added and run against the **shipped round-1 bodies**:
+  **85/109 pass, 24 FAIL** — red across D9-1b/1c/1d/1e, D9-2a, D9-3, D9-4, D11-1a/1b/2a/2b,
+  D11-6a/6b/6c, D10-1a/1b/1d/1e/1f/1g/1h, D10-2 and both embed markers.
+- GREEN after: **111/111**; mutate.sh **25/25** (12 new mutations, including two
+  OVER-CORRECTION mutants — "D11 repeals D4" and "D10 eats the Q23 answer" — so the fixes are
+  bounded in both directions, not just present).
+- Fixtures are verbatim outputs of the FAILING executions: 12041502 (D9), 12041783 + 12041879
+  (D11), 12040890 (the TA-7 bound D11 must not swallow), 12041565 (D10, via the gate flag).
+
+## Offline evidence — round 1
 
 - RED first: probe run against the PRE-change bodies (export copies + tier-gate stub):
   **29/75 pass, 46 FAIL** — red in every family (EB-*, TG-*, CM-*, CCS-1a/1b/1e, PP-1a/1d/1e/1g,

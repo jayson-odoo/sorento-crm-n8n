@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main PROMO-PICKER  (`RnpxEnAV3g20MmKj`)
 
-- versionId **407cbfb7-48e6-4793-9889-b933458b442b** · activeVersionId **407cbfb7-48e6-4793-9889-b933458b442b** · DRAFT == ACTIVE
+- versionId **bba611fa-e8c9-469f-abe3-bc5d64011a94** · activeVersionId **bba611fa-e8c9-469f-abe3-bc5d64011a94** · DRAFT == ACTIVE
 - 150 nodes
 
 ## Edges
@@ -307,16 +307,16 @@ whisper-transcribe[0] -> patch-transcript
 | node | lines |
 |---|---|
 | compile-current-state | 621 |
+| promo-picker | 568 |
 | build-suggest-offer | 557 |
-| promo-picker | 532 |
 | disallowed-entity-gate | 432 |
 | dym-transform | 410 |
 | dym-transform-partial | 410 |
 | not-found-error-message | 319 |
 | crossdomain-render | 165 |
+| tier-gate | 154 |
 | dym-annotate | 144 |
 | dym-annotate-partial | 144 |
-| tier-gate | 132 |
 | crossdomain-zeroset | 104 |
 | escalate-catalog | 89 |
 | crossdomain-compose | 86 |

@@ -16,9 +16,15 @@ function deriveRouting(out) {
         && /cert|certificate/i.test(String(out.user_goal || '')));
 
   // brand for promotion routing (entity wins, else access level)
+  // D9: prefer the DERIVED query_brands — it is the union of the brand entity and the brand half
+  // of a compound stated level, so it survives the tier-token normalisation that made the
+  // access-level fallback below dead. Measured (exec 12041502): the LLM itself routed
+  // marketing_promotion_cabana, and this function downgraded it to sorento because by the time it
+  // ran, access_levels said "dealer". Absent/empty query_brands ⇒ the original two rules, verbatim.
   const brandEnt = ents.find(e => String(e.hint || '').toLowerCase() === 'brand');
   const access = (out.access_levels || []).map(a => String(a).toLowerCase());
-  let brand = brandEnt ? String(brandEnt.raw || '').toLowerCase() : null;
+  let brand = (Array.isArray(out.query_brands) && out.query_brands.length) ? out.query_brands[0] : null;
+  if (!brand) brand = brandEnt ? String(brandEnt.raw || '').toLowerCase() : null;
   if (!brand) {
     if (access.some(a => a.includes('mocha')))   brand = 'mocha';
     else if (access.some(a => a.includes('cabana'))) brand = 'cabana';
@@ -541,6 +547,21 @@ function statedTiers(message, entities) {
   }
   return ['dealer', 'office', 'end_user'].filter(t => found.has(t));
 }
+
+function statedBrands(entities, rawLevels) {
+  const out = new Set();
+  for (const e of (Array.isArray(entities) ? entities : [])) {
+    if (String((e && e.hint) || '').toLowerCase() !== 'brand') continue;
+    const s = String((e && (e.canonical_code || e.raw)) || '').toLowerCase();
+    const v = BRANDS.find(b => s.includes(b));
+    if (v) out.add(v);
+  }
+  for (const l of (Array.isArray(rawLevels) ? rawLevels : [])) {
+    const p = parseLevel(l);
+    if (p && p.brand) out.add(p.brand);
+  }
+  return BRANDS.filter(b => out.has(b));
+}
 // <<< mapper-embed
 const TIER_ORDER = ['dealer', 'office', 'end_user'];
 
@@ -593,10 +614,23 @@ const TIER_ORDER = ['dealer', 'office', 'end_user'];
 
 // (b)+(d) stated tiers → output.access_levels as TIER TOKENS, every turn. Deterministic and
 // idempotent: tier tokens already present (e.g. from the pick above) pass straight through.
+//
+// D9 (UAC round 1, fork execs 12041502/12041592): the brand must be harvested HERE, in the same
+// block, because this is the LAST point where the raw compound level still exists. Measured: for
+// "cabana dealer promo for CBS212-WH" the LLM emits access_levels ["Cabana Dealer"] and NO brand
+// entity, while "cabana promo for CBS212-WH dealer" emits the entity and a bare "dealer" — so an
+// entities-only read made a SECURITY BOUNDARY depend on word order. `statedBrands` unions both
+// sources. Fed the RAW LLM levels (the frozen `_parser_raw_snapshot`, plus whatever is on
+// access_levels right now) — one line later they are tier tokens and the brand is unrecoverable.
+// This is D6-compliant: no new LLM field, derived deterministically in output_exchange.
 {
   const _msgT = String(parent_input.latest_user_message ?? '').split(/\s*reply to:/i)[0];
+  const _rawLevels = [].concat(
+    Array.isArray(_parser_raw_snapshot && _parser_raw_snapshot.access_levels) ? _parser_raw_snapshot.access_levels : [],
+    Array.isArray(output.output.access_levels) ? output.output.access_levels : []);
+  output.output.query_brands = statedBrands(output.output.entities, _rawLevels);
   const _set = new Set(statedTiers(_msgT, output.output.entities));
-  for (const a of (Array.isArray(output.output.access_levels) ? output.output.access_levels : [])) {
+  for (const a of _rawLevels) {
     const s = String(a ?? '').trim().toLowerCase();
     if (TIER_ORDER.includes(s)) { _set.add(s); continue; }
     const p = parseLevel(a);
@@ -1248,6 +1282,42 @@ if (!DATE_FILTER_DOMAINS.has(output.output.domain_hint)) {
   output.output.date_filter_start = null;
   output.output.date_filter_end   = null;
   output.output.date_mode         = null;
+}
+
+// ── D11 — PENDING NON-TIER PICK (UAC round 1, fork execs 12041783 / 12041879) ─
+// The spine's tier-gate must not fire the access-level ask on top of a pick the parser has
+// ALREADY resolved. Measured: "2" against a 6-row suggest_offer roster resolved correctly here
+// (reference_positions [2], entity_op 'reuse', no tier minted) and the ask then discarded it;
+// "the august one" after the same answer re-asked instead of continuing (plan journey row 5).
+//
+// Placed LAST so every writer above has run: the promo scope-reuse block, dymNumberedMultiSelect,
+// the reference-positions block and the Δ3 member arm all set the flags this reads.
+//
+// TWO signals, and the BOUND between them is the whole design:
+//   (1) an explicitly RESOLVED pick — provenance flags, unambiguous;
+//   (2) a CONTINUATION — a non-tier roster is pending AND this turn named no new scope.
+// The `!_ppNamedNewScope` half is what keeps D4 alive: "promo for CBS212-WH" with a roster still
+// pending IS a new query and MUST re-ask (TA-7). And prev `tier_offer` is excluded by name — the
+// tier ask's own roster is not a foreign pick, or the ask could never legitimately re-fire.
+{
+  const _ppPrevCtx = String(prevState.selection_context || '');
+  // `tier_offer` is excluded HERE and only here (a second outer `!== 'tier_offer'` guard was
+  // written and then deleted: it was unreachable given this line and `_tier_pick_scope_reused`,
+  // i.e. a clause no mutation could turn red — the decorative-guard smell, LESSONS §61).
+  const _ppRosterPending = ['suggest_offer', 'member_offer', 'disambiguation'].includes(_ppPrevCtx)
+    || (_ppPrevCtx !== 'tier_offer' && Array.isArray(prevState.last_result_set) && prevState.last_result_set.length > 0);
+  const _ppNamedNewScope = (Array.isArray(output.output.entities) ? output.output.entities : [])
+    .some(e => e && e.current_message === true);
+  const _ppResolvedPick = output.output._promo_pick_scope_reused === true
+    || output.output.dym_pick_applied === true
+    || output.output.member_pick_context === true
+    || Number(output.output.positions_resolved) > 0
+    || output.output.select_all_expanded === true
+    || (Array.isArray(output.output.reference_positions) && output.output.reference_positions.length > 0);
+  if (output.output._tier_pick_scope_reused !== true
+      && (_ppResolvedPick || (_ppRosterPending && !_ppNamedNewScope))) {
+    output.output._pending_pick = true;
+  }
 }
 
 output._parser_raw = _parser_raw_snapshot;

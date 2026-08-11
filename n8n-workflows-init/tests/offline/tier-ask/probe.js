@@ -64,7 +64,7 @@ function runBody(file, opts) {
     ck(`EB-tg-${fn}`, `tier-gate embeds mapper.js ${fn} byte-exact`, body['tier-gate.js'].includes(slice(fn)), fn);
   }
   ck('EB-tg-BRANDS', 'tier-gate embeds the BRANDS const byte-exact', body['tier-gate.js'].includes(constLine('BRANDS')), 'BRANDS');
-  for (const fn of ['parseLevel', 'statedTiers']) {
+  for (const fn of ['parseLevel', 'statedTiers', 'statedBrands']) {
     ck(`EB-ox-${fn}`, `output_exchange embeds mapper.js ${fn} byte-exact`, body['output_exchange.js'].includes(slice(fn)), fn);
   }
   ck('EB-ox-TIER_WORDS', 'output_exchange embeds the TIER_WORDS const byte-exact', body['output_exchange.js'].includes(constLine('TIER_WORDS')), 'TIER_WORDS');
@@ -77,6 +77,17 @@ function runTG({ names = FX.entitled_all, qf = {} }) {
     inputJson: { name: clone(names) },
     nodes: { "Call 'sub-query-reformulator'": { output: parser } },
   });
+}
+// D9/D11 round-trip: run the REAL parser body, feed its output to the REAL tier-gate body.
+// End-to-end across the sub boundary is the only place the "brand survives normalisation" and
+// "a pick suppresses the ask" claims are actually decided — a tier-gate-only assertion would
+// pass on a hand-passed query_brands the parser never emits.
+function runParserThenTG({ msg, prev, llm, names = FX.entitled_all }) {
+  const out = runOX({ msg, prev: clone(prev), llmRaw: clone(llm) });
+  return { parser: out, gate: runBody('tier-gate.js', {
+    inputJson: { name: clone(names) },
+    nodes: { "Call 'sub-query-reformulator'": { output: out } },
+  }) };
 }
 {
   const o = runTG({});
@@ -291,8 +302,9 @@ function runGQ({ qf = {}, tierGate = undefined, agg = FX.entitled_all }) {
 }
 
 // ── OX — output_exchange (tier-pick reconciliation + statedTiers port) ────────
-function runOX({ msg, prev = clone(FX.prior_tier_offer), llm = {}, refSet = undefined }) {
-  const raw = Object.assign(JSON.parse(FX.ai_raw_stock), llm);   // real raw shape, edited per-case
+function runOX({ msg, prev = clone(FX.prior_tier_offer), llm = {}, llmRaw = undefined, refSet = undefined }) {
+  // llmRaw = a verbatim recorded LLM object (preferred); llm = per-key edits on the stock one
+  const raw = llmRaw !== undefined ? clone(llmRaw) : Object.assign(JSON.parse(FX.ai_raw_stock), llm);
   const parent = clone(FX.parent_input);
   parent.latest_user_message = msg;
   parent.previous_conversation_state = prev;
@@ -410,6 +422,143 @@ function runSI({ nodes }) {
   } });
   ck('SI-2', 'off the promotion lane (tier-gate absent) the parser value passes through',
      eq(o.access_levels, ['dealer']), o.access_levels);
+}
+
+// ══ UAC round 1 blockers — D9 / D10 / D11 (plan §1b) ═════════════════════════
+// Every case below is built from the verbatim node output of the execution that FAILED,
+// so each one is red against the shipped-and-rejected build by construction.
+
+// ── D9 — brand recovered from a COMPOUND stated level (fork exec 12041502) ────
+{
+  const r = runParserThenTG({ msg: 'cabana dealer promo for CBS212-WH',
+    prev: FX.parent_input.previous_conversation_state, llm: FX.ai_raw_cabana_dealer_compound });
+  ck('D9-1a', 'compound "Cabana Dealer" still normalises to the tier token', eq(r.parser.access_levels, ['dealer']), r.parser.access_levels);
+  ck('D9-1b', 'and its BRAND half is recovered, not discarded (exec 12041502 defect)',
+     eq(r.parser.query_brands, ['cabana']), r.parser.query_brands);
+  ck('D9-1c', 'tier-gate consumes the parser brand', eq(r.gate.query_brands, ['cabana']), r.gate.query_brands);
+  ck('D9-1d', 'recomposition scopes to Cabana Dealer only — no Sorento leak',
+     eq(r.gate.access_levels_recomposed, ['Cabana Dealer']), r.gate.access_levels_recomposed);
+  ck('D9-1e', 'routing follows the recovered brand (the LLM said cabana; we downgraded it to sorento)',
+     r.parser.routing.suggested_team === 'marketing_promotion_cabana', r.parser.routing);
+}
+{
+  // the OTHER phrasing must be unchanged — D9 is a union, not a replacement (TA-10R still passes)
+  const r = runParserThenTG({ msg: 'cabana promo for CBS212-WH dealer',
+    prev: FX.parent_input.previous_conversation_state,
+    llm: Object.assign(clone(FX.ai_raw_cabana_dealer_compound), { access_levels: ['dealer'],
+      entities: [{ raw: 'CBS212-WH', hint: 'product', canonical_code: null, current_message: true, confident: true },
+                 { raw: 'Cabana', hint: 'brand', canonical_code: null, current_message: true, confident: true }] }) });
+  ck('D9-2a', 'entity-sourced brand still works (word order no longer matters)', eq(r.parser.query_brands, ['cabana']), r.parser.query_brands);
+  ck('D9-2b', 'and recomposes identically to the compound phrasing', eq(r.gate.access_levels_recomposed, ['Cabana Dealer']), r.gate.access_levels_recomposed);
+}
+{
+  const r = runParserThenTG({ msg: 'cabana dealer promo for CBS212-WH',
+    prev: FX.parent_input.previous_conversation_state, llm: FX.ai_raw_cabana_dealer_compound,
+    names: ['Sorento Dealer', 'End User'] });
+  ck('D9-3', 'compound-stated brand a contact does NOT hold now trips the gate (was silent: exec 12041502)',
+     r.gate.brand_gate_empty === true && eq(r.gate.access_levels_recomposed, []), r.gate);
+}
+{
+  const r = runParserThenTG({ msg: 'promo for SRTBF11710',
+    prev: FX.parent_input.previous_conversation_state, llm: FX.ai_raw_new_promo_query });
+  ck('D9-4', 'no brand anywhere -> query_brands [] and no gate (inert)',
+     eq(r.parser.query_brands, []) && r.gate.brand_gate_empty === false, [r.parser.query_brands, r.gate.brand_gate_empty]);
+}
+
+// ── D11 — a pending non-tier pick outranks the ask (execs 12041783 / 12041879) ─
+{
+  const r = runParserThenTG({ msg: '2', prev: FX.prior_suggest_offer, llm: FX.ai_raw_positional_pick });
+  ck('D11-1a', 'positional pick vs a suggest_offer roster is flagged pendingPick', r.parser._pending_pick === true, r.parser._pending_pick);
+  ck('D11-1b', 'the pick SURVIVES: no tier ask fires (exec 12041783 discarded it)',
+     r.gate.tier_ask === false && r.gate.tier_proceed === true, r.gate);
+  ck('D11-1c', 'and the promo scope-reuse lane is untouched', r.parser._promo_pick_scope_reused === true, r.parser._promo_pick_scope_reused);
+}
+{
+  const r = runParserThenTG({ msg: 'the august one', prev: FX.prior_suggest_offer, llm: FX.ai_raw_continuation_august });
+  ck('D11-2a', 'entity-less continuation is flagged pendingPick (exec 12041879)', r.parser._pending_pick === true, r.parser._pending_pick);
+  ck('D11-2b', 'continuation stays a continuation — no re-ask (plan journey row 5)',
+     r.gate.tier_ask === false && r.gate.tier_proceed === true, r.gate);
+}
+{
+  // THE BOUND: a NEW query must still re-ask (TA-7/D4) even with a roster pending, or D11
+  // silently repeals non-persistence. Same fixture, but the customer named a new scope.
+  const r = runParserThenTG({ msg: 'promo for CBS212-WH', prev: FX.prior_suggest_offer, llm: FX.ai_raw_new_promo_query });
+  ck('D11-3a', 'a NEW named scope is NOT a pending pick', r.parser._pending_pick !== true, r.parser._pending_pick);
+  ck('D11-3b', 'so the ask still fires (TA-7 / D4 non-persistence preserved)', r.gate.tier_ask === true, r.gate.tier_ask);
+}
+{
+  const r = runParserThenTG({ msg: 'promo for CBS212-WH', prev: FX.prior_answered_no_roster, llm: FX.ai_raw_new_promo_query });
+  ck('D11-4', 'TA-7 exactly as run (exec 12040890 prev state): ask fires', r.gate.tier_ask === true && r.parser._pending_pick !== true, r.gate.tier_ask);
+}
+{
+  // the tier ask's OWN roster must never count as a pending pick, or the ask could never re-fire
+  const r = runParserThenTG({ msg: 'promo for CBS212-WH', prev: FX.prior_tier_offer, llm: FX.ai_raw_new_promo_query });
+  ck('D11-5', 'tier_offer is not a "pending non-tier pick"', r.parser._pending_pick !== true, r.parser._pending_pick);
+}
+{
+  // THE discriminating case for the tier_offer exclusion: the customer IGNORES the tier ask and
+  // sends an entity-less non-pick. That is not an answer to the ask, so the ask must re-fire —
+  // if the tier roster counted as "a pending roster", _pending_pick would suppress it forever
+  // and the turn would silently answer at FULL entitlement with the question unanswered.
+  const r = runParserThenTG({ msg: 'what about promotions?', prev: FX.prior_tier_offer,
+    llm: Object.assign(clone(FX.ai_raw_continuation_august), { user_goal: 'asking about promotions generally' }) });
+  ck('D11-8a', 'entity-less non-pick under a PENDING TIER ASK is not a pending pick', r.parser._pending_pick !== true, r.parser._pending_pick);
+  ck('D11-8b', 'so the unanswered tier ask re-fires instead of answering at full entitlement',
+     r.gate.tier_ask === true && r.gate.tier_proceed === false, r.gate.tier_ask);
+}
+{
+  // defence in depth: tier-gate must also honour the spine-visible pick flags on their own,
+  // so a stale/live parser without _pending_pick still cannot discard a pick.
+  const o = runTG({ qf: { _promo_pick_scope_reused: true } });
+  ck('D11-6a', 'tier-gate suppresses on _promo_pick_scope_reused alone', o.tier_ask === false && o.tier_proceed === true, o.tier_ask);
+  const o2 = runTG({ qf: { dym_pick_applied: true } });
+  ck('D11-6b', 'and on dym_pick_applied alone', o2.tier_ask === false, o2.tier_ask);
+  const o3 = runTG({ qf: { member_pick_context: true } });
+  ck('D11-6c', 'and on member_pick_context alone', o3.tier_ask === false, o3.tier_ask);
+}
+{
+  const o = runTG({ qf: { _tier_pick_scope_reused: true, access_levels: ['dealer'] } });
+  ck('D11-7', 'the TIER pick turn itself is not treated as a foreign pending pick',
+     o.tier_proceed === true && eq(o.tier_stated, ['dealer']), o);
+}
+
+// ── D10 — the brand gate fails closed IN n8n (exec 12041565) ──────────────────
+{
+  const o = runPP({ nodes: { 'disallowed-entity-gate': {
+    brand_gate_empty: true, access_notice: "You don't have access to cabana promotions.",
+    company_team: 'marketing_promotion_cabana' } } });
+  ck('D10-1a', 'brand gate closed -> ZERO attachments, whatever the CRM returned (exec 12041565 sent 6)',
+     (o.attachments || []).length === 0, `len=${(o.attachments || []).length}`);
+  ck('D10-1b', 'and ZERO answer rows — the answer block is suppressed, not just unattached',
+     (o.answers || []).length === 0, `len=${(o.answers || []).length}`);
+  ck('D10-1c', 'customer gets the notice', /^You don't have access to cabana promotions\./.test(o.response || ''), (o.response || '').slice(0, 80));
+  ck('D10-1d', 'plus an escalation offer routed to the named brand team',
+     /Would you like me to escalate to marketing_promotion_cabana team\?/.test(o.response || ''), o.response);
+  ck('D10-1e', 'no Sorento filename survives anywhere in the reply',
+     !/SORENTO/i.test(o.response || '') && !/\.pdf/i.test(o.response || ''), (o.response || '').slice(0, 200));
+  ck('D10-1f', 'roster cleared — a later "1" cannot pick a suppressed row',
+     eq(o.suggest_last_result_set, []) && o.suggest_selection_context === null, o.suggest_selection_context);
+  ck('D10-1g', 'response_intro suppressed too (it is what the sendmsg caption reads)',
+     !/attached the file/i.test(o.response_intro || ''), o.response_intro);
+  ck('D10-1h', 'the suppression is recorded for the reviewer/tester', o._brand_gate_closed === true, o._brand_gate_closed);
+}
+{
+  // the fail-closed guard must not depend on the envelope being parseable
+  const o = runPP({ inputJson: { attachments: clone(FX.validator_promo.attachments).slice(0, 1) },
+    nodes: { 'disallowed-entity-gate': { brand_gate_empty: true, access_notice: 'You don\'t have access to cabana promotions.' } } });
+  ck('D10-2', 'unrecognised envelope + closed gate still sends nothing', (o.attachments || []).length === 0, `len=${(o.attachments || []).length}`);
+}
+{
+  const o = runPP({ nodes: { 'disallowed-entity-gate': { brand_gate_empty: false, access_notice: '' } } });
+  ck('D10-3', 'gate open -> byte-inert, the D5 answer is unchanged',
+     (o.attachments || []).length === 6 && /I have attached the file\(s\) below/.test(o.response_intro || ''), (o.attachments || []).length);
+}
+{
+  // D10 must not swallow the ordinary Q23 tier notice, which still ANSWERS at real entitlement
+  const o = runPP({ nodes: { 'disallowed-entity-gate': {
+    brand_gate_empty: false, access_notice: "You don't have access to office promotions — here's what you do have:" } } });
+  ck('D10-4', 'tier-level Q23 still answers WITH files (only the brand gate closes)',
+     (o.attachments || []).length === 6 && /don't have access to office/.test(o.response || ''), (o.attachments || []).length);
 }
 
 // ── report ────────────────────────────────────────────────────────────────────

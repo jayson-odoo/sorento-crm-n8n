@@ -30,6 +30,16 @@ const _notice = (() => {
   catch (e) { return ''; }
 })();
 const withNotice = t => _notice ? `${_notice}\n\n${t}` : t;
+// HOISTED (D10): the escalation team was derived further down, but the brand-gate guard below
+// has to render an offer BEFORE any exit path, including the unrecognised-shape one. Pure move,
+// same expression, same fallbacks — the strict-not-found block still reads this one binding.
+const _escTeam = (() => {
+  try {
+    const g = $('disallowed-entity-gate');
+    if (g.isExecuted && g.first().json.company_team) return g.first().json.company_team;
+  } catch (e) { /* fall through */ }
+  return (parser.routing && parser.routing.suggested_team) || 'marketing_promotion_sorento';
+})();
 
 if ((parser.domain_hint ?? null) !== 'promotion') return j;
 
@@ -42,6 +52,40 @@ const env     = (j && typeof j.output === 'object' && j.output !== null) ? j.out
 const rawAns  = Array.isArray(env.answers) ? env.answers : null;
 const atts    = Array.isArray(env.attachments) ? env.attachments : [];
 const norm    = s => String(s ?? '').trim().toLowerCase();
+
+// ── D10 — THE BRAND GATE FAILS CLOSED HERE, IN n8n ────────────────────────────
+// The customer named a brand they hold no entitlement for. tier-gate already sent
+// `access_levels: []` to the CRM — but the FIRST build stopped there, on a comment asserting
+// "[] makes the CRM return nothing" as fact. It is undocumented, it was never verified, and the
+// tester could not verify it (brand_gate_empty is unreachable for any contact holding all three
+// brands). Measured under replay (exec 12041565): with a non-empty CRM response the pipeline
+// rendered the answer and emitted SIX Sorento PDFs against a Cabana ask, under a notice saying
+// the customer has no Cabana access. An access boundary may not be enforced by another system's
+// empty-filter semantics.
+//
+// So: suppress the answer block and EVERY attachment locally, regardless of what came back.
+// Notice + escalation offer only. This runs BEFORE the shape check and before every other
+// branch, so no exit path — including the unrecognised-envelope one — can leak a file.
+// Consequence worth stating: the guard makes the CRM's []-behaviour irrelevant to safety, which
+// is why TA-11's true negative (a contact whose brands exclude the queried one) is no longer a
+// prerequisite for shipping — n8n now denies without asking the CRM anything.
+const _brandGateClosed = (() => {
+  try { const g = $('disallowed-entity-gate'); return g.isExecuted && g.first().json.brand_gate_empty === true; }
+  catch (e) { return false; }
+})();
+if (_brandGateClosed) {
+  const _deny = `${_notice || 'You do not have access to the brand you asked about.'}\n\n` +
+                `Would you like me to escalate to ${_escTeam} team?`;
+  env.answers          = [];
+  env.attachments      = [];
+  env.response         = _deny;
+  env.response_intro   = _deny;
+  // no roster: a stray "1" must not pick a row the customer was never allowed to see
+  env.suggest_last_result_set   = [];
+  env.suggest_selection_context = null;
+  j._brand_gate_closed = true;
+  return j;
+}
 
 if (rawAns === null) {
   // Shape not understood. Falling through would send every PDF at once, which is precisely the
@@ -191,14 +235,6 @@ const _broadened = (() => {
   try { return $('resolve-entity').isExecuted && $('resolve-entity').first().json.fallback_applied === true; }
   catch (e) { return false; }
 })();
-const _escTeam = (() => {
-  try {
-    const g = $('disallowed-entity-gate');
-    if (g.isExecuted && g.first().json.company_team) return g.first().json.company_team;
-  } catch (e) { /* fall through */ }
-  return (parser.routing && parser.routing.suggested_team) || 'marketing_promotion_sorento';
-})();
-
 const labelOf = (a, i) => {
   const f = (a.fields || []).find(x => norm(x.label) === 'promotion');
   return String(a.title || (f && f.value) || `promotion ${i + 1}`).trim();
