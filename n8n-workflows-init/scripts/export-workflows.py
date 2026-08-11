@@ -62,6 +62,11 @@ TARGETS = {
     # and .incoming. Registered on creation so the staleness gate covers them from day one.
     "RnpxEnAV3g20MmKj":      "fork-promo-picker-spine",
     "RJ326g9dwe3bTWyf":      "fork-promo-picker-parser",
+    # sub-sendmsg fork carrying the quick-reply chunking fix (WhatsApp 1024-char interactive
+    # body cap). Off LIVE c712e218 + 7 hunks + CHAT's console branch; the clone's 9 sendmsg
+    # callers point here. Registered on creation so the staleness gate covers it from day one —
+    # an un-exported fork is exactly how sub-semantic-parser-FORK drifted unnoticed.
+    "aQUmwMVplmNcyUVc":      "fork-sendmsg-qrchunk",
 }
 
 # Volatile / duplicative keys: excluded from workflow.json so a re-export with no

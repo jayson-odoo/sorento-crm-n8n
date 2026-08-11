@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main TEST  (`txiPzSxy3Pclsz6v`)
 
-- versionId **d9c1ce32-83b4-4820-9161-412b6a8b9fd1** · activeVersionId **d9c1ce32-83b4-4820-9161-412b6a8b9fd1** · DRAFT == ACTIVE
+- versionId **bd0023ac-f683-4b9d-a7a6-5a7441cfff35** · activeVersionId **bd0023ac-f683-4b9d-a7a6-5a7441cfff35** · DRAFT == ACTIVE
 - 148 nodes
 
 ## Edges
@@ -255,16 +255,16 @@ whisper-transcribe[0] -> patch-transcript
 | dym-probe | `t4QvrtrPnTwRU6br` | sub-get-results CS-BUILD |
 | dym-probe-partial | `t4QvrtrPnTwRU6br` | sub-get-results CS-BUILD |
 | probe-incoming | `t4QvrtrPnTwRU6br` | sub-get-results CS-BUILD |
-| send-transcript-confirm | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| send-voice-not-allowed | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
+| send-transcript-confirm | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| send-voice-not-allowed | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
 | sibling-probe | `t4QvrtrPnTwRU6br` | sub-get-results CS-BUILD |
-| sorento-sub-respond-sendmsg-presign-fail | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| sorento-sub-respond-sendmsg-respond | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| sorento-sub-respond-sendmsg-respond-transcribed-message | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| sorento-sub-respond-sendmsg-respond2 | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| sorento-sub-respond-sendmsg-respond3 | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| sorento-sub-respond-sendmsg-respond4 | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
-| sorento-sub-respond-sendmsg-respond5 | `ublq9nSlrpz63xan` | sub-sendmsg-CHAT |
+| sorento-sub-respond-sendmsg-presign-fail | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| sorento-sub-respond-sendmsg-respond | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| sorento-sub-respond-sendmsg-respond-transcribed-message | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| sorento-sub-respond-sendmsg-respond2 | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| sorento-sub-respond-sendmsg-respond3 | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| sorento-sub-respond-sendmsg-respond4 | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
+| sorento-sub-respond-sendmsg-respond5 | `aQUmwMVplmNcyUVc` | sub-sendmsg-QRCHUNK |
 
 ## Credentials (references only — no secrets)
 
