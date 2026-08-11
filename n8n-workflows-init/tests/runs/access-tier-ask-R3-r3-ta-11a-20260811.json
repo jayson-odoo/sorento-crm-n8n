@@ -1,0 +1,286 @@
+{
+ "case": "r3-ta-11a",
+ "round": 3,
+ "verdict": "PASS \u2605 D10 NOT DISARMED",
+ "target": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 668cd772 / 5dd1f43d (see rollup presence_gate)",
+  "live_spine_9qVyfUxmRQqrpGRMDLRuz": "NEVER DRIVEN"
+ },
+ "contact": 437264483,
+ "mode": "regress-replay",
+ "message": "cabana dealer promo for CBS212-WH",
+ "execution": "12054395",
+ "rendered_reply_verbatim": "You don't have access to cabana promotions.\n\nWould you like me to escalate to marketing_promotion_cabana team?",
+ "sendmsg_payload": {
+  "contact_identifer": 437264483,
+  "message": "You don't have access to cabana promotions.\n\nWould you like me to escalate to marketing_promotion_cabana team?",
+  "quick_reply": null,
+  "result_set": []
+ },
+ "file_attachments_at_customer_boundary": [],
+ "tier_gate": {
+  "name": [
+   "Sorento Dealer",
+   "End User"
+  ],
+  "tier_stated": [
+   "dealer"
+  ],
+  "entitled_tiers": [
+   "dealer",
+   "end_user"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [
+   "cabana"
+  ],
+  "pending_pick": false,
+  "tier_ask": false,
+  "tier_proceed": true,
+  "access_levels_recomposed": [],
+  "brand_gate_empty": true,
+  "brand_unheld": true
+ },
+ "promo_picker": {
+  "n_answers": 0,
+  "n_attachments": 0,
+  "_brand_gate_closed": true
+ },
+ "parser": {
+  "domain_hint": "promotion",
+  "access_levels": [
+   "dealer"
+  ],
+  "query_brands": [
+   "cabana"
+  ],
+  "entities": [
+   {
+    "raw": "CBS212-WH",
+    "hint": "product",
+    "canonical_code": null,
+    "current_message": true,
+    "confident": true
+   }
+  ],
+  "_tier_pick_scope_reused": null,
+  "_pending_pick": null,
+  "routing": {
+   "suggested_team": "marketing_promotion_cabana",
+   "suggested_agent": "general_enquiries"
+  }
+ },
+ "assertions": [
+  {
+   "assert": "PRECONDITION: branded entitlement",
+   "ok": true,
+   "detail": "['Sorento Dealer', 'End User']"
+  },
+  {
+   "assert": "PRECONDITION: cabana named (predicate exercised)",
+   "ok": true,
+   "detail": "['cabana']"
+  },
+  {
+   "assert": "D10 brand_unheld true",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "D10 brand_gate_empty true",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "INVARIANT holds: recomposed == []",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "assert": "promo-picker closed the gate",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "ZERO answers",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "assert": "ZERO attachments in envelope",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "assert": "\u2605 ZERO send-message-files egress",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "assert": "no roster left behind",
+   "ok": true,
+   "detail": "[]"
+  }
+ ],
+ "safety_per_case": [
+  {
+   "assert": "S1 no real send node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 no CRM write node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 session write is guarded (would_write)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S5 test_mode true",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "S2 no assignment node ran",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "nodes_run": [
+  "Aggregate",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If4",
+  "If5",
+  "If6",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "central-exchange",
+  "check-access",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "disallowed-entity-gate",
+  "dym-gate-partial",
+  "dym-transform-partial",
+  "fixture-check-access",
+  "fixture-get-access-types",
+  "fixture-get-results",
+  "fixture-resolve-entity",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "pg-upsert-session",
+  "promo-picker",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tf-message",
+  "tier-gate",
+  "tool-filter",
+  "validator"
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": 437264483,
+    "message": "cabana dealer promo for CBS212-WH"
+   },
+   "test_run_id": "r3-ta-11a",
+   "ts": "2026-08-11T05:18:38.397-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": 437264483,
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to check the promotion for CBS212-WH",
+      "entities": [
+       {
+        "raw": "CBS212-WH",
+        "hint": "product",
+        "canonical_code": "CBS212-WH",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_cabana",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (promotion): no results.",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "You don't have access to cabana promotions.\n\nWould you like me to escalate to marketing_promotion_cabana team?"
+    }
+   },
+   "test_run_id": "r3-ta-11a",
+   "ts": "2026-08-11T05:18:38.393-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": 437264483,
+   "payload": {
+    "contact_identifer": 437264483,
+    "message": "You don't have access to cabana promotions.\n\nWould you like me to escalate to marketing_promotion_cabana team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "r3-ta-11a",
+   "ts": "2026-08-11T05:18:38.350-04:00"
+  }
+ ],
+ "notes": "The bound in the other direction. A genuine cross-brand denial still suppresses everything: brand_unheld AND brand_gate_empty both true, access_levels_recomposed == [], promo-picker._brand_gate_closed true, 0 answers, 0 attachments, ZERO send-message-files egress, and no roster persisted. The pinned get_results payload was deliberately NON-EMPTY (2 cabana DEALER USE PDFs), so the suppression is n8n's own, not the CRM's."
+}

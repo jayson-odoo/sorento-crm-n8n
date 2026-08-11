@@ -1,0 +1,312 @@
+{
+ "case": "r3-d10-pick-2",
+ "round": 3,
+ "verdict": "FAIL \u2605\u2605 BLOCKER \u2014 D10 brand gate is disarmed on the tier-pick turn (F6)",
+ "target": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 668cd772 / 5dd1f43d (see rollup presence_gate)",
+  "live_spine_9qVyfUxmRQqrpGRMDLRuz": "NEVER DRIVEN"
+ },
+ "contact": 437264483,
+ "mode": "regress-replay",
+ "message": "2",
+ "execution": "12055181",
+ "rendered_reply_verbatim": "I found 2 promotions for CBS212-WH, Cabana. I have attached the file(s) below.\n\n1. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n2. *Promotion:* CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf\n*Start Date:* 2026-06-08\n*End Date:* 2026-09-08\n\n_Data last updated: 24/06/2026 17:59:43_",
+ "sendmsg_payload": {
+  "contact_identifer": 437264483,
+  "message": "I found 2 promotions for CBS212-WH, Cabana. I have attached the file(s) below.\n\n1. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n2. *Promotion:* CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf\n*Start Date:* 2026-06-08\n*End Date:* 2026-09-08\n\n_Data last updated: 24/06/2026 17:59:43_",
+  "quick_reply": null,
+  "result_set": [
+   {
+    "idx": 1,
+    "label": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+    "value": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+    "uuid": null,
+    "entity_type": "promotion",
+    "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (DEALER USE).pdf"
+   },
+   {
+    "idx": 2,
+    "label": "CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+    "value": "CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+    "uuid": null,
+    "entity_type": "promotion",
+    "filename": "CABANA BATHROOM FURNITURE PROMO_15062026 (DEALER USE).pdf"
+   }
+  ]
+ },
+ "file_attachments_at_customer_boundary": [
+  "CABANA BATHROOM FURNITURE PROMO_15062026 (DEALER USE).pdf",
+  "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (DEALER USE).pdf"
+ ],
+ "tier_gate": {
+  "name": [
+   "Sorento Dealer",
+   "Sorento Office"
+  ],
+  "tier_stated": [
+   "dealer"
+  ],
+  "entitled_tiers": [
+   "dealer",
+   "office"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [
+   "sorento",
+   "cabana",
+   "mocha"
+  ],
+  "pending_pick": false,
+  "tier_ask": false,
+  "tier_proceed": true,
+  "access_levels_recomposed": [
+   "Sorento Dealer"
+  ],
+  "brand_gate_empty": false,
+  "brand_unheld": false
+ },
+ "promo_picker": {
+  "n_answers": 2,
+  "n_attachments": 2,
+  "_brand_gate_closed": null
+ },
+ "parser": {
+  "domain_hint": "promotion",
+  "access_levels": [
+   "dealer"
+  ],
+  "query_brands": [
+   "sorento",
+   "cabana",
+   "mocha"
+  ],
+  "entities": [
+   {
+    "raw": "CBS212-WH",
+    "hint": "product",
+    "canonical_code": null,
+    "current_message": false,
+    "confident": true
+   },
+   {
+    "raw": "Cabana",
+    "hint": "brand",
+    "canonical_code": null,
+    "current_message": false,
+    "confident": true
+   }
+  ],
+  "_tier_pick_scope_reused": true,
+  "_pending_pick": null,
+  "routing": {
+   "suggested_team": "marketing_promotion_sorento",
+   "suggested_agent": "general_enquiries"
+  }
+ },
+ "assertions": null,
+ "safety_per_case": null,
+ "nodes_run": [
+  "Aggregate",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Edit Fields",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If4",
+  "If5",
+  "If6",
+  "If9",
+  "Loop Over Items1",
+  "Remove Duplicates",
+  "Split Out",
+  "Switch",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "central-exchange",
+  "chat-attach?",
+  "check-access",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "disallowed-entity-gate",
+  "dym-gate-partial",
+  "dym-transform-partial",
+  "fixture-check-access",
+  "fixture-get-access-types",
+  "fixture-get-results",
+  "fixture-resolve-entity",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-g-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "pg-upsert-session",
+  "promo-picker",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tf-message",
+  "tier-gate",
+  "tool-filter",
+  "validator"
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": 437264483,
+    "message": "2"
+   },
+   "test_run_id": "r3-d10-pick-2",
+   "ts": "2026-08-11T05:25:38.198-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": 437264483,
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to select the dealer access level",
+      "entities": [
+       {
+        "raw": "CBS212-WH",
+        "hint": "product",
+        "canonical_code": "CBS212-WH",
+        "current_message": false,
+        "confident": true
+       },
+       {
+        "raw": "Cabana",
+        "hint": "promotion",
+        "canonical_code": "2a146ee3-8445-4dbc-985b-3c2f0e641a85",
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (promotion): returned 2 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+        "value": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+        "uuid": null,
+        "entity_type": "promotion",
+        "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (DEALER USE).pdf"
+       },
+       {
+        "idx": 2,
+        "label": "CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+        "value": "CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+        "uuid": null,
+        "entity_type": "promotion",
+        "filename": "CABANA BATHROOM FURNITURE PROMO_15062026 (DEALER USE).pdf"
+       }
+      ],
+      "selection_context": "suggest_offer",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "I found 2 promotions for CBS212-WH, Cabana. I have attached the file(s) below.\n\n1. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n2. *Promotion:* CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf\n*Start Date:* 2026-06-08\n*End Date:* 2026-09-08\n\n_Data last updated: 24/06/2026 17:59:43_"
+    }
+   },
+   "test_run_id": "r3-d10-pick-2",
+   "ts": "2026-08-11T05:25:38.190-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/promotion/6c25639f-3549-47a8-b426-3d2227f19006/CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+    "filename": "CABANA BATHROOM FURNITURE PROMO_15062026 (DEALER USE).pdf"
+   },
+   "test_run_id": "r3-d10-pick-2",
+   "ts": "2026-08-11T05:25:38.176-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/promotion/84740516-847a-4cf4-a3ee-df12563bd50a/CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+    "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (DEALER USE).pdf"
+   },
+   "test_run_id": "r3-d10-pick-2",
+   "ts": "2026-08-11T05:25:36.835-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": 437264483,
+   "payload": {
+    "contact_identifer": 437264483,
+    "message": "I found 2 promotions for CBS212-WH, Cabana. I have attached the file(s) below.\n\n1. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n2. *Promotion:* CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf\n*Start Date:* 2026-06-08\n*End Date:* 2026-09-08\n\n_Data last updated: 24/06/2026 17:59:43_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "label": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+      "value": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (DEALER USE).pdf"
+     },
+     {
+      "idx": 2,
+      "label": "CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+      "value": "CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CABANA BATHROOM FURNITURE PROMO_15062026 (DEALER USE).pdf"
+     }
+    ]
+   },
+   "test_run_id": "r3-d10-pick-2",
+   "ts": "2026-08-11T05:25:35.375-04:00"
+  }
+ ],
+ "notes": "NEW BLOCKER, found this round, PRE-EXISTING since the round-2 D10 build (not caused by F1). Entitlement ['Sorento Dealer','Sorento Office'] \u2014 Sorento only, two tiers. TURN 1 'cabana promo for CBS212-WH': tier-gate correctly computes brand_unheld=true AND brand_gate_empty=true \u2014 the brand gate is CLOSED \u2014 but tier_ask=true wins, so the customer is asked to pick a tier for a brand they cannot see. TURN 2 '2': the LLM expands the numbered pick into _parser_raw.access_levels = ['Sorento Dealer','Mocha Dealer','Cabana Dealer'] (it lists every compound level it knows), statedBrands() harvests the brand half of each, so query_brands becomes ['sorento','cabana','mocha'] \u2014 brands the customer never named. tier-gate's predicate qb.some(b => entMap.brands.includes(b)) is now satisfied by 'sorento', brand_unheld flips to FALSE, brand_gate_empty FALSE, and the 2 pinned CABANA DEALER USE PDFs are emitted as send-message-files. Reproduced 2/2 (execs 12055181, 12055497). D10 exists precisely so an access boundary does not depend on the CRM's filtering; on this path n8n performs no denial at all."
+}

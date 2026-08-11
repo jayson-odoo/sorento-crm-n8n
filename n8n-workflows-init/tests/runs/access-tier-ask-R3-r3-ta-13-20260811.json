@@ -1,0 +1,186 @@
+{
+ "case": "r3-ta-13",
+ "round": 3,
+ "verdict": "PASS",
+ "target": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 668cd772 / 5dd1f43d (see rollup presence_gate)",
+  "live_spine_9qVyfUxmRQqrpGRMDLRuz": "NEVER DRIVEN"
+ },
+ "contact": 437264483,
+ "mode": "uac (real CRM reads)",
+ "message": "thank you",
+ "execution": "12054701",
+ "rendered_reply_verbatim": "Thanks for your message! Let me know if you need any help.",
+ "sendmsg_payload": {
+  "contact_identifer": 437264483,
+  "message": "Thanks for your message! Let me know if you need any help.",
+  "quick_reply": null,
+  "result_set": []
+ },
+ "file_attachments_at_customer_boundary": [],
+ "tier_gate": null,
+ "promo_picker": {
+  "n_answers": 0,
+  "n_attachments": 0,
+  "_brand_gate_closed": null
+ },
+ "parser": {
+  "domain_hint": null,
+  "access_levels": [],
+  "query_brands": [],
+  "entities": [],
+  "_tier_pick_scope_reused": null,
+  "_pending_pick": null,
+  "routing": {
+   "suggested_team": "marketing_promotion_sorento",
+   "suggested_agent": "general_enquiries"
+  }
+ },
+ "assertions": [
+  {
+   "assert": "no reprompt loop",
+   "ok": true,
+   "detail": "'Thanks for your message! Let me know if you need any help.'"
+  },
+  {
+   "assert": "tier_offer cleared or inert",
+   "ok": true,
+   "detail": "None"
+  }
+ ],
+ "safety_per_case": [
+  {
+   "assert": "S1 no real send node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 no CRM write node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 session write is guarded (would_write)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S5 test_mode true",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "S2 no assignment node ran",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "nodes_run": [
+  "Basic LLM Chain",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execution Data",
+  "If-ideate",
+  "If10",
+  "If2",
+  "If5",
+  "If9",
+  "OpenAI Chat Model",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "central-exchange",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "construct-user-prompt",
+  "crossdomain-compose",
+  "dym-gate-partial",
+  "dym-transform-partial",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "parser-bypass-gate",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "resolve-entity-clarification",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tf-message"
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": 437264483,
+    "message": "thank you"
+   },
+   "test_run_id": "r3-ta-13",
+   "ts": "2026-08-11T05:21:16.473-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": 437264483,
+    "body": {
+     "variables": {
+      "message_type": "casual",
+      "intent_hint": null,
+      "domain_hint": null,
+      "user_goal": "trying to acknowledge the previous message",
+      "entities": [],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Thanks for your message! Let me know if you need any help.",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "Thanks for your message! Let me know if you need any help."
+    }
+   },
+   "test_run_id": "r3-ta-13",
+   "ts": "2026-08-11T05:21:16.469-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": 437264483,
+   "payload": {
+    "contact_identifer": 437264483,
+    "message": "Thanks for your message! Let me know if you need any help.",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "r3-ta-13",
+   "ts": "2026-08-11T05:21:16.427-04:00"
+  }
+ ],
+ "notes": ""
+}
