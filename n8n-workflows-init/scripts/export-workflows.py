@@ -67,6 +67,14 @@ TARGETS = {
     # callers point here. Registered on creation so the staleness gate covers it from day one —
     # an un-exported fork is exactly how sub-semantic-parser-FORK drifted unnoticed.
     "aQUmwMVplmNcyUVc":      "fork-sendmsg-qrchunk",
+    # The CHAT-CONSOLE lane. Added 2026-08-11 after a fix landed in sub-sendmsg-CHAT and could
+    # not be committed, because an un-exported workflow produces no file to diff — the same
+    # blind spot that let sub-semantic-parser-FORK drift. The console is a real test surface
+    # (zz-chat -> zz-dispatcher-test -> a spine -> sub-sendmsg-CHAT), so its renderer and its
+    # sendmsg both need the staleness gate. Neither is live customer egress.
+    "ublq9nSlrpz63xan":      "sub-sendmsg-CHAT",
+    "oyYfVvZHRZpWubTy":      "zz-chat",
+    "2D0cw2Y1aPW2LOlU":      "zz-dispatcher-test",
 }
 
 # Volatile / duplicative keys: excluded from workflow.json so a re-export with no
