@@ -8,7 +8,10 @@
 // BLIND SPOT: asserts the producer node's returned object. The customer-boundary check
 // (sendmsg payload on a real run) is separate and is the one that counts.
 const fs = require('fs'), path = require('path'), vm = require('vm');
-const body = fs.readFileSync(path.join(__dirname, process.argv[2] || 'promo-picker.js'), 'utf8');
+// path.resolve, NOT path.join: join(__dirname, '/tmp/x') mangles an absolute mutant path
+// into __dirname/tmp/x, the read throws, and EVERY mutant reads as "caught" — mutate.sh was
+// vacuous for as long as that held (found 2026-08-11, tier-ask build).
+const body = fs.readFileSync(path.resolve(__dirname, process.argv[2] || 'promo-picker.js'), 'utf8');
 const FX = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures.json'), 'utf8'));
 
 let GATE = {};
@@ -57,15 +60,17 @@ const ck = (id, d, p, x) => checks.push({ id, d, p, x });
 // S4 — many promotions: list, no files
 {
   const o = run({});
-  ck('S4-1', '15 promotions -> attachments suppressed', o.attachments.length === 0, `len=${o.attachments.length}`);
+  // D5 (access-tier-ask-plan, 2026-08-11): the S4 list-gate is REMOVED — answers ALWAYS
+  // attach. The tier ask upstream now bounds the count; the roster stays for follow-ups.
+  ck('S4-1', '15 promotions -> ALL 15 files attached (D5 always-attach)', o.attachments.length === 15, `len=${o.attachments.length}`);
   ck('S4-2', 'roster has one row per promotion', (o.suggest_last_result_set || []).length === 15, `len=${(o.suggest_last_result_set || []).length}`);
   ck('S4-3', "selection_context = 'suggest_offer'", o.suggest_selection_context === 'suggest_offer', String(o.suggest_selection_context));
   ck('S4-4', 'roster labels are BARE (no leading numbering)', (o.suggest_last_result_set || []).every(r => !/^\s*\d+\s*[.)]/.test(r.label)), 'a label starts with a number');
   ck('S4-5', 'roster idx is 1-based and contiguous', (o.suggest_last_result_set || []).every((r, i) => r.idx === i + 1), 'idx mismatch');
-  ck('S4-6', 'intro tells the customer how to pick', /reply with the number/i.test(o.response_intro || ''), o.response_intro);
+  ck('S4-6', 'intro says the files are attached (D5), never the pick invite', /I have attached the file\(s\) below/.test(o.response_intro || '') && !/reply with the number you want/i.test(o.response_intro || ''), o.response_intro);
   ck('S4-7', 'answers preserved for rendering (description + period)', o.answers.length === 15, `len=${o.answers.length}`);
   // the customer reads `response`, not answers[] — the node must own it
-  ck('S4-8', 'response no longer claims files are attached', !/attached the file/i.test(o.response || ''), (o.response||'').split('\n')[0]);
+  ck('S4-8', 'response claims the files are attached (D5 — they are)', /attached the file/i.test(o.response || ''), (o.response||'').split('\n')[0]);
   ck('S4-9', 'response still lists all 15 (numbering intact)', /^15\./m.test(o.response || ''), 'no line 15.');
   // CONTRACT CHANGE (S4b): the LLM body is in CRM order, so a REORDERED list must rebuild it.
   // Reusing it would show the customer one order while the roster addresses another.
@@ -119,6 +124,18 @@ const ck = (id, d, p, x) => checks.push({ id, d, p, x });
      lastLabel === A2[3].fields[0].value, `last=${lastLabel}`);
 }
 {
+  // start-date tiebreak DISCRIMINATOR (P7): the real fixture's equal-end-date group shares one
+  // start date, so nothing in it can catch a dropped tiebreak — build the case from real rows.
+  const A3 = JSON.parse(JSON.stringify(FX.validator.answers)).slice(0, 3);
+  const setF = (a, l, v) => { a.fields.find(f => f.label.toLowerCase() === l).value = v; };
+  A3.forEach(a => setF(a, 'end date', '2026-12-31'));
+  setF(A3[0], 'start date', '2026-01-01'); setF(A3[1], 'start date', '2026-06-01'); setF(A3[2], 'start date', '2026-03-01');
+  const o = run({ answers: A3, attachments: FX.validator.attachments.slice(0, 3) });
+  const starts = o.answers.map(a => (a.fields.find(f => f.label.toLowerCase() === 'start date') || {}).value);
+  ck('S4b-13', 'equal end dates fall back to LATEST start date first',
+     starts.join('|') === '2026-06-01|2026-03-01|2026-01-01', starts.join('|'));
+}
+{
   // if the arrays are not index-pairable, reorder answers but do NOT scramble the files
   const o = run({ attachments: FX.validator.attachments.slice(0, 3) });
   ck('S4b-12', 'unpairable attachments are left alone and the mismatch is recorded',
@@ -136,7 +153,7 @@ const ck = (id, d, p, x) => checks.push({ id, d, p, x });
 {
   const o = run({ qf: { entities: [] } });
   ck('SE-3', 'no scope entity -> the plain intro, no dangling "for"',
-     /^I found 15 promotions\. Reply with the number/.test(o.response_intro || ''), o.response_intro);
+     /^I found 15 promotions\. I have attached/.test(o.response_intro || ''), o.response_intro);
 }
 {
   const o = run({ qf: { entities: [
@@ -285,7 +302,7 @@ const ck = (id, d, p, x) => checks.push({ id, d, p, x });
 }
 { // N1: a WRAPPED envelope must still be handled, not silently no-op'd
   const o = run({ wrap: true });
-  ck('N1-1','wrapped envelope: attachments still suppressed', o.attachments.length === 0, `len=${o.attachments.length}`);
+  ck('N1-1','wrapped envelope: attachments still attached (D5)', o.attachments.length === 15, `len=${o.attachments.length}`);
   ck('N1-2','wrapped envelope: roster still built', (o.suggest_last_result_set||[]).length === 15, `len=${(o.suggest_last_result_set||[]).length}`);
 }
 { // N1: an UNRECOGNISED shape must fail CLOSED, never dump every PDF

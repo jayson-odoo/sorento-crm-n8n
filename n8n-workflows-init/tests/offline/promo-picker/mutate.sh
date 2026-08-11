@@ -8,6 +8,10 @@ mutant() {
 import sys,pathlib
 s=pathlib.Path('promo-picker.js').read_text(); exec(sys.argv[1]); sys.stdout.write(s)
 PY
+  # a mutant that leaves the body byte-identical is a STALE ANCHOR — hard fail, never "caught"
+  if cmp -s /tmp/pp_mutant.js promo-picker.js; then
+    echo "  ✗ $1 — MUTANT WAS A NO-OP (stale anchor)"; fail=$((fail+1)); return
+  fi
   if node --check /tmp/pp_mutant.js 2>/dev/null && node probe.js /tmp/pp_mutant.js >/dev/null 2>&1; then
     echo "  ✗ $1 — probe still PASSED"; fail=$((fail+1))
   else
@@ -15,7 +19,7 @@ PY
   fi
 }
 echo "mutants:"
-mutant "M1 attachments no longer suppressed on list turn" "s=s.replace('j.attachments   = [];','')"
+mutant "M1 the S4 list-gate sneaks back (D5 broken: attachments emptied)" "s=s.replace('  // ── scope echo ──','  env.attachments = [];\n  // ── scope echo ──',1)"
 mutant "M2 picker fires on a single promotion (D2 broken)" "s=s.replace('if (answers.length > 1) {','if (answers.length > 0) {')"
 mutant "M3 roster labels carry numbering"                  "s=s.replace('label: labelOf(a, i),','label: (i+1)+\". \"+labelOf(a, i),')"
 mutant "M4 pick ignores positions, sends everything"       "s=s.replace('const pickedAtts = pickedIdx.map','const pickedAtts = atts.map')"
@@ -23,10 +27,10 @@ mutant "M5 selection_context wrong -> ALL handler dies"    "s=s.replace(\"'sugge
 mutant "M6 out-of-range no longer recorded"                "s=s.replace('out_of_range: positions.filter(n => n > answers.length),','out_of_range: [],')"
 mutant "M7 off-domain guard removed"                       "s=s.replace(\"if ((parser.domain_hint ?? null) !== 'promotion') return j;\",'')"
 mutant "M8 drift silently swallowed"                       "s=s.replace('drift.push({ idx: n, resolved_by: \'name\' });','')"
-mutant "M9  response left unfiltered on a pick"  "s=s.replace('j.response = [_pickIntro, renderBlocks(pickedAns)].filter(Boolean).join(\'\\\\n\\\\n\');','')"
-mutant "M10 list-turn response still says attached" "s=s.replace('j.response       = _swapped !== null ? _swapped : [_listIntro, renderBlocks(answers)].join(\'\\\\n\\\\n\');','')"
-mutant "M11 pre-narrowed guard removed (double-filter returns)" "s=s.replace('if (answers.length <= positions.length) {','if (false) {')"
-mutant "M12 pick turn stops publishing the roster (repeat picks break)" "s=s.replace('  j.suggest_last_result_set = answers.map((a, i) => ({\\n    idx: i + 1,\\n    label: labelOf(a, i),\\n    value: labelOf(a, i),\\n    uuid: null,\\n    entity_type: \'promotion\',\\n    filename: (atts[i] || {}).filename ?? null,\\n  }));\\n  j.suggest_selection_context = \'suggest_offer\';\\n\\n  j.answers','  j.answers',1)"
+mutant "M9  response left unfiltered on a pick"  "s=s.replace('env.response = withNotice([_pickIntro, renderBlocks(pickedAns)].filter(Boolean).join(\'\\\\n\\\\n\'));','')"
+mutant "M10 list intro replacement dropped (count/scope vanish)" "s=s.replace('env.response_intro = withNotice(_listIntro);','')"
+mutant "M11 pre-narrowed lane removed (dym pick gets double-filtered)" "s=s.replace('if (_pickedEntities) {','if (false) {')"
+mutant "M12 rosters stop being (re)published (repeat picks break)" "s=s.replace('env.suggest_last_result_set = answers.map','env.suggest_last_result_set = [].map',2)"
 mutant "M13 unknown shape falls through (fail-OPEN returns)" "s=s.replace('  if (atts.length > 1) {','  if (false) {',1)"
 mutant "M14 wrapped envelope no longer unwrapped"             "s=s.replace('const env     = (j && typeof j.output === \'object\' && j.output !== null) ? j.output : j;','const env     = j;')"
 mutant "M15 roster-label validation removed"                  "s=s.replace('if (_pickLabels.length > 0) {','if (false) {')"

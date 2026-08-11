@@ -1,6 +1,6 @@
 # TOPOLOGY — sub-semantic-parser PROMO-PICKER  (`RJ326g9dwe3bTWyf`)
 
-- versionId **1f784ae4-8fcd-401d-ac4d-2e53fa0af95c** · activeVersionId **1f784ae4-8fcd-401d-ac4d-2e53fa0af95c** · DRAFT == ACTIVE
+- versionId **7c5ff7fd-9cb1-427e-82d4-8556311f4807** · activeVersionId **7c5ff7fd-9cb1-427e-82d4-8556311f4807** · DRAFT == ACTIVE
 - 7 nodes
 
 ## Edges
@@ -35,6 +35,6 @@ test-reformulator-bypass[1] -> AI Agent
 
 | node | lines |
 |---|---|
-| output_exchange | 1147 |
+| output_exchange | 1254 |
 | suggest-follow-up | 34 |
 | mock-reformulator-output | 2 |

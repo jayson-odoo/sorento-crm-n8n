@@ -1,13 +1,13 @@
 # TOPOLOGY — sorento-consume-main PROMO-PICKER  (`RnpxEnAV3g20MmKj`)
 
-- versionId **4f2df612-3ae8-4ac8-a695-ea4c698d30f1** · activeVersionId **4f2df612-3ae8-4ac8-a695-ea4c698d30f1** · DRAFT == ACTIVE
-- 149 nodes
+- versionId **407cbfb7-48e6-4793-9889-b933458b442b** · activeVersionId **407cbfb7-48e6-4793-9889-b933458b442b** · DRAFT == ACTIVE
+- 150 nodes
 
 ## Edges
-_177 edge groups_
+_178 edge groups_
 
 ```
-Aggregate[0] -> If4
+Aggregate[0] -> tier-gate
 Aggregate1[0] -> not-found-error-message
 Basic LLM Chain[0] -> central-exchange
 Basic LLM Chain[1] -> set-ran-query-formulator
@@ -181,6 +181,7 @@ tag-not-found[0] -> escalate-catalog
 tag-not-supported[0] -> escalate-catalog
 tag-out-of-scope[0] -> escalate-catalog
 tf-message[0] -> sorento-sub-respond-findcontact-respond
+tier-gate[0] -> If4
 tool-filter[0] -> replay-get-results
 validator[0] -> promo-picker
 whisper-transcribe[0] -> patch-transcript
@@ -190,7 +191,7 @@ whisper-transcribe[0] -> patch-transcript
 
 > Rewiring alone does NOT redirect these. Repoint the expression too.
 
-- **Aggregate** ← Call 'sub-get-results', crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-incoming, resolve-entity-clarification, sibling-probe
+- **Aggregate** ← crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-incoming, resolve-entity-clarification, sibling-probe
 - **Edit Fields2** ← validator
 - **Remove Duplicates** ← presign-fail-notice
 - **Split Out** ← Switch
@@ -228,6 +229,7 @@ whisper-transcribe[0] -> patch-transcript
 - **sibling-transform** ← build-suggest-offer, sibling-probe
 - **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, chat-attach-push, chat-attach?, check-access-http, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars-http, guard-d-record, guard-h-record, ideate-turn-http, is-human-intervened, pg-get-session, pg-upsert-session, probe-incoming, resolve-entity-http, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, construct-user-prompt, get-session-vars-http, guard-h-record, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
+- **tier-gate** ← Call 'sub-get-results', disallowed-entity-gate
 - **validator** ← If6, compile-current-state, crossdomain-render, sibling-gate
 - **x** ← dym-transform, dym-transform-partial  ⚠️ TARGET NOT IN THIS WORKFLOW
 
@@ -304,26 +306,27 @@ whisper-transcribe[0] -> patch-transcript
 
 | node | lines |
 |---|---|
-| compile-current-state | 607 |
+| compile-current-state | 621 |
 | build-suggest-offer | 557 |
-| promo-picker | 528 |
+| promo-picker | 532 |
+| disallowed-entity-gate | 432 |
 | dym-transform | 410 |
 | dym-transform-partial | 410 |
-| disallowed-entity-gate | 403 |
 | not-found-error-message | 319 |
 | crossdomain-render | 165 |
 | dym-annotate | 144 |
 | dym-annotate-partial | 144 |
+| tier-gate | 132 |
 | crossdomain-zeroset | 104 |
 | escalate-catalog | 89 |
 | crossdomain-compose | 86 |
 | presign-fail-notice | 62 |
+| access-level-choice-message | 61 |
 | tool-filter | 59 |
 | attach-merge | 51 |
 | sibling-transform | 47 |
 | validator | 46 |
 | build-cs-member-offer | 36 |
-| access-level-choice-message | 35 |
 | annotate-incoming-picker | 35 |
 | patch-transcript | 32 |
 | central-exchange | 28 |

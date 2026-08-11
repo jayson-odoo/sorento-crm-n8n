@@ -1,12 +1,14 @@
 // ── promo-picker ─────────────────────────────────────────────────────────────
-// S4 + S5 of plans/promotion-picker-plan.md.
+// S5 of plans/promotion-picker-plan.md + D5 of plans/access-tier-ask-plan.md.
 //
-// S4 (list): a promotion query returning MORE THAN ONE promotion is answered with the
-//   numbered list only — attachments are suppressed. Without this the customer receives
-//   every matching PDF at once (measured: "promotion for bathroom furniture" -> 15 files
-//   in one WhatsApp message, because the entitlement union spans all 7 access types).
+// S4 (list-then-pick) is REMOVED (D5, user-locked: "send them all"). Every promotion
+//   answer now ATTACHES its file(s) immediately — the tier ask upstream (tier-gate/If4)
+//   is what bounds the count, replacing the entitlement-union blowup that S4 was built
+//   against (15 files, because the union spanned all 7 access types). The roster is still
+//   published so follow-up numbers keep addressing the list the customer sees (TA-8).
 // S5 (pick): a positional reply ("1", "1 and 2", "1,2", "all") re-runs the same scoped
-//   query and sends ONLY the picked promotions' files.
+//   query and sends ONLY the picked promotions' files — kept as the VESTIGIAL lane for
+//   sessions that still hold an old list-turn roster.
 //
 // D2 is preserved by construction: exactly ONE promotion falls through untouched, so the
 // single-hit path still attaches its file immediately. Zero promotions also falls through
@@ -94,6 +96,108 @@ if (_reordered) {
   if (_pairable) { const _t = _order.map(i => atts[i]); atts.splice(0, atts.length, ..._t); }
 }
 j._promo_sort = { reordered: _reordered, pairable: _pairable, order: _order };
+
+// ── per-product itemization ───────────────────────────────────────────────────
+// `promo for CBS212-WH & SRTBF11834` returned 7 promotions, every one of them SRTBF11834's, under
+// a heading naming both products — so the customer cannot tell the list does not answer for
+// CBS212-WH at all. Stock already decomposes per product ("dym-zerostock-itemize"); promotions did
+// not. Measured on exec 11917322.
+//
+// The linkage is already on the wire: every promotion match carries `display.products`. So for
+// each product the customer NAMED, ask whether any promotion we are about to show lists it. Join
+// on the promotion DESCRIPTION, because that is the only key the answer rows and the resolver
+// matches share — answers carry no uuid at this layer (see the header).
+//
+// Display-only: it appends a sentence and touches neither `answers`, nor the roster, nor the
+// positional contract. A wrong join can therefore mislead but can never send the wrong file.
+// the promotions we are about to SHOW, by description — populated before the join below, or the
+// closure would read an empty set and report every product as unmatched.
+const _shownNames = new Set(answers.map((a) => {
+  const f = (a.fields || []).find(x => norm(x.label) === 'promotion');
+  return norm(a.title || (f && f.value) || '');
+}).filter(Boolean));
+const _namedProducts = [];
+// Unmet scope, generalised beyond products. For EVERY token the customer named, ask whether any
+// promotion we are about to show came from THAT token's own resolution. A token that contributed
+// nothing was not answered — whether it has no promotions (CBS212-WH) or the resolver silently
+// dropped it to keep the query non-empty (bathtub, where AND produced zero and it fell back to OR
+// on the Cabana arm alone).
+//
+// Per-token `resolutions[].matches` is the attribution the earlier product-only join lacked:
+// exec 11917835 shows token "Cabana" with 15 promotion matches and token "bathtub" resolving to a
+// PRODUCT literally coded BATHTUB with none. `display.products` is kept as a second signal for the
+// via_product shape, where a promotion is reached THROUGH a product token.
+const _unmatchedProducts = (() => {
+  let R = null;
+  try { R = $('resolve-entity').isExecuted ? $('resolve-entity').first().json : null; } catch (e) { R = null; }
+  if (!R) return [];
+  const tokens = (Array.isArray(R.tokens) ? R.tokens : []).map(t => String(t ?? '').trim()).filter(Boolean);
+  const perToken = new Map();
+  for (const res of (R.resolutions || [])) {
+    if (!res || !res.token) continue;
+    perToken.set(norm(res.token), (res.matches || []).filter(m => m && m.entity_type === 'promotion'));
+  }
+  // every promotion match anywhere, for the via_product fallback signal
+  const allPromo = [];
+  const push = (arr) => { for (const m of (arr || [])) if (m && m.entity_type === 'promotion') allPromo.push(m); };
+  push(R.intersection); push(R.by_entity_type && R.by_entity_type.promotion);
+  for (const res of (R.resolutions || [])) push(res && res.matches);
+  const contributed = (tok) => {
+    const k = norm(tok);
+    const own = perToken.get(k) || [];
+    if (own.some(m => _shownNames.has(norm(m.display && m.display.description)))) return true;
+    // reached THROUGH this product token (display.products names it)
+    return allPromo.some(m => {
+      const ps = (m.display && Array.isArray(m.display.products)) ? m.display.products : [];
+      return ps.some(p => norm(p) === k) && _shownNames.has(norm(m.display && m.display.description));
+    });
+  };
+  const unmet = tokens.filter(t => !contributed(t));
+  // if NOTHING contributed, this is not a partial miss — the not-found path owns it
+  return unmet.length === tokens.length ? [] : unmet;
+})();
+// ── DISJOINT UNION ───────────────────────────────────────────────────────────
+// Every named token contributed rows, yet NO row satisfies all of them — so the list is the union
+// of disjoint per-token sets and answers none of them. `cabana kitchen tap promo` (exec 11963256):
+// token "Cabana" 15 promotion matches, token "kitchen tap" 6, `intersection` promotion rows **0**.
+// Six promotions shown, not one of them a Cabana kitchen tap promo, because none exists.
+//
+// The per-token miss check above is structurally blind to this — it fires only when a token
+// contributed NOTHING, and here both contributed. The CRM's `token_coverage` is blind too: it
+// pools blobs within an entity type, so every word counts matched. The signal that does work was
+// on the wire the whole time — an EMPTY `intersection` beside non-empty per-token matches is
+// exactly "no single row matches all", and needs no CRM change.
+const _disjointTokens = (() => {
+  let R = null;
+  try { R = $('resolve-entity').isExecuted ? $('resolve-entity').first().json : null; } catch (e) { R = null; }
+  if (!R) return [];
+  const toks = (Array.isArray(R.tokens) ? R.tokens : []).map(t => String(t ?? '').trim()).filter(Boolean);
+  if (toks.length < 2) return [];                       // a lone token cannot be disjoint with itself
+  const own = new Map();
+  for (const res of (R.resolutions || [])) {
+    if (!res || !res.token) continue;
+    own.set(norm(res.token), (res.matches || []).filter(m => m && m.entity_type === 'promotion').length);
+  }
+  // EVERY named token must have contributed promotions of its own. If one contributed nothing that
+  // is the per-item case above, which says something more specific — let it win.
+  if (!toks.every(t => (own.get(norm(t)) || 0) > 0)) return [];
+  const inter = (Array.isArray(R.intersection) ? R.intersection : [])
+    .filter(m => m && m.entity_type === 'promotion');
+  return inter.length === 0 ? toks : [];                 // non-empty ⇒ rows DO satisfy all tokens
+})();
+
+// the resolver says so itself when it dropped a constraint to keep the query non-empty
+const _broadened = (() => {
+  try { return $('resolve-entity').isExecuted && $('resolve-entity').first().json.fallback_applied === true; }
+  catch (e) { return false; }
+})();
+const _escTeam = (() => {
+  try {
+    const g = $('disallowed-entity-gate');
+    if (g.isExecuted && g.first().json.company_team) return g.first().json.company_team;
+  } catch (e) { /* fall through */ }
+  return (parser.routing && parser.routing.suggested_team) || 'marketing_promotion_sorento';
+})();
 
 const labelOf = (a, i) => {
   const f = (a.fields || []).find(x => norm(x.label) === 'promotion');
@@ -257,7 +361,7 @@ if (positions.length > 0 && answers.length > 0) {
   return j;
 }
 
-// ── S4 — more than one promotion: list, do not send ───────────────────────────
+// ── multi-promotion answer: ALWAYS-ATTACH (D5) ────────────────────────────────
 // F6: the Q23 fallback can return exactly ONE promotion. Without this the customer who asked
 // for a level they do not hold receives a file from a different level with no explanation.
 if (answers.length === 1 && _notice) {
@@ -275,7 +379,9 @@ if (answers.length > 1) {
     filename: (atts[i] || {}).filename ?? null,
   }));
   env.suggest_selection_context = 'suggest_offer';
-  env.attachments   = [];            // the whole point: list first, files only on pick
+  // D5 (access-tier-ask-plan): the S4 gate that emptied `attachments` and rendered the
+  // pick invite is DELETED — files ride the answer. The roster above stays published so a
+  // follow-up "1" / "the august one" resolves against exactly what the customer received.
   // ── scope echo ──────────────────────────────────────────────────────────────
   // "I found 10 promotions." does not say 10 promotions for WHAT. Echo the scope the customer
   // actually typed (`entity.raw`) and never a canonical code: "6047" resolved to TWO products
@@ -284,9 +390,14 @@ if (answers.length > 1) {
   // filename-length raw, hence the 60-char bound — past that the echo is noise and is dropped
   // rather than truncated, because a half-printed promotion name reads like a different one.
   const _scopeLabel = (() => {
+    // Never echo a scope the list does NOT answer for. "I found 4 promotions for Cabana, bathtub"
+    // above a list with no bathtub in it is the headline stating the very thing the note below
+    // has to retract. Unmet tokens are dropped here and named in the note instead.
+    const _unmet = new Set(_unmatchedProducts.map(t => String(t).trim().toLowerCase()));
     const raws = [];
     for (const e of (Array.isArray(parser.entities) ? parser.entities : [])) {
       const v = String((e && e.raw) || '').trim();
+      if (_unmet.has(v.toLowerCase())) continue;
       if (v && !raws.some(x => x.toLowerCase() === v.toLowerCase())) raws.push(v);
     }
     const s = raws.slice(0, 3).join(', ');
@@ -294,7 +405,7 @@ if (answers.length > 1) {
   })();
   const _listIntro =
     `I found ${answers.length} promotions${_scopeLabel ? ` for ${_scopeLabel}` : ''}. ` +
-    `Reply with the number you want — for example "1", "1 and 2", or "all".`;
+    `I have attached the file(s) below.`;
   // `reintro` reuses the LLM's own rendering and swaps only the leading paragraph — which is
   // correct ONLY while the rows are still in the order the LLM rendered them. Once S4b permutes
   // `answers`, that body is stale: the customer would read the CRM's order while the roster (and
@@ -310,6 +421,112 @@ if (answers.length > 1) {
     : [_listIntro, renderBlocks(answers), _tail].filter(Boolean).join('\n\n'));
   env.response_intro = withNotice(_listIntro);
   j._promo_picker  = { count: answers.length, intro_swapped: _swapped !== null, rebuilt: _reordered };
+}
+
+// Append the per-product miss note LAST, so it survives whichever branch above wrote `response`
+// (list, pick, pre-narrowed) and reads at the end of the reply rather than under one product's
+// rows. Display-only — `answers`, `attachments` and the roster are untouched.
+// ── STRICT NOT-FOUND (user decision 2026-08-11, twice affirmed) ────────────────
+// When the customer's actual COMBINATION has no satisfying rows, say so and stop. No "closest
+// matches", no cross-brand suggestions — measured live, those lists read as unrelated noise
+// ("cabana kitchen tap" was offering SORENTO rows and CABANA WASH BASIN). An earlier build kept
+// the union as "closest matches"; the user overruled it: a plain miss is less confusing than a
+// helpful-looking list that does not answer.
+//
+// Which misses collapse to the plain not-found:
+//   • DISJOINT: every token matched something, no row satisfies all (empty AND intersection).
+//   • UNMET-WITH-BRAND-ONLY-MET: a token contributed nothing and everything that DID contribute
+//     is just the brand arm (met tokens all hint 'brand'). A brand-only list is not an answer to
+//     "<brand> <category>".
+// Which do NOT collapse:
+//   • per-item decomposition between PRODUCT tokens (CBS212-WH & SRTBF11834): the found product's
+//     promos ARE an answer to half the ask, and the user explicitly designed that shape (#17).
+//
+// Typo/multilingual safety (the user's stated worry): a typo'd or foreign word never reaches this
+// code as a resolved token — it fails resolution and rides the trgm/alternatives path with
+// similarity evidence, or the parser canonicalizes it upstream. Only cleanly-resolved tokens can
+// trigger the strict miss, so the false-not-found direction stays closed.
+const _tokenHint = (() => {
+  const m = new Map();
+  for (const e of (Array.isArray(parser.entities) ? parser.entities : [])) {
+    if (e && e.raw) m.set(norm(e.raw), String(e.hint || '').toLowerCase());
+  }
+  return m;
+})();
+// ── word-level unmet, from the CRM's own honesty field (wired 2026-08-11) ─────
+// `token_coverage` landed with sorento-crm PR #121. For each token it names which of the
+// customer's WORDS matched no shown promotion. Measured (exec 12005497, "cabana shower set"):
+// token "shower set" -> matched ["set"], unmatched ["shower"] — `set` was a SUBSTRING hit on
+// WATER CLO*SET*, and the customer got a water-closet PDF as if it answered. A token with
+// unmatched words is unmet at word level, whatever the intersection says.
+//
+// Contract traps, all honoured (plans/crm-ask-promotion-description-match.md):
+//   • promotion entry ABSENT = no claim (membership-derived rows) -> not consulted
+//   • truncated:true = rows trimmed/unscored -> cannot claim, skipped (fail-open)
+//   • field absent entirely (OR path, pre-#121) -> Map empty -> behaviour unchanged
+// Typo trade, user-approved: a typo'd word in a multi-word token ("kitchin tap") strict-misses
+// WITH the word named — "could not find \"kitchin\"" — so the customer can self-correct, and the
+// escalation offer hands the rest to a human. Single-word typos never reach here (they fail
+// resolution and ride the trgm/alternatives path).
+const _coverageUnmet = (() => {
+  let R = null;
+  try { R = $('resolve-entity').isExecuted ? $('resolve-entity').first().json : null; } catch (e) { R = null; }
+  const m = new Map();
+  for (const tc of ((R && R.token_coverage) || [])) {
+    if (!tc || !tc.token) continue;
+    const cov = (Array.isArray(tc.coverage) ? tc.coverage : []).find(c => c && c.entity_type === 'promotion');
+    if (!cov) continue;                       // absence = NO CLAIM, never "no match"
+    if (cov.truncated === true) continue;     // trimmed/unscored rows -> cannot claim
+    const uw = (cov.unmatched_words || []).map(w => String(w ?? '').trim()).filter(Boolean);
+    if (uw.length) m.set(norm(tc.token), uw);
+  }
+  return m;
+})();
+const _strictMiss = (() => {
+  if (_disjointTokens.length) return { tokens: _disjointTokens, words: [], reason: 'disjoint' };
+  if (!_unmatchedProducts.length && !_coverageUnmet.size) return null;
+  let R = null;
+  try { R = $('resolve-entity').isExecuted ? $('resolve-entity').first().json : null; } catch (e) { R = null; }
+  const toks = ((R && R.tokens) || []).map(t => String(t ?? '').trim()).filter(Boolean);
+  const unmet = new Set(_unmatchedProducts.map(norm));
+  for (const k of _coverageUnmet.keys()) unmet.add(k);   // word-level unmet counts as unmet
+  const met = toks.filter(t => !unmet.has(norm(t)));
+  // all-unmet with NO coverage evidence stays the not-found path's job (C9); with coverage
+  // evidence we know exactly which words failed, so this node states it.
+  if (!met.length && !_coverageUnmet.size) return null;
+  // every met token is the brand arm ⇒ nothing shown answers the ask ⇒ strict miss
+  if (met.every(t => _tokenHint.get(norm(t)) === 'brand')) {
+    const words = [...new Set([].concat(...[..._coverageUnmet.values()]))];
+    return { tokens: toks, words, reason: _coverageUnmet.size ? 'coverage_unmet' : 'unmet_brand_only' };
+  }
+  return null;
+})();
+
+if (_strictMiss && (env.response || env.response_intro)) {
+  const _ask = _strictMiss.tokens.join(' ');
+  const _offer = `Would you like me to escalate to ${_escTeam} team?`;
+  // name the failing WORDS when the coverage field told us (user: «we will say like cannot find
+  // kitchin for clarity») — the customer can self-correct a typo instead of guessing why we missed
+  const _detail = _strictMiss.words.length
+    ? ` — could not find "${_strictMiss.words.join('", "')}"` : '';
+  const _msg = `No promotion found for ${_ask}${_detail}. ${_offer}`;
+  env.response       = withNotice(_msg);
+  env.response_intro = withNotice(_msg);
+  env.attachments    = [];               // nothing is being answered; nothing may be sent
+  env.answers        = [];
+  // no roster: a stray "1" after a not-found must not pick an invisible row
+  env.suggest_last_result_set  = [];
+  env.suggest_selection_context = null;
+  j._promo_notfound = { tokens: _strictMiss.tokens, words: _strictMiss.words, reason: _strictMiss.reason };
+  j._promo_disjoint = _disjointTokens.length ? _disjointTokens : undefined;
+  j._promo_unmatched = _unmatchedProducts.length ? _unmatchedProducts : undefined;
+} else if (_unmatchedProducts.length && (env.response || env.response_intro)) {
+  // per-item decomposition (#17) — product tokens, at least one answered with its own promos
+  const _note = `No promotion found for ${_unmatchedProducts.join(', ')}.`;
+  const _offer = `Would you like me to escalate to ${_escTeam} team?`;
+  if (env.response) env.response = `${env.response}\n\n${_note} ${_offer}`;
+  j._promo_unmatched = _unmatchedProducts;
+  j._promo_broadened = _broadened;
 }
 
 return j;
