@@ -75,6 +75,14 @@ TARGETS = {
     "ublq9nSlrpz63xan":      "sub-sendmsg-CHAT",
     "oyYfVvZHRZpWubTy":      "zz-chat",
     "2D0cw2Y1aPW2LOlU":      "zz-dispatcher-test",
+    # human-intervened-timeout (plans/human-intervened-timeout-plan.md, S4 promoted 2026-08-13).
+    # respond-send-user is LIVE and now carries the 12-node ht lane; the sweeper is LIVE with real
+    # egress (respondio flag-clear + sendmsg notices) on a 30s schedule — both need the staleness
+    # gate and a diffable artifact. The build fork/copies (itsbBtSh…, S0V5TFhP…, tpEueReC…) stay
+    # un-exported: they are harness artifacts, tracked by their own manifest + assert-built.py C4.
+    "eG3AA-TWo17-E1-DlHLnH": "live-respond-send-user",
+    "UmmjvYRl0h2GXd19":      "live-ht-sweeper",
+    "evLuDTO60DBlYkk0":      "live-ht-config-form",
 }
 
 # Volatile / duplicative keys: excluded from workflow.json so a re-export with no
