@@ -34,6 +34,28 @@
             "description": ""
           }
         }
+      },
+      "mock_reformulator_output": {
+        "message_type": "business_query",
+        "intent_hint": "goods_receive_status",
+        "domain_hint": "goods_receive",
+        "user_goal": "What is the weather in KL today",
+        "access_levels": [],
+        "entities": [],
+        "escalation": {
+          "is_escalation_confirmation": false
+        },
+        "correction": false,
+        "routing": {
+          "suggested_team": "purchasing",
+          "suggested_agent": "general_enquiries"
+        },
+        "date_mode": null,
+        "query_scope": null,
+        "match_mode": null,
+        "contains_flyer": false,
+        "date_filter_start": null,
+        "date_filter_end": null
       }
     },
     "contact": {
@@ -51,29 +73,7 @@
     "test_run_id": "canary-nsd-20260721",
     "scope": "deterministic",
     "test_mode": true,
-    "mode": "uac",
-    "mock_reformulator_output": {
-      "message_type": "business_query",
-      "intent_hint": "goods_receive_status",
-      "domain_hint": "goods_receive",
-      "user_goal": "What is the weather in KL today",
-      "access_levels": [],
-      "entities": [],
-      "escalation": {
-        "is_escalation_confirmation": false
-      },
-      "correction": false,
-      "routing": {
-        "suggested_team": "purchasing",
-        "suggested_agent": "general_enquiries"
-      },
-      "date_mode": null,
-      "query_scope": null,
-      "match_mode": null,
-      "contains_flyer": false,
-      "date_filter_start": null,
-      "date_filter_end": null
-    }
+    "mode": "uac"
   },
   "expected_route": [
     "redis-pop-main-message-list (pop) -> tf-message -> sorento-sub-respond-findcontact-respond",

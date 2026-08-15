@@ -1,0 +1,44 @@
+{
+  "_provenance": "CRM peer session dev-backend replay 2026-08-13, real HTTP against POST /api/v1/sla-management/conversation-sla-tracking/integration on branch feat/conversation-intervention-tickets AFTER the PR #137 timestamp fix (commit 29f50aa38). Verbatim responses; replay rows deleted by id afterwards. Datetimes are NAIVE UTC ISO (no Z). Pin on already_active, not is_update. assigned_to is a legacy respond-user-id-shaped TEXT; assigned_to_id is the CRM user UUID.",
+  "_timestamp_note": "The 8h skew fixed in #137 lived ONLY in update_sla_tracking_status_integration (PUT/POST /integration/{tracking_id}) and touched ONLY responded_at/resolved_at, and only when the caller sent an aware datetime. initiated_at/due_at/due_at_resolution come from create_tracking via _now_utc()/_working_due and were ALWAYS true naive UTC on both routes. So the n8n SLA-alert comment's DateTime.fromISO(x,{zone:'utc'}).setZone('Asia/Kuala_Lumpur') was correct all along, on live too — no staff-facing deadline was ever 8h late. Superseded fixture set (pre-fix) had initiated_at 2026-08-12T13:58:54.229717; retained only in git history.",
+  "_out_of_hours_note": "due_at now lands on a clean working-window boundary (2026-08-14T01:00:00 naive UTC = 09:00 MYT) rather than start+offset, and is a DIFFERENT DAY from initiated_at. That is the working-window normalisation, not the timestamp fix.",
+  "fresh_insert_in_hours": {
+    "status": "success",
+    "message": "SLA tracking created successfully.",
+    "tracking_id": "04473f95-0f4a-4956-83fd-7ebda2a1fb7d",
+    "is_update": false,
+    "already_active": false,
+    "in_working_hours": true,
+    "initiated_at": "2026-08-13T01:25:12.693268",
+    "due_at": "2026-08-13T02:25:12.693268",
+    "due_at_resolution": "2026-08-13T02:25:12.693268",
+    "assigned_to": "1096809",
+    "assigned_to_id": "4f684bc8-e0c0-42e5-af06-efaa4346116c"
+  },
+  "retry_already_active": {
+    "status": "success",
+    "message": "Active SLA tracking already exists for this contact; returned existing tracking.",
+    "tracking_id": "04473f95-0f4a-4956-83fd-7ebda2a1fb7d",
+    "is_update": true,
+    "already_active": true,
+    "in_working_hours": true,
+    "initiated_at": "2026-08-13T01:25:12.693268",
+    "due_at": "2026-08-13T02:25:12.693268",
+    "due_at_resolution": "2026-08-13T02:25:12.693268",
+    "assigned_to": "1096809",
+    "assigned_to_id": "4f684bc8-e0c0-42e5-af06-efaa4346116c"
+  },
+  "fresh_insert_out_of_hours": {
+    "status": "success",
+    "message": "SLA tracking created successfully.",
+    "tracking_id": "6907d9f0-b445-4beb-8254-bed12d4944e4",
+    "is_update": false,
+    "already_active": false,
+    "in_working_hours": false,
+    "initiated_at": "2026-08-13T01:25:25.919155",
+    "due_at": "2026-08-14T01:00:00",
+    "due_at_resolution": "2026-08-14T01:00:00",
+    "assigned_to": "1096809",
+    "assigned_to_id": "4f684bc8-e0c0-42e5-af06-efaa4346116c"
+  }
+}

@@ -56,6 +56,18 @@ TARGETS = {
     "t4QvrtrPnTwRU6br":      "sub-get-results-CS-BUILD",
     "aoydkG1dbItXR5jXFEQsP": "sub-sendmsg",
     "77SG9jTdVKhwMwvR":      "sorento-dispatcher",
+    # Conversation intervention tickets (S3.2, `plans/intervention-tickets-s32*.md`). Added
+    # 2026-08-13: all three sat outside the export set while carrying an in-flight change, so the
+    # reviewer had to re-derive the fork<->live delta from raw REST pulls — the same cost the
+    # parser FORK note above describes. The live sub AND respond-close-convo are both promote
+    # targets in ONE flip window; tracking them makes that diff a `git diff`.
+    "rrYXzE61gCNUck_zmXe-G": "live-sub-human-intervention",
+    # The fork the CLONE calls, and the S3.2 build target. NOT live — never promote from this
+    # directory (LESSONS §57); promotion targets rrYXzE61 as LIVE + reviewed hunks.
+    "vUfFUDjLAuMaeQE6":      "sub-human-intervention-FORK",
+    # Resolve-on-close. In S3.2 flip scope because its raw-SQL row lookup has no is_resolved
+    # filter, so post-flip one Respond close would resolve a contact's OPEN sibling tickets.
+    "-WkzJMQZHmsFQm6A2abLJ": "live-respond-close-convo",
     # promotion-picker build targets (plan `plans/promotion-picker-plan.md`, GH #3-#10).
     # Spine fork is off the REBASED clone (c4c89ed1); parser fork is off LIVE (bb875580) — NOT off
     # wI5RkNGW3EOJfBdo, which is behind live by `resource_attachment` in DOMAIN_BLOCKED_HINTS.order

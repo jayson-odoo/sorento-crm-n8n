@@ -34,6 +34,35 @@
             "description": ""
           }
         }
+      },
+      "mock_reformulator_output": {
+        "message_type": "business_query",
+        "intent_hint": "stock_check",
+        "domain_hint": "inventory",
+        "user_goal": "checking stock availability for SR-1234",
+        "access_levels": [],
+        "entities": [
+          {
+            "raw": "SR-1234",
+            "hint": "product",
+            "current_message": true
+          }
+        ],
+        "demand_qty": null,
+        "escalation": {
+          "is_escalation_confirmation": false
+        },
+        "correction": false,
+        "routing": {
+          "suggested_team": "warehouse",
+          "suggested_agent": "general_enquiries"
+        },
+        "date_mode": null,
+        "query_scope": null,
+        "match_mode": null,
+        "contains_flyer": false,
+        "date_filter_start": null,
+        "date_filter_end": null
       }
     },
     "contact": {
@@ -60,36 +89,7 @@
     "test_run_id": "canary-demandqty-20260721",
     "scope": "deterministic",
     "test_mode": true,
-    "mode": "uac",
-    "mock_reformulator_output": {
-      "message_type": "business_query",
-      "intent_hint": "stock_check",
-      "domain_hint": "inventory",
-      "user_goal": "checking stock availability for SR-1234",
-      "access_levels": [],
-      "entities": [
-        {
-          "raw": "SR-1234",
-          "hint": "product",
-          "current_message": true
-        }
-      ],
-      "demand_qty": null,
-      "escalation": {
-        "is_escalation_confirmation": false
-      },
-      "correction": false,
-      "routing": {
-        "suggested_team": "warehouse",
-        "suggested_agent": "general_enquiries"
-      },
-      "date_mode": null,
-      "query_scope": null,
-      "match_mode": null,
-      "contains_flyer": false,
-      "date_filter_start": null,
-      "date_filter_end": null
-    }
+    "mode": "uac"
   },
   "expected_route": [
     "... -> If5(allowed) -> If2(FALSE) -> If10(FALSE) -> ... -> If7(TRUE: is_allowed_stock==false && intent_hint==stock_check && entities notEmpty) -> Edit Fields2(not_allowed_check_stock=true) -> If8(TRUE: demand_qty empty)",

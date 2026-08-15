@@ -1,5 +1,33 @@
 # CRM ask — split access entitlement into BRAND × TIER (two axes)
 
+> ## ✅ ANSWERED 2026-08-15 — durable artifact is CRM-side
+> The CRM session replied (relay via peer "Debug slow conversation variables API endpoint").
+> **Authoritative contract now lives in `sorento_crm/documentation/plans/UAC-brand-tier-entitlement-split.md`
+> on PR https://github.com/jayson-odoo/sorento-crm/pull/156 (docs only, no code).** Read that, not
+> this file, for current detail. Summary of the four answers:
+> 1. **Field shapes agreed as proposed**: additive per-contact `brands[]` + `tiers[]` beside legacy
+>    `name[]`; no rename/removal without a named cutover; promotions tagged brand + tier; read path
+>    takes both filters on ONE call; empty/omitted `brands` = "all brands this contact is entitled
+>    to" with the server applying the gate.
+> 2. **Admin UI sets the two axes independently** — an explicit AC, not a maybe.
+> 3. **Migration sequencing agreed**: additive first → n8n switches consumers → compound names
+>    retired last; cutover date NAMED by CRM, never inferred from a deploy. No ETA until D1–D3 land.
+> 4. **End-user brand scoping still OPEN** — recorded as D1, the user's call.
+>
+> **Three USER decisions block the CRM plan (surfaced to jayson):**
+> - **D1** — is `end_user` tier brand-scoped (our assumption) or globally visible? 5 live contacts
+>   hold `end_user` alone — not hypothetical.
+> - **D2** — should Mocha-scoped contacts see promotions at all? All 29 promotions (incl. all 14
+>   Cabana ones) are OWNED by the Sorento company; Mocha owns zero, so a Mocha-only contact sees an
+>   empty list regardless of entitlement. Options: re-stamp ownership / company-neutral promotion
+>   visibility / accept as intended.
+> - **D3** — who re-confirms the 5 all-seven-names contacts, and by when. Never auto-granted.
+>
+> Promoted into ACs (plan against these): `scope` discriminator ships WITH this change
+> (AC-SCOPE-01..04, absence = NO CLAIM verbatim); tier-only-never-brand ask recorded as AC-ASK-03
+> with reasoning. **Nothing changes what n8n builds today — the compat mapper on compound names
+> stays correct before, during and after.**
+
 **For:** the `sorento_crm` agent. **Raised from:** `sorento_crm_n8n`, 2026-08-11.
 **Decided by the user (jayson), grilled over three rounds — the shape below is settled intent,
 the contract details are what we need to agree.**
@@ -115,3 +143,98 @@ n8n builds now against today's data via the compat mapper: tier ask (numbered, m
 per-query, only when >1 tier entitled and none stated), always-attach answers, brand from
 entities. Your additive fields activate the clean path the day they exist — same
 inert-until-data pattern as the brand routing (#16) that is already live and waiting on row brand.
+
+---
+
+## ✅ CRM ANSWERED — 2026-08-13 (relayed from the sorento_crm session)
+
+Durable CRM-side artifact: `documentation/plans/UAC-brand-tier-entitlement-split.md`
+on PR https://github.com/jayson-odoo/sorento-crm/pull/156 (docs only, no code).
+**Read that for the full detail** — the summary below exists so the answers are not
+lost to a dead socket, which is how this exchange nearly ended.
+
+Answers to the four asks in §"What we need back from you":
+
+1. **Field shapes — AGREED AS PROPOSED.** Per-contact `brands[]` and `tiers[]` alongside the
+   legacy `name[]`; additive, with no rename or removal without a named cutover. Promotions get
+   tagged brand + tier. The read path accepts both filters on one call; an empty/omitted `brands`
+   means "all brands this contact is entitled to", with the server applying the gate exactly as
+   it does for levels today.
+2. **Admin UI setting the two axes independently — YES**, and it is an explicit AC, not a maybe.
+3. **Migration sequencing — AGREED**: additive fields first → we switch consumers → compound
+   names retired last, and the CRM **names the cutover date** rather than inferring it from our
+   deploy. No ETA until D1–D3 below land.
+4. **End-user brand scoping — STILL OPEN**, recorded as D1. Deliberately left un-thumbed for the
+   user.
+
+Two items of ours they PROMOTED from footnote to shipped scope:
+- The `scope` discriminator ships WITH this change (same read, same failure mode) as
+  AC-SCOPE-01…04, carrying our consumption rule verbatim: **absence means NO CLAIM, never
+  "scope was fine"**.
+- Our "ask tier only, never brand" decision is recorded as AC-ASK-03 with its reasoning, so a
+  later reader does not mistake it for an oversight and "fix" it.
+
+### 🔴 Three decisions block the CRM plan — ALL are the user's
+
+- **D1. Is the `end_user` tier brand-scoped (our assumption) or globally visible?**
+  Not hypothetical: five live contacts hold `end_user` alone.
+- **D2. Should Mocha-scoped contacts see promotions at all?** All 29 promotions are owned by the
+  Sorento company (including all 14 Cabana ones); Mocha owns zero. So a Mocha-only-scoped contact
+  sees an empty list regardless of entitlement. Options: re-stamp ownership / make promotion
+  visibility company-neutral / accept as intended.
+
+  ⚠️ **CORRECTION 2026-08-13 to our own framing.** We suggested answering D2 "generally", as one
+  question about unpopulated companies. The CRM session pushed back and is RIGHT: the QUESTION
+  generalises, the ANSWER must not. The instances differ in WHAT is missing:
+  - **#134** (MOCHA has no `purchasing` team → hard 404, ~40% of live intervention requests) and
+    **#141** (MOCHA holds 3 SLA policy bindings vs SRT's full set → conversation-SLA create 400s,
+    one layer past #134) are missing **CONFIGURATION**. Falling back to the default company's team
+    set / policy binding crosses no data boundary — which is what both issues already propose,
+    with a `routing_fallback` marker.
+  - **D2 is missing DATA.** A runtime "fall back to Sorento's promotions" would show a
+    Mocha-scoped contact Sorento-OWNED ROWS — precisely what multi-company isolation prevents.
+    **D2 must NOT be answered with a fallback**; it is decided once and stamped in the data.
+
+  Read naively, our "answer it generally" would have meant applying #134's fallback pattern to
+  promotions — opening a cross-company leak while looking like consistency. Recorded so nobody
+  re-derives the wrong half.
+
+  Two supporting facts from the CRM code (their trace, full detail in the PR #156 doc):
+  - `company_id` on a `CompanyScopedMixin` model is **auto-stamped from the request scope on
+    insert**, so "all 29 promotions are Sorento-owned" records WHO UPLOADED THEM, not a decision
+    that Mocha may not see them. Option (a) therefore reads as "we accept the artefact" — never
+    as "the artefact expresses intent".
+  - Option (b) needs no new machinery: `__company_shared__ = True` already exists
+    (`app/models/base.py:103`), attachments use it, and the entity resolver honours it
+    (`entity_resolver.py:3788`). A NULL `company_id` reads under any scope.
+
+  ✅ **RETRACTED 2026-08-13 — an n8n-side claim that was WRONG.** We asserted here that the CRM
+  resolver still leaks cross-company data and that a D2 fallback would therefore be "the second
+  leak". **It is fixed** — `709ef9910` (`fix(resolve): scope fuzzy matches to the contact's
+  companies`), 2026-08-07 18:12 +0800, on `origin/main`; independently verified 2026-08-13
+  (commit is an ancestor of main, `_company_scope_sql` applied at all 7 raw-SQL probe sites,
+  fail-closed `" AND FALSE"` on UNSET/empty scope, Python backstop for the embedding probe that
+  cannot carry a SQL clause, and a named regression test for the exact symptom:
+  `tests/test_resolve_entity_company_scope.py:105`). So a D2 fallback would be the FIRST
+  cross-company leak, not the second — which if anything strengthens the case against it.
+
+  Two lessons kept deliberately:
+  - **Why our memory was stale**: it was written ~11:27 MYT on 2026-08-07 and the fix landed
+    ~18:12 MYT the SAME DAY. It was accurate when captured and wrong within hours.
+  - **Why a grep said "unfixed"**: `entity_resolver.py` does not import the shared
+    `company_sql_predicate`; it defines a LOCAL `_company_scope_sql` at line 3700. Searching for
+    the shared helper finds nothing and the file looks untouched. `tests/test_raw_sql_company_scope.py`
+    still describing the general gap is consistent with the local fix, not evidence against it.
+
+  **Loud vs silent, worth naming:** #134 and #141 fail LOUD (404 / 400) and got filed as bugs.
+  D2 fails SILENT — a well-formed empty 200. That asymmetry is why D2 sat undetected while its
+  two siblings got tickets, and it is the argument for the `scope` discriminator.
+- **D3. Who re-confirms the five contacts holding all seven names, and by when?** Never
+  auto-granted.
+
+### Impact on n8n work
+
+**None today.** The compat mapper over the compound names stays correct before, during and after
+the migration, so anything built now against current data keeps working. The clean path activates
+the day the additive fields exist — the same inert-until-data pattern as the brand routing that
+is already live and waiting on row brand.
