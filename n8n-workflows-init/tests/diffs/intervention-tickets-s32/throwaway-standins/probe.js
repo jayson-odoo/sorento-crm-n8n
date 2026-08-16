@@ -144,13 +144,15 @@ console.log('\n======== fail-on-purpose: the guards must go RED ========');
                  'get-round-robin-assignee': { assignee_id: 'USR-0042' } };
   expectThrow('create throws when _case_fixture is absent',
     () => run('cr', bodies['conversation-sla-tracking-create'], mkctx(out4, {})), '_case_fixture');
-  // a value that cannot be embedded raw must surface as a render failure, not silently.
-  // POST-HARDENING (2026-08-12): the three trigger-sourced strings are JSON.stringify'd, so
-  // the surviving raw-interpolated key is `assigned_to_id` (from get-round-robin-assignee).
-  const out5 = { 'When Executed by Another Workflow': { ...TRIG_BASE, _case_fixture: 'fresh_insert_in_hours' },
-                 'get-round-robin-assignee': { assignee_id: 'a"b' } };
-  expectThrow('create throws when the rendered body is not valid JSON (raw assigned_to_id)',
-    () => run('cr', bodies['conversation-sla-tracking-create'], mkctx(out5, {})), 'not valid JSON');
+  // NOTE (2026-08-16, codex VERDICT: FIX): the old case 5 here drove an unrenderable body through
+  // `assigned_to_id: 'a"b'` and asserted the JSON.parse guard threw. The 2026-08-16 hardening
+  // JSON.stringify's assigned_to_id, so that case can no longer go red — a green that cannot fail
+  // (LESSONS §61; this is the SECOND time this same case had to be retargeted for the same reason,
+  // the first being the 2026-08-12 pass which moved it off contact_phone_number).
+  // It is retired here and replaced by the `======== 2026-08-16 hardening ========` block below,
+  // which covers the NEW invariants positively AND negatively. Its red-proof is a reconstructed
+  // pre-fix body (throwaway-build.md §13), not a hostile input — because after this change NO
+  // interpolation in the template can malform the body, which is the whole point.
 }
 
 console.log('\n======== hardening: the 3 stringify\'d keys survive hostile values ========');
@@ -196,6 +198,79 @@ console.log('\n======== hardening: the 3 stringify\'d keys survive hostile value
   check('null contact_phone_number renders as ""', cr6._rendered_body.contact_phone_number === '', JSON.stringify(cr6._rendered_body.contact_phone_number));
   check('undefined agent renders as ""', cr6._rendered_body.agent_code === '');
   check('absent team renders as ""', cr6._rendered_body.team_set_code === '');
+}
+
+console.log("\n======== 2026-08-16 hardening: assigned_to_id / message_id / source_message_id ========");
+{
+  // Renders the create stand-in with a given trigger json and returns {raw, body} — or records a
+  // labelled FAIL and returns a null shape, so a throw here never crashes the probe.
+  function render(label, trigOverrides, rrOverrides) {
+    const trig = { ...TRIG_BASE, _case_fixture: 'fresh_insert_in_hours', ...trigOverrides };
+    for (const k of Object.keys(trigOverrides)) if (trigOverrides[k] === '__DELETE__') delete trig[k];
+    const rr = { assignee_id: 'USR-0042', ...rrOverrides };
+    for (const k of Object.keys(rrOverrides || {})) if (rr[k] === '__DELETE__') delete rr[k];
+    const out = { 'When Executed by Another Workflow': trig, 'get-round-robin-assignee': rr };
+    try {
+      const j = run('cr', bodies['conversation-sla-tracking-create'], mkctx(out, {})).json;
+      return { raw: j._rendered_body_raw, body: j._rendered_body };
+    } catch (e) {
+      check(label + ' renders without throwing', false, '-> ' + String(e.message).split('\n')[0].slice(0, 120));
+      return { raw: '', body: {} };
+    }
+  }
+  // The raw template text is the object under test for "bare null" vs `""` vs `"null"` — the parsed
+  // value alone cannot tell a bare null from a JSON string "null" being fixed up downstream.
+  const lineOf = (raw, key) => (raw.split('\n').find((l) => l.trim().startsWith(`"${key}":`)) || '').trim();
+
+  // ---- (c) PRESENT message_id: number unquoted, source_message_id a QUOTED string ----
+  {
+    const r = render('present message_id', { message_id: 1786538674000000 }, {});
+    check('(c) present: message_id line is the bare number', lineOf(r.raw, 'message_id') === '"message_id": 1786538674000000,', lineOf(r.raw, 'message_id'));
+    check('(c) present: source_message_id line is a QUOTED string', lineOf(r.raw, 'source_message_id') === '"source_message_id": "1786538674000000",', lineOf(r.raw, 'source_message_id'));
+    check('(c) present: parsed message_id is a number', typeof r.body.message_id === 'number');
+    check('(c) present: parsed source_message_id is a string', typeof r.body.source_message_id === 'string', JSON.stringify(r.body.source_message_id));
+    check('(c) present: the two agree', String(r.body.message_id) === r.body.source_message_id);
+  }
+
+  // ---- (a)+(b) ABSENT message_id: BOTH keys render a BARE null; the body still parses ----
+  for (const [what, ov] of [['absent', { message_id: '__DELETE__' }], ['null', { message_id: null }], ['undefined', { message_id: undefined }]]) {
+    const r = render(`${what} message_id`, ov, {});
+    check(`(a) ${what}: message_id renders BARE null (never a malformed empty slot)`, lineOf(r.raw, 'message_id') === '"message_id": null,', lineOf(r.raw, 'message_id'));
+    check(`(a) ${what}: body is still valid JSON`, r.body && typeof r.body === 'object' && 'message_id' in r.body);
+    check(`(a) ${what}: parsed message_id === null`, r.body.message_id === null, JSON.stringify(r.body.message_id));
+    check(`(b) ${what}: source_message_id renders BARE null, NOT ""`, lineOf(r.raw, 'source_message_id') === '"source_message_id": null,', lineOf(r.raw, 'source_message_id'));
+    check(`(b) ${what}: parsed source_message_id === null (empty idempotency key impossible)`, r.body.source_message_id === null, JSON.stringify(r.body.source_message_id));
+    check(`(b) ${what}: source_message_id is NOT the empty string`, r.body.source_message_id !== '');
+    check(`(b) ${what}: source_message_id is NOT the STRING "null"`, r.body.source_message_id !== 'null');
+  }
+
+  // ---- `== null` must catch undefined AND null but NOT 0 or "" ----
+  {
+    const r0 = render('message_id 0', { message_id: 0 }, {});
+    check('(b) message_id 0 is NOT treated as missing (== null, not falsy)', lineOf(r0.raw, 'source_message_id') === '"source_message_id": "0",', lineOf(r0.raw, 'source_message_id'));
+    check('(a) message_id 0 renders the bare number 0', lineOf(r0.raw, 'message_id') === '"message_id": 0,', lineOf(r0.raw, 'message_id'));
+    const rE = render('message_id ""', { message_id: '' }, {});
+    check('(b) message_id "" is NOT treated as missing', lineOf(rE.raw, 'source_message_id') === '"source_message_id": "",', lineOf(rE.raw, 'source_message_id'));
+    check('(a) message_id "" renders a quoted empty string, not a malformed slot', lineOf(rE.raw, 'message_id') === '"message_id": "",', lineOf(rE.raw, 'message_id'));
+  }
+
+  // ---- (d) MISSING assignee_id renders "" (correct: empty means round-robin server-side) ----
+  for (const [what, ov] of [['absent', { assignee_id: '__DELETE__' }], ['null', { assignee_id: null }], ['undefined', { assignee_id: undefined }]]) {
+    const r = render(`${what} assignee_id`, {}, ov);
+    check(`(d) ${what}: assigned_to_id renders ""`, lineOf(r.raw, 'assigned_to_id') === '"assigned_to_id": "",', lineOf(r.raw, 'assigned_to_id'));
+    check(`(d) ${what}: parsed assigned_to_id === ""`, r.body.assigned_to_id === '', JSON.stringify(r.body.assigned_to_id));
+    check(`(d) ${what}: NEVER the literal string "undefined"`, r.body.assigned_to_id !== 'undefined');
+    check(`(d) ${what}: NEVER the literal string "null"`, r.body.assigned_to_id !== 'null');
+  }
+
+  // ---- positive counterpart of the retired fail-on-purpose case: a hostile assignee_id is now SAFE ----
+  {
+    const r = render('hostile assignee_id', {}, { assignee_id: 'a"b\\c\nd' });
+    check('hostile assigned_to_id round-trips instead of malforming the body', r.body.assigned_to_id === 'a"b\\c\nd', JSON.stringify(r.body.assigned_to_id));
+    check('hostile assigned_to_id keeps the key set intact',
+          JSON.stringify(Object.keys(r.body).sort()) ===
+          JSON.stringify(['agent_code','assigned_to_id','contact_phone_number','message_id','source_message_id','source_message_text','team_set_code']));
+  }
 }
 
 console.log(fails === 0 ? '\nALL PROBE ASSERTIONS PASSED' : `\n${fails} PROBE ASSERTION(S) FAILED`);

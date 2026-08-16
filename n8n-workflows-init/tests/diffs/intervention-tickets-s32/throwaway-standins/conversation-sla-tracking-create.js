@@ -13,9 +13,25 @@
 //       HARDENING 2026-08-12: contact_phone_number / agent_code / team_set_code are now
 //       emitted via JSON.stringify(x ?? '') with the template's surrounding quote chars
 //       REMOVED (stringify supplies them), so a `"`, `\` or newline in any of the three no
-//       longer malforms the body. `assigned_to_id` is deliberately left raw-interpolated
-//       between quote chars — byte-for-byte with the fork — so a `"` there is still a
-//       render failure, which is what keeps this instrument able to go red.
+//       longer malforms the body.
+//       HARDENING 2026-08-16 (codex cross-model review, VERDICT: FIX): the last three raw
+//       interpolations are gone too.
+//         · assigned_to_id  -> JSON.stringify(x ?? '')  — an undefined assignee no longer
+//           renders the literal string "undefined" (backend 400 "User not found").
+//           Empty string is CORRECT on missing: it means "round-robin server-side".
+//         · message_id      -> JSON.stringify(x ?? null) — UNQUOTED before, so a null/undefined
+//           rendered `"message_id": ,` = MALFORMED JSON = the create fails and the
+//           intervention dies silently after the customer was told help is coming.
+//           Now a bare JSON null when missing (the field is optional), the number otherwise.
+//         · source_message_id -> ternary. Quoted-raw before, so a missing id rendered `""` —
+//           an EMPTY IDEMPOTENCY KEY, and that key is the identity of the whole feature
+//           (AC-A2 dedups on it). Silently broken dedup is worse than a loud failure, so it
+//           now renders a bare JSON null and the backend rejects it loudly (REQUIRED string
+//           in the contract). `== null` catches undefined AND null but not 0 or "".
+//       Consequence for this instrument: no interpolation can malform the body any more, so
+//       the JSON.parse guard below is defence-in-depth with no fail-on-purpose driver. The
+//       probe's red-proof moved to the new invariants (bare null vs "" vs quoted string) —
+//       see probe.js, and throwaway-build.md §13.
 //  (ii) RETURNS the verbatim dev-backend fixture selected by the trigger's `_case_fixture`.
 //
 // `_rendered_body` / `_rendered_body_raw` / `_rendered_url` are merged ALONGSIDE the
@@ -27,39 +43,39 @@ const FIXTURES = {
   "fresh_insert_in_hours": {
     "status": "success",
     "message": "SLA tracking created successfully.",
-    "tracking_id": "1926bae0-ed33-40c9-b324-96bde109d06e",
+    "tracking_id": "04473f95-0f4a-4956-83fd-7ebda2a1fb7d",
     "is_update": false,
     "already_active": false,
     "in_working_hours": true,
-    "initiated_at": "2026-08-12T13:58:54.229717",
-    "due_at": "2026-08-12T14:58:54.229717",
-    "due_at_resolution": "2026-08-12T14:58:54.229717",
+    "initiated_at": "2026-08-13T01:25:12.693268",
+    "due_at": "2026-08-13T02:25:12.693268",
+    "due_at_resolution": "2026-08-13T02:25:12.693268",
     "assigned_to": "1096809",
     "assigned_to_id": "4f684bc8-e0c0-42e5-af06-efaa4346116c"
   },
   "retry_already_active": {
     "status": "success",
     "message": "Active SLA tracking already exists for this contact; returned existing tracking.",
-    "tracking_id": "1926bae0-ed33-40c9-b324-96bde109d06e",
+    "tracking_id": "04473f95-0f4a-4956-83fd-7ebda2a1fb7d",
     "is_update": true,
     "already_active": true,
     "in_working_hours": true,
-    "initiated_at": "2026-08-12T13:58:54.229717",
-    "due_at": "2026-08-12T14:58:54.229717",
-    "due_at_resolution": "2026-08-12T14:58:54.229717",
+    "initiated_at": "2026-08-13T01:25:12.693268",
+    "due_at": "2026-08-13T02:25:12.693268",
+    "due_at_resolution": "2026-08-13T02:25:12.693268",
     "assigned_to": "1096809",
     "assigned_to_id": "4f684bc8-e0c0-42e5-af06-efaa4346116c"
   },
   "fresh_insert_out_of_hours": {
     "status": "success",
     "message": "SLA tracking created successfully.",
-    "tracking_id": "33ae44ea-4286-471a-8dc7-5caa76b3cdb1",
+    "tracking_id": "6907d9f0-b445-4beb-8254-bed12d4944e4",
     "is_update": false,
     "already_active": false,
     "in_working_hours": false,
-    "initiated_at": "2026-08-12T13:59:53.939402",
-    "due_at": "2026-08-13T00:59:53.939402",
-    "due_at_resolution": "2026-08-13T00:59:53.939402",
+    "initiated_at": "2026-08-13T01:25:25.919155",
+    "due_at": "2026-08-14T01:00:00",
+    "due_at_resolution": "2026-08-14T01:00:00",
     "assigned_to": "1096809",
     "assigned_to_id": "4f684bc8-e0c0-42e5-af06-efaa4346116c"
   }
@@ -87,12 +103,12 @@ const _rendered_url =
   'https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/integration';
 
 const _rendered_body_raw = `{
-    "assigned_to_id": "${ $('get-round-robin-assignee').item.json.assignee_id }",
+    "assigned_to_id": ${ JSON.stringify($('get-round-robin-assignee').item.json.assignee_id ?? '') },
     "contact_phone_number": ${ JSON.stringify($('When Executed by Another Workflow').first().json.contact_phone_number ?? '') },
     "agent_code": ${ JSON.stringify($('When Executed by Another Workflow').first().json.agent ?? '') },
     "team_set_code": ${ JSON.stringify($('When Executed by Another Workflow').first().json.team ?? '') },
-    "message_id": ${ $('When Executed by Another Workflow').first().json.message_id },
-    "source_message_id": "${ $('When Executed by Another Workflow').first().json.message_id }",
+    "message_id": ${ JSON.stringify($('When Executed by Another Workflow').first().json.message_id ?? null) },
+    "source_message_id": ${ $('When Executed by Another Workflow').first().json.message_id == null ? 'null' : JSON.stringify(String($('When Executed by Another Workflow').first().json.message_id)) },
     "source_message_text": ${ JSON.stringify($('When Executed by Another Workflow').first().json.input_message || '') }
 }`;
 

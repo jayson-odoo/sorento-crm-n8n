@@ -7,19 +7,22 @@ Amended 2026-08-12 (**hardening pass** — the create stand-in re-synced to the 
 template, plan edit-list item 3 "HARDENING" bullet). See §11.
 Amended 2026-08-12 (**fail-loud pass** — `if-in-working-hours` re-keyed after the tester's case (f)
 FAIL; 3 mechanism-verification executions run on this throwaway). See §12.
+Amended 2026-08-16 (**interpolation-hardening pass 2** — the create stand-in re-synced to the fork's
+pass-2 template after the codex cross-model review returned VERDICT: FIX; `probe.js` case 5 retired
+and replaced with the new invariants). See §13.
 
 | | |
 |---|---|
 | **workflow id** | **`mTfA5b9TgHItWo2g`** |
 | name | `zz-THROWAWAY-s32-pinmatrix (DISPOSABLE — delete after S3.2 V2 sign-off)` |
-| versionId (current, after the **fail-loud** PUT, §12) | **`2d1c03b3-fa63-44c9-8ff3-9c045e62200e`** (was `040b8fed-912e-4a53-9da9-3ef953136fe7`, before that `72e1d765-a8a9-46c5-a142-d7fe992ed4c7`) |
-| activeVersionId | `2d1c03b3-fa63-44c9-8ff3-9c045e62200e` — **published**, `versionId == activeVersionId` |
+| versionId (current, after the **interpolation-hardening pass-2** PUT, §13) | **`386caa11-7668-4e7b-8ca2-f386f211c6e8`** (was `f7887fc2-2808-4b87-8fe1-9f11a40d304b` — a FIXTURE-REFRESH version not recorded in this doc, see §13; before that `2d1c03b3-fa63-44c9-8ff3-9c045e62200e`, `040b8fed-912e-4a53-9da9-3ef953136fe7`, `72e1d765-a8a9-46c5-a142-d7fe992ed4c7`) |
+| activeVersionId | `386caa11-7668-4e7b-8ca2-f386f211c6e8` — **published**, `versionId == activeVersionId` |
 | active | `True` |
 | settings | `{"executionOrder": "v1", "availableInMCP": true}` (`availableInMCP: true` survived, so `test_workflow` can reach it) |
 | node count | 16 (identical to the fork) |
 | source of truth | REST `GET /workflows/vUfFUDjLAuMaeQE6` @ `fdc154b5-cb33-416c-a468-517fff59dc5e` for the original build; re-synced against the hardened fork @ `ceb72e9e-d708-4f35-b5ec-9d18286d316d`; fail-loud edit applied here FIRST and then mirrored to the fork @ **`16eadb1e-157b-419a-9441-e6510c40f4fc`** (drift-gated every time) |
 | transport | REST `POST /workflows` (create) → MCP `publish_workflow` → REST `PUT` ×3 (one corrective edit + the hardening re-sync + the fail-loud edit) — HTTP 200 throughout |
-| fork after this build | `vUfFUDjLAuMaeQE6` @ **`16eadb1e-…`** — moved by its **own** fail-loud PUT (`node-diff.md` §4a), never by this workflow's PUTs |
+| fork after this build | `vUfFUDjLAuMaeQE6` @ **`3186d960-2c39-4bfd-a3b1-9e8d4d5e0295`** — moved by its **own** PUTs (`node-diff.md` §4a, §3b), never by this workflow's PUTs |
 | live sub after the build | `rrYXzE61gCNUck_zmXe-G` still `5018a189-…`, `updatedAt 2026-07-22T01:27:32.239Z` — **not touched** |
 
 > ⚠️ **DISPOSABLE.** Delete this workflow after S3.2 V2 sign-off. It is a test double, not a
@@ -754,3 +757,144 @@ the execution must ERROR at `if-in-working-hours`. Cases (a)–(e) are unaffecte
 must be **re-run** against `2d1c03b3-…` (the (a)/(c) shapes above are coder evidence, not matrix
 results). `probe.js` is unaffected: it exercises the 5 stand-in bodies, and `if-in-working-hours` is
 an n8n node it never stubbed.
+
+---
+
+## 13. Interpolation-hardening pass 2 (2026-08-16, fourth PUT — `f7887fc2-…` → `386caa11-…`)
+
+Origin: **codex cross-model review, VERDICT: FIX** on the create body (`node-diff.md` §3b). Codex
+found the `message_id` / `source_message_id` defects; the main session found the `assigned_to_id`
+one while verifying against the exported fork. Because this stand-in exists to render **the fork's
+bytes**, it was re-synced first and the fork mirrored second, so the equality gate (§6/§11) never
+had a window in which it was false.
+
+### 13a. Version drift found before the write — record it
+
+The prior recorded throwaway version (§12) was `2d1c03b3-…`. A fresh GET showed
+**`f7887fc2-2808-4b87-8fe1-9f11a40d304b`**. The delta is a **fixture refresh** and nothing else:
+`FIXTURES` gained new `tracking_id`s and 2026-08-13 timestamps (incl. the out-of-hours
+`due_at`/`due_at_resolution` becoming `2026-08-14T01:00:00`); the template literal, the allow-list,
+the throw guards and the returned key set were byte-identical. The pre-flight gate was therefore
+**re-pinned to the value a fresh GET actually showed**, not to the value this doc predicted, and the
+drift recorded here rather than silently absorbed. Consequence for the committed artifacts: the local
+`throwaway-standins/conversation-sla-tracking-create.js` and `published-jscode.json` had been stale
+against the deployed bytes since that refresh. Both are now regenerated **from the published
+workflow** (LESSONS §69/§71), so the committed files are the deployed bytes again.
+`create-response-fixtures.json` was already in sync (it was refreshed on 2026-08-13 and its three
+fixture objects compare MATCH against the deployed `FIXTURES` blob) — only the two derived artifacts
+had drifted.
+
+### 13b. Scope of this PUT — exactly one node's `jsCode`
+
+| | before | after |
+|---|---|---|
+| throwaway versionId | `f7887fc2-2808-4b87-8fe1-9f11a40d304b` | **`386caa11-7668-4e7b-8ca2-f386f211c6e8`** (`== activeVersionId`) |
+| `conversation-sla-tracking-create` param sha | `20c67a6b2079` | **`965659b37b5b`** |
+| its `sha256(jsCode)[:16]` | `dcf1a3432ef4a66d` (5778 chars) | **`abc96e57bfed926d`** (7237 chars) |
+| other 15 nodes' param shas | — | **all unchanged** (delta table re-run: exactly one node CHANGED) |
+| `connections` | — | deep-equal to before; `activeVersion.nodes == nodes` |
+| credentialed nodes | 2 (both redis) | **2, unchanged** — `test-guard-record`, `chat-escalation-push` |
+
+**Code delta** — 3 template lines plus the header comment. The `FIXTURES` blob, the `_case_fixture`
+allow-list and throw, `_rendered_url`, the `JSON.parse` + throw, the `missing_in_working_hours`
+key-delete and the returned key set are byte-identical.
+
+```
+-    "assigned_to_id": "${ $('get-round-robin-assignee').item.json.assignee_id }",
+-    "message_id": ${ $('When Executed by Another Workflow').first().json.message_id },
+-    "source_message_id": "${ $('When Executed by Another Workflow').first().json.message_id }",
++    "assigned_to_id": ${ JSON.stringify($('get-round-robin-assignee').item.json.assignee_id ?? '') },
++    "message_id": ${ JSON.stringify($('When Executed by Another Workflow').first().json.message_id ?? null) },
++    "source_message_id": ${ $('When Executed by Another Workflow').first().json.message_id == null ? 'null' : JSON.stringify(String($('When Executed by Another Workflow').first().json.message_id)) },
+```
+
+**Equivalence gate (machine-checked, on both re-fetched published workflows): EQUAL.** Same check as
+§11 — fork `jsonBody` minus the leading `=`, `{{ x }}` → `${ x }`, string-compared to the stand-in's
+`_rendered_body_raw`. Two controls were run so the gate is an instrument and not a claim: it was
+EQUAL on the *pre-edit* deployed pair (proving the check is pointed at the right objects) and
+MISMATCH when one character was altered on the fork side (proving it can go red).
+
+### 13c. `probe.js` — INSTRUMENT RETARGET (LESSONS §61), and the red-proof
+
+The fail-on-purpose **case 5** drove an unrenderable body through `assigned_to_id: 'a"b'` and
+asserted the `JSON.parse` guard threw. This change `JSON.stringify`s `assigned_to_id`, so that case
+becomes a **green that cannot fail** — the exact class this slice exists to avoid, and the **second**
+time this one case has had to be retargeted for this reason (§11 moved it off `contact_phone_number`
+for the same cause). Rather than move it a third time onto whatever raw interpolation happened to
+survive — i.e. keeping a defect alive to keep an instrument alive — it is **retired**, with a comment
+saying so, and replaced by positive+negative coverage of the new invariants:
+
+| | assertion group |
+|---|---|
+| (a) | a missing `message_id` renders a **bare `null`** (`"message_id": null,` in the raw text) and the body still `JSON.parse`s — asserted for `absent` / `null` / `undefined` |
+| (b) | the same missing `message_id` renders `source_message_id` as a **bare `null`**, and explicitly **NOT** `""` and **NOT** the string `"null"` — the empty-idempotency-key defect, asserted three ways |
+| (c) | a **present** `message_id` renders `message_id` as a bare number and `source_message_id` as a **QUOTED string**, and the two agree |
+| (d) | a missing `assignee_id` (`absent`/`null`/`undefined`) renders `""`, never `"undefined"`, never `"null"` |
+| — | `== null` boundary: `message_id: 0` and `message_id: ""` are **NOT** treated as missing |
+| — | positive counterpart of the retired case: a hostile `assignee_id` (`a"b\c\n d`) now round-trips instead of malforming the body, key set intact |
+
+Assertions key on the **raw rendered text line** (`lineOf(raw, key)`), not only the parsed value —
+a parsed check alone cannot distinguish a bare `null` from a JSON string that a later step fixes up.
+The helper catches a throw and records a labelled FAIL instead of crashing the probe, so a regression
+that reintroduces the malformed body is reported rather than aborting the run.
+
+**Fail-on-purpose proof (LESSONS §61b — anchors counted before substituting, digest asserted changed
+after, run aborts otherwise).** The same probe, run against a **reconstructed pre-fix** body (the
+published body with only those 3 lines reverted; `sha256[:16] be32b4074c1f53cd`, 7089 chars):
+
+| | result |
+|---|---|
+| against the **published pass-2** body | **197 PASS · 0 FAIL** (exit 0) |
+| against the **reconstructed pre-fix** body | **171 PASS · 30 FAIL** (exit 1) |
+
+The 30 FAILs reproduce all three reported defects by name, e.g.
+`(d) absent: assigned_to_id renders ""  "assigned_to_id": "undefined"`,
+`(b) null: source_message_id renders BARE null, NOT ""  "source_message_id": "null"`, and — for a
+missing `message_id` — `renders without throwing -> … the rendered request body is not valid JSON`,
+which is the malformed-body defect surfacing exactly where the real HTTP node would have sent it.
+
+⚠️ **One faithfulness caveat, recorded rather than papered over.** The stand-in is a JS template
+literal, and JS renders `${undefined}` as the text `undefined`, whereas n8n renders a `null`/
+`undefined` expression result inside a multi-part `{{ }}` template as the **empty string**. So on the
+PRE-fix body the two engines disagree about *which* wrong thing happens (JS: `"undefined"` / n8n:
+`""` and a malformed slot) — both broken, differently. Post-fix the divergence is **eliminated by
+construction**: every interpolation now resolves to a non-empty, syntactically-complete literal, so
+there is no `undefined`/`null` for either engine to render. The red-proof is therefore evidence that
+the *fix* is right and the assertions can go red; it is not a byte-faithful simulation of n8n's
+pre-fix output. The pre-fix n8n behaviour is the one stated in `node-diff.md` §3b's defect table.
+
+### 13d. Re-verified after the PUT
+
+- `node --check` on the **published** body (extracted from the re-GET, not from a working copy):
+  **OK**; the committed `throwaway-standins/conversation-sla-tracking-create.js` is byte-identical to
+  it — 7237 bytes, `sha256 abc96e57bfed926d…`.
+- `published-jscode.json` refreshed from the published workflow; only the create body moved:
+  `Assign or unassign a Conversation1` `96219975779fda31` (897) · **`conversation-sla-tracking-create`
+  `abc96e57bfed926d` (7237)** · `get-round-robin-assignee` `26bc7297d294a6a2` (1391) ·
+  `get-working-days` `266a45376a4c9538` (800) · `Call 'sub-add-comment-respond'` `abee6ea9837fcb66`
+  (2086).
+- **S8 sweep BY NODE TYPE** (LESSONS: gate on `node['type']`, not a raw substring) over a fresh
+  re-GET, on `nodes` **and** `activeVersion.nodes`: **zero** nodes of type
+  `@respond-io/n8n-nodes-respond-io.respondio`, `n8n-nodes-base.httpRequest`,
+  `@n8n/n8n-nodes-langchain.memoryPostgresChat`. Type inventory unchanged: 6 code · 4 if ·
+  3 executeWorkflow · 2 redis · 1 executeWorkflowTrigger. Credentialed nodes: 2, both `redis`
+  (`test-guard-record`, `chat-escalation-push`) — unchanged. `sorento-respond-assignee-queue`: **0**.
+  (The raw-substring counts also happen to be 0/0/0 — the §10 convention of writing stand-in comments
+  so a naive `grep -F '<banned type>'` stays clean was preserved in the new comment text. The
+  authority remains the by-type gate.)
+- No trailing whitespace on any line of any string parameter in the PUT body; `pinData` never echoed;
+  `settings.binaryMode` / `settings.timeSavedMode` stripped.
+- Live after both PUTs: `rrYXzE61gCNUck_zmXe-G` `5018a189-…` (`updatedAt 2026-07-22T01:27:32.239Z`),
+  spine `9qVyfUxmRQqrpGRMDLRuz` `469e7259-…`, close-convo `-WkzJMQZHmsFQm6A2abLJ` `4a2e963d-…` —
+  **none touched**.
+- `create-body-sample.json`: re-rendered through the pass-2 published stand-in with the recorded
+  sample inputs and byte-compared — **identical, byte for byte**, so it was **NOT** regenerated.
+
+### 13e. Handover impact for the tester
+
+**None to the driving procedure.** §9's instructions are unchanged — same `_case_*` trigger keys,
+same allowed fixtures, same discriminator, same "pin the trigger, don't call it from a parent".
+Cases (a)–(f) are unaffected in shape; they must be re-run against `386caa11-…` (and the fork at
+`3186d960-…`) since both moved. One addition worth a matrix case if cheap: an envelope with
+`message_id` **absent** should now produce a create body carrying `"message_id": null` and
+`"source_message_id": null` rather than an error — offline-proven here, not execution-proven.

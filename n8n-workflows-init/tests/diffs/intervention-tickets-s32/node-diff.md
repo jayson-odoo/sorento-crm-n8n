@@ -6,6 +6,7 @@ Build date: 2026-08-12 · seat: coder · executions run: **3 mechanism-verificat
 THROWAWAY only** (see §4a; none on the fork, none on live — the matrix itself remains the tester's slice)
 Amended 2026-08-12 (**hardening pass**, plan edit-list item 3 "HARDENING" bullet) — see §3a.
 Amended 2026-08-12 (**fail-loud pass**, follow-up to the tester's case (f) FAIL) — see §4a.
+Amended 2026-08-16 (**interpolation-hardening pass 2**, codex cross-model review VERDICT: FIX) — see §3b.
 
 | | |
 |---|---|
@@ -14,7 +15,8 @@ Amended 2026-08-12 (**fail-loud pass**, follow-up to the tester's case (f) FAIL)
 | fork versionId before | `344e1a83-996d-45fb-9e7e-4b3319358811` (matches the plan's recorded fork state) |
 | fork versionId after build PUT | `fdc154b5-cb33-416c-a468-517fff59dc5e` |
 | fork versionId after **hardening** PUT | `ceb72e9e-d708-4f35-b5ec-9d18286d316d`, `updatedAt 2026-08-12T14:30:50.709Z` |
-| fork versionId after **fail-loud** PUT (current) | **`16eadb1e-157b-419a-9441-e6510c40f4fc`** — `versionId == activeVersionId` (published; REST PUT auto-publishes) |
+| fork versionId after **fail-loud** PUT | `16eadb1e-157b-419a-9441-e6510c40f4fc` |
+| fork versionId after **interpolation-hardening pass 2** PUT (current, §3b) | **`3186d960-2c39-4bfd-a3b1-9e8d4d5e0295`** — `versionId == activeVersionId` (published; REST PUT auto-publishes) |
 | transport | REST `PUT /api/v1/workflows/vUfFUDjLAuMaeQE6`, HTTP **200**, body derived from a fresh REST GET of the same workflow (LESSONS §55) |
 | snapshots | `fork-before.json` / `fork-after.json` in this directory (both gitignored — full GET dumps are secrets at rest, LESSONS §59b). ⚠️ **`fork-after.json` is the *build* PUT (`fdc154b5-…`) and is now one version stale**; it was deliberately not refreshed (writing another full-GET dump only adds a secret at rest). Re-GET the fork for the current bytes; the authority for the current state is the sha table below |
 | node count | 18 → **16** (+1 added, −3 deleted) |
@@ -69,7 +71,7 @@ Reference message: https://app.respond.io/space/364817/inbox/{{ …contact_id }}
 - Only one branch of an If emits per execution, so the create still fires exactly once per turn.
 
 ### 3. `conversation-sla-tracking-create` (httpRequest) — param-edit (URL + body, LOCKED shape)
-- **before** `cf2d15ffcf8b` → **after** `086487442a3d` → **after hardening (current) `7a6db3f826ef`** (§3a)
+- **before** `cf2d15ffcf8b` → **after** `086487442a3d` → **after hardening `7a6db3f826ef`** (§3a) → **after interpolation-hardening pass 2 (current) `d8d6ac75fb2c`** (§3b)
 - URL: `…/api/v1/sla-management/conversation-sla-tracking` → **`…/api/v1/sla-management/conversation-sla-tracking/integration`** (the only route whose response carries `in_working_hours`).
 - Method `POST`, `authentication: genericCredentialType`, `genericAuthType: httpHeaderAuth`, `sendHeaders: true` with an empty `headerParameters.parameters` list, `options: {}` — all unchanged.
 - Credential unchanged: **`crm-n8n-auth`** (`httpHeaderAuth`, id `mNsZWyU82NYV58k2`).
@@ -166,14 +168,98 @@ Behaviour notes for the reviewer:
 - `null` / `undefined` / an absent key now render `""` instead of the literal `null` (the old raw
   form produced `"contact_phone_number": "null"` — proven red in the offline probe, see
   `throwaway-build.md` §8).
-- **`assigned_to_id` is deliberately NOT hardened** — it is still raw-interpolated between quote
-  chars. It is out of the plan's scope ("those three keys"), its source is a CRM-issued id from
-  `get-round-robin-assignee`, and leaving it raw keeps the throwaway's "malformed body throws"
-  instrument able to go red. Flagged for the reviewer as a known remaining edge, not a regression.
+- ~~**`assigned_to_id` is deliberately NOT hardened**~~ — **SUPERSEDED by §3b (2026-08-16).** This
+  bullet argued the remaining raw interpolation was an acceptable known edge, partly because it kept
+  the throwaway's "malformed body throws" instrument able to go red. The codex cross-model review
+  rejected that trade (and found two worse siblings the bullet did not mention). All three raw
+  interpolations are now gone; the instrument was retargeted rather than kept alive by a defect.
 - n8n expression support: `??` is evaluated by the Tournament expression engine the same way the
   existing `||` and `?.` forms in this workflow are. Not exercised by an execution here (no
   executions in this seat) — the tester's V2 matrix runs the identical transplanted expression in
   the throwaway's Code stand-in, which is proven mechanically equivalent (`throwaway-build.md` §3).
+
+### 3b. `conversation-sla-tracking-create` — INTERPOLATION-HARDENING PASS 2 (2026-08-16, fourth PUT)
+
+Origin: **codex cross-model review, VERDICT: FIX** (`/codex-review` second opinion over the exported
+node bodies). Codex found the first two; the main session found the third while verifying against the
+exported fork. §3a hardened the three *trigger-sourced strings* and explicitly left `assigned_to_id`
+raw "as a known remaining edge". That judgement was wrong on all three counts below, and the two
+siblings were not even in the §3a delta table.
+
+**The three defects, all in the same body, all latent on LIVE today as well:**
+
+| key | pre-fix form | what a missing value rendered | consequence |
+|---|---|---|---|
+| `message_id` | `{{ … }}` **unquoted** | `"message_id": ,` | **MALFORMED JSON** → the create request fails → the intervention dies silently *after* `…routed-to-pic2` already told the customer "we are directing your enquiry to the correct person" |
+| `source_message_id` | `"{{ … }}"` quoted-raw | `""` | **EMPTY IDEMPOTENCY KEY.** This field is the identity of the whole feature — AC-A2 dedups on it. A silently broken dedup is worse than a loud failure |
+| `assigned_to_id` | `"{{ … }}"` quoted-raw | the literal string `"undefined"` | backend **400 "User not found for assigned_to_id"** |
+
+Note the n8n rendering rule that makes the first two so quiet: in a multi-part `{{ }}` template n8n
+renders a `null`/`undefined` expression result as the **empty string**, so the unquoted key loses its
+value entirely and the quoted key keeps its quotes and loses its content. Neither raises anything.
+
+- **sha** `7a6db3f826ef` → **`d8d6ac75fb2c`** · `sha256(jsonBody)` `d3b86d1213c6b863…` →
+  **`101c71472e610b88…`** (883 chars)
+- **Only** `parameters.jsonBody` changed. `url`, `method`, `authentication`, `genericAuthType`,
+  `sendHeaders`, `headerParameters`, `options`, the `crm-n8n-auth` credential binding
+  (`mNsZWyU82NYV58k2`), the node `id`/`name`/`position`/`type`/`typeVersion` and **all 15 other
+  nodes' param shas** are unchanged (delta table re-run after the PUT: exactly one node CHANGED).
+  `connections` deep-equal to before. All 6 fork credentials re-asserted intact after the PUT.
+
+Per-line delta — exactly three lines:
+
+| key | before | after |
+|---|---|---|
+| `assigned_to_id` | `"assigned_to_id": "{{ $('get-round-robin-assignee').item.json.assignee_id }}",` | `"assigned_to_id": {{ JSON.stringify($('get-round-robin-assignee').item.json.assignee_id ?? '') }},` |
+| `message_id` | `"message_id": {{ ….message_id }},` | `"message_id": {{ JSON.stringify(….message_id ?? null) }},` |
+| `source_message_id` | `"source_message_id": "{{ ….message_id }}",` | `"source_message_id": {{ ….message_id == null ? 'null' : JSON.stringify(String(….message_id)) }},` |
+
+The other four keys (`contact_phone_number`, `agent_code`, `team_set_code`, `source_message_text`)
+are **byte-identical** to §3a.
+
+body after pass 2 (byte-exact as published; `sha256(jsonBody) = 101c71472e610b88…`):
+```
+={
+    "assigned_to_id": {{ JSON.stringify($('get-round-robin-assignee').item.json.assignee_id ?? '') }},
+    "contact_phone_number": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_phone_number ?? '') }},
+    "agent_code": {{ JSON.stringify($('When Executed by Another Workflow').first().json.agent ?? '') }},
+    "team_set_code": {{ JSON.stringify($('When Executed by Another Workflow').first().json.team ?? '') }},
+    "message_id": {{ JSON.stringify($('When Executed by Another Workflow').first().json.message_id ?? null) }},
+    "source_message_id": {{ $('When Executed by Another Workflow').first().json.message_id == null ? 'null' : JSON.stringify(String($('When Executed by Another Workflow').first().json.message_id)) }},
+    "source_message_text": {{ JSON.stringify($('When Executed by Another Workflow').first().json.input_message || '') }}
+}
+```
+
+**Semantics, per key:**
+
+- `assigned_to_id` → `JSON.stringify(x ?? '')`. **Empty string is CORRECT on missing** — the peer
+  confirmed empty means *"round-robin server-side"*. It can never again be the literal `"undefined"`
+  or `"null"`, and a hostile `"`/`\`/newline in a CRM-issued id no longer malforms the body.
+- `message_id` → `JSON.stringify(x ?? null)`. Renders the **bare JSON `null`** when missing (the
+  field is **optional** in the contract, so `null` is legal), the number otherwise. It is now
+  structurally impossible for this key to emit a malformed slot.
+- `source_message_id` → ternary, deliberately **not** `?? ''`. It renders a quoted string
+  (`"1786538674000000"`) when present and a **bare JSON `null`** when missing, so the backend
+  **rejects the create loudly** (it is a REQUIRED string in the contract) instead of writing a ticket
+  with an empty identity. `== null` is load-bearing: it catches `undefined` **and** `null` but NOT
+  `0` or `""` — both of those still render as real (quoted) values. Probe-asserted in both
+  directions.
+
+**Wire shape is unchanged for today's values — checked, not assumed.** `message_id` arrives from the
+spine as `$('tf-message').first().json.message.messageId` (a respond.io numeric id) through a trigger
+input declared `type: "any"`, so it is a number in practice: `JSON.stringify(1786538674000000)` emits
+exactly the same bare digits the raw form did, and `JSON.stringify(String(x))` exactly the same
+quoted literal. Re-rendered through the published stand-in against the recorded sample inputs and
+byte-compared with `create-body-sample.json`: **identical, byte for byte** → the file was **NOT**
+regenerated and the peer's replayed fixtures stay valid. (One deliberate behaviour change worth
+naming: if `message_id` ever arrives as a *string*, `message_id` now renders quoted rather than bare.
+That is still valid JSON and the backend's `BeforeValidator` coerces; the previous form would have
+emitted an unquoted bare token, which for a non-numeric string is malformed JSON.)
+
+**Every interpolation in this body now passes through `JSON.stringify` or the ternary**, i.e. every
+`{{ }}` resolves to a non-empty, syntactically-complete JSON literal. That is the invariant to
+re-check if anyone adds a key here: *no raw interpolation, ever* — not even one "whose source is
+always present".
 
 ### 4. `if-in-working-hours` (if, `n8n-nodes-base.if` typeVersion 2.3) — **ADDED**
 - sha `84997fcc6296` at the build PUT → **`722d7448d591`** after the fail-loud PUT (§4a, current).
@@ -287,7 +373,7 @@ All five harness hunks carry an **identical param sha before and after**, i.e. t
 
 ## Full post-build param-sha table (for the "is the change still present" gate)
 
-Current values, i.e. **after the fail-loud PUT** (`16eadb1e-…`). Computed with
+Current values, i.e. **after the interpolation-hardening pass-2 PUT** (`3186d960-…`). Computed with
 `sha256(json.dumps(node.parameters, sort_keys=True, ensure_ascii=False))[:12]` — `ensure_ascii=False`
 is required, see *Reviewer notes* in the plan.
 
@@ -298,7 +384,7 @@ is required, see *Reviewer notes* in the plan.
 | `When Executed by Another Workflow` | `048ecba6eec7` |
 | `chat-escalation-push` | `b6f384e4bc9f` |
 | `chat?` | `aab7ec62a352` |
-| `conversation-sla-tracking-create` | `7a6db3f826ef` (was `086487442a3d` before the hardening PUT) |
+| `conversation-sla-tracking-create` | **`d8d6ac75fb2c`** (was `7a6db3f826ef` before the interpolation-hardening pass-2 PUT §3b; `086487442a3d` before the §3a hardening PUT) |
 | `get-round-robin-assignee` | `b40f59333e24` |
 | `get-working-days` | `47416000dd11` |
 | `if-conversation-unassigned` | `50391b189ae0` |
@@ -377,11 +463,56 @@ Notes for the peer:
   `create-body-sample.json`: **identical, byte for byte** (and deep-equal as JSON). The file was
   therefore **not regenerated** and the peer's replayed fixtures remain valid. A hostile value
   (`"`, `\`, newline, `null`) is where the two forms diverge — and that is the point of the fix.
+- **Unchanged by the 2026-08-16 interpolation-hardening pass 2 (§3b) — checked, not assumed.**
+  `assigned_to_id`, `message_id` and `source_message_id` now go through `JSON.stringify` / a ternary,
+  but for these sample values (`"USR-0042"`, `9876543210`) they emit exactly the same literals the raw
+  forms did. Re-rendered through the pass-2 published stand-in body and byte-compared against
+  `create-body-sample.json`: **identical, byte for byte**. The file was therefore **not regenerated**
+  (second time running; the check is `cmp`, not inspection). It diverges only on a MISSING value —
+  `message_id` absent now yields a bare `null` for both id keys instead of a malformed body / an empty
+  string, and a missing `assignee_id` yields `""` instead of `"undefined"`.
 - What n8n needs back: the response must carry **`in_working_hours`** (consumed by `if-in-working-hours`), **`initiated_at` / `due_at` / `due_at_resolution`** (consumed by the SLA-alert comment), and **`assigned_to`** (consumed by `return-assignee`). Please also return an `already_active: true` retry example — that is UAC case (e).
 
 ---
 
 ## Validation performed
+
+### Interpolation-hardening pass-2 PUT (2026-08-16, §3b) — re-verified after the write
+
+Order was deliberate: **throwaway first, then the fork** — the stand-in must render the fork's bytes,
+so the mirror lands first and the equality gate is re-proved on both published artifacts afterwards.
+
+- Pre-flight drift gates (the script aborts before any write): fork at
+  `16eadb1e-157b-419a-9441-e6510c40f4fc`, throwaway at `f7887fc2-2808-4b87-8fe1-9f11a40d304b`
+  (⚠️ **not** the `2d1c03b3-…` recorded in §12 of `throwaway-build.md` — the throwaway had since moved
+  on a fixture refresh; the gate was re-pinned to the value a fresh GET actually showed rather than
+  the value the doc predicted), `versionId == activeVersionId` on both, and the node's current
+  `jsonBody`/`jsCode` byte-compared against the recorded pre-edit strings. The three live ids
+  (`rrYXzE61gCNUck_zmXe-G`, `9qVyfUxmRQqrpGRMDLRuz`, `-WkzJMQZHmsFQm6A2abLJ`) are a hard-refused
+  target set in the script itself.
+- Both PUTs HTTP **200**, bodies `{name, nodes, connections, settings}` only, derived from a fresh
+  REST GET of the same workflow (LESSONS §55), `settings.binaryMode` / `settings.timeSavedMode`
+  stripped, `pinData` never echoed, zero trailing whitespace in any string parameter.
+  Fork `16eadb1e-…` → **`3186d960-2c39-4bfd-a3b1-9e8d4d5e0295`**;
+  throwaway `f7887fc2-…` → **`386caa11-7668-4e7b-8ca2-f386f211c6e8`**.
+- On a re-GET of each: `versionId == activeVersionId`, `activeVersion.nodes == nodes`, `connections`
+  deep-equal to before, node count still 16 on both, and the published `jsonBody` / `jsCode`
+  byte-equal to the intended string.
+- **Param-sha delta over all 16 nodes, both workflows: exactly ONE node changed** —
+  `conversation-sla-tracking-create` (fork `7a6db3f826ef` → `d8d6ac75fb2c`; throwaway
+  `20c67a6b2079` → `965659b37b5b`). All 15 others byte-identical.
+- Fork credentials re-asserted after the PUT (collateral check, LESSONS §55): 6/6 intact —
+  `sorento-api` ×1, `crm-n8n-auth` ×3 (incl. this node's `mNsZWyU82NYV58k2`), `sorento-redis` ×2.
+- **Equivalence gate re-proved on the two published artifacts**: fork `jsonBody` minus the leading
+  `=`, with `{{ x }}` rewritten to `${ x }`, is **string-equal** to the stand-in's
+  `_rendered_body_raw` template literal. Shown able to go red by a control run with one character
+  altered on the fork side → MISMATCH.
+- **Live untouched, re-checked after both PUTs**: `rrYXzE61gCNUck_zmXe-G` `5018a189-…`
+  (`updatedAt 2026-07-22T01:27:32.239Z`), spine `9qVyfUxmRQqrpGRMDLRuz` `469e7259-…`
+  (`updatedAt 2026-08-11T16:23:58.052Z`), `-WkzJMQZHmsFQm6A2abLJ` `4a2e963d-…`.
+- Offline probe against the published bodies: **197/197 PASS, 0 FAIL**. Red-proof against a
+  reconstructed pre-fix body: **30 FAIL** (see `throwaway-build.md` §13).
+- **Not performed:** no executions in this seat (tester's slice), no promote.
 
 ### Fail-loud PUT (2026-08-12, §4a) — re-verified after the write
 

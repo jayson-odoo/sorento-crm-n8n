@@ -21,9 +21,9 @@ first, and the user's explicit go.
 | live sub (promote target) | `rrYXzE61gCNUck_zmXe-G` | `5018a189-22df-4cb9-aa89-fa509377abe9` | UNTOUCHED, `updatedAt 2026-07-22` |
 | live spine (caller; in flip scope) | `9qVyfUxmRQqrpGRMDLRuz` | `469e7259-6cfb-4505-bef4-f37a36bf454f` | UNTOUCHED |
 | close-convo (flip scope) | `-WkzJMQZHmsFQm6A2abLJ` | `4a2e963d-dd2a-443e-bbb1-68b43ee29744` | UNTOUCHED |
-| **fork — the built change** | `vUfFUDjLAuMaeQE6` | **`16eadb1e-157b-419a-9441-e6510c40f4fc`** | build target |
+| **fork — the built change** | `vUfFUDjLAuMaeQE6` | **`3186d960`** | build target (was 16eadb1e before the 2026-08-16 codex hardening) |
 | **clone — caller fix** | `txiPzSxy3Pclsz6v` | **`c97f2f8f-e335-4a3b-8046-abea89bbfdf9`** | `input_message` mapping; ⚠️ SHARED harness — another session edited it 2026-08-13T11:30Z (was `6cd67cbf`); hunk re-verified intact (value present, `removed:false`, targets the fork). **Re-verify before every use.** |
-| **throwaway — S8 test double** | `mTfA5b9TgHItWo2g` | **`f7887fc2-2808-4b87-8fe1-9f11a40d304b`** | DISPOSABLE, delete after sign-off |
+| **throwaway — S8 test double** | `mTfA5b9TgHItWo2g` | **`386caa11`** | DISPOSABLE, delete after sign-off (was f7887fc2) |
 
 Three rollback versionIds are the three UNTOUCHED rows above. Record them before any PUT.
 
@@ -39,7 +39,7 @@ Three rollback versionIds are the three UNTOUCHED rows above. Record them before
 
 ## Verification status
 
-- **V2 functional matrix: 6/6 PASS** against throwaway `f7887fc2` on post-#137 fixtures
+- **V2 functional matrix: 6/6 PASS** against throwaway `f7887fc2` — ⚠️ SUPERSEDED, see CURRENT STATE below; the body changed after this run. Post-#137 fixtures
   (execs 12265871, 12265978, 12266078, 12266195, 12266296, 12266396). Includes case (f), a
   deliberate negative that must ERROR.
 - **V3 fail-closed**: PASS (exec 12206207).
@@ -55,6 +55,32 @@ Three rollback versionIds are the three UNTOUCHED rows above. Record them before
   only blocker that was ours; Step 0 remains worthwhile as the live-side confirmation but is no
   longer the ONLY evidence.
 - **NOT verified**: S7a/S7b redis reads (no helper — see blocked items).
+
+## ⚠️ CURRENT STATE 2026-08-16 — ONE STEP OUTSTANDING, DO NOT CALL THIS GREEN YET
+
+The mandated cross-model codex review returned **VERDICT: FIX** on the create body, and the fix
+was applied but **the matrix has NOT been re-run against it**. Sequence:
+
+- codex found: `message_id` interpolated UNQUOTED (missing → `"message_id": ,` → malformed JSON →
+  create fails → intervention dies after the customer was told help is coming); `assigned_to_id`
+  quoted-raw (missing → literal `"undefined"`).
+- I found what codex missed: **`source_message_id`, the idempotency key the whole feature dedups
+  on, was quoted-raw** — missing rendered `""`, i.e. an empty identity key and silently broken
+  dedup. The 6/6 matrix never saw it because every case pinned a valid id.
+- Applied to fork `vUfFUDjLAuMaeQE6` → **`3186d960`** and throwaway `mTfA5b9TgHItWo2g` →
+  **`386caa11`** (both published, versionId==activeVersionId). Verified after an agent died
+  mid-task: fork has 16 nodes, ONLY the create node changed, the other 15 byte-match their
+  recorded shas; throwaway S8-clean by node type. Live sub `5018a189` and spine `469e7259`
+  UNTOUCHED.
+- Final body: all six interpolations now safe; `source_message_id` renders a quoted string when
+  present and a bare JSON `null` when missing, so the backend rejects it LOUDLY rather than
+  creating a ticket with an empty identity.
+
+**NEXT SESSION, FIRST THING:** re-run the V2 matrix against fork `3186d960` / throwaway
+`386caa11` — the create body is asserted in cases (a)–(e), so the previous 6/6 no longer applies.
+Also unverified: the `probe.js` fail-on-purpose retarget (hardening `assigned_to_id` disarmed the
+old case-5 instrument — a green-that-cannot-fail if not replaced) and the node-diff/throwaway-build
+doc updates. Weekly usage limit hit 2026-08-16, resets **Aug 18 5pm MYT**.
 
 ## USER DECISIONS 2026-08-15 — these override the CRM plan and are recorded there too
 
