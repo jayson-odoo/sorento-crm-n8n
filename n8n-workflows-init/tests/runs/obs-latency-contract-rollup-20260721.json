@@ -1,0 +1,107 @@
+{
+  "_change_id": "obs-latency-contract",
+  "_role": "tester",
+  "_date": "2026-07-21",
+  "_spec": "n8n-workflows-init/plans/obs-latency-contract-build.md (§OBS-1…§OBS-7, §F V-OBS-a…i)",
+  "_diff": "n8n-workflows-init/tests/diffs/obs-latency-contract.md",
+  "_artifacts_under_test": {
+    "clone": "txiPzSxy3Pclsz6v @ 34aedb9f-0974-44b0-8821-a188d7a8223d (versionId == activeVersionId)",
+    "sendmsg_fork": "sJI3DbsLCG01JfRs @ 25b1a299-9de6-4b9e-bf39-bda34bdb7035",
+    "sink_fork": "tWm5DYLxfypmVC1T @ ce78408e-c6fd-4378-b2b9-cd6b7e609001"
+  },
+  "_nothing_live_edited": "No live workflow was edited or published. Live spine 9qVyfUxmRQqrpGRMDLRuz, live sendmsg aoydkG1dbItXR5jXFEQsP, live save sub UrETd-jm46tFj3Xw7w8vL and sorento-main NwMOBEQ1NW7LVky5 were READ ONLY.",
+
+  "_harness_changes_made_by_tester": [
+    "zz-canary-read (LLIbMXAixexM9Cwc): added redis llen nodes 'LLEN prod ingest' (sorento-respond-message) and 'LLEN test ingest' (sorento-respond-message-TEST); repointed 'Read Egress' key per case. Test scaffolding only.",
+    "zz-canary-run (VtIV3TF3aw2Fx8No): rebuilt into a single-shot atomic runner — WHook -> llen-prod-before -> llen-sink-before -> clear-q -> clear-egress -> seed-q -> Run Target -> llen-prod-after -> llen-sink-after -> read-egress. 'Run Target' workflowInputs now sourced from the webhook body (contact/test_run_id) because the clone's redis-pop reads 'test:q:{{ $json.contact }}', NOT 'main-message-list-test'. Test scaffolding only.",
+    "NOTE for the next agent: the clone pops per-contact queue 'test:q:{contact}'. The old zz-canary-run hardcoded inputs carried no 'contact', so it was popping 'test:q:undefined' and was already non-functional before this session."
+  ],
+
+  "S7_LLEN_sorento_respond_message": {
+    "baseline_before_any_run": 0,
+    "final_after_all_runs": 0,
+    "per_snapshot": [
+      {"t": "01:12:35Z", "prod": 0, "sink": 0, "note": "session baseline, established via workflow read (host has no redis access)"},
+      {"t": "01:20:26Z", "prod": 0, "sink": 0, "note": "OBS-1 before"},
+      {"t": "01:20:42Z", "prod": 0, "sink": 1, "note": "OBS-1 after"},
+      {"t": "01:22:13Z", "prod": 0, "sink": 1, "note": "OBS-2 before"},
+      {"t": "01:22:53Z", "prod": 0, "sink": 2, "note": "OBS-2 after / OBS-3 before"},
+      {"t": "01:22:53Z", "prod": 0, "sink": 3, "note": "OBS-3 after"},
+      {"t": "01:23:49Z", "prod": 0, "sink": 3, "note": "OBS-4b before"},
+      {"t": "01:23:50Z", "prod": 0, "sink": 4, "note": "OBS-4b after"},
+      {"t": "01:25:06Z", "prod": 0, "sink": 4, "note": "OBS-6 before"},
+      {"t": "01:28:12Z", "prod": 1, "sink": 5, "note": "OBS-6 after — PROD DELTA, see attribution below"},
+      {"t": "01:30:19Z", "prod": 0, "sink": 5, "note": "OBS-5 before"},
+      {"t": "01:31:54Z", "prod": 0, "sink": 6, "note": "OBS-5 after / OBS-7 before"},
+      {"t": "01:35:06Z", "prod": 0, "sink": 7, "note": "final, after OBS-7 + OBS-7-variant"}
+    ],
+    "verdict": "PASS by attribution — zero test-originated prod ingest writes.",
+    "prod_delta_attribution": {
+      "observed": "LLEN sorento-respond-message went 0 -> 1 between 01:25:06Z and 01:28:12Z.",
+      "halted": true,
+      "attributed_to": "GENUINE LIVE PRODUCTION TRAFFIC, not the harness.",
+      "evidence": [
+        "redis-consume-queue-mongo exec 9391897 (01:28:10Z) popped: contact_id 445239415, phone +60162861178, first_name 'Jay', message 'SRTWT8308-GMB STOCK STATUS', type incoming.",
+        "redis-consume-queue-mongo exec 9391907 (01:28:15Z) popped the paired outgoing stock reply for the same contact; insert-message created CRM rows 43029 and 43030.",
+        "DECISIVE: both popped blobs carry the PRE-C1 live shape — no 'message_id' and no 'turn_id' on the incoming row. Every blob this harness produces carries BOTH. The payloads are therefore structurally incapable of having originated from the clone.",
+        "Timing: the live turn occurred at 01:28:08Z, ~2m20s AFTER the OBS-6 run completed at 01:25:47.9Z.",
+        "Sink accounting is closed and exact (see below), leaving no unexplained harness write."
+      ]
+    },
+    "sink_accounting": {
+      "final_LLEN_sorento_respond_message_TEST": 7,
+      "expected": 7,
+      "breakdown": ["OBS-1 +1", "OBS-2 +1", "OBS-3 +1", "OBS-4b +1", "OBS-6 +1", "OBS-5 +1", "OBS-7-variant +1", "OBS-7 (no-contact) +0 — errored before the push"],
+      "verdict": "every sink write is accounted for by an expected test write; no harness write is unexplained"
+    },
+    "METHODOLOGY_FINDING_S7_IS_NOT_A_VALID_GATE_AS_WRITTEN": "S7 specifies raw 'LLEN before == LLEN after' on sorento-respond-message. That list is (a) shared with LIVE production traffic, which pushes to it continuously, and (b) drained every 5 seconds by redis-consume-queue-mongo (Srs08P0Ha3Cv--YPx0-Yn, schedule interval 5s). So the metric is BOTH false-positive prone (any concurrent real customer turn trips it, as happened here) AND false-negative prone (a genuine harness write is drained within 5s and can read back as 0). RECOMMEND UAC.md §0 S7 be rewritten to the gate actually used here: (1) sink-delta accounting on sorento-respond-message-TEST must equal the number of expected saves, and (2) any non-zero prod delta must be attributed by reading the consumer's popped payload from redis-consume-queue-mongo runData and confirming it lacks the harness markers (message_id/turn_id on an incoming row, or contact 437264483/457216562)."
+  },
+
+  "S8_pin_protocol": {
+    "user_mandated_protocol": "Pin + dev contact; assert pinData present on the workflow BEFORE executing any is_test:false run of sJI3DbsLCG01JfRs.",
+    "BARRIER_1_AS_LITERALLY_SPECIFIED_IS_NOT_IMPLEMENTABLE": "pinData is an argument to test_workflow, evaluated inside the same atomic call. update_workflow exposes no pinData operation (op enum: updateNodeParameters, setNodeParameter, addNode, removeNode, renameNode, addConnection, removeConnection, setNodeCredential, setNodePosition, setNodeDisabled, setNodeSettings, setWorkflowMetadata, addTags, removeTags). prepare_test_pin_data returns schemas and persists nothing. There is therefore NO way to store pin data on the workflow and inspect it before executing.",
+    "substitute_used": [
+      "(a) prepare_test_pin_data(sJI3DbsLCG01JfRs) confirmed the SERVER classifies 'Send a Message', 'HTTP Request' and 'Postgres Chat Memory1' as pin-required (nodesWithoutSchema), and confirmed the two save calls are in nodesSkipped (they execute for real, into the TEST sink).",
+      "(b) The first is_test:false run was deliberately chosen to be §OBS-6 (quick_reply NON-empty). On that path 'Send a Message' is STRUCTURALLY unreachable — it is fed only by Loop Over Items, reachable only via If->TRUE->Code->If1. The credentialed respond.io sender therefore could not fire regardless of pin behaviour. That run served as a zero-exposure proof of the pin mechanism.",
+      "(c) That probe PROVED pins are honoured: exec 9391685 shows 'HTTP Request' with executionTime 0ms returning exactly the pinned payload, and the execution record carries a populated pinData block.",
+      "(d) ONLY THEN were §OBS-5 and §OBS-7 (which do reach 'Send a Message') executed, with the pin supplied and contact_identifer = 437264483 (dev contact) exclusively."
+    ],
+    "empirical_result": "In every is_test:false run, 'Send a Message' shows executionTime 0ms and output identical to the pin, and the execution's pinData block lists it. ZERO real invocations. S8 satisfied empirically in all four runs.",
+    "contacts_used_in_is_test_false_runs": ["437264483 (dev contact, user's own WhatsApp) — and no other"]
+  },
+
+  "case_verdicts": {
+    "OBS-1": "PASS",
+    "OBS-2": "PASS",
+    "OBS-3": "PASS",
+    "OBS-4": "PASS (dynamic coverage #2, #5, #7; see finding on caller #1)",
+    "OBS-5": "PASS",
+    "OBS-6": "PASS (real, not PASS-with-finding — §C2 response shape resolved from historical evidence)",
+    "OBS-7": "PASS on the acceptance criterion, via the spec-sanctioned contact-supplied variant; the literal caller-#9 shape ERRORS (pre-existing A5 defect, reproduced)"
+  },
+
+  "verification_tasks": {
+    "V-OBS-a": "PASS by attribution — see S7 block. Note the metric itself is unsound as written.",
+    "V-OBS-b": "PASS — tWm5DYLxfypmVC1T Redis.list == literal \"sorento-respond-message-TEST\" (no '=' prefix, read from workflow JSON). Clone JSON contains zero occurrences of UrETd-jm46tFj3Xw7w8vL.",
+    "V-OBS-c": "PASS — acceptance criterion for the whole change. OBS-1 exec 9391208: incoming blob turn_id == \"9391208\"; egress sendmsg-sub record turn_id == \"9391208\"; both equal the spine execution id. Asserted as string equality, not eyeballed. Reproduced on OBS-2 (9391366), OBS-3 (9391427), OBS-4b (9391512).",
+    "V-OBS-d": "PASS — sent_at across OBS-1/2/3/5/6/7v: 1784519974000, 1784596934098, 1784519974000, 1784519974123, 1784519974123, 1784519974123. All positive integers; never NaN, null, 0, or a string.",
+    "V-OBS-e": "PASS — incoming blob key set is exactly the pre-change set plus message_id and turn_id; outgoing text blob exactly plus turn_id. No other key changed shape. (One variance on the proactive path only: 'result' is absent when result_set is undefined — pre-existing JSON.stringify drop, not introduced by C3.)",
+    "V-OBS-f": "PASS — static read of clone 34aedb9f: all 8 sendmsg callers target sJI3DbsLCG01JfRs and carry turn_id '={{ $execution.id }}'. sorento-main NwMOBEQ1NW7LVky5 unmodified and unpublished.",
+    "V-OBS-g": "NOT RE-RUN — promote-time gate, out of tester scope. Reviewer/promoter must re-run immediately before publish.",
+    "V-OBS-h": "PASS — UAC.md §0 carries the amended S3 plus S7 and S8. NOTE: docs say '5 orphaned + 1 sinked'; the build spec §D says '4 orphaned + 1 sinked'. The DOCS are right (verified against the clone's own DISCONNECTED_NODE output); the spec's arithmetic is wrong.",
+    "V-OBS-i": "NOT DONE — post-sign-off task. The clone's 8 sendmsg callers still point at sJI3DbsLCG01JfRs and MUST be restored to ublq9nSlrpz63xan (sub-sendmsg-CHAT) or the chat console stays broken."
+  },
+
+  "findings": [
+    {"id": "F1", "severity": "high-for-process", "title": "S7 as written is not a valid gate", "detail": "See S7.METHODOLOGY_FINDING. sorento-respond-message is shared with live traffic and drained every 5s. It tripped once on genuine customer traffic during this run. Replace with sink-delta accounting + payload attribution."},
+    {"id": "F2", "severity": "high-for-process", "title": "S8 barrier 1 is not implementable via MCP", "detail": "pinData cannot be persisted to or read from a workflow through this MCP surface. The user's 'assert the pin is present before executing' step cannot be performed literally. Substitute used is documented in S8.substitute_used; the reviewer should decide whether that substitute is acceptable as the standing protocol, or whether sub-level is_test:false testing should instead be made structurally safe (e.g. a name-preserving Code-node stand-in for 'Send a Message' in the fork, per LESSONS §4/§11), which would remove the residual risk entirely."},
+    {"id": "F3", "severity": "resolved-blocker", "title": "quick_reply response shape RESOLVED — spec §G2 / §C2 closed", "detail": "Live sendmsg sub aoydkG1dbItXR5jXFEQsP exec 9347803 (2026-07-20T16:55:01Z) took the quick_reply branch. Its 'HTTP Request' node output is {\"contactId\":477071889,\"messageId\":1784566502539125}. The respond.io POST /v2/contact/id:{id}/message response DOES carry messageId, in microseconds, same shape as the respondio node. Outcome (a) applies: §OBS-6 is a genuine PASS and there is NO separate CRM defect to raise. Obtained purely by reading historical runData — respond.io was never called."},
+    {"id": "F4", "severity": "resolved-open-question", "title": "C2 input needs NO type:'any' — the coder's flagged risk does not materialise", "detail": "The coder flagged that {name:'turn_id'} with no type might coerce a declared-but-unpassed input to '' rather than undefined, making '?? null' yield '' and breaking the proactive/turn-bound distinction. Empirically DISPROVEN: exec 9392400 (proactive shape, no turn_id passed) renders the blob as \"turn_id\":null — JSON null, not '', not 'undefined', not absent. Do NOT change the input to type:'any' before promote; the current form is correct."},
+    {"id": "F5", "severity": "medium", "title": "Pre-existing A5 defect reproduced — proactive save CRASHES, it does not merely degrade", "detail": "Exec 9392251 ran the exact caller-#9 shape (contact_identifer + message only). 'Call sub-respond-save-message-redis1' THREW: the data expression dereferences $('When Executed by Another Workflow').first().json.contact.phone, contact is undefined, so data never rendered, the sub received data:undefined and the Redis push failed with 'Invalid argument type'. This is PRE-EXISTING (live's blob has the same dereference) and NOT introduced by C3 — but it means the rate-limit-notice path has never logged an outgoing row, and after promote it still will not. Callers #5 and #6 pass no contact either and are exposed to the same crash on any path that reaches the save. Recommend a separate backlog item: guard the contact dereference (contact?.phone ?? null)."},
+    {"id": "F6", "severity": "low", "title": "turn_id is missing from BOTH sendmsg save callers' workflowInputs.value", "detail": "The clone's Call 'sub-respond-save-message-redis'2 passes turn_id as a first-class sub input. The two save calls inside sub-sendmsg-OBS do NOT — their workflowInputs.value has no turn_id key, so the sub receives turn_id:null (visible in every OBS-5/6/7 runData). HARMLESS today because the save sub forwards only 'data', and the blob's turn_id is correct. Flagged only as an inconsistency the reviewer may want made uniform before promote."},
+    {"id": "F7", "severity": "info", "title": "§OBS-4 caller #1 is not deterministically reachable", "detail": "sorento-sub-respond-sendmsg-respond (#1) has exactly one inbound: set-ran-query-formulator, which is fed ONLY by the ERROR outputs (index 1) of Call 'sub-query-reformulator', Call 'sub-get-results', and Basic LLM Chain. It is a failure-notification sender. Reaching it requires forcing a sub-workflow error, and the Basic LLM Chain route would also burn tokens (violating the deterministic scope / S6). Substituted caller #5 (fed by If5[1], the no-access path) as dynamic coverage — contact 457216562, exec 9391512, turn_id threaded correctly. Dynamic coverage achieved: #2, #5, #7. Static-only: #1, #3, #4, #6, #8. Caller #3 is additionally orphaned on the clone (coder already flagged)."},
+    {"id": "F8", "severity": "info", "title": "Legacy would_log guard now double-counts the incoming save", "detail": "guard-h-record still writes a {guard:'save-message-redis', kind:'would_log', target:'redis:sorento-respond-message->mongo'} egress record on the same if-message-is-audio[1] branch where the now-sinked real save call also runs. Both fire every turn. Not a safety problem (the guard is a redis note, the real call goes to the TEST sink), but the egress log now claims the write was 'blocked' when it in fact executed against the sink. Worth reconciling so a future reader does not misread the log."},
+    {"id": "F9", "severity": "info", "title": "Stale UAC case fixtures use a 3-level message shape the clone cannot read", "detail": "n8n-workflows-init/tests/cases/*.json nest item.message.message = {text,...}. The clone resolves text at $('tf-message').first().json.message.message.text, which needs FOUR levels (item.message.message.message). Ground truth taken from live spine exec 9390932: tf-message returns the respond.io webhook body B, where B.message = D = {messageId, replyTo, message: E} and E = {type, text, attachment}. messageId lives on D. The case files would silently yield undefined text. They should be regenerated against the live shape."},
+    {"id": "F10", "severity": "info-carried", "title": "Live spine still runs sub-get-results TEST", "detail": "Re-confirmed on the clone: Call 'sub-get-results', probe-incoming and sibling-probe all target rysSPgUssLDf6xJc ('sub-get-results TEST'), while sibling-probe on live targets Fss5aAaXthJSWpZCgKiKR. Carried forward from the coder's diff §7. Out of scope here; still needs a user decision."}
+  ]
+}

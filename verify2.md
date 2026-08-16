@@ -1,0 +1,36 @@
+- generic [active] [ref=f7e1]:
+  - button "Open Next.js Dev Tools" [ref=f7e7] [cursor=pointer]
+  - alert [ref=f7e11]
+  - generic [ref=f7e13]:
+    - generic [ref=f7e14]:
+      - heading "Welcome, Rayza" [level=1] [ref=f7e15]
+      - button "Log out" [ref=f7e16] [cursor=pointer]
+    - generic [ref=f7e20]:
+      - generic [ref=f7e21]:
+        - paragraph [ref=f7e24]:
+          - text: This page is your personal portal link — keep it to come back any time without asking for a new link.
+          - generic [ref=f7e25]: Press ⌘D to bookmark.
+        - button "Dismiss bookmark hint" [ref=f7e26] [cursor=pointer]
+      - generic [ref=f7e30]:
+        - button "Copy link" [ref=f7e31] [cursor=pointer]
+        - button "Share / save" [ref=f7e35] [cursor=pointer]
+    - generic [ref=f7e42]:
+      - searchbox "Search submissions" [ref=f7e43]
+      - button "Filter by status" [ref=f7e44] [cursor=pointer]
+    - generic [ref=f7e47]:
+      - combobox "Submission type" [ref=f7e48]:
+        - generic:
+          - generic:
+            - text: Stock Inquiry
+            - generic: "1"
+      - button "Set Stock Inquiry as default tab" [ref=f7e51] [cursor=pointer]
+    - generic [ref=f7e54]:
+      - link "New Stock Inquiry" [ref=f7e56] [cursor=pointer]:
+        - /url: /portal/c/ZJTH3GC69J/stock_inquiry/new
+      - list [ref=f7e58]:
+        - listitem [ref=f7e59]:
+          - link "Draft Stock Inquiry 1 Jul 2026" [ref=f7e60] [cursor=pointer]:
+            - generic [ref=f7e61]: Draft
+            - paragraph [ref=f7e63]: Stock Inquiry
+            - paragraph [ref=f7e65]: 1 Jul 2026
+  - region "Notifications alt+T"

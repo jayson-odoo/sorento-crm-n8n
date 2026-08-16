@@ -1,0 +1,121 @@
+{
+ "run": "dym-probe-before-offer \u00a7DP re-run (rev 5 \u2014 picker surface, scoping fallback, multi-token lift)",
+ "date": "2026-08-07",
+ "status": "INCOMPLETE \u2014 one BLOCKING defect found; several runs not executed (see coverage_not_run)",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "a22914d8-1026-4215-b390-aa114db79ac4",
+  "previous": "1b664006",
+  "rollback": "545210e7",
+  "live_spine": "533499f4 at start; **f9205b03 at end** \u2014 the live spine drifted a SECOND time DURING this pass (someone else is promoting, as the coordinator warned). The clone is unaffected (a22914d8 throughout)."
+ },
+ "BLOCKING_FINDING": {
+  "id": "F-PICKER-DISCARDED",
+  "severity": "BLOCKING \u2014 rev 5's headline feature does not reach the customer",
+  "claim_under_test": "the 4th surface needed no new wiring because not-found-error-message's escalate_message already flows to build-suggest-offer",
+  "verdict": "HALF TRUE. The payload does flow and the annotation IS computed correctly. It is then DISCARDED before it reaches the customer.",
+  "evidence_exec": "11514456 (`cert for SRTWC19`)",
+  "pipeline_worked": {
+   "dym-transform": {
+    "probe_lane": "picker",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "dym_candidate_codes": "all 8 picker options",
+    "scoping fallback FIRED": "compatible_entities contains ONLY the 8 products (the gate replaced it, exactly as the coder predicted), yet dym_probe_entities includes {uuid:1439736c-\u2026-4599, entity_type:'attachment_type', code:'Certification'} \u2014 that uuid exists ONLY in resolutions[1].matches, so it can only have come from the resolver-flatten fallback. THE FALLBACK IS PROVEN TO FIRE ON A REAL REQUIRE-SPECIFIC TURN."
+   },
+   "dym-probe": {
+    "sub": "11514470 @ rysSPgUssLDf6xJc",
+    "answer_count": 14
+   },
+   "dym-annotate": {
+    "ok": true,
+    "dym_available_codes": [
+     "srtwc191-g2",
+     "srtwc195",
+     "srtwc192-300"
+    ],
+    "probed": "all 8"
+   },
+   "build-suggest-offer.escalate_message": "1. SRTWC193 - no certificate\\n2. SRTWC190 - no certificate\\n3. SRTWC195 - has certificate\\n4. SRTWC191-G2 - has certificate\\n5. SRTWC191-250MM - no certificate\\n6. SRTWC191 - no certificate\\n7. SRTWC192-300 - has certificate\\n8. SRTWC192 - no certificate  \u2014 header unchanged, numbering unchanged, NOTHING reordered, suggest_offer:false"
+  },
+  "what_the_customer_got": "the BARE 8-line picker, byte-identical to rev 4. Confirmed from the sendmsg-sub egress AND from save-session-vars user_response.",
+  "root_cause": "escalate-catalog.js:21-23 \u2014 `const nfNode = $('not-found-error-message'); \u2026 response = nf.escalate_message;`. It re-sources escalate_message BY NAME from the node UPSTREAM of the dym chain, so it reads the PRE-annotation copy. build-suggest-offer correctly spreads rather than mutating its input, so its annotated output is never consumed on this path. compile-current-state then does `userResponse = response` (line 87) from escalate-catalog.",
+  "why_the_reachability_analysis_missed_it": "it proved the payload REACHES build-suggest-offer, which is true. It did not check what the RENDERED TEXT is sourced from downstream. By-name reads are not redirected by wiring \u2014 this repo's own documented landmine (TOPOLOGY 'Read BY NAME', LESSONS \u00a762).",
+  "why_offline_missed_it": "harness.js asserts build-suggest-offer's OUTPUT object, which is correct and annotated. No offline suite models escalate-catalog/compile-current-state's by-name re-sourcing, so the whole suite is green while the feature is inert.",
+  "fix_direction_NOT_implemented": "escalate-catalog must prefer the annotated escalate_message from $input (build-suggest-offer's output) over the by-name read, or dym-annotate must write back through a node escalate-catalog already reads. Reviewer's call.",
+  "note": "This is the same class as the user-found rev-4 defect: computed-correct, rendered-bare, all gates green."
+ },
+ "verified_static": {
+  "zero new nodes/edges": "CONFIRMED \u2014 rev 5 nodes 149, edges 188. Diffed against the pre-change baseline (git HEAD, 141 nodes / 178 edges): the 8 added nodes and 12 added edges are ALL accounted for by rev 1 (dym-transform/gate/probe/annotate) and rev 4 (*-partial). Rev 5 adds none.",
+  "incoming trio byte-untouched": "CONFIRMED by parameter sha vs the pre-change baseline \u2014 If-incoming-picker 80488d2a1a57, probe-incoming f937572289d3, annotate-incoming-picker 29cd08ab8f66, all identical.",
+  "If-incoming-picker domain condition": "still exactly require_specific===true AND gate_debug.domain === 'incoming'.",
+  "coder rejection reasons (all three hold)": [
+   "#1 probe-incoming.tool is the LITERAL 'crm_incoming_stock_list' (no '=' prefix) \u2014 serving attachments would require turning a shipped literal into an expression on the incoming path",
+   "#2 probe-incoming.entities is $('disallowed-entity-gate').compatible_entities, and on this very turn the gate replaced that with the 8-product option set with NO attachment_type \u2014 so the probe would have gone out unscoped. Confirmed from exec 11514456 runData.",
+   "#3 probe-incoming.workflowId is rysSPgUssLDf6xJc \u2014 the F6 landmine, which generalising would have entangled"
+  ],
+  "_DYM_CTRL_KEYS completeness": "VERIFIED BY COMPUTATION, not by reading. Ran the published dym-transform + dym-annotate bytes and diffed their emitted key sets against the declared list: 12 emitted, 12 declared, ADDED-BUT-NOT-STRIPPED = NONE, declared-but-never-emitted = NONE, and an empirical run of build-suggest-offer shows ZERO leak in the output object. probe_lane is present."
+ },
+ "live_cases": [
+  {
+   "id": "R5-V1",
+   "case": "cert for SRTWC19 \u2014 the 4th surface",
+   "exec": "11514456",
+   "verdict": "FAIL (F-PICKER-DISCARDED)"
+  },
+  {
+   "id": "R5-V3",
+   "case": "when is SRTWC19 coming in \u2014 incoming require-specific must not regress",
+   "exec": "11514475",
+   "verdict": "PASS",
+   "rendered": "8 candidates, all '\u2014 no incoming' with the ORIGINAL EM-DASH, plus 'None of these have incoming stock right now.' \u2014 byte-identical to shipped behaviour. No regression."
+  }
+ ],
+ "offline": {
+  "harness.js": "132 ok",
+  "byteid.js": "12 ok",
+  "ccs-harness.js": "26 ok",
+  "total": "170 \u2014 matches the coder's claim"
+ },
+ "S9_mutations": {
+  "S9-I scoping fallback removed (`if (out.length === 0) {` -> `if (false) {`)": "occ 1/1, digest aad03c268c88->52b042865046, harness RED x8 incl. 'PICKER scoping entity found via resolver fallback'. Gate works \u2014 the fallback is a real instrument.",
+  "S9-J multi-token lift reverted, vs ccs-harness.js": "reported \u274c GATE IS BLIND. NOT a coverage gap \u2014 my suite selection was wrong.",
+  "S9-J retry vs harness.js": "occ 1/1, digest aad03c268c88->08f4b8378d93, RED x3 ('partial lane multi-token allowed', 'partial lane', 'partial lane probes all 3 across 2 tokens'). The lift IS gated.",
+  "S9-J vs byteid.js": "GATE IS BLIND \u2014 correct and expected; byteid only covers un-annotated byte-identity paths.",
+  "lesson": "mutate.sh's 'GATE IS BLIND' verdict is relative to the suite you point it at. ccs-harness stubs dym-transform-partial's output, so it gates the RENDERER, not the lane detection. Worth stating in the script's help so a future run does not misread it as a coverage hole."
+ },
+ "docs_checks": {
+  "\u00a7DP-14": "CONFIRMED \u2014 DP.md:250 reads '\u2705 CLOSED (verified live 2026-08-07)' and cites exec 11512474 with the one-row/qty-0 observation. No longer reads as an open defect.",
+  "plan \u00a73.7 latency table": "CONFIRMED \u2014 transcribed correctly: dym-transform 20 ms, dym-gate 1 ms, dym-probe 361 ms (range 232\u2013458, one 1.9 s outlier), dym-annotate 35 ms, total \u2248417 ms, \u22480.35 % of the p99-vs-lock-TTL budget, no breach, outlier flagged against the missing executeWorkflow timeout. All numbers match what I measured."
+ },
+ "safety_scorecard_rev5": {
+  "S1": "PASS \u2014 2 completed runs; send-message-* absent from runData; all egress rows are would_* guard records.",
+  "S2": "PASS \u2014 Call 'sub-human-intervention' absent from runData.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData; sink unchanged.",
+  "S4": "PASS \u2014 dym-probe tool resolved to crm_master_product_attachments_list (a READ tool) on the picker lane; sub 11514470 targets rysSPgUssLDf6xJc.",
+  "S5": "PASS \u2014 trigger test_mode===true.",
+  "S6": "PASS \u2014 no LLM node in runData beyond the per-turn reformulator.",
+  "S7a": "PASS (partial window) \u2014 TEST sink 621->622 on exec 11514455, +1 for the run. Only 2 runs completed, so no long series this pass.",
+  "S7b": "PARTIAL, unchanged \u2014 prod LLEN 0 before and after; pop-payload series not collected; rests on structural containment.",
+  "S8": "PASS \u2014 no node added at all in rev 5, so no banned type could be introduced.",
+  "S9": "PASS \u2014 every fail-on-purpose ran through mutate.sh with occurrence+digest assertions."
+ },
+ "environment_incident": {
+  "what": "Mid-pass the CRM origin fe-sorento.foundryx.my returned Cloudflare 504 origin_gateway_timeout; clone execs 11513783 and 11514012 died at check-access-http with EMPTY runData, and one execution hung ~4 min.",
+  "attribution": "NOT rev 5 \u2014 check-access-http is upstream of the whole dym chain, unchanged by this change, and no dym node ever executed in those runs. Cloudflare advised >=120 s backoff; runs succeeded after waiting.",
+  "worth noting": "this change increases CRM read volume per not-found turn (now on 3 lanes), and the origin is currently fragile. Not causal here, but relevant to promote timing."
+ },
+ "coverage_not_run": [
+  "R5-V2 two-token partial miss LIVE (the multi-token lift's live proof) \u2014 gated offline only",
+  "cross-surface agreement live across all four surfaces on one candidate set",
+  "non-enabled domain byte-identity live",
+  "full S7 series (only 2 runs completed)",
+  "carried forward: \u00a7DP-15b live, \u00a7DP-3b, \u00a7DP-4/\u00a7DP-8, \u00a7DP-9 live, \u00a7DP-13b dynamic, \u00a7DP-12 sibling-probe[0]"
+ ],
+ "LIVE_DRIFT_WARNING": {
+  "observed": "export --verify was green on 533499f4 at pass start and reported STALE (live f9205b03) at pass end.",
+  "impact_on_my_evidence": "My static comparisons used the PRE-CHANGE baseline from git HEAD, so they are unaffected. But byteid.js compares the clone body against `live-bso.js`, which was synced to the LIVE export. If f9205b03 touched build-suggest-offer, that cross-file gate is now comparing against a SUPERSEDED live version and its 12 green fixtures are not evidence about current live.",
+  "required_before_promote": "re-run export-workflows.py, re-sync live-bso.js, re-run byteid.js, and re-diff. Do not carry this pass's byte-identity result forward across the drift.",
+  "note": "This is the second drift this cycle. Treat any byte-identity claim as having a shelf life of one export generation."
+ }
+}

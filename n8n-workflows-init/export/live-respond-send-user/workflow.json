@@ -1,0 +1,1200 @@
+{
+  "active": true,
+  "activeVersionId": "9b779edd-3bdd-4b71-b89a-0d85f22b0caa",
+  "connections": {
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Select rows from a table",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Execute a SQL query",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Update a Contact",
+            "type": "main"
+          }
+        ],
+        []
+      ]
+    },
+    "Respond.io Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "If",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "compile-current-state",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Call 'sub-respond-save-message-redis'",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "conversation-sla-tracking-update",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Update a Contact": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-cfg-enabled",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "webhook-to-respond-convert",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "compile-current-state": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "save-session-vars",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "conversation-sla-tracking-update": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "conversation-sla-event-tracking-create",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-act?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-prev-stamp",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "ht-inert",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-arm": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-stamp",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-cfg-enabled": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-cfg-timeout",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-cfg-pilot": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-gate",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-cfg-timeout": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-cfg-pilot",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-first?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-intervene-notice",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "ht-refresh-only",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-gate": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-act?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-prev-stamp": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-arm",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-stamp": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-first?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "webhook-to-respond-convert": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call 'sub-respond-save-message-redis'",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Execute a SQL query",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "description": null,
+  "id": "eG3AA-TWo17-E1-DlHLnH",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "respond-send-user",
+  "nodeGroups": [],
+  "nodes": [
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "id": "09f50ec9-aa92-4bdd-9028-310904f14e7f",
+      "name": "Respond.io Trigger",
+      "parameters": {
+        "eventSource": [
+          "user",
+          "api"
+        ],
+        "messageType": [
+          "text",
+          "attachment"
+        ],
+        "triggerEventType": "newOutgoingMessage"
+      },
+      "position": [
+        -624,
+        464
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondioTrigger",
+      "typeVersion": 1,
+      "webhookId": "5599c5a1-b197-41a7-8160-68486fda107a"
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      },
+      "id": "64bd7c9c-302a-4293-9b1d-dbf71fe74e06",
+      "name": "Select rows from a table",
+      "parameters": {
+        "operation": "select",
+        "options": {},
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "conversation_sla_tracking",
+          "mode": "list",
+          "value": "conversation_sla_tracking"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "policy_id",
+              "value": "={{ $json.policy_id }}"
+            },
+            {
+              "column": "is_responded",
+              "value": "false"
+            },
+            {
+              "column": "assigned_to",
+              "value": "={{ $('Respond.io Trigger').isExecuted ? $('Respond.io Trigger').first().json.user.id.toString() : $('webhook-to-respond-convert').first().json.user.id.toString() }}"
+            }
+          ]
+        }
+      },
+      "position": [
+        48,
+        248
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      },
+      "id": "7629975f-0c7d-47d3-a1dd-8c522f0c34fd",
+      "name": "Execute a SQL query",
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {},
+        "query": "SELECT sp.id as policy_id\nFROM public.sla_policies sp\nLIMIT 1"
+      },
+      "position": [
+        -176,
+        248
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "041460f0-6d2b-4825-9da4-5df8fce89df0",
+      "name": "Call 'sub-respond-save-message-redis'",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sub-respond-save-message-redis",
+          "cachedResultUrl": "/workflow/UrETd-jm46tFj3Xw7w8vL",
+          "mode": "list",
+          "value": "UrETd-jm46tFj3Xw7w8vL"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_id",
+              "id": "contact_id",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "phone_number",
+              "id": "phone_number",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "sent_at",
+              "id": "sent_at",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "data",
+              "id": "data",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "contact_id": "={{ $json.contact.id }}",
+            "data": "={{ JSON.stringify(   {     \"contact_id\": $json.contact.id,   \"phone_number\": $json.contact.phone,   \"message\": $json.message.message.text,   \"sent_at\": $json.message.timestamp,   \"first_name\": $json.contact.firstName,   \"last_name\": $json.contact.lastName }) }}",
+            "message": "={{ $json.message.message.text }}",
+            "phone_number": "={{ $json.contact.phone }}",
+            "sent_at": "={{ $json.message.timestamp }}"
+          }
+        }
+      },
+      "position": [
+        -176,
+        56
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      },
+      "id": "35ac309a-0aa2-479a-8f94-406eb7896b57",
+      "name": "conversation-sla-tracking-update",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={\n  \"is_responded\": true,\n  \"responded_by\": \"{{ $('Respond.io Trigger').isExecuted ? $('Respond.io Trigger').first().json.user.id.toString() : $('webhook-to-respond-convert').first().json.user.id.toString() }}\"\n}",
+        "method": "PUT",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/{{ $('Select rows from a table').item.json.id }}"
+      },
+      "position": [
+        272,
+        248
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      },
+      "id": "87aaa437-adf6-49a2-a600-b48e85e8f063",
+      "name": "conversation-sla-event-tracking-create",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={\n  \"sla_tracking_id\": \"{{ $json.id }}\",\n  \"event_type\": \"response\",\n  \"from_tier\": 1,\n  \"to_tier\": 1,\n  \"assigned_to\": \"{{ $json.assigned_to }}\",\n  \"reason\": \"Responded\"\n}",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/event-logs"
+      },
+      "position": [
+        496,
+        248
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "id": "09b52a0a-720e-4536-870c-489d5664110c",
+      "name": "Update a Contact",
+      "parameters": {
+        "contactId": "={{ $json.contact.id }}",
+        "customFields": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "is_human_intervened",
+              "id": "is_human_intervened",
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Is Allowed Stock",
+              "id": "is_allowed_stock",
+              "removed": true,
+              "required": false,
+              "type": "boolean"
+            },
+            {
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Complaint ID",
+              "id": "complaint_id",
+              "removed": true,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "User Type",
+              "id": "user_type",
+              "options": [
+                {
+                  "name": "end_user",
+                  "value": "end_user"
+                },
+                {
+                  "name": "dealer",
+                  "value": "dealer"
+                }
+              ],
+              "removed": true,
+              "required": false,
+              "type": "options"
+            },
+            {
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Enquiry Type",
+              "id": "enquiry_type",
+              "options": [
+                {
+                  "name": "General Enquiries",
+                  "value": "General Enquiries"
+                },
+                {
+                  "name": "Marketing Form",
+                  "value": "Marketing Form"
+                },
+                {
+                  "name": "Incoming Stock",
+                  "value": "Incoming Stock"
+                },
+                {
+                  "name": "Chat Analysis",
+                  "value": "Chat Analysis"
+                },
+                {
+                  "name": "Order Enquiries",
+                  "value": "Order Enquiries"
+                },
+                {
+                  "name": "Purchase Request / Sponsorship Form",
+                  "value": "Purchase Request / Sponsorship Form"
+                },
+                {
+                  "name": "Project Stock Inquiries",
+                  "value": "Project Stock Inquiries"
+                },
+                {
+                  "name": "Project Complaint",
+                  "value": "Project Complaint"
+                }
+              ],
+              "removed": true,
+              "required": false,
+              "type": "options"
+            }
+          ],
+          "value": {
+            "is_human_intervened": true
+          }
+        },
+        "operation": "UPDATE_CONTACT",
+        "resource": "CONTACTS"
+      },
+      "position": [
+        -176,
+        512
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1
+    },
+    {
+      "id": "cfa8683c-1239-49ff-8deb-c6b715ccdd39",
+      "name": "Webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {},
+        "path": "a38a6c3a-1d70-43f4-8424-4b63a39283b3"
+      },
+      "position": [
+        -624,
+        -16
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "a38a6c3a-1d70-43f4-8424-4b63a39283b3"
+    },
+    {
+      "id": "2b0d1b26-054b-4e4d-94a4-8437061053c9",
+      "name": "webhook-to-respond-convert",
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nreturn $input.first().json.body"
+      },
+      "position": [
+        -400,
+        -16
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "b37e92d5-ca35-4583-9917-1607ef7621d2",
+      "name": "If",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "154ab75d-d7b3-4b79-b9dd-988fb81abbaa",
+              "leftValue": "={{ $json.source }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "User"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        -400,
+        464
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      },
+      "id": "bba83030-46b6-4bcb-93cd-1d8dcc45af5e",
+      "name": "save-session-vars",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "method": "PUT",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "=https://fe-sorento.foundryx.my/api/v1/external/conversation-variables/{{ $('Respond.io Trigger').item.json.contact.id }}"
+      },
+      "position": [
+        -176,
+        704
+      ],
+      "retryOnFail": true,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "id": "aabed19a-1d85-4a92-b7b3-b270ca4bc7d8",
+      "name": "compile-current-state",
+      "parameters": {
+        "jsCode": "let output = {};\noutput = {\n  \"variables\": {\n    \"response\": $input.first().json.message.message.type\n  },\n  \"user_response\": $input.first().json.message.message.type\n};\nreturn output;"
+      },
+      "position": [
+        -400,
+        704
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "9b75e266-6e4f-443e-900f-4c4f4375ee4c",
+      "name": "ht-cfg-enabled",
+      "parameters": {
+        "key": "ht:enabled",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_enabled"
+      },
+      "position": [
+        -160,
+        520
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "9107f81f-4537-4385-b8e3-048dfb503c22",
+      "name": "ht-cfg-timeout",
+      "parameters": {
+        "key": "ht:timeout-sec",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_timeout_sec"
+      },
+      "position": [
+        80,
+        520
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "16389625-3b55-4859-b5c6-949367957f82",
+      "name": "ht-cfg-pilot",
+      "parameters": {
+        "key": "ht:pilot-contacts",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_pilot"
+      },
+      "position": [
+        320,
+        520
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "29dc5014-8814-4ff5-9f04-1327ba51afb6",
+      "name": "ht-gate",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-gate \u2500\u2500 S1 trigger-side gate + notice renderer (human-intervened-timeout) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// WHERE IT RUNS. `respond-send-user`, on the existing `If[0]` branch (source == \"User\"),\n// immediately downstream of `Update a Contact`. It is ADDITIVE: the existing flag/SLA lane is\n// untouched and runs whether or not this lane acts.\n//\n// WHY IT READS BY NAME. `Update a Contact` emits only `{contactId}`, and the n8n Redis node's\n// `get` operation emits a FRESH item (`{json:{}}` + the one property) rather than passing the\n// upstream item through \u2014 so chaining three config reads DROPS the earlier values. The only\n// survivable channel is `$('<node>')`. LESSONS \u00a75/\u00a763: `$('x')` reads are not redirected by\n// rewiring, which is exactly why the fork keeps a name-preserving `Respond.io Trigger` stand-in.\n//\n// FAIL-CLOSED DIRECTION. Every parse failure resolves to \"do not act\":\n//   - `enabled` must be the exact string \"1\". Absent / \"0\" / \"true\" / garbage \u21d2 OFF.\n//     Rationale: mis-parsing toward OFF restores the status quo (the known bug); mis-parsing\n//     toward ON sends WhatsApp notices to real contacts who were never in the pilot.\n//   - a non-empty pilot list acts as an ALLOWLIST; empty/absent means everyone (the announce flip).\n//   - `source` is re-checked here even though the upstream `If` already gated it. Two independent\n//     gates, so HT-3 has an instrument that does not depend on reading the If's branch counts.\n//\n// THE KEY PREFIX IS NOT OWNED HERE \u2014 ON PURPOSE. The redis node key strings are LITERALS\n// (`test:ht:` in the harness fork, `ht:` on live). Deriving the prefix from the payload would let\n// a malformed harness envelope reach the canonical `ht:*` namespace, which is a hard fail\n// (LESSONS \u00a753: never share a mutable key namespace between clone and prod). Fail-closed by\n// construction beats fail-closed by flag.\n//\n// OUTPUT: exactly one item. `ht_should_act` is the only field the graph branches on.\n\nconst DEFAULT_TIMEOUT_SEC = 300;\nconst FLOOR_TIMEOUT_SEC = 60;\n// Pluralised (reviewer R8). The config form accepts 1 minute and the floor is 60 s, so \"1 minutes\" was\n// reachable and customer-facing. The harness previously PINNED that ungrammatical string as intended \u2014\n// LESSONS \u00a773: a pin that blesses half a value becomes a defect when the other half gains teeth.\nconst notice = (min) =>\n  `You're now chatting with our team. If the team is inactive for ${min} ` +\n  `minute${min === 1 ? '' : 's'}, our AI assistant will resume automatically.`;\n\n// A config read has THREE outcomes, not two. Collapsing them is finding #1 (rev5): `readNode` used to\n// return `undefined` both when the READ FAILED (node renamed, never executed, `propertyName` drift) and\n// when the VALUE was legitimately absent (redis GET on a missing key returns null). `parsePilot(undefined)`\n// is `[]`, and an empty allowlist means EVERYONE \u2014 so if only the pilot leg broke while `enabled` still\n// read \"1\", the pilot phase acted on every real contact. Measured: contact 999999 got\n// `ht_should_act: true` with the pilot node removed.\n//\n// The kill-switch already failed closed. The allowlist must too, and it is the one whose failure direction\n// is a real customer receiving a message. Note the asymmetry that has to be preserved: an empty-string\n// VALUE still means everyone \u2014 that is the announce flip, and it is deliberate \u2014 while a failed READ\n// means \"I do not know who is in the allowlist\", which is not a permission to act.\n//   { ok: true,  value }  the node ran and carried the property (value may legitimately be null)\n//   { ok: false, why   }  the read itself failed \u2014 never treat this as \"no allowlist\"\nfunction readNode(nodeName, prop) {\n  let n;\n  try { n = $(nodeName); } catch (e) { return { ok: false, why: nodeName + ' is unreachable' }; }\n  if (!n) return { ok: false, why: nodeName + ' resolved to nothing' };\n  if (n.isExecuted === false) return { ok: false, why: nodeName + ' did not execute' };\n  let f;\n  try { f = n.first(); } catch (e) { return { ok: false, why: nodeName + ' produced no item' }; }\n  if (!f || !f.json) return { ok: false, why: nodeName + ' produced no json' };\n  if (!Object.prototype.hasOwnProperty.call(f.json, prop)) {\n    return { ok: false, why: nodeName + \" carried no '\" + prop + \"' property (propertyName drift?)\" };\n  }\n  return { ok: true, value: f.json[prop] };\n}\n\nfunction parseEnabled(v) {\n  return v !== null && v !== undefined && String(v).trim() === '1';\n}\n\nfunction parseTimeoutSec(v) {\n  const n = Number(String(v == null ? '' : v).trim());\n  if (!Number.isFinite(n) || n <= 0) return DEFAULT_TIMEOUT_SEC;\n  return Math.max(FLOOR_TIMEOUT_SEC, Math.floor(n));\n}\n\n// Comma-separated STRING, not a redis SET: the native n8n Redis node's `set` writes a single\n// scalar (SADD of one member) and has no SREM, so a set could be read but never maintained.\n// See the deviation note in plans/human-intervened-timeout-plan.md.\nfunction parsePilot(v) {\n  if (v === null || v === undefined) return [];\n  const raw = Array.isArray(v) ? v : String(v).split(',');\n  return raw.map((x) => String(x).trim()).filter((x) => x.length > 0);\n}\n\nconst env = $('Respond.io Trigger').first().json || {};\nconst contactRaw = env.contact ? env.contact.id : undefined;\nconst contact_id =\n  contactRaw === null || contactRaw === undefined || String(contactRaw).trim() === ''\n    ? ''\n    : String(contactRaw).trim();\nconst source = env.source === null || env.source === undefined ? null : String(env.source);\n\nconst rEnabled = readNode('ht-cfg-enabled', 'ht_enabled');\nconst rTimeout = readNode('ht-cfg-timeout', 'ht_timeout_sec');\nconst rPilot = readNode('ht-cfg-pilot', 'ht_pilot');\nconst ht_config_read_failures = [rEnabled, rTimeout, rPilot].filter((r) => !r.ok).map((r) => r.why);\n\nconst ht_enabled = rEnabled.ok && parseEnabled(rEnabled.value);\nconst ht_timeout_sec = parseTimeoutSec(rTimeout.ok ? rTimeout.value : undefined);\nconst ht_pilot = rPilot.ok ? parsePilot(rPilot.value) : [];\nconst ht_pilot_active = ht_pilot.length > 0;\nconst ht_allowlisted = !ht_pilot_active || ht_pilot.indexOf(contact_id) !== -1;\n\nlet ht_skip_reason = null;\n// FIRST, and ahead of the kill-switch: if any config leg could not be READ we do not know the state of\n// the allowlist, and \"I could not read it\" must never resolve to \"act on everyone\".\nif (ht_config_read_failures.length) ht_skip_reason = 'config-read-failure';\nelse if (!ht_enabled) ht_skip_reason = 'kill-switch-off';\nelse if (source !== 'User') ht_skip_reason = 'source-not-user';\nelse if (!contact_id) ht_skip_reason = 'no-contact-id';\nelse if (!ht_allowlisted) ht_skip_reason = 'not-in-pilot-allowlist';\n\nconst ht_should_act = ht_skip_reason === null;\nconst ht_timeout_min = Math.max(1, Math.round(ht_timeout_sec / 60));\nconst NOW = typeof $now !== 'undefined' && $now && typeof $now.toMillis === 'function'\n  ? $now.toMillis()\n  : Date.now();\n\nreturn [{\n  json: {\n    contact_id,\n    source,\n    ht_enabled,\n    ht_timeout_sec,\n    ht_timeout_min,\n    ht_pilot,\n    ht_pilot_active,\n    ht_allowlisted,\n    ht_should_act,\n    ht_skip_reason,\n    ht_config_read_failures,\n    ht_now_ms: NOW,\n    ht_notice: notice(ht_timeout_min),\n    // carried so the harness sendmsg stand-in can key its egress log; null on live, which the\n    // real sendmsg sub ignores.\n    test_run_id: env.test_run_id === undefined ? null : env.test_run_id,\n  },\n}];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        560,
+        520
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "17ffb665-3e37-43c7-929b-e28f9c1842f5",
+      "name": "ht-act?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "127f4d99-80a2-5a6b-8d77-40f7fdabbf90",
+              "leftValue": "={{ $json.ht_should_act }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        800,
+        520
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "bdf6a5c2-3cc7-43eb-9aaa-814503e9f1b6",
+      "name": "ht-inert",
+      "parameters": {},
+      "position": [
+        1040,
+        680
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "b9e50b73-62dd-4e38-9a10-7120b94df495",
+      "name": "ht-prev-stamp",
+      "parameters": {
+        "key": "=ht:active:{{ $json.contact_id }}",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_prev_ms"
+      },
+      "position": [
+        1040,
+        400
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "7fc497c4-df16-4e5d-bf4f-e6201874dbc4",
+      "name": "ht-arm",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-arm \u2500\u2500 S1: was this the FIRST message of a new intervention? \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// Runs between `ht-prev-stamp` (the redis GET, deliberately BEFORE the stamp is overwritten) and\n// `ht-stamp` (the write). Its single job is to turn \"was there a previous stamp\" into one boolean\n// the graph can branch on.\n//\n// WHY THIS IS A CODE NODE AND NOT AN `If` EXPRESSION. LESSONS \u00a771: a review (and every offline\n// suite in this repo) reads Code bodies; an If node's condition is a workflow PARAMETER and is\n// invisible to both. Two load-bearing hunks shipped unreviewed that way and broke every\n// multi-entitlement contact in production. So all of this feature's logic lives in Code, and the\n// two `If` nodes downstream test nothing but a boolean this node already computed.\n//\n// ABSENT vs UNPARSEABLE. A missing stamp means a new intervention (notice fires \u2014 HT-1, and HT-7\n// after a sweep has removed the key). An unparseable stamp is ALSO treated as new: the worst case\n// is one duplicate notice, whereas treating it as a refresh would silently suppress the notice for\n// that contact forever. Both are reported separately so the two are never confused in runData.\n\nconst g = $('ht-gate').first().json || {};\nconst prevRaw = ($('ht-prev-stamp').first().json || {}).ht_prev_ms;\n\nconst missing = prevRaw === null || prevRaw === undefined || String(prevRaw).trim() === '';\nconst prev_ms = missing ? null : Number(String(prevRaw).trim());\nconst unparseable = !missing && !Number.isFinite(prev_ms);\n\nreturn [{\n  json: {\n    contact_id: g.contact_id,\n    ht_now_ms: g.ht_now_ms,\n    ht_prev_ms: unparseable ? null : prev_ms,\n    ht_prev_raw: prevRaw === undefined ? null : prevRaw,\n    ht_is_first: missing || unparseable,\n    ht_first_because: missing ? 'no-previous-stamp' : (unparseable ? 'unparseable-previous-stamp' : null),\n    ht_gap_ms: !missing && !unparseable ? g.ht_now_ms - prev_ms : null,\n    ht_timeout_sec: g.ht_timeout_sec,\n    ht_timeout_min: g.ht_timeout_min,\n    ht_notice: g.ht_notice,\n    test_run_id: g.test_run_id === undefined ? null : g.test_run_id,\n  },\n}];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1280,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "ef4b1cb4-3d70-481e-93f0-1c9540ccd7d4",
+      "name": "ht-stamp",
+      "parameters": {
+        "key": "=ht:active:{{ $('ht-arm').first().json.contact_id }}",
+        "keyType": "string",
+        "operation": "set",
+        "value": "={{ $('ht-arm').first().json.ht_now_ms }}"
+      },
+      "position": [
+        1520,
+        400
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "0b7f7e2d-9aa2-4ad5-b8c8-d23ee54de8ca",
+      "name": "ht-first?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "29132052-38e7-5fa0-a1ff-ae2a9b3e88f1",
+              "leftValue": "={{ $json.ht_is_first }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1760,
+        400
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "52825204-1bb2-4fcb-a537-33f0410db12f",
+      "name": "ht-intervene-notice",
+      "parameters": {
+        "mode": "once",
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond",
+          "mode": "list",
+          "value": "aoydkG1dbItXR5jXFEQsP"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_identifer",
+              "id": "contact_identifer",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "quick_reply",
+              "id": "quick_reply",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "input_message",
+              "id": "input_message",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "started_at",
+              "id": "started_at",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact",
+              "id": "contact",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "result_set",
+              "id": "result_set",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "turn_id",
+              "id": "turn_id",
+              "required": false
+            }
+          ],
+          "value": {
+            "contact_identifer": "={{ $('ht-arm').first().json.contact_id }}",
+            "message": "={{ $('ht-arm').first().json.ht_notice }}"
+          }
+        }
+      },
+      "position": [
+        2000,
+        300
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "62ac1790-0034-4688-a4b3-0cd180e739dc",
+      "name": "ht-refresh-only",
+      "parameters": {},
+      "position": [
+        2000,
+        500
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {
+    "Respond.io Trigger": [
+      {
+        "json": {
+          "channel": {
+            "created_at": 1767682908,
+            "id": 453209,
+            "lastIncomingMessageTime": 1775558616,
+            "lastMessageTime": 1775472384,
+            "meta": null,
+            "name": "Whatsapp Business",
+            "source": "whatsapp_business"
+          },
+          "contact": {
+            "assignee": {
+              "email": "jayson@foundryx.my",
+              "firstName": "Jayson",
+              "id": 971724,
+              "lastName": "Teh",
+              "role": "user"
+            },
+            "countryCode": "MY",
+            "created_at": 1770128806,
+            "email": "jayson@foundryx.my",
+            "firstName": "Teh",
+            "id": 386900418,
+            "language": null,
+            "lastName": "Jayson",
+            "phone": "+60166753328",
+            "profilePic": null,
+            "status": "open"
+          },
+          "event_id": "cabbccb0-b83d-4bed-b5d5-0970b8176dd0",
+          "event_type": "message.sent",
+          "message": {
+            "channelId": 453209,
+            "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgARGBI4MTAxODlCQUQ2OUFGNjVBMDUA",
+            "contactId": 386900418,
+            "message": {
+              "text": "hey",
+              "type": "text"
+            },
+            "messageId": 1775472384012502,
+            "status": [
+              {
+                "timestamp": 1775472384677,
+                "value": "pending"
+              }
+            ],
+            "timestamp": 1775472384012,
+            "traffic": "outgoing"
+          },
+          "sender": {
+            "broadcastHistoryId": null,
+            "source": "user",
+            "teamId": null,
+            "userId": 971724,
+            "workflowId": null
+          },
+          "source": "User",
+          "user": {
+            "email": "jayson@foundryx.my",
+            "firstName": "Jayson",
+            "id": 971724,
+            "lastName": "Teh"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "body": [
+            {
+              "channel": {
+                "created_at": null,
+                "id": null,
+                "lastIncomingMessageTime": null,
+                "lastMessageTime": 1775518370,
+                "meta": null,
+                "name": "Whatsapp Business",
+                "source": "whatsapp_business"
+              },
+              "contact": {
+                "firstName": "",
+                "id": 423512626,
+                "lastName": "",
+                "phone": null
+              },
+              "crm": {
+                "business_id": "a1c0d07f-80e3-442f-9839-385d12cd0f3d",
+                "business_table": "purchase_requests",
+                "space_id": "364817"
+              },
+              "message": {
+                "channelId": null,
+                "channelMessageId": null,
+                "contactId": 423512626,
+                "message": {
+                  "text": "Your sponsorship form PSSF26-0305 has been approved by Jayson F. Note: okay can. Please view your submission here https://fe-sorento.foundryx.my/view/request?token=fIoKO1qYHpb4HZH3J44ILlzVo-8sUbfrycSRq4vc5gk",
+                  "type": "text"
+                },
+                "messageId": 1775518370908831,
+                "status": [
+                  {
+                    "timestamp": 1775518370928,
+                    "value": "pending"
+                  }
+                ],
+                "timestamp": 1775518370928,
+                "traffic": "outgoing"
+              },
+              "sender": {
+                "broadcastHistoryId": null,
+                "source": "user",
+                "teamId": null,
+                "userId": 423512626,
+                "workflowId": null
+              },
+              "source": "User",
+              "user": {
+                "email": "",
+                "firstName": "",
+                "id": 423512626,
+                "lastName": ""
+              }
+            }
+          ],
+          "executionMode": "production",
+          "headers": {
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate",
+            "connection": "close",
+            "content-length": "993",
+            "content-type": "application/json",
+            "host": "automate-sorento.foundryx.my",
+            "origin": "https://automate-sorento.foundryx.my",
+            "user-agent": "Sorento-CRM/1.0.0",
+            "x-forwarded-for": "72.62.195.20",
+            "x-forwarded-proto": "https",
+            "x-real-ip": "72.62.195.20"
+          },
+          "params": {},
+          "query": {},
+          "webhookUrl": "https://automate-sorento.foundryx.my/webhook/a38a6c3a-1d70-43f4-8424-4b63a39283b3"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "versionId": "9b779edd-3bdd-4b71-b89a-0d85f22b0caa"
+}

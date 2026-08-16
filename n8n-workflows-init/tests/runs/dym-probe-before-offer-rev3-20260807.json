@@ -1,0 +1,171 @@
+{
+ "run": "dym-probe-before-offer \u00a7DP re-run (rev 3 \u2014 F-DUPE exclusion)",
+ "date": "2026-08-07",
+ "tester": "sorento-tester",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "18429d54-5261-45f5-a8ec-242c506b8b77",
+  "previous": "78a72682",
+  "rollback": "545210e7",
+  "live_spine": "f03086ac UNTOUCHED (verify green at start and end)"
+ },
+ "tester_correction": {
+  "what_I_got_wrong": "In rev 2 I reported F-DUPE's mechanism as 'duplicate/variant product rows in the CRM' and proposed a uuid UNION remedy. Both were wrong. product_code is unique per COMPANY (uq_products_company_product_code), so the twin is another company's product; and the union would have promised '\u2014 has' then dead-ended on the empty twin, because applyDymPick resolves a single uuid and the render envelope carries no product id.",
+  "what_held_up": "The observation and its reproduction \u2014 same code, two uuids, same similarity, opposite probe answers, deterministic per token \u2014 were correct and are what the fix is built on.",
+  "why_it_matters": "'Correct' now means BARE, not 'annotate from the union'. I re-tested against the shipped contract, not my earlier proposal."
+ },
+ "cases": [
+  {
+   "id": "R3-H1",
+   "uac": "\u2605 HEADLINE \u2014 \u00a7DP-15, the exact token that produced the rev-2 finding",
+   "exec": "11473843",
+   "msg": "MWC7625-SH-S100 certificate",
+   "verdict": "PASS",
+   "rev2_rendered": "1. MWC7625-SH-S10 \u2014 no certificate   (FALSE \u2014 the product has 6 certificates)",
+   "rev3_rendered": "1. MWC7625-SH-S10\\n2. MWC7625-SH-S12 \u2014 no certificate\\n3. MWC7625-SH-P \u2014 no certificate",
+   "dym-transform runData": {
+    "dym_excluded_codes": [
+     {
+      "code": "MWC7625-SH-S10",
+      "reason": "multi_uuid_code",
+      "uuid_count": 2
+     }
+    ],
+    "dym_candidate_codes": [
+     "MWC7625-SH-S12",
+     "MWC7625-SH-P"
+    ],
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "neither twin uuid in dym_probe_entities": true,
+    "no entity carries the ambiguous code": true
+   },
+   "build-suggest-offer runData": {
+    "dym_excluded_codes": "ABSENT \u2014 stripped by _DYM_CTRL_KEYS, cannot leak",
+    "still offered": "suggest_quick_reply = MWC7625-SH-S10,MWC7625-SH-S12,MWC7625-SH-P,Yes escalate,No it's okay; suggest_last_result_set has 3 entries idx 1-3; picks.length unchanged",
+    "index alignment": "suggest_quick_reply[i] == suggest_last_result_set[i].value for all i"
+   }
+  },
+  {
+   "id": "R3-H3",
+   "uac": "\u00a7DP-15 inventory mirror",
+   "msg": "Have stock MWC7625-SH-S100?",
+   "verdict": "PASS",
+   "rendered": "1. MWC7625-SH-S10 (bare) / 2. MWC7625-SH-S12 \u2014 no stock / 3. MWC7625-SH-P \u2014 no stock"
+  },
+  {
+   "id": "R3-H2 / R3-H4",
+   "uac": "coordinator expected the rev-2 positive to survive",
+   "verdict": "EXPECTATION INVALID \u2014 behaviour is CORRECT",
+   "msg": "mwc7625-sh-s11 cert / Have stock mwc7625-sh-s11?",
+   "observed": "MWC7625-SH-S10 now renders BARE (was '\u2014 has certificate' / '\u2014 has stock' in rev 2)",
+   "why_this_is_not_over-firing": "The ambiguity is NOT token-dependent. resolve-entity exec 11471806 returns BOTH twins in the SAME response for this token (uuid 0f2fe976-\u2026 and a7dfc428-\u2026, both similarity 0.75). Only WHICH twin survived tokenCandidates' dedup was token-dependent. rev 3 sees census size 2 for either token and excludes consistently.",
+   "consequence_reviewer_must_accept": "MWC7625-SH-S10 \u2014 the confirmed-certificate product supplied as the \u00a7DP-1 witness \u2014 is cross-company ambiguous and can NEVER be annotated under rev 3. The rev-2 '\u2014 has certificate' was right by luck (dedup happened to keep the carrier). A new unambiguous witness was therefore required; see R3-W2."
+  },
+  {
+   "id": "R3-W2",
+   "uac": "\u2605 \u00a7DP-1 live positive RE-ESTABLISHED on an unambiguous code",
+   "exec": "11474003",
+   "msg": "srtwc8317-rl1 cert",
+   "verdict": "PASS",
+   "rendered": "1. SRTWC8317-RL \u2014 has certificate / 2. SRTWC8317-P-RL \u2014 no certificate / 3. SRTWC8317-SH \u2014 no certificate",
+   "dym-transform": {
+    "dym_excluded_codes": [],
+    "dym_candidate_codes": [
+     "SRTWC8317-RL",
+     "SRTWC8317-P-RL",
+     "SRTWC8317-SH"
+    ],
+    "probe_needed": true
+   },
+   "note": "Confirms the exclusion does NOT over-fire globally; unambiguous codes are still annotated."
+  },
+  {
+   "id": "R3-W4",
+   "uac": "has-first sort with TWO carriers + a non-carrier",
+   "msg": "srtwt22151 cert",
+   "verdict": "PASS",
+   "rendered": "1. SRTWT2214 \u2014 has certificate / 2. SRTWT2216 \u2014 has certificate / 3. SRTWT2215 \u2014 no certificate",
+   "note": "Both carriers sorted ahead of SRTWT2215 (the closest token match), resolver order preserved inside the has-group. Stable partition confirmed with a non-trivial group split."
+  },
+  {
+   "id": "R3-W1",
+   "uac": "\u00a7DP-15 second live instance, mixed bare + labelled",
+   "msg": "ibwc76011 cert",
+   "verdict": "PASS",
+   "rendered": "1. IBWC7601-RL-P \u2014 no certificate / 2. IBWC7601-RL-S10 (bare) / 3. IBWC7606-S10 \u2014 no certificate",
+   "note": "Bare line in the MIDDLE of the list \u2014 reads cleanly, see readability note."
+  },
+  {
+   "id": "R3-H5",
+   "uac": "no-ambiguity regression (rev-2 F-RANK fix must survive)",
+   "exec": "11473916",
+   "msg": "SRTWC1930 certificate",
+   "verdict": "PASS",
+   "rendered": "1. SRTWC193 \u2014 no certificate / 2. SRTWC190 / 3. SRTWC191 \u2014 all labelled, resolver similarity order intact"
+  },
+  {
+   "id": "\u00a7DP-11a/b sweep",
+   "verdict": "PASS",
+   "population": "9 rev-3 offers, 5 of which contain a bare line",
+   "clauses": "regex; no em-dash in quick_reply; entries==picks+2; quick_reply[i]==last_result_set[i].value; rendered line i+1 names last_result_set[i]; every bare line carries NO ' \u2014 has '/' \u2014 no ' suffix \u2014 all PASS"
+  },
+  {
+   "id": "\u00a7DP-15b all-ambiguous",
+   "verdict": "OFFLINE-ONLY",
+   "reason": "no live token produced a candidate set where EVERY code is cross-company ambiguous. Covered offline (harness 'F-DUPE-ALL': probe_needed false, probe_skip_reason 'multi_uuid_code', dym_probe_entities [], dym_candidate_codes []) and that gate is proven RED by S9-C."
+  }
+ ],
+ "reviewer_specific_1_over_exclusion": {
+  "claim": "uuidCensus counts isExact entries; a product at two tiers carries the same uuid so the Set collapses it and cannot cause a false exclusion.",
+  "verdict": "HOLDS \u2014 verified three ways",
+  "evidence": [
+   "offline harness case 'F-DUPE same-uuid not excluded' / 'F-DUPE same-uuid probed' PASS on the published bytes",
+   "that case is a real instrument: S9-E made the census tier-sensitive (add(uuid+match_tier)) and BOTH assertions went RED",
+   "structurally unreachable on the D1 path anyway: missResolutions drops any resolution where matches.some(isExact), so an exact-tier entry only survives via alternatives; across every live payload I fetched (11471806, 11474003) alternatives were trgm-only",
+   "live: R3-W2 and R3-W4 both annotate normally with dym_excluded_codes == []"
+  ]
+ },
+ "reviewer_specific_2_tokenCandidates_equivalence": {
+  "verdict": "PROVEN BEHAVIOURALLY, not assumed",
+  "method": "extracted both tokenCandidates() bodies from the published bytes by brace-matching and ran a randomized differential battery",
+  "result": "4000 random resolver payloads (varying matches/alternatives presence, null/dup codes, 6 entity types, 5 match tiers, 4 allowedTypes sets) \u2014 0 divergences",
+  "negative_control": "removing the isExact filter from one copy produced divergence in 200/200 trials, so the comparison is not blind"
+ },
+ "S9_mutation_procedure": {
+  "S9-A void-mutation regression": "./mutate.sh build-suggest-offer.js 'return (hb - ha);' ... -> 'occurrences before : 0 (expected 1)' + 'ABORT: ... suite NOT run', exit 1. My rev-2 mistake now fails closed instead of printing ALL PASS.",
+  "S9-B F-RANK mirror": "occurrences 1/1, digest 673311edc221 -> 898d96fd6f61, harness RED on 'DP-2 resolver order preserved' + 'DP-2 order matches un-annotated (LIVE) order'. RESULT: gate works.",
+  "S9-C F-DUPE exclusion disabled": "'if (uu && uu.size > 1) {' -> 'if (false) {'; occurrences 1/1, digest fc9b79425b6d -> 13efef5b1b7a, 11 assertions RED across F-DUPE and F-DUPE-ALL. RESULT: gate works.",
+  "S9-D over-exclusion probe": "ABORTED CORRECTLY \u2014 my search string occurred 3 times, not 1; script refused to run the suite. Replaced by S9-E.",
+  "S9-E census tier-sensitivity": "'census.get(k).add(String(m.uuid));' -> '+ String(m.match_tier)'; occurrences 1/1, digest fc9b79425b6d -> aeba2c5bdca6, RED on both two-tier assertions. RESULT: gate works.",
+  "assessment": "mutate.sh did its job \u2014 it caught one of my own no-op mutations (S9-D) in this very pass."
+ },
+ "safety_scorecard_rev3": {
+  "S1": "PASS \u2014 9/9 runs; send-message-* never in runData; guards would_send only.",
+  "S2": "PASS \u2014 no escalation turn in this slice; Call 'sub-human-intervention' absent from runData on all 9.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData on all 9; guard census 9/9/9 (save-message-redis, save-session-vars, sendmsg-sub), zero rows with a kind other than would_*. Sink unchanged.",
+  "S4": "PASS \u2014 probe tool only crm_master_product_attachments_list / crm_inventory_stock_balance_list; target fork rysSPgUssLDf6xJc unchanged.",
+  "S5": "PASS \u2014 trigger test_mode===true; dym-probe carries no is_test by design (containment = fork target).",
+  "S6": "PASS \u2014 no Basic LLM Chain / OpenAI Chat Model in runData; change still adds zero token cost.",
+  "S7a": "PASS \u2014 TEST sink 587 -> 596 across 9 canary runs = exactly +1 per run, continuing unbroken from rev 2 (which ended at 587). Brackets: 11473842 587->588, 11474047 595->596.",
+  "S7b": "PARTIAL (unchanged, stated not glossed) \u2014 prod sorento-respond-message LLEN 0 before and after on both brackets; per-poll consumer pop-payload series NOT collected; rests on structural containment (no redis node added; dym-probe's sub has none).",
+  "S8": "PASS \u2014 no banned node type added.",
+  "S9": "PASS \u2014 every fail-on-purpose in this pass ran through mutate.sh with occurrence-count and digest assertions; see S9-A..E."
+ },
+ "readability_note": {
+  "question": "does the bare-line render read acceptably in the actual message text?",
+  "verdict": "ACCEPTABLE, with one cosmetic reservation for the reviewer",
+  "sample_leading": "Couldn't find \"MWC7625-SH-S100\". Did you mean:\\n1. MWC7625-SH-S10\\n2. MWC7625-SH-S12 \u2014 no certificate\\n3. MWC7625-SH-P \u2014 no certificate\\nReply with a code to continue, ...",
+  "sample_middle": "1. IBWC7601-RL-P \u2014 no certificate\\n2. IBWC7601-RL-S10\\n3. IBWC7606-S10 \u2014 no certificate",
+  "reads_well": "The bare line is visually unremarkable and does not look broken; a mixed list scans as 'we know about these two, not that one'.",
+  "reservation": "There is no signal that the bare line's status is UNKNOWN rather than uninteresting. Next to explicit '\u2014 no certificate' siblings, a reader may infer the bare one also lacks it (absence reads as negative by contrast). If the reviewer wants that closed, the smallest honest fix is a neutral marker such as '\u2014 checking not available' rather than silence. Not a blocker; flagging because it is a customer-visible wording choice no document specifies (same class as the coder's earlier D4)."
+ },
+ "still_open": {
+  "\u00a7DP-15b live": "offline-only (no natural all-ambiguous live token).",
+  "\u00a7DP-3b unscoped_probe live": "still never observed \u2014 every live attachment probe returning rows carried Attachment Type.",
+  "\u00a7DP-14 discriminating half": "offline-only.",
+  "\u00a7DP-4/\u00a7DP-8 probe error": "not induced live (needs a workflow edit).",
+  "\u00a7DP-9 live, \u00a7DP-13b dynamic, \u00a7DP-12 sibling-probe[0] inbound": "not run.",
+  "traceability nit": "the offline suite labels the new cases F-DUPE / F-DUPE-ALL / F-DUPE same-uuid, not \u00a7DP-15 / 15b / 15c. Coverage is complete; only the ids don't match the UAC, which cost me a wrong `grep -c 'DP-15'` = 0 scare."
+ }
+}

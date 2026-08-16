@@ -1,0 +1,69 @@
+{
+  "run": "Change #6 domain-switch-word — tester: offline unit (V6-0) + real-reformulator multi-turn e2e + bundle re-confirm at current shas + §0 safety",
+  "date": "2026-08-01",
+  "tester": "sorento-tester",
+  "target_clone_only": "parser fork wI5RkNGW3EOJfBdo @ versionId c9f6e280 (active); spine txiPzSxy3Pclsz6v @ 0a647e8b (active). LIVE XTODTw and LIVE spine 9qVyfUxmRQqrpGRMDLRuz NEVER touched. No promote. No workflow edited.",
+  "build_integrity": {
+    "parser_fork.versionId": {"got": "c9f6e280-e686-4bbb-a5ab-42615b63e997", "active": true},
+    "parser_fork.output_exchange.sha_no_trailing_newline": {"got": "710e577a16522b0c", "expected": "710e577a...", "match": true},
+    "parser_fork.AI-Agent.systemMessage.sha": {"got": "f5c6458aba477539", "expected": "f5c6458a UNCHANGED", "match": true},
+    "spine.versionId": "0a647e8b (active)",
+    "spine.compile-current-state.sha_jqr": {"got": "1f5e7a678736d612", "match": true, "note": "UNCHANGED vs prior full run"},
+    "spine.build-suggest-offer.sha_jqr": {"got": "2cc445251bbfeaf7", "match": true, "note": "UNCHANGED vs prior full run"},
+    "hunks_present": "A(_DOMAIN_SWITCH_WORDS+_switchDomain L293-311), B(!_explicit && !_switchDomain reuse-carry L384), C(entity-bearing carry L629), D(apply switch L650, BEFORE blocklist-apply L657) — all four confirmed"
+  },
+  "V6-0_offline_unit": {
+    "verdict": "PASS — 31/31 on deployed body",
+    "star_repro": "prev inventory(SRTWT902)+LLM{clarification,domain null,intent null,reuse,[]}+'promo' -> domain_hint=promotion, domain_switched_by_keyword=promotion, domain_reused_entityless ABSENT, intent null, routing marketing_promotion_sorento, SRTWT902 retained",
+    "other_switches": "order->order, incoming->incoming, catalogue->master_products; filler 'any promo?'/'show me the catalogue'/'stock ada?' fire",
+    "no_fire": "real query (current entity), continuation 'how about SRTWT5902' (rev4 carry inventory), bare code, 'all' (filler), mixed 'promo stock', excluded balance/delivery/price, 'promotions for C2181...' (cur entity)",
+    "fail_on_purpose": "SAME suite on neutralized (behaviorally-unpatched) body: (a) reproduces bug -> domain=inventory, domain_reused_entityless=true, intent=check_stock, team=warehouse; 13 switch-asserts FAIL, regression asserts (c/d/all/g) stay PASS. Instrument proven able to go red. 18 pass / 13 fail on unpatched."
+  },
+  "e2e_real_reformulator": {
+    "driver": "zz-chat-console POST -> per-contact dispatcher (test:q:437264483) -> clone; mode=regress-capture; session in n8n_test.respond_contacts_test; contact 437264483 FULL access. Each exec ownership-verified via redis-pop test_run_id+text.",
+    "CRITICAL_FINDING_LLM_decisive": "In 7/7 bare 'promo' + 1 'order' + 1 'incoming' samples this cycle, the REAL LLM classified the bare switch word DECISIVELY (_parser_raw domain=promotion/order/incoming, intent=check_*, message_type=business_query => _explicit=TRUE). Therefore #6's switch was GATED OFF (fires only on !_explicit) and domain_switched_by_keyword was ABSENT on every e2e run. The correct outcome (promo->promotion) came from the LLM, NOT the keyword switch. The original bug (exec 10826285) was a NON-decisive LLM run (clarification/null); that failure mode did not reproduce in this cycle. The switch remains the safety net for non-decisive runs — proven only OFFLINE (V6-0 star). This is the run-sensitivity the plan V6-1 anticipated.",
+    "repro_chain": {
+      "T1": {"exec": 10830933, "text": "check stock for SRTW902", "result": "dym offer [SRTWC902,SRTWT902,SRTWT5902] domain=inventory; parser decisive inventory/check_stock; switched ABSENT; persisted domain=inventory"},
+      "T2": {"exec": 10831089, "text": "SRTWT902 (bare-code pick)", "result": "dym_pick_applied=true, dym_pick_domain_forced=inventory (#5), _parser_raw=master_products/check_product (raw LLM catalogue misroute) OVERRIDDEN to inventory; STOCK shown (SRTWT902-GM QOH 3); switched ABSENT; persisted domain=inventory"},
+      "T3": {"exec": 10831174, "text": "promo", "verdict": "OUTCOME PASS (domain=promotion, answer=PROMOTIONS list, routing=marketing_promotion_sorento, SRTWT902 retained, domain_reused_entityless ABSENT). MECHANISM: _parser_raw=promotion/check_promotion (LLM DECISIVE) => _explicit true => domain_switched_by_keyword ABSENT (switch inert; LLM already correct). Negative-control precondition (_parser_raw null) NOT met this run."}
+    },
+    "other_switch_e2e": {
+      "order": {"exec": 10831386, "_parser_raw": "order/check_order decisive", "final": "order, routing customer_service, switched ABSENT", "verdict": "outcome PASS, switch inert (LLM decisive)"},
+      "incoming": {"exec": 10831445, "_parser_raw": "incoming/check_incoming decisive", "final": "incoming, routing purchasing, switched ABSENT", "verdict": "outcome PASS, switch inert (LLM decisive)"}
+    }
+  },
+  "hard_regressions_e2e": {
+    "case3_normal_decisive_stock": {"exec": 10830933, "verdict": "PASS", "detail": "check stock for SRTW902 -> inventory, switched ABSENT, entity present, decisive"},
+    "case4_continuity_no_domain_word": {"exec": 10831915, "verdict": "PASS on #6 assertion (switched ABSENT, #6 inert)", "note": "domain resolved to master_products NOT inventory because LLM decisively tagged check_product (_explicit gates rev4 carry off) — this is the documented backlog-bare-code-domain-carry issue (LLM decisiveness), NOT a #6 regression; #6 never touched it. In offline (d) with forced null-intent the rev4 carry correctly holds inventory."},
+    "case5_dym_bare_code_pick": {"exec": 10831089, "verdict": "PASS", "detail": "#5 dym_pick_domain_forced=inventory, pick applied, #6 switched ABSENT"},
+    "case6_all_on_offer": {"exec": 10831971, "verdict": "PASS", "detail": "select_all_expanded=true, all 3 candidates expanded (#4 intact), switched ABSENT, _parser_raw non-decisive null but rev4 inherited=true -> inventory"},
+    "case7_excluded_mixed": {
+      "balance": {"exec": 10832028, "verdict": "PASS", "detail": "_parser_raw NON-decisive (clarification/null) -> the ONE e2e non-decisive run; 'balance' EXCLUDED -> #6 inert -> rev4 reuse carry -> inventory. Proves exclusion list works under non-decisive condition."},
+      "promotions_for_C2181XUW-P-ENG": {"exec": 10832058, "verdict": "PASS", "detail": "decisive promotion, current entity present (_swHasCurEnt) -> #6 inert, switched ABSENT, domain=promotion from LLM not keyword"}
+    }
+  },
+  "bundle_reconfirm_at_current_shas": {
+    "note": "output_exchange changed 292db8dc->710e577a (added #6 hunks A-D, purely additive, gated on _switchDomain/!_explicit). Spine compile-current-state (1f5e7a67) + build-suggest-offer (2cc44525) BYTE-IDENTICAL to prior full run (dym-all-domaincarry-real-e2e-20260801).",
+    "#5_pick_domain_carry": "RE-CONFIRMED e2e at new sha (T2 10831089): raw master_products overridden to inventory.",
+    "#4_select_all": "RE-CONFIRMED e2e at new sha (CASE6 10831971): select_all_expanded=true, 3 candidates.",
+    "#2v3_dym_creation": "RE-CONFIRMED: T1 created a proper did-you-mean offer via new output_exchange -> compile-current-state; pick round-trips (T2).",
+    "#3_zerostock + #1_multitoken + #2_compile": "spine-Code only (compile 1f5e7a67, build-suggest-offer 2cc44525 both UNCHANGED vs prior full run) -> verdicts carry forward; not re-run.",
+    "byte_inertness_of_#6": "Offline neg-control proves the 4 hunks are BYTE-INERT on every non-switch path: cases c/d/all/g produce IDENTICAL output on patched vs neutralized body. True live byte-identity (item 13) is a §DS-promote gate, not run here (live must not be executed for test)."
+  },
+  "safety_S0": {
+    "verdict": "ALL PASS across 18 asserted execs (+ establishing turns), zero egress",
+    "S1": "PASS — runData-only scan: NO api.respond.io/.../message 2xx in any executed node. (NOTE: a naive whole-exec regex FALSE-POSITIVED because the orphan send node's URL sits dormant in the embedded workflowData snapshot; must scan runData only — recorded as a red-that-cannot-be-trusted trap.)",
+    "S2": "PASS — no assign/SLA/PIC/escalation-write node ran.",
+    "S3": "PASS — prod-write orphans (update-human-intervened, prod save-session-vars PUT) never ran; session persisted only to n8n_test.respond_contacts_test via pg-upsert-session.",
+    "S4": "PASS — get-results resolved only READ tools (crm_marketing_promotions_list, crm_inventory_stock_balance_list, crm_inventory_warehouses_list); never crm_it_support_ticket_create / *_create/_update/_delete.",
+    "S5": "PASS — mode=regress-capture in every redis item; is_test=true passed to sendmsg (ublq9nSlrpz63xan), reformulator fork (wI5RkNGW3EOJfBdo), human-intervention fork (vUfFUDjLAuMaeQE6).",
+    "S6": "PASS — token sinks bounded to parser scope: reformulator LLM ran each turn (expected, parser tier) + get-results MCP reads. No new/unexpected sink (no reformulator double-call, no reformulator on the standin).",
+    "S7": "PASS by STRUCTURAL attribution (not bare LLEN): save-message caller -> fork tWm5DYLxfypmVC1T whose ONLY egress is RPUSH to sorento-respond-message-TEST (unconsumed); prod list sorento-respond-message structurally unreachable from it.",
+    "S8": "PASS — stale CHAT-fork (ublq9nSlrpz63xan) guard HELD: is_test=true -> sendmsg returned {success:true} standin, no real WhatsApp send."
+  },
+  "anomalies": [
+    "LLM now decisive on bare switch words (promo/order/incoming) 9/9 samples -> #6 switch machinery never exercised e2e; correctness of the switch under the non-decisive failure mode is proven ONLY by the offline V6-0 star + fail-on-purpose neg control. The e2e negative-control the plan wanted (_parser_raw null so the switch is provably the fixer) was UNVERIFIABLE this cycle.",
+    "case4 'how about SRTWT5902' resolved to master_products not inventory = pre-existing backlog-bare-code-domain-carry (LLM decisive check_product); #6 inert throughout; NOT introduced by this change.",
+    "S1 whole-exec regex false-positive (workflowData dormant URL) — future sweeps must scope to runData."
+  ]
+}

@@ -1,0 +1,956 @@
+{
+  "active": true,
+  "activeVersionId": "16eadb1e-157b-419a-9441-e6510c40f4fc",
+  "connections": {
+    "Assign or unassign a Conversation1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "conversation-sla-tracking-create",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Call 'sub-add-comment-respond'": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "if-in-working-hours",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "chat?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "chat?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "chat-escalation-push",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "test-guard",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "conversation-sla-tracking-create": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call 'sub-add-comment-respond'",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "get-round-robin-assignee": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "if-conversation-unassigned",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "get-working-days": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "if-conversation-unassigned": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Assign or unassign a Conversation1",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "conversation-sla-tracking-create",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "if-in-working-hours": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "return-assignee",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "get-working-days",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "return-assignee": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "sorento-sub-respond-sendmsg-respond-routed-to-pic2": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "get-round-robin-assignee",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "test-guard": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "test-guard-record",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "sorento-sub-respond-sendmsg-respond-routed-to-pic2",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "description": null,
+  "id": "vUfFUDjLAuMaeQE6",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "sub-human-intervention TEST (delta3)",
+  "nodeGroups": [],
+  "nodes": [
+    {
+      "id": "9c94bf98-fd29-41b6-b953-0003026d8620",
+      "name": "When Executed by Another Workflow",
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contact_id",
+              "type": "any"
+            },
+            {
+              "name": "agent"
+            },
+            {
+              "name": "team"
+            },
+            {
+              "name": "contact_phone_number"
+            },
+            {
+              "name": "current_assignee",
+              "type": "any"
+            },
+            {
+              "name": "message_id",
+              "type": "any"
+            },
+            {
+              "name": "is_test",
+              "type": "boolean"
+            },
+            {
+              "name": "test_run_id"
+            },
+            {
+              "name": "input_message"
+            },
+            {
+              "name": "started_at"
+            },
+            {
+              "name": "contact",
+              "type": "object"
+            },
+            {
+              "name": "explicit_assignee_id"
+            },
+            {
+              "name": "turn_id"
+            }
+          ]
+        }
+      },
+      "position": [
+        -960,
+        128
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "id": "7687d2be-6276-4512-8e12-696dbced687a",
+      "name": "Assign or unassign a Conversation1",
+      "parameters": {
+        "assigneeUserId": "={{ $json.assignee_respond_user_id }}",
+        "assignmentType": "userId",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+        "resource": "CONVERSATIONS"
+      },
+      "position": [
+        160,
+        32
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      },
+      "id": "06ae4997-3eed-4f22-9871-18f405aff5be",
+      "name": "conversation-sla-tracking-create",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={\n    \"assigned_to_id\": \"{{ $('get-round-robin-assignee').item.json.assignee_id }}\",\n    \"contact_phone_number\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_phone_number ?? '') }},\n    \"agent_code\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.agent ?? '') }},\n    \"team_set_code\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.team ?? '') }},\n    \"message_id\": {{ $('When Executed by Another Workflow').first().json.message_id }},\n    \"source_message_id\": \"{{ $('When Executed by Another Workflow').first().json.message_id }}\",\n    \"source_message_text\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.input_message || '') }}\n}",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "https://fe-sorento.foundryx.my/api/v1/sla-management/conversation-sla-tracking/integration"
+      },
+      "position": [
+        384,
+        32
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      },
+      "id": "89103c96-7827-4735-84c5-8c55a24ec9fd",
+      "name": "get-round-robin-assignee",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={\n    \"agent_code\": \"{{ $('When Executed by Another Workflow').first().json.agent }}\",\n    \"team_code\": \"{{ $('When Executed by Another Workflow').first().json.team }}\",\n    \"contact_phone_number\": \"{{ $('When Executed by Another Workflow').first().json.contact_phone_number }}\",\n    \"policy_code\": \"NORMAL\",\n    \"preferred_assignee_id\": \"{{ $('When Executed by Another Workflow').first().json.explicit_assignee_id || '' }}\",\n    \"tier\": 1\n}",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/next-assignee"
+      },
+      "position": [
+        -288,
+        224
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "id": "86f3ee70-d40c-4f9b-a656-4ceff3638fa3",
+      "name": "if-conversation-unassigned",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "83bed6cf-b77c-4326-a6db-07240c5366ec",
+              "leftValue": "={{ $json.is_already_assigned }}",
+              "operator": {
+                "operation": "false",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        -64,
+        224
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "c5dd9961-0568-4c6e-8efa-c21343af715e",
+      "name": "sorento-sub-respond-sendmsg-respond-routed-to-pic1",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "zz-sub-sendmsg-BLOBTEST",
+          "cachedResultUrl": "/workflow/69RhomhiCH4bpY1w",
+          "mode": "list",
+          "value": "69RhomhiCH4bpY1w"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_identifer",
+              "id": "contact_identifer",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "quick_reply",
+              "id": "quick_reply",
+              "removed": true,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "input_message",
+              "id": "input_message",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "test_run_id",
+              "id": "test_run_id",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "started_at",
+              "id": "started_at",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact",
+              "id": "contact",
+              "removed": false,
+              "required": false,
+              "type": "object"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "result_set",
+              "id": "result_set",
+              "removed": false,
+              "required": false,
+              "type": "array"
+            }
+          ],
+          "value": {
+            "contact": "={{ $('When Executed by Another Workflow').first().json.contact }}",
+            "contact_identifer": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+            "input_message": "={{ $('When Executed by Another Workflow').first().json.input_message }}",
+            "message": "=We have noted down your enquiries. We are outside of our working hours, we will notify the respective PIC once they get back to work.\n\nOur operating hours (except public holidays):\n{{ $json.working_day_ranges[0].start_weekday }} - {{ $json.working_day_ranges[0].end_weekday }}\n{{ $json.working_hours_start }} - {{ $json.working_hours_end }}",
+            "result_set": "={{ $('When Executed by Another Workflow').first().json.last_result_set }}",
+            "started_at": "={{ $('When Executed by Another Workflow').first().json.started_at }}",
+            "test_run_id": "={{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+            "turn_id": "={{ $('When Executed by Another Workflow').first().json.turn_id }}"
+          }
+        }
+      },
+      "position": [
+        1264,
+        176
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      },
+      "id": "321258ea-de71-47f8-a3b5-a3c14d2bb6b4",
+      "name": "get-working-days",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {},
+        "sendHeaders": true,
+        "url": "https://fe-sorento.foundryx.my/api/v1/external/work-calendar"
+      },
+      "position": [
+        1040,
+        176
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "id": "0ca5413f-1b55-4296-a7c4-7d89c726adc7",
+      "name": "sorento-sub-respond-sendmsg-respond-routed-to-pic",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "zz-sub-sendmsg-BLOBTEST",
+          "cachedResultUrl": "/workflow/69RhomhiCH4bpY1w",
+          "mode": "list",
+          "value": "69RhomhiCH4bpY1w"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_identifer",
+              "id": "contact_identifer",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "quick_reply",
+              "id": "quick_reply",
+              "removed": true,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "input_message",
+              "id": "input_message",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "test_run_id",
+              "id": "test_run_id",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "started_at",
+              "id": "started_at",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact",
+              "id": "contact",
+              "removed": false,
+              "required": false,
+              "type": "object"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "result_set",
+              "id": "result_set",
+              "removed": false,
+              "required": false,
+              "type": "array"
+            }
+          ],
+          "value": {
+            "contact": "={{ $('When Executed by Another Workflow').first().json.contact }}",
+            "contact_identifer": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+            "input_message": "={{ $('When Executed by Another Workflow').first().json.input_message }}",
+            "message": "=This inquiry has been routed to the respective person-in-charge (PIC) from {{ $('When Executed by Another Workflow').first().json.team }} team. We will get back to you soon. Thanks for your patience.",
+            "result_set": "={{ [] }}",
+            "started_at": "={{ $('When Executed by Another Workflow').first().json.started_at }}",
+            "test_run_id": "={{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+            "turn_id": "={{ $('When Executed by Another Workflow').first().json.turn_id }}"
+          }
+        }
+      },
+      "position": [
+        1264,
+        -64
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "a45bc94d-6ac3-445e-9b6c-b435c3155d16",
+      "name": "return-assignee",
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    agent_assignee: $('conversation-sla-tracking-create').first().json.assigned_to\n  }\n}"
+      },
+      "position": [
+        1040,
+        -64
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "e46f7d04-c53c-484a-9c5c-de37ebade46f",
+      "name": "Call 'sub-add-comment-respond'",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sub-add-comment-respond",
+          "cachedResultUrl": "/workflow/2l8egTLJbyGOPvG-DbtDX",
+          "mode": "list",
+          "value": "2l8egTLJbyGOPvG-DbtDX"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_id",
+              "id": "contact_id",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "user_id",
+              "id": "user_id",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "comment",
+              "id": "comment",
+              "removed": false,
+              "required": false
+            }
+          ],
+          "value": {
+            "comment": "=Team: {{ $('When Executed by Another Workflow').item.json.team }}\n\u23f0 SLA Alert: This contact is routed to you at {{ DateTime.fromISO($('conversation-sla-tracking-create').item.json.initiated_at, { zone: 'utc' }).setZone('Asia/Kuala_Lumpur').toFormat('yyyy-MM-dd HH:mm:ss') }}.\nYou have until {{ DateTime.fromISO($('conversation-sla-tracking-create').item.json.due_at, { zone: 'utc' }).setZone('Asia/Kuala_Lumpur').toFormat('yyyy-MM-dd HH:mm:ss') }} to respond.\nYou have until {{ DateTime.fromISO($('conversation-sla-tracking-create').item.json.due_at_resolution, { zone: 'utc' }).setZone('Asia/Kuala_Lumpur').toFormat('yyyy-MM-dd HH:mm:ss') }} to resolve.\nReference message: https://app.respond.io/space/364817/inbox/{{ $('When Executed by Another Workflow').first().json.contact_id }}#{{ $('When Executed by Another Workflow').first().json.message_id }}",
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+            "user_id": "={{ $('get-round-robin-assignee').first().json.assignee_respond_user_id }}"
+          }
+        }
+      },
+      "position": [
+        608,
+        32
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "a1ea185e-6751-41ae-87e9-c405a978c091",
+      "name": "sorento-sub-respond-sendmsg-respond-routed-to-pic2",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "zz-sub-sendmsg-BLOBTEST",
+          "cachedResultUrl": "/workflow/69RhomhiCH4bpY1w",
+          "mode": "list",
+          "value": "69RhomhiCH4bpY1w"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_identifer",
+              "id": "contact_identifer",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "quick_reply",
+              "id": "quick_reply",
+              "removed": true,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "input_message",
+              "id": "input_message",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "test_run_id",
+              "id": "test_run_id",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "started_at",
+              "id": "started_at",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact",
+              "id": "contact",
+              "removed": false,
+              "required": false,
+              "type": "object"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "result_set",
+              "id": "result_set",
+              "removed": false,
+              "required": false,
+              "type": "array"
+            }
+          ],
+          "value": {
+            "contact": "={{ $('When Executed by Another Workflow').first().json.contact }}",
+            "contact_identifer": "={{ $('When Executed by Another Workflow').first().json.contact_id }}",
+            "input_message": "={{ $('When Executed by Another Workflow').first().json.input_message }}",
+            "message": "=Your request is out of the scope of my ability and require human assistance. We are directing your enquiry to the correct person. Please wait for a moment.",
+            "result_set": "={{ [] }}",
+            "started_at": "={{ $('When Executed by Another Workflow').first().json.started_at }}",
+            "test_run_id": "={{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+            "turn_id": "={{ $('When Executed by Another Workflow').first().json.turn_id }}"
+          }
+        }
+      },
+      "position": [
+        -512,
+        224
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "32142d16-3e3d-4cfc-bea9-0e525babcf7c",
+      "name": "test-guard",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "hg1",
+              "leftValue": "={{ $('When Executed by Another Workflow').first().json.is_test }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        -736,
+        128
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "afe432e5-45a6-47a5-9f7b-07a0b8346b54",
+      "name": "test-guard-record",
+      "parameters": {
+        "list": "=test:egress:{{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+        "messageData": "={\n  \"guard\": \"human-intervention-sub\",\n  \"kind\": \"would_write\",\n  \"target\": \"respondio:assign+crm:sla+respondio:comment\",\n  \"payload\": { \"contact_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_id) }}, \"agent\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.agent || null) }}, \"team\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.team || null) }}, \"current_assignee\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.current_assignee || null) }}, \"explicit_assignee_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.explicit_assignee_id || null) }} },\n  \"turn_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.turn_id ?? null) }},\n  \"test_run_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.test_run_id || null) }},\n  \"ts\": {{ JSON.stringify($now.toISO()) }}\n}",
+        "operation": "push"
+      },
+      "position": [
+        -512,
+        32
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "e7b4906d-d87d-443f-bc62-36bb057cda0d",
+      "name": "chat?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "hchat1",
+              "leftValue": "={{ ($('When Executed by Another Workflow').first().json.contact || {}).chat_id }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        }
+      },
+      "position": [
+        -870,
+        300
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "3450bc46-528d-47ad-844c-88781d39c4be",
+      "name": "chat-escalation-push",
+      "parameters": {
+        "list": "=chat:reply:{{ ($('When Executed by Another Workflow').first().json.contact || {}).chat_id }}",
+        "messageData": "={{ JSON.stringify({ type: 'escalation', text: '[escalated to ' + ($('When Executed by Another Workflow').first().json.team || 'team') + ' team]', team: $('When Executed by Another Workflow').first().json.team || null, agent: $('When Executed by Another Workflow').first().json.agent || null, ts: $now.toISO() }) }}",
+        "operation": "push",
+        "tail": true
+      },
+      "position": [
+        -680,
+        380
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "4a9c1e77-2b30-4c58-8f6d-91ae5d0b3c62",
+      "name": "if-in-working-hours",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "c1f7a3d2-5e64-42b8-9a01-7d3f6b8c2e45",
+              "leftValue": "={{ $('conversation-sla-tracking-create').first().json.in_working_hours ?? 'MISSING_IN_WORKING_HOURS' }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        816,
+        32
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "versionId": "16eadb1e-157b-419a-9441-e6510c40f4fc"
+}

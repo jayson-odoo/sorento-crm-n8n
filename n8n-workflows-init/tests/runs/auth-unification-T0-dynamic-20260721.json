@@ -1,0 +1,877 @@
+{
+ "_change_id": "auth-unification-T0",
+ "_plan": "plans/crm-auth-unification-plan.md (T0, \u00a75.2 dynamic proof)",
+ "_diff": "tests/diffs/auth-unification/T0-clone-fork.md",
+ "_date": "2026-07-21",
+ "_role": "tester",
+ "_targets": {
+  "clone": "txiPzSxy3Pclsz6v @ 8bc5fb5b-87ce-4771-85bf-8bc4c7a6ae3e (draft==active)",
+  "fork": "vUfFUDjLAuMaeQE6 @ 344e1a83-996d-45fb-9e7e-4b3319358811 (draft==active)"
+ },
+ "_live_spine_touched": false,
+ "_tester_window_utc": [
+  "2026-07-21T11:31:50Z",
+  "2026-07-21T11:42:10Z"
+ ],
+ "_scope": "deterministic (mock_reformulator_output injected on every case; parser LLM bypassed). DEVIATIONS: AUTH-A4 additionally invokes the clarification LLM (Basic LLM Chain / gpt-4.1-mini) because that node is intrinsic to the branch under test; AUTH-A1/A8b/A10 invoke the real get-results MCP READ (crm_incoming_stock_list / product reads) because get-presigned-url and family-fetch are only reachable downstream of real results.",
+ "_static_gate_reconfirmed_after_runs": {
+  "clone": "RESULT: PASS (10/10 G1-G4, G5, G5b, G6)",
+  "fork": "RESULT: PASS (3/3)"
+ },
+ "cases": {
+  "AUTH-A1": {
+   "verdict": "PASS",
+   "title": "happy path, full-access contact 437264483, deterministic mock (check_product/master_products)",
+   "clone_exec": "9445692",
+   "execution_status": "success",
+   "proves_nodes": [
+    "get-session-vars-http",
+    "check-access-http",
+    "resolve-entity-http"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"General Enquiries\"}"
+    },
+    "resolve-entity-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"tokens\": [\"WC286\"], \"elapsed_ms\": 54.03, \"resolutions\": [{\"token\": \"WC286\", \"resolved\": false, \"ambiguous\": true, \"matches\": [{\"entity_type\": \"product\", \"canonical_code\": \"SRTWC286-SH-PP\", \"uuid\": \"7a8f2543-ef3b-4e5f-9dad-e29f6f688485\", \"match_field\": \"product_code\", \"match_tier\": \"substring\", \"si"
+    }
+   },
+   "nodes_absent": [
+    "get-access-types",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 18,
+    "TEST_after": 19,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items",
+    "Split Out1",
+    "When Executed by Another Workflow",
+    "central-exchange",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "disallowed-entity-gate",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-supported-domain",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "AUTH-A2": {
+   "verdict": "PASS",
+   "title": "no-access contact 457216562 \u2014 check-access must return a 2xx DENIAL, not an auth error",
+   "clone_exec": "9445721",
+   "execution_status": "success",
+   "proves_nodes": [
+    "get-session-vars-http",
+    "check-access-http"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"457216562\", \"session_vars\": {}}"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": false, \"decision\": \"deny_no_access\", \"agent_name\": \"General Enquiries\"}"
+    }
+   },
+   "nodes_absent": [
+    "resolve-entity-http",
+    "get-access-types",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 19,
+    "TEST_after": 20,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If5",
+    "When Executed by Another Workflow",
+    "check-access",
+    "check-access-http",
+    "console-incoming-gate",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-get-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond5",
+    "tf-message"
+   ]
+  },
+  "AUTH-A4": {
+   "verdict": "PASS",
+   "title": "clarification path (message_type=casual -> If9 TRUE)",
+   "clone_exec": "9445733",
+   "execution_status": "success",
+   "proves_nodes": [
+    "resolve-entity-clarification"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"General Enquiries\"}"
+    },
+    "resolve-entity-clarification": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"tokens\": [\"nothing\"], \"elapsed_ms\": 587.95, \"resolutions\": [{\"token\": \"nothing\", \"resolved\": false, \"ambiguous\": false, \"matches\": [], \"alternatives\": []}], \"unresolved_tokens\": [\"nothing\"]}"
+    }
+   },
+   "nodes_absent": [
+    "resolve-entity-http",
+    "get-access-types",
+    "get-cs-members",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 20,
+    "TEST_after": 21,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Basic LLM Chain",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If-ideate",
+    "If10",
+    "If2",
+    "If5",
+    "If9",
+    "OpenAI Chat Model",
+    "When Executed by Another Workflow",
+    "central-exchange",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "construct-user-prompt",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "parser-bypass-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "resolve-entity-clarification",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message"
+   ]
+  },
+  "AUTH-A5": {
+   "verdict": "PASS",
+   "title": "escalate-offer -> cs-offer-gate (correction=true + customer_service/order_enquiries)",
+   "clone_exec": "9445764",
+   "execution_status": "success",
+   "proves_nodes": [
+    "get-cs-members"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"Order Enquiries\"}"
+    },
+    "get-cs-members": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 6,
+     "out1_items": 0,
+     "body_excerpt": "{\"user_id\": \"0d69dfb7-dcf7-41fe-8457-f45897895182\", \"name\": \"Maryam Ariffin\", \"respond_user_id\": \"1144607\", \"email\": \"project.sadmin03@sorento.com.my\", \"sort_order\": null}"
+    }
+   },
+   "nodes_absent": [
+    "resolve-entity-http",
+    "get-access-types",
+    "resolve-entity-clarification",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 21,
+    "TEST_after": 22,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If-ideate",
+    "If10",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "build-cs-member-offer",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "cs-offer-gate",
+    "escalate-catalog",
+    "get-cs-members",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-escalate-offer",
+    "tf-message"
+   ]
+  },
+  "AUTH-A7": {
+   "verdict": "PASS",
+   "title": "check_promotion -> If -> replay-get-access-types -> get-access-types",
+   "clone_exec": "9445776",
+   "execution_status": "success",
+   "proves_nodes": [
+    "get-access-types"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"General Enquiries\"}"
+    },
+    "get-access-types": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 7,
+     "out1_items": 0,
+     "body_excerpt": "{\"name\": \"Sorento Office\", \"keywords\": [\"sorento office\", \"office\"]}"
+    }
+   },
+   "nodes_absent": [
+    "resolve-entity-http",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 22,
+    "TEST_after": 23,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Aggregate",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If4",
+    "If5",
+    "If9",
+    "When Executed by Another Workflow",
+    "access-level-choice-message",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "cs-offer-gate",
+    "escalate-catalog",
+    "get-access-types",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-supported-domain",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-access-types",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-access-choice",
+    "tf-message"
+   ]
+  },
+  "AUTH-A8b": {
+   "verdict": "PASS",
+   "title": "incoming + demand_qty=50, results carry attachments -> Split Out -> get-presigned-url",
+   "clone_exec": "9445985",
+   "execution_status": "success",
+   "proves_nodes": [
+    "get-presigned-url"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"General Enquiries\"}"
+    },
+    "resolve-entity-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"tokens\": [\"SRTWC286-SH-UF\"], \"elapsed_ms\": 38.73, \"resolutions\": [{\"token\": \"SRTWC286-SH-UF\", \"resolved\": true, \"ambiguous\": false, \"matches\": [{\"entity_type\": \"product\", \"canonical_code\": \"SRTWC286-SH-UF\", \"uuid\": \"d55d8829-5e3d-4386-ab77-6c93e26d73e7\", \"match_field\": \"product_code\", \"match_tier\""
+    },
+    "get-presigned-url": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"presigned_url\": \"https://cdn-sorento.com/packing_list/580150de-a767-4dde-a133-de5e31ccb90d/FFAU3176932.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=a01b18c72859a986c0c4255d2ee12b8e%2F20260721%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260721T114016Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=ho"
+    }
+   },
+   "nodes_absent": [
+    "get-access-types",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "family-fetch",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 25,
+    "TEST_after": 26,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Edit Fields2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If8",
+    "If9",
+    "Loop Over Items",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Split Out1",
+    "Switch",
+    "When Executed by Another Workflow",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "disallowed-entity-gate",
+    "get-presigned-url",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-supported-domain",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "AUTH-A10": {
+   "verdict": "PASS",
+   "title": "incoming + demand_qty=20 on a code with no incoming -> not-found -> sibling-gate -> family-fetch",
+   "clone_exec": "9446042",
+   "execution_status": "success",
+   "proves_nodes": [
+    "family-fetch"
+   ],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"General Enquiries\"}"
+    },
+    "resolve-entity-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"tokens\": [\"SRTWC286-SH-P\"], \"elapsed_ms\": 36.42, \"resolutions\": [{\"token\": \"SRTWC286-SH-P\", \"resolved\": false, \"ambiguous\": true, \"matches\": [{\"entity_type\": \"product\", \"canonical_code\": \"SRTWC286-SH-P\", \"uuid\": \"d73a33f3-956b-401f-90c7-0ad6ff792ea1\", \"match_field\": \"product_code\", \"match_tier\": \""
+    },
+    "family-fetch": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"data\": [{\"product_code\": \"SRTWC286-SH-P\", \"product_name\": \"SRTWC286-SH-P\", \"description\": \"****SORENTO ONE PIECE TWISTER FLUSH WC (P-TRAP 180MM). SRTWC286-SH-P **PLEASE USE SRTWC286-SH-NEW-P\", \"category_id\": \"425a30eb-ae51-457b-ad0c-02fc22de43aa\", \"brand_id\": \"438cab0b-ec83-4eae-bbcf-e1dc5bf7943c\""
+    }
+   },
+   "nodes_absent": [
+    "get-access-types",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 27,
+    "TEST_after": 28,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Aggregate1",
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If8",
+    "If9",
+    "Loop Over Items",
+    "Split Out1",
+    "When Executed by Another Workflow",
+    "build-suggest-offer",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "cs-offer-gate",
+    "disallowed-entity-gate",
+    "escalate-catalog",
+    "family-fetch",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-found-error-message",
+    "not-supported-domain",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sibling-gate",
+    "sibling-probe",
+    "sibling-transform",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-not-found",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "AUTH-A11": {
+   "verdict": "PASS",
+   "title": "ideate domain \u2014 proves ideate-egress-gate diverts to ideate-turn-mock under test_run_id",
+   "clone_exec": "9446093",
+   "execution_status": "success",
+   "proves_nodes": [],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"General Enquiries\"}"
+    }
+   },
+   "nodes_absent": [
+    "resolve-entity-http",
+    "get-access-types",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 28,
+    "TEST_after": 29,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If-ideate",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "build-ideate-reply",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "ideate-egress-gate",
+    "ideate-turn",
+    "ideate-turn-mock",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message"
+   ]
+  },
+  "AUTH-A12": {
+   "verdict": "PASS",
+   "title": "request_for_help -> sub-human-intervention fork is_test=true short-circuit",
+   "clone_exec": "9446102",
+   "execution_status": "success",
+   "proves_nodes": [],
+   "node_evidence": {
+    "get-session-vars-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"respond_io_id\": \"437264483\", \"session_vars\": {\"variables\": {\"routing\": {\"suggested_team\": \"customer_service\", \"suggested_agent\": \"order_enquiries\"}, \"entities\": [{\"raw\": \"Deluxe home\", \"hint\": \"customer\", \"confident\": true, \"canonical_code\": \"DBR-a16583b564\", \"current_message\": true}, {\"raw\": \"Srt"
+    },
+    "check-access-http": {
+     "executionStatus": "success",
+     "error": null,
+     "out0_items": 1,
+     "out1_items": 0,
+     "body_excerpt": "{\"allowed\": true, \"decision\": \"allow\", \"agent_name\": \"Order Enquiries\"}"
+    }
+   },
+   "nodes_absent": [
+    "resolve-entity-http",
+    "get-access-types",
+    "resolve-entity-clarification",
+    "get-cs-members",
+    "family-fetch",
+    "get-presigned-url",
+    "ideate-turn-http"
+   ],
+   "egress_guards": [],
+   "sink": {
+    "prod_before": 0,
+    "prod_after": 0,
+    "TEST_before": 29,
+    "TEST_after": 30,
+    "TEST_delta": 1,
+    "prod_delta": 0
+   },
+   "executed_nodes": [
+    "Call 'sub-human-intervention'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "cs-offer-gate",
+    "divert-suggest-yes",
+    "escalate-catalog",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-out-of-scope",
+    "tf-message"
+   ]
+  }
+ },
+ "_S7a_TEST_sink": {
+  "method": "zz-canary-run llen-sink-before/after per case + per-write payload attribution from the save fork's own executions",
+  "total_delta": "+12 across the 12 scored/ancillary runs; every write attributed",
+  "attribution": "All 12 sink writes carry our fixture contacts (437264483 / 457216562) and a turn_id equal to the clone execution id of the case that produced them. Save-fork exec ids 9445506, 9445558, 9445701, 9445726, 9445742, 9445768, 9445780, 9445878, 9445891, 9445994, 9446008, 9446050, 9446097, 9446106.",
+  "verdict": "PASS"
+ },
+ "_S7b_prod_sink": {
+  "method": "Per-poll LLEN depth series AND per-poll pop payload from the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn (5s poll). Both co-mandatory signals recorded. Bare LLEN equality (withdrawn S7) NOT used; consumer execution COUNT NOT used.",
+  "covering_polls": 124,
+  "first_poll": "9445209 2026-07-21T11:31:50.025Z llen=0 pop={\"\":null}",
+  "last_poll": "9446171 2026-07-21T11:42:05.030Z llen=0 pop={\"\":null}",
+  "llen_series": "all 124 polls report sorento-respond-message = 0",
+  "pop_payloads": "all 124 polls report an empty pop {\"\":null} \u2014 zero real payloads taken",
+  "unretrievable_executions": 0,
+  "prod_delta": 0,
+  "verdict": "PASS \u2014 delta 0 on both signals, nothing to attribute, no HALT triggered"
+ },
+ "_S0_checklist": {
+  "S1": "PASS \u2014 every reply is an egress-log {guard:'sendmsg-sub', would_send}. The clone's 8 sendmsg callers target ublq9nSlrpz63xan (sub-sendmsg-CHAT) with is_test=true; every invocation ran only [When Executed by Another Workflow, chat?, test-guard, test-guard-record] \u2014 the credentialed 'Send a Message' (respondio) and 'HTTP Request' nodes are ABSENT from runData in every execution. Zero api.respond.io 2xx.",
+  "S2": "PASS \u2014 AUTH-A12 drove the escalation. Fork vUfFUDjLAuMaeQE6 exec 9446104 received is_test:true and ran only [When Executed by Another Workflow, chat?, test-guard, test-guard-record]. conversation-sla-tracking-create / get-round-robin-assignee / get-working-days ABSENT. No assign, no SLA POST, no PIC comment, no assignee-queue push.",
+  "S3": "PASS \u2014 save-session-vars and update-human-intervened still have 0 inbound connections (asserted from the post-change REST JSON, not memory); both appear only as egress-log would_write records. sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T, whose Redis.list is the literal 'sorento-respond-message-TEST' (no '=' prefix), a list no consumer reads.",
+  "S4": "PASS \u2014 get-results ran via the TEST fork rysSPgUssLDf6xJc; resolved tool was crm_incoming_stock_list (read). Only MCP Client1 executed. crm_it_support_ticket_create never appears.",
+  "S5": "PASS \u2014 every clone execution's trigger carries test_mode:true + scope + test_run_id; the human-intervention fork and all sendmsg calls received is_test:true.",
+  "S6": "PASS WITH RECORDED DEVIATION \u2014 see _scope. 8 of 9 cases executed zero LLM nodes. AUTH-A4 executed Basic LLM Chain + OpenAI Chat Model (the clarification path's own LLM, unavoidable for that branch). No reformulator LLM ran anywhere (mock bypass held).",
+  "S7": "PASS \u2014 see _S7a_TEST_sink and _S7b_prod_sink."
+ },
+ "_containment_reassertion_AUTH6": {
+  "connections_byte_identical_to_pre_T0": true,
+  "orphans_0_inbound": [
+   "send-message-files",
+   "send-message-images",
+   "send-message-video",
+   "update-human-intervened",
+   "save-session-vars"
+  ],
+  "save_sink_target": "tWm5DYLxfypmVC1T",
+  "save_sink_list": "sorento-respond-message-TEST (literal)",
+  "is_test_true_on_shared_sub_calls": "9/9 egress-capable callers (8 sendmsg -> ublq9nSlrpz63xan, 1 human-intervention -> vUfFUDjLAuMaeQE6). get-rag/get-results/save-message calls target non-egress TEST forks.",
+  "verdict": "PASS \u2014 T0 perturbed nothing"
+ }
+}

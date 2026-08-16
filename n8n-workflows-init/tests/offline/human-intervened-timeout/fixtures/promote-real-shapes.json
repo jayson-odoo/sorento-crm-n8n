@@ -1,0 +1,109 @@
+{
+ "_why": "The output shapes of the nodes that S4 converts from a Code STAND-IN to a REAL node. assert-built.py's promote-shape pass (C9b) resolves downstream parameter references against THESE instead of the stand-in's fields. Reviewer R1: C9 passed and would keep passing, because a stand-in that re-forwards a field is correct on the build and absent on live. LESSONS 65 \u2014 a substituted upstream changes what $json means without changing a line of the node you tested.",
+ "_provenance": "Captured from real n8n executions. NOT hand-written (LESSONS 64).",
+ "shapes": {
+  "ht-clear-flag": {
+   "becomes": "@respond-io/n8n-nodes-respond-io.respondio CONTACTS/UPDATE_CONTACT (is_human_intervened:false)",
+   "source": "live respond-send-user (eG3AA-TWo17-E1-DlHLnH) execution 12146305, node 'Update a Contact'",
+   "captured_at": "2026-08-12",
+   "note": "contactId ONLY. No contact_id, no notice text. This is the shape that breaks ht-forget and ht-timeout-notice unless ht-carry-clear bridges it.",
+   "sample": {
+    "contactId": 423755030
+   },
+   "fields": [
+    "contactId"
+   ]
+  },
+  "ht-findcontact": {
+   "becomes": "n8n-nodes-base.executeWorkflow -> sorento-sub-respond-findcontact-respond (D62_NHUOrugeULSFwfjEJ), mode: each",
+   "source": "execution 12166204 of D62_NHUOrugeULSFwfjEJ, node 'Find a Contact'",
+   "captured_at": "2026-08-12",
+   "note": "id, never contact_id \u2014 the original F-RECHECK shape. Returns ZERO items on a hard not-found (reviewer R3), which is why ht-carry-contact pairs by identity rather than by index.",
+   "sample": {
+    "id": 477071889,
+    "firstName": "Chong",
+    "lastName": null,
+    "phone": "+60162291178",
+    "email": null,
+    "language": null,
+    "profilePic": null,
+    "locale": null,
+    "countryCode": "MY",
+    "status": "open",
+    "isBlocked": false,
+    "custom_fields": [
+     {
+      "name": "enquiry_type",
+      "value": null
+     },
+     {
+      "name": "user_type",
+      "value": null
+     },
+     {
+      "name": "complaint_id",
+      "value": null
+     },
+     {
+      "name": "is_allowed_stock",
+      "value": "true"
+     },
+     {
+      "name": "is_human_intervened",
+      "value": "false"
+     },
+     {
+      "name": "backend_id",
+      "value": "https://fe-sorento.foundryx.my/user-management/contacts/b2916c77-57c7-4f05-8565-3f100bcf0577"
+     },
+     {
+      "name": "is_allowed_ai",
+      "value": "true"
+     },
+     {
+      "name": "is_allowed_voice",
+      "value": null
+     }
+    ],
+    "tags": [
+     "imported_20260627_150636"
+    ],
+    "assignee": {
+     "id": 1132641,
+     "firstName": "Loo",
+     "lastName": "Jingkai",
+     "email": "jaydenloo0214@gmail.com"
+    },
+    "lifecycle": "New Lead",
+    "created_at": 1782546255
+   },
+   "fields": [
+    "assignee",
+    "countryCode",
+    "created_at",
+    "custom_fields",
+    "email",
+    "firstName",
+    "id",
+    "isBlocked",
+    "language",
+    "lastName",
+    "lifecycle",
+    "locale",
+    "phone",
+    "profilePic",
+    "status",
+    "tags"
+   ]
+  }
+ },
+ "_dropped_at_s4": {
+  "_why": "Harness-only nodes that do NOT exist on the promoted graph. C9b skips references made FROM them, because asking whether their expressions survive a promote is meaningless. Listing them here is what forces the promote inventory to be written down rather than assumed.",
+  "ht-egress-log": "harness egress log (redis push to test:egress:*) \u2014 dropped at S4",
+  "ht-sweep-driver": "harness driver payload normaliser \u2014 dropped at S4 (the Schedule Trigger is the only live entry)",
+  "ht-driver-webhook": "harness driver webhook \u2014 dropped at S4",
+  "harness-envelope": "harness driver adapter \u2014 dropped at S4",
+  "When Executed by Another Workflow": "harness driver trigger \u2014 dropped at S4",
+  "Respond.io Trigger": "on live this is the REAL respondioTrigger, whose envelope shape is verified identical (exec 12146305); the Code stand-in is dropped"
+ }
+}

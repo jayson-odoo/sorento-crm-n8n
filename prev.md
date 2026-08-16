@@ -1,0 +1,964 @@
+- main [ref=f2e180]:
+  - generic [ref=f2e183]:
+    - heading "Product Specifications" [level=1] [ref=f2e184]
+    - navigation "breadcrumb" [ref=f2e185]:
+      - list [ref=f2e186]:
+        - listitem [ref=f2e187]:
+          - link "Home" [ref=f2e188] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=f2e189]
+        - listitem [ref=f2e192]:
+          - link "Master Data" [disabled] [ref=f2e193]
+  - generic [ref=f2e195]:
+    - generic [ref=f2e196]:
+      - heading "Try a customer phrase" [level=3] [ref=f2e198]
+      - generic [ref=f2e199]:
+        - paragraph [ref=f2e200]: Type what a customer would send, optionally pin the specs the parser would extract, and see exactly what the chatbot would offer back. Scores and matched keys are shown so a wrong result can be explained.
+        - generic [ref=f2e201]:
+          - generic [ref=f2e202]:
+            - generic [ref=f2e203]: Customer phrase
+            - textbox "Customer phrase" [active] [ref=f2e204]:
+              - /placeholder: stainless steel kitchen sink
+              - text: interlignet wc
+          - generic [ref=f2e205]:
+            - button "Search" [ref=f2e206] [cursor=pointer]
+            - button "Reset" [ref=f2e207] [cursor=pointer]
+        - group [ref=f2e208]:
+          - generic "Pin a spec by hand" [ref=f2e209] [cursor=pointer]
+          - option "Any" [selected]
+          - option "single lever"
+          - option "two way"
+          - option "self closing"
+          - option "sensor"
+          - option "Any" [selected]
+          - option "black"
+          - option "gunmetal"
+          - option "nickel"
+          - option "grey"
+          - option "rose gold"
+          - option "chrome"
+          - option "french gold"
+          - option "white"
+          - option "satin chrome"
+          - option "Any" [selected]
+          - option "washdown"
+          - option "siphonic"
+          - option "twister"
+          - option "Any" [selected]
+          - option "stainless steel"
+          - option "ceramic"
+          - option "glass"
+          - option "pvc"
+          - option "brass"
+          - option "acrylic"
+          - option "Any" [selected]
+          - option "wall hung"
+          - option "floor standing"
+          - option "pedestal"
+          - option "concealed"
+          - option "counter top"
+          - option "under counter"
+          - option "pillar mounted"
+          - option "Any" [selected]
+          - option "angle valve"
+          - option "bib tap"
+          - option "basin tap"
+          - option "kitchen tap"
+          - option "shower tap"
+          - option "mixer tap"
+          - option "hand shower"
+          - option "rain shower"
+          - option "shower set"
+          - option "shower head"
+          - option "close coupled"
+          - option "one piece"
+          - option "art basin"
+          - option "mirror cabinet"
+          - option "Any" [selected]
+          - option "round"
+          - option "square"
+          - option "rectangular"
+          - option "oval"
+          - option "Any" [selected]
+          - option "flexible"
+          - option "double flexible"
+          - option "pull out"
+          - option "swivel"
+          - option "gooseneck"
+          - option "Any" [selected]
+          - option "s trap"
+          - option "p trap"
+        - generic [ref=f2e210]:
+          - generic [ref=f2e211]:
+            - checkbox "Include accessories and spare parts" [ref=f2e212]
+            - text: Include accessories and spare parts
+          - generic [ref=f2e213]:
+            - checkbox "Understand the sentence (off = match words literally)" [checked] [ref=f2e214]
+            - text: Understand the sentence
+            - generic [ref=f2e215]: (off = match words literally)
+        - generic [ref=f2e1058]:
+          - generic [ref=f2e1059]:
+            - generic [ref=f2e1060]: Understood as
+            - generic [ref=f2e1061]: gpt-4o-mini
+            - generic [ref=f2e1062]: 3559 ms
+          - generic [ref=f2e1063]: class = Water Closet
+          - paragraph [ref=f2e1065]: The brand 'interlignet' is not recognized.
+        - generic [ref=f2e1066]:
+          - generic [ref=f2e1067]: What the customer would see
+          - link "1. BF OTHERS water closet. class 5" [ref=f2e1068] [cursor=pointer]:
+            - /url: /master-data-management/products/5972ebca-cf94-4038-b36a-bbd056177103?tab=specifications
+            - generic [ref=f2e1069]:
+              - generic [ref=f2e1070]:
+                - generic [ref=f2e1071]: "1."
+                - generic [ref=f2e1072]: BF
+              - generic [ref=f2e1073]: OTHERS water closet.
+            - generic [ref=f2e1074]:
+              - generic [ref=f2e1075]: class
+              - generic "Total ranking score" [ref=f2e1076]: "5"
+          - link "2. BRBC01017W BRAVAT water closet. Wall mounted. class 5" [ref=f2e1077] [cursor=pointer]:
+            - /url: /master-data-management/products/7cd61f66-c6ac-466c-8ad7-3d77b0a437ba?tab=specifications
+            - generic [ref=f2e1078]:
+              - generic [ref=f2e1079]:
+                - generic [ref=f2e1080]: "2."
+                - generic [ref=f2e1081]: BRBC01017W
+              - generic [ref=f2e1082]: BRAVAT water closet. Wall mounted.
+            - generic [ref=f2e1083]:
+              - generic [ref=f2e1084]: class
+              - generic "Total ranking score" [ref=f2e1085]: "5"
+          - link "3. BRC01011W BRAVAT water closet. Floor standing. class 5" [ref=f2e1086] [cursor=pointer]:
+            - /url: /master-data-management/products/1f6417dd-51be-4a10-9091-ed86e4b15d6e?tab=specifications
+            - generic [ref=f2e1087]:
+              - generic [ref=f2e1088]:
+                - generic [ref=f2e1089]: "3."
+                - generic [ref=f2e1090]: BRC01011W
+              - generic [ref=f2e1091]: BRAVAT water closet. Floor standing.
+            - generic [ref=f2e1092]:
+              - generic [ref=f2e1093]: class
+              - generic "Total ranking score" [ref=f2e1094]: "5"
+          - link "4. BRC01015W BRAVAT water closet. Floor standing. class 5" [ref=f2e1095] [cursor=pointer]:
+            - /url: /master-data-management/products/19d46225-3549-49d7-9863-eb8e2f452f76?tab=specifications
+            - generic [ref=f2e1096]:
+              - generic [ref=f2e1097]:
+                - generic [ref=f2e1098]: "4."
+                - generic [ref=f2e1099]: BRC01015W
+              - generic [ref=f2e1100]: BRAVAT water closet. Floor standing.
+            - generic [ref=f2e1101]:
+              - generic [ref=f2e1102]: class
+              - generic "Total ranking score" [ref=f2e1103]: "5"
+          - link "5. BRC01018W BRAVAT water closet. Floor standing. class 5" [ref=f2e1104] [cursor=pointer]:
+            - /url: /master-data-management/products/5a487926-c22e-445d-acdc-5387f2a8ad99?tab=specifications
+            - generic [ref=f2e1105]:
+              - generic [ref=f2e1106]:
+                - generic [ref=f2e1107]: "5."
+                - generic [ref=f2e1108]: BRC01018W
+              - generic [ref=f2e1109]: BRAVAT water closet. Floor standing.
+            - generic [ref=f2e1110]:
+              - generic [ref=f2e1111]: class
+              - generic "Total ranking score" [ref=f2e1112]: "5"
+          - paragraph [ref=f2e1113]: Click any result to see every spec it carries and the text each one was read from.
+    - generic [ref=f2e217]:
+      - heading "Spec keys supported (23)" [level=3] [ref=f2e219]
+      - table [ref=f2e222]:
+        - rowgroup [ref=f2e223]:
+          - row [ref=f2e224]:
+            - columnheader "Key" [ref=f2e225]
+            - columnheader "Type" [ref=f2e226]
+            - columnheader "Applies to" [ref=f2e227]
+            - columnheader "Weight" [ref=f2e228]
+            - columnheader "Seen in" [ref=f2e229]
+            - columnheader "Words that resolve to it" [ref=f2e230]
+            - columnheader [ref=f2e231]
+        - rowgroup [ref=f2e232]:
+          - row [ref=f2e233]:
+            - cell "Number of bowls bowl_count" [ref=f2e234]:
+              - generic [ref=f2e235]: Number of bowls
+              - generic [ref=f2e237]: bowl_count
+            - cell "numeric" [ref=f2e238]
+            - cell "Kitchen Sink" [ref=f2e239]
+            - cell "3" [ref=f2e240]
+            - cell "106" [ref=f2e241]
+            - cell "single bowl one bowl 1 bowl single sink double bowl two bowl 2 bowl twin bowl double sink triple bowl three bowl 3 bowl bowl bowls" [ref=f2e242]:
+              - generic [ref=f2e243]:
+                - generic [ref=f2e244]: single bowl
+                - generic [ref=f2e245]: one bowl
+                - generic [ref=f2e246]: 1 bowl
+                - generic [ref=f2e247]: single sink
+                - generic [ref=f2e248]: double bowl
+                - generic [ref=f2e249]: two bowl
+                - generic [ref=f2e250]: 2 bowl
+                - generic [ref=f2e251]: twin bowl
+                - generic [ref=f2e252]: double sink
+                - generic [ref=f2e253]: triple bowl
+                - generic [ref=f2e254]: three bowl
+                - generic [ref=f2e255]: 3 bowl
+                - generic [ref=f2e256]: bowl
+                - generic [ref=f2e257]: bowls
+            - cell [ref=f2e258]:
+              - button "Edit" [ref=f2e259] [cursor=pointer]
+          - row [ref=f2e260]:
+            - cell "Brand brand" [ref=f2e261]:
+              - generic [ref=f2e262]: Brand
+              - generic [ref=f2e264]: brand
+            - cell "enum" [ref=f2e265]
+            - cell "Every class" [ref=f2e266]
+            - cell "1.5" [ref=f2e267]
+            - cell "11,584" [ref=f2e268]
+            - cell "open vocabulary, sourced from the catalog" [ref=f2e269]
+            - cell [ref=f2e270]:
+              - button "Edit" [ref=f2e271] [cursor=pointer]
+          - row [ref=f2e272]:
+            - cell "Product class class" [ref=f2e273]:
+              - generic [ref=f2e274]: Product class
+              - generic [ref=f2e276]: class
+            - cell "enum" [ref=f2e277]
+            - cell "Every class" [ref=f2e278]
+            - cell "5" [ref=f2e279]
+            - cell "11,584" [ref=f2e280]
+            - cell "open vocabulary, sourced from the catalog" [ref=f2e281]
+            - cell [ref=f2e282]:
+              - button "Edit" [ref=f2e283] [cursor=pointer]
+          - row [ref=f2e284]:
+            - cell "Control type control_type" [ref=f2e285]:
+              - generic [ref=f2e286]: Control type
+              - generic [ref=f2e288]: control_type
+            - cell "enum" [ref=f2e289]
+            - cell "Every class" [ref=f2e290]
+            - cell "1.5" [ref=f2e291]
+            - cell "201" [ref=f2e292]
+            - cell "sensor automatic auto touchless two way 2 way dual self closing self-closing push delay action single lever single handle one lever" [ref=f2e293]:
+              - generic [ref=f2e294]:
+                - generic [ref=f2e295]: sensor
+                - generic [ref=f2e296]: automatic
+                - generic [ref=f2e297]: auto
+                - generic [ref=f2e298]: touchless
+                - generic [ref=f2e299]: two way
+                - generic [ref=f2e300]: 2 way
+                - generic [ref=f2e301]: dual
+                - generic [ref=f2e302]: self closing
+                - generic [ref=f2e303]: self-closing
+                - generic [ref=f2e304]: push
+                - generic [ref=f2e305]: delay action
+                - generic [ref=f2e306]: single lever
+                - generic [ref=f2e307]: single handle
+                - generic [ref=f2e308]: one lever
+            - cell [ref=f2e309]:
+              - button "Edit" [ref=f2e310] [cursor=pointer]
+          - row [ref=f2e311]:
+            - cell "Depth depth" [ref=f2e312]:
+              - generic [ref=f2e313]: Depth
+              - generic [ref=f2e315]: depth
+            - cell "numeric (mm)" [ref=f2e316]
+            - cell "Every class" [ref=f2e317]
+            - cell "1" [ref=f2e318]
+            - cell "365" [ref=f2e319]
+            - cell "depth deep" [ref=f2e320]:
+              - generic [ref=f2e321]:
+                - generic [ref=f2e322]: depth
+                - generic [ref=f2e323]: deep
+            - cell [ref=f2e324]:
+              - button "Edit" [ref=f2e325] [cursor=pointer]
+          - row [ref=f2e326]:
+            - cell "Diameter diameter" [ref=f2e327]:
+              - generic [ref=f2e328]: Diameter
+              - generic [ref=f2e330]: diameter
+            - cell "numeric (mm)" [ref=f2e331]
+            - cell "round, square" [ref=f2e332]
+            - cell "2" [ref=f2e333]
+            - cell "365" [ref=f2e334]
+            - cell "diameter dia across" [ref=f2e335]:
+              - generic [ref=f2e336]:
+                - generic [ref=f2e337]: diameter
+                - generic [ref=f2e338]: dia
+                - generic [ref=f2e339]: across
+            - cell [ref=f2e340]:
+              - button "Edit" [ref=f2e341] [cursor=pointer]
+          - row [ref=f2e342]:
+            - cell "Height dim_height" [ref=f2e343]:
+              - generic [ref=f2e344]: Height
+              - generic [ref=f2e346]: dim_height
+            - cell "numeric (mm)" [ref=f2e347]
+            - cell "Every class" [ref=f2e348]
+            - cell "1.5" [ref=f2e349]
+            - cell "3,390" [ref=f2e350]
+            - cell "height tall high" [ref=f2e351]:
+              - generic [ref=f2e352]:
+                - generic [ref=f2e353]: height
+                - generic [ref=f2e354]: tall
+                - generic [ref=f2e355]: high
+            - cell [ref=f2e356]:
+              - button "Edit" [ref=f2e357] [cursor=pointer]
+          - row [ref=f2e358]:
+            - cell "Length dim_length" [ref=f2e359]:
+              - generic [ref=f2e360]: Length
+              - generic [ref=f2e362]: dim_length
+            - cell "numeric (mm)" [ref=f2e363]
+            - cell "Every class" [ref=f2e364]
+            - cell "2" [ref=f2e365]
+            - cell "3,390" [ref=f2e366]
+            - cell "length long" [ref=f2e367]:
+              - generic [ref=f2e368]:
+                - generic [ref=f2e369]: length
+                - generic [ref=f2e370]: long
+            - cell [ref=f2e371]:
+              - button "Edit" [ref=f2e372] [cursor=pointer]
+          - row [ref=f2e373]:
+            - cell "Width dim_width" [ref=f2e374]:
+              - generic [ref=f2e375]: Width
+              - generic [ref=f2e377]: dim_width
+            - cell "numeric (mm)" [ref=f2e378]
+            - cell "Every class" [ref=f2e379]
+            - cell "2" [ref=f2e380]
+            - cell "3,390" [ref=f2e381]
+            - cell "width wide" [ref=f2e382]:
+              - generic [ref=f2e383]:
+                - generic [ref=f2e384]: width
+                - generic [ref=f2e385]: wide
+            - cell [ref=f2e386]:
+              - button "Edit" [ref=f2e387] [cursor=pointer]
+          - row [ref=f2e388]:
+            - cell "Finish or colour finish" [ref=f2e389]:
+              - generic [ref=f2e390]: Finish or colour
+              - generic [ref=f2e392]: finish
+            - cell "enum" [ref=f2e393]
+            - cell "Every class" [ref=f2e394]
+            - cell "1.5" [ref=f2e395]
+            - cell "1,600" [ref=f2e396]
+            - cell "grey gray black matt black matte black white chrome polished chrome nickel brushed nickel gunmetal gun metal rose gold rosegold french gold gold satin chrome satin" [ref=f2e397]:
+              - generic [ref=f2e398]:
+                - generic [ref=f2e399]: grey
+                - generic [ref=f2e400]: gray
+                - generic [ref=f2e401]: black
+                - generic [ref=f2e402]: matt black
+                - generic [ref=f2e403]: matte black
+                - generic [ref=f2e404]: white
+                - generic [ref=f2e405]: chrome
+                - generic [ref=f2e406]: polished chrome
+                - generic [ref=f2e407]: nickel
+                - generic [ref=f2e408]: brushed nickel
+                - generic [ref=f2e409]: gunmetal
+                - generic [ref=f2e410]: gun metal
+                - generic [ref=f2e411]: rose gold
+                - generic [ref=f2e412]: rosegold
+                - generic [ref=f2e413]: french gold
+                - generic [ref=f2e414]: gold
+                - generic [ref=f2e415]: satin chrome
+                - generic [ref=f2e416]: satin
+            - cell [ref=f2e417]:
+              - button "Edit" [ref=f2e418] [cursor=pointer]
+          - row [ref=f2e419]:
+            - cell "Flush type flush_type" [ref=f2e420]:
+              - generic [ref=f2e421]: Flush type
+              - generic [ref=f2e423]: flush_type
+            - cell "enum" [ref=f2e424]
+            - cell "Water Closet" [ref=f2e425]
+            - cell "2" [ref=f2e426]
+            - cell "622" [ref=f2e427]
+            - cell "twister flush twister flushing twister siphonic syphonic washdown wash down wash-down" [ref=f2e428]:
+              - generic [ref=f2e429]:
+                - generic [ref=f2e430]: twister flush
+                - generic [ref=f2e431]: twister flushing
+                - generic [ref=f2e432]: twister
+                - generic [ref=f2e433]: siphonic
+                - generic [ref=f2e434]: syphonic
+                - generic [ref=f2e435]: washdown
+                - generic [ref=f2e436]: wash down
+                - generic [ref=f2e437]: wash-down
+            - cell [ref=f2e438]:
+              - button "Edit" [ref=f2e439] [cursor=pointer]
+          - row [ref=f2e440]:
+            - cell "Has a drainer board has_drainer" [ref=f2e441]:
+              - generic [ref=f2e442]: Has a drainer board
+              - generic [ref=f2e444]: has_drainer
+            - cell "boolean" [ref=f2e445]
+            - cell "Kitchen Sink" [ref=f2e446]
+            - cell "1.5" [ref=f2e447]
+            - cell "18" [ref=f2e448]
+            - cell "drainer with drainer drainer board drain board" [ref=f2e449]:
+              - generic [ref=f2e450]:
+                - generic [ref=f2e451]: drainer
+                - generic [ref=f2e452]: with drainer
+                - generic [ref=f2e453]: drainer board
+                - generic [ref=f2e454]: drain board
+            - cell [ref=f2e455]:
+              - button "Edit" [ref=f2e456] [cursor=pointer]
+          - row [ref=f2e457]:
+            - cell "Comes with a fixing screw has_fixing_screw" [ref=f2e458]:
+              - generic [ref=f2e459]: Comes with a fixing screw
+              - generic [ref=f2e461]: has_fixing_screw
+            - cell "boolean" [ref=f2e462]
+            - cell "Every class" [ref=f2e463]
+            - cell "1" [ref=f2e464]
+            - cell "29" [ref=f2e465]
+            - cell "basin screw fixing screw c/w screw with screw" [ref=f2e466]:
+              - generic [ref=f2e467]:
+                - generic [ref=f2e468]: basin screw
+                - generic [ref=f2e469]: fixing screw
+                - generic [ref=f2e470]: c/w screw
+                - generic [ref=f2e471]: with screw
+            - cell [ref=f2e472]:
+              - button "Edit" [ref=f2e473] [cursor=pointer]
+          - row [ref=f2e474]:
+            - cell "Has an overflow has_overflow" [ref=f2e475]:
+              - generic [ref=f2e476]: Has an overflow
+              - generic [ref=f2e478]: has_overflow
+            - cell "boolean" [ref=f2e479]
+            - cell "Every class" [ref=f2e480]
+            - cell "1.5" [ref=f2e481]
+            - cell "142" [ref=f2e482]
+            - cell "overflow with overflow c/w overflow overflow hole" [ref=f2e483]:
+              - generic [ref=f2e484]:
+                - generic [ref=f2e485]: overflow
+                - generic [ref=f2e486]: with overflow
+                - generic [ref=f2e487]: c/w overflow
+                - generic [ref=f2e488]: overflow hole
+            - cell [ref=f2e489]:
+              - button "Edit" [ref=f2e490] [cursor=pointer]
+          - row [ref=f2e491]:
+            - cell "Intelligent / smart toilet is_smart" [ref=f2e492]:
+              - generic [ref=f2e493]: Intelligent / smart toilet
+              - generic [ref=f2e495]: is_smart
+            - cell "boolean" [ref=f2e496]
+            - cell "Water Closet" [ref=f2e497]
+            - cell "3" [ref=f2e498]
+            - cell "76" [ref=f2e499]
+            - cell "intelligent toilet intelligent smart toilet smart wc auto induction" [ref=f2e500]:
+              - generic [ref=f2e501]:
+                - generic [ref=f2e502]: intelligent toilet
+                - generic [ref=f2e503]: intelligent
+                - generic [ref=f2e504]: smart toilet
+                - generic [ref=f2e505]: smart wc
+                - generic [ref=f2e506]: auto induction
+            - cell [ref=f2e507]:
+              - button "Edit" [ref=f2e508] [cursor=pointer]
+          - row [ref=f2e509]:
+            - cell "Material material" [ref=f2e510]:
+              - generic [ref=f2e511]: Material
+              - generic [ref=f2e513]: material
+            - cell "enum" [ref=f2e514]
+            - cell "Every class" [ref=f2e515]
+            - cell "2" [ref=f2e516]
+            - cell "2,316" [ref=f2e517]
+            - cell "pvc plastic brass glass tempered glass acrylic ceramic porcelain stainless stainless steel s/steel steel inox" [ref=f2e518]:
+              - generic [ref=f2e519]:
+                - generic [ref=f2e520]: pvc
+                - generic [ref=f2e521]: plastic
+                - generic [ref=f2e522]: brass
+                - generic [ref=f2e523]: glass
+                - generic [ref=f2e524]: tempered glass
+                - generic [ref=f2e525]: acrylic
+                - generic [ref=f2e526]: ceramic
+                - generic [ref=f2e527]: porcelain
+                - generic [ref=f2e528]: stainless
+                - generic [ref=f2e529]: stainless steel
+                - generic [ref=f2e530]: s/steel
+                - generic [ref=f2e531]: steel
+                - generic [ref=f2e532]: inox
+            - cell [ref=f2e533]:
+              - button "Edit" [ref=f2e534] [cursor=pointer]
+          - row [ref=f2e535]:
+            - cell "Mounting mounting" [ref=f2e536]:
+              - generic [ref=f2e537]: Mounting
+              - generic [ref=f2e539]: mounting
+            - cell "enum" [ref=f2e540]
+            - cell "Every class" [ref=f2e541]
+            - cell "2" [ref=f2e542]
+            - cell "3,289" [ref=f2e543]
+            - cell "pedestal with pedestal concealed hidden in wall wall hung wall mounted wall mount hang on wall counter top countertop above counter on counter top mount under counter undermount under mount below counter floor standing floor mounted free standing pillar mounted pillar mount pillar tap pillar" [ref=f2e544]:
+              - generic [ref=f2e545]:
+                - generic [ref=f2e546]: pedestal
+                - generic [ref=f2e547]: with pedestal
+                - generic [ref=f2e548]: concealed
+                - generic [ref=f2e549]: hidden
+                - generic [ref=f2e550]: in wall
+                - generic [ref=f2e551]: wall hung
+                - generic [ref=f2e552]: wall mounted
+                - generic [ref=f2e553]: wall mount
+                - generic [ref=f2e554]: hang on wall
+                - generic [ref=f2e555]: counter top
+                - generic [ref=f2e556]: countertop
+                - generic [ref=f2e557]: above counter
+                - generic [ref=f2e558]: on counter
+                - generic [ref=f2e559]: top mount
+                - generic [ref=f2e560]: under counter
+                - generic [ref=f2e561]: undermount
+                - generic [ref=f2e562]: under mount
+                - generic [ref=f2e563]: below counter
+                - generic [ref=f2e564]: floor standing
+                - generic [ref=f2e565]: floor mounted
+                - generic [ref=f2e566]: free standing
+                - generic [ref=f2e567]: pillar mounted
+                - generic [ref=f2e568]: pillar mount
+                - generic [ref=f2e569]: pillar tap
+                - generic [ref=f2e570]: pillar
+            - cell [ref=f2e571]:
+              - button "Edit" [ref=f2e572] [cursor=pointer]
+          - row [ref=f2e573]:
+            - cell "Type product_type" [ref=f2e574]:
+              - generic [ref=f2e575]: Type
+              - generic [ref=f2e577]: product_type
+            - cell "enum" [ref=f2e578]
+            - cell "Every class" [ref=f2e579]
+            - cell "3" [ref=f2e580]
+            - cell "5,075" [ref=f2e581]
+            - cell "bib tap hose bib bib garden tap art basin vessel basin designer basin basin tap basin mixer wash basin tap mixer mixer tap hot and cold tap one piece one-piece single piece shower set shower kit complete shower shower tap shower mixer angle valve stop valve corner valve hand shower handheld shower hand held shower kitchen tap sink tap kitchen sink tap paip dapur rain shower rainfall shower overhead shower shower head showerhead close coupled close-coupled two piece coupled mirror cabinet cabinet mirror" [ref=f2e582]:
+              - generic [ref=f2e583]:
+                - generic [ref=f2e584]: bib tap
+                - generic [ref=f2e585]: hose bib
+                - generic [ref=f2e586]: bib
+                - generic [ref=f2e587]: garden tap
+                - generic [ref=f2e588]: art basin
+                - generic [ref=f2e589]: vessel basin
+                - generic [ref=f2e590]: designer basin
+                - generic [ref=f2e591]: basin tap
+                - generic [ref=f2e592]: basin mixer
+                - generic [ref=f2e593]: wash basin tap
+                - generic [ref=f2e594]: mixer
+                - generic [ref=f2e595]: mixer tap
+                - generic [ref=f2e596]: hot and cold tap
+                - generic [ref=f2e597]: one piece
+                - generic [ref=f2e598]: one-piece
+                - generic [ref=f2e599]: single piece
+                - generic [ref=f2e600]: shower set
+                - generic [ref=f2e601]: shower kit
+                - generic [ref=f2e602]: complete shower
+                - generic [ref=f2e603]: shower tap
+                - generic [ref=f2e604]: shower mixer
+                - generic [ref=f2e605]: angle valve
+                - generic [ref=f2e606]: stop valve
+                - generic [ref=f2e607]: corner valve
+                - generic [ref=f2e608]: hand shower
+                - generic [ref=f2e609]: handheld shower
+                - generic [ref=f2e610]: hand held shower
+                - generic [ref=f2e611]: kitchen tap
+                - generic [ref=f2e612]: sink tap
+                - generic [ref=f2e613]: kitchen sink tap
+                - generic [ref=f2e614]: paip dapur
+                - generic [ref=f2e615]: rain shower
+                - generic [ref=f2e616]: rainfall shower
+                - generic [ref=f2e617]: overhead shower
+                - generic [ref=f2e618]: shower head
+                - generic [ref=f2e619]: showerhead
+                - generic [ref=f2e620]: close coupled
+                - generic [ref=f2e621]: close-coupled
+                - generic [ref=f2e622]: two piece
+                - generic [ref=f2e623]: coupled
+                - generic [ref=f2e624]: mirror cabinet
+                - generic [ref=f2e625]: cabinet mirror
+            - cell [ref=f2e626]:
+              - button "Edit" [ref=f2e627] [cursor=pointer]
+          - row [ref=f2e628]:
+            - cell "Shape shape" [ref=f2e629]:
+              - generic [ref=f2e630]: Shape
+              - generic [ref=f2e632]: shape
+            - cell "enum" [ref=f2e633]
+            - cell "Every class" [ref=f2e634]
+            - cell "2" [ref=f2e635]
+            - cell "365" [ref=f2e636]
+            - cell "oval ellipse round circular square rectangular rectangle" [ref=f2e637]:
+              - generic [ref=f2e638]:
+                - generic [ref=f2e639]: oval
+                - generic [ref=f2e640]: ellipse
+                - generic [ref=f2e641]: round
+                - generic [ref=f2e642]: circular
+                - generic [ref=f2e643]: square
+                - generic [ref=f2e644]: rectangular
+                - generic [ref=f2e645]: rectangle
+            - cell [ref=f2e646]:
+              - button "Edit" [ref=f2e647] [cursor=pointer]
+          - row [ref=f2e648]:
+            - cell "Spout spout_type" [ref=f2e649]:
+              - generic [ref=f2e650]: Spout
+              - generic [ref=f2e652]: spout_type
+            - cell "enum" [ref=f2e653]
+            - cell "Every class" [ref=f2e654]
+            - cell "2" [ref=f2e655]
+            - cell "641" [ref=f2e656]
+            - cell "swivel rotating turnable flexible flexible head flexi bendable hose spout pull out pull-out extendable pull down gooseneck goose neck high arc double flexible double spout" [ref=f2e657]:
+              - generic [ref=f2e658]:
+                - generic [ref=f2e659]: swivel
+                - generic [ref=f2e660]: rotating
+                - generic [ref=f2e661]: turnable
+                - generic [ref=f2e662]: flexible
+                - generic [ref=f2e663]: flexible head
+                - generic [ref=f2e664]: flexi
+                - generic [ref=f2e665]: bendable
+                - generic [ref=f2e666]: hose spout
+                - generic [ref=f2e667]: pull out
+                - generic [ref=f2e668]: pull-out
+                - generic [ref=f2e669]: extendable
+                - generic [ref=f2e670]: pull down
+                - generic [ref=f2e671]: gooseneck
+                - generic [ref=f2e672]: goose neck
+                - generic [ref=f2e673]: high arc
+                - generic [ref=f2e674]: double flexible
+                - generic [ref=f2e675]: double spout
+            - cell [ref=f2e676]:
+              - button "Edit" [ref=f2e677] [cursor=pointer]
+          - row [ref=f2e678]:
+            - cell "Thickness thickness" [ref=f2e679]:
+              - generic [ref=f2e680]: Thickness
+              - generic [ref=f2e682]: thickness
+            - cell "numeric (mm)" [ref=f2e683]
+            - cell "Every class" [ref=f2e684]
+            - cell "1" [ref=f2e685]
+            - cell "136" [ref=f2e686]
+            - cell "thickness thick gauge" [ref=f2e687]:
+              - generic [ref=f2e688]:
+                - generic [ref=f2e689]: thickness
+                - generic [ref=f2e690]: thick
+                - generic [ref=f2e691]: gauge
+            - cell [ref=f2e692]:
+              - button "Edit" [ref=f2e693] [cursor=pointer]
+          - row [ref=f2e694]:
+            - cell "Trap outlet length trap_length" [ref=f2e695]:
+              - generic [ref=f2e696]: Trap outlet length
+              - generic [ref=f2e698]: trap_length
+            - cell "numeric (mm)" [ref=f2e699]
+            - cell "Every class" [ref=f2e700]
+            - cell "2" [ref=f2e701]
+            - cell "738" [ref=f2e702]
+            - cell "trap" [ref=f2e703]
+            - cell [ref=f2e706]:
+              - button "Edit" [ref=f2e707] [cursor=pointer]
+          - row [ref=f2e708]:
+            - cell "Trap trap_type" [ref=f2e709]:
+              - generic [ref=f2e710]: Trap
+              - generic [ref=f2e712]: trap_type
+            - cell "enum" [ref=f2e713]
+            - cell "Every class" [ref=f2e714]
+            - cell "3" [ref=f2e715]
+            - cell "1,027" [ref=f2e716]
+            - cell "p trap p-trap wall outlet wall waste s trap s-trap floor outlet floor waste" [ref=f2e717]:
+              - generic [ref=f2e718]:
+                - generic [ref=f2e719]: p trap
+                - generic [ref=f2e720]: p-trap
+                - generic [ref=f2e721]: wall outlet
+                - generic [ref=f2e722]: wall waste
+                - generic [ref=f2e723]: s trap
+                - generic [ref=f2e724]: s-trap
+                - generic [ref=f2e725]: floor outlet
+                - generic [ref=f2e726]: floor waste
+            - cell [ref=f2e727]:
+              - button "Edit" [ref=f2e728] [cursor=pointer]
+    - generic [ref=f2e729]:
+      - generic [ref=f2e730]:
+        - heading "Needs a human (25)" [level=3] [ref=f2e732]
+        - table [ref=f2e735]:
+          - rowgroup [ref=f2e736]:
+            - row [ref=f2e737]:
+              - columnheader "Product" [ref=f2e738]
+              - columnheader "Spec" [ref=f2e739]
+              - columnheader "Why" [ref=f2e740]
+              - columnheader "Stored" [ref=f2e741]
+          - rowgroup [ref=f2e742]:
+            - row [ref=f2e743]:
+              - cell "32MM TAIL PIECE COUPLING" [ref=f2e744]
+              - cell "brand" [ref=f2e745]
+              - cell "company_copies_disagree" [ref=f2e746]
+              - cell "\"OTHERS, TP ENTERPRISE\"" [ref=f2e747]
+            - row [ref=f2e748]:
+              - cell "BK2033J" [ref=f2e749]
+              - cell "shape" [ref=f2e750]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e751]
+              - 'cell "{\"dim_width\":1500,\"dim_length\":1500}" [ref=f2e752]'
+            - row [ref=f2e753]:
+              - cell "BK2043J" [ref=f2e754]
+              - cell "shape" [ref=f2e755]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e756]
+              - 'cell "{\"dim_width\":1350,\"dim_length\":1350}" [ref=f2e757]'
+            - row [ref=f2e758]:
+              - cell "BK2048J" [ref=f2e759]
+              - cell "shape" [ref=f2e760]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e761]
+              - 'cell "{\"dim_width\":1500,\"dim_length\":1500}" [ref=f2e762]'
+            - row [ref=f2e763]:
+              - cell "BK2049J" [ref=f2e764]
+              - cell "shape" [ref=f2e765]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e766]
+              - 'cell "{\"dim_width\":1500,\"dim_length\":1500}" [ref=f2e767]'
+            - row [ref=f2e768]:
+              - cell "BK2085SS" [ref=f2e769]
+              - cell "shape" [ref=f2e770]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e771]
+              - 'cell "{\"dim_width\":900,\"dim_length\":900}" [ref=f2e772]'
+            - row [ref=f2e773]:
+              - cell "BRVWB7249" [ref=f2e774]
+              - cell "shape" [ref=f2e775]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e776]
+              - 'cell "{\"dim_width\":415,\"dim_length\":415}" [ref=f2e777]'
+            - row [ref=f2e778]:
+              - cell "CAB5004" [ref=f2e779]
+              - cell "shape" [ref=f2e780]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e781]
+              - 'cell "{\"dim_width\":395,\"dim_length\":395}" [ref=f2e782]'
+            - row [ref=f2e783]:
+              - cell "CAB7026" [ref=f2e784]
+              - cell "shape" [ref=f2e785]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e786]
+              - 'cell "{\"dim_width\":465,\"dim_length\":465}" [ref=f2e787]'
+            - row [ref=f2e788]:
+              - cell "CAB7029E" [ref=f2e789]
+              - cell "shape" [ref=f2e790]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e791]
+              - 'cell "{\"dim_width\":460,\"dim_length\":460}" [ref=f2e792]'
+            - row [ref=f2e793]:
+              - cell "CAB7076" [ref=f2e794]
+              - cell "shape" [ref=f2e795]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e796]
+              - 'cell "{\"dim_width\":410,\"dim_length\":410}" [ref=f2e797]'
+            - row [ref=f2e798]:
+              - cell "CAB7226" [ref=f2e799]
+              - cell "shape" [ref=f2e800]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e801]
+              - 'cell "{\"dim_width\":410,\"dim_length\":410}" [ref=f2e802]'
+            - row [ref=f2e803]:
+              - cell "CAB7775" [ref=f2e804]
+              - cell "shape" [ref=f2e805]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e806]
+              - 'cell "{\"dim_width\":410,\"dim_length\":410}" [ref=f2e807]'
+            - row [ref=f2e808]:
+              - cell "CAB8050A" [ref=f2e809]
+              - cell "shape" [ref=f2e810]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e811]
+              - 'cell "{\"dim_width\":510,\"dim_length\":510}" [ref=f2e812]'
+            - row [ref=f2e813]:
+              - cell "CB488" [ref=f2e814]
+              - cell "dim_length" [ref=f2e815]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e816]
+              - 'cell "{\"value\":130}" [ref=f2e817]'
+            - row [ref=f2e818]:
+              - cell "CB488" [ref=f2e819]
+              - cell "dim_width" [ref=f2e820]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e821]
+              - 'cell "{\"value\":80}" [ref=f2e822]'
+            - row [ref=f2e823]:
+              - cell "CB488" [ref=f2e824]
+              - cell "dim_height" [ref=f2e825]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e826]
+              - 'cell "{\"value\":120}" [ref=f2e827]'
+            - row [ref=f2e828]:
+              - cell "CB833J" [ref=f2e829]
+              - cell "shape" [ref=f2e830]
+              - cell "Stored dimensions describe a round or square product" [ref=f2e831]
+              - 'cell "{\"dim_width\":1500,\"dim_length\":1500}" [ref=f2e832]'
+            - row [ref=f2e833]:
+              - cell "CBDR4001" [ref=f2e834]
+              - cell "dim_length" [ref=f2e835]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e836]
+              - 'cell "{\"value\":420}" [ref=f2e837]'
+            - row [ref=f2e838]:
+              - cell "CBDR4001" [ref=f2e839]
+              - cell "dim_width" [ref=f2e840]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e841]
+              - 'cell "{\"value\":240}" [ref=f2e842]'
+            - row [ref=f2e843]:
+              - cell "CBDR4001" [ref=f2e844]
+              - cell "dim_height" [ref=f2e845]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e846]
+              - 'cell "{\"value\":700}" [ref=f2e847]'
+            - row [ref=f2e848]:
+              - cell "CBDR4002" [ref=f2e849]
+              - cell "dim_length" [ref=f2e850]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e851]
+              - 'cell "{\"value\":750}" [ref=f2e852]'
+            - row [ref=f2e853]:
+              - cell "CBDR4002" [ref=f2e854]
+              - cell "dim_width" [ref=f2e855]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e856]
+              - 'cell "{\"value\":320}" [ref=f2e857]'
+            - row [ref=f2e858]:
+              - cell "CBDR4002" [ref=f2e859]
+              - cell "dim_height" [ref=f2e860]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e861]
+              - 'cell "{\"value\":520}" [ref=f2e862]'
+            - row [ref=f2e863]:
+              - cell "CBDR4003" [ref=f2e864]
+              - cell "dim_length" [ref=f2e865]
+              - cell "Description disagrees with the stored dimensions" [ref=f2e866]
+              - 'cell "{\"value\":950}" [ref=f2e867]'
+      - generic [ref=f2e868]:
+        - heading "Derived specifications (11415)" [level=3] [ref=f2e870]
+        - generic [ref=f2e871]:
+          - generic [ref=f2e872]:
+            - textbox "Filter by product code or class" [ref=f2e873]
+            - button "Filter" [ref=f2e874] [cursor=pointer]
+          - table [ref=f2e876]:
+            - rowgroup [ref=f2e877]:
+              - row [ref=f2e878]:
+                - columnheader "Code" [ref=f2e879]
+                - columnheader "Class" [ref=f2e880]
+                - columnheader "Brand" [ref=f2e881]
+                - columnheader "Specs" [ref=f2e882]
+                - columnheader "What search matches" [ref=f2e883]
+            - rowgroup [ref=f2e884]:
+              - row [ref=f2e885] [cursor=pointer]:
+                - cell "**NEW" [ref=f2e886]
+                - cell "-" [ref=f2e887]
+                - cell "OTHERS" [ref=f2e888]
+                - cell "0 Accessory" [ref=f2e889]:
+                  - text: "0"
+                  - generic [ref=f2e890]: Accessory
+                - cell "OTHERS. Accessory or spare part." [ref=f2e891]
+              - row [ref=f2e892] [cursor=pointer]:
+                - cell "**REPAIR" [ref=f2e893]
+                - cell "-" [ref=f2e894]
+                - cell "OTHERS" [ref=f2e895]
+                - cell "0 Accessory" [ref=f2e896]:
+                  - text: "0"
+                  - generic [ref=f2e897]: Accessory
+                - cell "OTHERS. Accessory or spare part." [ref=f2e898]
+              - row [ref=f2e899] [cursor=pointer]:
+                - cell "**REPLACE" [ref=f2e900]
+                - cell "-" [ref=f2e901]
+                - cell "OTHERS" [ref=f2e902]
+                - cell "0 Accessory" [ref=f2e903]:
+                  - text: "0"
+                  - generic [ref=f2e904]: Accessory
+                - cell "OTHERS. Accessory or spare part." [ref=f2e905]
+              - row [ref=f2e906] [cursor=pointer]:
+                - cell "**SPARE PART" [ref=f2e907]
+                - cell "-" [ref=f2e908]
+                - cell "OTHERS" [ref=f2e909]
+                - cell "0 Accessory" [ref=f2e910]:
+                  - text: "0"
+                  - generic [ref=f2e911]: Accessory
+                - cell "OTHERS. Accessory or spare part." [ref=f2e912]
+              - row [ref=f2e913] [cursor=pointer]:
+                - cell "1/2\" ULTRA CIRCULAR" [ref=f2e914]
+                - cell "-" [ref=f2e915]
+                - cell "OTHERS" [ref=f2e916]
+                - cell "0" [ref=f2e917]
+                - cell "OTHERS." [ref=f2e918]
+              - row [ref=f2e919] [cursor=pointer]:
+                - cell "11X11" [ref=f2e920]
+                - cell "Bathroom Accessory" [ref=f2e921]
+                - cell "OTHERS" [ref=f2e922]
+                - cell "2" [ref=f2e923]
+                - cell "OTHERS bathroom accessory. 11 x 11 mm." [ref=f2e924]
+              - row [ref=f2e925] [cursor=pointer]:
+                - cell "1861" [ref=f2e926]
+                - cell "Kitchen Sink" [ref=f2e927]
+                - cell "OTHERS" [ref=f2e928]
+                - cell "0" [ref=f2e929]
+                - cell "OTHERS kitchen sink." [ref=f2e930]
+              - row [ref=f2e931] [cursor=pointer]:
+                - cell "2102AW" [ref=f2e932]
+                - cell "-" [ref=f2e933]
+                - cell "OTHERS" [ref=f2e934]
+                - cell "3" [ref=f2e935]
+                - cell "OTHERS. Stainless steel. 9 x 9 mm." [ref=f2e936]
+              - row [ref=f2e937] [cursor=pointer]:
+                - cell "21130" [ref=f2e938]
+                - cell "Wash Basin" [ref=f2e939]
+                - cell "OTHERS" [ref=f2e940]
+                - cell "0" [ref=f2e941]
+                - cell "OTHERS wash basin." [ref=f2e942]
+              - row [ref=f2e943] [cursor=pointer]:
+                - cell "2295W-1" [ref=f2e944]
+                - cell "Water Closet" [ref=f2e945]
+                - cell "OTHERS" [ref=f2e946]
+                - cell "0 Discontinued" [ref=f2e947]:
+                  - text: "0"
+                  - generic [ref=f2e948]: Discontinued
+                - cell "OTHERS water closet." [ref=f2e949]
+              - row [ref=f2e950] [cursor=pointer]:
+                - cell "25BCSC" [ref=f2e951]
+                - cell "-" [ref=f2e952]
+                - cell "OTHERS" [ref=f2e953]
+                - cell "1" [ref=f2e954]
+                - cell "OTHERS. Brass." [ref=f2e955]
+              - row [ref=f2e956] [cursor=pointer]:
+                - cell "30MM" [ref=f2e957]
+                - cell "-" [ref=f2e958]
+                - cell "-" [ref=f2e959]
+                - cell "0 Accessory" [ref=f2e960]:
+                  - text: "0"
+                  - generic [ref=f2e961]: Accessory
+                - cell "Accessory or spare part." [ref=f2e962]
+              - row [ref=f2e963] [cursor=pointer]:
+                - cell "32MM" [ref=f2e964]
+                - cell "-" [ref=f2e965]
+                - cell "TP ENTERPRISE" [ref=f2e966]
+                - cell "0 Accessory" [ref=f2e967]:
+                  - text: "0"
+                  - generic [ref=f2e968]: Accessory
+                - cell "TP ENTERPRISE. Accessory or spare part." [ref=f2e969]
+              - row [ref=f2e970] [cursor=pointer]:
+                - cell "32MM TAIL PIECE COUPLING" [ref=f2e971]
+                - cell "-" [ref=f2e972]
+                - cell "OTHERS" [ref=f2e973]
+                - cell "0 Accessory 1 to check" [ref=f2e974]:
+                  - text: "0"
+                  - generic [ref=f2e975]: Accessory
+                  - generic [ref=f2e976]: 1 to check
+                - cell "OTHERS. Accessory or spare part." [ref=f2e977]
+              - row [ref=f2e978] [cursor=pointer]:
+                - cell "40MM" [ref=f2e979]
+                - cell "-" [ref=f2e980]
+                - cell "-" [ref=f2e981]
+                - cell "0 Accessory" [ref=f2e982]:
+                  - text: "0"
+                  - generic [ref=f2e983]: Accessory
+                - cell "Accessory or spare part." [ref=f2e984]
+              - row [ref=f2e985] [cursor=pointer]:
+                - cell "40MM TAIL" [ref=f2e986]
+                - cell "-" [ref=f2e987]
+                - cell "TP ENTERPRISE" [ref=f2e988]
+                - cell "0 Accessory" [ref=f2e989]:
+                  - text: "0"
+                  - generic [ref=f2e990]: Accessory
+                - cell "TP ENTERPRISE. Accessory or spare part." [ref=f2e991]
+              - row [ref=f2e992] [cursor=pointer]:
+                - cell "507" [ref=f2e993]
+                - cell "Urinal" [ref=f2e994]
+                - cell "-" [ref=f2e995]
+                - cell "0" [ref=f2e996]
+                - cell "Urinal." [ref=f2e997]
+              - row [ref=f2e998] [cursor=pointer]:
+                - cell "6302A" [ref=f2e999]
+                - cell "Kitchen Sink" [ref=f2e1000]
+                - cell "OTHERS" [ref=f2e1001]
+                - cell "0" [ref=f2e1002]
+                - cell "OTHERS kitchen sink." [ref=f2e1003]
+              - row [ref=f2e1004] [cursor=pointer]:
+                - cell "63522-6" [ref=f2e1005]
+                - cell "Bathroom Accessory" [ref=f2e1006]
+                - cell "OTHERS" [ref=f2e1007]
+                - cell "0" [ref=f2e1008]
+                - cell "OTHERS bathroom accessory." [ref=f2e1009]
+              - row [ref=f2e1010] [cursor=pointer]:
+                - cell "63522-6D" [ref=f2e1011]
+                - cell "Bathroom Accessory" [ref=f2e1012]
+                - cell "OTHERS" [ref=f2e1013]
+                - cell "0" [ref=f2e1014]
+                - cell "OTHERS bathroom accessory." [ref=f2e1015]
+              - row [ref=f2e1016] [cursor=pointer]:
+                - cell "63524" [ref=f2e1017]
+                - cell "Bathroom Accessory" [ref=f2e1018]
+                - cell "OTHERS" [ref=f2e1019]
+                - cell "0" [ref=f2e1020]
+                - cell "OTHERS bathroom accessory." [ref=f2e1021]
+              - row [ref=f2e1022] [cursor=pointer]:
+                - cell "63524D" [ref=f2e1023]
+                - cell "Bathroom Accessory" [ref=f2e1024]
+                - cell "OTHERS" [ref=f2e1025]
+                - cell "0" [ref=f2e1026]
+                - cell "OTHERS bathroom accessory." [ref=f2e1027]
+              - row [ref=f2e1028] [cursor=pointer]:
+                - cell "63531" [ref=f2e1029]
+                - cell "Bathroom Accessory" [ref=f2e1030]
+                - cell "OTHERS" [ref=f2e1031]
+                - cell "0" [ref=f2e1032]
+                - cell "OTHERS bathroom accessory." [ref=f2e1033]
+              - row [ref=f2e1034] [cursor=pointer]:
+                - cell "63531D" [ref=f2e1035]
+                - cell "Bathroom Accessory" [ref=f2e1036]
+                - cell "OTHERS" [ref=f2e1037]
+                - cell "0" [ref=f2e1038]
+                - cell "OTHERS bathroom accessory." [ref=f2e1039]
+              - row [ref=f2e1040] [cursor=pointer]:
+                - cell "63539SZ" [ref=f2e1041]
+                - cell "Bathroom Accessory" [ref=f2e1042]
+                - cell "OTHERS" [ref=f2e1043]
+                - cell "0" [ref=f2e1044]
+                - cell "OTHERS bathroom accessory." [ref=f2e1045]

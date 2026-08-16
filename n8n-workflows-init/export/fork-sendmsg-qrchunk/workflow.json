@@ -1,0 +1,1081 @@
+{
+  "active": true,
+  "activeVersionId": "51fed3d1-9a92-469a-9b7a-d77e56f8d302",
+  "connections": {
+    "Call 'sub-respond-save-message-redis' (quick_reply)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Loop Over Items",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Call 'sub-respond-save-message-redis'1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Loop Over Items",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "If1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Find a Message": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Switch1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call 'sub-respond-save-message-redis' (quick_reply)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Loop Over Items",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Chat Memory Manager",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "is-last-quickreply",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "index": 0,
+            "node": "Chat Memory Manager",
+            "type": "ai_memory"
+          }
+        ]
+      ]
+    },
+    "Send a Message": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call 'sub-respond-save-message-redis'1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [],
+        [
+          {
+            "index": 0,
+            "node": "Send Template",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Find a Message",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "chat?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "chat-build-parts": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "chat-push",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "chat-push": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "console-loggable?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "chat?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "chat-build-parts",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Code in JavaScript",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "console-loggable?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "log-chat-history-n8ntest",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "guard-qr": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "guard-record-qr",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "HTTP Request",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "guard-record-qr": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Loop Over Items",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "guard-record-text": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Loop Over Items",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "guard-text": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "guard-record-text",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Send a Message",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "is-last-quickreply": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "guard-qr",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "guard-text",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "description": null,
+  "id": "aQUmwMVplmNcyUVc",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "sub-sendmsg-QRCHUNK",
+  "nodeGroups": [],
+  "nodes": [
+    {
+      "id": "752fab22-92d9-412b-a7f3-8bb380d21dcc",
+      "name": "When Executed by Another Workflow",
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contact_identifer",
+              "type": "any"
+            },
+            {
+              "name": "message"
+            },
+            {
+              "name": "quick_reply"
+            },
+            {
+              "name": "input_message"
+            },
+            {
+              "name": "test_run_id"
+            },
+            {
+              "name": "started_at"
+            },
+            {
+              "name": "contact",
+              "type": "object"
+            },
+            {
+              "name": "result_set",
+              "type": "array"
+            },
+            {
+              "name": "is_test",
+              "type": "boolean"
+            },
+            {
+              "name": "turn_id"
+            }
+          ]
+        }
+      },
+      "position": [
+        -160,
+        460
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "c43974ff-9ea9-4092-bcec-f109104006c3",
+      "name": "Code in JavaScript",
+      "parameters": {
+        "jsCode": "// Splits one bot turn into N WhatsApp messages. Buttons ride the LAST part.\n// Unit-tested offline: tests/unit/sendmsg-quickreply-chunk.test.js (23 cases, 11 mutants).\nconst src = $('When Executed by Another Workflow').first().json;\nlet text = src.message;\nif (text) { text = String(text).trim(); }\nconst resultSet = src.result_set;\nconst quickReply = src.quick_reply || '';\nconst contactId = src.contact_identifer;\nif (!text) return [{ json: { message: '' } }];\n\n// WhatsApp caps an interactive message's `body` at 1024; respond.io rejects a longer\n// one with \"parameter value is not valid\" and the 400 kills the whole turn.\nconst LIMIT = quickReply ? 1000 : 1800;\n// 800 verbatim on the plain path so its split boundaries stay byte-identical to live;\n// only the button path needs a smaller floor, since its LIMIT is 1000.\nconst FLOOR = quickReply ? 450 : 800;\n// Meta documents the cap as 1024 CHARACTERS, but its validators are inconsistent about\n// chars vs UTF-8 bytes across endpoints. Our replies are full of multi-byte text\n// (\u2014 \u2022 \u26a0\ufe0f \ud83d\udea9 \ud83d\ude0a), so a 1000-CHAR part can be ~1180 BYTES. Capping bytes too is strictly\n// dominant: a no-op if the limit really is characters, and the difference between working\n// and a dead turn if it is bytes. Button path only \u2014 the plain path keeps live's boundaries.\nconst BYTE_CAP = quickReply ? 1000 : Infinity;\nconst blen = (s) => new TextEncoder().encode(s).length;\n\nconst parts = [];\nlet rest = text;\nwhile (rest.length > LIMIT || blen(rest) > BYTE_CAP) {\n  // Shrink the char window until its prefix also fits the byte budget.\n  let lim = Math.min(LIMIT, rest.length);\n  while (lim > 1 && blen(rest.slice(0, lim)) > BYTE_CAP) lim = Math.floor(lim * 0.9);\n  let at = rest.lastIndexOf('\\n', lim);\n  if (at < FLOOR) at = rest.lastIndexOf(' ', lim);\n  if (at < FLOOR) at = lim;\n  // Never slice between the halves of a surrogate pair \u2014 that emits a lone surrogate and\n  // renders as a replacement char. Only reachable on the hard-cut branch.\n  if (at > 0 && at < rest.length) {\n    const c = rest.charCodeAt(at - 1);\n    if (c >= 0xd800 && c <= 0xdbff) at -= 1;\n  }\n  parts.push(rest.slice(0, at).trim());\n  rest = rest.slice(at).trim();\n}\nparts.push(rest);\n\nconst idxIn = (part) =>\n  [...part.matchAll(/(?:^|\\n)\\s*\\*?(\\d{1,3})[.)]/g)].map((m) => Number(m[1]));\n\nconst anyNumbered = parts.some((p) => idxIn(p).length > 0);\n\nreturn parts.map((p, i) => {\n  const ids = new Set(idxIn(p));\n  const subset = resultSet?.filter((r) => ids.has(r.idx));\n  const isLast = i === parts.length - 1;\n  const buttoned = isLast && !!quickReply;\n  return {\n    json: {\n      message: p,\n      part: i + 1,\n      total_parts: parts.length,\n      quick_reply: buttoned ? quickReply : '',\n      contact_identifer: contactId,\n      // At most ONE part ever holds the whole set: the buttoned part if there is one,\n      // else part 1 under the no-numbering fallback. No duplication beyond that.\n      result: buttoned ? resultSet\n            : subset?.length ? subset\n            : (!anyNumbered && !quickReply && i === 0 ? resultSet : []),\n    },\n  };\n});\n"
+      },
+      "position": [
+        280,
+        560
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "d285f6de-b694-444b-988d-84d9f54a5214",
+      "name": "If1",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "5a681afd-fe7a-4ce8-9682-52a168bd5c56",
+              "leftValue": "={{ $json.message }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        500,
+        560
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "ce067603-3e9e-47f4-af39-d26b164330a3",
+      "name": "Loop Over Items",
+      "parameters": {
+        "options": {}
+      },
+      "position": [
+        720,
+        560
+      ],
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "id": "9fd31e18-edfc-4798-bd42-ff128e22075b",
+      "name": "Send a Message",
+      "parameters": {
+        "channelType": "lastInteractedChannel",
+        "contactId": "={{ $('When Executed by Another Workflow').first().json.contact_identifer }}",
+        "operation": "SEND_MESSAGE",
+        "resource": "MESSAGES",
+        "text": "={{ $json.message }}"
+      },
+      "position": [
+        1620,
+        600
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "id": "28816181-276f-4cc8-a79c-f76519c11c45",
+      "name": "HTTP Request",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={\n  \"message\": {\n    \"type\": \"quick_reply\",\n    \"title\": {{ JSON.stringify($json.message) }},\n    \"replies\": {{ JSON.stringify($json.quick_reply.split(\",\")) }}\n  }\n}",
+        "method": "POST",
+        "nodeCredentialType": "respondIoApi",
+        "options": {},
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "=https://api.respond.io/v2/contact/id:{{ $json.contact_identifer }}/message "
+      },
+      "position": [
+        1620,
+        400
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "id": "fc0b22ca-6a15-4818-bd15-85203848fc2a",
+      "name": "Call 'sub-respond-save-message-redis'1",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sub-respond-save-message-redis TEST",
+          "cachedResultUrl": "/workflow/tWm5DYLxfypmVC1T",
+          "mode": "list",
+          "value": "tWm5DYLxfypmVC1T"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_id",
+              "id": "contact_id",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "phone_number",
+              "id": "phone_number",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "sent_at",
+              "id": "sent_at",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "data",
+              "id": "data",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_identifer }}",
+            "data": "={{ JSON.stringify(\n  {\n    \"contact_id\": `${$('When Executed by Another Workflow').first().json.contact_identifer}`,\n  \"phone_number\": $('When Executed by Another Workflow').first().json.contact?.phone ?? null,\n  \"message\": $('Loop Over Items').item.json.message,\n  \"sent_at\": $('Send a Message').item.json.messageId\n             ? Math.floor($('Send a Message').item.json.messageId / 1000)\n             : new Date().getTime(),\n  \"first_name\": $('When Executed by Another Workflow').first().json.contact?.firstName ?? null,\n  \"last_name\": $('When Executed by Another Workflow').first().json.contact?.lastName ?? null,\n  \"type\": \"outgoing\",\n  \"message_id\": `${$('Send a Message').item.json.messageId}`,\n  \"turn_id\": $('When Executed by Another Workflow').first().json.turn_id ?? null,\n  \"result\": $('Loop Over Items').item.json.result\n}) }}",
+            "message": "={{ $('Loop Over Items').item.json.message }}",
+            "phone_number": "={{ $('When Executed by Another Workflow').first().json.contact?.phone }}",
+            "sent_at": "={{ new Date().getTime() }}"
+          }
+        }
+      },
+      "position": [
+        1840,
+        600
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "c2985929-1260-407a-8f79-5c4b238900db",
+      "name": "Call 'sub-respond-save-message-redis' (quick_reply)",
+      "parameters": {
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sub-respond-save-message-redis TEST",
+          "cachedResultUrl": "/workflow/tWm5DYLxfypmVC1T",
+          "mode": "list",
+          "value": "tWm5DYLxfypmVC1T"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_id",
+              "id": "contact_id",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "phone_number",
+              "id": "phone_number",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "sent_at",
+              "id": "sent_at",
+              "removed": false,
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "data",
+              "id": "data",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "contact_id": "={{ $('When Executed by Another Workflow').first().json.contact_identifer }}",
+            "data": "={{ JSON.stringify({\n  \"contact_id\": `${$('When Executed by Another Workflow').first().json.contact_identifer}`,\n  \"phone_number\": $('When Executed by Another Workflow').first().json.contact?.phone ?? null,\n  \"message\": $('Loop Over Items').item.json.message,\n  \"sent_at\": $('HTTP Request').item.json.messageId\n             ? Math.floor($('HTTP Request').item.json.messageId / 1000)\n             : new Date().getTime(),\n  \"first_name\": $('When Executed by Another Workflow').first().json.contact?.firstName ?? null,\n  \"last_name\": $('When Executed by Another Workflow').first().json.contact?.lastName ?? null,\n  \"type\": \"outgoing\",\n  \"message_id\": `${$('HTTP Request').item.json.messageId}`,\n  \"turn_id\": $('When Executed by Another Workflow').first().json.turn_id ?? null,\n  \"quick_reply\": $('When Executed by Another Workflow').first().json.quick_reply,\n  \"result\": $('Loop Over Items').item.json.result\n}) }}",
+            "message": "={{ $('Loop Over Items').item.json.message }}",
+            "phone_number": "={{ $('When Executed by Another Workflow').first().json.contact?.phone }}",
+            "sent_at": "={{ new Date().getTime() }}"
+          }
+        }
+      },
+      "position": [
+        1840,
+        400
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "ad3461a1-5d50-4ce1-8c67-6abb036762d0",
+      "name": "Chat Memory Manager",
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('When Executed by Another Workflow').first().json.message }}\n{{ $('When Executed by Another Workflow').first().json.quick_reply }}"
+            }
+          ]
+        },
+        "mode": "insert"
+      },
+      "position": [
+        960,
+        760
+      ],
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "ETJL5KoaA1UpkDip",
+          "name": "sorento-crm-db"
+        }
+      },
+      "id": "a5060e31-46e8-4491-ac82-cbc945153a0a",
+      "name": "Postgres Chat Memory1",
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When Executed by Another Workflow').first().json.contact_identifer }}"
+      },
+      "position": [
+        1232,
+        208
+      ],
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3
+    },
+    {
+      "disabled": true,
+      "id": "ef07daf8-5072-4faf-a1b2-70959b006e2b",
+      "name": "Wait",
+      "parameters": {
+        "amount": 1
+      },
+      "position": [
+        -192,
+        848
+      ],
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "webhookId": "78f663f8-5023-4850-a1c1-7063f33a683e"
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "disabled": true,
+      "id": "7ca92cd5-a07a-42aa-8ff2-e290b206c0d4",
+      "name": "Find a Message",
+      "parameters": {
+        "contactId": "={{ $json.contactId }}",
+        "messageId": "={{ $json.messageId }}",
+        "resource": "MESSAGES"
+      },
+      "position": [
+        32,
+        848
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1
+    },
+    {
+      "disabled": true,
+      "id": "7863b0b2-cc64-45a1-be21-d08f45235f23",
+      "name": "Switch1",
+      "parameters": {
+        "options": {},
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "ce46f9a5-b7ad-49cb-89f5-7f6874dc12fc",
+                    "leftValue": "={{ $json.status[1].value }}",
+                    "operator": {
+                      "operation": "exists",
+                      "singleValue": true,
+                      "type": "string"
+                    },
+                    "rightValue": "delivered"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                }
+              },
+              "outputKey": "Delivered",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "a1849cf1-810d-4257-ac83-398c7e3b2868",
+                    "leftValue": "={{ $json.status[0].value }}",
+                    "operator": {
+                      "operation": "contains",
+                      "type": "string"
+                    },
+                    "rightValue": "failed"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                }
+              },
+              "outputKey": "Undelivered",
+              "renameOutput": true
+            }
+          ]
+        }
+      },
+      "position": [
+        256,
+        848
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "disabled": true,
+      "id": "d0e04462-6b50-4a64-af74-3b1d0d2f6151",
+      "name": "Send Template",
+      "parameters": {
+        "channelId": 430341,
+        "contactId": "={{ $json.contactId }}",
+        "messageType": "whatsapp_template",
+        "operation": "SEND_MESSAGE",
+        "resource": "MESSAGES",
+        "templateId": 46691571,
+        "templateLanguageCode": "en",
+        "whatsappTemplateComponentFields": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [],
+          "value": {}
+        }
+      },
+      "position": [
+        480,
+        848
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1
+    },
+    {
+      "id": "bfa67eaf-cebb-4e8d-bb94-fbaf082d82e9",
+      "name": "chat?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cg1",
+              "leftValue": "={{ ($('When Executed by Another Workflow').first().json.contact || {}).chat_id }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        }
+      },
+      "position": [
+        60,
+        460
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "4674bd6f-adca-4873-b3b2-2c36a394442e",
+      "name": "chat-build-parts",
+      "parameters": {
+        "jsCode": "// Chat-console mirror of the production chunker. Buttoned replies chunk too \u2014 the\n// console must reproduce what WhatsApp will actually receive, or a post-promote\n// console check would show the OLD single-message behaviour and read as \"not fixed\".\nconst j = $('When Executed by Another Workflow').first().json;\nconst chatId = (j.contact || {}).chat_id;\nlet message = j.message ? String(j.message).trim() : '';\nconst quickReply = j.quick_reply || '';\nconst ts = new Date().toISOString();\n\nconst LIMIT = quickReply ? 1000 : 1800;\nconst FLOOR = quickReply ? 450 : 800;\nconst parts = [];\nlet rest = message;\nwhile (rest.length > LIMIT) {\n  let at = rest.lastIndexOf('\\n', LIMIT);\n  if (at < FLOOR) at = rest.lastIndexOf(' ', LIMIT);\n  if (at < FLOOR) at = LIMIT;\n  parts.push(rest.slice(0, at).trim());\n  rest = rest.slice(at).trim();\n}\nparts.push(rest);\n\nconst out = parts.map((p, i) => {\n  const isLast = i === parts.length - 1;\n  const buttoned = isLast && !!quickReply;\n  return { json: {\n    chat_id: chatId,\n    type: buttoned ? 'quick_reply' : 'text',\n    text: p,\n    quick_reply: buttoned ? quickReply : '',\n    part: i + 1,\n    total_parts: parts.length,\n    ts,\n  } };\n});\nif (out.length === 0) out.push({ json: { chat_id: chatId, type: 'text', text: '', quick_reply: '', part: 1, total_parts: 1, ts } });\nreturn out;\n"
+      },
+      "position": [
+        280,
+        220
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "842edb6e-5734-49a8-a845-f0587a94a4e6",
+      "name": "chat-push",
+      "parameters": {
+        "list": "=chat:reply:{{ $json.chat_id }}",
+        "messageData": "={{ JSON.stringify({ type: $json.type, text: $json.text, quick_reply: $json.quick_reply, part: $json.part, ts: $json.ts }) }}",
+        "operation": "push",
+        "tail": true
+      },
+      "position": [
+        500,
+        220
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "fcb08f5a-6322-4883-be0b-c6f1b9227b9b",
+      "name": "console-loggable?",
+      "parameters": {
+        "conditions": {
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "ll1",
+              "leftValue": "={{ $json.text }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            },
+            {
+              "id": "ll2",
+              "leftValue": "={{ $json.quick_reply }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        }
+      },
+      "position": [
+        720,
+        220
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "Dnnofg8Xb27VQOhI",
+          "name": "n8n_test-db"
+        }
+      },
+      "id": "2993208f-3b1c-4f4a-bee6-950bea186a0d",
+      "name": "log-chat-history-n8ntest",
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {
+          "queryReplacement": "={{ [ String($('When Executed by Another Workflow').first().json.contact_identifer), String(($('When Executed by Another Workflow').first().json.contact || {}).phone || '60100000000'), ($json.text || ''), (($('When Executed by Another Workflow').first().json.contact || {}).firstName || null), (($('When Executed by Another Workflow').first().json.contact || {}).lastName || null), JSON.stringify({ quick_reply: ($json.quick_reply ? String($json.quick_reply).split(',').map(s => s.trim()).filter(Boolean) : []), result_set: ($('When Executed by Another Workflow').first().json.result_set || []), type: $json.type, part: $json.part, source: 'chat-console' }) ] }}"
+        },
+        "query": "INSERT INTO chat_histories (id, channel, contact_id, phone_number, message, sent_at, first_name, last_name, type, created_at, message_id, result) SELECT COALESCE(MAX(id),0)+1, 'whatsapp', $1, $2, $3, NOW(), $4, $5, 'outgoing', NOW(), NULL, $6::jsonb FROM chat_histories;"
+      },
+      "position": [
+        940,
+        220
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "qrc-islast",
+      "name": "is-last-quickreply",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "il1",
+              "leftValue": "={{ $json.quick_reply }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            },
+            {
+              "id": "il2",
+              "leftValue": "={{ $json.part }}",
+              "operator": {
+                "operation": "equals",
+                "type": "number"
+              },
+              "rightValue": "={{ $json.total_parts }}"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1180,
+        460
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "id": "qrc-guard-qr",
+      "name": "guard-qr",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "qrc-guard-qr-c1",
+              "leftValue": "={{ $('When Executed by Another Workflow').first().json.is_test }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1400,
+        360
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "id": "qrc-guard-tx",
+      "name": "guard-text",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "qrc-guard-tx-c1",
+              "leftValue": "={{ $('When Executed by Another Workflow').first().json.is_test }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1400,
+        620
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "qrc-quick_reply-rec",
+      "name": "guard-record-qr",
+      "parameters": {
+        "list": "=test:egress:{{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+        "messageData": "={\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"quick_reply\",\n  \"target\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_identifer) }},\n  \"payload\": {\n    \"part\": {{ JSON.stringify($json.part) }},\n    \"total_parts\": {{ JSON.stringify($json.total_parts) }},\n    \"message\": {{ JSON.stringify($json.message || null) }},\n    \"message_len\": {{ JSON.stringify(($json.message || '').length) }},\n    \"quick_reply\": {{ JSON.stringify($json.quick_reply || null) }},\n    \"result_idx\": {{ JSON.stringify(($json.result || []).map(r => r.idx)) }}\n  },\n  \"test_run_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.test_run_id || null) }},\n  \"ts\": {{ JSON.stringify($now.toISO()) }}\n}",
+        "operation": "push",
+        "tail": true
+      },
+      "position": [
+        1620,
+        240
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "qrc-text-rec",
+      "name": "guard-record-text",
+      "parameters": {
+        "list": "=test:egress:{{ $('When Executed by Another Workflow').first().json.test_run_id }}",
+        "messageData": "={\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_identifer) }},\n  \"payload\": {\n    \"part\": {{ JSON.stringify($json.part) }},\n    \"total_parts\": {{ JSON.stringify($json.total_parts) }},\n    \"message\": {{ JSON.stringify($json.message || null) }},\n    \"message_len\": {{ JSON.stringify(($json.message || '').length) }},\n    \"quick_reply\": {{ JSON.stringify($json.quick_reply || null) }},\n    \"result_idx\": {{ JSON.stringify(($json.result || []).map(r => r.idx)) }}\n  },\n  \"test_run_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.test_run_id || null) }},\n  \"ts\": {{ JSON.stringify($now.toISO()) }}\n}",
+        "operation": "push",
+        "tail": true
+      },
+      "position": [
+        1620,
+        760
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed"
+  },
+  "staticData": null,
+  "versionId": "51fed3d1-9a92-469a-9b7a-d77e56f8d302"
+}

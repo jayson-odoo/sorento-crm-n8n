@@ -1,0 +1,288 @@
+{
+ "case": "TA-14a",
+ "title": "roster collision — suggest_offer must win",
+ "verdict": "FAIL",
+ "mode": "regress-replay",
+ "prompt": "2",
+ "execution": "12041783",
+ "rendered_reply_verbatim": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\".",
+ "quick_reply_key_present_in_sendmsg_payload": [
+  false
+ ],
+ "quick_reply_value": [
+  null
+ ],
+ "file_attachments_at_boundary": [],
+ "tier_gate": {
+  "tier_stated": [],
+  "entitled_tiers": [
+   "dealer",
+   "office",
+   "end_user"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [],
+  "tier_ask": true,
+  "tier_proceed": false,
+  "access_levels_recomposed": [
+   "Sorento Office",
+   "Sorento Dealer",
+   "Mocha Dealer",
+   "Mocha Office",
+   "Cabana Office",
+   "Cabana Dealer",
+   "End User"
+  ],
+  "brand_gate_empty": false
+ },
+ "entitlement": [
+  "Sorento Office",
+  "Sorento Dealer",
+  "Mocha Dealer",
+  "Mocha Office",
+  "Cabana Office",
+  "Cabana Dealer",
+  "End User"
+ ],
+ "If4_branch": [
+  [
+   1
+  ]
+ ],
+ "persisted_selection_context": "tier_offer",
+ "D4_access_levels_key_in_persisted_vars": false,
+ "get_results_ran": false,
+ "get_results_semantic_access_levels": null,
+ "nodes_run": [
+  "Aggregate",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If4",
+  "If5",
+  "If9",
+  "When Executed by Another Workflow",
+  "access-level-choice-message",
+  "attach-merge",
+  "check-access",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "cs-offer-gate",
+  "escalate-catalog",
+  "fixture-check-access",
+  "fixture-get-access-types",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "pg-upsert-session",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-access-choice",
+  "tf-message",
+  "tier-gate"
+ ],
+ "S1_hard_egress_nodes_ran": [],
+ "S6_llm_nodes_ran": [],
+ "sendmsg_sub_nodes_run": [
+  [
+   "When Executed by Another Workflow",
+   "chat?",
+   "test-guard",
+   "test-guard-record"
+  ]
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "437264483",
+    "message": "2"
+   },
+   "test_run_id": "ta-14a",
+   "ts": "2026-08-11T03:03:08.917-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "437264483",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to select the 2nd result from the previous list",
+      "entities": [
+       {
+        "raw": "SRTBF11710",
+        "hint": "promotion",
+        "canonical_code": "eb6dd648-15d4-47a7-b111-6e7ed19d79d9",
+        "current_message": false,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\".",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "Office",
+        "value": "office",
+        "tier": "office",
+        "uuid": null,
+        "entity_type": "access_tier",
+        "product": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "label": "Dealer",
+        "value": "dealer",
+        "tier": "dealer",
+        "uuid": null,
+        "entity_type": "access_tier",
+        "product": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "label": "End user",
+        "value": "end_user",
+        "tier": "end_user",
+        "uuid": null,
+        "entity_type": "access_tier",
+        "product": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "tier_offer",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\".",
+     "quick_reply": null
+    }
+   },
+   "test_run_id": "ta-14a",
+   "ts": "2026-08-11T03:03:08.914-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "payload": {
+    "contact_identifer": "437264483",
+    "message": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\".",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "label": "Office",
+      "value": "office",
+      "tier": "office",
+      "uuid": null,
+      "entity_type": "access_tier",
+      "product": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "label": "Dealer",
+      "value": "dealer",
+      "tier": "dealer",
+      "uuid": null,
+      "entity_type": "access_tier",
+      "product": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "label": "End user",
+      "value": "end_user",
+      "tier": "end_user",
+      "uuid": null,
+      "entity_type": "access_tier",
+      "product": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "ta-14a",
+   "ts": "2026-08-11T03:03:08.869-04:00"
+  }
+ ],
+ "notes": "State carried correctly (get-session-vars shows selection_context suggest_offer + 6-row roster) and the parser resolved '2' correctly (reference_positions [2], reference_target 'result', entity_op 'reuse') and did NOT mint a tier. But tier-gate then saw no stated tier on a promotion turn and fired the tier ask, DISCARDING the pick. The customer who picked promo #2 gets 'Which access level do you need?'. tier_offer does not shadow suggest_offer in the PARSER, but the ASK TRIGGER overrides it downstream — the case's intent fails.",
+ "static_safety": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 407cbfb7 (versionId == activeVersionId, re-fetched before the run)",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 7c5ff7fd (versionId == activeVersionId)",
+  "live_spine": "9qVyfUxmRQqrpGRMDLRuz NEVER driven — read-only observation of pre-existing executions only",
+  "S3_from_JSON": "orphaned (0 inbound): send-message-files, send-message-images, send-message-video, update-human-intervened, save-session-vars. Sinked: Call 'sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T, whose Redis.list is the literal 'sorento-respond-message-TEST'",
+  "sendmsg": "all callers -> ublq9nSlrpz63xan (sub-sendmsg-CHAT). Every run: chat?[1] -> test-guard[0] -> test-guard-record. The credentialed respondio 'Send a Message' executed in ZERO sub-executions.",
+  "S5": "is_test:true is a literal on every sendmsg caller's workflowInputs; trigger json carries test_mode:true",
+  "S4": "Call 'sub-get-results' ran only in CRM-PROBE; tool resolved to a promotion READ; crm_it_support_ticket_create never invoked"
+ },
+ "S7": {
+  "S7a_TEST_sink": "every turn shows LLEN sorento-respond-message-TEST +1 (runner execs 12038829..12041890); no turn wrote anywhere else",
+  "S7b_method": "prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn — per-poll LLEN keyed by list name AND per-poll pop payload, snapshotted DURING/immediately after the run (both signals, per §0)",
+  "S7b_windows": [
+   {
+    "window": "06:33:00Z..06:52:35Z",
+    "polls": 236,
+    "unretrievable": 0,
+    "nonzero_llen": 40,
+    "nonempty_pop": 40,
+    "attribution": "all 40 -> LIVE spine turns for unrelated real contacts (477071889, 428334748, 445659708, 482766267, 423729473); turn_ids 12038725..12040669 are live-spine execution ids, none in this run's execution set; no test_run_id, no fixture message_id. HARNESS-ATTRIBUTABLE = 0 -> resumed"
+   },
+   {
+    "window": "06:52:30Z..07:04:35Z",
+    "polls": 146,
+    "unretrievable": 0,
+    "nonzero_llen": 27,
+    "nonempty_pop": 27,
+    "attribution": "all 27 -> LIVE spine turns for unrelated contacts (423729473, 477071891, 423882401, 445239409). HARNESS-ATTRIBUTABLE = 0"
+   },
+   {
+    "window": "07:04:00Z..07:05:25Z",
+    "polls": 18,
+    "unretrievable": 0,
+    "nonzero_llen": 0,
+    "nonempty_pop": 0,
+    "attribution": "prod-sink delta 0"
+   }
+  ]
+ }
+}

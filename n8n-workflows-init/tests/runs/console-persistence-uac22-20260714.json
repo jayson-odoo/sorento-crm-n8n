@@ -1,0 +1,79 @@
+{
+  "test_run_id": "console-persistence-uac22-20260714",
+  "change": "console-persistence (stateful chat-console lane; Gap-C incoming logger just added)",
+  "tester": "sorento-tester",
+  "date": "2026-07-14",
+  "target": "clone txiPzSxy3Pclsz6v (active versionId 0da4d7d7-2b04-45d8-96c1-bd4f05a6ccf7)",
+  "scope": "deterministic (pg persistence + IF-gate); driver=chat webpage so live reformulator runs 1x/turn (structural assertions only)",
+  "driver": "execute_workflow(zz-chat oyYfVvZHRZpWubTy, chat input) -> zz-dispatcher-test -> clone spine",
+  "contact": "437264483",
+  "db": "n8n_test @ 72.62.195.19 (respond_contacts_test, chat_histories)",
+  "baseline_chat_histories_max_id": 9150013,
+  "cases": [
+    {
+      "case": "22.0 S-CRED credential gate",
+      "verdict": "PASS",
+      "method": "REST GET /workflows/{ublq9nSlrpz63xan,txiPzSxy3Pclsz6v}, assert postgres cred id",
+      "evidence": {
+        "log-chat-history-n8ntest (fork ublq9)": "Dnnofg8Xb27VQOhI (n8n_test-db)",
+        "pg-get-session (clone)": "Dnnofg8Xb27VQOhI",
+        "pg-upsert-session (clone)": "Dnnofg8Xb27VQOhI",
+        "log-incoming-chat-history-n8ntest (clone, NEW Gap-C)": "Dnnofg8Xb27VQOhI"
+      },
+      "note": "NONE bind prod ETJL5KoaA1UpkDip. Gate GREEN, UAC allowed to proceed."
+    },
+    {
+      "case": "22.1 multi-turn session evolution",
+      "verdict": "PASS",
+      "clone_exec_turn1": "8562830",
+      "clone_exec_turn2": "8562886",
+      "pre": "respond_contacts_test.session_vars reset to {\"variables\":{}} before turn-1",
+      "turn1_input": "check the price for SRTWT7301",
+      "turn1_result": "reply delivered via chat:reply; pg-upsert-session wrote last_result_set = 3 candidates [SRTWT7301-BL, SRTWT7301-GM, SRTWT7301]",
+      "turn2_input": "2",
+      "turn2_result": "reformulator (fed by pg-get-session reading turn-1 row) resolved '2' -> reply about SRTWT7301-GM (idx 2 of persisted set); session evolved: last_result_set 3->1, user_goal='trying to select the 2nd product from the previous list'",
+      "note": "Proves the pg round-trip carries state turn->turn (what uac mode cannot do, LESSON 31)."
+    },
+    {
+      "case": "22.2 plain-text reply logged to n8n_test",
+      "verdict": "PASS",
+      "rows": [9150014, 9150016, 9150018, 9150020, 9150021],
+      "evidence": "type=outgoing, channel=whatsapp, contact_id=437264483, result.source=chat-console, message=reply text. Multi-part replies logged as multiple rows (9150020/9150021)."
+    },
+    {
+      "case": "22.3 quick_reply (buttoned) reply logged to n8n_test",
+      "verdict": "PASS",
+      "clone_exec": "8563165",
+      "send_fork_exec": "8563175",
+      "input": "price for srt7ss",
+      "row": 9150023,
+      "evidence": "result.quick_reply = [\"SRT79-SS\",\"SRTKT37SS\",\"SRTESS\",\"Yes escalate\",\"No it's okay\"] (non-empty); source=chat-console. Fork took chat? TRUE branch (chat-build-parts -> chat-push -> console-loggable? -> log-chat-history-n8ntest); real respond.io HTTP Request NOT executed. Closes quickreply-not-logged for the console corpus."
+    },
+    {
+      "case": "22.4 incoming user turn logged (Gap-C C1)",
+      "verdict": "FAIL (rows written, but pairing invariant broken)",
+      "rows": [9150015, 9150017, 9150019, 9150022, 9150024],
+      "row_existence": "PASS - every turn wrote a type=incoming row carrying the typed text (source=chat-console, contact_id=437264483). console-incoming-gate -> log-incoming-chat-history-n8ntest ran on all 5 chat-stateful turns.",
+      "pairing_defect": "FAIL - incoming.sent_at lands ~30-53ms AFTER its own outgoing reply on EVERY turn (5/5). v_turns LATERAL join requires outgoing.sent_at >= incoming.sent_at, so it MIS-PAIRS: incoming 9150015 (turn-1) paired with 9150016 (turn-2's reply); incoming 9150017 (turn-2) paired with NULL. The v_turns/v_replies corpus pairing is therefore off-by-one/broken. §22.4 spec requires 'paired (earlier sent_at)'.",
+      "root_cause": "log-incoming INSERT uses NOW() but the console-incoming-gate branch executes AFTER the send fork's outgoing INSERT, so NOW() resolves later. Both incoming and outgoing stamp NOW() at insert time.",
+      "recommended_fix": "Stamp incoming sent_at from an EARLY captured timestamp (message arrival at tf-message/redis-pop), not NOW() at late insert; or otherwise guarantee incoming.sent_at < outgoing.sent_at for the same turn."
+    },
+    {
+      "case": "22.5 gate isolation (off-lane produces no incoming row)",
+      "verdict": "PASS (structural/topological)",
+      "evidence": "console-incoming-gate condition = (redis-pop message.mode === 'chat-stateful' && !!contact.chat_id). Connections: gate outputs ONLY main[0] -> log-incoming; FALSE branch is UNWIRED (dead) -> a non-chat-stateful item physically cannot reach the incoming logger (fail-closed, LESSON 16 class). Corroboration: historical uac-mode clone execs 8549234/8549199 wrote no incoming rows; the logger fired only on the 5 chat-stateful turns.",
+      "caveat": "No live current-version uac execution driven (requires host redis seed of test:q which is not available from host). Structural proof is authoritative."
+    }
+  ],
+  "zero_egress_gate_s0": {
+    "verdict": "PASS (all 5 turns)",
+    "clone_execs": [8562830, 8562886, 8563038, 8563106, 8563165],
+    "S1_no_whatsapp_send": "PASS - no 'Send a Message' / 'HTTP Request' (respond.io) node executed in any clone spine exec; send fork (ublq9) took chat? TRUE branch (chat-push redis + log-chat-history-n8ntest only), is_test=True.",
+    "S2_no_assign_sla_pic": "PASS - no human-intervention/assign/SLA/PIC node executed.",
+    "S3_no_prod_write": "PASS - save-session-vars (prod PUT) never executed (0 inbound, orphaned); session write went to pg-upsert-session (respond_contacts_test); chat_histories writes bound to n8n_test-db (S-CRED). No save-message-redis.",
+    "S4_get_results_read_only": "PASS - resolve-entity/check-access ran; no write-tool node present; get-results unchanged by this lane.",
+    "S5_test_mode_present": "PASS - redis-pop mode=chat-stateful on all turns; fork received is_test=True; contact.chat_id present.",
+    "S6_token_sinks": "reformulator (sub-query-reformulator, live gpt-5.4-mini) ran 1x/turn (driver cost, allowed); no unexpected extra LLM."
+  },
+  "overall": "PASS on 22.0, 22.1, 22.2, 22.3, 22.5 and the §0 zero-egress gate. FAIL on 22.4 pairing invariant (incoming rows written but sent_at ordering inverts v_turns pairing). Lane is safe (zero egress proven) but the incoming-logger timestamp ordering must be fixed for a faithful paired corpus."
+}

@@ -1,0 +1,155 @@
+{
+  "_change_id": "obs-latency-contract",
+  "_date": "2026-07-21",
+  "_rollup": "obs-latency-contract-rollup-20260721.json",
+
+  "OBS-1": {
+    "verdict": "PASS",
+    "title": "Incoming save blob carries message_id / turn_id / sent_at (PRIMARY, C1)",
+    "mechanism": "clone run, mode uac, mock_reformulator_output injected (0 parser tokens)",
+    "runner_exec": "9391207", "clone_exec": "9391208", "sink_sub_exec": "9391212",
+    "seeded_messageId": 1784519974000000,
+    "resolved_data_blob": {
+      "contact_id": "437264483", "phone_number": "60100000000",
+      "message": "What is the weather in KL today",
+      "sent_at": 1784519974000, "first_name": "Jayson", "last_name": "Canary",
+      "reply_to_message_id": null, "reply_to_message": null,
+      "type": "incoming", "message_id": "1784519974000000", "turn_id": "9391208"
+    },
+    "assertions": [
+      "message_id === \"1784519974000000\" — string, non-empty, not 'undefined', not 'null' ✓",
+      "turn_id === \"9391208\" === this clone execution's own id ✓",
+      "sent_at === 1784519974000 === Math.floor(messageId/1000), integer, not NaN ✓",
+      "sent_at is ~24h from wall-clock at run time (1784596827692) — proves it came from messageId, not Date.now() ✓",
+      "type === 'incoming'; all 7 pre-existing keys present and unchanged in shape ✓",
+      "save node executed, sourced from if-message-is-audio output 1 (FALSE) — the new edge ✓",
+      "LLEN sorento-respond-message-TEST +1 exactly ✓"
+    ],
+    "safety": {"S1": "PASS — sendmsg sub exec 9391211 ran only trigger/test-guard/test-guard-record; Send a Message and HTTP Request absent from runData", "S2": "PASS — no human-intervention call", "S3": "PASS — save-session-vars orphaned + would_write recorded; save node targets tWm5DYLxfypmVC1T whose Redis.list is literal sorento-respond-message-TEST", "S4": "PASS — get-results never reached", "S5": "PASS — trigger test_mode===true; sendmsg sub received is_test===true", "S6": "PASS — zero LLM nodes executed", "S7": "PASS — prod LLEN 0 -> 0"}
+  },
+
+  "OBS-2": {
+    "verdict": "PASS",
+    "title": "sent_at fallback when messageId absent (C1 degradation)",
+    "runner_exec": "9391365", "clone_exec": "9391366",
+    "seeded_messageId": "OMITTED ENTIRELY",
+    "resolved_fields": {"sent_at": 1784596934098, "message_id": "undefined", "turn_id": "9391366"},
+    "assertions": [
+      "sent_at === 1784596934098 — plausible wall-clock ms integer, within ~0.6s of run start (1784596933509) ✓",
+      "sent_at is NOT NaN, NOT null, NOT 0, NOT a string ✓",
+      "message_id renders as the string 'undefined' — the documented accepted behaviour of the backtick form, asserted explicitly so a future change is caught ✓",
+      "run completed with status success, no error ✓",
+      "turn_id still correct and still threads to the sendmsg sub ✓"
+    ],
+    "safety": {"all": "PASS", "S7": "prod LLEN 0 -> 0"}
+  },
+
+  "OBS-3": {
+    "verdict": "PASS",
+    "title": "Voice turn — messageId survives transcription (C1, A4)",
+    "runner_exec": "9391426", "clone_exec": "9391427",
+    "path": "if-audio-in[0] -> if-voice-allowed -> if-audio-mock[TRUE] -> patch-transcript -> tf-message -> ... -> if-message-is-audio[1 FALSE] -> save node",
+    "resolved_fields": {"message": "what is the weather in KL today", "sent_at": 1784519974000, "message_id": "1784519974000000", "turn_id": "9391427"},
+    "assertions": [
+      "message_id === \"1784519974000000\" — identical to the typed case, messageId carried verbatim through patch-transcript ✓",
+      "sent_at === 1784519974000 ✓",
+      "message equals the transcript text — patched item and preserved messageId coexist ✓",
+      "patch-transcript set E.attachment.type='text' and preserved source_url; if-message-is-audio took FALSE ✓",
+      "whisper-transcribe, fetch-audio, 'Transcribe a recording' ABSENT from runData — did not execute, zero OpenAI/network egress ✓",
+      "OpenAI Chat Model and Basic LLM Chain ABSENT — S6 deterministic holds ✓"
+    ],
+    "bonus": "This run also delivered §OBS-4 coverage of caller #7 (send-transcript-confirm), egress turn_id 9391427.",
+    "safety": {"all": "PASS", "S7": "prod LLEN 0 -> 0 (captured atomically inside the runner)"}
+  },
+
+  "OBS-4": {
+    "verdict": "PASS",
+    "title": "turn_id threads spine -> sendmsg sub (PRIMARY, C4 + C2)",
+    "acceptance": "STRING EQUALITY between the incoming blob's turn_id and the sendmsg egress record's turn_id, both equal to the spine execution id.",
+    "evidence": [
+      {"clone_exec": "9391208", "incoming_blob_turn_id": "9391208", "egress_sendmsg_turn_id": "9391208", "caller": "sorento-sub-respond-sendmsg-respond2 (#2)", "equal": true},
+      {"clone_exec": "9391427", "incoming_blob_turn_id": "9391427", "egress_sendmsg_turn_id": "9391427", "caller": "send-transcript-confirm (#7)", "equal": true},
+      {"clone_exec": "9391512", "egress_sendmsg_turn_id": "9391512", "caller": "sorento-sub-respond-sendmsg-respond5 (#5)", "contact": "457216562 (no-access path, If5[1])", "equal": true}
+    ],
+    "coverage": {
+      "dynamic": ["#2", "#5", "#7"],
+      "static_only": ["#1", "#3", "#4", "#6", "#8"],
+      "deviation_from_spec": "Spec asked for #1, #2, #7. Caller #1 is NOT deterministically reachable — its sole inbound is set-ran-query-formulator, fed only by the ERROR outputs of the reformulator / get-results / Basic LLM Chain. It is a failure-notification sender; reaching it needs a forced sub-workflow error and the Basic LLM Chain route burns tokens (violates the deterministic scope). Substituted caller #5, which IS deterministically reachable via the no-access branch. All 8 verified statically to carry turn_id: {{ $execution.id }}."
+    },
+    "safety": {"all": "PASS", "S1": "send blocked and recorded, never executed"}
+  },
+
+  "OBS-5": {
+    "verdict": "PASS",
+    "title": "Outgoing text blob carries turn_id + sent_at (C3, sub-level)",
+    "mechanism": "test_workflow on sJI3DbsLCG01JfRs, is_test:false, Send a Message PINNED, contact 437264483 (dev)",
+    "sub_exec": "9392112", "sink_sub_exec": "9392113",
+    "resolved_data_blob": {
+      "contact_id": "437264483", "phone_number": "60100000000", "message": "hello",
+      "sent_at": 1784519974123, "first_name": "Jayson", "last_name": "Canary",
+      "type": "outgoing", "message_id": "1784519974123456", "turn_id": "9999001", "result": []
+    },
+    "assertions": [
+      "turn_id === \"9999001\" — the THREADED value ✓",
+      "turn_id !== \"9392112\" (this sub's own execution id) — the §0.3 failure mode explicitly ruled out ✓",
+      "message_id === \"1784519974123456\" ✓; sent_at === 1784519974123 === floor(messageId/1000) ✓",
+      "type === 'outgoing'; result and all pre-existing keys intact ✓",
+      "path: test-guard[FALSE] -> If[TRUE] -> Code in JavaScript -> If1 -> Loop Over Items -> Send a Message (PINNED) -> save'1 -> TEST sink ✓"
+    ],
+    "safety": {"S8": "PASS — Send a Message executionTime 0ms, output identical to pin, execution pinData block lists it; ZERO real invocations. HTTP Request did not execute.", "S7": "PASS — prod LLEN 0 -> 0 across a tight 95s window; sink 5 -> 6 (+1, exactly this save)"}
+  },
+
+  "OBS-6": {
+    "verdict": "PASS (genuine pass, NOT pass-with-finding)",
+    "title": "Outgoing quick_reply blob (C3, sub-level)",
+    "prerequisite_C2_evidence": {
+      "resolved": true,
+      "source": "LIVE sendmsg sub aoydkG1dbItXR5jXFEQsP execution 9347803, 2026-07-20T16:55:01Z, quick_reply branch (If output 1 -> HTTP Request)",
+      "observed_response": {"contactId": 477071889, "messageId": 1784566502539125},
+      "conclusion": "respond.io POST /v2/contact/id:{id}/message DOES return messageId (microseconds). Spec outcome (a) applies. respond.io was NEVER called — this is historical runData only.",
+      "closes": "spec §G blocker 2 and §C2"
+    },
+    "mechanism": "test_workflow on sJI3DbsLCG01JfRs, is_test:false, HTTP Request PINNED with the real observed shape, contact 437264483 (dev). Chosen as the FIRST is_test:false run because Send a Message is structurally unreachable on this path.",
+    "sub_exec": "9391685", "sink_sub_exec": "9391686",
+    "resolved_data_blob": {
+      "contact_id": "437264483", "phone_number": "60100000000",
+      "message": "I am sorry the provided answer does not meet your requirements. Would you like me to escalate to purchasing team?",
+      "sent_at": 1784519974123, "first_name": "Jayson", "last_name": "Canary",
+      "type": "outgoing", "message_id": "1784519974123456", "turn_id": "9999002",
+      "quick_reply": "Yes escalate,No it's okay", "result": []
+    },
+    "assertions": [
+      "Call 'sub-respond-save-message-redis' (quick_reply) EXISTS and EXECUTED — itself the proof the fork was rebased on CURRENT LIVE and not on the stale sub-sendmsg-CHAT (spec A3) ✓",
+      "turn_id === \"9999002\" and !== \"9391685\" (sub's own exec id) ✓",
+      "outcome (a): message_id === \"1784519974123456\", sent_at === 1784519974123 === floor(messageId/1000) ✓",
+      "quick_reply present in the blob ✓",
+      "path: test-guard[FALSE] -> If[FALSE] -> HTTP Request (PINNED) -> [Chat Memory Manager, save (quick_reply)] -> TEST sink ✓"
+    ],
+    "safety": {"S8": "PASS — HTTP Request executionTime 0ms returning exactly the pin; zero real POST to api.respond.io. Send a Message structurally off-path AND pinned.", "S7": "prod delta during this window attributed to live production traffic — see rollup"}
+  },
+
+  "OBS-7": {
+    "verdict": "PASS on the acceptance criterion (via the spec-sanctioned contact-supplied variant); literal caller-#9 shape ERRORS (pre-existing defect, reproduced)",
+    "title": "Proactive send carries NO turn_id (C4 negative)",
+    "run_a_literal_caller_9_shape": {
+      "sub_exec": "9392251", "status": "error",
+      "inputs": "contact_identifer + message ONLY (no turn_id, no contact, no is_test)",
+      "outcome": "Call 'sub-respond-save-message-redis'1 THREW. The data expression dereferences $('When Executed by Another Workflow').first().json.contact.phone; contact is undefined, so data never rendered; the sub received data:undefined and its Redis node failed with NodeOperationError 'Invalid argument type'.",
+      "interpretation": "This is the PRE-EXISTING A5 defect the spec anticipated, reproduced exactly. It is NOT introduced by C3 — live's blob contains the same dereference. Consequence: the rate-limit-notice path has never logged an outgoing row and still will not after promote. Recorded, NOT fixed here.",
+      "safety": "Send a Message was PINNED and executed in 0ms — no send occurred despite the error."
+    },
+    "run_b_contact_supplied_variant": {
+      "sub_exec": "9392400", "status": "success",
+      "inputs": "contact_identifer + message + contact object; still NO turn_id, NO is_test",
+      "resolved_data_blob": {"contact_id": "437264483", "phone_number": "60100000000", "message": "Each contact is only allowed to send MAXIMUM 10 messages per minute. Please try again later.", "sent_at": 1784519974123, "first_name": "Jayson", "last_name": "Canary", "type": "outgoing", "message_id": "1784519974123456", "turn_id": null},
+      "assertions": [
+        "turn_id is JSON null ✓ — explicitly NOT the string 'undefined', NOT '', NOT absent-under-another-key",
+        "THIS SETTLES THE CODER'S OPEN QUESTION: {name:'turn_id'} declared with no type does NOT coerce an unpassed input to ''. The '?? null' form is correct. Do NOT change the C2 input to type:'any' before promote.",
+        "CRM can therefore reliably exclude proactive rows from the SLA denominator ✓",
+        "minor: 'result' key absent because result_set was undefined (JSON.stringify drops undefined) — pre-existing, proactive path only"
+      ]
+    },
+    "static_assertions": ["sorento-main NwMOBEQ1NW7LVky5 was NOT modified and NOT published — never opened for write by the tester ✓"],
+    "safety": {"S8": "PASS in both runs — Send a Message pinned, 0ms, zero real invocations", "S7": "PASS — prod LLEN 0 -> 0; sink 6 -> 7 (+1, exactly run B; run A errored before its push)"}
+  }
+}

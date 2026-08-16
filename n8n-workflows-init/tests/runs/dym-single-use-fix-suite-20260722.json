@@ -1,0 +1,90 @@
+{
+  "run": "dym-single-use-fix DSU-1..7 live stateful suite",
+  "date": "2026-07-22",
+  "role": "tester",
+  "verdict": "PASS (all functional acceptance + §0 S1-S7 hold on every case)",
+  "promote": "NOT promoted (user-gated). Live spine 9qVyfUxmRQqrpGRMDLRuz + live sub XTODTw UNTOUCHED.",
+  "targets": {
+    "clone_spine": {"id": "txiPzSxy3Pclsz6v", "activeVersionId": "b8fb4c72-10e8-4893-9a07-59cf57e6a12a", "verified": true},
+    "parser_fork": {"id": "wI5RkNGW3EOJfBdo", "activeVersionId": "006e75f1-11e7-456c-971a-d5b32c0bacbf", "verified": true},
+    "wiring": "clone Call 'sub-query-reformulator' -> fork wI5RkNGW3EOJfBdo (confirmed)",
+    "markers_present": {
+      "output_exchange_E3": "dym_offer source + legacy dym_candidates fallback, dym_slot tier-0, entity_type-first hint, dym_offer_pick_code",
+      "build-suggest-offer_E1": "_mkOffer wrapping D1 numbered/code + D2 + suggest; dym_candidates mirror",
+      "compile-current-state_E2": "7-rule lifecycle; dym_offer + legacy dym_candidates mirror"
+    }
+  },
+  "driver": "chat-stateful console lane (zz-chat oyYfVvZHRZpWubTy, chatTrigger webhook 58a0adb6). Contact 437264483. Session round-tripped through respond_contacts_test (pg n8n_test). Host psql WORKS (LESSON 31 stale on this point) -> used for reset + state read. Reset ONCE before each chain, never mid-chain.",
+  "cases": {
+    "DSU-1": {
+      "verdict": "PASS",
+      "execs": {"T1_clone": "9542197", "T1_fork": "9542198", "T2_clone": "9542272", "T2_fork": "9542274", "T3_clone": "9542308", "T3_fork": "9542309"},
+      "T1": "not-found -> D1 code-mode did-you-mean merged CS roster (selection_context=member_offer). Persisted dym_offer id=9542197 ttl=3 domain=order picked=[] candidates=[SRTWC8354-SH-UF,SRTWC8354-SH,SRTWC8354-SH-200] all for_hint=product entity_type=product. entities=[Deluxe home->DBR-a16583b564, Srtwc8354->product], date 2026-07-20..21.",
+      "T2": "pick SRTWC8354-SH-UF -> dym_pick_applied. Customer+date+product retained. Persisted picked=[SRTWC8354-SH-UF] ttl=3 id=9542197.",
+      "T3_mandatory_asserts": {
+        "dym_pick_applied": "true",
+        "customer_retained": "entities contains {canonical_code:DBR-a16583b564} (Deluxe home)",
+        "picked_hint": "SRTWC8354-SH hint=product (NOT order; raw LLM emitted scope_exclusive:true + domain master_products, all overridden)",
+        "entities_length": "2 (no dupe, no dym_replace_unmatched)",
+        "scope_exclusive": "false",
+        "scope_exclusive_applied": "false",
+        "date_filter": "start=2026-07-20 end=2026-07-21",
+        "dym_offer_pick_code": "SRTWC8354-SH",
+        "dym_slot": "9542197 stamped on picked entity",
+        "state_after": "dym_offer.picked=[SRTWC8354-SH-UF,SRTWC8354-SH] ttl=3"
+      }
+    },
+    "DSU-2": {
+      "verdict": "PASS",
+      "execs": {"T4_clone": "9542642", "T4_fork": "9542643"},
+      "asserts": "third pick SRTWC8354-SH-200: dym_pick_applied=true, entities len 2 (Deluxe home retained + SRTWC8354-SH-200 hint=product, raw LLM hint=order forced to product via entity_type), scope_exclusive false/applied false, dym_offer_pick_code=SRTWC8354-SH-200, picked len 3 [SH-UF,SH,SH-200] ttl=3 id=9542197, dates retained. Tier-0 dym_slot resolved after raw overwritten twice."
+    },
+    "DSU-3": {
+      "verdict": "PASS",
+      "3a_domain_switch_rule2": "reset->T1(offer id 9542732 ttl3)->T2 'check stock srtbf11831' -> inventory results, dym_offer=null. Following code -> fresh inventory query (no dym pick).",
+      "3b_escalation_rule3": "reset->T1->T2 'yes' -> escalated to customer_service, dym_offer=null. Clone exec 9542844; human-intervention guarded fork vUfFUDjLAuMaeQE6 is_test:true explicit_assignee_id='' (round-robin).",
+      "3c_ttl_rule7_rule6": "TTL 3->2->1->null observed on a SEEDED non-merged offer (selection_context=suggest_offer, empty last_result_set) via 3 casual filler turns. Rule 7 decrements, rule 6 kills at exhaustion.",
+      "3c_finding": "In the MERGED member_offer flavor (DSU-1 T1 shape) the retained 6-member roster keeps last_result_set non-empty, so rule 5 (_answered) preempts rule 7 and the offer dies on the FIRST non-pick filler. Safe direction (earlier expiry; pick turns still retain via rule 4 which precedes rule 5). TTL rule 7 is only reachable live on a non-roster offer."
+    },
+    "DSU-4": {
+      "verdict": "PASS",
+      "asserts": "date-relaxation arm: after pick, dym_offer candidates stayed the 3 CODES (NOT date-valued) -> rev-2 FINDING 1 stays fixed. Date reply '2026-06-03' took normal date handling: customer Deluxe home + product retained as reuse (current_message:false, no date-valued entity), date_filter->2026-06-03, NO dym hijack. TTL/supersede backstop covered by 3c (dead offer -> code gets no pick)."
+    },
+    "DSU-5": {
+      "verdict": "PASS",
+      "outcomes": {
+        "number_2": "clone 9543540: member_pick_context, reference_positions=[2], preferred_assignee_id=12246ae8 (roster idx-2 Cyndi), NO dym_pick_applied -> member pick. guarded fork is_test:true explicit_assignee_id=12246ae8.",
+        "name_Cyndi": "clone 9543564: person_mention=Cyndi, preferred_assignee_id=12246ae8 (name->uuid), NO dym_pick_applied -> member pick. guarded fork is_test:true.",
+        "yes": "clone 9542844: round-robin escalate, explicit_assignee_id='', no dym_pick_applied.",
+        "code": "DSU-1 T3: dym_pick_applied=true, member block skipped (Edit-D guard)."
+      },
+      "note": "4 distinct outcomes; Edit-D guard (dym_pick_applied!==true) intact."
+    },
+    "DSU-6": {
+      "verdict": "PASS",
+      "a_legacy_fallback": "seeded flat dym_candidates + NO dym_offer, fired SRTWC8354-SH. Fork 9543677: dym_pick_applied=true via legacy fallback, dym_offer_pick_code=SRTWC8354-SH, customer Deluxe home retained, no dym_slot (correct: legacy has no offer.id). Proves spine->parser promotion-window direction.",
+      "b_no_offer": "session with neither -> output_exchange early-returns on empty _cands, dym_pick_applied absent, byte-behaviour identical (covered by every fresh T1 + DSU-0 negative control).",
+      "c_unknown_code": "reset->T1->'SRTUFV101' (not in offer) -> fresh product listing, no dym reconciliation (normal parser behavior; customer not force-retained). fork 9543713."
+    }
+  },
+  "safety_gate_S1_S7": {
+    "S1_zero_real_send": "PASS. All 8 clone sendmsg callers -> chat fork ublq9nSlrpz63xan. Sub-exec 9542318 ran only chat?->chat-build-parts->chat-push(RPUSH chat:reply)->log-chat-history-n8ntest; NO respond.io/api.respond.io send node executed. send-message-files/images/video never ran. Reply = the {output} returned via chat:reply.",
+    "S2_zero_assign_write": "PASS. Escalation/member-pick only via guarded fork vUfFUDjLAuMaeQE6 with is_test:true (would-write only; explicit_assignee_id records intended member). Verified 9542844/9543540/9543564. No real assign/SLA/PIC.",
+    "S3_zero_crm_write": "PASS. save-session-vars (prod PUT) + update-human-intervened NEVER executed (absent from runData on 9542308/9542844). Session R/W only to n8n_test.respond_contacts_test (pg).",
+    "S4_get_results_read_only": "PASS. get-results = rysSPgUssLDf6xJc, read-only, returned data, resolved tool a read (order query), never crm_it_support_ticket_create. Verified 9542308.",
+    "S5_test_mode_present": "PASS. redis item mode=chat-stateful; egress-capable shared subs (sendmsg, human-intervention) hardcode is_test:true in caller workflowInputs AND received is_test:true in sub inputs.",
+    "S6_token_sinks_bounded": "PASS. One reformulator fork (gpt-5.4-mini) per turn (expected for parser scope). get-results = deterministic MCP read (no LLM). No orphaned get-results agent, no reformulator double-call, no new sink.",
+    "S7_sink_delta_attribution": "PASS. Incoming logger wrote to harness fork tWm5DYLxfypmVC1T (RPUSH sorento-respond-message-TEST, unconsumed) e.g. sub-exec 9542319, attributable to test item (contact 437264483, chat_id dsuX, test_run_id chatui-*). No node wrote the prod list sorento-respond-message. No unattributable prod-list movement."
+  },
+  "findings": [
+    "TTL rule 7 not reachable in the merged member_offer flavor (rule 5 preempts via retained roster). Safe/earlier expiry; multi-use PICK path unaffected (rule 4 precedes rule 5). Observed rule 7 live only on a seeded non-roster offer.",
+    "LESSON 31 stale: host psql (72.62.195.19, .env placeholder password) DOES connect and read/write respond_contacts_test.",
+    "get-results sub the clone calls = rysSPgUssLDf6xJc (not CLAUDE.md-listed Fss5aAaXthJSWpZCgKiKR); read-only, non-defect (consistent with prior runs).",
+    "No new token sink (no reformulator/reformulator-2 double call, no orphaned get-results agent) observed."
+  ],
+  "acceptance_vs_plan_section8": {
+    "1_DSU1": "PASS", "2_DSU2": "PASS", "3_DSU3": "PASS (TTL observed on seeded non-merged offer; see finding)",
+    "4_DSU4": "PASS", "5_DSU5": "PASS", "6_DSU6": "PASS", "7_S1_S7": "PASS",
+    "8_promotable_diff": "3 nodes/3 hunks across 2 workflows; live-spine draft credential-migration hazard (plan §7) acknowledged, UNRESOLVED by this change (out of tester scope)."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "test_run_id": "chatui-1784709736215",
+  "case": "datemiss-summary (date-relaxation offer leads with resolved-entity found_summary bullets)",
+  "target_workflow": "txiPzSxy3Pclsz6v (sorento-consume-main TEST, clone) @ published 4026f185",
+  "lane": "zz-chat chat-stateful (oyYfVvZHRZpWubTy) -> dispatcher 2D0cw2Y1aPW2LOlU -> clone",
+  "contact": "437264483",
+  "reformulator_fork_called": "wI5RkNGW3EOJfBdo",
+  "session_reset": {
+    "helper": "zz-reset-437 (BryJe5bKxP0SsNrx), Postgres cred n8n_test-db Dnnofg8Xb27VQOhI",
+    "exec": "9555621",
+    "result": "respond_io_id 437264483 session_vars -> {} (once, before T1)"
+  },
+  "turns": [
+    {"t": "T1", "text": "Deluxe home\\nSrtwc8354 delivery\\n20/07/26~21/07/26", "zz_chat_exec": "9555647", "clone_exec": "9555649", "outcome": "did-you-mean offer (SRTWC8354-SH-UF / -SH / -SH-200) + escalation roster; dym_offer id 9555649 established"},
+    {"t": "T2", "text": "SRTWC8354-SH-UF", "zz_chat_exec": "9555681", "clone_exec": "9555683", "outcome": "dym pick 1 applied; get-results no-match -> not-found escalation, itemized found_summary"},
+    {"t": "T3", "text": "SRTWC8354-SH", "zz_chat_exec": "9555727", "clone_exec": "9555729", "outcome": "dym pick 2 applied; get-results date-relaxation -> suggest_offer leads with found_summary then date text"}
+  ],
+  "t3_clone_exec": "9555729",
+  "t3_sub_execs": {
+    "reformulator_fork_wI5RkNGW3EOJfBdo": "9555730",
+    "get-rag_tWP33QOFT7SxThfT": "9555737",
+    "get-results_rysSPgUssLDf6xJc": "9555739",
+    "sendmsg_CHAT_ublq9nSlrpz63xan": "9555740",
+    "save-message-TEST-sink_tWm5DYLxfypmVC1T": "9555741"
+  },
+  "assertions": {
+    "A1_suggest_response_leads_with_summary": "PASS",
+    "A2_found_summary_nonempty_bullets": "PASS",
+    "A3_dym_fix_regression_guard": "PASS",
+    "S0_zero_egress_S1_S7": "PASS"
+  },
+  "A1_evidence": {
+    "node": "build-suggest-offer",
+    "suggest_response": "Here's what you want:\n• customer: DELUXE HOME CENTRE (STP) SDN BHD (+7 more)\n• product: SRTWC8354-SH (+4 more)\n\nNo delivery on 2026-07-20 to 2026-07-21. Deluxe home has delivery on 2026-06-03 (DO 202606-0041); 2026-05-15 (DO 202605-2103); 2026-05-06 (DO 202605-0487). Reply with a date to continue, or would you like me to escalate to customer_service team?",
+    "rendered_user_response_prefix": "Here's what you want:\n• customer: ...\n• product: ...\n\nNo delivery on 2026-07-20 to 2026-07-21. ..."
+  },
+  "A2_evidence": {
+    "node": "not-found-error-message",
+    "found_summary": "• customer: DELUXE HOME CENTRE (STP) SDN BHD (+7 more)\n• product: SRTWC8354-SH (+4 more)"
+  },
+  "A3_evidence": {
+    "entities_len": 2,
+    "entity_customer": {"raw": "Deluxe home", "hint": "customer", "canonical_code": "DBR-a16583b564"},
+    "entity_product": {"raw": "SRTWC8354-SH", "hint": "product", "canonical_code": "SRTWC8354-SH", "uuid": "76343ecb-f435-41ba-a0c3-47e2e83a72ed"},
+    "dym_pick_applied": true,
+    "dym_offer_pick_code": "SRTWC8354-SH",
+    "scope_exclusive": false,
+    "scope_exclusive_applied": false,
+    "dates_carried": {"date_filter_start": "2026-07-20", "date_filter_end": "2026-07-21"},
+    "source_node": "Call 'sub-query-reformulator'.output (fork wI5RkNGW3EOJfBdo)"
+  },
+  "S0_evidence": {
+    "S1_no_real_whatsapp": "send fork 9555740: chat? gate TRUE -> chat-push (redis chat:reply) + log-chat-history-n8ntest; no api.respond.io send node executed; reply round-tripped via chat:reply rendezvous",
+    "S2_no_assign_escalation": "no sub-human-intervention execution in window (rrYXzE / vUfFUDjLAuMaeQE6 did not fire); T3 = escalation OFFER only, no confirmation",
+    "S3_no_crm_contact_write": "session write -> respond_contacts_test (pg-upsert-session, n8n_test); chat_histories -> n8n_test (log-chat-history-n8ntest / log-incoming-chat-history-n8ntest); prod save-session-vars PUT orphaned, did not fire",
+    "S4_getresults_read_only": "get-results 9555739 resolved tool 'crm_order_management_orders_list' (READ allowlist); MCP Client1 read only; NOT crm_it_support_ticket_create; no write tool",
+    "S5_test_mode_present": "trigger item mode='chat-stateful'; send sub 9555740 received is_test:true; clone hardcodes is_test=true on all shared-sub calls",
+    "S6_token_sinks_bounded": "exactly 1 LLM call: reformulator fork gpt-5.4-mini (9555730). Basic LLM Chain clarification did NOT run. get-results ran deterministic (MCP read + output-structurer), no LLM agent",
+    "S7_attribution": "only save-message sink that fired is TEST fork tWm5DYLxfypmVC1T -> RPUSH sorento-respond-message-TEST (unconsumed), attributed to turn_id 9555729 / msg 'SRTWC8354-SH'; prod-ingest sub UrETd-jm46tFj3Xw7w8vL did NOT fire; send fork wrote chat:reply not prod list. No prod-shared-resource write attributable to this run."
+  },
+  "notes": [
+    "get-results LLM agent liveness: in this date-relaxation/orders_list path the get-results sub (rysSPgUssLDf6xJc) ran no AI Agent/LLM node (When Executed -> entity-ids-transformer -> MCP Client1 -> output-structurer). Consistent with the get-results agent being orphaned/bypassed for structured reads.",
+    "No new token sink (e.g. reformulator reformulator-of-reformulator) observed; single parser LLM only.",
+    "Ambient 9qVyfUxmRQqrpGRMDLRuz (LIVE spine) trigger-mode executions in the window are the live prod-queue poller (~1/s), NOT children of this test chain and not caused by this run (payload went to test:q:437264483 / main-message-list-test)."
+  ]
+}

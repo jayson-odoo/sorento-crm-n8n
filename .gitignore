@@ -26,3 +26,16 @@ sorento_embedding.sql
 # === OS / editor cruft ===
 .DS_Store
 *.swp
+
+# --- secret hygiene (added 2026-07-21) ---
+# Raw n8n workflow dumps embed literal x-api-key values in node parameters.
+# Never commit them; keep them on disk for rollback only.
+scratchpad/
+n8n-workflows-init/tests/reviews/backups/**/*.json
+*-before.json
+*-after.json
+
+# playwright/chrome MCP artifacts — Chrome is uninstalled; use `npx -y agent-browser` instead
+.playwright-mcp/
+test-results/
+playwright-report/

@@ -1,0 +1,276 @@
+{
+  "_change_id": "turn-id-threading-completion",
+  "_cycle": "2c retest (targeted: OBS-14, OBS-15, OBS-16 only)",
+  "_date": "2026-07-21",
+  "_supersedes_cases_in": "turn-id-threading-completion-cases-20260721.json (OBS-14/15/16 entries only; all other cases stand as recorded there)",
+  "_prior_rollup": "turn-id-threading-completion-rollup-20260721.json",
+  "_diff_under_test": "../diffs/turn-id-threading-completion.md (STEP 6 / STEP 7 / STEP 8, cycle 2c)",
+  "_scope": "deterministic — zero LLM nodes executed, 0 tokens",
+  "_tester_window_utc": ["2026-07-21T07:52:32Z", "2026-07-21T08:04:07Z"],
+
+  "_verdict": "OBS-14 PASS (H4 defect F2 fully fixed). OBS-15 PASS, OBS-16 PASS — but coverage gap G1 is NOT closed by STEP 7; it remains OPEN with an unchanged rationale.",
+
+  "_cases_rerun_and_why": {
+    "OBS-14": "direct target of STEP 6 (H4 ?? null fix)",
+    "OBS-15": "direct target of STEP 7 (G1 closure claim)",
+    "OBS-16": "direct target of STEP 7 (G1 closure claim)",
+    "OBS-13": "NOT separately re-run — it shares the OBS-14 execution by construction (same 2-key contactless shape), so its assertion was re-verified for free. Result below.",
+    "cases_judged_NOT_at_risk_and_deliberately_not_re-run": {
+      "OBS-8, OBS-12": "spine clone txiPzSxy3Pclsz6v via sub-sendmsg-CHAT (ublq9nSlrpz63xan). Neither STEP 6 nor STEP 7 touched that fork or that clone. No regression path.",
+      "OBS-9, OBS-10": "run against BLOBTEST and therefore DO sit downstream of STEP 6. Judged not at risk and re-verified statically instead of dynamically: both pass a contact OBJECT, and `contact?.phone ?? null` is provably inert when contact.phone is a non-null string — the ?? only fires on null/undefined. The control for this (V-T-f) was additionally re-proven empirically inside this cycle: the OBS-15/16 incoming blobs render phone_number/first_name/last_name populated through the same expression family. No dynamic re-run needed.",
+      "OBS-11": "DO NOT RUN — reaching it dynamically requires a real respond.io PIC comment (S2 violation). Static coverage stands, per finding F1 and diff STEP 8(a).",
+      "OBS-17": "H6 not built. Correctly not run."
+    }
+  },
+
+  "_sink_accounting": {
+    "baseline_T0": {
+      "at": "2026-07-21T07:52:32Z",
+      "source": "zz-canary-read exec 9426152",
+      "sorento-respond-message": 0,
+      "sorento-respond-message-TEST": 13,
+      "main-message-list": 0,
+      "main-message-list-test": 1
+    },
+    "final_T1": {
+      "at": "2026-07-21T08:04:07Z",
+      "source": "zz-canary-read exec 9427163",
+      "sorento-respond-message": 0,
+      "sorento-respond-message-TEST": 16,
+      "main-message-list": 0,
+      "main-message-list-test": 1
+    },
+    "TEST_sink_delta": "+3",
+    "TEST_sink_delta_expected_by_coder": "+5 (the coder's heads-up predicted 2 rows per Hop-3 case)",
+    "TEST_sink_delta_reconciliation": "+3 is CORRECT and +5 was the wrong prediction. Observed: OBS-14 outgoing x1, OBS-15 incoming x1, OBS-16 incoming x1. The Hop-3 cases produced NO outgoing row. See finding F9 — this is the evidence that STEP 7 did not close G1. This is an under-count against the coder's budget, not an over-count, and it is a coverage shortfall rather than a safety event.",
+    "every_new_payload_carries_this_cycles_turn_id": true,
+    "prod_sink_delta": 0,
+    "prod_queue_main-message-list": "0 -> 0, unchanged at every sample",
+    "main-message-list-test": "1 -> 1, untouched (clone pops test:q:{contact}, not this list)"
+  },
+
+  "_S7b_prod_attribution": {
+    "verdict": "PASS — prod delta 0, established with a DRAIN-INDEPENDENT instrument. No halt was triggered this cycle.",
+    "instrument_upgrade": "NEW AND IMPORTANT (see finding F10). The prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn runs an LLEN of sorento-respond-message as its FIRST node ('Redis1') on every 5s poll, and that value is retained in execution data. The consumer ledger is therefore a complete 5-second-resolution LLEN time series of the prod sink. This fully defeats the drain-blindness that finding F7 flagged last cycle — a write at time T that is drained by T+3s is still visible as a non-zero LLEN in the poll that consumed it, and the pop itself appears as a non-empty 'Redis' node output.",
+    "correction_to_prior_cycle": "The prior cycle's S7b method ('count consumer executions started inside the run window') is UNSOUND as written: the consumer records one execution per 5s poll unconditionally, whether or not it pops anything. A raw execution count is therefore a clock, not a leak signal. The sound signal is the per-execution Redis1 LLEN value and the Redis pop payload. Recorded so the reviewer does not re-apply the counting method.",
+    "sampling_strategy": "A leak from this harness can only land in the 5s poll window immediately following one of the three known write instants. Those three polls were fetched in full rather than sweeping ~140 executions.",
+    "polls_inspected": [
+      {"event": "OBS-14 wrote at 07:54:32.081-32.350", "consumer_exec": "9426327", "at": "07:54:35.029Z", "Redis1_LLEN_sorento-respond-message": 0, "Redis_pop": "{\"\":null} (empty)", "verdict": "clean"},
+      {"event": "OBS-15 wrote at 07:57:02.560-02.794", "consumer_exec": "9426543", "at": "07:57:05.022Z", "Redis1_LLEN_sorento-respond-message": 0, "Redis_pop": "{\"\":null} (empty)", "verdict": "clean"},
+      {"event": "OBS-16 wrote at 07:59:20.159-20.342", "consumer_exec": "9426737 -> poll 9426744", "at": "07:59:25.058Z", "Redis1_LLEN_sorento-respond-message": 0, "Redis_pop": "{\"\":null} (empty)", "verdict": "clean"}
+    ],
+    "corroborating_out_of_band_LLEN": "0 at 07:52:32, 0 at 08:01:35, 0 at 08:04:07",
+    "structural_backstop": "No node in any workflow executed this cycle targets the list sorento-respond-message. Every save call in BLOBTEST and in both ingress clones targets tWm5DYLxfypmVC1T, whose Redis list is the literal string sorento-respond-message-TEST. Asserted from re-fetched JSON, not memory.",
+    "unattributable_executions": "NONE. The FAIL clause was not reached."
+  },
+
+  "_static_gates": {
+    "BLOBTEST_69RhomhiCH4bpY1w": {
+      "published": "PASS — versionId == activeVersionId == 86cc9542-5874-43e0-bb8d-899f67780345",
+      "draft_equals_active": "PASS — full draft-vs-activeVersion comparison across all 11 nodes: parameters and connections byte-identical. No foreign draft content could ship.",
+      "six_null_coalesce_sites": "PASS — contact?.phone ?? null / contact?.firstName ?? null / contact?.lastName ?? null present in BOTH data blobs (text blob on Call 'sub-respond-save-message-redis'1 and quick_reply blob), 6/6 sites",
+      "turn_id_coalesce_retained": "PASS — turn_id ?? null still present in both blobs",
+      "S8_node_type_check": "PASS — 0 nodes of type @respond-io/n8n-nodes-respond-io.respondio, 0 of n8n-nodes-base.httpRequest, 0 of @n8n/n8n-nodes-langchain.memoryPostgresChat. 'Send a Message' and 'HTTP Request' are n8n-nodes-base.code stand-ins with names preserved.",
+      "save_targets": "PASS — both executeWorkflow save calls target tWm5DYLxfypmVC1T, never live UrETd-jm46tFj3Xw7w8vL",
+      "cosmetic_non_delta_noted_by_coder": "CONFIRMED PRESENT AND INERT — three if nodes (test-guard, If, If1) carry an empty options:{} in the draft. Both draft and active now carry it identically. Not a finding, as the coder stated."
+    },
+    "sub-sendmsg-OBS_sJI3DbsLCG01JfRs": "NOT RUN, NOT POINTED AT ANYTHING, NOT FETCHED FOR EXECUTION. DO-NOT-RUN honoured. Tester did not attempt to publish it and did not verify its draft state (doing so was unnecessary and fetching it serves no assertion this cycle).",
+    "ingress_clone_containment_V-T-q": {
+      "sendmsg caller target": "BOTH clones now point at 69RhomhiCH4bpY1w (BLOBTEST) — main clone node e91849d6, INJECT clone node 99a4175e. STEP 7 confirmed applied.",
+      "sendmsg workflowInputs": "PASS — unchanged on both, 6 keys: contact_identifer, message (literal), test_run_id (.isExecuted fallback form), contact ($('If1').first().json), is_test (true), turn_id ($execution.id)",
+      "save target": "PASS — save-ratelimit-incoming -> tWm5DYLxfypmVC1T on both",
+      "Redis2": "PASS — 0 inbound connections AND parameters.list == 'zz-dead-main-message-list-TEST' on both. ABSENT from runData in both Hop-3 runs.",
+      "findcontact": "D62_NHUOrugeULSFwfjEJ, permitted CRM read, PINNED in both runs so not even read",
+      "in-failover? typeValidation (main clone)": "loose — mirrors production active, not the strict draft",
+      "banned node types": "PASS — no respondio / httpRequest node on either clone"
+    },
+    "clone_activation_state": {
+      "ucf8g8sON5n4v0ry": {"active_before": false, "active_after": false, "activeVersionId": null, "activeVersion": null, "updatedAt_before": "2026-07-21T07:43:16.471Z", "updatedAt_after": "2026-07-21T07:43:16.471Z", "verdict": "UNCHANGED — never published, and updatedAt proves the tester made no edit"},
+      "4kfNkL6afjidbP4D": {"active_before": false, "active_after": false, "activeVersionId": null, "activeVersion": null, "updatedAt_before": "2026-07-21T07:43:01.827Z", "updatedAt_after": "2026-07-21T07:43:01.827Z", "verdict": "UNCHANGED — never published, and updatedAt proves the tester made no edit"},
+      "live_sorento-main_NwMOBEQ1NW7LVky5": "updatedAt 2026-07-13T10:20:32.851Z — untouched",
+      "live_sorento-main-INJECT_sk0zN90Cas4Y6Y2w": "updatedAt 2026-07-14T04:10:33.549Z — untouched"
+    }
+  },
+
+  "OBS-14": {
+    "verdict": "PASS — the H4 defect (finding F2) is FULLY FIXED. H4 now passes cleanly.",
+    "H4_SEPARATE_SCORE": "PASS. The prior REQUEST-CHANGES on H4 is DISCHARGED. H4 is now recommendable for promotion on its own merits.",
+    "title": "H4: contactless caller produces a complete row with explicit JSON nulls",
+    "mechanism": "test_workflow directly on BLOBTEST 69RhomhiCH4bpY1w with caller #12/#13's exact 2-key shape: contact_identifer + message only. No turn_id, no contact, no is_test.",
+    "blobtest_exec": "9426323",
+    "sink_sub_exec": "9426324",
+    "rendered_save_blob": {
+      "contact_id": "437264483",
+      "phone_number": null,
+      "message": "Your inquiry has been routed to the PIC. (OBS-14 cycle-2c contactless 2-key shape)",
+      "sent_at": 1784620472260,
+      "first_name": null,
+      "last_name": null,
+      "type": "outgoing",
+      "message_id": "1784620472260000",
+      "turn_id": null
+    },
+    "assertions": [
+      "PRIMARY: phone_number is PRESENT with JSON value null, not an absent key PASS",
+      "PRIMARY: first_name is PRESENT with JSON value null, not an absent key PASS",
+      "PRIMARY: last_name is PRESENT with JSON value null, not an absent key PASS",
+      "turn_id is JSON null — not 'undefined', not '', not absent PASS",
+      "the run did NOT throw — status success PASS",
+      "a row WAS produced where cycle 1 produced none PASS",
+      "sent_at 1784620472260 === Math.floor(1784620472260000 / 1000) — EXACT, integer, not null, not NaN PASS",
+      "Loop Over Items completed all iterations (noItemsLeft true, done true) — the loop-back edge through the save node is intact PASS",
+      "test-guard took FALSE with is_test unset (loose boolean), so test-guard-record did not fire PASS",
+      "row landed at the TEST sink, verified by LRANGE not merely by node output PASS"
+    ],
+    "before_after_evidence_in_one_LRANGE": "The TEST sink retains BOTH the pre-fix and post-fix rows for direct comparison. Pre-fix (cycle 2b, exec 9423455): {\"contact_id\",\"message\",\"sent_at\",\"type\",\"message_id\",\"turn_id\"} — 6 keys, three contact columns ABSENT. Post-fix (this cycle, exec 9426323): 9 keys with phone_number/first_name/last_name each explicitly null. This is the cleanest possible evidence that STEP 6 landed.",
+    "RESIDUAL_OBSERVATION_not_a_failure": {
+      "severity": "LOW — informational, out of H4's declared scope",
+      "detail": "The same JSON.stringify-drops-undefined mechanism still applies to the blob's `result` key, which maps from $('Loop Over Items').item.json.result. A caller that passes no result_set yields undefined and the `result` key vanishes. So a contactless row has 9 keys where a contact-bearing, result-bearing row (OBS-9) has 10.",
+      "why_not_a_failure": "OBS-14 and the plan both scope the assertion to phone_number/first_name/last_name/turn_id, all four of which now render correctly. `result` was never in scope for H4, its absence is unchanged from before the fix (not a regression), and it is the same mechanism already tracked as finding F5 (pic1 result key dropped, backlogged).",
+      "action_for_reviewer": "Decide whether the CRM-side row contract wants `result` normalised too. If yes it is the identical one-character-class edit (?? null or ?? []) and belongs with F5, not as a re-open of H4."
+    },
+    "safety": {"S1": "PASS", "S2": "PASS", "S3": "PASS", "S4": "n/a", "S5": "n/a — deliberate guard-open sub-level run, S8 structural gate applies instead", "S6": "PASS — zero LLM", "S7a": "PASS — TEST sink +1", "S7b": "PASS — prod LLEN 0 at the covering poll 9426327, empty pop", "S8": "PASS — asserted from re-fetched JSON before running"}
+  },
+
+  "OBS-13_incidental_reverification": {
+    "verdict": "PASS — still holds after STEP 6",
+    "note": "Not separately executed; shares OBS-14's execution 9426323 by construction. The negative assertion is unaffected by the fix.",
+    "assertions": [
+      "proactive 2-key caller shape still emits turn_id as JSON null — NOT 'undefined', NOT '', NOT absent PASS",
+      "static: sorento-main, sorento-main-INJECT, respond-close-convo, schedule-working-day-detection all unmodified and unpublished PASS"
+    ],
+    "shape_change_disclosure": "The row this shape produces is no longer byte-identical to cycle 2b's: it correctly GAINED three explicit-null columns. That is the intended effect of STEP 6, not a regression, and OBS-13's assertion was never about those keys."
+  },
+
+  "OBS-15": {
+    "verdict": "PASS on all functional assertions. Coverage gap G1 REMAINS OPEN — STEP 7 did not close it.",
+    "title": "ACCEPTANCE 2 (V-T-j) — rate-limit turn logs both rows on one turn_id, sorento-main TEST",
+    "clone": "ucf8g8sON5n4v0ry",
+    "clone_exec": "9426538",
+    "sink_sub_exec": "9426539",
+    "sendmsg_sub_exec": "9426540 (BLOBTEST)",
+    "mechanism": "test_workflow with triggerNodeName 'When Executed by Another Workflow'. Redis1 pinned to {\"437264483\": 31} so If takes output 1 (rate-limited). get-set pinned to {ids: []} so in-failover? is FALSE. findcontact pinned. Live-webhook-shape fixture with replyTo ABSENT. NEVER execute_workflow on an ingress clone.",
+    "incoming_blob": {
+      "contact_id": "437264483",
+      "phone_number": "60100000000",
+      "message": "rate limit probe OBS-15 cycle2c",
+      "sent_at": 1784620800000,
+      "first_name": "Jayson",
+      "last_name": "Canary",
+      "reply_to_message_id": null,
+      "reply_to_message": null,
+      "type": "incoming",
+      "message_id": "1784620800000000",
+      "turn_id": "9426538"
+    },
+    "outgoing_egress_record": {
+      "guard": "sendmsg-sub",
+      "kind": "would_send",
+      "target": "437264483",
+      "turn_id": "9426538",
+      "test_run_id": "9426538",
+      "payload.message": "Each contact is only allowed to send MAXIMUM 10 messages to the chatbot every minute. Please try again later.",
+      "read_from": "redis test:egress:9426538"
+    },
+    "sendmsg_sub_input_observed": {
+      "is_test": true,
+      "turn_id": "9426538",
+      "contact": {"id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary", "custom_fields": [{"name": "is_human_intervened", "value": "false"}]},
+      "note": "contact arrived as a real JSON OBJECT with populated fields — not stringified, not '[object Object]' (V-T-k PASS)"
+    },
+    "assertions": [
+      "1. incoming: type 'incoming' PASS; turn_id '9426538' === this ingress execution's own id, STRING EQUALITY PASS; message_id === fixture messageId PASS; message === fixture text PASS; sent_at 1784620800000 === Math.floor(1784620800000000/1000), exact integer, not null, not NaN PASS; contact_id/phone_number/first_name/last_name all populated from If1 PASS",
+      "2. outgoing: turn_id '9426538' === THE SAME STRING PASS — but see COVERAGE_GAP_G1: asserted from the egress record, NOT from a rendered outgoing save blob",
+      "3. turn_id non-null, not 'undefined', not '' PASS",
+      "4. Redis2 ABSENT from runData — the prod queue push never ran PASS",
+      "5. save-then-send order confirmed: save-ratelimit-incoming executionIndex 11 precedes the sendmsg caller at 12 PASS",
+      "6. reply_to_message_id renders JSON null from an ABSENT replyTo key PASS"
+    ],
+    "COVERAGE_GAP_G1": "STILL OPEN — see finding F9. STEP 7 repointed this clone's sendmsg caller STANDIN -> BLOBTEST, but the clone hardcodes is_test = true, and BLOBTEST's test-guard routes is_test===true to the TERMINAL node test-guard-record. Proven from sub-execution 9426540, whose lastNodeExecuted is 'test-guard-record' and which executed exactly 3 nodes: trigger, test-guard, test-guard-record. The save-blob path lives on the guard's FALSE arm and was never entered. So assertion 2 is proven exactly as it was in cycle 2b — from the egress record — and the rationale for accepting it is unchanged and still sound: V-T-k (contact arrives as a populated object) IS fully proven, and OBS-9 proves that same object renders those three fields correctly through the real blob.",
+    "safety": {"S1": "PASS — BLOBTEST has zero credentialed send nodes; no message can reach 437264483", "S2": "PASS — no assign/SLA/comment path exists on the ingress clones", "S3": "PASS — save target is the TEST sink; Redis2 orphaned AND repointed; findcontact pinned so not even read", "S4": "n/a", "S5": "PASS — sendmsg sub received is_test true", "S6": "PASS — zero LLM", "S7a": "PASS — TEST sink +1 (incoming only; see F9)", "S7b": "PASS — prod LLEN 0 at the covering poll 9426543, empty pop", "S8": "PASS"}
+  },
+
+  "OBS-16": {
+    "verdict": "PASS on all functional assertions. Same G1 status as OBS-15.",
+    "title": "V-T-j on the LIVE path — INJECT twin behaves identically for failover-injected traffic",
+    "clone": "4kfNkL6afjidbP4D",
+    "clone_exec": "9426737",
+    "sink_sub_exec": "9426738",
+    "sendmsg_sub_exec": "9426739 (BLOBTEST)",
+    "fixture_shape": "injected: contact.firstName/lastName/phone all EMPTY STRINGS in the body, event_id 'failover-live-tidc-obs16-c2c-20260721', replyTo EXPLICITLY null, no channel/sender keys",
+    "incoming_blob": {
+      "contact_id": "437264483",
+      "phone_number": "60100000000",
+      "message": "rate limit probe OBS-16 injected cycle2c",
+      "sent_at": 1784620900000,
+      "first_name": "Jayson",
+      "last_name": "Canary",
+      "reply_to_message_id": null,
+      "reply_to_message": null,
+      "type": "incoming",
+      "message_id": "1784620900000000",
+      "turn_id": "9426737"
+    },
+    "outgoing_egress_record": {"turn_id": "9426737", "test_run_id": "9426737", "read_from": "redis test:egress:9426737"},
+    "assertions": [
+      "row shape byte-identical to OBS-15 — same 11 keys, same order, same types PASS",
+      "THE POINT OF USER DECISION 4: phone_number '60100000000', first_name 'Jayson', last_name 'Canary' are populated FROM If1, NOT from the empty body contact. Failover-injected traffic gets identical chat-history semantics to live traffic PASS",
+      "turn_id '9426737' === this ingress execution's own id, shared by both rows, STRING EQUALITY PASS",
+      "sent_at 1784620900000 === Math.floor(1784620900000000/1000), exact integer, not null, not NaN PASS",
+      "reply_to_message_id renders JSON null from an EXPLICIT replyTo: null — together with OBS-15's absent-key path, both branches covered PASS",
+      "outgoing egress record turn_id '9426737' === the same string; contact arrived as an object (V-T-k) PASS",
+      "Redis2 ABSENT from runData PASS"
+    ],
+    "COVERAGE_GAP_G1": "STILL OPEN — identical mechanism to OBS-15. See finding F9.",
+    "safety": {"S1": "PASS", "S2": "PASS", "S3": "PASS", "S4": "n/a", "S5": "PASS — is_test true", "S6": "PASS — zero LLM", "S7a": "PASS — TEST sink +1 (incoming only)", "S7b": "PASS — prod LLEN 0 at the covering poll 9426744, empty pop", "S8": "PASS"}
+  },
+
+  "findings": {
+    "F9_STEP7_does_not_close_G1": {
+      "severity": "MEDIUM — coverage claim in the diff is incorrect; NOT a safety issue",
+      "status": "NEW this cycle",
+      "detail": "Diff STEP 7 claims: 'OBS-15/16 assertion 2 can now be asserted directly off a rendered outgoing blob at the TEST sink, closing G1', and predicts the per-case TEST-sink delta rises from 1 to 2. Both claims are FALSE. The ingress clones hardcode is_test = {{ true }} on the sendmsg caller. BLOBTEST's test-guard sends is_test===true to output 0, which connects ONLY to test-guard-record — a terminal node with no downstream. The save-blob path (If -> Code in JavaScript -> If1 -> Loop Over Items -> Send a Message -> save) is reachable only via the guard's FALSE arm. Repointing STANDIN -> BLOBTEST therefore changes nothing observable for a caller passing is_test=true: both forks stop at their respective guard record.",
+      "empirical_proof": "Sub-execution 9426540 (OBS-15) executed exactly 3 nodes — When Executed by Another Workflow, test-guard, test-guard-record — with lastNodeExecuted 'test-guard-record'. Sub-execution 9426739 (OBS-16) identical. TEST-sink delta for the whole cycle was +3, not the +5 that 2-rows-per-Hop-3-case would require.",
+      "why_it_is_not_a_safety_problem": "The behaviour is strictly SAFER, not less safe: the test guard fired and short-circuited exactly as designed. Nothing leaked. This is a coverage-fix that did not land, not a containment failure. S1-S8 all still pass.",
+      "options_for_the_coder_reviewer": [
+        "(a) Accept G1 as a permanent, documented indirection. It is already well-mitigated: V-T-k is fully proven and OBS-9 proves the blob rendering separately. This is the tester's recommendation — the residual risk is very low and the alternatives all cost containment clarity.",
+        "(b) Add a THIRD fork whose test-guard records the egress AND falls through to the blob path, and point the clones at that. Costs a new artifact to keep S8-clean.",
+        "(c) Make the ingress clones pass is_test=false. NOT RECOMMENDED — it removes a guard for a coverage nicety and makes the clone's containment depend on BLOBTEST's node-type purity alone.",
+        "In all cases: correct the STEP 7 text and the S7a expected-count in the diff before the reviewer signs off, so the record does not carry a false coverage claim."
+      ]
+    },
+    "F10_consumer_ledger_is_an_LLEN_time_series": {
+      "severity": "PROCESS — harness improvement, supersedes part of F7 and corrects the prior cycle's S7b method",
+      "status": "NEW this cycle",
+      "detail": "The prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn runs `LLEN sorento-respond-message` as its FIRST node on every 5s poll and retains the value in execution data. The ledger is thus a complete 5s-resolution time series of the prod sink depth, plus a per-poll record of whether anything was popped (the 'Redis' node emits {\"\":null} on an empty pop). This is a genuinely drain-independent instrument and is the correct primary evidence for S7b.",
+      "correction": "The prior cycle recorded the S7b method as 'counting consumer executions started inside the run window'. That is unsound: the consumer emits one execution per poll unconditionally, so the count is a clock, not a leak signal (~140 executions in an 11-minute window this cycle). The count must not be used. Use the per-execution Redis1 LLEN value and the Redis pop payload.",
+      "action": "Update UAC.md S7b to name the Redis1 LLEN series as the preferred drain-independent counter and to retire the execution-count method. Worth a LESSONS entry alongside F7."
+    },
+    "F2_H4_omits_keys_instead_of_nulling": {
+      "status": "CLOSED — fixed and verified this cycle. See OBS-14.",
+      "prior_severity": "MEDIUM"
+    },
+    "F1_OBS11_unreachable_safely": {"status": "OPEN, unchanged. Plan corrected by diff STEP 8(a). Static coverage stands. Do not attempt dynamically."},
+    "F3_spine_clone_sendmsg_fork_is_stale": {"status": "OPEN, unchanged — sub-sendmsg-CHAT ublq9nSlrpz63xan still stale vs live. Not touched this cycle."},
+    "F4_escalation_sendmsg_message_is_null": {"status": "OPEN, pre-existing, unchanged."},
+    "F5_pic1_result_key_dropped": {"status": "OPEN, backlogged. See OBS-14 RESIDUAL_OBSERVATION — the same undefined-key-drop mechanism also affects `result` on contactless rows."},
+    "F6_live_threading_confirmed_incidentally": {"status": "INFORMATIONAL, from prior cycle."},
+    "F7_prod_sink_drains_in_under_60s": {"status": "OPEN but now well-mitigated by F10's instrument."},
+    "F8_setNodeParameter_pointer_is_relative": {"status": "CLOSED — added to docs/LESSONS.md as entry 32b by diff STEP 8(b). Confirmed present."}
+  },
+
+  "gaps": {
+    "G1_outgoing_blob_not_asserted_on_hop3": "STILL OPEN. STEP 7 attempted closure and did not achieve it — see F9. The original mitigation rationale is unchanged and still sound.",
+    "G2_OBS11": "STILL OPEN by design. See F1."
+  },
+
+  "tester_actions_taken": {
+    "workflows_edited": "ONLY zz-canary-read (LLIbMXAixexM9Cwc), the tester's own read helper: the 'Read Egress' key leaf was repointed twice (test:egress:9426538, then test:egress:9426737) to read the two egress lists. No artifact under test was edited.",
+    "workflows_published": "NONE",
+    "live_workflows_touched": "NONE",
+    "sub-sendmsg-OBS_sJI3DbsLCG01JfRs": "NOT executed, NOT pointed at anything, NOT fetched. DO-NOT-RUN honoured; left draft-only.",
+    "execute_workflow_on_ingress_clones": "NEVER. Both Hop-3 cases used test_workflow with Redis1 pinned, as required.",
+    "permission_denials_encountered": "NONE. No safety or permission denial was hit, and none was worked around.",
+    "mcp_note": "Every test_workflow call returned 'The operation timed out' at the MCP layer while the execution itself completed successfully server-side. Results were retrieved via search_executions + get_execution. A timeout here is a transport artifact, not a failed run — but it MUST be reconciled by fetching the execution, never assumed either way."
+  }
+}

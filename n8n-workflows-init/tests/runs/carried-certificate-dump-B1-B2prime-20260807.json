@@ -1,0 +1,119 @@
+{
+ "run": "B1 + B2\u2032 tested together (carried-certificate-dump)",
+ "date": "2026-08-07",
+ "verdict": "PASS \u2014 the customer-visible defect I measured is fixed, both pick paths hold, B1 unregressed, and the dym annotation not only survives but is CORRECTED.",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v @ 2d1627c8 (B1, unchanged)",
+  "parser fork": "wI5RkNGW3EOJfBdo @ 95193323 (rollback c9f6e280)",
+  "live_spine": "f9205b03 \u2014 untouched, verified both ends",
+  "live_parser": "8a813ddc \u2014 untouched, verified both ends",
+  "note": "the fork is not in the export set, so --verify says nothing about it; its bodies were exercised through real executions"
+ },
+ "HEADLINE": {
+  "case": "B2-H1 \u2014 my own F-CARRY-NARROW finding",
+  "exec": "11528644",
+  "verdict": "PASS",
+  "before (B1 only, exec 11525013)": "'No certificate for SRTWT2214. Try: SRTWT2216, SRTWT2219, SRTWT2225.' \u2014 a confident false negative",
+  "now": "I have attached the file(s) below.\\n1. *Product Code:* SRTWT2214\\n*Attachment Type:* Certification\\n*File Name:* WCM - Cold Tap - EXP 13 SEP 2026.pdf\\n*Certificate Number:* PC 000373\\n*Valid Until:* 2026-09-13\\n*Validity:* Valid",
+  "asserted on": "save-session-vars.user_response and the sendmsg egress payload",
+  "PC 000373 fact": "ESTABLISHED BY PRINTING, not assumed \u2014 the \u00a7CD-3b gate the coordinator flagged. Certificate Number PC 000373, Valid Until 2026-09-13, Validity Valid, file 'WCM - Cold Tap - EXP 13 SEP 2026.pdf'. The uuid itself is still not surfaced in the render envelope (it carries no id field), so the uuid remains unestablished \u2014 only the certificate NUMBER is."
+ },
+ "CRITICAL_REGRESSION_tryDymPick": {
+  "why": "B1's reply is 'Reply with a code to continue', and a code reply is the tryDymPick trigger \u2014 the exact reason the original B2 was rejected",
+  "method": "drove B1's did-you-mean end to end (B2-R1), then re-seeded turn 2 with that state PLUS the stale certificate re-added (per the coordinator's plan-defect-3 correction \u2014 otherwise turn 1 has already evicted and turn 2 is vacuous), then replied",
+  "code pick": {
+   "case": "B2-T2-codepick",
+   "exec": "11528794",
+   "sent": "SRTWC8317-RL",
+   "verdict": "PASS",
+   "delivered": "SRTWC8317-RL's OWN certificates \u2014 01616FC, BPAI/0526-2025, PPS 01616FC \u2026",
+   "contains PC 000078": false
+  },
+  "numbered pick": {
+   "case": "B2-T2-numpick",
+   "exec": "11528822",
+   "sent": "1",
+   "verdict": "PASS",
+   "note": "this is the dymNumberedMultiSelect path that discards the executor's output wholesale at :514 \u2014 the strictest placement test",
+   "delivered": "identical correct result",
+   "contains PC 000078": false
+  },
+  "conclusion": "the eviction survives BOTH defeat mechanisms end to end at the customer boundary. The late placement is doing what it claims."
+ },
+ "PLAN_DEFECT_RULINGS": [
+  {
+   "id": "1 \u2014 part 4's dropped set would have starved the dym probe",
+   "verdict": "CODER IS RIGHT, and the narrowed drop is verified live",
+   "evidence": "B2-R1 exec 11528683 dym-transform runData: compatible_entities is now ONLY the attachment_type Certification (the carried PC 000078 is GONE \u2014 it WAS present on the B1-only run 11524911). dym_probe_entities still carries the attachment_type uuid 1439736c-\u2026-4599 alongside the 3 product candidates; probe_needed:true, probe_skip_reason:null, probe_lane:'d1'; dym_probe_meta.ok:true, answer_count:4.",
+   "so": "the attachment_type carry survived, the product_attachment probe still fires, and the dym annotation is NOT disabled.",
+   "BONUS FINDING": "B2\u2032 also CORRECTS the annotation. B1-only rendered 'SRTWC8317-RL - no certificate' (false \u2014 the carried PC 000078 was narrowing the probe). With B2\u2032 it renders 'SRTWC8317-RL - has certificate', which is true: the same product's certificates are exactly what the code-pick turn then returned. So the carried certificate was corrupting the dym annotation too, and B2\u2032 fixes that as a side effect."
+  },
+  {
+   "id": "2 \u2014 \u00a7CD-FP-8's stated \u00a7CD-10b expectation is blind",
+   "verdict": "CONFIRMED by the mutation run",
+   "evidence": "CD-FP-8 (drop the product_scope half) reddened CD-11a, CD-11a2, CD-11b, CD-7c2 and FP8-D \u2014 and NOT CD-10b. So CD-10b alone cannot detect the loss of that half, exactly as the coder measured; FP8-D is the sole discriminator."
+  },
+  {
+   "id": "3 \u2014 \u00a7CD-11's two-turn recipe is vacuous, and \u00a7CD-FP-4a is a non-instrument",
+   "verdict": "CONFIRMED on both halves",
+   "evidence_4a": "CD-FP-4a (AXIS_BY_DOMAIN only) reddened NOTHING, and CD-FP-4b (HINT_AXIS_DEFAULT only) also reddened NOTHING \u2014 the two maps shadow each other. Only CD-FP-4c (BOTH) is a gate, reddening 7 fixtures. So neither single-map mutation is an instrument.",
+   "evidence_11": "I applied the correction rather than the recipe \u2014 turn 2 was sim-inject-seeded with the certificate re-added plus the dym_offer. Without that re-add, turn 1's own eviction leaves turn 2 nothing to carry and the case degenerates to \u00a7CD-5, which the coder correctly predicted."
+  }
+ ],
+ "coder_mutation_run_reproduced_by_me": {
+  "oe-probe before": "RED 8/11 against oe.before.js \u2014 the defect provably reproduces on the rollback body",
+  "oe-probe after": "GREEN 11/11",
+  "oe-byte-identity": "15 fixtures, 7 identical / 8 changed, every change attributable to a carried instance-attachment entity or a duplicate key",
+  "oe-mutate.sh (what it printed)": {
+   "CD-FP-4a": "occ 1/1, a773fff4a7c8->d928b4e3eee0, RED <none>, expected <none> \u2705 (correctly NOT an instrument)",
+   "CD-FP-4b": "occ 1/1, ->c8500d39b16f, RED <none>, expected <none> \u2705 (correctly NOT an instrument)",
+   "CD-FP-4c": "occ 1/1 + 1/1, ->eb2f809748db, RED = CD-10b CD-11a CD-11a2 CD-11b CD-5 CD-7c2 FP8-D = expected \u2705",
+   "CD-FP-6": "block=1 anchor=1, ->0e9012209344, RED = CD-11b only = expected \u2705 (CD-11a stayed GREEN, as the brief predicted)",
+   "CD-FP-7": "occ 1/1, ->7db1df725b48, RED = CD-11a CD-11a2 CD-11b CD-7c2 = expected \u2705 (CD-5 stayed GREEN)",
+   "CD-FP-8": "occ 1/1, ->ec4914fd9487, RED = CD-11a CD-11a2 CD-11b CD-7c2 FP8-D = expected \u2705",
+   "CD-FP-9": "occ 1/1, ->1831d8749527, RED = CD-7c CD-7c2 = expected \u2705",
+   "CD-FP-0 negative control": "occ 0 (expected 1) -> ABORT, suite NOT run, VOID \u2705",
+   "suite rc": "2 (ABORT, expected only for CD-FP-0)"
+  },
+  "three defeat mechanisms verified INDEPENDENTLY": {
+   "tryDymPick (position + provenance)": "CD-FP-7 (provenance->current_message) reddens CD-11a/11a2 while CD-5 stays green; and the LIVE code-pick turn 11528794 holds",
+   "dymNumberedMultiSelect (position only)": "CD-FP-6 reddens CD-11b and leaves CD-11a green \u2014 exactly the asymmetry claimed; and the LIVE numbered pick 11528822 holds",
+   "B4 current_message corruption (provenance only)": "CD-FP-7's red set is precisely the four carried-flag fixtures"
+  }
+ },
+ "B1_regression": [
+  {
+   "id": "\u00a78.1/\u00a78.2",
+   "case": "B2-R1",
+   "exec": "11528683",
+   "verdict": "PASS \u2014 B1 still dead-ends: gate_passed false with B1's reason, did-you-mean rendered, no PC 000078, no PDF"
+  },
+  {
+   "id": "\u00a78.3",
+   "case": "B2-R2",
+   "exec": "11528703",
+   "verdict": "PASS \u2014 `certification with number PC000078` still lists the covered products with the PDF; B1 correctly inert. Parser runData shows entities = only current-message rows; the carried MWC7602-RL-P and carried certificate are GONE (\u00a78.5 evidence at the parser sub, real reformulator, sub-exec 11528709 on the fork)"
+  },
+  {
+   "id": "\u00a78.6",
+   "verdict": "PASS \u2014 offline oe-byte-identity shows the non-interference fixtures (NI-promotion, NI-incoming, NI-attach-clean) identical before/after; B1's own byte-identity.js remains 7/8 identical"
+  }
+ ],
+ "safety_scorecard": {
+  "S1": "PASS \u2014 6 runs; all egress rows would_*; send-message-files fired only on the turns that legitimately return PDFs (headline, cert-number query, and the two pick turns).",
+  "S2": "PASS \u2014 HI sub absent from runData on all runs.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData; sink unchanged.",
+  "S4": "PASS \u2014 reads only; the write tool never appears.",
+  "S5": "PASS \u2014 trigger test_mode===true; the parser fork received is_test true.",
+  "S6": "PARSER TIER as scoped \u2014 the real reformulator ran once per turn on fork wI5RkNGW3EOJfBdo (e.g. sub-exec 11528709). No Basic LLM Chain. Token sink is the expected one.",
+  "S7a": "PASS \u2014 TEST sink 643->644 on exec 11528643, +1 per run.",
+  "S7b": "PARTIAL, unchanged and stated \u2014 prod sorento-respond-message LLEN 0 before AND after; per-poll pop-payload series not collected; rests on structural containment (B2\u2032 changes a parser Code node only; no node, edge or redis path added).",
+  "S8": "PASS \u2014 no node added on either artifact; no banned type introduced.",
+  "S9": "PASS \u2014 all 7 mutations plus the negative control ran through oe-mutate.sh with occurrence-count and digest gates; the control correctly ABORTED."
+ },
+ "not_covered": [
+  "\u00a7CD-11's full natural two-turn flow without re-seeding (vacuous by construction \u2014 recorded, not run)",
+  "the PC 000373 uuid (render envelope carries no id field; only the certificate NUMBER is established)",
+  "carried forward from dym-probe: \u00a7DP-15b live, \u00a7DP-3b, \u00a7DP-9 live, \u00a7DP-13b dynamic, \u00a7DP-12 sibling-probe[0]"
+ ]
+}

@@ -1,0 +1,108 @@
+{
+  "_change_id": "auth-unification-negative-control-swallow-node",
+  "_purpose": "Prove the §5.2 post-conversion verification assertion actually FAILS on a genuine continueErrorOutput swallow-node whose main[1] is unwired, when that node 401s. [[green-that-cannot-fail]]: an assertion only ever shown to PASS is not an instrument.",
+  "_plan": "plans/crm-auth-unification-plan.md §5.2 (dynamic per-node proof), §2 CORRECTION 3 (silent swallow-node failure mode)",
+  "_date": "2026-07-22",
+  "_role": "coder (negative-control experiment)",
+  "_target": "CLONE ONLY txiPzSxy3Pclsz6v (sorento-consume-main TEST). Live spine 9qVyfUxmRQqrpGRMDLRuz NOT touched.",
+  "_live_spine_touched": false,
+
+  "chosen_node": {
+    "name": "get-access-types",
+    "why_check_access_http_rejected": "On the clone check-access-http has onError=null (stopWorkflow) and only main[0] wired -> NOT a swallow-node. The clone splits the live spine's single check-access HTTP node into check-access-http (real call, stopWorkflow) + check-access (code). So the spine's canonical swallow node maps to a non-swallow node on the clone.",
+    "swallow_node_proof": {
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "connections_from_node": {"main": [[{"node": "Aggregate", "index": 0}]]},
+      "main1_error_output": "ABSENT from connections -> error output wired to NOTHING",
+      "verdict": "GENUINE swallow-node: continueErrorOutput AND main[1] unwired"
+    },
+    "other_genuine_swallow_node_on_clone": "get-presigned-url (continueErrorOutput, main[0]->Loop Over Items1, main[1] unwired). Not chosen: only reachable downstream of a real get-results MCP read; get-access-types is reachable by the deterministic AUTH-A7 turn (no LLM, no MCP).",
+    "reachability": "Bad-CREDENTIAL (not bad contact-id) isolates the 401 to get-access-types alone; upstream check-access-http keeps its valid crm-n8n-auth binding so the AUTH-A7 path (intent_hint=check_promotion) still routes into get-access-types. This closes the plan's §5.2 OPEN GAP (a bad contact-id could never fail get-access-types without also flipping check-access to a legit denial)."
+  },
+
+  "credential_binding": {
+    "before_and_restored": {"id": "mNsZWyU82NYV58k2", "name": "crm-n8n-auth"},
+    "invalid_for_test": {"id": "vqmhkrU30kXCwdv8", "name": "crm-n8n-auth-invalid", "behaviour": "x-api-key: invalid-key -> 401 from CRM"},
+    "rebind_method": "REST PUT (MCP cannot bind httpHeaderAuth, LESSONS 55). Body = {name,nodes,connections,settings} from a fresh REST GET, settings.binaryMode stripped (400-trap), ONLY get-access-types.credentials.httpHeaderAuth changed. PUT auto-publishes the clone (accepted).",
+    "collateral_after_each_put": "28/28 credential-bearing nodes survived every PUT; only get-access-types binding changed; zero bindings lost; pinData/staticData preserved."
+  },
+
+  "good_run": {
+    "clone_exec": "9523453",
+    "test_run_id": "negctrl-A7-good-20260722",
+    "execution_status": "success",
+    "cred_bound": "crm-n8n-auth (valid)",
+    "get_access_types_runData": {
+      "executionStatus": "success",
+      "node_level_error": "absent",
+      "main0_items": 7,
+      "main0_first_json": {"name": "Sorento Office", "keywords": ["sorento office", "office"]},
+      "main1_error_output_items": 0
+    },
+    "downstream_reply": "Please specify which access level you'd like to use for promotions: (7 access levels offered)",
+    "s52_assertion": {
+      "clause1_main0_0_json_has_domain_key (name/keywords)": true,
+      "clause2_main0_0_json_error_ABSENT": true,
+      "verdict": "PASS"
+    }
+  },
+
+  "failing_run": {
+    "clone_exec": "9523682",
+    "test_run_id": "negctrl-A7-bad-20260722",
+    "execution_status": "success",
+    "cred_bound": "crm-n8n-auth-invalid (401)",
+    "http_outcome": "401 Invalid API key. Node RETRIED (retryOnFail=true, executionTime 2282ms) then completed with executionStatus=success -- the 401 did NOT fail the node or the execution.",
+    "where_the_401_landed": {
+      "main1_error_output_UNWIRED": "carries the AxiosError envelope {allowed,decision,agent_name, error:{message:'401 - Invalid API key', name:'AxiosError', status:401}} -> routed to the unwired error output -> SWALLOWED, goes nowhere",
+      "main0_regular_output_to_Aggregate": "carries an EMPTY item {\"json\":{}} -- NOT the access-types data",
+      "dead_end": false,
+      "actual_consequence": "The empty {} on main[0] propagated downstream: Aggregate -> {\"name\":[]} (hint: 'field name not found') -> access-level-choice-message -> 'You have no access levels configured to get promotions.' A CONFIDENTLY WRONG customer-facing reply, with the whole execution reporting success. This is WORSE than the plan's assumed silent dead-end (no reply)."
+    },
+    "s52_assertion": {
+      "main0_0_json": {},
+      "clause1_main0_0_json_has_domain_key (name/keywords)": false,
+      "clause2_main0_0_json_error_ABSENT": true,
+      "verdict": "FAIL",
+      "which_clause_fired": "clause 1 (domain key present in main[0][0].json) -- exactly the clause plan §5.2 predicts is 'the only one that fires'"
+    },
+    "decorative_clauses_on_bad_run": {
+      "execution_status==success": "PASS (decorative -- would wave the failure through)",
+      "node_runData.error==null/absent": "PASS (decorative -- would wave it through; the error is inside main[1][0].json.error, not the node-level error field)",
+      "search_executions status:error": "MISSES it entirely -- 0 error executions; a status-filter reviewer sees nothing",
+      "note_main1_empty_clause": "For continueErrorOutput, main[1] is NON-empty on failure (holds the error), so that particular decorative clause would incidentally catch it -- but that is mechanism-dependent and NOT the assertion the plan relies on. The load-bearing clause remains main[0][0].json domain-key presence."
+    }
+  },
+
+  "side_by_side": {
+    "get-access-types main[0][0].json": {
+      "good": {"name": "Sorento Office", "keywords": ["sorento office", "office"]},
+      "bad": {}
+    },
+    "downstream_reply": {
+      "good": "Please specify which access level you'd like to use for promotions (7 levels)",
+      "bad": "You have no access levels configured to get promotions."
+    },
+    "s52_verdict": {"good": "PASS", "bad": "FAIL"}
+  },
+
+  "restore": {
+    "method": "REST PUT of the pre-experiment node set (byte-identical restore)",
+    "get_access_types_cred": "crm-n8n-auth mNsZWyU82NYV58k2 (restored)",
+    "nodes_byte_identical_to_pre_experiment": true,
+    "connections_byte_identical": true,
+    "cred_nodes": "28/28 intact",
+    "pinData_staticData_preserved": true,
+    "draft_equals_active": true,
+    "assert_auth_sh": "RESULT: PASS (10/10 CRM nodes G1-G4, G5/G5b/G6 all PASS, no residual x-api-key)",
+    "clone_ends_as_it_started": true
+  },
+
+  "egress_safety": {
+    "both_runs": "Zero real egress. All replies emitted as egress-log records (save-message-redis would_log, save-session-vars would_write). get-access-types is a prod READ (permitted); a 401 on a read produces no egress. No sendmsg, no assign, no prod write.",
+    "note": "The bad run's save-session-vars would_write carried the WRONG 'no access levels' response -- but as a would_write egress-log record, never a real CRM PUT."
+  },
+
+  "verdict": "YES -- the §5.2 detector CATCHES the silent swallow-node failure. On a genuine continueErrorOutput node with an unwired main[1], a real 401 leaves main[0][0].json without its domain-specific key (empty {} here), so the assertion's clause-1 comes out FALSE = FAIL, while execution-status and node-level-error checks all decoratively PASS. The instrument has now been shown to FAIL on a real fault, not only to PASS."
+}

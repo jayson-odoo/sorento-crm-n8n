@@ -1,0 +1,231 @@
+{
+ "family": "TA — tier-only access ask (tests/uac/TA.md)",
+ "date": "2026-08-11",
+ "target": "FORK spine RnpxEnAV3g20MmKj @ 407cbfb7 + parser RJ326g9dwe3bTWyf @ 7c5ff7fd. Live spine never driven.",
+ "drivers": [
+  "zz-canary-run PROMO-PICKER (M5m6EYDLdSc0ofto) webhook /zz-run-promo-picker -> fork",
+  "zz-canary-run (VtIV3TF3aw2Fx8No) webhook /zz-run-hint -> pre-change clone txiPzSxy3Pclsz6v, used ONLY as the discriminator control"
+ ],
+ "state_threading": "every turn sends previous_conversation_state explicitly (truthy -> sim-inject-session); multi-turn cases thread the prior turn's persisted variables. The dev contact's prod session is never read.",
+ "discriminator_S9_70d": {
+  "control": "identical input 'promo for SRTBF11710' + previous_conversation_state {} against the PRE-CHANGE spine (clone txiPzSxy3Pclsz6v @ bd0023ac, which has no tier-gate node), exec 12041903",
+  "result": "tier-gate absent; access-level-choice-message rendered the OLD prompt \"Please specify which access level you'd like to use for promotions:\"; persisted selection_context null",
+  "conclusion": "the TA-1 assertion set (exact 3-option numbered string + selection_context tier_offer + 3-row access_tier roster + no quick_reply key) goes RED on pre-change code. The harness can fail."
+ },
+ "verdicts": [
+  {
+   "case": "TA-1",
+   "verdict": "PASS",
+   "exec": "12038830",
+   "mode": "uac (real CRM entitlement read)",
+   "reply_head": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\"",
+   "notes": "Reply is exactly the plan journey row-1 string. sendmsg payload has NO quick_reply key at all (D3 satisfied at the boundary, not merely in the renderer). Zero send-message-files egress. selection_context=tier_offer, roster = 3 tier rows (entity_type access_tier, uuid null). Original product scope SRTBF11710 carried in variables.entities. If4 took output 1 (ask). Discriminator: pre-change clone renders the OLD prompt (see rollup)."
+  },
+  {
+   "case": "TA-2",
+   "verdict": "BLOCKED",
+   "exec": "12039423",
+   "mode": "uac (real CRM)",
+   "reply_head": "Could not find promotion for SRTBF11710 for dealer. Would you like me to escalate to marketing_promotion_sorento team?",
+   "notes": "Tier pick mechanics correct: '2' -> tier_stated ['dealer'], scope SRTBF11710 reused, recomposed ['Sorento Dealer','Mocha Dealer','Cabana Dealer']. BUT the CRM entity resolver returned 0 matches / 0 alternatives for contact 437264483, so the turn dead-ended at not-found before get-results. NOT caused by this change — the pre-change clone reproduces it byte-for-byte. See BLOCKER-1 in the rollup. Scored via TA-2R instead."
+  },
+  {
+   "case": "TA-2R",
+   "verdict": "PASS (with pinning caveat)",
+   "exec": "12041243",
+   "mode": "regress-replay (CRM reads pinned to REAL live exec 12031183 payloads)",
+   "reply_head": "I found 6 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNIT",
+   "notes": "D5 PROVEN AT THE CUSTOMER BOUNDARY: 6 send-message-files would_send entries, filenames exactly the 6 answer rows; promo-picker.attachments has the same 6. Intro reads 'I found 6 promotions for SRTBF11710. I have attached the file(s) below.' — the old 'Reply with the number you want' list-gate is GONE. CAVEAT: get-results is pinned, so 'at the picked tier ONLY' is NOT exercised here (the pinned payload holds all three tiers' files). The tier filter reaching the CRM is proven separately by CRM-PROBE."
+  },
+  {
+   "case": "TA-3R",
+   "verdict": "PASS (with pinning caveat)",
+   "exec": "12041267",
+   "mode": "regress-replay",
+   "reply_head": "I found 6 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNIT",
+   "notes": "tier_stated ['dealer','office'] -> recomposed 6 compound names (office+dealer across all 3 entitled brands, End User correctly excluded). 6 files attached."
+  },
+  {
+   "case": "TA-4R",
+   "verdict": "PASS (with pinning caveat)",
+   "exec": "12041300",
+   "mode": "regress-replay",
+   "reply_head": "I found 6 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNIT",
+   "notes": "tier_stated all 3 -> recomposed all 7 compound names. 6 files attached."
+  },
+  {
+   "case": "TA-5R",
+   "verdict": "PASS",
+   "exec": "12041327",
+   "mode": "regress-replay",
+   "reply_head": "I found 6 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNIT",
+   "notes": "'promo for SRTBF11710 dealer' -> tier_ask false, tier_proceed true, no ask turn, straight to the answer + 6 files. access_levels signal = dealer only (recomposed ['Sorento Dealer','Mocha Dealer','Cabana Dealer']). Also confirmed in uac (exec 12039468) up to the resolver dead-end."
+  },
+  {
+   "case": "TA-6R",
+   "verdict": "PASS",
+   "exec": "12041417",
+   "mode": "regress-replay, entitlement injected ['End User']",
+   "reply_head": "I found 6 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNIT",
+   "notes": "entitled_tiers ['end_user'] -> tier_ask false, recomposed ['End User'], answer + 6 files, no ask turn."
+  },
+  {
+   "case": "TA-7",
+   "verdict": "PASS",
+   "exec": "12040890",
+   "mode": "uac",
+   "reply_head": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\"",
+   "notes": "After the completed TA-2 pick, 'promo for CBS212-WH' asks AGAIN. Proven at the STATE layer as required: TA-2's persisted variables contain NO access_levels key and selection_context is null — the tier is not carried. Re-confirmed in replay as TA-7R (exec 12041891)."
+  },
+  {
+   "case": "TA-8R",
+   "verdict": "FAIL",
+   "exec": "12041879",
+   "mode": "regress-replay",
+   "reply_head": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\"",
+   "notes": "After a real 6-promo answer (selection_context suggest_offer, 6-row roster), 'the august one' RE-ASKS the tier instead of resolving against the answer. Root cause shared with TA-14a: needsTierAsk() has no exemption for a pending non-tier positional roster. Contradicts TA.md TA-8 and plan journey row 5."
+  },
+  {
+   "case": "TA-9R",
+   "verdict": "PASS",
+   "exec": "12041445",
+   "mode": "regress-replay, entitlement injected ['End User']",
+   "reply_head": "You don't have access to office promotions — here's what you do have:\n\nI found 6 promotions for SRTBF11710. I have attac",
+   "notes": "'office promo for SRTBF11710' with only End User held -> notice renders verbatim 'You don't have access to office promotions — here's what you do have:' prepended to the answer at the real entitlement (recomposed ['End User']). Not a bare not-found."
+  },
+  {
+   "case": "TA-10R",
+   "verdict": "PASS",
+   "exec": "12041473",
+   "mode": "regress-replay",
+   "reply_head": "I found 6 promotions for CBS212-WH, Cabana. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM",
+   "notes": "'cabana promo for CBS212-WH dealer' -> parser emits a hint:'brand' entity 'Cabana', query_brands ['cabana'], recomposed EXACTLY ['Cabana Dealer'] per plan §3. Scope echo 'for CBS212-WH, Cabana'; team routes marketing_promotion_cabana. Independently confirmed against the REAL CRM by CRM-PROBE (semantic_input.access_levels = ['Cabana Dealer'], CRM returned only CABANA DEALER files)."
+  },
+  {
+   "case": "TA-11R",
+   "verdict": "FAIL",
+   "exec": "12041502",
+   "mode": "regress-replay, entitlement injected ['Sorento Dealer','End User']",
+   "reply_head": "I found 6 promotions for CBS212-WH. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNITU",
+   "notes": "TA.md's own phrasing 'cabana dealer promo for CBS212-WH' makes the parser emit NO brand entity (reproduced twice: 12041502, 12041592) -> query_brands [], brand_gate_empty FALSE, recomposed ['Sorento Dealer'] -> a Cabana ask answered with Sorento Dealer scope and Sorento files, WITH NO NOTICE. This is the R5 cross-brand leak class, reached through the brand axis dropping out of the parser rather than through the CRM. Compare TA-11R2 where the TA-10 word order does produce query_brands ['cabana']."
+  },
+  {
+   "case": "TA-11R2",
+   "verdict": "FAIL (n8n side does not fail closed)",
+   "exec": "12041565",
+   "mode": "regress-replay, entitlement injected ['Sorento Dealer','End User']",
+   "reply_head": "You don't have access to cabana promotions.\n\nI found 6 promotions for CBS212-WH, Cabana. I have attached the file(s) bel",
+   "notes": "'cabana promo for CBS212-WH dealer' with no Cabana entitlement -> brand_gate_empty TRUE, access_levels_recomposed []. The notice renders ('You don't have access to cabana promotions.') but the pipeline STILL renders the answer block and attaches all 6 Sorento files. Under replay the CRM read is pinned, so this shows the n8n side has NO independent guard: whether the customer gets Sorento files for a Cabana ask depends ENTIRELY on the CRM returning nothing for access_levels: []. That assumption remains UNVERIFIED (see BLOCKER-2)."
+  },
+  {
+   "case": "TA-12",
+   "verdict": "PASS (partial)",
+   "exec": "12040925",
+   "mode": "uac",
+   "reply_head": "Could not find inventory for SRTWC286. Would you like me to escalate to warehouse team?",
+   "notes": "From the tier_offer-pending state, 'check stock srtwc286' routes to inventory: tier-gate never executes, no tier ask, no tier leakage into the inventory lane, tier_offer context dies (persisted selection_context null). The stock ANSWER itself is blocked by BLOCKER-1, so 'stock answers normally' is unverified."
+  },
+  {
+   "case": "TA-13",
+   "verdict": "PASS",
+   "exec": "12040940",
+   "mode": "uac",
+   "reply_head": "You're welcome! Let me know if you need anything else.",
+   "notes": "From the tier_offer-pending state, 'thank you' -> \"You're welcome! Let me know if you need anything else.\" No reprompt loop, tier_offer cleared (persisted selection_context null). Mirrors casual-aborts-member-reprompt."
+  },
+  {
+   "case": "TA-14a",
+   "verdict": "FAIL",
+   "exec": "12041783",
+   "mode": "regress-replay",
+   "reply_head": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) — e.g. \"1\", \"1 and 2\", or \"all\"",
+   "notes": "State carried correctly (get-session-vars shows selection_context suggest_offer + 6-row roster) and the parser resolved '2' correctly (reference_positions [2], reference_target 'result', entity_op 'reuse') and did NOT mint a tier. But tier-gate then saw no stated tier on a promotion turn and fired the tier ask, DISCARDING the pick. The customer who picked promo #2 gets 'Which access level do you need?'. tier_offer does not shadow suggest_offer in the PARSER, but the ASK TRIGGER overrides it downstream — the case's intent fails."
+  },
+  {
+   "case": "TA-14b",
+   "verdict": "NOT ARRANGED",
+   "exec": "12041795",
+   "mode": "uac",
+   "reply_head": "",
+   "notes": "'yes escalate' from the not-found state went straight to the human-intervention sub (guard recorded {human-intervention-sub}, blocked) via divert-suggest-yes/tag-out-of-scope; no CS member roster was produced, so the member_offer arm could not be set up on this lane. Report only."
+  },
+  {
+   "case": "TA-15",
+   "verdict": "PASS (partial)",
+   "exec": "12040965",
+   "mode": "uac",
+   "reply_head": "Could not find incoming for SRTWC286-SH. Would you like me to escalate to purchasing team?",
+   "notes": "Turn 1 'check stock srtwc286' (exec 12039710) and turn 2 'eta for SRTWC286-SH' (exec 12040965): tier-gate never executes on either, no tier ask on any non-promotion domain. The answers themselves are blocked by BLOCKER-1."
+  },
+  {
+   "case": "CRM-PROBE",
+   "verdict": "EVIDENCE",
+   "exec": "12041687",
+   "mode": "uac, control contact 477071889 (read-only; all writes orphaned/sinked, sends guarded)",
+   "reply_head": "No promotion found for SRTWB8013 Cabana. Would you like me to escalate to marketing_promotion_cabana team?",
+   "notes": "Two turns against the REAL CRM. (a) 'promo for SRTWB8013 dealer' -> semantic_input.access_levels ['Sorento Dealer','Mocha Dealer','Cabana Dealer'], CRM returned 1 answer + 1 attachment, 1 file egress, reply 'I have attached the file(s) below.' — the §71-class executeWorkflow input hunk works end-to-end and D5 always-attach works against real data (exec 12041667). (b) 'cabana promo for SRTWB8013 dealer' -> semantic_input.access_levels ['Cabana Dealer'], CRM returned ONLY Cabana-dealer files, promo-picker's strict not-found correctly refused to serve them for a Sorento product ('No promotion found for SRTWB8013 Cabana', 0 files) (exec 12041687). Confirms the access_levels filter is real and brand-correct for a NON-EMPTY list."
+  }
+ ],
+ "blockers": [
+  {
+   "id": "BLOCKER-1",
+   "severity": "blocks the suite, NOT caused by the change",
+   "title": "CRM entity resolver returns 0 matches AND 0 alternatives for the harness contact 437264483",
+   "evidence": [
+    "fork 'check stock srtwc286' exec 12039710 -> resolutions[0] matches 0, alternatives 0",
+    "PRE-CHANGE clone, same input, exec 12039973 -> identical 0/0 (so not the change)",
+    "same fork+lane, contact 477071889, identical message 'SRT35102\\nSRTWB8013\\n\\nhelp check stock' exec 12040525 -> BOTH tokens resolved exact in 73 ms; contact 437264483 exec 12040466 -> 0/0 in 1300 ms",
+    "contact 437264483 resolved fine on LIVE at 04:44 (12029059) and 05:08 (12031152, 3 matches for SRTBF11710); it stopped some time before 06:33",
+    "the recorded baseline tests/offline/promo-resolution-baseline/baseline.json (exec 11925500, same fork, same contact) had n=10 for 'promo for SRTBF11834'; today 0"
+   ],
+   "impact": "every TA case needing a real promotion/product answer dead-ends at not-found in uac mode. Worked around with regress-replay pinned to REAL captured payloads from live exec 12031183, plus a two-turn real-CRM probe on control contact 477071889.",
+   "note": "TA.md's fixture product SRTBF11710 is real (live exec 12031152/12031183 resolve it); it is the CONTACT that lost resolution, not the code."
+  },
+  {
+   "id": "BLOCKER-2",
+   "severity": "must be closed before promote",
+   "title": "brand-gate fail-closed rests on an UNVERIFIED CRM assumption, and the n8n side does not fail closed on its own",
+   "evidence": [
+    "TA-11R2 exec 12041565: brand_gate_empty true, access_levels_recomposed [], notice rendered — and the pipeline still rendered the answer and emitted 6 send-message-files for Sorento PDFs against a Cabana ask (get-results pinned in replay, so this is what happens for ANY non-empty CRM response)",
+    "the empirical question 'does the CRM return nothing for access_levels: []' could NOT be answered: brand_gate_empty is unreachable for any contact holding all three brands (both 437264483 and 477071889 hold all 7 compound levels), and BLOCKER-1 prevents the uac lane from reaching get-results at all",
+    "positive control: access_levels ['Cabana Dealer'] (exec 12041687) returned ONLY Cabana-dealer rows, so the filter is real and brand-correct for a NON-EMPTY list — this says nothing about []"
+   ],
+   "required_experiment": "either a contact whose brand entitlement excludes the queried brand, or a direct get-results call with access_levels: [] against the real CRM"
+  },
+  {
+   "id": "BLOCKER-3",
+   "severity": "functional regression introduced by the change",
+   "title": "the tier ask overrides a pending positional pick — TA-8 and TA-14 both fail",
+   "evidence": [
+    "TA-14a exec 12041783: selection_context suggest_offer + 6-row roster present in get-session-vars; parser correctly resolved '2' to reference_positions [2]/reference_target 'result'/entity_op 'reuse' and minted NO tier; tier-gate then saw tier_stated [] on a promotion turn and fired the ask, discarding the pick",
+    "TA-8R exec 12041879: 'the august one' after a real 6-promo answer -> tier re-ask instead of continuation"
+   ],
+   "root_cause": "needsTierAsk(domain,stated,entitledTiers) has no exemption for a pending non-tier roster (selection_context suggest_offer/member_offer/disambiguation) or for a continuation turn (reference_positions / entity_op 'reuse')",
+   "contradicts": "TA.md TA-8 and TA-14, and plan §2 journey row 5 ('Follow-up on the SAME answer is a continuation, not a new ask')"
+  },
+  {
+   "id": "BLOCKER-4",
+   "severity": "functional gap, cross-brand leak class",
+   "title": "the brand axis silently drops out of the parser for a common phrasing",
+   "evidence": [
+    "'cabana dealer promo for CBS212-WH' -> entities = [CBS212-WH product] only, NO hint:'brand' entity (reproduced twice, execs 12041502 and 12041592) -> query_brands [] -> brand_gate_empty false -> a Cabana ask answered at Sorento Dealer scope with Sorento files and NO notice",
+    "'cabana promo for CBS212-WH dealer' (word order swapped) -> entities include {raw:'Cabana', hint:'brand'} -> query_brands ['cabana'] -> gate fires"
+   ],
+   "root_cause": "D6 makes brand arrive ONLY as an LLM-emitted entity; when the brand word is adjacent to the tier word the parser absorbs it into the access phrase and emits no brand entity. The whole brand gate is downstream of that one LLM decision.",
+   "note": "TA.md's own TA-11 arrange string is the phrasing that triggers this."
+  }
+ ],
+ "ambiguities_in_TA_md_I_had_to_interpret": [
+  "TA-2/3/4 say 'attachments non-empty and = the answer rows'. crossdomain-compose has NO attachments key — the attachment lane is attach-merge -> Loop Over Items1 -> Switch -> guard-{e,f,g}-record, and send-message-files is ORPHANED on the fork. I therefore asserted at the boundary on the egress log's send-message-files would_send payloads (filenames) cross-checked against promo-picker.attachments. Asserting crossdomain-compose.attachments would have been a wrong-object green (LESSONS §63) — it is null on every passing case.",
+  "TA-6/9/11 say 'inject entitlement (sim-inject or fixture)'. There is no entitlement injection in uac mode: the fixture lane (fixture-get-access-types) is gated ONLY on mode == 'regress-replay', which pins resolve-entity and get-results too. I used regress-replay with REAL captured payloads and reported the pinning explicitly rather than pretending the CRM read was live.",
+  "TA-14 says 'member_offer or suggest_offer pending'. I could arrange suggest_offer (from a real answer) but not member_offer — 'yes escalate' from a not-found goes straight to the human-intervention sub with no CS roster on this lane. The suggest_offer arm is scored; the member_offer arm is NOT ARRANGED.",
+  "TA-2's 'answer for SRTBF11710 at the picked tier ONLY' is not decidable under replay (the pinned payload contains all three tiers). What IS decidable — and proven — is that the correct compound access_levels reach get-results (CRM-PROBE) and that the CRM honours them for a non-empty list.",
+  "TA-1 says 'NO files'. I read that as zero send-message-files egress entries, which holds."
+ ],
+ "observations_to_surface": [
+  "get-results LLM liveness: in the one real get-results call (CRM-PROBE, sub t4QvrtrPnTwRU6br) the sub ran; no new token sink appeared on the spine. The parser sub is the only spine LLM on promotion turns. TA-8/TA-13 additionally ran 'Basic LLM Chain' + 'OpenAI Chat Model' (the existing consume-main gpt-4.1-mini clarification path) — expected, not new.",
+  "The replay fixture captured from live exec 12031183 carries a stale second entity 'welps WEP2352-6', so every replayed answer ends with 'No promotion found for welps WEP2352-6...'. That is a fixture artifact, not product behaviour.",
+  "not-found-error-message now echoes TIER TOKENS: 'Could not find promotion for SRTBF11710 for dealer' (was 'for Sorento Dealer, Mocha Dealer, Cabana Dealer' on the pre-change clone, exec 12039986). The coder flagged this; confirmed live-visible and an improvement.",
+  "Concurrent activity: clone txiPzSxy3Pclsz6v is at bd0023ac (matches the export). I only READ it plus one control turn."
+ ]
+}

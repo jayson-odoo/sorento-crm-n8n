@@ -1,0 +1,63 @@
+- generic [active] [ref=f8e1]:
+  - button "Open Next.js Dev Tools" [ref=f8e7] [cursor=pointer]
+  - alert [ref=f8e11]
+  - generic [ref=f8e17]:
+    - generic [ref=f8e18]:
+      - link "Back" [ref=f8e19] [cursor=pointer]:
+        - /url: /portal/c/ZJTH3GC69J?type=purchase_request
+      - button "AI Extract" [ref=f8e23] [cursor=pointer]
+    - generic [ref=f8e28]:
+      - generic [ref=f8e29]: Purchase Request
+      - heading "Purchase Request" [level=2] [ref=f8e32]
+      - generic [ref=f8e33]:
+        - generic [ref=f8e35]:
+          - text: Customer name
+          - textbox "Customer name" [ref=f8e38]:
+            - /placeholder: Search debtors...
+        - generic [ref=f8e40]:
+          - text: Project title
+          - textbox "Project title" [ref=f8e42]
+        - generic [ref=f8e44]:
+          - text: Purpose
+          - textbox "Purpose" [ref=f8e46]
+        - generic [ref=f8e48]:
+          - text: Sales type
+          - combobox "Sales type" [ref=f8e51]:
+            - generic: Select...
+        - generic [ref=f8e55]:
+          - text: Expected delivery date
+          - textbox "Expected delivery date" [ref=f8e57]
+        - generic [ref=f8e59]:
+          - text: Expected PO date
+          - textbox "Expected PO date" [ref=f8e61]
+        - generic [ref=f8e63]:
+          - text: Requested by
+          - textbox "Requested by" [ref=f8e65]: Rayza
+        - generic [ref=f8e67]:
+          - text: External reference
+          - textbox "External reference" [ref=f8e69]
+    - generic [ref=f8e70]:
+      - heading "Items" [level=3] [ref=f8e72]
+      - generic [ref=f8e73]:
+        - table [ref=f8e75]:
+          - rowgroup [ref=f8e76]:
+            - row [ref=f8e77]:
+              - columnheader "#" [ref=f8e78]
+              - columnheader "Item code" [ref=f8e79]
+              - columnheader "Quantity" [ref=f8e80]
+              - columnheader "Remark" [ref=f8e81]
+              - columnheader [ref=f8e82]
+          - rowgroup
+        - button "Add item" [ref=f8e83] [cursor=pointer]
+    - generic [ref=f8e85]:
+      - heading "Attachments" [level=3] [ref=f8e87]
+      - generic [ref=f8e90]:
+        - paragraph [ref=f8e94]: Drop a file here, paste a screenshot or text, or
+        - generic [ref=f8e95]:
+          - button "Choose file" [ref=f8e96] [cursor=pointer]
+          - button "Paste from clipboard" [ref=f8e99] [cursor=pointer]
+    - generic [ref=f8e103]:
+      - button "Cancel" [ref=f8e104] [cursor=pointer]
+      - button "Save as draft" [ref=f8e105] [cursor=pointer]
+      - button "Submit" [ref=f8e106] [cursor=pointer]
+  - region "Notifications alt+T"

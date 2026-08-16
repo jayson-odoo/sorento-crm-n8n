@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Sorento Voice Console</title>
+<style>
+  :root{
+    --bg:#eaeef3; --panel:#fff; --ink:#1a1f26; --muted:#5c6672;
+    --line:#dde3ea; --me:#2563eb; --rec:#dc2626;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#11151a; --panel:#1a2028; --ink:#e8edf3; --muted:#93a0ad; --line:#2a323c; }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    display:flex;flex-direction:column}
+  header{padding:.7rem 1rem;background:var(--panel);border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-size:.95rem;font-weight:600}
+  header p{margin:.15rem 0 0;font-size:.75rem;color:var(--muted)}
+  #log{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem}
+  .msg{max-width:88%;padding:.65rem .9rem;border-radius:16px;white-space:pre-wrap;
+    word-wrap:break-word;overflow-wrap:anywhere}
+  .bot{background:var(--panel);border:1px solid var(--line);align-self:flex-start}
+  .me{background:var(--me);color:#fff;align-self:flex-end}
+  .sys{align-self:center;font-size:.75rem;color:var(--muted);background:none;padding:.2rem}
+  footer{padding:.7rem;background:var(--panel);border-top:1px solid var(--line);
+    display:flex;gap:.5rem;align-items:center}
+  input[type=text]{flex:1;min-width:0;padding:.6rem .8rem;border:1px solid var(--line);
+    border-radius:10px;background:var(--bg);color:var(--ink);font-size:15px}
+  button{border:0;border-radius:10px;padding:.6rem .9rem;font-size:14px;font-weight:600;
+    cursor:pointer;background:var(--me);color:#fff;white-space:nowrap}
+  button:disabled{opacity:.5;cursor:default}
+  #rec.recording{background:var(--rec)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;
+    margin-right:.35rem;vertical-align:middle}
+  #rec.recording .dot{animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.25}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Sorento Voice Console</h1>
+  <p>clone lane &middot; egress routed to chat, never WhatsApp</p>
+</header>
+<div id="log"></div>
+<footer>
+  <button id="rec" title="Hold or click to record"><span class="dot"></span><span id="reclabel">Record</span></button>
+  <input id="text" type="text" placeholder="or type a message / /voice &lt;text&gt;">
+  <button id="send">Send</button>
+</footer>
+<script>
+(function(){
+  // Same-origin: serve.py proxies this to n8n server-side. Posting straight to the n8n
+  // URL from the browser is blocked — its POST response always sets
+  // Access-Control-Allow-Origin to n8n's own host, whatever allowedOrigins says.
+  var CHAT_WEBHOOK = "/chat";
+  // sessionStorage must be GUARDED: when this page is served from an n8n webhook the
+  // response carries `content-security-policy: sandbox ...` WITHOUT allow-same-origin, so
+  // the document has a null origin and touching sessionStorage throws SecurityError —
+  // which killed the whole IIFE before any handler was attached (the "Record does nothing"
+  // bug). Serve this file over http://localhost:8000 instead; the guard stays as a seatbelt.
+  var sessionId = null;
+  try { sessionId = sessionStorage.getItem("sorento_sid"); } catch (e) {}
+  if(!sessionId){
+    sessionId = "voicepage-" + Date.now();
+    try { sessionStorage.setItem("sorento_sid", sessionId); } catch (e) {}
+  }
+
+  var log=document.getElementById("log"), recBtn=document.getElementById("rec"),
+      recLabel=document.getElementById("reclabel"), textIn=document.getElementById("text"),
+      sendBtn=document.getElementById("send");
+
+  function add(cls, txt){
+    var d=document.createElement("div"); d.className="msg "+cls; d.textContent=txt;
+    log.appendChild(d); log.scrollTop=log.scrollHeight; return d;
+  }
+
+  function post(fd, pending){
+    fd.append("action","sendMessage");
+    fd.append("sessionId",sessionId);
+    return fetch(CHAT_WEBHOOK,{method:"POST",body:fd})
+      .then(function(r){ return r.text(); })
+      .then(function(t){
+        var out=t;
+        try{ var j=JSON.parse(t); out=(j&&(j.output||j.text))||t; }catch(e){}
+        pending.remove(); add("bot", out);
+      })
+      .catch(function(e){ pending.remove(); add("sys","error: "+e.message); });
+  }
+
+  function sendText(){
+    var v=textIn.value.trim(); if(!v) return;
+    textIn.value="";
+    add("me", v);
+    var p=add("sys","thinking…");
+    var fd=new FormData(); fd.append("chatInput", v);
+    post(fd,p);
+  }
+  sendBtn.onclick=sendText;
+  textIn.addEventListener("keydown",function(e){ if(e.key==="Enter") sendText(); });
+
+  // ── recording ──────────────────────────────────────────────────────────
+  // MediaRecorder gives webm (Chromium) or mp4 (Safari); Whisper accepts both.
+  // The blob is posted as `files`, exactly like the widget's paperclip upload,
+  // so it lands on the same spine lane: base64 -> queue -> decode -> Whisper.
+  var mr=null, chunks=[], recording=false;
+
+  function pickMime(){
+    var c=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg;codecs=opus"];
+    for(var i=0;i<c.length;i++){
+      if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c[i])) return c[i];
+    }
+    return "";
+  }
+
+  function stopRec(){
+    if(mr && mr.state!=="inactive") mr.stop();
+  }
+
+  function startRec(){
+    if(!navigator.mediaDevices || !window.MediaRecorder){
+      add("sys","recording not supported in this browser — attach a file instead"); return;
+    }
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      var mime=pickMime();
+      mr = mime ? new MediaRecorder(stream,{mimeType:mime}) : new MediaRecorder(stream);
+      chunks=[];
+      mr.ondataavailable=function(e){ if(e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop=function(){
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        recording=false; recBtn.classList.remove("recording"); recLabel.textContent="Record";
+        if(!chunks.length){ add("sys","no audio captured"); return; }
+        var type=(mr.mimeType||mime||"audio/webm").split(";")[0];
+        var blob=new Blob(chunks,{type:type});
+        var ext=type.indexOf("mp4")>-1?"mp4":(type.indexOf("ogg")>-1?"ogg":"webm");
+        add("me","🎤 voice note ("+Math.round(blob.size/1024)+" KB)");
+        var p=add("sys","transcribing…");
+        var fd=new FormData();
+        fd.append("chatInput","");
+        fd.append("files", blob, "voice."+ext);
+        post(fd,p);
+      };
+      mr.start();
+      recording=true; recBtn.classList.add("recording"); recLabel.textContent="Stop";
+    }).catch(function(e){
+      add("sys","mic blocked: "+e.message+" (page must be https)");
+    });
+  }
+
+  recBtn.onclick=function(){ recording ? stopRec() : startRec(); };
+
+  add("sys","Session "+sessionId+" · click Record, speak, click Stop.");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{
+  "_change_id": "turn-id-threading-completion",
+  "_date": "2026-07-21",
+  "_cases_file": "turn-id-threading-completion-cases-20260721.json",
+  "_verdict": "PASS with 1 conditional hunk (H4), 1 blocked case (OBS-11), 1 coverage gap (G1)",
+  "_promote_recommendation": "Hop 1 and Hop 3: READY for reviewer. H4: REQUEST-CHANGES (one-line fix). Tester does not promote.",
+
+  "tally": {"PASS": 8, "PASS_WITH_DEFECT": 1, "NOT_RUN_BLOCKED": 1, "NOT_RUN_CORRECT": 1},
+  "cases": {
+    "OBS-8": "PASS", "OBS-9": "PASS", "OBS-10": "PASS", "OBS-11": "NOT RUN — blocked on safety",
+    "OBS-12": "PASS (ACCEPTANCE 1)", "OBS-13": "PASS", "OBS-14": "PASS WITH DEFECT (H4)",
+    "OBS-15": "PASS (ACCEPTANCE 2)", "OBS-16": "PASS", "OBS-17": "NOT RUN — correct, H6 not built"
+  },
+
+  "acceptance_criteria": {
+    "criterion_1_escalation": "SATISFIED — OBS-8 + OBS-12. Incoming row and the HI escalation record share turn_id '9423742' == spine execution id, by string equality.",
+    "criterion_2_rate_limit": "SATISFIED on BOTH ingress clones — OBS-15 (sorento-main TEST, turn_id 9423983) and OBS-16 (sorento-main-INJECT TEST, turn_id 9424189). Incoming row saved where none existed before; outgoing notice carries the same id."
+  },
+
+  "safety_gate_summary": {
+    "S1": "PASS — zero real sends. Every sendmsg path went to a zero-credential stand-in or was recorded blocked.",
+    "S2": "PASS — zero assignment/escalation writes. Assign, conversation-sla-tracking-create, both add-comment subs and the assignee-queue push were ABSENT from runData in every run. This required an explicit routing control (see findings F1).",
+    "S3": "PASS — zero CRM/contact writes. save-session-vars would_write only; both ingress clones' Redis2 orphaned AND repointed.",
+    "S4": "PASS — get-results never reached in any case.",
+    "S5": "PASS where applicable — is_test/test_mode true observed in the clone run's sub inputs. The three sub-level cases are deliberate guard-open runs governed by S8 instead.",
+    "S6": "PASS — zero LLM nodes executed anywhere. 0 tokens for the entire cycle.",
+    "S7a": "PASS — TEST sink +6, exactly the 6 expected saves, each carrying this cycle's turn_id.",
+    "S7b": "PASS AFTER ATTRIBUTION — one transient +2 on the prod sink. Run HALTED as the rule binds, both consumer executions retrieved and read, both attributed to an unrelated real customer. Nothing was UNATTRIBUTABLE, so the FAIL clause was not reached.",
+    "S8": "PASS — BLOBTEST and STANDIN both structurally free of all three banned node types, asserted from re-fetched JSON before running. sub-sendmsg-OBS was never executed."
+  },
+
+  "prod_queue_watch": "main-message-list held 0 at every sample (07:14, 07:18, 07:19, 07:33). No movement on the real spine queue. main-message-list-test unchanged at 1 (a pre-existing leftover; the clone pops test:q:{contact}).",
+  "clones_stayed_inactive": "YES — both active:false / activeVersionId:null before and after; updatedAt unchanged at 06:33, proving the tester made no edit to either.",
+
+  "findings": {
+    "F1_OBS11_unreachable_safely": {
+      "severity": "MEDIUM — plan correction",
+      "detail": "Plan 9.2 OBS-11 asserts all three HI sendmsg callers are reachable. Caller #11 (0ca5413f) has only two inbound edges and BOTH pass through the add-comment sub. executeWorkflow nodes are NOT pinnable on this MCP surface (confirmed via prepare_test_pin_data nodesSkipped), so reaching #11 dynamically means a real respond.io PIC comment. Covered statically instead.",
+      "action": "Correct the plan. Do not attempt #11 dynamically."
+    },
+    "F2_H4_omits_keys_instead_of_nulling": {
+      "severity": "MEDIUM — the one hunk-level defect",
+      "detail": "contact?.phone / firstName / lastName yield undefined, and JSON.stringify drops undefined keys, so contactless rows omit those three columns entirely rather than rendering null. Inconsistent with turn_id ?? null in the same object literal.",
+      "action": "REQUEST-CHANGES on H4 only: add ?? null to all 6 sites. Rejecting/holding H4 breaks neither Hop 1 nor Hop 3."
+    },
+    "F3_spine_clone_sendmsg_fork_is_stale": {
+      "severity": "LOW for this change, MEDIUM for harness fidelity",
+      "detail": "The spine clone's 8 sendmsg callers still target sub-sendmsg-CHAT (ublq9nSlrpz63xan), whose test-guard-record predates C3 and emits no turn_id key at all. Visible in OBS-12's egress log: the sendmsg-sub record has turn_id ABSENT (not null). This is a stale harness fork, NOT a defect in the code under test — live aoydkG1dbItXR5jXFEQsP already has C3.",
+      "action": "Reconcile sub-sendmsg-CHAT with live, or repoint the clone. Already a known open item in CLAUDE.md."
+    },
+    "F4_escalation_sendmsg_message_is_null": {
+      "severity": "LOW — pre-existing, observed in passing",
+      "detail": "On the escalation branch the spine clone's own sendmsg record carries message: null (the customer-facing text is sent by the HI sub instead). Pre-existing behaviour, unrelated to turn_id threading. Noting so it is not mistaken for a regression.",
+      "action": "None. Backlog if the null send is itself undesirable."
+    },
+    "F5_pic1_result_key_dropped": {
+      "severity": "LOW — pre-existing latent bug, already flagged in the plan",
+      "detail": "Caller #10 maps result_set from last_result_set, which is not a declared trigger input, so it is always undefined and the result key vanishes from the blob. Confirmed empirically in OBS-10.",
+      "action": "Backlog. Do not fix in this cycle."
+    },
+    "F6_live_threading_confirmed_incidentally": {
+      "severity": "INFORMATIONAL — positive",
+      "detail": "The prod-sink attribution incidentally captured a real customer turn (contact 423729094) whose incoming and outgoing rows both carry turn_id 9423087. Independent live evidence that cycle 1's C1/C3 threading works in production on the happy path.",
+      "action": "None."
+    },
+    "F7_prod_sink_drains_in_under_60s": {
+      "severity": "PROCESS — harness lesson",
+      "detail": "The prod sink went 0 -> 2 -> 0 inside ~54 seconds. Reading LLEN after the fact would have shown 0 and silently passed a delta that DID occur. This is exactly the false-negative the S7 replacement was written to catch, and it fired on its first real outing. Attribution was only possible because the consumer ledger (5s poll, Srs08P0Ha3Cv--YPx0-Yn) retains payloads in execution data.",
+      "action": "Keep S7b's ledger-first ordering. Prefer the runner's atomic before/after capture (zz-canary-run already does this) over out-of-band LLEN sampling."
+    },
+    "F8_setNodeParameter_pointer_is_relative": {
+      "severity": "PROCESS — MCP gotcha, cost one wasted run",
+      "detail": "update_workflow setNodeParameter with path '/parameters/key' does NOT overwrite parameters.key — it creates a nested parameters.parameters.key and the node keeps using the old value, silently. The pointer is relative to the node's parameters object, so the correct path is '/key'. Worth adding to docs/LESSONS.md.",
+      "action": "Add to LESSONS. Use updateNodeParameters{replace:true} when unsure."
+    }
+  },
+
+  "gaps": {
+    "G1_outgoing_blob_not_asserted_on_hop3": "Both ingress clones point their sendmsg caller at STANDIN (no save blobs), so OBS-15/16 assertion 2 is proven from the egress record rather than a rendered outgoing blob. V-T-k (contact arrives as an object) IS fully proven; what is indirect is only 'those fields render populated in the blob', and OBS-9 proves that rendering separately. Closing it needs one workflowId leaf change per clone — outside the tester's remit.",
+    "G2_OBS11": "See F1."
+  },
+
+  "tester_actions_taken": {
+    "workflows_edited": "ONLY zz-canary-read (LLIbMXAixexM9Cwc), the tester's own read helper: added LLEN main-message-list, LRANGE sorento-respond-message-TEST, LRANGE sorento-respond-message, and retargeted the egress key. No artifact under test was edited.",
+    "workflows_published": "NONE",
+    "live_workflows_touched": "NONE",
+    "sub-sendmsg-OBS_sJI3DbsLCG01JfRs": "NOT executed, NOT pointed at anything. DO-NOT-RUN honoured.",
+    "execute_workflow_on_ingress_clones": "NEVER. Both Hop-3 cases used test_workflow with Redis1 pinned, as required."
+  }
+}

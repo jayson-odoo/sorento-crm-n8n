@@ -1,0 +1,454 @@
+--- clone/Call 'sub-get-results'
++++ fork/Call 'sub-get-results'
+@@ -66,7 +66,7 @@
+   "value": {
+    "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+    "entities": "={{ $('disallowed-entity-gate').first().json.compatible_entities }}",
+-   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
++   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  const _inter = aggExecuted ? _entitled.filter(a => _stated.includes(a)) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
+    "tool": "={{ $json.name }} ",
+    "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('disallowed-entity-gate').first().json.compatible_entities) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  "
+   }
+--- clone/Call 'sub-query-reformulator'
++++ fork/Call 'sub-query-reformulator'
+@@ -2,10 +2,10 @@
+  "options": {},
+  "workflowId": {
+   "__rl": true,
+-  "cachedResultName": "sub-semantic-parser FORK domain-continuity-carry",
+-  "cachedResultUrl": "/workflow/wI5RkNGW3EOJfBdo",
++  "cachedResultName": "sub-semantic-parser PROMO-PICKER",
++  "cachedResultUrl": "/workflow/RJ326g9dwe3bTWyf",
+   "mode": "list",
+-  "value": "wI5RkNGW3EOJfBdo"
++  "value": "RJ326g9dwe3bTWyf"
+  },
+  "workflowInputs": {
+   "attemptToConvertTypes": false,
+--- clone/If4
++++ fork/If4
+@@ -1,25 +1,15 @@
+ {
+  "conditions": {
+-  "combinator": "or",
++  "combinator": "and",
+   "conditions": [
+    {
+-    "id": "e6818373-74f0-4d0b-bc45-cf863ae44125",
+-    "leftValue": "={{ $('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels) }}",
+-    "operator": {
+-     "operation": "notEmpty",
+-     "singleValue": true,
+-     "type": "array"
+-    },
+-    "rightValue": "="
+-   },
+-   {
+     "id": "50d7c5dd-def2-4c29-a43f-2be5324b66bd",
+     "leftValue": "={{ $json.name.length }}",
+     "operator": {
+-     "operation": "equals",
++     "operation": "gt",
+      "type": "number"
+     },
+-    "rightValue": 1
++    "rightValue": 0
+    }
+   ],
+   "options": {
+--- clone/compile-current-state
++++ fork/compile-current-state
+@@ -206,7 +206,19 @@
+ else if (_sug) { last_result_set = Array.isArray(_sug.suggest_last_result_set) ? _sug.suggest_last_result_set : []; }
+ else if (_mem) { last_result_set = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : []; }
+ const _isDisambig = (() => { try { const r = getResultObj(); return !!(r && r.require_specific === true && Array.isArray(r.compatible_entities) && r.compatible_entities.length > 0); } catch (e) { return false; } })();
+-const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_isDisambig ? 'disambiguation' : null)));
++// promotion-picker S4: promo-picker builds its own roster, and the parser's ALL handler is
++// gated on selection_context === 'suggest_offer', so without an arm here "all" over a
++// promotion list silently does nothing (measured). LOWEST precedence on purpose — member,
++// suggest and cs rosters must still win a stray "2" (UAC §PP-8).
++const _promo = (() => {
++  try { const n = $('promo-picker');
++        if (!n.isExecuted) return null;
++        const j = n.first().json;
++        return (Array.isArray(j.suggest_last_result_set) && j.suggest_last_result_set.length) ? j : null;
++  } catch (e) { return null; }
++})();
++if (!_merge && !_sug && !_mem && _promo) { last_result_set = _promo.suggest_last_result_set; }
++const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_promo ? 'suggest_offer' : (_isDisambig ? 'disambiguation' : null))));
+ 
+ // ── friendly domain disclaimers (append to user-facing text on the happy path only) ──
+ // master_products answered → nudge toward the catalogue for attributes not shown.
+--- clone/crossdomain-probe
++++ fork/crossdomain-probe
+@@ -18,7 +18,7 @@
+   "value": {
+    "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+    "entities": "={{ $json._xd.probe_entities }}",
+-   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:  parser.message_type ?? null,\n    intent_hint:   parser.intent_hint ?? null,\n    domain_hint:   parser.domain_hint ?? null,\n    user_goal:     parser.user_goal ?? null,\n    access_levels: accessLevels,\n    contact_id:    $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:      \"364817\",\n    is_active:     parser.is_active ?? null\n  };\n})() }}",
++   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  const _inter = aggExecuted ? _entitled.filter(a => _stated.includes(a)) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:  parser.message_type ?? null,\n    intent_hint:   parser.intent_hint ?? null,\n    domain_hint:   parser.domain_hint ?? null,\n    user_goal:     parser.user_goal ?? null,\n    access_levels: accessLevels,\n    contact_id:    $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:      \"364817\",\n    is_active:     parser.is_active ?? null\n  };\n})() }}",
+    "tool": "={{ $json._xd.other_tool }}",
+    "user_prompt": "=cross-domain probe ({{ $json._xd.origin_domain }} -> {{ $json._xd.other_tool }}) for: {{ $json._xd.probe_entities.map(e => e.code).join(', ') }}"
+   }
+--- clone/disallowed-entity-gate
++++ fork/disallowed-entity-gate
+@@ -14,7 +14,11 @@
+   portal_link:        [],
+ };
+ const ALLOWS_EMPTY = {
+-  promotion: true, incoming: true, forms: true, portal_link: true,
++  // S1 (promotion-picker): a promotion cannot be answered by a general search. Flipping this
++  // to false routes a scope-less promotion ask into not-found-error-message's EXISTING
++  // `needsScope` arm ("can't be answered with a general search — please specify a ..."),
++  // reusing that renderer rather than adding a second one.
++  promotion: false, incoming: true, forms: true, portal_link: true,
+   master_products: false, product_attachment: false, inventory: false, order: false,
+ };
+ 
+@@ -311,6 +315,41 @@
+ }
+ out.gate_passed = gate_passed;
+ out.require_specific = require_specific;
++// ── #9 multi-company routing ────────────────────────────────────────────────
++// The resolver now stamps company_id/company_name on every match (CRM multi-company is
++// live). Derive the escalation team from the RESOLVED ENTITY'S company instead of guessing
++// from the customer's access levels — which is empty on an unqualified turn and made every
++// promotion escalation fall back to `sorento`, sending Mocha/Cabana enquiries to the wrong
++// team. Brand tokens already routed correctly; this covers product- and promotion-scoped
++// turns too. Falls back to the parser's routing when no company is resolvable.
++{
++  const _VALID = ['sorento', 'cabana', 'mocha'];
++  const _names = flat.map(m => String((m && m.company_name) || '').toLowerCase()).filter(Boolean);
++  const _brands = [...new Set(_names.map(n => _VALID.find(v => n.includes(v))).filter(Boolean))];
++  // Only when UNAMBIGUOUS — a mixed-company result set must not be collapsed to an arbitrary
++  // first match (the dedup-by-code failure shape).
++  out.resolved_company = _brands.length === 1 ? _brands[0] : null;
++  out.company_team = (domain === 'promotion' && _brands.length === 1)
++    ? `marketing_promotion_${_brands[0]}` : null;
++  out.resolved_companies = _brands;
++}
++
++// ── Q23 — a stated access level the contact does not hold ───────────────────
++// Say so, then still show what they DO have. Without this the intersection is empty, the CRM
++// returns nothing and the customer gets a generic "not found" for a question that was really
++// an entitlement problem.
++{
++  const _stated = (Array.isArray(parser.access_levels) ? parser.access_levels : [])
++    .map(a => String(a || '').trim()).filter(Boolean);
++  let _entitled = [];
++  try { if ($('Aggregate').isExecuted) _entitled = $('Aggregate').first().json.name || []; } catch (e) {}
++  const _lc = _entitled.map(a => String(a).toLowerCase());
++  const _held = _stated.filter(a => _lc.includes(a.toLowerCase()));
++  out.access_denied_levels = (_stated.length > 0 && _held.length === 0) ? _stated : [];
++  out.access_notice = out.access_denied_levels.length
++    ? `You don't have access to ${_stated.join(', ')} promotions — here's what you do have:` : '';
++}
++
+ out.gate_reason = gate_reason;
+ out.gate_clarification = gate_clarification;   // '' when nothing to ask
+ out.compatible_entities = compatible_entities;
+--- clone/dym-probe
++++ fork/dym-probe
+@@ -66,7 +66,7 @@
+   "value": {
+    "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+    "entities": "={{ $('dym-transform').first().json.dym_probe_entities }}",
+-   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
++   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  const _inter = aggExecuted ? _entitled.filter(a => _stated.includes(a)) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
+    "tool": "={{ $('dym-transform').first().json.probe_tool }}",
+    "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('dym-transform').first().json.dym_probe_entities) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  "
+   }
+--- clone/dym-probe-partial
++++ fork/dym-probe-partial
+@@ -66,7 +66,7 @@
+   "value": {
+    "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+    "entities": "={{ $('dym-transform-partial').first().json.dym_probe_entities }}",
+-   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
++   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  const _inter = aggExecuted ? _entitled.filter(a => _stated.includes(a)) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
+    "tool": "={{ $('dym-transform-partial').first().json.probe_tool }}",
+    "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('dym-transform-partial').first().json.dym_probe_entities) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  "
+   }
+--- clone/escalate-catalog
++++ fork/escalate-catalog
+@@ -61,8 +61,11 @@
+     response       = `I see you're ${qf.user_goal}, Let me understand more.\n\nAre you asking about any of these?\n\n- Product (List Price, Dimension)\n- Photos, Technical Specs, Cert\n- Promotion\n- Forms\n- Stock\n- Delivery order\n- Incoming\n- Catalogue, Warranty\n\nI can help with the topics listed above.`;
+     manualResponse = true;
+     break;
+-  case 'escalate_offer':
+-    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${qf.routing.suggested_team} team?`;
++  case 'escalate_offer': {
++    // #9: prefer the resolved entity's company team over the parser's access-level guess.
++    const _ct = (() => { try { const g2 = $('disallowed-entity-gate'); return g2.isExecuted ? (g2.first().json.company_team || null) : null; } catch (e) { return null; } })();
++    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${_ct || qf.routing.suggested_team} team?`;
++  }
+     manualResponse = true;
+     is_escalate_offer = true;
+     break;
+--- clone/not-found-error-message
++++ fork/not-found-error-message
+@@ -258,6 +258,12 @@
+     }
+   }
+   }
++}
++
++// Q23: the customer named an access level they do not hold. The gate detects it; say so here
++// too, or an entitlement problem reads as an ordinary "couldn't find it".
++if (gate && gate.access_notice && escalate_message) {
++  escalate_message = `${gate.access_notice}\n\n${escalate_message}`;
+ }
+ 
+ const out = $input.first().json;
+--- clone/probe-incoming
++++ fork/probe-incoming
+@@ -66,7 +66,7 @@
+   "value": {
+    "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+    "entities": "={{ $('disallowed-entity-gate').first().json.compatible_entities }}",
+-   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
++   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  const _inter = aggExecuted ? _entitled.filter(a => _stated.includes(a)) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
+    "tool": "crm_incoming_stock_list",
+    "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('disallowed-entity-gate').first().json.compatible_entities) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  "
+   }
+--- clone/sibling-probe
++++ fork/sibling-probe
+@@ -66,7 +66,7 @@
+   "value": {
+    "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+    "entities": "={{ $('sibling-transform').first().json.siblings }}",
+-   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  const accessLevels = aggExecuted\n    ? $('Aggregate').first().json.name.sort().filter(a => (parser.access_levels || []).includes(a))\n    : (parser.access_levels || []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
++   "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  const aggExecuted = $('Aggregate').isExecuted;\n  // S2b (promotion-picker): the customer is never asked for a level. A STATED level filters this\n  // turn, intersected with entitlement (never raw \u2014 raw would leak another company's promotions).\n  // Stating nothing now yields the FULL live entitlement instead of the empty intersection that\n  // used to force the access-level prompt.\n  const _stated   = parser.access_levels || [];\n  const _entitled = aggExecuted ? $('Aggregate').first().json.name.sort() : [];\n  // Q23: a stated level the contact does not hold yields an EMPTY intersection. Sending []\n  // makes the CRM return nothing and the customer sees a generic \"not found\" for what is\n  // really an entitlement problem. Fall back to their full entitlement; the gate raises the\n  // notice that explains it.\n  const _inter = aggExecuted ? _entitled.filter(a => _stated.includes(a)) : _stated;\n  const accessLevels = _stated.length ? (_inter.length ? _inter : _entitled) : _entitled;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}",
+    "tool": "crm_incoming_stock_list",
+    "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('sibling-transform').first().json.siblings) }} \naccess level: {{ ($('Aggregate').isExecuted ? JSON.stringify($('Aggregate').first().json.name.sort().intersection( $('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels)) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  "
+   }
+--- clone/promo-picker (NEW)
++++ fork/promo-picker (NEW)
+@@ -1 +1,178 @@
++// ── promo-picker ─────────────────────────────────────────────────────────────
++// S4 + S5 of plans/promotion-picker-plan.md.
++//
++// S4 (list): a promotion query returning MORE THAN ONE promotion is answered with the
++//   numbered list only — attachments are suppressed. Without this the customer receives
++//   every matching PDF at once (measured: "promotion for bathroom furniture" -> 15 files
++//   in one WhatsApp message, because the entitlement union spans all 7 access types).
++// S5 (pick): a positional reply ("1", "1 and 2", "1,2", "all") re-runs the same scoped
++//   query and sends ONLY the picked promotions' files.
++//
++// D2 is preserved by construction: exactly ONE promotion falls through untouched, so the
++// single-hit path still attaches its file immediately. Zero promotions also falls through
++// to the existing not-found handling.
++//
++// ⚠️ WHY POSITIONS AND NOT promotion_ids: `answers[]` from get-results carry NO uuid
++// (verified exec 11827379 — `last_result_set[].uuid` is null for every promotion row). The
++// plan's Q14 said "re-call MCP with promotion_ids"; there are no ids to pass. The pick turn
++// therefore re-runs the SAME query (the scope entity is carried in state) and selects from
++// the fresh result set. That still satisfies Q14's actual requirement — nothing stale is
++// reused, files are presigned at send time — it just keys on position + name, not uuid.
++const j      = $input.first().json;
++const parser = $("Call 'sub-query-reformulator'").first().json.output ?? {};
++// Q23: the customer named an access level they do not hold. disallowed-entity-gate detects it
++// and we still show their real entitlement — but the reply must SAY so, or an entitlement
++// problem reads as a generic "not found".
++const _notice = (() => {
++  try { const g = $('disallowed-entity-gate'); return g.isExecuted ? String(g.first().json.access_notice || '') : ''; }
++  catch (e) { return ''; }
++})();
++const withNotice = t => _notice ? `${_notice}\n\n${t}` : t;
+ 
++if ((parser.domain_hint ?? null) !== 'promotion') return j;
++
++const answers = Array.isArray(j.answers) ? j.answers : [];
++const atts    = Array.isArray(j.attachments) ? j.attachments : [];
++const norm    = s => String(s ?? '').trim().toLowerCase();
++
++const labelOf = (a, i) => {
++  const f = (a.fields || []).find(x => norm(x.label) === 'promotion');
++  return String(a.title || (f && f.value) || `promotion ${i + 1}`).trim();
++};
++
++// `response` is the PRE-RENDERED customer string. Filtering answers[]/attachments[] alone is
++// invisible to the customer — they read `response`, so this node must own it too. (Measured:
++// picking "1 and 2" sent exactly 2 files while the text still listed all 15.)
++const renderBlocks = list => list.map((a, i) => {
++  const lines = (a.fields || []).map(f => `*${f.label}:* ${f.value}`).join('\n');
++  return `${i + 1}. ${lines}`;
++}).join('\n\n');
++// Swap ONLY the leading intro paragraph, leaving the LLM's own rendering intact. If the head
++// is not the intro we expected, rebuild rather than blindly slicing.
++const reintro = (resp, oldIntro, newIntro) => {
++  const s = String(resp || '');
++  const head = s.split('\n\n')[0];
++  return (oldIntro && head.trim() === String(oldIntro).trim())
++    ? [newIntro, s.slice(head.length).replace(/^\n+/, '')].filter(Boolean).join('\n\n')
++    : null;
++};
++
++// ── S5 — positional pick ──────────────────────────────────────────────────────
++// The parser already turns "1 and 2" / "all" into reference_positions (1-based) against
++// the previous turn's roster; "all" is expanded upstream by the existing ALL handler,
++// which is gated on selection_context === 'suggest_offer' — the value S4 sets below.
++const positions = Array.isArray(parser.reference_positions)
++  ? parser.reference_positions.map(Number).filter(n => Number.isInteger(n) && n >= 1)
++  : [];
++
++if (positions.length > 0 && answers.length > 0) {
++  // The parser resolves a pick into ENTITIES as well as reference_positions, so on the
++  // stateful lane the re-query already comes back narrowed to exactly what was picked.
++  // Applying the positions again would double-filter: picking "3" narrowed answers to 1,
++  // then position 3 fell out of range and the customer was told "there is only 1 promotion"
++  // (reproduced through the chat console, exec 11871980).
++  //
++  // Distinguisher — compare set size to pick count, NOT max(position):
++  //   already narrowed : positions [3]    answers 1   -> 1 <= 1  pass through
++  //   genuine 99       : positions [99]   answers 15  -> 15 > 1  filter, report out-of-range
++  // Both have max(position) > answers.length, which is why that test alone is not enough.
++  if (answers.length <= positions.length) {
++    j.response_intro = atts.length
++      ? 'I have attached the file(s) below.'
++      : 'No file is attached to that promotion — here are its details.';
++    j._promo_pick = { positions, matched: answers.length, files: atts.length,
++                      out_of_range: [], drift: [], pre_narrowed: true };
++    return j;
++  }
++
++  const keep      = new Set(positions);
++  const pickedIdx = answers.map((_, i) => i + 1).filter(n => keep.has(n));
++  const pickedAns = pickedIdx.map(n => answers[n - 1]).filter(Boolean);
++
++  // answers[] and attachments[] are INDEX-ALIGNED — that is the contract, and matching by
++  // name instead is actively wrong: the answer title is an LLM-normalised copy of the
++  // filename with punctuation dropped ("PROMO_11052026 (2) OFFICE.pdf" arrives as
++  // "PROMO_11052026 2 OFFICE.pdf"). Measured on exec 11827379: exact-name matching resolved
++  // only 8 of 15 rows and silently sent nothing for the other 7.
++  // `loose` compares alphanumerics only, so it is a real cross-check rather than a
++  // punctuation test; a mismatch is RECORDED, never silently corrected.
++  const loose  = s => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
++  const byName = new Map(atts.map(a => [loose(a.filename), a]));
++  const drift  = [];
++  const pickedAtts = pickedIdx.map((n, k) => {
++    const at  = atts[n - 1];
++    const lbl = loose(labelOf(pickedAns[k], k));
++    if (at && loose(at.filename) === lbl) return at;
++    if (byName.has(lbl)) { drift.push({ idx: n, resolved_by: 'name' }); return byName.get(lbl); }
++    if (at) { drift.push({ idx: n, resolved_by: 'index', label_mismatch: true }); return at; }
++    drift.push({ idx: n, resolved_by: 'none' });
++    return null;
++  }).filter(Boolean);
++
++  // Every picked position is past the end of the list: say so plainly. Falling through would
++  // emit "No file is attached to that promotion", which describes a DIFFERENT situation (Q5)
++  // and reads as though the promotion exists.
++  if (pickedAns.length === 0) {
++    const only = `There ${answers.length === 1 ? 'is' : 'are'} only ${answers.length} ` +
++                 `promotion${answers.length === 1 ? '' : 's'} in that list — ` +
++                 `please reply with a number between 1 and ${answers.length}.`;
++    j.answers = []; j.attachments = [];
++    j.response = only; j.response_intro = only;
++    j._promo_pick = { positions, matched: 0, files: 0,
++                      out_of_range: positions.filter(n => n > answers.length), drift: [] };
++    return j;
++  }
++
++  // Keep publishing the FULL-list roster on a pick turn. Without this,
++  // compile-current-state rebuilds last_result_set from the (filtered) answers, the roster
++  // collapses to the one promotion just sent, and EVERY later number returns that same file
++  // — reproduced end-to-end: 7 listed, "5" correct, then "3" returned #5 again.
++  // The customer's numbers must keep addressing the list they are looking at (plan Q3).
++  j.suggest_last_result_set = answers.map((a, i) => ({
++    idx: i + 1,
++    label: labelOf(a, i),
++    value: labelOf(a, i),
++    uuid: null,
++    entity_type: 'promotion',
++    filename: (atts[i] || {}).filename ?? null,
++  }));
++  j.suggest_selection_context = 'suggest_offer';
++
++  j.answers     = pickedAns;
++  j.attachments = pickedAtts;
++  // Q5: a picked promotion with no file still answers — with its details as text.
++  const _pickIntro = pickedAtts.length
++    ? 'I have attached the file(s) below.'
++    : 'No file is attached to that promotion — here are its details.';
++  j.response_intro = _pickIntro;
++  // rebuilt, not sliced: the set itself changed, so the old rendering is wrong line by line
++  j.response = [_pickIntro, renderBlocks(pickedAns)].filter(Boolean).join('\n\n');
++  j._promo_pick = { positions, matched: pickedAns.length, files: pickedAtts.length,
++                    out_of_range: positions.filter(n => n > answers.length),
++                    drift };
++  return j;
++}
++
++// ── S4 — more than one promotion: list, do not send ───────────────────────────
++if (answers.length > 1) {
++  j.suggest_last_result_set = answers.map((a, i) => ({
++    idx: i + 1,
++    label: labelOf(a, i),          // BARE — no numbering baked in, or the pick breaks
++    value: labelOf(a, i),
++    uuid: null,                    // promotions carry none at this layer (see header)
++    entity_type: 'promotion',
++    filename: (atts[i] || {}).filename ?? null,
++  }));
++  j.suggest_selection_context = 'suggest_offer';
++  j.attachments   = [];            // the whole point: list first, files only on pick
++  const _listIntro =
++    `I found ${answers.length} promotions. Reply with the number you want — ` +
++    `for example "1", "1 and 2", or "all".`;
++  const _swapped = reintro(j.response, j.response_intro, _listIntro);
++  j.response       = withNotice(_swapped !== null ? _swapped : [_listIntro, renderBlocks(answers)].join('\n\n'));
++  j.response_intro = withNotice(_listIntro);
++  j._promo_picker  = { count: answers.length, intro_swapped: _swapped !== null };
++}
++
++return j;
++
+--- clone/parser/output_exchange
++++ fork/parser/output_exchange
+@@ -916,8 +916,44 @@
+   output.output.message_type = 'casual';
+ }
+ 
+-if (output.output.access_levels.length == 0) {
+-  output.output.access_levels = $('When Executed by Another Workflow').first().json.previous_conversation_state?.access_levels || []
++// ── S3 (promotion-picker): the access-level CARRY IS DELETED ────────────────────────────
++// It made a level chosen once sticky for the rest of the session: ask for office, then ask
++// for dealer, still get office (reproduced, PP-0b). Entitlement is now re-read from CRM every
++// turn (spine S2b), so there is nothing to go stale and nothing to carry.
++//
++// ── S5 (promotion-picker): a positional pick carries its own scope ──────────────────────
++// "1 and 2" resolves to reference_positions but entities:[] — entity_op is already 'reuse',
++// yet nothing reinstates the scope, so the gate sees a scope-less promotion ask and refuses
++// (measured exec 11827959). Reuse the PREVIOUS turn's entities so the SAME query re-runs and
++// the positions still line up with the roster the customer is looking at. Promotion domain
++// only, and only when this turn resolved no entity of its own.
++{
++  const _prev = $('When Executed by Another Workflow').first().json.previous_conversation_state || {};
++  const _picking = Array.isArray(output.output.reference_positions) && output.output.reference_positions.length > 0;
++  const _noScope = !Array.isArray(output.output.entities) || output.output.entities.length === 0;
++  // The pick must NOT become the new scope. The parser resolves positions into the PICKED
++  // promotion's own entities; letting that stand narrows the next query to that one promotion,
++  // so the roster collapses to 1 and every later number returns the same file (reproduced:
++  // 7 listed, "5" correct, then "3" returned #5 again).
++  // Reuse the previous turn's NON-promotion scope on every promotion pick — not only when this
++  // turn resolved nothing — so repeat picks keep addressing the list the customer can see.
++  // QUOTE-REPLY WINS. When the customer quote-replies an OLDER list, the parser has already
++  // resolved the position against `referenced_result_set` — that IS the right answer, and the
++  // scope reuse below would discard it and re-run the PREVIOUS turn's query instead, returning
++  // the wrong promotion (PP-7: quoted list #2 vs current list #2).
++  const _quoted = Array.isArray(parent_input.referenced_result_set) && parent_input.referenced_result_set.length > 0;
++  const _prevScope = _quoted ? [] : (Array.isArray(_prev.entities) ? _prev.entities : [])
++    .filter(x => String(x && x.hint || '').toLowerCase() !== 'promotion');
++  if (output.output.domain_hint === 'promotion' && _picking && _prevScope.length > 0) {
++    output.output.entities = _prevScope.map(x => ({ ...x, current_message: false }));
++    output.output.entity_op = 'reuse';
++    output.output._promo_pick_scope_reused = true;
++  } else if (output.output.domain_hint === 'promotion' && _picking && _noScope && !_quoted
++             && Array.isArray(_prev.entities) && _prev.entities.length > 0) {
++    output.output.entities = _prev.entities.map(x => ({ ...x, current_message: false }));
++    output.output.entity_op = 'reuse';
++    output.output._promo_pick_scope_reused = true;
++  }
+ }
+ 
+ const _engagesOffer = (isAffirmative || isDecline || _isPositionPick);
