@@ -1,0 +1,39 @@
+{
+ "case": "SR-15",
+ "also_satisfies": ["SR-4 (genuine miss survives)", "SR-9 (N-3 reachability, third-shape re-confirmed post-migration)"],
+ "title": "DEV-2 mixed hit+miss turn -- spec shortlist AND a code miss line in ONE reply",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "wall hung basin and SRTZZ999",
+ "test_run_id": "sr15-20260815",
+ "execution": "12597093",
+ "resolve_entity_http_response": {
+  "tokens": ["wall hung basin", "SRTZZ999"],
+  "per_token_resolutions": [
+   {"token": "wall hung basin", "resolved": false, "ambiguous": false, "matches": [], "alternatives": "3 trgm fuzzy candidates only"},
+   {"token": "SRTZZ999", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []},
+   {"token": "wall hung basin and SRTZZ999 (the FULL query)", "resolved": false, "ambiguous": true, "matches": "5 Bravat wall-hung-basin spec_search rows, via_token = the full sentence"}
+  ],
+  "fallback_match_mode": "or",
+  "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+  "unresolved_tokens": ["SRTZZ999"],
+  "spec_asked": [{"key": "mounting", "value": "wall_hung"}],
+  "matched_specs_per_row": ["free_terms", "mounting"]
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 14/08/2026 18:37:21_\n\n_Matched on: mounting: Wall Hung._\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊\n\nCouldn't find these:\n\"SRTZZ999\" — not found.\n\nAsk again with the correct code.",
+  "spec_shortlist_present": true,
+  "wall_hung_basin_absent_from_miss_block": true,
+  "exactly_one_not_found_marker": true,
+  "sendmsg_parts": 1
+ },
+ "sr9_reachability_reconfirmed": "The same third-shape SR-9 identified pre-migration (a multi-token AND-zero-intersection query forced into OR-mode, keeping the descriptive token's OWN empty-matches resolution AND appending a separate query-keyed spec_search resolution) is REACHABLE and functioning identically on the post-migration build. N-3 correctly suppresses the 'wall hung basin' miss (it was answered by the query-keyed resolution) while leaving 'SRTZZ999' (genuinely unresolved) surfaced. No regression.",
+ "safety_S0": {
+  "S1_S3": "PASS -- 3-entry would_* egress log, no real sends/writes.",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sr15-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:37:48Z-15:38:27Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

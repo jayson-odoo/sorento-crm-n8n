@@ -1,0 +1,54 @@
+{
+ "addendum_to": ["spec-answer-honesty-rollup-20260813.json (rev1)", "spec-answer-honesty-rollup-20260813-rev2-addendum.json (rev2)", "spec-answer-honesty-rev3-maindelta-20260813.json (rev3, main-session deviation)"],
+ "purpose": "SR-1b delta run: the three tester-owned clone cases (SR-10, SR-11, SR-12) for the rev-4 \"Matched on\" (N-1a) line. Offline units are the coder's and already green (134 passed / 0 failed, 22/22 mutants caught) per tests/diffs/spec-answer-honesty.md -- NOT re-run here, per instruction.",
+ "change_id": "spec-answer-honesty",
+ "slice": "SR-1b (N-1a, the \"Matched on\" line)",
+ "family": "SR",
+ "date": "2026-08-13",
+ "rev4_change_summary_from_coordinator": "One node, one leaf, compile-current-state.jsCode: one new additive IIFE (N-1a), spliced above N-2, unioning display.matched_specs across the answer's spec rows (joined to disallowed-entity-gate.compatible_entities the same way N-3 joins them), deduped first-seen order, humanised, free_terms excluded (falls back to 'your description' if it's the only match), zero spec keys -> no line (byte-identical no-op). N-0/N-2/N-3 untouched; resolve-entity-http not re-touched. Offline: 134 passed / 0 failed, 22/22 mutants caught, 14/23 new SR-U6 assertions shown RED against the deployed rev-3 body first (S9 compliant).",
+ "target_verification": {
+  "pre_run": "Fresh REST GET of txiPzSxy3Pclsz6v BEFORE the first case fired: versionId==activeVersionId==c97f2f8f-e335-4a3b-8046-abea89bbfdf9, matching the coordinator's stated rev-4 target exactly. Independently re-derived node shas: compile-current-state.jsCode sha256 82707a95a7c63d74b6dbc963774630e21a5bd1c9cb4748671706a4a8a63e67b5 (52694 B, matches the manifest's rev-4 DEPLOYED value byte-for-byte -- CHANGED from rev-3's 7959776fa7ce.../46933B, confirming a real deploy occurred); resolve-entity-http.jsonBody sha256 7ca14cbfd47e273a1c1464e2fb0c85fd52e3a39cf9f0062f83bc537ce7fd4265 (1809 B, UNCHANGED from rev1/2/3's deployed value, independently confirming the coordinator's 'N-0 not re-touched' claim rather than trusting it).",
+  "post_run": "Re-fetched via fresh REST GET after all 3 case-firings: versionId==activeVersionId==c97f2f8f-e335-4a3b-8046-abea89bbfdf9, UNCHANGED. Both node shas re-derived identically to the pre-run values. workflow 'updatedAt' (2026-08-13T11:30:28.920Z) PREDATES the first case fire (11:57:55.979Z), confirming zero writes to this workflow occurred during the entire delta pass.",
+  "no_edits_no_promotion": "Confirmed -- no update_workflow or publish_workflow call was made against txiPzSxy3Pclsz6v or any other workflow during this delta pass. Live spine 9qVyfUxmRQqrpGRMDLRuz not touched, not read."
+ },
+ "contact": 437264483,
+ "driver_mechanism": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No wraps: clears the per-contact test queue + egress key, RPUSHes the item, runs the clone via its executeWorkflowTrigger, returns {egress:[...]} directly in the HTTP response). Every item carried mode:'uac', a per-case test_run_id, and previous_conversation_state:{} at item top level (same shape as every prior SR-family driver -- tests/harness/drive-clone.py / tests/offline/container-status/e2e-driver.py). Execution ids resolved by polling GET /executions?workflowId=txiPzSxy3Pclsz6v&limit=1 until it changed from the pre-fire latest, and cross-verified by test_run_id in the trigger node's own json (self-verify guard, LESSONS §8) for every case.",
+ "cases_run": {
+  "SR-10": "PASS. See spec-answer-honesty-SR-10-20260813.json. Product list + `_Matched on: bowl count._` + N-2 thickness line, each exactly once, in the required order (rows -> Matched-on -> N-2 -> P/S footer). N-2's own wording/value unchanged from rev 3, confirming the two hunks (N-1a splice above N-2) did not interact destructively.",
+  "SR-11": "PASS. See spec-answer-honesty-SR-11-20260813.json. Spec answer + Matched-on line present; none of the SR-3 banned strings. Key set recorded VERBATIM: {mounting} (free_terms excluded, single key, attributable to the customer's own 'wall hung' wording). The §3b finding-1 house-preference review trigger (a `brand` key from CRM-side value_weights boosting) did NOT manifest on this execution -- flagged prominently per instruction as a negative-this-run observation, not proof the underlying CRM-side risk is closed. See the case file's dedicated review_trigger_check_KEY_SET_VERBATIM block.",
+  "SR-12": "PASS. See spec-answer-honesty-SR-12-20260813.json. NO Matched-on line anywhere in the 49-row inventory reply -- the no-op guarantee at the boundary, confirmed both by direct substring scan of the full rendered text and by the mechanism (resolve-entity's output carries match_tier:'and' on every row, never 'spec_search', so N-1a's key-collection guard returns before emitting anything). A literal byte-for-byte rev-3 uac-mode baseline for this exact input does not exist (recorded honestly, same caveat the coder's own SR-5 result already flagged for this input) -- N-1a's own node-for-node absence is instead proven directly against this execution's resolve-entity match_tier values, which is the claim that actually matters for the no-op guarantee."
+ },
+ "executions_this_delta_pass": {
+  "sr10r4": "12323456 (started 2026-08-13T11:57:55.979Z, stopped 11:58:05.422Z)",
+  "sr11r4": "12323479 (started 2026-08-13T11:58:06.453Z, stopped 11:58:13.356Z)",
+  "sr12r4": "12323496 (started 2026-08-13T11:58:14.568Z, stopped 11:58:20.413Z)"
+ },
+ "safety_S0_summary": {
+  "S1_S6": "All 3 case-firings PASS S1-S6. Zero real WhatsApp/comment sends across every execution (every egress-log entry, 12 total across the 3 cases, is would_log/would_write/would_send -- SR-12's inventory answer chunked into 4 would_send parts due to the 1024-byte quick-reply cap, still every one blocked). Zero assignment/escalation writes (no escalation branch taken in any of the 3 cases). Zero CRM/contact writes (save-session-vars/update-human-intervened remain orphaned, 0 inbound, unchanged by this build; every egress entry is would_write, never a real PUT). get-results never invoked a write tool in any case -- all 3 sub-executions (12323471/12323490/12323506, all on fork t4QvrtrPnTwRU6br) returned the established read-only answer shape.",
+  "S5_test_mode": "Directly confirmed via get_execution for EVERY case-firing (12323456/12323479/12323496) -- {test_mode:true, test_run_id:<matching case tag>, scope:'deterministic'} on all 3, self-verified against the fired test_run_id, no case relied on inference.",
+  "S6_llm_liveness_note": "Real reformulator (Call 'sub-query-reformulator') ran on all 3, against the clone's actually-wired fork wI5RkNGW3EOJfBdo -- non-mocked (mock_parser_output/mock_reformulator_output both null), consistent with prior SR-family classification as parser-tier. 'Basic LLM Chain' (the clarification path) did not execute on any of the 3. No new token sink observed anywhere in this delta pass beyond the standard reformulator + get-results fork's own established pattern -- consistent with every prior SR-family run."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Directly re-confirmed for ALL THREE cases individually (not sampled): 12323476 (SR-10) / 12323493 (SR-11) / 12323511 (SR-12), each a 'Call sub-respond-save-message-redis'2' sub-execution targeting workflowId tWm5DYLxfypmVC1T (the TEST sink, never the live UrETd-jm46tFj3Xw7w8vL), each payload turn_id self-verified equal to its own parent execution id.",
+  "S7b_prod_sink": {
+   "method": "Two co-mandatory signals per UAC.md §0 S7b: (1) per-poll LLEN depth series from the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn's first node ('Redis1', emits {'sorento-respond-message': N}), and (2) per-poll pop payload from that consumer's second node ('Redis', emits {'':null} on empty pop or the popped message object). Never scored on consumer execution COUNT.",
+   "window_covered": "2026-08-13T11:57:50Z through 2026-08-13T11:58:25Z -- 8 consumer executions individually fetched via REST and inspected (12323444/12323451/12323465/12323474/12323484/12323497/12323508/12323516). This window FULLY CONTAINS all 3 case fires of THIS delta run (earliest 11:57:55.979Z, latest stop 11:58:20.413Z) with margin on both sides (5s before the first fire, 5s after the last stop), and was swept immediately after firing, well within the ~8-minute retention horizon. This sweep covers ONLY this session's own SR-10/11/12 window -- explicitly scoped to avoid the rev-1 gap noted in that rollup (SR-7/SR-8 fired outside their swept window and were separately flagged as a gap, not silently omitted; this run's cases are fully covered, no such gap here).",
+   "unretrievable_polls": 0,
+   "total_polls_fetched": 8,
+   "nonzero_llen_polls": 0,
+   "nonempty_pop_polls": 0,
+   "harness_attributable_delta": 0,
+   "verdict": "PASS -- zero prod-sink delta across the entire covering window. No attribution step was needed (no non-zero poll of either signal)."
+  }
+ },
+ "verdicts": {
+  "SR-10": "PASS",
+  "SR-11": "PASS (with the recorded, prominently-flagged, not-triggered-this-run house-preference observation)",
+  "SR-12": "PASS"
+ },
+ "open_items_for_reviewer": [
+  "SR-11 / diff §3b finding 1 remains an OPEN CRM-side honesty limit, unaffected by this run's clean result: product_spec_search.py:695-702 can append a house-preference key (e.g. brand) to matched_specs precisely when the customer never stated it, and n8n has no wire signal to filter it. This run's catalogue slice (BRAVAT wall-hung basins) did not exercise that path -- absence of evidence on this one query, not evidence of absence. Decision still needed per the diff doc: CRM marks preference-derived keys on the row (C-3 rider), or SR-1b accepts a boosted brand can be announced as a match.",
+  "SR-12 session-carry non-determinism (re-confirmed, not new): this delta run's 'check stock SRTWC286' rendered a clean 49-row answer with no trailing miss line, while rev-1's uac-mode run of the identical input carried a 'Dealer' miss and rev-3's chat-console run of the identical input carried a '2m flexible hose' miss -- both from carried session entities unrelated to the turn's own words. This is pre-existing session-carry noise (backlog B2, diff §3-rev3), orthogonal to both nodes this slice touches, and does not affect the SR-12 no-op verdict (which is proven directly from resolve-entity's match_tier values, not from miss-line absence).",
+  "No new token sink observed in this delta pass -- get-results LLM liveness on fork t4QvrtrPnTwRU6br consistent with every prior SR-family run; no reformulator/get-results agent behaviour change flagged."
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "case": "SR-2",
+ "title": "the number changes the answer (1.0mm vs 1.2mm pair) -- rev3 verbatim N-2 wording must not regress",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63 (unchanged throughout the run -- see SR-13 run file for the byte-level pre/post verification, shared across this whole pass)",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "double bowl kitchen sink with thickness 1.0mm",
+ "test_run_id": "sr2-20260815",
+ "execution": "12597040",
+ "paired_with": "SR-13/SR-1 execution 12596895 (the 1.2mm turn), fired ~1min50s earlier, same clean session (previous_conversation_state:{} on both)",
+ "resolve_entity_http_response": {
+  "spec_asked": [{"key": "bowl_count", "value": 2}, {"key": "thickness", "value": 1}],
+  "spec_unmet": [{"key": "thickness", "value": 1}],
+  "matched_specs_per_row": ["bowl_count", "free_terms"],
+  "via_token": "double bowl kitchen sink with thickness 1.0mm (full raw sentence, per-row)",
+  "product_codes_same_5_skus_as_1.2mm": true,
+  "codes": ["CKS12050", "CKS315", "CKS317", "CKS317-NG", "CKS319"]
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 14/08/2026 18:37:26_\n\n_Matched on: bowl count: 2._\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.0mm.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "n2_line_exact": "thickness isn't recorded for these products, so I couldn't narrow by 1.0mm.",
+  "n2_wording_matches_rev3_requirement": "YES -- verbatim '...so I couldn't narrow by 1.0mm.' (unit preserved, no truncation to bare '1.'), matching SR.md's explicit re-run instruction after clone rev 48aaa6fd",
+  "sendmsg_parts": 1
+ },
+ "hard_assertion": "Rows for the SAME 5 SKUs are identical between 1.0mm and 1.2mm (a CRM-side ranking property this n8n change cannot and should not paper over), BUT both replies carry the honest, unit-preserving N-2 explanation line -- satisfying SR-2's OR-condition ('either the row sets differ, or both replies carry the N-2 line'). No regression from the pre-migration rev3 SR-2 settlement.",
+ "safety_S0": {
+  "S1_S3": "PASS -- egress log 3 entries, all would_*: would_log/would_write/would_send. Zero real sends/writes.",
+  "S4": "get-results ran (target t4QvrtrPnTwRU6br), read-only shape, no write-tool marker.",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr2-20260815', scope:'deterministic', mock_parser_output:null, mock_reformulator_output:null}, self-verified.",
+  "S6": "Real parser-tier run (mocks null), consistent with the SR-13 finding."
+ },
+ "S7": "Covered by the rollup's full-run sink-delta sweep (execution window 15:37:20Z-15:37:31Z falls inside the swept 15:34:00Z-15:45:55Z window; all polls LLEN=0/pop=empty)."
+}

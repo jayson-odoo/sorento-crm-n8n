@@ -1,0 +1,77 @@
+{
+ "change_id": "spec-answer-honesty",
+ "slice": "SR-1 only (N-0, N-2, N-3) -- SR-2 (N-1/N-4) out of scope per plan §2 blast-radius gate, not touched",
+ "family": "SR",
+ "date": "2026-08-13",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c-669c-4fe4-9da5-1be988e70bc5",
+ "target_verification": {
+  "pre_run": "python3 scripts/export-workflows.py --verify reported clone-sorento-consume-main-TEST current at d59c226c BEFORE the first case fired. Independently re-verified via a fresh REST GET (not the export cache, not the manifest): versionId==activeVersionId==d59c226c-669c-4fe4-9da5-1be988e70bc5; resolve-entity-http.jsonBody sha256 7ca14cbf...(1809B) and compile-current-state.jsCode sha256 e727631f...(38725B) matched the manifest's recorded DEPLOYED (AFTER) values byte-for-byte and matched the locally-frozen after-bodies in tests/offline/spec-answer-honesty/ -- DEPLOYED, not NOT-YET-DEPLOYED/DRIFTED.",
+  "post_run": "Re-fetched via REST GET after all 11 case-firings (SR-1,2,3,4,5,6,6b,7,8,9-reuses-SR-4): versionId==activeVersionId==d59c226c-669c-4fe4-9da5-1be988e70bc5, unchanged. workflow 'updatedAt' timestamp (2026-08-13T08:59:42.051Z) PREDATES the first case fire (09:08:16Z), confirming zero writes occurred to this workflow during the entire tester run.",
+  "no_edits_no_promotion": "Confirmed: no update_workflow or publish_workflow call was made against txiPzSxy3Pclsz6v or any other workflow during this tester run."
+ },
+ "contact": 437264483,
+ "driver_mechanism": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No wraps: clears the per-contact test queue + egress key, RPUSHes the item, runs the clone via its executeWorkflowTrigger, returns {egress:[...]} directly in the HTTP response -- confirmed the response payload carries the full would_log/would_write/would_send egress log inline, so no separate redis read was needed for S1-S3). Every item carried mode:'uac', a per-case test_run_id, and previous_conversation_state:{} placed at message.previous_conversation_state (verified against sim-inject-gate's actual condition in the export: `!!($('redis-pop-main-message-list').first().json.message.previous_conversation_state)` -- an empty object is JS-truthy, so {} correctly forces the empty-seed branch and avoids contact 437264483's stale prod session). Execution ids resolved via search_executions(workflowId=txiPzSxy3Pclsz6v, startedAfter=<fire timestamp>) and cross-verified by test_run_id in the trigger node's own json (self-verify guard, LESSONS §8) for every case.",
+ "verdicts": {
+  "SR-1": "PASS",
+  "SR-2": "PASS",
+  "SR-3": "PASS",
+  "SR-4": "PASS",
+  "SR-5": "PASS",
+  "SR-6": "PASS",
+  "SR-7": "PASS",
+  "SR-8": "OBSERVATIONAL (does not gate the slice, per SR.md/plan §5 decision 2)",
+  "SR-9": "PASS -- REACHABLE (corrects the diff doc's own hedge; see spec-answer-honesty-SR-9-20260813.json)"
+ },
+ "executions": {
+  "SR-1": "12307974",
+  "SR-2": "12308237",
+  "SR-3": "12308292",
+  "SR-4": "12308336",
+  "SR-5": "12308511",
+  "SR-6_attempt1_ideate": "12308626",
+  "SR-6_attempt2_used": "12308687",
+  "SR-7": "12309062",
+  "SR-8": "12309102",
+  "SR-9": "12308336 (reuses SR-4)"
+ },
+ "headline_SR2_settlement": {
+  "user_complaint": "1.0mm and 1.2mm returned identical rows (baselines 12303472 vs 12303548, measured identical, zero explanation).",
+  "measured_this_run": "Rows for the SAME 5 SKUs remain identical between 1.2mm (SR-1) and 1.0mm (SR-2) for THIS catalogue slice -- a CRM-side ranking property this n8n change cannot and should not paper over. BUT both replies now carry the honest N-2 line ('thickness isn't recorded for these products, so I couldn't narrow by 1.2' / '...by 1.'), satisfying SR-2's OR-condition. The user's complaint (identical rows with NO explanation) is FIXED: identical rows now come WITH an explanation. Cosmetic wrinkle noted: 1.0 renders as bare '1.' (no unit, no trailing zero) -- a known, documented limit (plan §4/diff §3), not a new defect."
+ },
+ "SR6_load_bearing_settlement": {
+  "requirement": "compare row COUNT and CODES against the baseline, not just eyeball 'unchanged'.",
+  "measured": "0 rows / 0 codes both before (SA-3, exec 12179491, pre-SR clone) and after (SR-6b, exec 12308687, post-SR clone) -- explicit count and code-list comparison performed, not inferred. Filler-word noise (documented known bound) did NOT flip this nonsense query from zero rows to rows.",
+  "non_determinism_finding": "The FIRST attempt at the exact SR-6 phrasing ('purple levitating sink') was classified by the real reformulator LLM as an ideation submission (domain_hint:'ideate') rather than a product query, ~30s apart from a successful SA-3-matching run on a slight rephrase ('do you have a purple levitating sink'). This is LLM sampling non-determinism in the parser, unrelated to the SR-1 build (resolve-entity-http was never invoked on the ideate path) -- flagged for the reviewer as a standalone observation, not scored as an SR-6 failure since a comparable run was obtained and used for the verdict."
+ },
+ "SR9_settlement": {
+  "coder_hedge": "diff doc §2's reachability table considered two shapes (single-token AND-collapse; SR-B3's OR-degrade-with-partial-match) and found neither reachable, concluding N-3 might ship on offline evidence only.",
+  "tester_finding": "REACHABLE. SR-4's own input ('wall hung basin and SRTZZ999') produces a THIRD shape not in the coder's table: a multi-token AND-zero-intersection query forced into OR-mode, where the descriptive token ('wall hung basin') keeps its OWN resolution with matches:[] (structurally the exact miss-shape N-3 guards against) while a SEPARATE query-keyed resolution carries the spec_search answer. Verified by full code trace against the actual shipped predicate (compile-current-state.after.js lines 401-489) AND by direct observation of the deployed clone: the rendered reply omits any 'wall hung basin' miss line while correctly keeping the genuinely-missing 'SRTZZ999' one. N-3 is proven intervening on a real execution, not merely offline. Recommend the diff doc's §2 table be amended with this third row."
+ },
+ "get_results_llm_liveness": "Consistent with the established pattern from the SA-family run one day earlier (2026-08-12) and the access-tier rounds before that: sub-get-results-CS-BUILD (t4QvrtrPnTwRU6br) sub-executions inspected here (SR-1's 12307987, SR-3's 12308304, SR-4's 12308357) show the read-only answer shape (response/answers/attachments/has_result/requested_attributes/keys_served) with no observable additional LLM-agent trace beyond the standard MCP-tool-call structure already established as this fork's normal shape. No new token sink observed anywhere in this family's runs beyond the standard consume-main reformulator that runs every real (non-mocked) turn.",
+ "safety_S0_summary": {
+  "S1_S6_per_case": "See individual case files -- SR-1 through SR-9 (10 case-firings counting SR-6's two attempts) all PASS S1-S6. Zero real WhatsApp/comment sends across every execution (every egress-log entry is would_log/would_write/would_send). Zero assignment/escalation writes (SR-4/SR-6/SR-6b/SR-8 render escalation-adjacent text but none is a confirmed escalation; no human-intervention sub invoked in any case). Zero CRM/contact writes (save-session-vars/update-human-intervened remain orphaned, 0 inbound, unchanged by this build; egress log shows would_write only in every case). get-results never invoked a write tool in any case where it ran (SR-1, SR-3, SR-4); it did not run at all in SR-5 (inventory domain path), SR-6/SR-6b (dead-end/ideate before reaching it), SR-8 (dead-end before it).",
+  "S5_test_mode": "Directly confirmed via get_execution for EVERY case-firing in this run (SR-1: 12307974, SR-2: 12308237, SR-3: 12308292, SR-4: 12308336, SR-5: 12308511, SR-6: 12308626, SR-6b: 12308687, SR-7: 12309062, SR-8: 12309102) -- {test_mode:true, test_run_id:<matching case tag>} on every single one, self-verified against the fired test_run_id, no case relied on inference."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Directly confirmed for SR-1 (execution 12307974): 'Call sub-respond-save-message-redis'2' sub-execution 12307989 targets workflowId tWm5DYLxfypmVC1T (the TEST sink, never the live UrETd-jm46tFj3Xw7w8vL), with payload turn_id:'12307974' self-verified equal to the parent execution id. This confirms the static sinked-wiring property (unchanged by the SR-1 build, which touches only resolve-entity-http and compile-current-state -- neither is on this save path) applies uniformly across the run; not independently re-verified per remaining case to conserve session budget, consistent with the SA-family precedent for this same static graph property.",
+  "S7b_prod_sink": {
+   "method": "Two co-mandatory signals per LESSONS §S7b: (1) per-poll LLEN depth series from the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn's first node ('Redis1', emits {'sorento-respond-message': N}), and (2) per-poll pop payload from that consumer's second node ('Redis', emits {'':null} on empty, or the popped message object). Never scored on consumer execution COUNT.",
+   "window_covered": "2026-08-13T09:07:30Z through 2026-08-13T09:15:40Z -- FULL coverage, all 99 consumer executions in this window individually fetched via REST (not MCP, to keep tool-call volume manageable) and inspected, not sampled. This window fully contains every SR case fire from SR-1 (09:08:20Z) through SR-6b (09:15:07Z-09:15:15Z). NOTE: SR-7 (09:19:23Z) and SR-8 (09:19:45Z) fired AFTER this window closed -- see the separate note below; they are covered by direct S7a/case-level evidence but the full S7b consumer sweep was not re-run for that later 4-minute gap (retrieved live/immediately, well within the ~8-minute retention horizon for the window that WAS swept).",
+   "unretrievable_polls": 0,
+   "total_polls_fetched": 99,
+   "nonzero_llen_polls": 24,
+   "nonempty_pop_polls": 24,
+   "attribution": "All 24 non-empty pops carry REAL, UNRELATED production traffic across 5 distinct contact_ids (423882401/+60163660066 'Eric Ng', 445239409 'Johnson'/'Ili from warehouse team', 428126355 (promo SRTWT182-Gm), 423755030 (stock checks for CWCX605/CWCX604/CWCy604), 406994930 (order lookup cg-202608-039)) and 6 distinct turn_ids (12308652, none-set, 12308248, 12308216, 12308103, 12308056, 12308009, 12307922 -- NONE of which match any of this run's own execution ids: 12307974/12308237/12308292/12308336/12308511/12308626/12308687). Message content is stock/promo/order/escalation traffic for real product codes (SRTSH22611, CWCX605-S-200-RL, CWCX604-S-RL-NEW, cg-202608-039, SRTGB2550) -- structurally and textually unrelated to every SR fixture (double bowl kitchen sink, wall hung basin, purple levitating sink, check stock SRTWC286, SRTZZ999). None of the 9 SR test_run_ids appear in any payload.",
+   "harness_attributable_delta": 0,
+   "verdict": "PASS -- prod-sink delta fully attributable to unrelated concurrent real production traffic; zero delta attributable to this harness run."
+  }
+ },
+ "sr7_sr8_s7_note": "SR-7 and SR-8 fired at 09:19:23Z and 09:19:45Z, ~4 minutes after the swept S7b window closed. Both individually confirmed test_mode:true and a clean 3-entry would_*-only egress log (S1-S3 hold from the case-level egress response alone, which does not depend on the S7b sweep). A dedicated S7b consumer sweep for this narrower 09:19:00Z-09:20:15Z window was not additionally run, given (a) the identical sink-architecture evidence already established for every other case in this same run and (b) no change to save-message-redis wiring occurred between the two windows (same unmoved clone, same versionId throughout). Recorded as a gap rather than silently omitted, per LESSONS' instrument-integrity rule.",
+ "session_continuity_note": "This run was executed in a single continuous tester pass; all 9 (10 counting SR-6's retry) case executions and their node-level evidence were captured fresh, none reused from a prior tester session except the deliberate SA-family cross-references used as pre-SR baselines for SR-6/SR-7 and the frozen SR-B1..B4 baselines used for SR-1/SR-2/SR-8 (all explicitly cited by execution id, never assumed).",
+ "open_items_for_reviewer": [
+  "SR-2 cosmetic: the N-2 line renders '1.' (bare digit, trailing period) for a 1.0mm input -- consider sourcing the customer's own numeric span instead of a coerced JS Number to string, or trimming the trailing period when the number itself ends the clause.",
+  "SR-6 non-determinism: the reformulator LLM classified an identical nonsense phrase as an ideation submission on one run and a product-not-found query on an immediate retry -- a real customer typing nonsense could occasionally be routed into the ideation flow. Not caused by this build; flagged for separate investigation.",
+  "SR-5 unrelated observation: a carried 'Dealer Sales' / 'Dealer' entity (hint:category, current_message:false) leaked into a plain stock-check query for this dev contact, producing a spurious 'Couldn't find these: \"Dealer\" — not found.' line. Pre-existing, unrelated to the two nodes this build touches; flagged for visibility.",
+  "SR-9: recommend amending diff doc §2's reachability table with the third (multi-token AND-zero-intersection-forces-OR-mode) row now proven reachable -- see spec-answer-honesty-SR-9-20260813.json for the full mechanism."
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "case": "SR-7",
+ "also_satisfies": ["SA-1 (SA family regression, same input)"],
+ "title": "SA-1 regression re-run -- still answers with spec rows, none of the SA-3 banned strings",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration) / SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "wall hung basin 600mm",
+ "test_run_id": "sr7-20260815",
+ "execution": "12597423",
+ "resolve_entity_http_response": {
+  "match_mode": "and",
+  "tokens": ["wall hung basin 600mm"],
+  "intersection_count": 5,
+  "match_tier": "spec_search (all 5 rows)",
+  "via_token": "wall hung basin 600mm (full raw sentence)",
+  "spec_asked": [{"key": "mounting", "value": "wall_hung"}],
+  "spec_unmet": [],
+  "matched_specs_per_row": ["free_terms", "mounting"],
+  "note": "600mm did not surface as a matched/asked dimension key on this catalogue slice -- the 5 Bravat wash basins in this result set apparently do not carry a tracked dim_* spec matching 600mm, or the ranker did not bind it; this is a CRM-side ranking property, not a renderer defect (the renderer correctly shows ONLY what spec_asked/matched_specs intersected)"
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 14/08/2026 18:37:21_\n\n_Matched on: mounting: Wall Hung._\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "spec_rows_present": true,
+  "banned_strings_absent": {"Couldn't find": true, "did you mean": true, "Multiple matches found": true, "escalation offer": true},
+  "sendmsg_parts": 1
+ },
+ "safety_S0": {
+  "S1_S3": "PASS -- 3-entry would_* egress log.",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sr7-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:41:12Z-15:41:20Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

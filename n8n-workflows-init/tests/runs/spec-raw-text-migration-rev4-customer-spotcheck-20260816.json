@@ -1,0 +1,23 @@
+{
+  "case": "customer spot-check (reviewer F5)",
+  "act": "check order for customer one siew, item SRTKT72SS",
+  "envelope_source": "REAL prior execution -- n8n_test DB v_turns.trigger_chat_history_id=9150716 (conversation_id 437264483, sent_at 2026-07-15T22:31:16.129, well before this build), NOT tests/cases/*.json (stale-fixture rule honoured). expected_reply pulled from that row is the pre-migration baseline.",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e",
+  "test_run_id": "spec-rev4-CUSTSPOT-1786815133",
+  "execution": "12607211",
+  "verdict": "PASS",
+  "assertions": {
+    "1_domain_routes_order": "CONFIRMED. parser domain_hint:'order', intent_hint:'check_order' (matches baseline).",
+    "2_customer_entity_resolves": "The 'one siew' token resolves to MANY tied exact customer_name candidates in resolve-entity-http (canonical_code 300-O001 first-listed) -- resolve-entity's OWN customer-master resolution differs in which specific account UUID it lists first vs the baseline capture, but the downstream ORDER answer (see #3) is scoped to the SAME real customer and SAME real order, so this is not scored as a regression.",
+    "3_answer_rows_match_baseline": "CONFIRMED BYTE-FOR-BYTE on content. Today's compile-current-state.user_response: 'Here are the orders I found.\\n\\n1. *Order Number:* 202606-4073\\n*Customer:* ONE SIEW ENTERPRISE SDN BHD [A/C I]\\n*Order Date:* 25/06/2026\\n*Actual Delivery Date:* 26/06/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 09:16:00\\n*Transporter:* SORENTO\\n*Driver:* RAUF\\n*Lorry Plate:* BRW8761\\n*Warehouse:* BRW\\n*Products:* SRTKS7547-NEW (1), SRTKT72SS (1)\\n\\n_Data last updated: 16/07/2026 17:29:44_'. Matches the 2026-07-15 baseline expected_reply on order number, customer name, all order fields, product list -- only the trailing 'Data last updated' timestamp differs (expected, data refreshes daily).",
+    "4_F1_whole_sentence_not_a_dym_group_or_miss_line": "CONFIRMED. resolve-entity-http.unresolved_tokens === [] (fully resolved, no OR-fallback needed); user_response contains no 'Couldn't find'/'did you mean' text anywhere.",
+    "5_no_matched_on_line": "CONFIRMED. Non-spec (order) domain -- no '_Matched on:' line anywhere in the reply."
+  },
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send].",
+    "S2": "PASS.", "S3": "PASS -- save-session-vars would_write/blocked.",
+    "S4": "N/A (order domain, no get-results call).",
+    "S5": "PASS -- test_mode:true self-verified.",
+    "S6": "PASS -- reformulator ran (real, sub-exec 12607216 on wI5RkNGW3EOJfBdo)."
+  }
+}

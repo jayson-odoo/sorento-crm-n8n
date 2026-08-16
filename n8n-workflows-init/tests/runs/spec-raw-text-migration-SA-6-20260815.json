@@ -1,0 +1,16 @@
+{
+ "case": "SA-6",
+ "title": "clarify path untouched -- resolve-entity-clarification body carries NONE of the three new fields",
+ "verdict": "PASS",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "method": "STATIC verification directly from a fresh REST GET of the workflow JSON (not a live fire) -- deliberately chosen over firing a vague clarify-triggering turn, per memory uac-mode-reads-prod-session.md's landmine: 'Any test message that is not domain-decisive is unmeasurable in uac mode ... clarify/require-specific/disambiguation cases cannot be scored there -- mark them UNRELIABLE, never PASS.' SA.md itself instructs: 'Verify from the JSON, not from memory' -- this is a cleaner, more definitive proof than a live fire would have produced.",
+ "resolve_entity_clarification_jsonBody_verbatim": "={\n  \"query\": {{ JSON.stringify($('Call \\'sub-query-reformulator\\'').first().json.output.user_goal || \"nothing\") }},  \n\"match_mode\": \"or\",\n  \"tokens\": {{ JSON.stringify(...) }},\n  \"allowed_entity_types\": {{ JSON.stringify(...) }},\n  \"access_levels\": {{ ... }},\n  \"fallback_to_all_types\": true\n}",
+ "three_new_fields_absent": {
+  "spec_fallback": "ABSENT (key not present at all)",
+  "understand_phrase": "ABSENT (key not present at all)",
+  "the_migrated_query_field": "STILL sends the OLD restatement pattern ($('Call sub-query-reformulator').first().json.output.user_goal), NOT the raw-text RAW_MESSAGE_SRC accessor -- this node was genuinely NOT touched by this slice, exactly as the diff doc claims ('One slice, three leaves ... No other nodes.')"
+ },
+ "cross_check_against_diff_doc": "Matches the diff doc's own full param-hash sweep result verbatim: 'nodes whose parameters differ | exactly 2 — compile-current-state, resolve-entity-http'. resolve-entity-clarification is confirmed structurally excluded from that set.",
+ "safety_S0": "N/A -- static JSON read, no execution fired, no egress possible."
+}

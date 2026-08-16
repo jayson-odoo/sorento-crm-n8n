@@ -1,0 +1,66 @@
+{
+ "case": "SA-1",
+ "title": "descriptive resolves",
+ "verdict": "PASS",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8 (versionId==activeVersionId, verified via export --verify before run)",
+ "mode": "uac, previous_conversation_state:{} (REQUIRED per SA.md, routes sim-inject-gate TRUE -> empty seed, avoids 437264483's stale prod session)",
+ "contact": 437264483,
+ "prompt": "wall hung basin 600mm",
+ "test_run_id": "sa1-20260812",
+ "execution": "12179324",
+ "started_at": "2026-08-12T08:51:21.573Z",
+ "resolve_entity_http_output": {
+   "tokens": ["wall hung basin 600mm"],
+   "match_mode": "and",
+   "matches_all_tier": "spec_search",
+   "matches_all_match_field": "specifications",
+   "match_count": 5,
+   "product_codes": ["BRBC22137W-1 (WALL HUNG)", "BRBC22292W", "BRBC22350W-1-SG", "BRBC22589W", "BRBC22590W"],
+   "resolutions_token": "trying to check the product details for wall hung basin 600mm (the LLM restatement/user_goal, NOT the raw customer token)",
+   "resolutions_resolved": false,
+   "resolutions_ambiguous": true,
+   "unresolved_tokens": [],
+   "alternatives_top_level": [],
+   "spec_candidates_count": 5,
+   "floor_missed": false,
+   "semantic_used": false
+ },
+ "disallowed_entity_gate": {
+   "gate_passed": true,
+   "require_specific": false,
+   "gate_reason": "ok",
+   "compatible_entities_count": 5,
+   "domain": "master_products"
+ },
+ "If3_branch": "output 1 (resolved leg) -- output 0 (dead-end) EMPTY. No dead-end.",
+ "get_results": {
+   "ran": true,
+   "sub_execution": "12179336",
+   "sub_workflow": "t4QvrtrPnTwRU6br (sub-get-results CS-BUILD -- current wiring, see notes)",
+   "has_result": true,
+   "answer_product_codes": ["BRBC22350W-1-SG", "BRBC22137W-1 (WALL HUNG)", "BRBC22292W", "BRBC22589W", "BRBC22590W"],
+   "uuids_subset_of_spec_matches": true
+ },
+ "customer_boundary": {
+   "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:04_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+   "contains_couldnt_find_marker": false,
+   "contains_multiple_matches_marker": false,
+   "contains_escalation_offer": false,
+   "real_product_codes_present": true,
+   "sendmsg_parts": 1
+ },
+ "F1_settled": "REFUTED (negative -- the predicted defect did NOT reproduce). The diff doc predicted the customer's raw token 'wall hung basin 600mm' would keep a separate resolution with matches:[] (since the CRM attaches spec matches to a resolution keyed on payload.query, the LLM restatement) and that compile-current-state's partial-miss filter would therefore render the spec answer AND a duplicate 'Couldn't find these... did you mean' underneath. Direct observation: resolve-entity-http's top-level 'resolutions' array contains exactly ONE entry (the restated-token one, matches populated); there is NO second resolution for the raw customer token. unresolved_tokens is empty []. The CRM REPLACES rather than merges (matches the family-file status banner's contract fact #1, confirmed live since the CRM's ae3393810 deploy). Rendered reply is clean single-paragraph product list -- grepped for 'Couldn't find these', 'Multiple matches found', any escalation offer -- NONE present.",
+ "F2_settled": "CONFIRMED (outcome matches prediction, mechanism differs from prediction). disallowed-entity-gate: gate_passed=true, require_specific=false, gate_reason='ok', compatible_entities carries ALL 5 spec matches (not filtered to a subset). No did-you-mean picker rendered. If3 takes the resolved leg. Differs from F2's predicted MECHANISM (predicted the code-relation filter on specific_options would accidentally empty out and 'escape' the ambiguous-picker path) -- observed gate_reason is a clean 'ok', not a filtered-empty escape. Net customer-visible outcome is exactly as F2 predicted: no picker, straight to the answer.",
+ "F3_settled": "N/A for this case (SA-1 is the resolving-traffic case; F3 concerns the zero-match/miss path, see SA-3).",
+ "safety_S0": {
+   "S1_zero_real_sends": "PASS -- egress log has 1x would_log (save-message-redis), 1x would_write (save-session-vars), 1x would_send (sendmsg-sub, part 1/1). No api.respond.io POST executed. sub-sendmsg callers all point at ublq9nSlrpz63xan (sub-sendmsg-CHAT, confirmed current per export TOPOLOGY.md at be62b3a8).",
+   "S2_zero_assignment": "PASS -- no escalation branch taken; human-intervention sub not invoked.",
+   "S3_zero_crm_writes": "PASS -- save-session-vars and update-human-intervened are orphaned (0 inbound, per manifest); egress log shows would_write only. Call 'sub-respond-save-message-redis'2 confirmed sinked to tWm5DYLxfypmVC1T (sub-respond-save-message-redis TEST) per export TOPOLOGY.md -- static check, not re-verified per-case (unchanged property of the graph).",
+   "S4_get_results_read_only": "PASS -- Call 'sub-get-results' targets t4QvrtrPnTwRU6br (sub-get-results-CS-BUILD, current wiring per --verify export at be62b3a8 -- NOTE this SUPERSEDES the CLAUDE.md note pointing at rysSPgUssLDf6xJc, which is stale; see report notes). Answer payload shape is read-only (response/answers/attachments/has_result), no ticket-create markers found. crm_it_support_ticket_create not observed in execution text.",
+   "S5_test_mode": "PASS -- 'When Executed by Another Workflow' json: {test_mode:true, test_run_id:'sa1-20260812', scope:'deterministic'}.",
+   "S6_token_sinks": "scope=deterministic per trigger metadata, BUT this case is tier=parser in practice (the reformulator gpt LLM ran, sub wI5RkNGW3EOJfBdo, real parse). No mock_reformulator_output supplied (both mock fields null) -- this is a REAL parser-tier run consistent with SA.md's uac-mode real-CRM-read design, not a deterministic/0-token case. get-results agent path did not execute (orphaned, only MCP Client1/entity-ids-transformer/output-structurer ran per established pattern) -- no additional LLM.",
+   "S7_sink_delta": "See rollup file for the full batch S7a/S7b evidence (89-poll sweep covers this execution's window)."
+ },
+ "notes": "resolve-entity fires via resolve-entity-http (clone's HTTP body node; NoOp 'resolve-entity' relays for $('resolve-entity') readers). get-results fork t4QvrtrPnTwRU6br is a CONFIRMED-CURRENT re-target from the container-status-n8n build (2026-08-11), documented in tests/manifests/access-tier/README.md and tests/diffs/access-tier-ask.md; CLAUDE.md's 'rysSPgUssLDf6xJc' note predates this and is stale as of this run."
+}

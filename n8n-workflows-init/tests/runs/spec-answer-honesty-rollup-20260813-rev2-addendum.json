@@ -1,0 +1,49 @@
+{
+ "addendum_to": "spec-answer-honesty-rollup-20260813.json (rev1)",
+ "purpose": "DELTA-ONLY re-run against rev 2 of the clone, per the coordinator's mid-task instruction. Not a full re-run of the SR family -- only the cases the coordinator specified.",
+ "change_id": "spec-answer-honesty",
+ "date": "2026-08-13",
+ "rev2_change_summary_from_coordinator": "One leaf, compile-current-state.jsCode: the N-2 line now quotes the customer's own span instead of a coerced JS Number, fixing the rev1 cosmetic (bare '1.' / missing unit). resolve-entity-http unchanged. Offline: 101 passed / 0 failed, 16 mutants caught, 13 new assertions shown RED against the rev-1 deployed body first.",
+ "target_verification": {
+  "pre_delta_run": "Fresh REST GET of txiPzSxy3Pclsz6v BEFORE firing any delta case: versionId==activeVersionId==8ed4e464-02ae-47cd-9494-d8328162c254 -- matches the coordinator's stated moved-to version exactly. Independently re-derived node shas: resolve-entity-http.jsonBody sha256 7ca14cbfd47e273a1c1464e2fb0c85fd52e3a39cf9f0062f83bc537ce7fd4265 (UNCHANGED, matches rev1's DEPLOYED value byte-for-byte, confirming the coordinator's 'resolve-entity-http is unchanged' claim independently rather than trusting it); compile-current-state.jsCode sha256 e3b844c6cb674f54b780a817af5d0287607db790aafc207ddf1d11e73f3aa4f0, len 42402 (CHANGED from rev1's e727631f...38725B, confirming a real deploy occurred, not a no-op).",
+  "post_delta_run": "Re-fetched via REST GET after all 6 case-firings (sr2r2a x2 executions, sr2r2b, sr4r2, sr3r2, sr6r2): versionId==activeVersionId==8ed4e464-02ae-47cd-9494-d8328162c254, UNCHANGED. workflow 'updatedAt' (2026-08-13T09:36:48.235Z) PREDATES the first delta case fire (09:46:01Z first prod-consumer poll in window; first clone case fire ~09:47:43Z for the completed timed-out attempt), confirming zero writes during this delta pass.",
+  "no_edits_no_promotion": "Confirmed -- no update_workflow or publish_workflow call made against txiPzSxy3Pclsz6v or any other workflow during this delta pass."
+ },
+ "cases_run": {
+  "SR-2": "MANDATORY, rev2's whole point -- PASS. See spec-answer-honesty-SR-2-rev2-20260813.json. Both the 1.2mm and 1.0mm twins now render the customer's own numeric span WITH unit ('...couldn't narrow by 1.2mm.' / '...couldn't narrow by 1.0mm.'), fixing the rev1 bare-digit/missing-unit cosmetic. The coordinator's exact required text for the 1.0mm case ('...so I couldn't narrow by 1.0mm.') is an EXACT match to what rendered.",
+  "SR-4": "PASS. See spec-answer-honesty-SR-4-rev2-20260813.json. The N-3 reachable shape proven at rev1's exec 12308336 survives unchanged at rev2's exec 12312093: 'wall hung basin' miss is still correctly suppressed, 'SRTZZ999' miss still correctly renders.",
+  "SR-3": "PASS, quick regression. See spec-answer-honesty-SR-3-rev2-20260813.json. Byte-identical to rev1.",
+  "SR-6": "PASS, quick regression -- NOT treated as a formality: row count (0) and codes ([]) explicitly re-compared against both the SA-3 pre-SR baseline and the rev1 result. See spec-answer-honesty-SR-6-rev2-20260813.json. Also notes a determinism observation: this run's bare phrase landed on master_products directly (no ideation misroute this time) -- consistent with the already-flagged reformulator non-determinism, not a rev-2 regression (resolve-entity-http is byte-unchanged).",
+  "SR-1": "NOT re-run -- justified per the coordinator's 'only if cheap' condition. resolve-entity-http.jsonBody sha256 confirmed BYTE-IDENTICAL to rev1's deployed value (7ca14cbfd47e...), and SR-1's hard assertions (free_terms reaching the CRM, spec_unmet naming thickness) are entirely about that node's behavior. Since the node did not change, SR-1's rev1 result (spec-answer-honesty-SR-1-20260813.json, PASS) stands without re-derivation."
+ },
+ "executions_this_delta_pass": {
+  "sr2r2a_1.2mm": ["12311930 (timed-out-but-completed original request)", "12311935 (retry, used as primary record)"],
+  "sr2r2b_1.0mm": "12312058",
+  "sr4r2": "12312093",
+  "sr3r2": "12312135",
+  "sr6r2": "12312169"
+ },
+ "transport_note": "The first zz-run-hint POST for sr2r2a returned a client-side HTTP 504 Gateway Timeout, but the n8n backend had already accepted and completed the request (execution 12311930, status:success). A retry with a fresh test_run_id-bearing item (sr2r2a-20260813, same tag reused) produced a second execution (12311935) ~2 seconds later. Verified both executions rendered a byte-identical compile-current-state.user_response before relying on either -- no evidence of a race condition or partial/corrupted state; both are ordinary read-only test-mode turns.",
+ "safety_S0_summary": {
+  "S1_S6": "All 6 case-firings (5 logical cases, 1 with a harmless duplicate execution) PASS S1-S6. Zero real sends/writes/assigns in every execution -- every egress-log entry is would_log/would_write/would_send. test_mode:true directly confirmed and self-verified for every single execution id listed above (not inferred for any of them)."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Directly re-confirmed for sr4r2 (execution 12312093): 'Call sub-respond-save-message-redis'2' sub-execution 12312113 targets workflowId tWm5DYLxfypmVC1T (the TEST sink), payload turn_id:'12312093' self-verified equal to the parent execution id. Static sinked-wiring property unchanged post-rev2 (rev2 touches only compile-current-state.jsCode; the save-path node/wiring is untouched).",
+  "S7b_prod_sink": {
+   "method": "Same two co-mandatory signals as the rev1 sweep: per-poll LLEN depth series (Redis1) + per-poll pop payload (Redis) from the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn, every covering execution individually fetched, never sampled, never scored on consumer execution count.",
+   "window_covered": "2026-08-13T09:46:00Z through 2026-08-13T09:50:30Z -- FULL coverage, all 57 consumer executions in this window individually fetched and inspected. Window fully contains every delta case fire (earliest completed backend request ~09:47:43Z for sr2r2a, latest sr6r2 09:50:04Z-09:50:17Z) with margin on both sides. Note the consumer fired a dense burst of ~30 executions within 09:47:48Z-09:47:53Z (roughly 150ms apart) -- consistent with the consumer catching up on its normal 5s poll cadence after whatever caused the earlier 504 (not itself evidence of a prod write; each poll's own LLEN/pop was inspected individually regardless of firing density).",
+   "unretrievable_polls": 0,
+   "total_polls_fetched": 57,
+   "nonzero_llen_polls": 0,
+   "nonempty_pop_polls": 0,
+   "harness_attributable_delta": 0,
+   "verdict": "PASS -- CLEANER than the rev1 window: zero nonzero LLEN polls at all in this delta window (no concurrent real production traffic observed during this pass, vs. 24/99 nonzero polls in the larger rev1 window). No attribution step was needed."
+  }
+ },
+ "reviewer_note_on_rev1_cosmetic": "The rev1 rollup's open item #1 ('SR-2 cosmetic: renders bare 1. / consider sourcing the customer's own numeric span') is now RESOLVED by rev 2, confirmed live on the deployed clone via direct verbatim reads, not merely accepted on the coordinator's or offline suite's say-so.",
+ "still_open_from_rev1_unaffected_by_rev2": [
+  "SR-6 reformulator non-determinism (parser prompt, not touched by this build) -- unaffected, observed again in a different direction this pass (no misroute this time).",
+  "SR-5 carried 'Dealer'/'Dealer Sales' entity leak into stock-check queries -- not re-tested this delta pass (out of the coordinator's requested scope), still applies to whatever session/entity-carry logic produces it (unrelated to the two nodes this build touches).",
+  "SR-9 diff-doc reachability-table correction (third row: multi-token AND-zero-intersection-forces-OR-mode) -- still recommended, not re-derived this pass since SR-9 reused SR-4's execution and SR-4 rev2 confirms the same shape survives unchanged."
+ ]
+}

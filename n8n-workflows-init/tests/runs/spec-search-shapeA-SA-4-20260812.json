@@ -1,0 +1,51 @@
+{
+ "case": "SA-4",
+ "title": "descriptive + cert ask",
+ "verdict": "PASS (assertion holds) -- WITH A MATERIAL CAVEAT: this input does not exercise spec_fallback",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "wall hung basin got SIRIM cert?",
+ "test_run_id": "sa4-20260812",
+ "execution": "12179549",
+ "started_at": "2026-08-12T08:53:50.901Z",
+ "resolve_entity_http_output": {
+   "tokens": ["wall hung basin", "SIRIM cert"],
+   "wall_hung_basin_resolution": {"resolved": false, "ambiguous": false, "matches": [], "alternatives_match_tier": "trgm (NOT spec_search)", "alternatives_count": 3, "alternatives_codes": ["BRBC2296-1 (WALL HUNG)", "MAB7029C-WALL HUNG", "MAB7029E-WALL HUNG"]},
+   "sirim_cert_resolution": {"resolved": true, "ambiguous": false, "matches_entity_type": "attachment_type", "canonical_code": "Certification"},
+   "IMPORTANT": "spec_fallback did NOT fire for this input. 'wall hung basin' resolved via the PRE-EXISTING trigram (trgm) code-text match -- the catalogue literally embeds descriptive words into product codes (e.g. 'MAB7029C-WALL HUNG'), a known cataloguing quirk documented in the SA.md status banner. Because trgm produced non-empty alternatives, the CRM's _result_has_zero_matches gate was never true for this token, so spec_fallback (the feature under test) never engaged. This mechanism and finding is IDENTICAL to what SA-5 shows for the same phrase."
+ },
+ "disallowed_entity_gate": {
+   "gate_passed": false,
+   "gate_reason": "'product_attachment' subject product did not resolve; refusing to scope on carried entities",
+   "compatible_entities": [{"uuid": "1439736c-20ca-4bba-b387-b242ff4a4599", "entity_type": "attachment_type", "code": "Certification"}]
+ },
+ "dym_transform_probe": {
+   "probe_tool": "crm_master_product_attachments_list",
+   "probe_predicate": "row_present_with_type",
+   "probe_needed": true,
+   "mechanism": "This is the PRE-EXISTING dym-probe-before-offer machinery (per user memory 'dym-blind-suggestion-measured' / 'dym probe-before-offer'), NOT anything introduced by shapeA. It per-candidate-probes the 3 trgm alternatives for a SIRIM cert row before rendering the did-you-mean, producing the SCOPED per-candidate negative seen at the boundary."
+ },
+ "customer_boundary": {
+   "rendered_reply_verbatim": "Couldn't find \"wall hung basin\". Did you mean:\n1. BRBC2296-1 (WALL HUNG) - no SIRIM cert\n2. MAB7029C-WALL HUNG - no SIRIM cert\n3. MAB7029E-WALL HUNG - no SIRIM cert\nReply with a code to continue, or would you like me to escalate to purchasing_certification team?",
+   "channel": "quick_reply",
+   "quick_reply_options": "BRBC2296-1 (WALL HUNG),MAB7029C-WALL HUNG,MAB7029E-WALL HUNG,Yes escalate,No it's okay",
+   "is_unscoped_universal_negative": false,
+   "reasoning": "The negative is rendered PER CANDIDATE CODE ('BRBC2296-1 (WALL HUNG) - no SIRIM cert', etc), scoped to the 3 specific did-you-mean options offered -- NOT a blanket claim like 'no wall hung basin has a SIRIM cert'. The hard assertion in SA.md ('the reply must NOT render an unscoped universal negative') is satisfied by direct grep of the rendered string."
+ },
+ "F1_settled": "N/A for this execution (no spec_search matches occurred at all -- see IMPORTANT note above).",
+ "F2_settled": "N/A for this execution (same reason).",
+ "F3_settled": "N/A (this is not the zero-candidate-everywhere path SA-3 covers).",
+ "SA4_specific_finding": "SA-4 as worded in SA.md ('spec matches flow into the attachment domain') is NOT exercised by this input, because 'wall hung basin' never reaches spec_fallback -- the pre-existing trgm alternative-match short-circuits the CRM's zero-match gate first. The hard boundary assertion (no unscoped universal negative) genuinely passes, but for a reason unrelated to the shapeA build: the scoping comes from the pre-existing dym-probe-before-offer machinery, not from spec_search candidates. RECOMMENDATION for the reviewer/coordinator: to actually exercise spec matches flowing into the attachment/cert domain, a follow-up case needs a descriptive phrase that does NOT trigram-match any existing product-code substring (e.g. add a dimension/qualifier the trgm probe won't catch, mirroring what made SA-1's '600mm' suffix work) -- 'wall hung basin got SIRIM cert' alone cannot test this interaction with this catalogue's naming.",
+ "safety_S0": {
+   "S1_zero_real_sends": "PASS -- egress log: 1x would_log, 1x would_write, 1x would_send (quick_reply channel).",
+   "S2_zero_assignment": "PASS -- escalation offered as a quick-reply option only, not confirmed/executed.",
+   "S3_zero_crm_writes": "PASS -- would_write only; dym_offer persisted only into the WOULD-write session-vars payload (never a real CRM PUT).",
+   "S4_get_results_read_only": "PASS -- the dym-transform probe calls crm_master_product_attachments_list (a READ tool, per-candidate attachment lookup), never crm_it_support_ticket_create. This IS the get-results-adjacent probe path, confirmed read-shaped by tool name in the node output.",
+   "S5_test_mode": "PASS (inferred by identical harness mechanism, same as SA-2/SA-5 -- not independently re-fetched to conserve session budget).",
+   "S6_token_sinks": "Real reformulator ran (parser tier). No new LLM sink beyond the pre-existing reformulator + the dym-probe machinery (deterministic CRM tool call, not an LLM).",
+   "S7_sink_delta": "See rollup file -- covered by the 89-poll sweep."
+ },
+ "notes": "SA-4's product picker was already scoped-per-item BEFORE this build (LESSONS 'dym probe-before-offer BUILT+APPROVED' / 'Answered token offered as did-you-mean' fixes) -- this case demonstrates that existing safety property survives the shapeA edit, but does not demonstrate anything NEW about shapeA's interaction with the attachment domain."
+}

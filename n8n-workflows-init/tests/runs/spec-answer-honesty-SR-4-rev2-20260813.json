@@ -1,0 +1,35 @@
+{
+ "case": "SR-4",
+ "revision": "rev2",
+ "title": "genuine miss survives -- confirm the N-3 reachable shape survives rev 2",
+ "verdict": "PASS -- SURVIVES UNCHANGED",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 8ed4e464",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "wall hung basin and SRTZZ999",
+ "test_run_id": "sr4r2-20260813",
+ "execution": "12312093",
+ "started_at": "2026-08-13T09:49:21.606Z",
+ "rev1_reference": "rev1's exec 12308336 (spec-answer-honesty-SR-4-20260813.json / spec-answer-honesty-SR-9-20260813.json) proved this input reaches the N-3-guarded shape: 'wall hung basin' carries its OWN resolution with matches:[] (structurally poised to render a duplicate miss) coexisting with a query-keyed spec_search answer on the same turn.",
+ "rev2_observed": {
+  "compatible_entities": ["BRBC22350W-1-SG", "BRBC22137W-1 (WALL HUNG)", "BRBC22292W", "BRBC22589W", "BRBC22590W"],
+  "wall_hung_basin_miss_line_present": false,
+  "srtzz999_miss_line_present": true,
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:04_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊\n\nCouldn't find these:\n\"SRTZZ999\" — not found.\n\nAsk again with the correct code.",
+  "byte_identical_to_rev1_shape": "The reply STRUCTURE is unchanged from rev1's SR-4 result (same 5 products, same P/S line, same SRTZZ999 miss line, same absence of any 'wall hung basin' miss) -- only the N-2 mechanism (untouched here, since no spec_unmet applies to this query -- no thickness/dimension ask) and N-3's still-correct suppression are in play. No N-2 line present in either rev1 or rev2 for this input, as expected (nothing was asked-for-but-unmet)."
+ },
+ "hard_assertion": "N-3 still suppresses ONLY the answered raw ('wall hung basin') and still keeps the genuinely-missing SRTZZ999 miss line, on the rev-2 deployed body -- CONFIRMED, no regression from the N-2 unit-quoting fix bleeding into N-3's predicate (the diff's rev2 change is a single leaf inside the SAME node, additive per the coordinator's summary; this proves the two hunks did not interact destructively).",
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries only.",
+  "S2_zero_assignment": "PASS -- no escalation branch (this reply is answer + genuine code-miss, not an escalation prompt).",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS -- get-results sub-execution not separately re-fetched this pass (not needed: the rendered answer text is identical in shape to rev1's SR-4, whose get-results sub-execution 12308357 on the same fork t4QvrtrPnTwRU6br was directly confirmed read-only). The save-path sub-execution 12312113 (see S7a below) IS re-confirmed directly this pass and targets only the TEST sink.",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr4r2-20260813', scope:'deterministic'}, directly confirmed via get_execution, self-verified.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Directly confirmed: 'Call sub-respond-save-message-redis'2' sub-execution 12312113 targets workflowId tWm5DYLxfypmVC1T (TEST sink, unchanged from rev1), payload turn_id:'12312093' self-verified equal to the parent execution id.",
+  "S7b_prod_sink": "See spec-answer-honesty-rollup-20260813-rev2-addendum.json -- full delta-window sweep, zero nonzero-LLEN polls in this window at all (quieter than the rev1 window)."
+ }
+}

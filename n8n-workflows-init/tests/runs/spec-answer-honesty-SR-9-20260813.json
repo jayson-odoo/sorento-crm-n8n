@@ -1,0 +1,36 @@
+{
+ "case": "SR-9",
+ "title": "N-3 reachability",
+ "verdict": "PASS -- REACHABLE, contrary to the coder's own hedge in the diff doc",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "reused_execution": "12308336 (SAME execution as SR-4 -- the SR-4 input incidentally IS the SR-9 reachability shape; no separate case needed, but the mechanism is analyzed fully here per SR.md's explicit instruction not to infer reachability from a green elsewhere)",
+ "prompt": "wall hung basin and SRTZZ999",
+ "test_run_id": "sr4-20260813 (shared with SR-4)",
+ "finding": "REACHABLE TODAY. The diff doc's §2 reachability table enumerated two shapes and found neither reachable (single-token AND-collapse, and SR-B3's OR-degrade-with-partial-prefix-match where spec search never runs at all). A THIRD shape exists that the table did not enumerate: a MULTI-token query where AND-mode produces zero intersection (forcing an OR-mode fallback per the CRM's fallback_reason), and under THAT fallback each unresolved token keeps its OWN per-token resolution (with empty matches + trgm/prefix alternatives) while a SEPARATE query-keyed resolution carrying match_tier:'spec_search' rows is ALSO appended. This is exactly the shape N-3's predicate is written against, and it is directly reachable via a two-token descriptive+nonexistent-code query.",
+ "mechanism_verified_by_code_trace": {
+  "source": "tests/offline/spec-answer-honesty/compile-current-state.after.js lines 401-489 (the ACTUAL shipped predicate, sha256-verified deployed)",
+  "token_examined": "wall hung basin",
+  "without_N3_clause_would_have_been_included": true,
+  "trace": [
+   "res.resolved !== true -> TRUE (resolved:false)",
+   "!(matches.some(isExact)) -> TRUE (matches:[])",
+   "!_gateResolvedTokens.has('wall hung basin') -> TRUE (not resolved via document-class-narrowing)",
+   "[[[WITHOUT N-3]]] !_tokenWasAnswered(res) -> checks res.matches(empty)+res.alternatives(3 trgm rows: BRBC2296-1, MAB7029C-WALL HUNG, MAB7029E-WALL HUNG) against _answerCodes (the 5 DIFFERENT codes actually in the answer: BRBC22350W-1-SG/BRBC22137W-1/BRBC22292W/BRBC22589W/BRBC22590W) -> NO OVERLAP -> _tokenWasAnswered=false -> !false=TRUE",
+   "=> ALL FOUR clauses true WITHOUT N-3 -> 'wall hung basin' WOULD have been pushed into missResolutions, rendering 'Couldn't find these: \"wall hung basin\" — not found.' directly underneath the 5-row spec answer that already answered it."
+  ],
+  "with_N3_clause": [
+   "_specSearchAnswered: r.resolutions contains a resolution with match_tier:'spec_search' rows whose codes ARE in _answerCodes (the query-keyed restatement resolution, 5/5 rows match) -> TRUE",
+   "_tokenFedSpecSearch('wall hung basin') = _specSearchAnswered(true) && _fedFreeTerms([{raw:'wall hung basin'}]).length>0 (non-code-shaped word, survives the classifier) -> TRUE",
+   "!_tokenFedSpecSearch(...) -> FALSE -> the AND-chain for 'wall hung basin' is FALSE -> EXCLUDED from missResolutions"
+  ]
+ },
+ "mechanism_verified_by_direct_observation": {
+  "rendered_reply": "5-row spec answer, THEN 'Couldn't find these: \"SRTZZ999\" — not found.' -- 'wall hung basin' does NOT appear anywhere in the miss section, confirming the code-trace prediction empirically on the live deployed clone, not just by static analysis."
+ },
+ "conclusion": "N-3 does NOT ship on offline evidence alone. The shape it guards against was reproduced live on the clone (execution 12308336) and the fix was observed intervening correctly. This corrects/refines the diff doc's §2 reachability table, which should be read as 'the two shapes I checked are not reachable' rather than 'the defect is not reachable' -- a third, reachable shape exists via multi-token AND-zero-intersection-forces-OR-mode queries. Recommend the diff doc be amended to record this third row.",
+ "safety_S0": "Identical to SR-4 (same execution) -- see spec-answer-honesty-SR-4-20260813.json for the full S0 breakdown. PASS.",
+ "S7_sink_delta": "See rollup (covered by the same execution's window as SR-4)."
+}

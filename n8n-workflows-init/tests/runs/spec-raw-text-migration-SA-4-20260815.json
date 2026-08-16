@@ -1,0 +1,23 @@
+{
+ "case": "SA-4",
+ "title": "descriptive + cert ask -- spec matches flow into attachment domain; no unscoped universal negative",
+ "verdict": "PASS (hard assertion) / observational for the shape B qualifying-total question, per SA.md",
+ "family": "SA (spec-search-shapeA-wiring) re-probe under spec-raw-text-migration",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "wall hung basin got SIRIM cert?",
+ "test_run_id": "sa4-20260815",
+ "execution": "12597815",
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Couldn't find some items:\n\n\"wall hung basin\" — did you mean:\n  1. BRBC2296-1 (WALL HUNG) - no SIRIM cert\n  2. MAB7029C-WALL HUNG - no SIRIM cert\n  3. MAB7029E-WALL HUNG - no SIRIM cert\n\"wall hung basin got SIRIM cert?\" — did you mean:\n  4. BRBC22137W-1 (WALL HUNG) - no SIRIM cert\n  5. BRBC22292W - no SIRIM cert\n  6. BRBC22350W-1-SG - no SIRIM cert\n\nReply a number to pick, or 'yes' to escalate to purchasing_certification.",
+  "unscoped_universal_negative_absent": "CONFIRMED -- no phrase resembling 'no wall hung basin has SIRIM cert' / a blanket claim about the whole category. Each candidate is itemised individually with its own '- no SIRIM cert' annotation, which is the scoped, per-row form SA.md's hard assertion requires.",
+  "sendmsg_parts": 1
+ },
+ "recorded_wording_note": "Per SA.md ('record actual wording verbatim -- observational until shape B lands'), this reply structure (a did-you-mean picker merging spec-search candidates from BOTH the descriptive token's own resolution and the full-query resolution, each candidate annotated no-cert) is a materially DIFFERENT shape from the pre-migration SA family's original SA-4 observation. Whether this exact 6-candidate merged picker is the intended C-1/shape-B UX or an artifact of the AND->OR fallback stacking two separate resolutions is a design question outside this slice's scope (resolve-entity-http/compile-current-state only) -- flagged for the reviewer, not scored as a defect since the hard (unscoped-negative) assertion holds.",
+ "safety_S0": {
+  "S1_S3": "PASS -- 3-entry would_* egress log.",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sa4-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:45:17Z-15:45:31Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

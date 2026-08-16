@@ -1,0 +1,103 @@
+{
+ "change_id": "spec-search-shapeA-wiring",
+ "family": "SA",
+ "date": "2026-08-12",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8-3d4f-41ff-a52d-5061bc9f25cd",
+ "target_verification": "Confirmed via `python3 scripts/export-workflows.py --verify` before the run: clone-sorento-consume-main-TEST current at be62b3a8, versionId==activeVersionId. Clone did NOT move during the run.",
+ "contact": 437264483,
+ "driver_mechanism": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No wraps: clears test:q:{contact}+test:egress:{id}, RPUSHes the item, runs the clone via its executeWorkflowTrigger, returns {egress:[...]}). This is the documented/precedented mechanism for this clone (LESSONS \u00a71: execute_workflow cannot pass custom JSON to an executeWorkflowTrigger) -- used identically by the TA/XA/DS families. Every item carried mode:'uac', a per-case test_run_id, and previous_conversation_state:{} (REQUIRED by SA.md to force empty-state arrange and avoid contact 437264483's stale prod session via sim-inject-gate). Execution ids resolved via search_executions(workflowId=txiPzSxy3Pclsz6v, startedAfter=<fire timestamp>) and cross-verified by test_run_id in the trigger node's json (self-verify guard, LESSONS \u00a78).",
+ "verdicts": {
+  "SA-1": "PASS",
+  "SA-2": "PASS",
+  "SA-3": "PASS",
+  "SA-4": "PASS (hard assertion holds; material caveat -- see below)",
+  "SA-5": "PASS",
+  "SA-6": "PASS",
+  "SA-7": "PASS (hard assertion holds; precise mechanism finding recorded -- see SA7_widened_arm_settlement below. Added 2026-08-12 per reviewer REQUEST-CHANGES §D.)"
+ },
+ "executions": {
+  "SA-1": "12179324",
+  "SA-2": "12179126",
+  "SA-3": "12179491",
+  "SA-4": "12179549",
+  "SA-5": "12179671",
+  "SA-6": "12179735",
+  "SA-7": "12183425"
+ },
+ "F1_settlement": {
+  "prediction": "The answered token (e.g. 'wall hung basin 600mm') would keep a separate resolution with matches:[] alongside the new spec-matched resolution keyed on the LLM restatement (payload.query), so compile-current-state's partial-miss filter would render the spec answer AND a duplicate 'Couldn't find these... did you mean' underneath -- a sixth instance of the LESSONS \u00a767/\u00a768 class.",
+  "outcome": "REFUTED, directly, in SA-1 (exec 12179324). resolve-entity-http's top-level 'resolutions' array has exactly ONE entry (the restated-token one, matches populated with 5 spec_search rows); unresolved_tokens is []. There is no orphaned original-token resolution. The rendered customer reply is a single clean product list with NO 'Couldn't find these', NO 'Multiple matches found', NO escalation-offer marker (grepped verbatim, per LESSONS \u00a768's 'assert the whole reply' rule). This matches the SA.md status banner's post-deploy contract fact #1 ('REPLACE, never merge... the renderer NEVER sees a mixed set') -- the CRM's ae3393810 fix (deployed 2026-08-11, same day as this build) already closed the gap F1 was written against, before this n8n change ever ran."
+ },
+ "F2_settlement": {
+  "prediction": "disallowed-entity-gate would route >1 spec_search match with no exact tier into stillAmbiguous (a picker), then 'accidentally escape' via the code-relation filter emptying specific_options (SRTWC286 relates to none of the typed tokens), landing on the resolved leg by a mechanism not written for this purpose.",
+  "outcome": "CONFIRMED on the net customer-visible OUTCOME (no picker, resolved leg reached, If3 output 1), observed directly in SA-1's disallowed-entity-gate node output: gate_passed=true, require_specific=false, gate_reason='ok', compatible_entities carries all 5 matches un-filtered. The MECHANISM differs from the prediction -- the gate reports a clean 'ok', not a filtered-to-empty escape -- but the outcome F2 cared about (unpinned-but-correct behaviour) is exactly as predicted."
+ },
+ "F3_settlement": {
+  "prediction": "On a zero-match turn the CRM's fallback block adds top-level spec_candidates/floor_missed/spec_unmet/semantic_used even when it finds nothing, so a strict payload diff vs a pre-change baseline would show 4 new keys -- this is EXPECTED, and SA-3 should be scored on path-identity, not payload-identity.",
+  "outcome": "CONFIRMED, directly, in SA-3 (exec 12179491): all four keys present with the predicted 'empty/found-nothing' values (spec_candidates:[], floor_missed:true, spec_unmet:[], semantic_used:false). not-found-error-message renders the identical escalate-offer format used elsewhere in the repo -- no new wording. Per LESSONS \u00a770c, the sole key-set-iteration reader (not-found-error-message.js:5 over by_entity_type) is unaffected since by_entity_type itself gained no new keys."
+ },
+ "unplanned_finding_SA4_SA5": {
+  "title": "spec_fallback never fires for the phrase 'wall hung basin' on THIS catalogue, in either SA-4 or SA-5",
+  "detail": "Both SA-4 ('wall hung basin got SIRIM cert?') and SA-5 ('SRTWC286 and wall hung basin') show 'wall hung basin' resolving via the PRE-EXISTING trigram (match_tier:'trgm') code-text match, never spec_search. Root cause: the catalogue embeds descriptive words directly into product codes (e.g. 'MAB7029C-WALL HUNG', 'BRBC2296-1 (WALL HUNG)') -- the same cataloguing quirk the SA.md status banner already documents as the reason SA-P1/SA-P2's CRM gate fix was needed. Because trgm produces non-empty alternatives for 'wall hung basin' alone, the CRM's _result_has_zero_matches gate is never true for that token, so spec_fallback (the feature this whole family exists to test) is bypassed. SA-1 ('wall hung basin 600mm', with the dimension suffix) is the ONE case in this suite that actually exercises spec_fallback -- adding '600mm' apparently defeats the trgm collision. Both SA-4's and SA-5's hard/documented assertions still PASS (the per-candidate did-you-mean stays properly scoped, the known-gap description matches SA.md's own expectation), but neither case demonstrates the specific interaction it was designed to probe (F2's attachment-domain claim, SA-5's mixed-token claim) against the actual shapeA code path. RECOMMENDATION: a follow-up SA-4-variant using a descriptive phrase without an existing code-embedded substring (or the '+600mm'-style suffix that worked for SA-1) is needed before F2's attachment-domain interaction claim can be considered independently verified rather than inferred from SA-1 alone."
+ },
+ "stale_reference_finding": {
+  "title": "CLAUDE.md's get-results fork pointer is stale",
+  "detail": "CLAUDE.md's Key IDs table states the clone's Call 'sub-get-results' targets rysSPgUssLDf6xJc (verified 2026-08-02). All 6 SA executions here show it targeting t4QvrtrPnTwRU6br (sub-get-results-CS-BUILD) instead -- confirmed both dynamically (SA-1's sub-execution 12179336, workflowId t4QvrtrPnTwRU6br) and statically (export/clone-sorento-consume-main-TEST/TOPOLOGY.md at be62b3a8, current per --verify). This re-target happened during the container-status-n8n build (2026-08-11) and is already documented in tests/manifests/access-tier/README.md and tests/diffs/access-tier-ask.md -- it is NOT new to this SA run, but CLAUDE.md itself was not updated to reflect it. Not a defect in the SA build; flagged per the task's explicit ask to surface get-results wiring/liveness."
+ },
+ "get_results_llm_liveness": "Consistent with the established pattern from the access-tier-ask R2/R3 rounds run against the same t4QvrtrPnTwRU6br fork one day earlier: the AI-agent path inside sub-get-results-CS-BUILD does not appear to execute -- only MCP Client1 / entity-ids-transformer / output-structurer style nodes ran in the sub-executions inspected here (SA-1's 12179336). No new token sink observed anywhere in this family's 6 executions beyond the standard consume-main reformulator (gpt-5.4-mini equivalent, sub wI5RkNGW3EOJfBdo) that runs every turn regardless of this change.",
+ "safety_S0_summary": {
+  "S1_S6_per_case": "See individual case files -- all 6 PASS. Zero real WhatsApp/comment sends across all 6 executions (every egress-log entry is would_log/would_write/would_send). Zero assignment/escalation writes (SA-3 and SA-4 OFFER escalation as a question/quick-reply but neither confirms it). Zero CRM/contact writes (save-session-vars and update-human-intervened remain the orphaned pair; egress log shows would_write only in all 6 cases). get-results never invoked a write tool in any case where it ran (SA-1, SA-2, SA-5); it did not run at all in SA-3/SA-4(main path)/SA-6.",
+  "S5_test_mode": "Directly confirmed from the trigger node's json ({test_mode:true, test_run_id:<case>, scope:'deterministic'}) for SA-1, SA-3, SA-6. Inferred (not independently re-fetched, to conserve session budget after a mid-run termination and resume) for SA-2/SA-4/SA-5, which used the byte-identical harness envelope/mechanism.",
+  "S8_sub_arrangement": "All 8 sendmsg callers on the clone point at ublq9nSlrpz63xan (sub-sendmsg-CHAT) per the current export TOPOLOGY.md at be62b3a8 -- unchanged by this build. save-message-redis sinks to tWm5DYLxfypmVC1T (sub-respond-save-message-redis TEST), confirmed both statically (TOPOLOGY.md) and dynamically (SA-1/SA-6 sub-executions carrying self-verified turn_id matches to their own parent execution id)."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Every one of the 6 SA runs produced exactly one 'Call sub-respond-save-message-redis'2' sub-execution targeting workflowId tWm5DYLxfypmVC1T, each carrying a turn_id equal to its own parent clone execution id (self-verified per LESSONS \u00a78 -- e.g. SA-6: sub-execution 12179744, turn_id '12179735' == the parent execution id). No case's save routed anywhere else. Direct LLEN-before/after on sorento-respond-message-TEST was not separately instrumented (no host-side redis-cli access in this environment); the per-case sub-execution-target + self-verified-turn_id evidence is used instead, per the standard this repo has applied to S3/S7a in prior runs (e.g. TA-1's 'S3_from_JSON' static check).",
+  "S7b_prod_sink": {
+   "method": "Two co-mandatory signals per LESSONS \u00a7S7b / turn-id-threading-completion cycle 2c: (1) the per-poll LLEN depth series from the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn's first node ('Redis1', emits {'sorento-respond-message': N}), and (2) the per-poll pop payload from that consumer's second node ('Redis', emits {'':null} on empty, or the popped message object). Never scored on consumer execution COUNT (LESSONS explicitly retracts that method as zero-evidence).",
+   "window_covered": "2026-08-12T08:48:50Z through 2026-08-12T08:56:05Z -- FULL coverage, all 89 consumer executions in this window individually fetched and inspected (not sampled). This window fully contains all 6 SA case fires (earliest 08:49:14Z / SA-2, latest 08:55:44Z / SA-6) plus margin on both sides. Retrieved within the ~8-minute retention horizon (LESSONS S7b instrument note ii) -- checked live during the run, not retrospectively.",
+   "unretrievable_polls": 0,
+   "nonzero_llen_polls": 5,
+   "nonempty_pop_polls": 5,
+   "nonzero_window": "08:55:05Z - 08:55:25Z (executions 12179683, 12179692, 12179701, 12179707, 12179660 -- LLEN 4,3,2,1,1 draining down to 0, i.e. a real 5-message backlog being consumed)",
+   "attribution": "All 5 non-empty pops carry a SINGLE unrelated live-spine turn_id (12179650, contact_id 477071885, phone +60163361679, first_name 'Chua'/'Chin Long'). Payload content is an order/delivery-status conversation ('Jungle bath Srtkt71ss-GY delivery', numbered order-list answers with real order numbers/warehouses/transporters) -- structurally and textually unrelated to every SA fixture (none of my 6 prompts mention orders, deliveries, or contact 477071885; none of my 6 test_run_ids or execution ids [12179126,12179324,12179491,12179549,12179671,12179735] appear in any payload). This is the same attribution pattern the repo's prior S7b runs establish for real concurrent production traffic on a shared list.",
+   "harness_attributable_delta": 0,
+   "verdict": "PASS -- prod-sink delta attributable to unrelated real production traffic, zero delta attributable to this harness run. Resumed per the binding S7b procedure (non-zero delta halts pending attribution; attribution to an unrelated producer resumes the run)."
+  }
+ },
+ "RED_first_gap": {
+  "status": "NOT CAPTURED as an independent n8n execution -- documented gap, not silently skipped.",
+  "detail": "SA.md requires: 'run SA-1/SA-3/SA-4's inputs against the PRE-change clone rev [bd0023ac] first and record the executions... An SA-1 that was never seen red proves nothing.' Search of the manifest, diff doc, and tests/runs/ for a pre-existing bd0023ac-era execution matching any of SA-1/3/4's exact input text found NONE -- the only bd0023ac execution on record (12041903, referenced in tests/runs/access-tier-ask-rollup-20260811.json) is an unrelated access-tier-ask control turn ('promo for SRTBF11710'), not a spec-search phrase.",
+  "why_not_captured_here": "Capturing a genuine RED baseline requires reverting the clone's resolve-entity-http jsonBody to the frozen before-body (tests/offline/spec-shapeA/resolve-entity.before.jsonBody.txt) via update_workflow+publish_workflow, running the 3 inputs, then restoring to be62b3a8 and re-verifying the sha. This is a WORKFLOW EDIT (write to the clone), which this tester's task explicitly prohibits ('Do not edit any workflow; do not promote') and which is outside the sorento-tester role's contract (never edits workflows). The manifest's own rollback recipe documents this exact toggle but frames it as coder/promote-adjacent tooling, not a tester action.",
+  "mitigating_evidence": "The RED behaviour is not merely assumed -- it is provably deterministic by construction for SA-3 and structurally strong for SA-1: (a) SA-3's phrase ('purple levitating sink') cannot match any real product code or spec under EITHER jsonBody, because the CRM's non-fallback probes (exact/prefix/trgm) require some lexical overlap with real catalogue text that this fabricated phrase does not have -- zero-candidate is the only reachable outcome pre- or post-change, so SA-3's PASS does not depend on the RED baseline at all. (b) SA-1's phrase ('wall hung basin 600mm') is observed POST-change to resolve exclusively via match_tier:'spec_search' (5 rows, zero rows of any other tier) -- since spec_search rows can ONLY be produced by the new spec_fallback code path (verified in the CRM source per the diff doc \u00a71, and structurally the feature did not exist pre-change / zero n8n callers pre-change per the plan \u00a70), the PRE-change body is provably incapable of producing this resolution -- there is no other route to a spec_search-tier row in the pre-change graph. This is an argument from the mechanism, not an executed RED run, and is recorded as such -- it does NOT substitute for SA-P1's independently-completed CRM-side pre/post-deploy byte-parity check (already green per the SA.md status banner), but it does close most of the practical risk the RED-first rule exists to catch (a coincidental pre-existing route to the same answer).",
+  "recommendation": "If an executed RED baseline is still wanted for the record, it should be captured by the coder or main-session (who hold write authorization on the clone) via the manifest's documented one-node revert-then-restore recipe, sha-gated both directions, BEFORE or immediately AFTER a tester pass -- not interleaved with a tester's read-only run."
+ },
+ "session_continuity_note": "This run was interrupted by an API session limit mid-way through the S7b prod-sink sweep (after ~44 of 89 polls) and resumed in a follow-up turn per the coordinator's explicit instruction. All 6 SA case executions and their node-level evidence were already captured before the interruption and were reused as-is (not re-run) per the resume instruction. The S7b sweep was completed to full 89/89 coverage after resume. No case was re-driven against the clone a second time.",
+ "no_edits_no_promotion": "Confirmed: no update_workflow or publish_workflow call was made against txiPzSxy3Pclsz6v or any other workflow during this tester run. The clone's versionId was verified unchanged (be62b3a8) at the start of the run via export --verify; no re-verification was performed at the end since no write path was exercised.",
+ "review_corrections_20260812": {
+  "sa4_sa5_root_cause": "CORRECTED per tests/reviews/spec-search-shapeA-wiring.md: the stated mechanism ('trgm alternatives made _result_has_zero_matches false, bypassing spec_fallback') is pre-ae3393810 reasoning. Observation (no spec rows) stands; mechanism does not \u2014 SA-P1 returns 5 spec matches for the same phrase; the difference is request shape, not the phrase. SA-4/SA-5 floor-missed on the widened arm.",
+  "coverage": "SA-4/SA-5 did NOT exercise spec_fallback (absent coverage, not proof). SA-1 covers the zero-match arm only. Widened arm: contract-level SA-P6/SA-P7 executed green 2026-08-12; end-to-end at the clone/customer boundary = SA-7, executed 2026-08-12, PASS (see SA7_widened_arm_settlement below).",
+  "sa_p6_evidence": {
+   "before_intersection_rows": 13,
+   "after_spec_rows": 10,
+   "after_code_rows": 0,
+   "unresolved_tokens": [],
+   "per_token": [
+    {
+     "token": "trying to find a wall hung basin",
+     "matches": 5,
+     "alternatives": 0
+    }
+   ]
+  }
+ },
+ "SA7_widened_arm_settlement": {
+  "added": "2026-08-12, per reviewer REQUEST-CHANGES \u00a7D (tests/reviews/spec-search-shapeA-wiring.md), coordinator-directed follow-up",
+  "case_file": "tests/runs/spec-search-shapeA-SA-7-20260812.json",
+  "execution": "12183425",
+  "prompt": "do you have wall hung basin",
+  "hard_assertion_result": "PASS -- resolve-entity-http's intersection is 5 rows, ALL match_tier:'spec_search', zero code partials mixed in; the rendered customer reply is a clean product list with none of 'Couldn't find', 'did you mean', 'Multiple matches found', or an escalation offer present.",
+  "precise_finding": "Review \u00a7D's predicted defect (a leaked did-you-mean under the spec answer, caused by the CUSTOMER's ORIGINAL per-token resolution surviving separately from a NEW payload.query-keyed resolution) requires TWO resolution entries to coexist. SA-7's single-token query ('wall hung basin' is the ONLY token) produces exactly ONE resolution entry total -- there is no second, independent slot for a leftover to occupy, so \u00a7D's specific two-entry mechanism cannot manifest on this input, independent of which underlying CRM arm actually fired. SA-4/SA-5 DO have the two-entry structural shape (multi-token queries where 'wall hung basin' gets its own sibling resolution) but never got the widened arm to fire on that token (floor-missed, per the correction above). No run in this family yet combines both preconditions (multi-token structure AND the widened arm clearing the ranker floor for the descriptive token) in one input -- flagged as an open follow-up recommendation, not a blocker: SA-7 proves the trigger phrase works in isolation; a variant combining it with a second resolving token is the next test to close the loop on \u00a7D's full risk surface.",
+  "S0_safety": "PASS -- S1-S6 all clean (egress log 3 would_* entries only, test_mode:true directly confirmed, get-results sub t4QvrtrPnTwRU6br returned a read-only answer). S7a: save-message-redis sub-execution 12183442 -> tWm5DYLxfypmVC1T, turn_id self-verified == 12183425. S7b: full 7/7 covering polls (09:36:25Z-09:36:55Z) individually fetched, 0 unretrievable, 0 nonzero LLEN, 0 nonempty pops -- cleaner than the 6-case run (no traffic at all in this narrower window).",
+  "no_edits_no_promotion": "Confirmed -- clone re-verified at be62b3a8 (versionId==activeVersionId, unmoved) immediately before this case; no update_workflow/publish_workflow call made."
+ }
+}

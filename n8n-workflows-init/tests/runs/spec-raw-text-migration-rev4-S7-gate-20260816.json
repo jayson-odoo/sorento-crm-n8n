@@ -1,0 +1,24 @@
+{
+  "case": "S0 S7a/S7b sink-delta gate (mandatory for every case in this pass)",
+  "run_window": "2026-08-15T17:27:08Z (first fire, SA-4-B) through 2026-08-15T17:32:57Z (last stop, INC548)",
+  "S7a_TEST_sink": {
+    "method": "Fetched sub-execution of Call 'sub-respond-save-message-redis'2 for exec 12606706 (SA-4-B).",
+    "sub_execution": "12606732",
+    "target_workflowId": "tWm5DYLxfypmVC1T (sub-respond-save-message-redis TEST) -- NEVER the live UrETd-jm46tFj3Xw7w8vL",
+    "payload_self_verify": "turn_id:'12606706' === parent execution id; contact_id:437264483 === our test contact.",
+    "verdict": "PASS. Confirms the static sinked-wiring property (unchanged by this slice) applies uniformly."
+  },
+  "S7b_prod_sink": {
+    "method": "BOTH co-mandatory signals: (1) per-poll LLEN depth series from prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn's LLEN node (emits {'sorento-respond-message': N}), (2) per-poll pop-payload from the same executions' pop node (emits {'':null} on empty). NEVER scored on consumer execution count (the retracted, unsound method).",
+    "window_covered": "2026-08-15T17:26:30Z through 2026-08-15T17:33:26Z -- fully contains the run window with margin on both sides, well inside the ~8-minute retention horizon (checked immediately after the run).",
+    "total_polls_fetched": 84,
+    "unretrievable_polls": 0,
+    "nonzero_llen_polls": 6,
+    "nonzero_llen_detail": "execs 12607319(1), 12607306(2), 12607238(1), 12607228(2), 12607139(1), 12607128(2)",
+    "nonempty_pop_polls": 6,
+    "attribution": "ALL 6 nonzero polls ATTRIBUTED to an unrelated real producer, not this harness. Every nonempty pop payload carries contact_id:'440987225', phone_number:'+60122465213', first_name:'Justin' -- a real WhatsApp customer, NOT our test contact (437264483). None of the 6 payloads carry a test_run_id field, and their message_ids/turn_ids (12607293, 12607200, 12607108) match none of this run's fixtures. Per §0 S7b's binding rule ('payload attributable to an unrelated producer (different contact_id, no test_run_id, and a message_id not present in this run's fixtures) -> record the attribution, the case may be resumed') this is a clean attribution to unrelated production traffic sharing the same prod list during our window.",
+    "harness_attributable_delta": 0,
+    "verdict": "PASS -- zero prod-sink movement attributable to this harness run across all 84 covering polls, both signals recorded for every poll."
+  },
+  "overall_S7_verdict": "PASS for the entire pass (S7a positive-sink confirmed on the sinked wiring; S7b prod-sink delta fully attributed to unrelated real traffic, zero attributable to this harness)."
+}

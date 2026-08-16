@@ -1,0 +1,415 @@
+{
+ "ran_at": "2026-08-12T09:34:20.771Z",
+ "base": "https://fe-sorento.foundryx.my/api/v1/system",
+ "cases": [
+  {
+   "id": "SA-P1",
+   "why": "a described product resolves through the spec tier",
+   "request": {
+    "query": "trying to find a wall hung basin",
+    "match_mode": "and",
+    "tokens": [
+     "wall hung basin"
+    ],
+    "allowed_entity_types": [
+     "category"
+    ],
+    "access_levels": [],
+    "domain": "master_products",
+    "fallback_to_all_types": true,
+    "limit": 15,
+    "spec_fallback": true,
+    "free_terms": [
+     "wall hung basin"
+    ],
+    "understand_phrase": false
+   },
+   "checks": [
+    {
+     "ok": true,
+     "msg": "HTTP 200 (got 200)"
+    },
+    {
+     "ok": true,
+     "msg": "at least one spec_search match (got 5)"
+    },
+    {
+     "ok": true,
+     "msg": "every spec match carries match_field=\"specifications\""
+    },
+    {
+     "ok": true,
+     "msg": "every spec match carries a uuid"
+    },
+    {
+     "ok": true,
+     "msg": "resolved/ambiguous mirror prefix semantics (len==1 / len>1)",
+     "extra": {
+      "resolved": false,
+      "ambiguous": true,
+      "n": 5
+     }
+    },
+    {
+     "ok": true,
+     "msg": "no spec-tier row is actually a code match relabelled"
+    }
+   ],
+   "status": 200,
+   "spec_match_count": 5,
+   "spec_unmet": [],
+   "floor_missed": false,
+   "semantic_used": false,
+   "top": [
+    {
+     "code": "BRBC22137W-1 (WALL HUNG)",
+     "uuid": "15e235b8-7cf0-4082-8020-91b60cbc4247",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22292W",
+     "uuid": "8ae24c5b-5d85-4ffd-bb66-237084b66eb5",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22350W-1-SG",
+     "uuid": "14f5ea4e-eb1f-4743-b1a0-e5129f7f8ac3",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22589W",
+     "uuid": "1f67b885-1b87-4e0f-894e-386b91912f37",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22590W",
+     "uuid": "2aaa77aa-f40a-4c1d-addc-5786e8a5cf51",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    }
+   ]
+  },
+  {
+   "id": "SA-P2",
+   "why": "a code query is UNCHANGED by the three new fields (the inertness claim)",
+   "request": {
+    "query": "trying to check SRTWC286",
+    "match_mode": "and",
+    "tokens": [
+     "SRTWC286"
+    ],
+    "allowed_entity_types": [
+     "category"
+    ],
+    "access_levels": [],
+    "domain": "master_products",
+    "fallback_to_all_types": true,
+    "limit": 15,
+    "spec_fallback": true,
+    "free_terms": [],
+    "understand_phrase": false
+   },
+   "checks": [
+    {
+     "ok": true,
+     "msg": "HTTP 200 (got 200)"
+    },
+    {
+     "ok": true,
+     "msg": "response identical with and without the three new fields (elapsed_ms ignored)"
+    }
+   ],
+   "status": 200,
+   "baseline_keys": [
+    "alternatives",
+    "by_entity_type",
+    "elapsed_ms",
+    "empty",
+    "intersection",
+    "match_mode",
+    "token_coverage",
+    "tokens",
+    "unresolved_tokens"
+   ],
+   "spec_match_count": 0,
+   "top": []
+  },
+  {
+   "id": "SA-P3",
+   "why": "known v1 gap: cabana resolves as a promotion, so the fallback never fires",
+   "request": {
+    "query": "trying to find a cabana bathtub",
+    "match_mode": "and",
+    "tokens": [
+     "cabana bathtub"
+    ],
+    "allowed_entity_types": [
+     "category"
+    ],
+    "access_levels": [],
+    "domain": "master_products",
+    "fallback_to_all_types": true,
+    "limit": 15,
+    "spec_fallback": true,
+    "free_terms": [
+     "cabana bathtub"
+    ],
+    "understand_phrase": false
+   },
+   "checks": [
+    {
+     "ok": true,
+     "msg": "HTTP 200 (got 200)"
+    },
+    {
+     "ok": true,
+     "msg": "observational: 0 spec matches, floor_missed=undefined"
+    }
+   ],
+   "status": 200,
+   "spec_match_count": 0,
+   "top": []
+  },
+  {
+   "id": "SA-P4",
+   "why": "gibberish stays a miss",
+   "request": {
+    "query": "trying to find a purple levitating sink",
+    "match_mode": "and",
+    "tokens": [
+     "purple levitating sink"
+    ],
+    "allowed_entity_types": [
+     "category"
+    ],
+    "access_levels": [],
+    "domain": "master_products",
+    "fallback_to_all_types": true,
+    "limit": 15,
+    "spec_fallback": true,
+    "free_terms": [
+     "purple levitating sink"
+    ],
+    "understand_phrase": false
+   },
+   "checks": [
+    {
+     "ok": true,
+     "msg": "HTTP 200 (got 200)"
+    },
+    {
+     "ok": true,
+     "msg": "observational: 0 spec matches, floor_missed=true"
+    }
+   ],
+   "status": 200,
+   "spec_match_count": 0,
+   "spec_unmet": [],
+   "floor_missed": true,
+   "semantic_used": false,
+   "top": []
+  },
+  {
+   "id": "SA-P6",
+   "why": "widened arm: partial code coverage → spec rows REPLACE the intersection; record §D preconditions",
+   "request": {
+    "query": "trying to find a wall hung basin",
+    "match_mode": "and",
+    "tokens": [
+     "wall hung basin"
+    ],
+    "allowed_entity_types": [
+     "category"
+    ],
+    "access_levels": [],
+    "domain": "master_products",
+    "fallback_to_all_types": true,
+    "limit": 15,
+    "spec_fallback": true,
+    "free_terms": [
+     "wall hung basin"
+    ],
+    "understand_phrase": false
+   },
+   "checks": [
+    {
+     "ok": true,
+     "msg": "HTTP 200 (got 200)"
+    },
+    {
+     "ok": true,
+     "msg": "without fields: the partial-coverage code intersection exists (got 13 rows)"
+    },
+    {
+     "ok": true,
+     "msg": "with fields: spec rows present (got 10) — the widened arm fired"
+    },
+    {
+     "ok": true,
+     "msg": "with fields: intersection fully REPLACED, no code-partial rows remain (got 0)"
+    },
+    {
+     "ok": true,
+     "msg": "§D record: unresolved_tokens=[] per-token=[{\"token\":\"trying to find a wall hung basin\",\"matches\":5,\"alternatives\":0}]"
+    }
+   ],
+   "status": 200,
+   "spec_match_count": 5,
+   "spec_unmet": [],
+   "floor_missed": false,
+   "semantic_used": false,
+   "top": [
+    {
+     "code": "BRBC22137W-1 (WALL HUNG)",
+     "uuid": "15e235b8-7cf0-4082-8020-91b60cbc4247",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22292W",
+     "uuid": "8ae24c5b-5d85-4ffd-bb66-237084b66eb5",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22350W-1-SG",
+     "uuid": "14f5ea4e-eb1f-4743-b1a0-e5129f7f8ac3",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22589W",
+     "uuid": "1f67b885-1b87-4e0f-894e-386b91912f37",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22590W",
+     "uuid": "2aaa77aa-f40a-4c1d-addc-5786e8a5cf51",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    }
+   ],
+   "d_preconditions": {
+    "unresolved_tokens": [],
+    "customer_token_resolution": [
+     {
+      "token": "trying to find a wall hung basin",
+      "matches": 5,
+      "alternatives": 0
+     }
+    ],
+    "before_intersection_codes": [
+     "BRBC22137W-1 (WALL HUNG)",
+     "BRBC2296-1 (WALL HUNG)",
+     "SRTWB7104-WALL HUNG",
+     "MAB7029C-WALL HUNG",
+     "MAB7029E-WALL HUNG",
+     "SRTWB1513-WALL HUNG",
+     "SRTWB7055 -WALL HUNG",
+     "SRTWB7299-WALL HUNG"
+    ]
+   }
+  },
+  {
+   "id": "SA-P7",
+   "why": "RED baseline: SA-P1 body without the three fields yields zero spec rows",
+   "request": {
+    "query": "trying to find a wall hung basin",
+    "match_mode": "and",
+    "tokens": [
+     "wall hung basin"
+    ],
+    "allowed_entity_types": [
+     "category"
+    ],
+    "access_levels": [],
+    "domain": "master_products",
+    "fallback_to_all_types": true,
+    "limit": 15,
+    "spec_fallback": true,
+    "free_terms": [
+     "wall hung basin"
+    ],
+    "understand_phrase": false
+   },
+   "checks": [
+    {
+     "ok": true,
+     "msg": "HTTP 200 (got 200)"
+    },
+    {
+     "ok": true,
+     "msg": "RED baseline: without the three fields, zero spec rows anywhere (got 0)"
+    }
+   ],
+   "status": 200,
+   "spec_match_count": 5,
+   "spec_unmet": [],
+   "floor_missed": false,
+   "semantic_used": false,
+   "top": [
+    {
+     "code": "BRBC22137W-1 (WALL HUNG)",
+     "uuid": "15e235b8-7cf0-4082-8020-91b60cbc4247",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22292W",
+     "uuid": "8ae24c5b-5d85-4ffd-bb66-237084b66eb5",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22350W-1-SG",
+     "uuid": "14f5ea4e-eb1f-4743-b1a0-e5129f7f8ac3",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22589W",
+     "uuid": "1f67b885-1b87-4e0f-894e-386b91912f37",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    },
+    {
+     "code": "BRBC22590W",
+     "uuid": "2aaa77aa-f40a-4c1d-addc-5786e8a5cf51",
+     "field": "specifications",
+     "tier": "spec_search",
+     "sim": 4.4
+    }
+   ],
+   "red_baseline_keys": [
+    "alternatives",
+    "by_entity_type",
+    "elapsed_ms",
+    "empty",
+    "intersection",
+    "match_mode",
+    "token_coverage",
+    "tokens",
+    "unresolved_tokens"
+   ]
+  }
+ ]
+}

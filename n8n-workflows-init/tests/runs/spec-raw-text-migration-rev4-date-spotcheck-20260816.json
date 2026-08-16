@@ -1,0 +1,22 @@
+{
+  "case": "date spot-check (reviewer F5)",
+  "act": "Find do to hanlim in june",
+  "envelope_source": "REAL prior execution -- n8n_test DB v_turns.trigger_chat_history_id=36477 (conversation_id 437264483, sent_at 2026-06-14T07:23:21), NOT tests/cases/*.json.",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e",
+  "test_run_id": "spec-rev4-DATESPOT-1786815142",
+  "execution": "12607235",
+  "verdict": "PASS (structural, see baseline caveat below)",
+  "assertions": {
+    "1_date_fields_unchanged_in_shape": "CONFIRMED. parser date_filter_start:'2026-06-01', date_filter_end:'2026-06-30', domain_hint:'order' -- month word correctly parsed into a real date range.",
+    "2_query_carries_raw_sentence_tokens_carry_entity_raws_only": "CONFIRMED. resolve-entity-http.tokens === ['hanlim'] only -- the month word ('june') is NOT sent as a separate probe token, only the entity raw is, consistent with SR.md's requirement that the phrase stay ONE token via tokens while query (input side) carries the raw sentence.",
+    "3_answer_set_matches_baseline": "PARTIAL / DISCORDANT WITH THE OLD BASELINE, NOTED HONESTLY. Today's answer is 50 orders, every single one attributed to a HANLIM TRADING SDN BHD account variant -- correctly customer-scoped. The 2026-06-14 baseline capture (36477) shows a reply whose FIRST several rows are attributed to unrelated customers (MASTILE KLANG, PUSAT JUBIN KANGAR, GLORY MOTION) -- i.e. the old baseline itself does not appear to have been cleanly customer-filtered, a pre-existing data/corpus quirk unrelated to this migration. Today's clone result is MORE correctly scoped than the old baseline, not less, so this is not read as a regression -- it is read as inconclusive baseline comparison, reported plainly rather than silently scored PASS on content parity.",
+    "4_no_new_miss_block": "CONFIRMED. resolve-entity-http.unresolved_tokens === []; user_response contains no 'Couldn't find'/'did you mean' text; no '_Matched on:' line (non-spec domain)."
+  },
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send x9 (50-row multi-part reply)].",
+    "S2": "PASS.", "S3": "PASS -- save-session-vars would_write/blocked.",
+    "S4": "N/A (order domain).",
+    "S5": "PASS -- test_mode:true self-verified.",
+    "S6": "PASS -- reformulator ran (real, sub-exec 12607240)."
+  }
+}

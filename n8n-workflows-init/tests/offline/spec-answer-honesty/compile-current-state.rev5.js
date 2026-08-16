@@ -250,12 +250,10 @@ const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_
   // The rows the customer was actually shown. Same construction as N-3's `_answerCodes`:
   // `compatible_entities` carries {uuid, entity_type, code} and no match_tier, so the tier is
   // read off the resolver rows and joined back to this set by uuid/code.
-  const _shownEnts = [];
   const _shownSet = (() => {
     const s = new Set();
     try {
       for (const e of ($('disallowed-entity-gate').first().json.compatible_entities ?? [])) {
-        _shownEnts.push(e);
         for (const v of [e && e.uuid, e && e.code]) {
           const k = String(v ?? '').trim().toLowerCase();
           if (k) s.add(k);
@@ -273,34 +271,6 @@ const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_
   const _inAnswer = (m) => [m && m.uuid, m && m.canonical_code]
     .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _shownSet.has(k); });
   const _specRows = _all.filter(m => String(m?.match_tier ?? '').toLowerCase() === 'spec_search' && _inAnswer(m));
-  // ── F2 · the sentence is WHOLE-ANSWER scoped, so its evidence must be too ──────────
-  // The keys are sourced from spec rows, but the sentence is appended to the WHOLE reply. On
-  // the mixed shape this slice newly makes reachable (the CRM's OR arm APPENDS a spec
-  // resolution beside surviving code rows - conformance §C-1, MEASURED exec 12597847) the
-  // reply carried 15 rows, 10 of them code-prefix matches, and still closed with
-  // `_Matched on: mounting: Wall Hung._` - true of 5 rows and false of 10. Substitute a
-  // product attribute and it sharpens: "SRTWC286 and 1.2mm sink" would invite the customer to
-  // read the SRTWC286 rows as 1.2mm.
-  //
-  // So: emit ONLY when EVERY row the customer was shown is a spec_search row. A partial
-  // attribution is not a weaker claim, it is a false one, and the whole SR family exists to
-  // stop exactly that. Mixed => no line at all; the spec rows are still shown, they are simply
-  // not described. Same join as `_inAnswer`, so "in the answer" and "the whole answer" cannot
-  // disagree about what the answer is.
-  //
-  // Stated bound: a shown entity that is not a product spec row (a category or brand row lifted
-  // into `compatible_entities`) also suppresses. That is the conservative direction and it is
-  // the one this block must err in.
-  const _specKeys = new Set();
-  for (const m of _specRows) {
-    for (const v of [m && m.uuid, m && m.canonical_code]) {
-      const k = String(v ?? '').trim().toLowerCase();
-      if (k) _specKeys.add(k);
-    }
-  }
-  const _allShownAreSpec = _shownEnts.length > 0 && _shownEnts.every(e =>
-    [e && e.uuid, e && e.code].some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _specKeys.has(k); }));
-  if (!_allShownAreSpec) return;
   // First-seen order across rows, deduped. Row order is the ranker's order.
   const _keys = [];
   for (const m of _specRows) {
@@ -314,11 +284,9 @@ const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_
       if (_keys.indexOf(_key) < 0) _keys.push(_key);
     }
   }
-  // THE NO-OP GUARANTEE: no spec key in the answer => no line, and the whole output stays
-  // byte-identical. Deliberately not written as a separate "was there a spec row" flag - a
-  // second guard for the SAME outcome would be unfalsifiable (LESSONS 66). F2's gate above is
-  // a DIFFERENT question (is the whole answer spec-sourced?), not a second copy of this one,
-  // and it has its own mutant.
+  // THE NO-OP GUARANTEE, and the ONLY early gate: no spec key in the answer => no line, and
+  // the whole output stays byte-identical. Deliberately not written as a separate "was there a
+  // spec row" flag - a second guard for the same outcome would be unfalsifiable (LESSONS 66).
   if (!_keys.length) return;
   // ── THE FILTER · matched_specs INTERSECT (spec_asked-keys UNION {class}) ──────────────
   // spec_asked is what the CUSTOMER asked for; matched_specs is what SCORED. A house
@@ -792,44 +760,11 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
         .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _answerCodes.has(k); }));
   })();
   const _tokenReachedSpecSearch = (tok) => _specSearchAnswered && _notCodeShaped([{ raw: tok }]).length > 0;
-  // ── F1 · the CRM's own QUERY-KEYED resolution is NOT a customer token ────────────────
-  // Since spec-raw-text-migration `query` IS the customer's whole sentence, the resolution
-  // the CRM appends for it comes back with `token` == that sentence (MEASURED, exec 12597847:
-  // `resolutions[2].token === "SRTWC286 and wall hung basin"`). Every renderer that groups
-  // misses BY TOKEN then prints the customer's own question back at them as a failed search
-  // term (MEASURED at the customer boundary, exec 12597815). It is not a customer entity:
-  // n8n never sent it.
-  //
-  // Keyed on WHAT WE SENT. `resolve-entity-http` builds its `tokens` from exactly
-  // `qf.entities[].raw`, so the sent set is decidable HERE without trusting anything the CRM
-  // echoes back — and every CRM-derived probe token (the appended query resolution, and any
-  // `_synthesize_alpha_tokens` split of the sentence) falls outside it by construction.
-  //
-  // FAIL-OPEN, deliberately (UAC SR-U5: a genuine miss must never be silenced). When we sent
-  // NO tokens at all the set cannot discriminate, so the rule narrows to the raw turn text
-  // itself; and when neither the entity set nor the turn text is available, nothing is
-  // suppressed.
-  const _sentTokens = (() => {
-    const s = new Set();
-    for (const e of (Array.isArray(qf.entities) ? qf.entities : [])) {
-      const k = String((e && e.raw) ?? '').trim().toLowerCase();
-      if (k) s.add(k);
-    }
-    return s;
-  })();
-  const _rawTurn = String((() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })() ?? '').trim().toLowerCase();
-  const _isDerivedQueryToken = (tok) => {
-    const k = String(tok ?? '').trim().toLowerCase();
-    if (!k) return false;
-    if (_sentTokens.size) return !_sentTokens.has(k);
-    return !!_rawTurn && k === _rawTurn;
-  };
   let missResolutions = [];
   if (Array.isArray(r?.resolutions)) {
     missResolutions = r.resolutions.filter(res => res && res.resolved !== true
       && !(Array.isArray(res.matches) && res.matches.some(isExact))
       && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
-      && !_isDerivedQueryToken(res.token)
       && !_tokenReachedSpecSearch(res.token)
       && !_tokenWasAnswered(res));
   } else if (unresolved.length && !_tokenWasAnswered(r)) {

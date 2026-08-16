@@ -1,0 +1,31 @@
+{
+  "case": "SA-4-B",
+  "closes": "reviewer F1 (the customer-boundary re-read, third node: build-suggest-offer)",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ versionId==activeVersionId==98e93d6e-41b4-4a1f-999c-5fe70daeacc6 (re-verified from freshly re-exported workflow.json before firing: resolve-entity-http.jsonBody sha256 af7d38527e6b544c55ed1e04d457980d37924f8758fa5c36b0983b0bb369fb81, compile-current-state.jsCode sha256 97d2f6a25882fc948a2a1b9ed03517137de28e68db5b0e810d5f1ef5c6200925, build-suggest-offer.jsCode sha256 8a18369006be77e25530b76a3c6b0284dec68ec22a76c13615d79a42ae764217 -- all three MATCH the diff doc's rev-4 after-shas exactly)",
+  "act": "wall hung basin got SIRIM cert? (exec 12597815's own input, verbatim)",
+  "driver": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No), mode:uac, previous_conversation_state:{}, contact 437264483",
+  "test_run_id": "spec-rev4-SA4B-1786814827",
+  "execution": "12606706",
+  "verdict": "PASS",
+  "assertions": {
+    "1_customer_question_appears_nowhere": "CONFIRMED ABSENT. build-suggest-offer.suggest_response contains no '\"wall hung basin got SIRIM cert?\" — did you mean:' group and the full sentence is absent from the reply as a whole string.",
+    "2_real_token_still_gets_suggestions": "CONFIRMED. The customer's real entity raw 'wall hung basin' (parser entities[0].raw) still heads a 3-item did-you-mean group.",
+    "3_roster_3_not_6": "CONFIRMED. suggest_last_result_set.length === 3 (was 6 pre-fix).",
+    "4_suggest_last_result_set_length": 3,
+    "5_dym_candidates_for_raw_cross_check": "CONFIRMED. All 3 dym_candidates[].for_raw === 'wall hung basin', which IS one of Call 'sub-query-reformulator'.output.entities[].raw ({'wall hung basin','SIRIM cert'}). Pre-fix (exec 12597815, re-fetched independently this pass), 3 of 6 dym_candidates carried for_raw:'wall hung basin got SIRIM cert?' -- a raw the parser never emitted (parser only ever emitted 'wall hung basin' and 'SIRIM cert'). That pick-linkage corruption is gone post-fix.",
+    "6_which_node_rendered": "CONFIRMED. compile-current-state.variables.user_response === build-suggest-offer.suggest_response, byte-identical (verbatim string match performed)."
+  },
+  "boundary_strings": {
+    "pre_fix_RED_exec_12597815_build_suggest_offer_suggest_response": "Couldn't find some items:\n\n\"wall hung basin\" — did you mean:\n  1. BRBC2296-1 (WALL HUNG) - no SIRIM cert\n  2. MAB7029C-WALL HUNG - no SIRIM cert\n  3. MAB7029E-WALL HUNG - no SIRIM cert\n\"wall hung basin got SIRIM cert?\" — did you mean:\n  4. BRBC22137W-1 (WALL HUNG) - no SIRIM cert\n  5. BRBC22292W - no SIRIM cert\n  6. BRBC22350W-1-SG - no SIRIM cert\n\nReply a number to pick, or 'yes' to escalate to purchasing_certification.",
+    "post_fix_GREEN_exec_12606706_build_suggest_offer_suggest_response": "Couldn't find \"wall hung basin\". Did you mean:\n1. BRBC2296-1 (WALL HUNG) - no SIRIM cert\n2. MAB7029C-WALL HUNG - no SIRIM cert\n3. MAB7029E-WALL HUNG - no SIRIM cert\nReply with a code to continue, or would you like me to escalate to purchasing_certification team?",
+    "note": "The shape change (6-item two-group picker -> single-token prose + per-code quick replies) is a consequence of removing the phantom token, not a second decision -- matches the diff doc's own predicted AFTER example verbatim."
+  },
+  "safety_S0": {
+    "S1": "PASS -- egress log for this exec: [{guard:save-message-redis,kind:would_log},{guard:save-session-vars,kind:would_write},{guard:sendmsg-sub,kind:would_send}]. No api.respond.io POST executed.",
+    "S2": "PASS -- no escalation confirmed/executed; dym offer with 'Yes escalate' quick reply text only (not a taken branch).",
+    "S3": "PASS -- save-session-vars egress entry is would_write, blocked; save-session-vars/update-human-intervened remain orphaned (unchanged by this slice per diff doc's param-hash sweep).",
+    "S4": "N/A this case (no get-results call on the not-found lane) -- see SR-8 case file for a positive S4 read-only confirmation this pass.",
+    "S5": "PASS -- 'When Executed by Another Workflow'.json.test_mode === true, self-verified against fired test_run_id spec-rev4-SA4B-1786814827.",
+    "S6": "PASS -- parser tier: real gpt LLM ran (Call 'sub-query-reformulator', sub-exec 12606708 on wI5RkNGW3EOJfBdo); no get-results/other LLM node fired on this not-found lane; scope:deterministic metadata field does not reflect actual tier (established finding, unchanged)."
+  }
+}

@@ -1,0 +1,13 @@
+={
+  "query": "{{ $('Call \'sub-query-reformulator\'').first().json.output.user_goal }}",
+  "match_mode": "{{ $('Call \'sub-query-reformulator\'').first().json.output.match_mode }}",
+  "tokens": {{ JSON.stringify($('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.raw).length > 0 ? $('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.raw) : []) }},
+  "allowed_entity_types": {{ JSON.stringify($('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.raw).length > 0 ? $('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.hint) : []) }},
+  "access_levels": {{ JSON.stringify($('Call \'sub-query-reformulator\'').item.json.output.access_levels || []) }},
+  "domain": "{{ $('Call \'sub-query-reformulator\'').first().json.output.domain_hint }}",
+  "fallback_to_all_types": true,
+  "limit": 15,
+  "spec_fallback": true,
+  "free_terms": {{ JSON.stringify(((_c) => (_e, _m) => { const _t = _c(_e); const _x = ((_c) => (_m) => String(_m == null ? '' : _m).split(/\s+/).filter(w => _c([{ raw: w }]).length > 0).join(' '))(_c)(_m); if (_x) _t.push(_x); return _t.filter((v, i, a) => a.indexOf(v) === i); })((_e) => (Array.isArray(_e) ? _e : []).map(x => String((x && x.raw) || '').trim()).filter(v => v.length > 0 && !(/[0-9]/.test(v) && /^[A-Za-z][A-Za-z][A-Za-z0-9._\/\-\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]*$/.test(v))).filter((v, i, a) => a.indexOf(v) === i))($('Call \'sub-query-reformulator\'').first().json.output.entities, (() => { try { const _j = $('tf-message').first().json; return (_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''; } catch (_err) { return ''; } })())) }},
+  "understand_phrase": false
+}

@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main TEST  (`txiPzSxy3Pclsz6v`)
 
-- versionId **bd0023ac-f683-4b9d-a7a6-5a7441cfff35** · activeVersionId **bd0023ac-f683-4b9d-a7a6-5a7441cfff35** · DRAFT == ACTIVE
+- versionId **98e93d6e-41b4-4a1f-999c-5fe70daeacc6** · activeVersionId **98e93d6e-41b4-4a1f-999c-5fe70daeacc6** · DRAFT == ACTIVE
 - 148 nodes
 
 ## Edges
@@ -225,7 +225,7 @@ whisper-transcribe[0] -> patch-transcript
 - **sibling-probe** ← build-suggest-offer
 - **sibling-transform** ← build-suggest-offer, sibling-probe
 - **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, chat-attach-push, chat-attach?, check-access-http, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars-http, guard-d-record, guard-h-record, ideate-turn-http, is-human-intervened, pg-get-session, pg-upsert-session, probe-incoming, resolve-entity-http, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
-- **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, construct-user-prompt, get-session-vars-http, guard-h-record, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
+- **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, build-suggest-offer, compile-current-state, construct-user-prompt, get-session-vars-http, guard-h-record, ideate-turn-http, if-message-is-audio, patch-transcript, resolve-entity-http, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **validator** ← If6, compile-current-state, crossdomain-render, sibling-gate
 - **x** ← dym-transform, dym-transform-partial  ⚠️ TARGET NOT IN THIS WORKFLOW
 
@@ -302,8 +302,8 @@ whisper-transcribe[0] -> patch-transcript
 
 | node | lines |
 |---|---|
-| compile-current-state | 572 |
-| build-suggest-offer | 555 |
+| compile-current-state | 1008 |
+| build-suggest-offer | 582 |
 | dym-transform | 410 |
 | dym-transform-partial | 410 |
 | disallowed-entity-gate | 318 |

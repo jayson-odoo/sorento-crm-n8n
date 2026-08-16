@@ -1,0 +1,33 @@
+{
+ "case": "SR-16",
+ "also_satisfies": ["SR-12 (no-op guarantee on a code turn)", "SR-5 (code parity, amended)", "SA-2 (code parity)"],
+ "title": "code rides in query unstripped, resolves via exact product_code match, no Matched-on line -- the no-op guarantee at the boundary",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "check stock SRTWC286",
+ "test_run_id": "sr16-20260815",
+ "execution": "12597163",
+ "resolve_entity_http_response": {
+  "match_mode": "and",
+  "tokens": ["SRTWC286"],
+  "match_tier": "and (product_code exact/prefix match) -- NOT spec_search",
+  "intersection_count": 10,
+  "note": "the code resolves via the ordinary product_code AND path, entirely independent of spec search -- the raw-text migration (code no longer stripped from query) does not disturb code resolution, exactly as diff decision on 'code no longer stripped' anticipated"
+ },
+ "customer_boundary": {
+  "domain_routing": "check_stock/inventory (NOT master_products/spec) -- resolve-entity-http is confirmed to be the SAME shared node across ALL domains (diff decision #4: single resolve node for the whole spine)",
+  "no_matched_on_line": "CONFIRMED ABSENT -- grepped the full 4-part rendered reply, no '_Matched on' substring anywhere",
+  "sendmsg_parts": 4,
+  "reply_shape": "50-row stock table across 4 parts, standard warehouse/location/QOH format, one row flagged (PRODUCT DISCONTINUED) -- unremarkable, matches the expected shape for this well-known fixture code",
+  "first_part_excerpt": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 1\n\n..."
+ },
+ "code_no_longer_stripped_confirmed": "The literal query field (per SR-13's structural jsonBody dump) now sends the FULL raw message including the code -- previously (N-0 free_terms era) the code would have been excluded from free_terms per-word filtering. This turn shows the code still resolves correctly via product_code match regardless, matching the diff's explicit note: '_is_code_shaped tokens are never cleared' and 'a product CODE is no longer stripped from what we send -- it rides inside query and the CRM owns it. That is correct and deliberate.'",
+ "safety_S0": {
+  "S1_S3": "PASS -- egress log has 6 entries for this 4-part send (would_log, would_write, 4x would_send parts), no real sends/writes.",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sr16-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:38:30Z-15:38:40Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

@@ -1,4 +1,4 @@
-// ── build-suggest-offer (D1/D2/D3) ────────
+// ── build-suggest-offer (D1/D2/D3) ────────────────────────
 // Sibling downstream of not-found-error-message. ADDITIVE: passes the not-found
 // payload through and, when the miss carries CONCRETE candidates, attaches a
 // suggestion offer that compile-current-state renders. No candidates → suggest_offer
@@ -115,7 +115,7 @@ const _mkOffer = (cands) => (Array.isArray(cands) && cands.length)
   }
 }
 
-// ── UUID leak guard (promotion did-you-mean) ────────
+// ── UUID leak guard (promotion did-you-mean) ───────────────────────
 // Promotions have no product code: their canonical_code IS the promo uuid, and the
 // human name lives in display.description. Rendering canonical_code as the label leaks
 // a raw uuid to the customer. isUuid() detects that; humanLabel() prefers a REAL code,
@@ -144,7 +144,7 @@ const attachmentNoun = () => {
   return (at && at.raw) ? at.raw : 'document';
 };
 
-// ── D1: resolution-miss "did you mean" — PER-TOKEN, GENUINE-MISS ONLY ────────
+// ── D1: resolution-miss "did you mean" — PER-TOKEN, GENUINE-MISS ONLY ──────────
 // Only a token the resolver could not resolve AND that had no exact match drives a
 // did-you-mean, using ITS OWN matches/alternatives. Never aggregate candidates across
 // tokens (bug: in a multi-item order, a dead SRTUB6503-BL borrowed SRTMFV207-NL from a
@@ -167,7 +167,7 @@ function tokenCandidates(res) {
 
 // Build the list of genuine miss tokens (their own resolution, no exact match).
 
-// ── honour the gate's document-class narrowing (container-status S1) ────────
+// ── honour the gate's document-class narrowing (container-status S1) ──────────────────
 // `r` above is bound to the RAW resolver node, so a token the GATE resolved still looks
 // unresolved here. Measured: "please send me the container status list" returned the correct
 // file AND "Couldn't find 'container status list' — did you mean Packing List, Stock_List,
@@ -184,38 +184,11 @@ const _gateResolvedTokens = (() => {
   } catch (e) { return new Set(); }
 })();
 
-// ── F1 · the CRM's own QUERY-KEYED resolution is NOT a customer token ────────
-// Since spec-raw-text-migration `query` IS the customer's whole sentence, the resolution the
-// CRM appends for it comes back with `token` == that sentence (MEASURED, exec 12597847). THIS
-// node is the one that rendered it back at the customer (MEASURED, exec 12597815):
-//     "wall hung basin got SIRIM cert?" — did you mean:
-// i.e. their own question, quoted as something we could not find, heading a second overlapping
-// candidate list. It is not a customer entity: n8n never sent it as a token.
-//
-// Identical rule and identical bytes to compile-current-state's — both are spliced from
-// tests/offline/spec-answer-honesty/derived-token.js, because two hand-maintained copies of
-// this rule is the next LESSONS §63 waiting to happen. Fail-open bounds are documented there.
-const _sentTokens = (() => {
-  const s = new Set();
-  for (const e of (Array.isArray(q.entities) ? q.entities : [])) {
-    const k = String((e && e.raw) ?? '').trim().toLowerCase();
-    if (k) s.add(k);
-  }
-  return s;
-})();
-const _rawTurn = String((() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })() ?? '').trim().toLowerCase();
-const _isDerivedQueryToken = (tok) => {
-  const k = String(tok ?? '').trim().toLowerCase();
-  if (!k) return false;
-  if (_sentTokens.size) return !_sentTokens.has(k);
-  return !!_rawTurn && k === _rawTurn;
-};
 let missResolutions = [];
 if (Array.isArray(r?.resolutions)) {
   missResolutions = r.resolutions.filter(res => res && res.resolved !== true
     && !(Array.isArray(res.matches) && res.matches.some(isExact))
-    && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
-    && !_isDerivedQueryToken(res.token));
+    && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase()));
 } else if (unresolved.length) {
   missResolutions = [r];   // legacy single-resolution shape
 }
@@ -236,7 +209,7 @@ if (!isClar && !requireSpec) {
   d1s = d1s.slice(0, 5);
 }
 
-// ── dym-probe-before-offer: has-it annotation inputs ────────
+// ── dym-probe-before-offer: has-it annotation inputs ──────────────────────────
 // dym-annotate (upstream, sibling-gate[1] path only) reports which of the offered
 // codes actually HAVE the thing the user asked for. If it did not run, failed, or
 // detected an unscoped probe, _dymOk is false and every render below is
@@ -259,7 +232,7 @@ const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_d
 const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
 const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || attachmentNoun()) : null;
 
-// ── dym-probe-before-offer, 4th surface: the REQUIRE-SPECIFIC PICKER ────────
+// ── dym-probe-before-offer, 4th surface: the REQUIRE-SPECIFIC PICKER ──────────
 // disallowed-entity-gate renders a numbered "needs to be more specific / please choose"
 // list into gate_clarification, which not-found-error-message copies verbatim into
 // escalate_message (not-found-error-message.js:175). D1 never fires on these turns
@@ -308,7 +281,7 @@ if (_survivors.length > 1) {
     for (const p of s.picks) {
       idx += 1;
       const isU = isUuid(p.m.canonical_code);
-      // ── C3 (immortal-hint-class): annotate the RENDERED LINE ONLY. ────────
+      // ── C3 (immortal-hint-class): annotate the RENDERED LINE ONLY. ────────────────────────────
       // No sort is introduced: `idx` still increments once per pick in exactly the same order, so
       // the numbering is preserved BY CONSTRUCTION and §IH-11 clause 3 (strip the suffixes, diff
       // against the pre-change render) holds byte-for-byte.

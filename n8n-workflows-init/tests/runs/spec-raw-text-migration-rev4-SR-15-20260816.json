@@ -1,0 +1,20 @@
+{
+  "case": "SR-15 (DEV-2, mixed hit+miss, re-run for rev4 regression)",
+  "act": "wall hung basin and SRTZZ999 (= SR-4's input)",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e",
+  "test_run_id": "spec-rev4-SR15-1786815081",
+  "execution": "12607097",
+  "verdict": "PASS",
+  "assertions": {
+    "spec_shortlist_and_miss_in_one_reply": "CONFIRMED. compile-current-state.user_response contains the 5-item BRAVAT/CABANA wall-hung spec shortlist AND '\"SRTZZ999\" — not found.' in the SAME reply.",
+    "wall_hung_basin_absent_from_miss_block": "CONFIRMED. Miss block reads only 'Couldn't find these:\\n\"SRTZZ999\" — not found.\\n\\nAsk again with the correct code.' -- 'wall hung basin' does not appear in the miss block (N-3's _tokenWasAnswered/_tokenReachedSpecSearch guard correctly suppresses it because it WAS answered via the combined query-token spec search).",
+    "exactly_one_not_found": "CONFIRMED (grepped, 1 occurrence)."
+  },
+  "resolve_entity_http_shape": "resolutions[]: 'wall hung basin' (unresolved, matches:[], only trgm alternatives), 'SRTZZ999' (unresolved, matches:[], alternatives:[]), and the combined query-token 'wall hung basin and SRTZZ999' (ambiguous, 5 spec_search matches). No F1 phantom-sentence dym group rendered (this lane goes through compile-current-state's N-1a/N-3, not build-suggest-offer).",
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send].",
+    "S2": "PASS.", "S3": "PASS.", "S4": "N/A.",
+    "S5": "PASS -- test_mode:true self-verified.",
+    "S6": "PASS -- reformulator ran (real)."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "case": "SR-8 (D7 retest, re-run for rev4 regression -- same phrase as incident exec 12303509's own turn, see the separate incident-replay file)",
+  "act": "sorento double bowl kitchen sink with 1.2mm thickness",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e",
+  "test_run_id": "spec-rev4-SR8-1786815096",
+  "execution": "12607135",
+  "verdict": "PASS",
+  "assertions": {
+    "junk_absent": "CONFIRMED. Zero SORENTOBAG / SORENTO188 / '****NOT USE THIS CODE' anywhere in resolve-entity-http.resolutions or the rendered reply. 'Sorento' and 'double bowl kitchen sink' individually resolve to matches:[] (no junk prefix matches at all) -- D7's _suppress_brand_prefix_junk remains deployed and effective.",
+    "descriptive_half_produces_real_spec_answer": "CONFIRMED. 5 real spec_search rows (CKS12050, SRTKS4040-O/F, CKS315, CKS317, CKS317-NG), spec_asked=[bowl_count:2, brand:SORENTO, thickness:1.2]."
+  },
+  "observation_not_a_defect": "The rendered '_Matched on: bowl count: 2, brand: CABANA and thickness: 1.' line shows brand:CABANA even though the row that actually scored on 'brand'/'thickness' in ITS OWN matched_specs is SRTKS4040-O/F (brand:SORENTO, thickness:1). Traced this to N-1a's documented value-provenance rule (diff doc §2a: 'the first in-answer row that RECORDS the key' -- i.e. the first row whose specifications object HAS that key present at all, walked in answer-render order, not gated per-row by that row's own matched_specs). CKS315 (answer position #1, a CABANA product) has a 'brand' field in its specifications even though brand was not among what IT scored on, so its value is what renders. This matches the diff doc's rule as literally written and is not new to rev4 (N-1a/DEV-1 unchanged by this build) -- flagged for the reviewer as a cross-row attribution nuance worth a second look, not scored as a fail.",
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send].",
+    "S2": "PASS.", "S3": "PASS.",
+    "S4": "PASS -- Call 'sub-get-results' (target t4QvrtrPnTwRU6br) returned the standard read-only shape (response/answers/attachments/action_links/has_result/alternatives/relaxed_axis/field_access/requested_attributes/keys_served); no write-tool marker.",
+    "S5": "PASS -- test_mode:true self-verified.",
+    "S6": "PASS -- reformulator + get-results both ran (real); no new token sink observed."
+  }
+}

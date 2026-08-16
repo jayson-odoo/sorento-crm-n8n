@@ -1,0 +1,48 @@
+{
+ "case": "regression-sweep (plan §3, DEV-3 widened scope to the FULL resolve surface)",
+ "title": "code parity incl. unicode-dash fold, AND-mode multi-token, order spot-check, attachment/domain_hint -- resolve-entity-http is shared by ALL consumers so a raw sentence now reaches the code-token extractor and derive_search_inputs for every domain, not just spec",
+ "verdict": "PASS (no crash, no garbled output, no unsafe content, sensible domain routing preserved on all 4 probes) -- envelopes are fresh REAL executions fired by this tester, per the stale-fixture rule (never tests/cases/*.json unverified); no byte-exact pre-migration baseline exists for these specific novel phrasings, so this is a functional spot-check, not a byte-diff regression proof",
+ "family": "SR-1c (spec-raw-text-migration) regression sweep",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{} on every subcase",
+ "contact": 437264483,
+ "subcases": [
+  {
+   "id": "unicode-dash-code",
+   "prompt": "check stock SRT332−GM (U+2212 minus-sign paste, not ASCII hyphen)",
+   "test_run_id": "reg-unicode-dash-20260815",
+   "execution": "12597558",
+   "rendered_reply_verbatim": "Couldn't find \"SRT332−GM\". Did you mean:\n1. SRT332-GM - has stock details\n2. SRT332 - no stock details\n3. SRT316-GM - no stock details\nReply with a code to continue, or would you like me to escalate to warehouse team?",
+   "assessment": "The unicode-dash fold (LIVE promoted 6723879b per memory unicode-dash-breaks-codes.md) still functions correctly with the raw-query migration -- the pasted U+2212 code is recognised and offered a did-you-mean including the correctly ASCII-hyphenated SRT332-GM as option 1 with real stock details. No regression: the dash fold happens upstream of resolve-entity-http (at the parser's last node, per that memory), and is unaffected by resolve-entity-http no longer receiving free_terms."
+  },
+  {
+   "id": "AND-mode-multi-token",
+   "prompt": "check stock for SRTWC286 and CKS315 (two distinct real product codes)",
+   "test_run_id": "reg-and-multitoken-20260815",
+   "execution": "12597590",
+   "rendered_reply_summary": "4-part stock reply covering BOTH codes: CKS315 (2 warehouse rows) + all 10 SRTWC286-SH variant rows (48 rows) = 50 total stock lines across 4 message parts.",
+   "assessment": "Both codes resolved and returned stock details -- no crash, no dropped entity, no garbled multi-token handling. (Two distinct product codes cannot literally AND-intersect to a shared row, so this necessarily exercises the AND-zero-intersection -> OR-fallback path per-token, same mechanism as SR-9/SR-15/SA-5 -- consistent behaviour across this whole run.)"
+  },
+  {
+   "id": "order-domain-spot-check",
+   "prompt": "show me my orders for August",
+   "test_run_id": "reg-order-spotcheck-20260815",
+   "execution": "12597613",
+   "rendered_reply_verbatim": "A order enquiry can't be answered with a general search — please specify a order, customer_order, transporter, customer, or product so I can look it up.",
+   "assessment": "Order-domain routing and its deterministic clarify-ask behave normally -- no crash, sensible clarification prompt, unaffected by the spec-search leaves this slice touched."
+  },
+  {
+   "id": "attachment-domain_hint-spot-check",
+   "prompt": "any documents or spec sheets for SRTWC286",
+   "test_run_id": "reg-attach-20260815",
+   "execution": "12597631",
+   "rendered_reply_verbatim_excerpt": "product_attachment search needs to be more specific. Multiple matches found — please choose:\n1. SRTWC286-SH-200 - has technical drawing\n2. SRTWC286-SH-P - has technical drawing\n...",
+   "assessment": "Attachment-domain routing and its disambiguation picker behave normally -- resolve-entity-http (now carrying the raw sentence in query) does not break the attachment-domain resolution path. No crash, no garbled output."
+  }
+ ],
+ "safety_S0": {
+  "S1_S3_all_four": "PASS -- every subcase's egress log entries are would_* only (would_log/would_write/would_send), no real sends/writes.",
+  "S5_test_mode_all_four": "Confirmed {test_mode:true, test_run_id:<matching>, scope:'deterministic'} on all 4 executions via 'When Executed by Another Workflow' runData, self-verified against the fired test_run_id."
+ },
+ "S7": "All 4 execution windows (15:42:40Z-15:43:35Z) fall inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

@@ -1,0 +1,37 @@
+{
+ "case": "SA-5",
+ "title": "mixed code+descriptive -- DEVIATION FROM PRE-MIGRATION BASELINE, flagged for the reviewer (not a failure)",
+ "verdict": "PASS (functional -- no crash, no error, no unsafe content) WITH A NOTED BEHAVIOUR CHANGE vs the documented pre-migration 'known v1 gap'",
+ "family": "SA (spec-search-shapeA-wiring) re-probe under spec-raw-text-migration",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "SRTWC286 and wall hung basin",
+ "test_run_id": "sa5-20260815",
+ "execution": "12597847",
+ "pre_migration_expectation_SA_md": "'code token resolves normally; fallback suppressed (CRM zero-match gate) -- assert code answer correct, document the descriptive half's fate; known v1 gap, NOT a failure.' I.e. pre-migration, only the CODE half was expected to resolve; the descriptive half ('wall hung basin') was expected to be silently dropped (documented gap).",
+ "resolve_entity_http_response": {
+  "tokens": ["SRTWC286", "wall hung basin"],
+  "per_token_resolutions": [
+   {"token": "SRTWC286", "resolved": false, "ambiguous": true, "match_field": "product_code", "match_tier": "prefix", "count": 10},
+   {"token": "wall hung basin", "resolved": false, "ambiguous": false, "matches": [], "alternatives": "3 trgm fuzzy candidates -- the descriptive token's OWN resolution is STILL empty on its own, exactly as pre-migration"},
+   {"token": "SRTWC286 and wall hung basin (FULL QUERY)", "resolved": false, "ambiguous": true, "matches": "5 Bravat wall-hung-basin spec_search rows, via_token = the full sentence"}
+  ],
+  "fallback_match_mode": "or",
+  "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+  "spec_asked": [{"key": "mounting", "value": "wall_hung"}],
+  "matched_specs_per_row": ["free_terms", "mounting"]
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n6. *Product Code:* SRTWC286-SH\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC (S-TRAP 250MM). SRTWC286-SH\n*List Price:* MYR 1260.00\n*Dimensions:* Not defined\n\n7. *Product Code:* SRTWC286-SH-200\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC (S-TRAP 200MM). SRTWC286-SH-200\n*List Price:* MYR 1260.00\n*Dimensions:* Not defined\n\n8. *Product Code:* SRTWC286-SH-150\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC (S-TRAP 150MM). SRTWC286-SH-150\n*List Price:* MYR 1260.00\n*Dimensions:* Not defined\n\n9. *Product Code:* SRTWC286-SH-UF\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC (S-TRAP 250MM). SRTWC286-SH-UF\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n10. *Product Code:* SRTWC286-SH-P\n*Description:* ****SORENTO ONE PIECE TWISTER FLUSH WC (P-TRAP 180MM). SRTWC286-SH-P **PLEASE USE SRTWC286-SH-NEW-P\n*List Price:* MYR 1260.00\n*Dimensions:* Not defined\n⚠️  *(PRODUCT DISCONTINUED)*\n\n11. *Product Code:* SRTWC286-SH-NEW\n*Description:* SORENTO ONE PIECE TWISTER FLUSH WC (S-TRAP 250MM) SRTWC286-SH-NEW\n*List Price:* MYR 1260.00\n*Dimensions:* Not defined\n12. *Product Code:* SRTWC286-SH-PP\n...(15 total)...\n\n_Data last updated: 14/08/2026 18:37:36_\n\n_Matched on: mounting: Wall Hung._\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "sendmsg_parts": 2,
+  "code_answer_correct": true,
+  "descriptive_half_fate": "RESOLVED, not dropped -- this is the deviation. 15 total items rendered: the 10 SRTWC286-code-prefix products (from the code token's own resolution) MERGED with the 5 Bravat wall-hung-basin spec_search products (from the full-query resolution). Both halves are answered in ONE list, with the Matched-on line applying only to the spec-matched subset."
+ },
+ "deviation_flagged_for_reviewer": "The pre-migration 'known v1 gap' (descriptive half silently dropped when paired with a code) appears CLOSED by this slice -- not because this slice's two touched nodes (resolve-entity-http/compile-current-state) implement new merge logic, but because the SR-9 third-shape mechanism (AND-zero-intersection -> OR fallback -> per-token resolution UNION a query-keyed spec_search resolution) now applies uniformly to ANY multi-token AND-collapse, including a code+descriptive pair, not just a code+nonexistent-code pair (SR-4/SR-15/SR-9's original finding). This is likely a POSITIVE, welcome behaviour change (the customer now gets both answers instead of one silently dropped), but it is a real functional deviation from SA.md's documented expectation and from SA family's contract fact #1 ('REPLACE, never merge: ... The renderer NEVER sees a mixed set -- SA-1 asserts no code-partial rows alongside spec_search rows'). Here the renderer DOES show a code-prefix-tier row (match_tier:'and'/'prefix') alongside spec_search-tier rows in the SAME list -- worth an explicit reviewer decision on whether SA.md's contract fact #1 needs amending to describe this newly-reachable third shape, the same way SR-9 amended the N-3 reachability table. NOT scored as a FAIL: no error, no unsafe content, no S0 violation, and the merged answer is strictly MORE informative than the documented pre-migration gap.",
+ "safety_S0": {
+  "S1_S3": "PASS -- egress log entries all would_*, no real sends/writes.",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sa5-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:45:34Z-15:45:42Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

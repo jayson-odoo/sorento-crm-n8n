@@ -1,0 +1,51 @@
+{
+ "case": "SR-6",
+ "title": "nonsense unchanged -- LOAD-BEARING",
+ "verdict": "PASS",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "attempt_1": {
+  "prompt": "purple levitating sink",
+  "test_run_id": "sr6-20260813",
+  "execution": "12308626",
+  "started_at": "2026-08-13T09:14:36.240Z",
+  "outcome": "NOT COMPARABLE to the SA-3 baseline -- the real reformulator (non-deterministic LLM classification) routed this turn to domain_hint:'ideate'/intent_hint:'submit_idea' (a mock ideation-capture response was rendered) instead of domain_hint:'master_products'. This is a genuine parser-tier non-determinism finding, recorded below, not a defect in the SR-1 build (resolve-entity-http was never even invoked on this path). test_mode:true confirmed."
+ },
+ "attempt_2_used_for_verdict": {
+  "prompt": "do you have a purple levitating sink",
+  "test_run_id": "sr6b-20260813",
+  "execution": "12308687",
+  "started_at": "2026-08-13T09:15:07.813Z",
+  "outcome": "Routed to domain_hint:'master_products' as expected -- used as the case of record for SR-6's verdict."
+ },
+ "baseline_for_comparison": {
+  "source": "tests/runs/spec-search-shapeA-SA-3-20260812.json (SAME exact phrase, pre-SR clone @ be62b3a8, exec 12179491)",
+  "sa3_row_count": 0,
+  "sa3_product_codes": [],
+  "sa3_floor_missed": true,
+  "sa3_spec_candidates": [],
+  "sa3_rendered_reply": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team?"
+ },
+ "sr6b_observed": {
+  "row_count": 0,
+  "product_codes": [],
+  "floor_missed": true,
+  "spec_candidates": [],
+  "unresolved_tokens": ["purple levitating sink"],
+  "resolutions": [{"token": "purple levitating sink", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []}],
+  "rendered_reply_verbatim": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team?"
+ },
+ "hard_assertion": "Row count AND product codes compared explicitly against the pre-SR baseline (SA-3), not merely eyeballed: 0 rows both before and after, zero codes both before and after, byte-identical rendered escalation text. N-0's filler-word noise (documented known bound, plan §4 / diff §1) did NOT flip this nonsense query from zero rows to rows -- verdict is PASS, not merely 'looks the same'.",
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- both attempts: 3 egress entries only (would_log/would_write/would_send), no real send.",
+  "S2_zero_assignment": "PASS -- escalation OFFERED as a question only (sr6b), never confirmed; no human-intervention sub invoked in either attempt.",
+  "S3_zero_crm_writes": "PASS -- would_write only, both attempts.",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' did not run in either attempt (sr6: ideation path never reaches it; sr6b: dead-end before it, per disallowed-entity-gate's gate_passed:false path) -- trivially no write tool fired.",
+  "S5_test_mode": "PASS -- both attempts directly confirmed: sr6 {test_mode:true, test_run_id:'sr6-20260813'}, sr6b {test_mode:true, test_run_id:'sr6b-20260813'}.",
+  "S6_token_sinks": "Real reformulator ran on both attempts (parser tier); no other LLM sink."
+ },
+ "S7_sink_delta": "See rollup (both attempts' windows covered).",
+ "notes_for_reviewer": "The attempt_1 finding (identical fabricated nonsense phrase classified as an ideation submission on one run and a product-not-found query on a retry, ~30s apart, same contact/session-reset) is a REAL non-determinism property of the reformulator LLM, worth the reviewer's attention independent of this SR family: a customer typing genuine nonsense could occasionally get routed into the ideation flow instead of getting a not-found/escalate response. Out of scope for SR-1 to fix (the reformulator/parser prompt is untouched by this build), but flagged per the task's instruction to surface anything notable observed."
+}

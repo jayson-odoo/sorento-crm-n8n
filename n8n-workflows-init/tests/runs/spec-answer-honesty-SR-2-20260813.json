@@ -1,0 +1,41 @@
+{
+ "case": "SR-2",
+ "title": "the number changes the answer",
+ "verdict": "PASS",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c (unchanged from SR-1)",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "sequence": "SR-1 (1.2mm, exec 12307974) then this case (1.0mm, exec 12308237), same contact, ~2 minutes apart",
+ "prompt": "double bowl kitchen sink with thickness 1.0mm",
+ "test_run_id": "sr2-20260813",
+ "execution": "12308237",
+ "started_at": "2026-08-13T09:10:40.852Z",
+ "comparison_vs_sr1": {
+  "sr1_1.2mm_product_codes": ["CKS315", "CKS319", "CKS317-NG", "CKS317", "CKS12050"],
+  "sr2_1.0mm_product_codes": ["CKS315", "CKS319", "CKS317-NG", "CKS317", "CKS12050"],
+  "row_sets_identical": true,
+  "note_on_row_identity": "This measurement REPRODUCES the SR-B2 defect shape at the row level (this catalogue's product-spec data for these 5 SKUs evidently makes 1.0mm and 1.2mm indistinguishable via the CRM's spec matcher -- not something SR-1's n8n change can or should fix; N-0 only ensures the qualifier is SENT, not that the CRM's ranker discriminates every value). This is EXACTLY the scenario SR-2's acceptance criterion anticipates: 'either the row sets differ, OR both replies carry the N-2 line.'"
+ },
+ "hard_assertion": "Rows are identical BUT both replies carry the N-2 explanatory line -- NOT the SR-B2 defect (identical rows with NO explanation). PASS per SR.md: 'Identical rows with NO explanation = FAIL (this is SR-B2's RED)' -- explanation IS present both times, so this is not that failure.",
+ "customer_boundary": {
+  "sr1_n2_line": "thickness isn't recorded for these products, so I couldn't narrow by 1.2.",
+  "sr2_n2_line": "thickness isn't recorded for these products, so I couldn't narrow by 1.",
+  "cosmetic_observation_not_a_gate_failure": "1.0 renders as bare '1' (JavaScript Number(1.0).toString() === '1', dropping the trailing zero), producing the slightly odd 'narrow by 1.' with a sentence-final period directly after the digit. SR.md does not specify an exact numeric format for the N-2 line, only that it must be present and in the data-truth form -- both hold. Flagged for the reviewer as a cosmetic wrinkle worth a follow-up (render '1.0' verbatim from the customer's own span, or at minimum avoid the naked trailing period), not a functional defect.",
+  "rendered_reply_verbatim_sr2": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:08_\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "contains_couldnt_find_marker": false,
+  "contains_multiple_matches_marker": false,
+  "contains_escalation_offer": false,
+  "sendmsg_parts": 1
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries, would_log/would_write/would_send only.",
+  "S2_zero_assignment": "PASS -- no escalation branch.",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS (by mechanism identity with SR-1/SR-4 -- same domain, same answer shape).",
+  "S5_test_mode": "PASS -- directly confirmed: {test_mode:true, test_run_id:'sr2-20260813', scope:'deterministic'}.",
+  "S6_token_sinks": "Real reformulator ran (parser tier), no other LLM."
+ },
+ "S7_sink_delta": "See rollup -- covered by the full-run sweep.",
+ "notes": "Row-set identity between 1.0mm and 1.2mm for THIS specific catalogue is a CRM-side ranking property, not an n8n defect; N-0's job (ship the qualifier honestly, and say so when it can't narrow) is satisfied. Flagging the underlying CRM ranker behaviour (why 1.0mm and 1.2mm score identically for these 5 SKUs) as out of scope for this slice -- it is the exact class of gap N-2 exists to surface honestly rather than paper over."
+}

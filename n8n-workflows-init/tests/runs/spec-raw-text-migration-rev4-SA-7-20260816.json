@@ -1,0 +1,25 @@
+{
+  "case": "SA-7",
+  "closes": "reviewer F3 (SA.md marks required before promote)",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e (shas re-verified, see SA-4-B case file)",
+  "act": "do you have wall hung basin",
+  "test_run_id": "spec-rev4-SA7-1786814891",
+  "execution": "12606807",
+  "verdict": "PASS",
+  "pairing_note": "Fired immediately before S1-C in the same tester pass, same contact, same instrument (resolve-entity-http intersection tier) -- this is the positive spec-row count S1-C is paired against per the coder's warning (see spec-raw-text-migration-rev4-S1-C-20260816.json).",
+  "assertions": {
+    "widened_arm_fired": "CONFIRMED. resolve-entity-http.intersection: 5 rows, ALL match_tier==='spec_search', match_field==='specifications'. resolutions[0].matches: same 5 rows, same tiers.",
+    "zero_code_partial_rows": "CONFIRMED. Zero rows anywhere in intersection OR resolutions[].matches with match_field:'product_code' or tier prefix/exact/and.",
+    "spec_asked_present_array": "CONFIRMED. spec_asked === [{\"key\":\"mounting\",\"value\":\"wall_hung\"}].",
+    "whole_reply_boundary": "CONFIRMED. compile-current-state.user_response = 'Here are the matching products.\\n\\n1..5 [BRBC/CABANA wall-hung products]...\\n\\n_Matched on: mounting: Wall Hung._\\n\\nP/S: ...' -- spec product list present; NONE of 'Couldn't find', 'did you mean', 'Multiple matches found', or an escalation offer appear anywhere in the string."
+  },
+  "bonus_observation": "N-1a's VALUE-not-key rendering also confirmed correct here as a side effect: '_Matched on: mounting: Wall Hung._' renders the VALUE (Wall Hung) not the bare key name.",
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send] only.",
+    "S2": "PASS -- no escalation branch taken.",
+    "S3": "PASS -- save-session-vars would_write/blocked.",
+    "S4": "N/A this case (widened-arm answer does not route through Call 'sub-get-results' on this lane; see SR-8 for a positive S4 confirmation).",
+    "S5": "PASS -- test_mode:true self-verified against test_run_id spec-rev4-SA7-1786814891.",
+    "S6": "PASS -- reformulator ran (real), no other LLM."
+  }
+}

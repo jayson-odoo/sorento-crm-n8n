@@ -1,0 +1,85 @@
+{
+ "change_id": "spec-raw-text-migration",
+ "date": "2026-08-15",
+ "tester": "sorento-tester",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ versionId==activeVersionId==6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "target_verification": {
+  "pre_run": "Fresh REST GET (not export cache, not MCP -- MCP redacts credentials and this check needed raw byte comparison) at run start: versionId==activeVersionId==6656a1de-45e3-4b49-8ded-5286e5250b63; resolve-entity-http.jsonBody sha256 af7d38527e6b544c55ed1e04d457980d37924f8758fa5c36b0983b0bb369fb81 (1157B) and compile-current-state.jsCode sha256 9a8f141c473028d4054400049baf3f8d622525d616e7d558375fd8f10a0b2aee (56311B) -- BYTE-IDENTICAL to the diff doc's recorded 'after' shas at daa88349/6656a1de. DEPLOYED, matching the coder's claim exactly.",
+  "export_verify": "python3 scripts/export-workflows.py --verify (run in background, partial network flake on an unrelated workflow later in its list did not affect the clone check): 'clone-sorento-consume-main-TEST: current (6656a1de)' -- confirmed clean before this REST cross-check was even done.",
+  "post_run": "Fresh REST GET after all 20 case-firings: versionId==activeVersionId==6656a1de-45e3-4b49-8ded-5286e5250b63 UNCHANGED; both node shas UNCHANGED; workflow updatedAt timestamp (2026-08-15T15:13:08.075Z) PREDATES the first case fire (15:35:44Z) -- proves zero writes landed on this workflow during the entire tester pass.",
+  "no_edits_no_promotion": "Confirmed: no update_workflow/publish_workflow call was made by this tester against txiPzSxy3Pclsz6v or any other workflow. Never touched the live spine 9qVyfUxmRQqrpGRMDLRuz."
+ },
+ "driver_mechanism": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No). The clone's ONLY trigger is n8n-nodes-base.executeWorkflowTrigger (confirmed from the fresh REST GET's node list) -- per LESSONS #1, MCP execute_workflow cannot inject custom JSON into this trigger type, so the webhook wrapper is the only viable mechanism, not a deviation from the task brief. curl was used instead of Python urllib for the POST calls -- urllib's default User-Agent was blocked by Cloudflare with a bare HTTP 403 on this host (verified: identical payload via curl succeeded with HTTP 200; the same payload via urllib failed 403), and the same fix (User-Agent: curl/8.4.0 header) was needed for the S7b REST sweep. Every item carried mode:'uac', a per-case test_run_id, and previous_conversation_state:{} (uac-mode prod-session landmine avoided on every single case -- confirmed via memory uac-mode-reads-prod-session.md's HOWTO: {} is JS-truthy so sim-inject-gate routes to the empty-seed branch while resolve-entity-http still reaches the real network). Execution ids resolved via search_executions(workflowId, startedAfter/Before) and cross-verified against test_run_id in the trigger node's own runData (self-verify guard, LESSONS #8) for every single case below -- none inferred from timing alone.",
+ "cases_run": 20,
+ "verdicts": {
+  "SR-13": "PASS (also satisfies SR-1 amended, SR-10)",
+  "SR-2": "PASS",
+  "SR-14": "PASS (also satisfies SR-3, SR-11; DEV-1 brand exemption DEFINITIVELY proven via a second probe SR-14b)",
+  "SR-15": "PASS (also satisfies SR-4, SR-9 reachability re-confirmed post-migration)",
+  "SR-16": "PASS (also satisfies SR-12, SR-5 amended, SA-2)",
+  "SR-8": "PASS (junk suppression D7 confirmed deployed, no longer observational)",
+  "SR-6": "PASS (LOAD-BEARING, 0 rows/0 codes measured vs 0/0 baseline)",
+  "SR-7": "PASS (also satisfies SA-1)",
+  "SA-4": "PASS (hard assertion; reply-shape deviation flagged for reviewer, not a failure)",
+  "SA-5": "PASS functionally, WITH A FLAGGED BEHAVIOUR DEVIATION vs the documented pre-migration 'known v1 gap' -- see detail below and in the case file",
+  "SA-6": "PASS (static JSON verification, no live fire -- resolve-entity-clarification confirmed untouched)",
+  "wordless-turn (rev2 new case)": "UNRELIABLE / could not be exercised live within the harness's synthetic envelope -- reported honestly, not inferred",
+  "regression-sweep (4 subcases: unicode-dash code, AND-mode multi-token, order spot-check, attachment/domain_hint)": "PASS (functional spot-check, no byte-exact pre-migration baseline existed for these exact novel phrasings)",
+  "s0-blocked-first (post-#142 zz-crm-probe-spec-shapeA)": "BLOCKED, confirmed independently, not worked around -- see mitigating finding below"
+ },
+ "executions": {
+  "SR-13/SR-1/SR-10": "12596895",
+  "SR-2": "12597040",
+  "SR-14/SR-3/SR-11 (prompt A, no brand)": "12597070",
+  "SR-14b (DEV-1 brand probe, prompt B)": "12597337",
+  "SR-15/SR-4/SR-9": "12597093",
+  "SR-16/SR-12/SR-5/SA-2": "12597163",
+  "SR-8": "12597395",
+  "SR-6": "12597361",
+  "SR-7/SA-1": "12597423",
+  "SA-4": "12597815",
+  "SA-5": "12597847",
+  "SA-6": "N/A (static JSON read)",
+  "wordless-turn": "12597709 (parser dead-ended before resolve-entity-http; case UNRELIABLE)",
+  "regression-unicode-dash": "12597558",
+  "regression-AND-multitoken": "12597590",
+  "regression-order-spotcheck": "12597613",
+  "regression-attachment": "12597631"
+ },
+ "headline_finding_deployment_status": "CRM PR #142 IS DEPLOYED and live on the endpoint the clone calls. This is the single most important thing this tester established beyond the diff doc's own evidence: the diff doc's §0 explicitly states the dedicated post-deploy probe (s1-probe.js via zz-crm-probe-spec-shapeA) is UNRUN and blocked, leaving the deployment status of the CRM half formally unproven at build time. This tester's live clone executions supply that missing live-envelope evidence directly: spec_asked appears on the wire on every spec-domain response (SR-13, SR-2, SR-14, SR-15, SR-8, SR-7, SA-4, SA-5), the S4/DEV-1 Matched-on VALUE upgrade renders correctly (bowl count: 2, not bare 'bowl count'), the DEV-1 brand-verbatim exemption is PROVEN against real catalogue data (SR-14b: 'brand: BRAVAT', not titlecased 'Bravat' -- resolving the diff doc's stated open item), and D7 junk suppression is confirmed deployed (SR-8: zero SORENTOBAG/SORENTO188/junk). The dedicated zz-crm-probe-spec-shapeA proxy remains blocked (s0-blocked-first case file) and its more rigorous contract-shape checks (S1-C counterweight, exhaustive unrecognized_terms/field-type checks) remain formally UNRUN -- this tester's evidence is real but narrower in scope than what s1-probe.js would prove, and does not substitute for running it.",
+ "headline_finding_no_free_terms": "Structurally CONFIRMED, not just reconstructed. The resolve-entity-http.jsonBody was read directly from the deployed workflow JSON (not inferred from response behaviour): the key set is exactly {query, match_mode, tokens, allowed_entity_types, access_levels, domain, fallback_to_all_types, limit, spec_fallback, understand_phrase} -- no free_terms key anywhere. Every response's via_token field independently corroborates this dynamically: it carries the FULL raw customer sentence (e.g. 'double bowl kitchen sink with thickness 1.2mm'), not just the entity raw a pre-migration free_terms-based body would have sent.",
+ "headline_finding_dev1_brand_exemption": "PROVEN, not INCONCLUSIVE. SR.md's own SR-14 prompt ('do you have wall hung basin') did not surface a brand key on this catalogue slice, which would have left DEV-1 formally untested per the diff doc's own caveat. This tester fired a second, minimal probe ('show me bravat wall hung basin') that DID surface brand:'BRAVAT' in matched_specs, and the rendered reply showed '_Matched on: brand: BRAVAT and mounting: Wall Hung._' -- BRAVAT rendered verbatim uppercase, genuinely differing from what a blind titlecase pass would have produced ('Bravat'). This is a real, discriminating, live-data proof.",
+ "headline_finding_sa5_deviation": "FLAGGED FOR THE REVIEWER, NOT A FAILURE. SA-5 ('SRTWC286 and wall hung basin') pre-migration was documented as a 'known v1 gap': the descriptive half was expected to be silently dropped, leaving only the code answer. Post-migration, BOTH halves resolve and render in ONE merged 15-item list (10 code-prefix products + 5 spec_search products), via the same SR-9 third-shape mechanism (AND-zero-intersection -> OR-fallback -> per-token resolution UNION a query-keyed spec_search resolution) that SR-9/SR-15 already proved reachable for a code+nonexistent-code pair. This appears to be a positive behaviour change (the customer gets more information, not less) but it is a functional deviation from SA.md's documented contract fact #1 ('REPLACE, never merge ... the renderer NEVER sees a mixed set') that the reviewer should explicitly sign off on, the same way SR-9's finding required a documented amendment to the coder's reachability table. See spec-raw-text-migration-SA-5-20260815.json for full detail.",
+ "wordless_turn_finding": "This tester attempted the rev2-new wordless-turn case (an attachment-with-no-caption turn that per the diff should now send query:'' instead of a parser restatement) and could NOT exercise it live: the clone's real parser LLM correctly classified a synthetic fake-URL attachment (no real binary content) as message_type:'unknown' and routed to a generic casual greeting BEFORE resolve-entity-http ever ran. This is a harness-construction limitation (the uac driver cannot supply real media binary), not a defect in the slice. The offline units SR-U7-6/SR-U7-8 remain the only coverage of this specific empty-query path (169/169 passed per the coder's offline suite) -- reported as UNRELIABLE at the live-fire level rather than inferring a pass from the offline evidence, per the diff's own instruction to 'exercise it once and record the reply rather than inferring it.'",
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "CONFIRMED for the SR-13 execution: Call 'sub-respond-save-message-redis'2 sub-execution 12596917 targets workflowId tWm5DYLxfypmVC1T (the TEST sink, never the live UrETd-jm46tFj3Xw7w8vL), with payload turn_id:'12596895' self-verified equal to the parent execution id. This confirms the static sinked-wiring property (unchanged by this slice, which touches only resolve-entity-http and compile-current-state -- neither is on the save-message path) applies uniformly across the run.",
+  "S7b_prod_sink": {
+   "method": "BOTH co-mandatory signals per §0 S7b: (1) per-poll LLEN depth series from the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn's Redis1 node ({'sorento-respond-message': N}), and (2) per-poll pop payload from that consumer's Redis node ({'':null} on empty). NEVER scored on consumer execution count (the retracted, unsound method).",
+   "window_covered": "2026-08-15T15:34:00Z through 2026-08-15T15:45:55Z -- FULL coverage, all 144 consumer executions in this window individually fetched via REST GET (not MCP, to keep per-call payload light) and inspected, not sampled. This window fully contains every case fire in this run (first fire 15:35:44Z / SR-13, last fire 15:45:42Z / SA-5), plus a comfortable margin before and after.",
+   "total_polls_fetched": 144,
+   "unretrievable_polls": "0 in the final tally -- 3 of the 144 initial fetches hit a transient network read-timeout (not a 403, not a data issue) and were individually retried; all 3 retries succeeded cleanly.",
+   "nonzero_llen_polls": 0,
+   "nonempty_pop_polls": 0,
+   "attribution": "Not applicable -- delta is exactly zero. Every single one of the 144 covering polls read LLEN=0 ({'sorento-respond-message': 0}) and an EMPTY pop ({'':null}) on the prod ingest list. This is the clean PASS case per §0 S7b's own wording: 'Delta == 0 -> PASS -- i.e. every covering poll shows LLEN 0 and an empty pop.'",
+   "harness_attributable_delta": 0,
+   "verdict": "PASS -- zero prod-sink movement whatsoever during this entire run window, on both co-mandatory signals, for every one of the 144 covering polls."
+  }
+ },
+ "get_results_llm_liveness": "Call 'sub-get-results' (target t4QvrtrPnTwRU6br, sub-get-results CS-BUILD fork) ran on every product/spec-answer case and returned the standard read-only shape (response/response_intro/answers/attachments/action_links/has_result/alternatives/relaxed_axis/field_access/requested_attributes/keys_served). No crm_it_support_ticket_create marker or any other write-tool marker was observed in any execution's runData. No new token sink observed anywhere in this run beyond the standard consume-main reformulator (real LLM, mocks null on every case) and the standard get-results sub-agent structure already established by prior SA/SR-family runs.",
+ "s0_blocked_first": "zz-crm-probe-spec-shapeA (UYkE8VLZ8DzJa3TT) remains blocked: settings block is {} (empty), no availableInMCP:true, confirmed via a fresh REST GET at run start. Not worked around. See spec-raw-text-migration-s0-blocked-20260815.json for full detail and the mitigating finding (this tester's clone executions independently supply much, but not all, of what the blocked probe would have proven).",
+ "safety_S0_summary": {
+  "S1_zero_real_sends": "PASS across all 16 clone-fired cases (20 total case-slots, 4 covered statically/without-fire) -- every egress log entry across every execution was would_log/would_write/would_send. No api.respond.io POST executed anywhere.",
+  "S2_zero_assignment": "PASS -- no escalation branch was confirmed-taken (SR-6 and SA-4 render escalation OFFERS in text, never a confirmed/executed escalation); no human-intervention sub was invoked in any execution inspected.",
+  "S3_zero_crm_writes": "PASS -- save-session-vars/update-human-intervened remain orphaned (0 inbound, unchanged by this slice's node-diff, re-confirmed structurally from the fresh REST GET's connections block at run start) on every execution; egress log shows would_write only.",
+  "S4_get_results_read_only": "PASS on every execution where get-results ran -- read-only response shape, no write-tool marker, target consistently t4QvrtrPnTwRU6br.",
+  "S5_test_mode": "PASS, directly confirmed via 'When Executed by Another Workflow' runData for EVERY single case-firing in this run (16 executions), each self-verified against its own fired test_run_id -- no case relied on inference.",
+  "S6_token_sinks": "Every fired case ran the real parser-tier reformulator (mocks null in the trigger metadata, consistent with the established SA/SR-family finding that the scope:'deterministic' metadata field does not reflect the real per-case tier). No new token sink (e.g. a reformulator or additional agent) observed beyond what prior SA/SR runs already established."
+ },
+ "open_items_for_reviewer": [
+  "SA-5's merged-answer deviation (code-prefix rows + spec_search rows in ONE list, contradicting SA family's documented contract fact #1 'REPLACE, never merge') -- likely a positive change, needs an explicit sign-off/amendment decision, same treatment as SR-9's earlier reachability-table amendment.",
+  "SA-4's reply now shows a 6-candidate merged did-you-mean picker sourced from BOTH the descriptive token's own resolution AND the full-query resolution -- structurally different from the pre-migration SA-4 shape. The hard (unscoped-negative) assertion holds, but the shape itself is worth a design-intent confirmation.",
+  "The wordless-turn case (query:'' on an empty-raw-text turn) could not be exercised live within the uac harness's synthetic envelope -- only offline-unit coverage (SR-U7-6/SR-U7-8) exists for this specific behaviour change; recommend a targeted pin-data test_workflow probe if live confirmation is required before promote.",
+  "zz-crm-probe-spec-shapeA remains blocked pending the one user-toggle fix (enable Available in MCP) -- s1-probe.js's more rigorous contract checks (notably the S1-C counterweight) remain formally UNRUN even though this tester's live clone evidence covers much of the same ground.",
+  "DEV-1's brand exemption is now PROVEN (not INCONCLUSIVE) against real catalogue data via the SR-14b probe this tester added -- recommend the diff doc / SR.md be updated to reflect this closed item rather than carrying the INCONCLUSIVE hedge forward."
+ ]
+}
