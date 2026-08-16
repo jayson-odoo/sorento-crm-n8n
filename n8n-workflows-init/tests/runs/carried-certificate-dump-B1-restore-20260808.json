@@ -1,0 +1,192 @@
+{
+ "run": "carried-certificate-dump B1 restore verification + B1 x C-series (tester pass 4)",
+ "date": "2026-08-08",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v @ 3f1b20d4 (draft==active)",
+  "rollback": "879d0f68",
+  "live_spine": "f9205b03 \u2014 UNTOUCHED, --verify green at start and end",
+  "live_parser": "659b7576 \u2014 parser half already promoted; UNTOUCHED by me, --verify green at start and end",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 184882c1"
+ },
+ "executions": 10,
+ "sink_delta": "729 -> 739 = +10, exactly one save per run",
+ "1_PRESENCE_GATE": {
+  "printed": [
+   "clone versionId : 3f1b20d4-33dc-4994-8758-2f868192220d",
+   "draft == active : True",
+   "gate sha256     : a8938abe2e5c0189c43d3af376c2689dc4597ea222520d6b28e5e01e33a4ea27",
+   "RESULT: PASS \u2014 B1 is present.",
+   "EXIT=0"
+  ],
+  "run_twice": "at the START and again at the END of the pass \u2014 identical output both times, so nothing moved under me mid-pass",
+  "PROVEN_AS_AN_INSTRUMENT": {
+   "why": "a presence gate that cannot go red is exactly the failure class that let the revert survive a day",
+   "method": "copied the script, asserted each sha literal occurs exactly 1 time, SWAPPED EXPECT_SHA and PRE_B1_SHA, confirmed the file digest changed (4a08f4be3842 -> 638ca8d6d2d5), and ran the mutant against the SAME LIVE BODY",
+   "negative_control": "unmutated copy in the same relocated tree -> 'RESULT: PASS \u2014 B1 is present.' EXIT=0",
+   "mutant": "'RESULT: FAIL \u2014 gate is the PRE-B1 body. B1 HAS BEEN REVERTED.' EXIT=1",
+   "note": "a first attempt errored on a bad .env path and EXITED 1 WITHOUT reaching the comparison \u2014 recorded as VOID, not as a red, and re-run properly (LESSONS \u00a761b)"
+  },
+  "verdict": "B1 is proven present BY EVIDENCE THAT COULD HAVE FAILED \u2014 the gate reads the live body over REST and demonstrably emits the reverted branch when the expected value is wrong."
+ },
+ "2_CD_0b_THE_DISCRIMINATOR": {
+  "verdict": "PASS LIVE, and it discriminates \u2014 the assertion took BOTH values inside this suite",
+  "signal": "presence/absence of Call 'sub-get-results' in per-node runData. Structural, never text.",
+  "B1_FIRES_sub_ABSENT": [
+   {
+    "case": "B1-1",
+    "exec": "11655110"
+   },
+   {
+    "case": "BC-1",
+    "exec": "11655207"
+   },
+   {
+    "case": "BC-2",
+    "exec": "11655227"
+   },
+   {
+    "case": "BC-3",
+    "exec": "11655249"
+   }
+  ],
+  "B1_INERT_sub_PRESENT": [
+   {
+    "case": "B1-2",
+    "exec": "11655133",
+    "gate_reason": "ok"
+   },
+   {
+    "case": "B1-3",
+    "exec": "11655161",
+    "gate_reason": "ok"
+   },
+   {
+    "case": "PR-1",
+    "exec": "11655403"
+   },
+   {
+    "case": "PR-2",
+    "exec": "11655431"
+   }
+  ],
+  "gate_reason_on_the_firing_turns": "'product_attachment' subject product did not resolve; refusing to scope on carried entities \u2014 B1's own predicate, verbatim",
+  "CAUSAL_CHAIN_CLOSED_EMPIRICALLY": {
+   "static": "independent reachability walk of the published clone graph: If3[0] -> If-incoming-picker, does NOT reach Call 'sub-get-results'; If3[1] -> Execute 'sub-get-rag', DOES reach it",
+   "dynamic": "B1-1 and BC-2 (B1 fires) took If3 output [0] -> If-incoming-picker; B1-2 and B1-3 (B1 inert) took If3 output [1] -> Execute 'sub-get-rag'",
+   "so": "the sub's absence is a CONSEQUENCE of B1 dead-ending through If3[0], observed end to end \u2014 not an inference from the graph alone"
+  },
+  "why_this_beats_the_old_checks": "B2' evicts the carried certificate either way, so the customer-visible text is identical with or without B1. \u00a7CD-0b keys on a signal B2' cannot produce, and it was observed taking both values on real executions in one suite."
+ },
+ "3_CERT_CASES_WITH_B1_PRESENT": [
+  {
+   "case": "B1-1",
+   "exec": "11655110",
+   "input": "srtwc8317-rl1 cert",
+   "verdict": "PASS",
+   "evidence": "gate_passed FALSE with B1's reason; Call 'sub-get-results' ABSENT; reply = '1. SRTWC8317-RL - has certificate / 2. SRTWC8317-P-RL - no certificate / 3. SRTWC8317-SH - no certificate'; no PC 000078; single-token D1 annotation intact (probe_lane d1, meta.ok true, answer_count 4)"
+  },
+  {
+   "case": "B1-2",
+   "exec": "11655133",
+   "input": "certification with number PC000078",
+   "verdict": "PASS \u2014 B1 correctly INERT",
+   "evidence": "gate_passed TRUE, gate_reason 'ok'; Call 'sub-get-results' PRESENT; reply lists the covered products with the PDF"
+  },
+  {
+   "case": "B1-3",
+   "exec": "11655161",
+   "input": "SRTWT2214 cert",
+   "verdict": "PASS",
+   "evidence": "gate_passed TRUE; sub present; reply = Certificate Number PC 000373, Valid Until 2026-09-13, Validity Valid"
+  },
+  {
+   "case": "B1-4",
+   "exec": "11655187",
+   "input": "srtwc8317-rl1 and SRTWC19 cert",
+   "verdict": "PASS \u2014 require-specific picker, annotated",
+   "evidence": "probe_lane 'picker', 8 candidates ALL annotated: '1. SRTWC193 - no certificate ... 3. SRTWC195 - has certificate / 4. SRTWC191-G2 - has certificate ... 7. SRTWC192-300 - has certificate'; numbering 1..8 contiguous; sub absent",
+   "precision": "gate_reason here is the AMBIGUOUS arm ('no single exact match; user must pick'), not B1's own predicate \u2014 so this case exercises the picker render, it is not a B1-firing case. Stated rather than blurred."
+  }
+ ],
+ "4_B1_x_C_SERIES_never_tested_together": [
+  {
+   "case": "BC-1",
+   "exec": "11655207",
+   "shape": "B1 fires on a turn that ALSO carries an entity C1/B2' would evict (seeded MWC7602-RL-P + attachment_type + certificate PC 000078)",
+   "verdict": "PASS",
+   "evidence": "gate_passed FALSE with B1's reason; sub ABSENT; the carried product and carried certificate are both gone from the parser entity set; reply is the annotated did-you-mean; no PC 000078 anywhere",
+   "note": "carried_attachment_evicted is null because the executor's axis collision removed them before B2' part 4 \u2014 either route, the dump cannot occur"
+  },
+  {
+   "case": "BC-2",
+   "exec": "11655227",
+   "shape": "multi-token C3 render on a turn where B1 ALSO fires",
+   "verdict": "PASS \u2014 this is the headline combination",
+   "evidence": "gate_passed FALSE with B1's reason AND sub ABSENT, yet the full C3 multi-token render appears: 5 candidates across 2 token blocks, every one annotated, global contiguous numbering 1..5, probe_lane d1, probe_cap_applied false. B1's dead-end does NOT suppress C3 annotation."
+  },
+  {
+   "case": "BC-3",
+   "exec": "11655249",
+   "shape": "B1 fires with the DORMANT immortal entity in prior state (M2399, hint product_attachment, ordinal 1)",
+   "verdict": "PASS",
+   "evidence": "gate_passed FALSE with B1's reason; sub ABSENT; unknown_entity_hints == ['product_attachment'] \u2014 the F3 diagnostic still counts the dormant entity on a B1 dead-end turn; C3 annotation present; no PC 000078"
+  }
+ ],
+ "5_REGRESSION": [
+  {
+   "id": "non-enabled domain byte-identical",
+   "case": "RG-1",
+   "exec": "11655271",
+   "verdict": "PASS",
+   "evidence": "master_products: probe_skip_reason 'domain_not_enabled', dym_candidate_codes [], render is the single-token CODE-mode sentence with NO suffix anywhere"
+  },
+  {
+   "id": "single-token D1 annotates",
+   "verdict": "PASS \u2014 B1-1 / BC-1 / BC-3, all three annotated"
+  },
+  {
+   "id": "partial-resolution annotates",
+   "verdict": "PASS \u2014 CLOSED, open since pass 1",
+   "cases": [
+    {
+     "case": "PR-1",
+     "exec": "11655403",
+     "input": "SRTWT2214 and srtwc8317-rl1 cert",
+     "evidence": "probe_lane 'partial'; dym-transform-partial AND dym-annotate-partial both fired; meta.ok true, answer_count 4; render is the answered part (PC 000373 Valid) PLUS \"Couldn't find these: 'srtwc8317-rl1' \u2014 did you mean: 1. SRTWC8317-RL - has certificate / 2. ... - no certificate / 3. ...\""
+    },
+    {
+     "case": "PR-2",
+     "exec": "11655431",
+     "input": "stock for SRTWC8317-RL and srtwb7099x",
+     "evidence": "inventory partial lane, 3 candidates all annotated, answer_count 16, probe_cap_applied false (3 <= cap 3, correctly does not bind)"
+    }
+   ]
+  }
+ ],
+ "ALSO_VERIFIED": {
+  "get-presigned-url": "ABSENT \u2014 confirmed from the published clone JSON. Node count 148. The only presign-named nodes remaining are 'presign-fail-notice' and 'sorento-sub-respond-sendmsg-presign-fail', which are the failure-notice path, NOT the presigned-url fetch. The restore did not reintroduce it.",
+  "credentials": "27 nodes carry credentials \u2014 27/27 as expected",
+  "connections_and_orphans": "5 egress orphans all inbound == [] (send-message-files/images/video, update-human-intervened, save-session-vars); Call 'sub-respond-save-message-redis'2 inbound ['if-message-is-audio'] targeting the TEST sink fork"
+ },
+ "MUTATION_SUITE_what_it_printed": {
+  "mutate.sh (the B1 gate)": "base digest a8938abe2e5c \u2014 i.e. it ran against the RESTORED body. CD-FP-1 (domain guard -> true) occ 1/1, digest -> a0e09fc5d966, suite RED; CD-FP-2 (drop the !_haveProduct term) occ 1/1, -> feb673867506, suite RED; CD-FP-3 (product-hint filter -> all) occ 1/1, -> 220b4158d30c, suite RED; CD-FP-0 negative control occ 0 (expected 1) -> ABORT, suite NOT run, VOID. Each red printed its compared population (8 cases, 1 unexpected)."
+ },
+ "SAFETY_SCORECARD_S1_S9": {
+  "S1": "PASS \u2014 10 executions, no respondio node in any runData; sends represented in the egress log as guard 'sendmsg-sub' / 'send-message-files' with the sub short-circuited",
+  "S2": "PASS \u2014 no human-intervention sub, no Assign*, no sla node in any runData",
+  "S3": "PASS \u2014 the 5 egress orphans appear in NO runData and have inbound == [] in the published JSON; save-redis'2 sinked to tWm5DYLxfypmVC1T",
+  "S4": "PASS \u2014 resolved tools are crm_master_product_attachments_list (9 cases) and crm_inventory_stock_balance_list (1); no *_create/_update/_delete string anywhere; crm_it_support_ticket_create never appears",
+  "S5": "PASS \u2014 trigger test_mode === true on all 10",
+  "S6": "PASS \u2014 zero LLM nodes in the clone runData on all 10; the real reformulator ran in the fork (populated _parser_raw). No new token sink.",
+  "S7a": "PASS, exact \u2014 TEST sink 729 -> 739 = +10",
+  "S7b": "PASS WITH ATTRIBUTION \u2014 window 05:14:00-05:22:00Z covers the run window 05:16:50-05:19:57Z. 82 covering consumer executions of Srs08P0Ha3Cv--YPx0-Yn, 0 unretrievable. Per-poll LLEN series 80@0, 1@1, 1@2. Per-poll pop payloads: 8 non-empty occurrences, and a programmatic scan found the ONLY contact_id present is 477071891 (a real live customer). ZERO occurrences of contact 437264483 and ZERO occurrences of any of the 10 test_run_ids across all 82 executions => unrelated live producer => resumed.",
+  "S8": "PASS \u2014 no is_test:false run performed; no node added",
+  "S9": "PASS \u2014 mutate.sh enforced and printed occurrence-count-before + digest-before/after per step, and its negative control correctly ABORTED without running the suite. The presence gate was separately proven red-capable by the sha-swap above."
+ },
+ "STILL_OPEN": [
+  "\u00a7IH-14 real >=50-row saturation fixture \u2014 unchanged from pass 3: the caps (8 / 3) bound every lane below 50 by construction, so it is BLOCKED-BY-DESIGN rather than outstanding test debt",
+  "\u00a7IH-2 / \u00a7IH-7 / \u00a7IH-8 / \u00a7IH-9 byte-identity arms as live executions (offline GREEN only)",
+  "\u00a7CD-2 / \u00a7CD-2b parser-level entity shape \u2014 the live LLM types a certificate number as hint 'product'; the certificate hint is produced by the spine's reconcileEntities, not the parser, so those offline fixtures encode a shape the live parser does not emit",
+  "\u00a7FP8-D's attachment_type-retention half \u2014 blocked by the pre-existing bare-code domain-carry backlog item"
+ ]
+}

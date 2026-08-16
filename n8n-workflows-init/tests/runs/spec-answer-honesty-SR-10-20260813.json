@@ -1,0 +1,43 @@
+{
+ "case": "SR-10",
+ "family": "SR (spec-answer-honesty)",
+ "slice": "SR-1b (N-1a, the \"Matched on\" line) -- rev 4",
+ "title": "product list + Matched-on(bowl count) + N-2 thickness line, each exactly once, in order",
+ "verdict": "PASS",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ c97f2f8f-e335-4a3b-8046-abea89bbfdf9 (versionId==activeVersionId verified via fresh REST GET BEFORE the first case fired and again AFTER all 3 cases fired -- unchanged both times; compile-current-state.jsCode sha256 82707a95a7c63d74b6dbc963774630e21a5bd1c9cb4748671706a4a8a63e67b5 (52694 B) and resolve-entity-http.jsonBody sha256 7ca14cbfd47e273a1c1464e2fb0c85fd52e3a39cf9f0062f83bc537ce7fd4265 (1809 B) both match the manifest's rev-4 DEPLOYED values byte-for-byte, independently re-derived, not trusted from the coordinator's claim. workflow updatedAt 2026-08-13T11:30:28.920Z PREDATES the first case fire (11:57:55Z), confirming zero writes to this workflow during the run)",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "double bowl kitchen sink with thickness 1.2mm",
+ "test_run_id": "sr10r4-20260813",
+ "execution": "12323456",
+ "started_at": "2026-08-13T11:57:55.979Z",
+ "stopped_at": "2026-08-13T11:58:05.422Z",
+ "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:08_\n\n_Matched on: bowl count._\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.2mm.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+ "hard_assertion": {
+  "requirement": "product list + `_Matched on: bowl count._` + the N-2 thickness line, each exactly once, in that order (rows -> Matched-on -> N-2 -> P/S footer)",
+  "matched_on_line_count": 1,
+  "matched_on_line_verbatim": "_Matched on: bowl count._",
+  "n2_line_count": 1,
+  "n2_line_verbatim": "thickness isn't recorded for these products, so I couldn't narrow by 1.2mm.",
+  "order_observed": "rows (1-5) -> _Data last updated_ -> _Matched on: bowl count._ -> N-2 thickness line -> P/S footer -- EXACT MATCH to the required order",
+  "n2_wording_matches_rev3": true,
+  "note_n2_unchanged_by_n1a": "N-2 line is byte-identical in wording/value/unit to the rev-3-established form (span 1.2mm quoted from the customer's own text). N-1a's insertion above N-2 did not alter N-2's own text or trigger condition -- confirms the two hunks did not interact destructively."
+ },
+ "node_evidence": {
+  "resolve_entity_matched_specs_per_row": "[\"bowl_count\",\"free_terms\"] on all 5 intersection rows (uuid df3a94e7.../48271c9a.../af3fa49a.../9cffa025.../61bd0e84...) -- union minus free_terms = {bowl_count}, humanised \"bowl count\", single key -- matches the rendered line",
+  "spec_unmet": "[{\"key\":\"thickness\",\"value\":1.2}] -- drives the N-2 line, unchanged mechanism from rev 3",
+  "disallowed_entity_gate": "gate_passed:true, require_specific:false, compatible_entities: 5 uuids matching the 5 rendered rows -- N-1a's scope-by-answer join (compatible_entities) confirmed correct"
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- egress log 3 entries, all would_*: save-message-redis(would_log) / save-session-vars(would_write) / sendmsg-sub(would_send). No api.respond.io 2xx anywhere in execution data.",
+  "S2_zero_assignment": "PASS -- no escalation branch taken; message_type business_query, no human-intervention sub invoked.",
+  "S3_zero_crm_writes": "PASS -- save-session-vars entry is would_write only (not a real PUT); update-human-intervened not invoked (0 inbound, unchanged).",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' sub-execution 12323471 on fork t4QvrtrPnTwRU6br returned the established read-only answer shape (response/response_intro/answers/attachments/action_links/has_result/requested_attributes/keys_served) -- no write-tool trace, consistent with every prior SR-family run on this same fork. No crm_it_support_ticket_create or any write tool observed.",
+  "S5_test_mode": "PASS -- directly confirmed in 'When Executed by Another Workflow' node json: {contact:437264483, test_run_id:'sr10r4-20260813', test_mode:true, scope:'deterministic'}. self-verified: fired tag == returned tag.",
+  "S6_token_sinks": "Real reformulator ran (Call 'sub-query-reformulator', sub-execution 12323459 on fork wI5RkNGW3EOJfBdo -- the clone's actual wired fork per CLAUDE.md) -- parser tier, non-mocked (mock_parser_output/mock_reformulator_output both null in the trigger json, output is a genuine semantic parse of the sentence). 'Basic LLM Chain' did NOT execute (empty in a targeted nodeNames fetch) -- no clarification-path LLM fired. No new token sink observed beyond the standard reformulator."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Directly confirmed: 'Call sub-respond-save-message-redis'2' sub-execution 12323476 targets workflowId tWm5DYLxfypmVC1T (the TEST sink, never live UrETd-jm46tFj3Xw7w8vL), payload turn_id:'12323456' self-verified equal to the parent execution id.",
+  "S7b_prod_sink": "See spec-answer-honesty-SR-1b-rollup-20260813.json for the full covering sweep (shared window across SR-10/11/12) -- 8 consumer polls (Srs08P0Ha3Cv--YPx0-Yn) individually fetched from 11:57:50Z through 11:58:25Z, fully containing this case's 11:57:55Z-11:58:05Z span; all 8 show LLEN 0 and empty pop. Zero delta, zero attribution needed."
+ }
+}

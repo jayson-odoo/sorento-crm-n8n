@@ -1,0 +1,346 @@
+{
+ "case": "r3-f3b",
+ "round": 3,
+ "verdict": "PARTIAL \u2014 identical to r3-ta-10, both word orders now behave the same (see F3)",
+ "target": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 668cd772 / 5dd1f43d (see rollup presence_gate)",
+  "live_spine_9qVyfUxmRQqrpGRMDLRuz": "NEVER DRIVEN"
+ },
+ "contact": 437264483,
+ "mode": "uac (real CRM reads)",
+ "message": "cabana dealer promo for CBS212-WH",
+ "execution": "12054819",
+ "rendered_reply_verbatim": "No promotion for CBS212-WH. Try: CBS202-WH, CBS204-WH. Reply with a code to continue, or would you like me to escalate to marketing_promotion_cabana team?",
+ "sendmsg_payload": {
+  "contact_identifer": 437264483,
+  "message": "No promotion for CBS212-WH. Try: CBS202-WH, CBS204-WH. Reply with a code to continue, or would you like me to escalate to marketing_promotion_cabana team?",
+  "quick_reply": "CBS202-WH,CBS204-WH,Yes escalate,No it's okay",
+  "result_set": [
+   {
+    "idx": 1,
+    "label": "CBS202-WH",
+    "value": "CBS202-WH",
+    "product": "CBS202-WH",
+    "display": "CBS202-WH",
+    "order_number": null
+   },
+   {
+    "idx": 2,
+    "label": "CBS204-WH",
+    "value": "CBS204-WH",
+    "product": "CBS204-WH",
+    "display": "CBS204-WH",
+    "order_number": null
+   }
+  ]
+ },
+ "file_attachments_at_customer_boundary": [],
+ "tier_gate": {
+  "name": [
+   "Sorento Office",
+   "Sorento Dealer",
+   "Mocha Dealer",
+   "Mocha Office",
+   "Cabana Office",
+   "Cabana Dealer",
+   "End User"
+  ],
+  "tier_stated": [
+   "dealer"
+  ],
+  "entitled_tiers": [
+   "dealer",
+   "office",
+   "end_user"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [
+   "cabana"
+  ],
+  "pending_pick": false,
+  "tier_ask": false,
+  "tier_proceed": true,
+  "access_levels_recomposed": [
+   "Cabana Dealer"
+  ],
+  "brand_gate_empty": false,
+  "brand_unheld": false
+ },
+ "promo_picker": {
+  "n_answers": 0,
+  "n_attachments": 0,
+  "_brand_gate_closed": null
+ },
+ "parser": {
+  "domain_hint": "promotion",
+  "access_levels": [
+   "dealer"
+  ],
+  "query_brands": [
+   "cabana"
+  ],
+  "entities": [
+   {
+    "raw": "CBS212-WH",
+    "hint": "product",
+    "canonical_code": null,
+    "current_message": true,
+    "confident": true
+   }
+  ],
+  "_tier_pick_scope_reused": null,
+  "_pending_pick": null,
+  "routing": {
+   "suggested_team": "marketing_promotion_cabana",
+   "suggested_agent": "general_enquiries"
+  }
+ },
+ "assertions": [
+  {
+   "assert": "[F3] other word order also answers with files",
+   "ok": false,
+   "detail": "[]"
+  }
+ ],
+ "safety_per_case": [
+  {
+   "assert": "S1 no real send node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 no CRM write node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 session write is guarded (would_write)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S5 test_mode true",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "S2 no assignment node ran",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "nodes_run": [
+  "Aggregate",
+  "Aggregate1",
+  "Call 'sub-get-results'",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If4",
+  "If5",
+  "If6",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "build-suggest-offer",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "cs-offer-gate",
+  "disallowed-entity-gate",
+  "dym-gate",
+  "dym-transform",
+  "escalate-catalog",
+  "get-access-types",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-found-error-message",
+  "not-supported-domain",
+  "promo-picker",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "resolve-entity-http",
+  "session-save-gate",
+  "sibling-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-not-found",
+  "tf-message",
+  "tier-gate",
+  "tool-filter",
+  "validator"
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": 437264483,
+    "message": "cabana dealer promo for CBS212-WH"
+   },
+   "test_run_id": "r3-f3b",
+   "ts": "2026-08-11T05:22:09.392-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": 437264483,
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to check the promotion for CBS212-WH",
+      "entities": [
+       {
+        "raw": "CBS212-WH",
+        "hint": "product",
+        "canonical_code": "CBS212-WH",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_cabana",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "No promotion for CBS212-WH. Try: CBS202-WH, CBS204-WH. Reply with a code to continue, or would you like me to escalate to marketing_promotion_cabana team?",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "CBS202-WH",
+        "value": "CBS202-WH",
+        "product": "CBS202-WH",
+        "display": "CBS202-WH",
+        "order_number": null
+       },
+       {
+        "idx": 2,
+        "label": "CBS204-WH",
+        "value": "CBS204-WH",
+        "product": "CBS204-WH",
+        "display": "CBS204-WH",
+        "order_number": null
+       }
+      ],
+      "selection_context": "suggest_offer",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": {
+       "id": "12054819",
+       "domain": "promotion",
+       "ttl": 3,
+       "candidates": [
+        {
+         "code": "CBS202-WH",
+         "uuid": null,
+         "entity_type": null,
+         "for_raw": "CBS212-WH",
+         "for_hint": "product",
+         "for_canonical": "CBS212-WH"
+        },
+        {
+         "code": "CBS204-WH",
+         "uuid": null,
+         "entity_type": null,
+         "for_raw": "CBS212-WH",
+         "for_hint": "product",
+         "for_canonical": "CBS212-WH"
+        }
+       ],
+       "picked": []
+      },
+      "dym_candidates": [
+       {
+        "code": "CBS202-WH",
+        "uuid": null,
+        "entity_type": null,
+        "for_raw": "CBS212-WH",
+        "for_hint": "product",
+        "for_canonical": "CBS212-WH"
+       },
+       {
+        "code": "CBS204-WH",
+        "uuid": null,
+        "entity_type": null,
+        "for_raw": "CBS212-WH",
+        "for_hint": "product",
+        "for_canonical": "CBS212-WH"
+       }
+      ],
+      "ideation": null
+     },
+     "user_response": "No promotion for CBS212-WH. Try: CBS202-WH, CBS204-WH. Reply with a code to continue, or would you like me to escalate to marketing_promotion_cabana team?",
+     "quick_reply": "CBS202-WH,CBS204-WH,Yes escalate,No it's okay"
+    }
+   },
+   "test_run_id": "r3-f3b",
+   "ts": "2026-08-11T05:22:09.389-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": 437264483,
+   "payload": {
+    "contact_identifer": 437264483,
+    "message": "No promotion for CBS212-WH. Try: CBS202-WH, CBS204-WH. Reply with a code to continue, or would you like me to escalate to marketing_promotion_cabana team?",
+    "quick_reply": "CBS202-WH,CBS204-WH,Yes escalate,No it's okay",
+    "result_set": [
+     {
+      "idx": 1,
+      "label": "CBS202-WH",
+      "value": "CBS202-WH",
+      "product": "CBS202-WH",
+      "display": "CBS202-WH",
+      "order_number": null
+     },
+     {
+      "idx": 2,
+      "label": "CBS204-WH",
+      "value": "CBS204-WH",
+      "product": "CBS204-WH",
+      "display": "CBS204-WH",
+      "order_number": null
+     }
+    ]
+   },
+   "test_run_id": "r3-f3b",
+   "ts": "2026-08-11T05:22:09.343-04:00"
+  }
+ ],
+ "notes": ""
+}

@@ -1,0 +1,44 @@
+{
+ "case": "SR-6",
+ "revision": "rev2",
+ "title": "nonsense unchanged -- LOAD-BEARING, quick regression",
+ "verdict": "PASS -- unchanged from rev1/baseline. NOT a formality: row count AND codes explicitly compared, as before.",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 8ed4e464",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "purple levitating sink",
+ "test_run_id": "sr6r2-20260813",
+ "execution": "12312169",
+ "started_at": "2026-08-13T09:50:04.467Z",
+ "note_on_determinism": "Unlike rev1 (where the bare phrase was misrouted to the ideation flow on the first attempt and needed a rephrase to reach master_products), THIS run landed on domain_hint:'master_products' directly on the first attempt with the bare original phrase -- consistent with the reformulator non-determinism already flagged in the rev1 rollup, not a rev-2 change (resolve-entity-http, which this phrase exercises, is byte-unchanged from rev1: sha256 7ca14cbfd47e... confirmed identical).",
+ "baseline_for_comparison": {
+  "source_1": "tests/runs/spec-search-shapeA-SA-3-20260812.json (pre-SR, exec 12179491): 0 rows, 0 codes, floor_missed:true, spec_candidates:[]",
+  "source_2": "tests/runs/spec-answer-honesty-SR-6-20260813.json (rev1, exec 12308687): 0 rows, 0 codes, floor_missed:true, spec_candidates:[] -- byte-identical reply text to SA-3"
+ },
+ "rev2_observed": {
+  "resolve_entity_http_output": {
+   "tokens": ["purple levitating sink"],
+   "resolutions": [{"token": "purple levitating sink", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []}],
+   "unresolved_tokens": ["purple levitating sink"],
+   "spec_candidates": [],
+   "floor_missed": true,
+   "spec_unmet": [],
+   "semantic_used": false
+  },
+  "row_count": 0,
+  "product_codes": [],
+  "rendered_reply_verbatim": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team?",
+  "byte_identical_to_sa3_and_rev1": true
+ },
+ "hard_assertion": "Row count (0) AND product codes ([]) explicitly compared against both the SA-3 pre-SR baseline and the rev1 result, not eyeballed. N-2's rev-2 change (customer-span quoting) never activates on this path (spec_unmet is empty -- nothing was asked-for-but-unmet on a total zero-match turn), so it has no opportunity to introduce a regression here, and none was observed.",
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries only.",
+  "S2_zero_assignment": "PASS -- escalation OFFERED as a question only, never confirmed.",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' did not run (dead-end before it, gate_passed:false path) -- trivially no write tool fired.",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr6r2-20260813', scope:'deterministic'}, directly confirmed.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": "See spec-answer-honesty-rollup-20260813-rev2-addendum.json (covered by the delta-window sweep)."
+}

@@ -1,0 +1,35 @@
+{
+ "case": "SR-8",
+ "title": "brand junk (observational, C-1 pending)",
+ "verdict": "OBSERVATIONAL -- UNCHANGED from SR-B3, as expected. Does NOT gate this slice (per SR.md/plan §5.2).",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "sorento double bowl kitchen sink with 1.2mm thickness",
+ "test_run_id": "sr8-20260813",
+ "execution": "12309102",
+ "started_at": "2026-08-13T09:19:45.311Z",
+ "baseline_for_comparison": {
+  "source": "SR-B3 (tests/diffs/spec-answer-honesty.md §0 / exec 12303509, pre-SR)",
+  "sr_b3_observed": "4 junk rows (SORENTOBAG, SORENTO CATALOGUE, SORENTO188 '****NOT USE THIS CODE', SORENTO SP0100) + \"Couldn't find these: 'double bowl kitchen sink' — not found.\""
+ },
+ "sr8_observed": {
+  "product_codes": ["SORENTOBAG", "SORENTO SP0100", "SORENTO188", "SORENTO CATALOGUE"],
+  "junk_rows_unchanged": true,
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* SORENTOBAG\n*Description:* SORENTO FELT TOTE  SHOPPING BAG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* SORENTO SP0100\n*Description:* SORENTO MC CARTRIDGE BLUE (SORENTO SP0100)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* SORENTO188\n*Description:* ****NOT USE THIS CODE\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n⚠️  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SORENTO CATALOGUE\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 07/08/2026 11:12:41_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊\n\nCouldn't find these:\n\"double bowl kitchen sink\" — not found.\n\nAsk again with the correct code.",
+  "mechanism": "AND-mode found zero intersection (sorento's prefix matches and the descriptive category token share no common product) -> OR-degrade -> 'sorento' prefix-matches 4 junk codes with non-empty results, so the CRM's _result_has_zero_matches gate is never true for that path and spec_fallback never runs at all for 'double bowl kitchen sink' on the OR path. Confirms the diff/plan's own stated mechanism exactly (case B, plan §0): this is a pre-existing CRM-side gap, gated on CRM C-1 landing, not something SR-1's two n8n node edits can or should fix without inventing an n8n-side junk filter (explicitly rejected in plan §5 decision 2 -- would be a second mechanism guarding the same outcome, LESSONS §67)."
+ },
+ "n2_line_present": false,
+ "n3_suppression_fired": false,
+ "note": "Neither N-2 nor N-3 activate here (spec_unmet absent since spec search never ran at all on this path; no spec_search-tier row exists anywhere in the answer for _specSearchAnswered to key on). This IS the expected/documented no-op -- recorded verbatim per SR.md's instruction, not scored as a slice-gating result.",
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries only.",
+  "S2_zero_assignment": "PASS -- no escalation branch (this is a code-miss line, not an escalation offer).",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS (read-only answer shape, mechanism identity with other product-domain cases).",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr8-20260813', scope:'deterministic'}, directly confirmed.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": "See rollup."
+}

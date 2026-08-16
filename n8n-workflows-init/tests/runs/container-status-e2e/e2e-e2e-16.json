@@ -1,0 +1,101 @@
+{
+  "exec": "11790035",
+  "status": "success",
+  "nodes_run": 59,
+  "domain_hint": "incoming",
+  "intent_hint": "check_incoming",
+  "requested_attributes": [
+    "gatepass_date"
+  ],
+  "entities": [
+    {
+      "raw": "srtwc286-sh-new",
+      "hint": "inbound_shipment",
+      "cc": null
+    }
+  ],
+  "keys_served": true,
+  "gr_requested": [
+    "gatepass_date"
+  ],
+  "rows": 4,
+  "labels": [
+    "Product Code",
+    "Container",
+    "Incoming Quantity",
+    "ETA",
+    "Gatepass"
+  ],
+  "keys": [
+    "product_code",
+    "shipping_container_number",
+    "remaining_incoming_quantity",
+    "estimated_arrival_date",
+    "gatepass_date"
+  ],
+  "denied": [
+    "eta_delay_date"
+  ],
+  "response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWC286-SH-NEW\n*Container:* TCNU2274916\n*Incoming Quantity:* 392\n*ETA:* 2026-06-26\n*Gatepass:* not recorded yet\n🚩  *(PENDING ALLOCATION)*\n\n2. *Product Code:* SRTWC286-SH-NEW\n*Container:* WHSU6840437\n*Incoming Quantity:* 8\n*Warehouse Allocations:* BRW (8)\n*ETA:* 2026-07-18\n*Gatepass:* not recorded yet\n\n3. *Product Code:* SRTWC286-SH-NEW\n*Shipment:* J0222781\n*Container:* ECMU7393988\n*Incoming Quantity:* 237\n*ETA:* 2026-08-01\n*Gatepass:* not recorded yet\n🚩  *(PENDING ALLOCATION)*\n\n4. *Product Code:* SRTWC286-SH-NEW\n*Container:* TCKU6245254\n*Incoming Quantity:* 97\n*ETA:* 2026-08-01\n*Gatepass:* not recorded yet\n🚩  *(PENDING ALLOCATION)*",
+  "ran": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-session-vars",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-supported-domain",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sim-inject-session",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+  ]
+}

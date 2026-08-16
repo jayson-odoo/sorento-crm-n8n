@@ -1,0 +1,29 @@
+{
+ "case": "SR-3",
+ "revision": "rev2",
+ "title": "no contradiction -- quick regression",
+ "verdict": "PASS -- unchanged from rev1",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 8ed4e464",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "do you have wall hung basin",
+ "test_run_id": "sr3r2-20260813",
+ "execution": "12312135",
+ "started_at": "2026-08-13T09:49:45.456Z",
+ "hard_assertion": "spec rows present AND the reply contains none of 'Couldn't find', 'did you mean', 'Multiple matches found', an escalation offer -- verified by direct case-insensitive substring scan over the exact rendered string, same as rev1.",
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:04_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "byte_identical_to_rev1": true,
+  "marker_scan": {"couldn't find": false, "did you mean": false, "multiple matches found": false, "escalate": false}
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries only.",
+  "S2_zero_assignment": "PASS -- no escalation branch.",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS by mechanism identity with rev1's confirmed sub-execution 12308304 (same fork, same query, same read-only answer shape).",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr3r2-20260813', scope:'deterministic'}, directly confirmed.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": "See spec-answer-honesty-rollup-20260813-rev2-addendum.json (covered by the delta-window sweep)."
+}

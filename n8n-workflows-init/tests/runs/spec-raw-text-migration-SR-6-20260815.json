@@ -1,0 +1,35 @@
+{
+ "case": "SR-6",
+ "title": "LOAD-BEARING: nonsense must stay unchanged -- 'purple levitating sink' compared by ROW COUNT and CODES, not eyeballed",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "purple levitating sink",
+ "test_run_id": "sr6-20260815",
+ "execution": "12597361",
+ "baseline_for_comparison": "SA-3 (pre-SR clone, exec 12179491) and SR-6b (post-SR rev1 clone, exec 12308687) both recorded 0 rows / 0 codes for this exact phrase (spec-answer-honesty-rollup-20260813.json SR6_load_bearing_settlement)",
+ "resolve_entity_http_response": {
+  "tokens": ["purple levitating sink"],
+  "resolutions": [{"token": "purple levitating sink", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []}],
+  "unresolved_tokens": ["purple levitating sink"],
+  "fallback_match_mode": "or",
+  "spec_candidates": [],
+  "floor_missed": true,
+  "spec_asked": [],
+  "row_count": 0,
+  "codes": []
+ },
+ "measured_comparison": "0 rows / 0 codes THIS run (post spec-raw-text-migration, real customer sentence reaching the ranker), vs 0 rows / 0 codes in BOTH prior baselines. Explicit count comparison performed, not inferred. The whole-sentence-reaches-the-ranker change did NOT flip this nonsense query from 'no rows' to 'rows' -- the risk this case exists to catch did not materialise.",
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team?",
+  "sendmsg_parts": 1
+ },
+ "safety_S0": {
+  "S1_S3": "PASS -- 3-entry would_* egress log (this is an escalation OFFER in text, not a confirmed/executed escalation -- no human-intervention sub was invoked, S2 holds).",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sr6-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:40:38Z-15:40:47Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty.",
+ "note": "This tester did not reproduce the prior run's non-determinism finding (LLM occasionally misclassifying this exact phrasing as an ideation submission) -- this single fire landed on the product-not-found path cleanly. Not re-tested for that specific non-determinism given it was already flagged to the reviewer in the prior SR run and is unrelated to this slice's two touched nodes."
+}

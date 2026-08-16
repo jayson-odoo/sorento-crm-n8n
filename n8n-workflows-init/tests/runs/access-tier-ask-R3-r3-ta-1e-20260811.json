@@ -1,0 +1,332 @@
+{
+ "case": "r3-ta-1e",
+ "round": 3,
+ "verdict": "PASS",
+ "target": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 668cd772 / 5dd1f43d (see rollup presence_gate)",
+  "live_spine_9qVyfUxmRQqrpGRMDLRuz": "NEVER DRIVEN"
+ },
+ "contact": 437264483,
+ "mode": "uac (real CRM reads)",
+ "message": "promo for SRTBF11710",
+ "execution": "12054689",
+ "rendered_reply_verbatim": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) \u2014 e.g. \"1\", \"1 and 2\", or \"all\".",
+ "sendmsg_payload": {
+  "contact_identifer": 437264483,
+  "message": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) \u2014 e.g. \"1\", \"1 and 2\", or \"all\".",
+  "quick_reply": null,
+  "result_set": [
+   {
+    "idx": 1,
+    "label": "Office",
+    "value": "office",
+    "tier": "office",
+    "uuid": null,
+    "entity_type": "access_tier",
+    "product": null,
+    "filename": null
+   },
+   {
+    "idx": 2,
+    "label": "Dealer",
+    "value": "dealer",
+    "tier": "dealer",
+    "uuid": null,
+    "entity_type": "access_tier",
+    "product": null,
+    "filename": null
+   },
+   {
+    "idx": 3,
+    "label": "End user",
+    "value": "end_user",
+    "tier": "end_user",
+    "uuid": null,
+    "entity_type": "access_tier",
+    "product": null,
+    "filename": null
+   }
+  ]
+ },
+ "file_attachments_at_customer_boundary": [],
+ "tier_gate": {
+  "name": [
+   "Sorento Office",
+   "Sorento Dealer",
+   "Mocha Dealer",
+   "Mocha Office",
+   "Cabana Office",
+   "Cabana Dealer",
+   "End User"
+  ],
+  "tier_stated": [],
+  "entitled_tiers": [
+   "dealer",
+   "office",
+   "end_user"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [],
+  "pending_pick": false,
+  "tier_ask": true,
+  "tier_proceed": false,
+  "access_levels_recomposed": [
+   "Sorento Office",
+   "Sorento Dealer",
+   "Mocha Dealer",
+   "Mocha Office",
+   "Cabana Office",
+   "Cabana Dealer",
+   "End User"
+  ],
+  "brand_gate_empty": false,
+  "brand_unheld": false
+ },
+ "promo_picker": {
+  "n_answers": 0,
+  "n_attachments": 0,
+  "_brand_gate_closed": null
+ },
+ "parser": {
+  "domain_hint": "promotion",
+  "access_levels": [],
+  "query_brands": [],
+  "entities": [
+   {
+    "raw": "SRTBF11710",
+    "hint": "product",
+    "canonical_code": null,
+    "current_message": true,
+    "confident": true
+   }
+  ],
+  "_tier_pick_scope_reused": null,
+  "_pending_pick": null,
+  "routing": {
+   "suggested_team": "marketing_promotion_sorento",
+   "suggested_agent": "general_enquiries"
+  }
+ },
+ "assertions": [
+  {
+   "assert": "ask fires",
+   "ok": true,
+   "detail": "tier_ask=True reply_has_ask=True"
+  },
+  {
+   "assert": "zero files",
+   "ok": true,
+   "detail": "[]"
+  }
+ ],
+ "safety_per_case": [
+  {
+   "assert": "S1 no real send node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 no CRM write node ran",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S3 session write is guarded (would_write)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "assert": "S5 test_mode true",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "assert": "S2 no assignment node ran",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "nodes_run": [
+  "Aggregate",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If4",
+  "If5",
+  "If9",
+  "When Executed by Another Workflow",
+  "access-level-choice-message",
+  "attach-merge",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "cs-offer-gate",
+  "escalate-catalog",
+  "get-access-types",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-access-choice",
+  "tf-message",
+  "tier-gate"
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": 437264483,
+    "message": "promo for SRTBF11710"
+   },
+   "test_run_id": "r3-ta-1e",
+   "ts": "2026-08-11T05:21:06.661-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": 437264483,
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to check the promotion for SRTBF11710",
+      "entities": [
+       {
+        "raw": "SRTBF11710",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_sorento",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) \u2014 e.g. \"1\", \"1 and 2\", or \"all\".",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "Office",
+        "value": "office",
+        "tier": "office",
+        "uuid": null,
+        "entity_type": "access_tier",
+        "product": null,
+        "filename": null
+       },
+       {
+        "idx": 2,
+        "label": "Dealer",
+        "value": "dealer",
+        "tier": "dealer",
+        "uuid": null,
+        "entity_type": "access_tier",
+        "product": null,
+        "filename": null
+       },
+       {
+        "idx": 3,
+        "label": "End user",
+        "value": "end_user",
+        "tier": "end_user",
+        "uuid": null,
+        "entity_type": "access_tier",
+        "product": null,
+        "filename": null
+       }
+      ],
+      "selection_context": "tier_offer",
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) \u2014 e.g. \"1\", \"1 and 2\", or \"all\".",
+     "quick_reply": null
+    }
+   },
+   "test_run_id": "r3-ta-1e",
+   "ts": "2026-08-11T05:21:06.653-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": 437264483,
+   "payload": {
+    "contact_identifer": 437264483,
+    "message": "Which access level do you need?\n1. Office\n2. Dealer\n3. End user\nReply with the number(s) \u2014 e.g. \"1\", \"1 and 2\", or \"all\".",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "label": "Office",
+      "value": "office",
+      "tier": "office",
+      "uuid": null,
+      "entity_type": "access_tier",
+      "product": null,
+      "filename": null
+     },
+     {
+      "idx": 2,
+      "label": "Dealer",
+      "value": "dealer",
+      "tier": "dealer",
+      "uuid": null,
+      "entity_type": "access_tier",
+      "product": null,
+      "filename": null
+     },
+     {
+      "idx": 3,
+      "label": "End user",
+      "value": "end_user",
+      "tier": "end_user",
+      "uuid": null,
+      "entity_type": "access_tier",
+      "product": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "r3-ta-1e",
+   "ts": "2026-08-11T05:21:06.599-04:00"
+  }
+ ],
+ "notes": ""
+}

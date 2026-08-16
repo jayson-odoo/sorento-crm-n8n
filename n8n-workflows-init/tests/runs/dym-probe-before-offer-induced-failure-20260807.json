@@ -1,0 +1,101 @@
+{
+ "run": "\u00a7DP-4 / \u00a7DP-8 \u2014 INDUCED PROBE FAILURE, all three lanes",
+ "date": "2026-08-07",
+ "verdict": "PASS on all three lanes",
+ "artifacts": {
+  "runner": "4AQFVgLB4skVjAzH zz-run-throwaway (webhook /zz-run-throwaway-hint)",
+  "target": "Es4WwjMHOEy9j62V zz-THROWAWAY-dym-probe-fail (copy of rev-6 b79ef8c4)",
+  "throwing sub": "yHUqYrFuWCF1Plr3 zz-THROWAWAY-sub-always-throws"
+ },
+ "live_spine": "f9205b03 \u2014 untouched",
+ "main_clone": "5d6f9593 (rev 7) \u2014 untouched by me",
+ "VOID_GATE": {
+  "applied_first": true,
+  "condition": "dym_probe_meta.ok === true with answer_count === 0 (sub returned empty instead of throwing)",
+  "observed": "ok === FALSE and reason === 'probe_error' on ALL THREE lanes \u2014 the sub genuinely threw. Observation is VALID, not void."
+ },
+ "lanes": [
+  {
+   "lane": "D1",
+   "exec": "11517840",
+   "probe_sub_exec": "11517858",
+   "fixture": "SRTWC1930 certificate",
+   "dym-probe": "executed; output {error:'zz-THROWAWAY induced probe failure \u2026 [line 6]'}; node executionStatus success; EXECUTION STATUS success",
+   "dym-annotate": "EXECUTED \u2014 ok:false, reason:'probe_error', answer_count:0, dym_available_codes:[], probed:[srtwc193,srtwc190,srtwc191]; not-found payload (escalate_message) survived",
+   "delivered": "Couldn't find \"SRTWC1930\". Did you mean SRTWC193, SRTWC190, or SRTWC191? Reply with a code to continue, or would you like me to escalate to purchasing_certification team?",
+   "note": "degrades to the UN-ANNOTATED PROSE arm (humanList) \u2014 i.e. exactly pre-change D1 behaviour, offer still made, escalation still offered"
+  },
+  {
+   "lane": "picker",
+   "exec": "11517863",
+   "probe_sub_exec": "11517872",
+   "fixture": "cert for SRTWC19",
+   "dym-transform": "probe_lane:'picker', probe_needed:true, 8 candidates + the Certification scoping uuid (resolver-flatten fallback fired even on the failure run)",
+   "dym-probe": "executed with error; execution success",
+   "dym-annotate": "EXECUTED \u2014 ok:false, reason:'probe_error', answer_count:0, dym_available_codes:[], probed: all 8",
+   "delivered": "the 8-line picker, header and numbering intact, every line BARE",
+   "note": "identical to the pre-change picker text"
+  },
+  {
+   "lane": "partial \u2605 F-ONERR PROMOTE GATE",
+   "exec": "11517876",
+   "probe_sub_exec": "11517891",
+   "fixture": "certificate for SRTWT2214 and SRTWC1930",
+   "dym-probe-partial": "executed; output {error:'zz-THROWAWAY \u2026'}; node executionStatus success; EXECUTION STATUS success",
+   "dym-annotate-partial": "EXECUTED \u2014 ok:false, reason:'probe_error', answer_count:0, dym_available_codes:[]",
+   "THE GATE \u2014 was the ANSWERED turn degraded?": "NO. dym-annotate-partial's output still carries the real result: answers[] with SRTWT2214's Certification row, attachments[] with the PDF, has_result:true. The customer received the full certificate data PLUS a bare candidate list.",
+   "delivered": "I have attached the file(s) below.\\n\\n1. *Product Code:* SRTWT2214 \u2026 *Validity:* Valid\\n\\nCouldn't find these:\\n\"SRTWC1930\" \u2014 did you mean:\\n  1. SRTWC193\\n  2. SRTWC190\\n  3. SRTWC191\\n\\nReply a number to check it, or ask again.",
+   "verdict": "PASS \u2014 a probe failure on the answered path costs the ANNOTATION only, never the data. This is the specific risk the reviewer gated on and it is now measured, not inferred."
+  }
+ ],
+ "customer_boundary_assertions": {
+  "method": "asserted on save-session-vars.user_response AND the sendmsg-sub egress payload \u2014 NOT on intermediate node outputs",
+  "per lane": "user_response non-empty; user_response == sendmsg payload; no ' - has ' anywhere; no ' - no ' anywhere; no em-dash suffix variant; turn answered (not dead-ended)",
+  "result": "PASS on D1, picker and partial"
+ },
+ "MECHANISM_FINDING": {
+  "title": "the observed fail-open branch is NOT the one the design predicted",
+  "predicted": "onError:continueRegularOutput emits the node's INPUT item, so dym-transform stamps `_dym_probe_input:true` and dym-annotate checks that sentinel first (coder deviation D7)",
+  "observed": "n8n emitted `{error:'zz-THROWAWAY induced probe failure \u2026 [line 6]'}` as the output item \u2014 NOT the input item. So the load-bearing detector was dym-annotate's `error`-key branch; the `_dym_probe_input` sentinel never fired.",
+  "impact": "none today \u2014 fail-open holds and both branches exist, so this is working defence in depth. But the sentinel is currently DEAD CODE for this scenario and is therefore unexercised; if a future n8n version changes continueRegularOutput to pass the input item through, the sentinel becomes load-bearing having never been observed to work. Worth a line in the diff so nobody deletes the `error`-key branch as redundant.",
+  "why_it_matters_for_the_docs": "plan \u00a73.6 and diff \u00a7D7 both describe the sentinel as the primary failure detector. That is now known to be inaccurate against this n8n version."
+ },
+ "version_skew_check": {
+  "asked": "confirm rev 7 (5d6f9593) differs from rev 6 (b79ef8c4, what the throwaway copies) only by a comment",
+  "found": "STRONGER than claimed \u2014 compile-current-state.js is BYTE-IDENTICAL between the two (diff exit 0, before any comment-stripping). So there is no behavioural skew in that node at all.",
+  "scope_of_what_I_verified": "I snapshotted and diffed compile-current-state only (the node named in the brief). I did NOT diff every other node body rev6->rev7, because the re-export rewrites all files and destroys mtime as a signal. If the reviewer needs a full rev6->rev7 body diff, that requires a snapshot taken before the re-export, which I no longer have.",
+  "conclusion": "no behavioural difference found in the node under suspicion; the throwaway is a valid stand-in for rev 7 on the paths tested."
+ },
+ "containment_scored_on_the_agreed_basis": {
+  "precondition_withdrawn": "`active:false` is unattainable on this n8n \u2014 active and published are the same flag, so deactivating makes an executeWorkflowTrigger workflow uncallable as a sub. Scored on the same basis the reviewed clone runs on, as agreed.",
+  "single trigger": "exactly one, executeWorkflowTrigger \u2014 nothing external can start it. PASS",
+  "5 egress orphans": "send-message-files/-images/-video, update-human-intervened, save-session-vars \u2014 all inbound == 0. PASS",
+  "sink": "tWm5DYLxfypmVC1T. PASS",
+  "other four get-results callers": "Call 'sub-get-results', probe-incoming, sibling-probe, crossdomain-probe all still rysSPgUssLDf6xJc. PASS",
+  "throwing sub": "2 nodes, executeWorkflowTrigger + code, unconditional throw, no respondio/httpRequest/memoryPostgresChat type. PASS"
+ },
+ "safety_scorecard": {
+  "S1": "PASS \u2014 3 runs; guards save-message-redis 3, save-session-vars 3, sendmsg-sub 3, send-message-files 1 (the attachment-returning partial turn); all would_*; clone send nodes 0-inbound.",
+  "S2": "PASS \u2014 no escalation turn; HI sub absent from runData.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData; sink unchanged.",
+  "S4": "PASS \u2014 the only tool string reaching a probe was crm_master_product_attachments_list (READ). The probe target was the throwing sub by design; the other four get-results callers were untouched.",
+  "S5": "PASS \u2014 trigger test_mode===true.",
+  "S6": "PASS \u2014 no LLM node beyond the per-turn reformulator; the failed probe consumed zero tokens.",
+  "S7a": "PASS \u2014 TEST sink 631->632 on exec 11517875, +1 for the run; the new runner's brackets work identically to zz-canary-run's.",
+  "S7b": "PARTIAL, unchanged and stated \u2014 prod sorento-respond-message LLEN 0 before AND after; per-poll pop-payload series not collected; rests on structural containment.",
+  "S8": "PASS \u2014 no banned node type added by the throwaways; update-human-intervened is a respondio node but is one of the five orphans (0 inbound), same as on the reviewed clone.",
+  "S9": "N/A this pass \u2014 no fail-on-purpose mutation was needed; the failure was induced in the real graph, which is strictly stronger."
+ },
+ "closes": [
+  "\u00a7DP-4 (probe ERRORS, attachment)",
+  "\u00a7DP-8 (probe ERRORS, inventory path \u2014 same code, same detector, exercised on all three lanes)"
+ ],
+ "still_open": [
+  "\u00a7DP-15b live",
+  "\u00a7DP-3b unscoped_probe live",
+  "\u00a7DP-9 live",
+  "\u00a7DP-13b dynamic",
+  "\u00a7DP-12 sibling-probe[0] inbound"
+ ],
+ "throwaway_disposal": "SAFE TO DELETE all three (4AQFVgLB4skVjAzH, Es4WwjMHOEy9j62V, yHUqYrFuWCF1Plr3) once the reviewer has read this file. I need no further runs against them."
+}

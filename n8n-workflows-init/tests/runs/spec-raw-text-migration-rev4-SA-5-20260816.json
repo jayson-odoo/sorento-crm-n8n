@@ -1,0 +1,20 @@
+{
+  "case": "SA-5 (mixed code+descriptive, re-run for rev4 regression -- and the F2/F6 no-regression check)",
+  "act": "SRTWC286 and wall hung basin",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e",
+  "test_run_id": "spec-rev4-SA5-1786815122",
+  "execution": "12607184",
+  "verdict": "PASS -- consistent with the reviewer's already-accepted F6 disposition (OR-arm append is a documented CRM contract behaviour, not a defect)",
+  "resolve_entity_http": "resolutions[]: SRTWC286 (ambiguous, 10 matches, match_field:product_code, tier:prefix), wall hung basin (unresolved, matches:[], 3 trgm alternatives), combined query-token 'SRTWC286 and wall hung basin' (ambiguous, 5 spec_search matches). unresolved_tokens:[] -- both halves fully absorbed into ONE merged 15-row OR-arm answer.",
+  "assertions": {
+    "F2_no_regression_matched_on_correctly_suppressed": "CONFIRMED. The reply renders all 15 rows (10 SRTWC286-code-prefix + 5 wall-hung spec_search) in ONE list and carries NO '_Matched on:' line anywhere -- because not all shown rows are spec_search rows (F2's _allShownAreSpec gate correctly reads this as a mixed answer and suppresses the claim). This is the exact defect class the reviewer's F2 finding described pre-fix (a false 'Matched on: mounting: Wall Hung.' claim covering 10 rows that did not match on mounting) -- confirmed STILL fixed after rev4's third-node change (F2 lives in compile-current-state N-1a, untouched by rev4).",
+    "no_crash_both_halves_correct": "CONFIRMED. All 10 real SRTWC286-SH-* variant codes present with correct descriptions/prices; all 5 BRAVAT wall-hung spec rows present."
+  },
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send x2 (15-row multi-part reply)].",
+    "S2": "PASS.", "S3": "PASS.",
+    "S4": "N/A this case (not explicitly captured; get-results confirmed read-only elsewhere this pass, see SR-8).",
+    "S5": "PASS -- test_mode:true self-verified.",
+    "S6": "PASS -- reformulator ran (real)."
+  }
+}

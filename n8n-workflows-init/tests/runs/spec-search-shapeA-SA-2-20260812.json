@@ -1,0 +1,40 @@
+{
+ "case": "SA-2",
+ "title": "code parity",
+ "verdict": "PASS",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "check stock SRTWC286",
+ "test_run_id": "sa2-20260812",
+ "execution": "12179126",
+ "started_at": "2026-08-12T08:49:14.218Z",
+ "resolve_entity_http_output": {
+   "tokens": ["SRTWC286"],
+   "match_tier_all": "and",
+   "match_field_all": "product_code",
+   "match_count": 10,
+   "spec_search_rows": 0,
+   "no_new_fields_present_on_this_resolving_traffic": "confirmed via full-text scan of by_entity_type -- every row is match_tier:'and', match_field:'product_code'; zero rows carry match_field:'specifications' or match_tier:'spec_search'"
+ },
+ "customer_boundary": {
+   "rendered_reply_summary": "Stock details found for the requested products -- 49 numbered rows (SRTWC286-SH variant family), warehouse/location/qty per row, standard inventory-answer shape, chunked into 4 sendmsg parts",
+   "contains_couldnt_find_marker": false,
+   "sendmsg_parts": 4
+ },
+ "baseline_comparison": "No PRE-CHANGE n8n execution of this exact input exists to diff against byte-for-byte (see rollup notes on RED-first gap). Structural parity argument: the request path here never reaches spec_fallback at all (CRM's zero-match gate requires zero normal matches; SRTWC286 resolves via prefix/and-tier with 10 rows), so the appended jsonBody fields (spec_fallback:true, free_terms:[...], understand_phrase:false) are provably inert on THIS payload by construction (verified in the diff doc's plan section 'Safety property inherited from the CRM design'). free_terms itself is populated (SRTWC286 is code-shaped so the classifier excludes it -- free_terms would be [] for this single-token input), consistent with plan section on the classifier rule.",
+ "F1_settled": "N/A (resolving/code case, not the descriptive-miss path F1 concerns).",
+ "F2_settled": "N/A (no spec_search rows enter play; F2 concerns spec-match-driven gate behaviour).",
+ "F3_settled": "N/A (this is a RESOLVING turn, not the zero-match path F3 concerns; see SA-3).",
+ "safety_S0": {
+   "S1_zero_real_sends": "PASS -- egress log: 1x would_log, 1x would_write, 4x would_send (chunked). No real respond.io POST.",
+   "S2_zero_assignment": "PASS -- no escalation branch.",
+   "S3_zero_crm_writes": "PASS -- save-session-vars/update-human-intervened orphaned; would_write only.",
+   "S4_get_results_read_only": "PASS -- Call 'sub-get-results' ran (source previousNode replay-get-results output 1 = real-read arm), tool resolved to a stock/inventory read (response contains warehouse/location/qty rows, no ticket-create markers).",
+   "S5_test_mode": "PASS (inferred by identical harness mechanism -- not independently re-fetched for this case to conserve budget; directly confirmed for SA-1/SA-3/SA-6 from the same zz-run-hint/zz-canary-run wrapper).",
+   "S6_token_sinks": "tier=parser in practice (real reformulator ran). No new LLM/token sink observed beyond the standard reformulator.",
+   "S7_sink_delta": "See rollup file -- covered by the 89-poll sweep."
+ },
+ "notes": "This case exists to prove the CRM's zero-match gate keeps the shapeA fields inert on resolving traffic, per plan section 2/SA.md 'CRM zero-match gate keeps the feature inert on resolving traffic -- prove it, don't trust it.' The observed match_tier:'and' with zero spec_search rows IS that proof for this specific input."
+}

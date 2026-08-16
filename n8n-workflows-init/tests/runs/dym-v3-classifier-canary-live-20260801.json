@@ -1,0 +1,46 @@
+{
+  "run": "dym-partial-disambiguation v3 — REAL reformulator classifier canary (§PD-dym / §PD-dym-multi / §PD-result / ratio) + §ZS-6 e2e",
+  "date": "2026-08-01",
+  "tester": "sorento-tester",
+  "scope": "parser (LESSON 28: reference_target is an LLM decision invisible to mock -> proven with the REAL reformulator on the full clone)",
+  "driver": "zz-chat-console (qJzJqgAXIZfcgUOG) webhook -> dispatcher -> CLONE txiPzSxy3Pclsz6v. mode=regress-capture (session round-trips via n8n_test, egress structurally blocked). contact 437264483.",
+  "round_trip_confirmed": "T2 get-session-vars read back T1's variables.response marker + dym_last_result_set + dym_offer from n8n_test (exec 10808858 read id-10808766 offer). regress-capture is stateful; uac is NOT (prod session, save orphaned).",
+  "classifier_probes": {
+    "NULL direction (T1, no marker present)": [
+      {"exec": "10808371", "msg": "check stock for SRTWT902, SRTW808 and SRTW809", "_parser_raw.reference_target": null, "reference_positions": [], "verdict": "PASS"}
+    ],
+    "DYM direction (bare number -> dym)": [
+      {"exec": "10808858", "T1": "10808766", "msg": "2", "_parser_raw.reference_target": "dym", "reference_positions": [2], "resolved": "dym#2 SRTWT1808 (for_raw SRTW808), SRTWT902+SRTW809 retained, dym_pick_applied true, positions cleared, stock last_result_set untouched", "verdict": "PASS"},
+      {"exec": "10809095", "T1": "10809033", "msg": "1, 4", "_parser_raw.reference_target": "dym", "reference_positions": [1,4], "resolved": "BOTH dym#1 SRTWT808 (SRTW808) + dym#4 SRTWT809 (SRTW809); neither dropped; SRTWT902 retained; dym_pick_applied true", "verdict": "PASS"},
+      {"exec": "10809255", "T1": "10809197", "msg": "1 and 4", "_parser_raw.reference_target": "dym", "reference_positions": [1,4], "resolved": "BOTH dym#1 SRTWT808 + dym#4 SRTWT809; SRTWT902 retained", "verdict": "PASS"}
+    ],
+    "RESULT direction (qualified phrase -> result)": [
+      {"exec": "10809371", "T1": "10809316", "msg": "the 2nd one", "_parser_raw.reference_target": "result", "reference_positions": [2], "resolved": "STOCK row #2 SRTWT902-GM via byIdx over last_result_set; numbered-dym handler SKIPPED (no dym pick)", "verdict": "PASS"},
+      {"exec": "10809485", "T1": "10809428", "msg": "product 2", "_parser_raw.reference_target": "result", "reference_positions": [2], "resolved": "STOCK row #2 SRTWT902-GM; handler SKIPPED", "verdict": "PASS"}
+    ]
+  },
+  "classifier_ratio": {
+    "bare-number -> dym": "3/3 (100%)  [\"2\", \"1, 4\", \"1 and 4\"]",
+    "qualified-phrase -> result": "2/2 (100%)  [\"the 2nd one\", \"product 2\"]",
+    "no-marker -> null": "1/1 (100%)  [T1]",
+    "misroutes": 0,
+    "verdict": "LESSON-39 scoring: all correct picks. No systematic wrong-default. Promote-gating classifier PASSES both directions."
+  },
+  "§ZS-6 e2e (real data, best-effort)": {
+    "exec": "10808371 (T1)",
+    "observed": "user_response contained 'No stock records found for: SRTWT902-FRG, SRTWT902-GM-NL.' then the #2 'Couldn't find these:' dym block, in that order, disjoint. #3 fired end-to-end on REAL resolver+get-results data (SRTWT902 family prefix-variants resolved but returned zero stock rows).",
+    "verdict": "PASS (real-data variant of the locked wording; exact codes are live-data-dependent per plan, but the FEATURE fired correctly with exact locked wording format)."
+  },
+  "safety_§0": {
+    "S1 no real send": "PASS (structural, cycle-wide) — sendmsg -> sub-sendmsg-CHAT (ublq9nSlrpz63xan); chat_id present -> chat:reply RPUSH branch; the credentialed 'Send a Message' (respondio) + 'HTTP Request' (api.respond.io) sit behind BOTH chat_id-absent AND is_test-false, two independent guards, neither satisfied (chat_id present + is_test=true).",
+    "S2 no assign/escalation": "PASS — all probes business_query answered turns; Call 'sub-human-intervention' never executed (verified exec 10808371 runData; other probes same happy path).",
+    "S3 no CRM/contact write": "PASS — save-session-vars (prod PUT) + update-human-intervened orphaned, never executed. regress-capture session persists to n8n_test respond_contacts_test (isolated DB), NOT prod CRM.",
+    "S4 get-results read-only": "PASS — get-results returned inventory stock rows (read tool crm_inventory_stock_*); never crm_it_support_ticket_create.",
+    "S5 test_mode present": "PASS — all 6 sendmsg callers pass is_test:true + test_run_id (verified from clone JSON); redis item carries test_run_id + scope:chat-console.",
+    "S6 token sinks by scope (parser)": "PASS — only the reformulator LLM sub (wI5RkNGW3EOJfBdo) executed per turn; answered turns, no clarification LLM.",
+    "S7a TEST-sink positive": "PASS — Call 'sub-respond-save-message-redis'2 -> subExec in tWm5DYLxfypmVC1T (exec 10808371 subExec 10808395), blob carries this run's turn_id.",
+    "S7b prod-sink delta zero": "PASS (STRUCTURAL, LESSON 45) — the only ingest-save node targets fork tWm5DYLxfypmVC1T whose SOLE Redis node pushes the literal list 'sorento-respond-message-TEST' (unconsumed); NO node in any executed clone path writes prod 'sorento-respond-message'. Structural attribution is strictly stronger than an LLEN count on a shared drained list; host redis CLI unavailable, so the empirical per-poll LLEN series was NOT run — the structural guarantee stands in its place and is decisive because the fork cannot address the prod list.",
+    "S8 isolated is_test:false fork run": "N/A — only full-clone runs; no isolated fork run. Parser fork ran inside the clone with is_test context."
+  },
+  "verdict": "REAL-REFORMULATOR CLASSIFIER: PASS both directions (dym 3/3, result 2/2, null 1/1). Multi-select ACCUMULATE both picks confirmed. §ZS-6 e2e feature fired. §0 all hold (S7b structural)."
+}

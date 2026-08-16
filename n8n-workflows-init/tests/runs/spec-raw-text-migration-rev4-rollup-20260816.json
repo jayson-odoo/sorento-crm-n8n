@@ -1,0 +1,58 @@
+{
+  "change_id": "spec-raw-text-migration",
+  "rev": 4,
+  "date": "2026-08-16",
+  "tester": "sorento-tester (this pass)",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ versionId==activeVersionId==98e93d6e-41b4-4a1f-999c-5fe70daeacc6",
+  "pre_run_verification": {
+    "export_verify": "python3 export-workflows.py --verify: clone-sorento-consume-main-TEST current (98e93d6e); live-spine-sorento-consume-main current (469e7259). Clean before firing.",
+    "clone_after_shas_reverified_from_fresh_export": {
+      "resolve-entity-http.jsonBody": "af7d38527e6b544c55ed1e04d457980d37924f8758fa5c36b0983b0bb369fb81 -- MATCH",
+      "compile-current-state.jsCode": "97d2f6a25882fc948a2a1b9ed03517137de28e68db5b0e810d5f1ef5c6200925 -- MATCH",
+      "build-suggest-offer.jsCode": "8a18369006be77e25530b76a3c6b0284dec68ec22a76c13615d79a42ae764217 -- MATCH"
+    },
+    "live_spine_reverified_untouched": {
+      "resolve-entity.jsonBody": "51de7f16cf223c7dcc89485d629252c2524729df56735dae29b741d9e8a7da5f -- MATCH",
+      "compile-current-state.jsCode": "3fa9d17071a81adacfdc573951bef81b249031cb153a68baadf6f709bfa98249 -- MATCH",
+      "live versionId": "469e7259-6cfb-4505-bef4-f37a36bf454f -- UNCHANGED"
+    }
+  },
+  "driver_mechanism": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No) via curl, reusing the prior tester's proven method (not MCP execute_workflow, not python urllib). Every item: mode:'uac', a per-case test_run_id, previous_conversation_state:{} (uac-mode prod-session landmine avoided on every case), contact 437264483. Execution ids resolved via search_executions + self-verified against test_run_id in each execution's own 'When Executed by Another Workflow' runData.",
+  "cases_run": 11,
+  "rollup_table": [
+    {"case": "SA-4-B", "closes": "F1 (bso emitter)", "execution": "12606706", "verdict": "PASS", "evidence": "Customer's full sentence no longer appears as a dym group label; roster 3 not 6; every dym_candidates[].for_raw is a real parser raw; compile-current-state.user_response === build-suggest-offer.suggest_response verbatim."},
+    {"case": "SA-7", "closes": "F3", "execution": "12606807", "verdict": "PASS", "evidence": "intersection = 5/5 spec_search rows, zero code partials; whole reply is a clean spec answer, no did-you-mean/escalation text."},
+    {"case": "S1-C", "closes": "F4", "execution": "12606828", "verdict": "PASS (paired w/ SA-7, same session)", "evidence": "Zero spec_search rows, spec_asked key entirely absent; code resolves normally at tier 'and'; instrument proven to discriminate within this run."},
+    {"case": "customer spot-check", "closes": "F5", "execution": "12607211", "verdict": "PASS", "evidence": "Real 2026-07-15 baseline turn (v_turns 9150716) replayed; answer byte-matches the baseline order/customer/product content."},
+    {"case": "date spot-check", "closes": "F5", "execution": "12607235", "verdict": "PASS (baseline data-quality caveat noted, not a regression)", "evidence": "date_filter_start/end correctly threaded; tokens carry only the entity raw, not the month word; no new miss block; old baseline itself appears mis-filtered (unrelated pre-existing corpus quirk)."},
+    {"case": "SR-15", "family": "DEV-2 mixed hit+miss", "execution": "12607097", "verdict": "PASS", "evidence": "Spec shortlist + exactly one 'SRTZZ999 — not found.' in one reply; 'wall hung basin' absent from the miss block."},
+    {"case": "SR-8", "family": "D7 junk retest", "execution": "12607135", "verdict": "PASS", "evidence": "Zero SORENTOBAG/SORENTO188/junk; 5 real spec rows returned; get-results confirmed read-only (S4)."},
+    {"case": "SR-6", "family": "LOAD-BEARING filler floor", "execution": "12607162", "verdict": "PASS", "evidence": "0 rows / 0 codes, unchanged vs 0/0 baseline."},
+    {"case": "SA-5", "family": "mixed code+descriptive / F2 no-regression", "execution": "12607184", "verdict": "PASS", "evidence": "15-row merged OR-arm answer, NO '_Matched on:' line (F2's mixed-answer suppression confirmed still working after rev4)."},
+    {"case": "incident replay 12303509 (C-1)", "execution": "12607257", "verdict": "FIXED", "evidence": "Zero junk prefix-matches, spec search now runs, 5 real product rows."},
+    {"case": "incident replay 12303548 (N-0)", "execution": "12607284", "verdict": "FIXED", "evidence": "spec_asked.thickness correctly threads the customer's number (1 vs 1.2 across the two sibling replays)."}
+  ],
+  "egress_proof": "Every one of the 11 cases' egress log (returned inline by zz-canary-run) contained ONLY guarded/blocked entries: {guard:save-message-redis, kind:would_log}, {guard:save-session-vars, kind:would_write}, {guard:sendmsg-sub, kind:would_send} (repeated per reply chunk on multi-part answers). Zero real api.respond.io sends, zero real CRM writes, zero assignment/escalation writes, across all 11 executions. Full S0 detail: S1/S2/S3 PASS on every case (see per-case files); S4 PASS -- Call 'sub-get-results' (target t4QvrtrPnTwRU6br) returned only the standard read-only shape, no crm_it_support_ticket_create marker, on every case where it ran; S5 PASS -- test_mode:true self-verified against every fired test_run_id on all 11 'When Executed by Another Workflow' runData; S6 PASS -- only the reformulator (real, wI5RkNGW3EOJfBdo) and get-results (real, t4QvrtrPnTwRU6br) LLM/agent nodes fired anywhere this pass, no new token sink observed; S7 PASS -- see spec-raw-text-migration-rev4-S7-gate-20260816.json (S7a positive TEST-sink confirmed on tWm5DYLxfypmVC1T; S7b prod-sink: 6/84 covering polls nonzero, ALL 6 attributed to an unrelated real WhatsApp customer (contact_id 440987225, first_name Justin) sharing the prod list during our window -- zero delta attributable to this harness); S8 N/A (every run used is_test:true throughout, never an is_test:false fork); S9 N/A (no fail-on-purpose mutation step in this pass).",
+  "SA_4_B_boundary_strings": {
+    "pre_fix_RED_exec_12597815": "Couldn't find some items:\n\n\"wall hung basin\" — did you mean:\n  1. BRBC2296-1 (WALL HUNG) - no SIRIM cert\n  2. MAB7029C-WALL HUNG - no SIRIM cert\n  3. MAB7029E-WALL HUNG - no SIRIM cert\n\"wall hung basin got SIRIM cert?\" — did you mean:\n  4. BRBC22137W-1 (WALL HUNG) - no SIRIM cert\n  5. BRBC22292W - no SIRIM cert\n  6. BRBC22350W-1-SG - no SIRIM cert\n\nReply a number to pick, or 'yes' to escalate to purchasing_certification.",
+    "post_fix_GREEN_exec_12606706": "Couldn't find \"wall hung basin\". Did you mean:\n1. BRBC2296-1 (WALL HUNG) - no SIRIM cert\n2. MAB7029C-WALL HUNG - no SIRIM cert\n3. MAB7029E-WALL HUNG - no SIRIM cert\nReply with a code to continue, or would you like me to escalate to purchasing_certification team?"
+  },
+  "replay_verdicts": {
+    "12303509_C-1": "FIXED -- see spec-incident-replay-12303509-12303548-20260816.json",
+    "12303548_N-0": "FIXED -- see spec-incident-replay-12303509-12303548-20260816.json"
+  },
+  "failures": "NONE. All 11 cases PASS (or FIXED for the two incident replays). No FAIL, no HALT.",
+  "reviewer_findings_status": {
+    "F1": "CLOSED -- confirmed at the customer boundary via SA-4-B, with an additional silent pick-linkage-corruption bug found and confirmed fixed (dym_candidates[].for_raw cross-check).",
+    "F2": "CONFIRMED NO REGRESSION at rev4 -- SA-5 re-run shows the Matched-on suppression still holding on the mixed AND+OR answer.",
+    "F3": "CLOSED -- SA-7 run and PASSED.",
+    "F4": "CLOSED -- S1-C run and PASSED, paired with SA-7's positive count from the same session.",
+    "F5": "CLOSED -- customer and date spot-checks both run against real prior executions.",
+    "F6": "RE-CONFIRMED (documentation-only, already closed by the coder) -- SA-5's OR-arm merge is the CRM's documented contract behaviour, not a defect.",
+    "new_observation_SR-8": "A cross-row value-provenance nuance in the Matched-on line (brand:CABANA rendered from a row that did not itself score on brand) flagged for the reviewer as worth a second look -- traced to the diff doc's own documented §2a rule, not scored as a fail."
+  },
+  "not_covered_this_pass": [
+    "The blocked post-deploy CRM probe (zz-crm-probe-spec-shapeA / s1-probe.js) remains UNRUN -- unchanged from the prior pass, still a one-user-toggle fix, not a hard gate per reviewer F10.",
+    "Original executions 12303509/12303548 are pruned from n8n's execution history and could not be independently re-verified -- input text for the replay was sourced from two committed docs (SR.md, spec-answer-honesty-plan.md) that recorded each execution's own input at capture time, disclosed plainly in the replay file."
+  ]
+}

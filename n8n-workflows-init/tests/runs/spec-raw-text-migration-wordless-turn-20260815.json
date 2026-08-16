@@ -1,0 +1,17 @@
+{
+ "case": "wordless-turn (rev2 NEW case, plan §1 decision 3)",
+ "title": "empty-raw-text turn now sends query:'' instead of a parser restatement",
+ "verdict": "UNRELIABLE / COULD NOT BE EXERCISED LIVE -- reported honestly per the diff's own instruction to 'exercise it once and record the reply rather than inferring it', not silently skipped",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "attempted_construction": "message.message.type:'image', message.message.text:'', message.message.attachment:{type:'image', url:'https://example.invalid/photo.jpg'} -- i.e. an attachment-with-no-caption turn, matching the diff's description of the one path that should now send query:'' ('a wordless turn (attachment with no caption, failed transcript)')",
+ "test_run_id": "sr-wordless-20260815",
+ "execution": "12597709",
+ "what_actually_happened": "The clone's REAL parser (reformulator sub wI5RkNGW3EOJfBdo, sub-execution 12597712) classified the synthetic fake-URL attachment as message_type:'unknown', domain_hint:null, entities:[] -- i.e. it correctly recognised a URL-only placeholder with no real binary/visual content as NOT attributable to any business query, and routed to the generic casual-greeting fallback ('Hi! How can I assist you today?') BEFORE the flow ever reached resolve-entity-http. This is the parser behaving sensibly, not a bug -- but it means resolve-entity-http never ran on this execution, so the empty-query behaviour this case exists to exercise was NOT observed.",
+ "root_cause_of_the_block": "The uac harness's synthetic redis-item envelope can inject a fake attachment URL/metadata shape, but it cannot supply real image/document binary content or a genuine respond.io-hosted media asset for the clone's real (unmocked) parser LLM to actually 'see' and derive intent from. Without real media, ANY synthetic no-caption-attachment turn will most likely dead-end the same way this one did, regardless of the resolve-entity-http/compile-current-state change under test.",
+ "coverage_that_DOES_exist_for_this_behaviour": "SR-U7-6 and SR-U7-8 (offline units, tests/offline/spec-answer-honesty/probe.js) pin the two empty-query paths deterministically: empty raw text -> '' (never a node error, never the restatement), and tf-message-not-executed -> the guard absorbs it -> ''. Both reported PASS in the coder's 169/169 offline suite (per the diff doc §4). This live attempt neither confirms nor contradicts that offline coverage -- it simply could not reach the code path.",
+ "recommendation": "If live confirmation of this specific behaviour is required before sign-off, it needs either (a) a real respond.io-hosted media asset routed through the actual respond.io webhook (out of scope for the fail-closed uac harness by design), or (b) a targeted pin-data test_workflow run (LESSONS §34) that pins tf-message's output directly to an attachment-with-no-caption shape and asserts resolve-entity-http's rendered jsonBody -- neither was attempted here given the effort budget for this pass; flagging for the reviewer rather than fabricating a result.",
+ "safety_S0": "PASS on the execution that DID run -- 3-entry would_* egress log, test_mode:true confirmed, zero real sends/writes. No safety concern; this is purely a functional-coverage gap."
+}

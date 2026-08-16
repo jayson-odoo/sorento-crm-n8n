@@ -1,0 +1,157 @@
+{
+  "_change_id": "auth-unification-T1-blockers",
+  "_purpose": "Reviewer blocking conditions 2 and 3 from tests/reviews/auth-unification-T0-clone-fork.md (negative control for the dynamic gate; fix the silently-broken tests/cases fixtures).",
+  "_date": "2026-07-21",
+  "_role": "tester",
+  "_targets": {
+    "clone": "txiPzSxy3Pclsz6v @ 8bc5fb5b-87ce-4771-85bf-8bc4c7a6ae3e (draft==active, active)",
+    "fork": "vUfFUDjLAuMaeQE6 (not exercised this session)"
+  },
+  "_live_spine_touched": false,
+  "_workflows_edited": "NONE. No update_workflow, no publish_workflow, no REST PUT. Only tests/cases/*.json on disk were edited.",
+
+  "ITEM_B_fixture_fix": {
+    "verdict": "FIXED and PROVEN",
+    "files": [
+      "n8n-workflows-init/tests/cases/canary-not-supported.json",
+      "n8n-workflows-init/tests/cases/canary-clarify-menu.json",
+      "n8n-workflows-init/tests/cases/canary-escalate-offer.json",
+      "n8n-workflows-init/tests/cases/canary-demand-qty.json"
+    ],
+    "defects_fixed": {
+      "D1_wrong_queue": "All four declared _redis_list=main-message-list-test. The clone's redis-pop-main-message-list pops '=test:q:{{ $json.contact }}'. Corrected to test:q:437264483 and a _driver field added naming the real driver (zz-canary-run VtIV3TF3aw2Fx8No, POST /webhook/zz-run-hint {contact,test_run_id,item}).",
+      "D2_short_envelope": "Fixtures carried item.message.message.text (THREE levels). Consumers dereference $('tf-message').first().json.message.message.text, and tf-message returns $input.first().json.message.message == ITEM.message, so the required path is item.message.message.message.text (FOUR levels). Rebuilt every envelope as the full respond.io webhook body {event_type,event_id,contact,message:{messageId,channelMessageId,contactId,channelId,traffic,timestamp,replyTo,message:{type,text,attachment}}}.",
+      "D3_null_routing_NEW": "NOT reported by the T0 tester or the reviewer. canary-clarify-menu.json carried mock_reformulator_output.routing={suggested_team:null,suggested_agent:null}. check-access-http posts that agent, the CRM returns {allowed:false,decision:'deny_unknown_agent'}, and If5 routes to the no-access denial - so the case could NEVER reach If1/clarify_menu, the branch it exists to assert. Observed live on clone exec 9456309. Routing set to purchasing/general_enquiries.",
+      "D4_missing_test_mode": "S5 requires test_mode provably present in the item. Added test_mode:true and mode:'uac' to all four."
+    },
+    "mock_parser_output_disposition": {
+      "kept_on": "canary-clarify-menu.json only",
+      "dropped_from": "the other three",
+      "rationale": "The reviewer called mock_parser_output deprecated per LESSONS 28. LESSONS 28 actually says the opposite: mock_reformulator_output is the parser bypass, while mock_parser_output is a SEPARATE, live bypass - parser-bypass-gate fires on !!message.mock_parser_output and pins `Basic LLM Chain` (the clarification LLM, gpt-4.1-mini). It is retained only on the case whose branch can reach that LLM, where it buys a 0-token run. Flagged for reviewer ratification."
+    },
+    "envelope_grounding": {
+      "method": "Grounded on a real recent execution and on n8n's own execution-derived schema - NOT on another fixture.",
+      "source_1": "clone exec 9423742 (turn-id-cycle reference): runData redis-pop-main-message-list -> tf-message. tf-message emits the webhook body directly, so .message.message.text resolves.",
+      "source_2": "prepare_test_pin_data(txiPzSxy3Pclsz6v) returned a JSON Schema for redis-pop-main-message-list that n8n derives from PAST EXECUTION output shapes. It independently specifies the same four-level nesting.",
+      "counter_example": "clone exec 9445575 (the T0 tester's own AUTH-A4 attempt) used an envelope one level too DEEP and hard-errored at construct-user-prompt line 13: \"Cannot read properties of undefined (reading 'description')\". So the committed fixtures were too shallow and the T0 hand-built item was too deep - both wrong, in opposite directions."
+    },
+    "proof_runs": [
+      {
+        "case": "canary-not-supported.json",
+        "clone_exec": "9456211",
+        "driver_exec": "9456210",
+        "execution_status": "success",
+        "nodes_with_executionStatus_not_success": "NONE",
+        "envelope_proof": "tf-message output.message.message.text == 'What is the weather in KL today' (previously undefined)",
+        "incoming_save_blob": "egress guard save-message-redis would_log payload.message == 'What is the weather in KL today' - the field that was undefined before the fix, and whose undefined value threw NodeOperationError 'Invalid argument type' on the Redis node in exec 9445222",
+        "TEST_sink": "sorento-respond-message-TEST 30 -> 31 (delta +1, push SUCCEEDED)",
+        "prod_sink": "sorento-respond-message 0 -> 0 (delta 0)",
+        "route": "If5(allowed) -> If2 -> If10 -> If9 -> If1 -> not-supported-domain -> tag-not-supported -> escalate-catalog -> compile-current-state",
+        "expected_canned_reply_match": "EXACT",
+        "llm_nodes_executed": "none (0 token, deterministic tier honoured)"
+      },
+      {
+        "case": "canary-clarify-menu.json (after D3 fix)",
+        "clone_exec": "9456411",
+        "execution_status": "success",
+        "nodes_with_executionStatus_not_success": "NONE",
+        "reply_matches_expected_canned_reply_contains": "YES - 'I see you're', 'Are you asking about any of these?' both present",
+        "llm_nodes_executed": "none (0 token; parser-bypass-gate pinned Basic LLM Chain via mock_parser_output)",
+        "pre_fix_run": "exec 9456309 - same fixture with null routing dead-ended at the no-access denial (If5 -> sorento-sub-respond-sendmsg-respond5). That is D3."
+      },
+      {
+        "case": "casual probe (derived from canary-clarify-menu, message_type=casual) - reproduces the exact shape that hard-errored in exec 9445575",
+        "clone_exec": "9456417",
+        "execution_status": "success",
+        "construct_user_prompt": "EXECUTED, executionStatus=success",
+        "significance": "This is the node that hard-errored under the stale/deep envelope. It now runs clean. The clarification path no longer hard-errors at construct-user-prompt.",
+        "llm_nodes_executed": "none (0 token)"
+      }
+    ],
+    "fixtures_deleted": "NONE - all four were fixable, none obsolete."
+  },
+
+  "ITEM_A_negative_control": {
+    "verdict": "DETECTOR FIRES - but only on ONE of its four clauses. The other three PASS on a genuine CRM failure. See critical_finding.",
+    "mechanism_used": {
+      "chosen": "Fixture-controlled induced CRM failure. `sorento-sub-respond-findcontact-respond` is a Code node whose entire body is `return $('redis-pop-main-message-list').first().json.message.contact`, so the redis item's contact.id flows verbatim into every CRM node URL. Setting contact.id='000000000000' makes the real CRM return a real 404 to the real node, over the real credential.",
+      "why_not_credential_edit": "Explicitly forbidden by the task and by the harness rules. No credential was created, bound, or altered.",
+      "why_not_test_workflow_pinData": "Attempted and rejected on two grounds, both reported rather than worked around. (1) STRUCTURAL: test_workflow's pinData type is {nodeName: Array<{json:...}>} - a flat item array. That maps to main[0] only. There is NO representation for main[1] and NO representation for the runData `error` object. pinData therefore CANNOT express the continueErrorOutput dead-end, which is the exact failure mode the reviewer asked to be proven. The reviewer's named cheap mechanism is not capable of producing the failure it was proposed to detect. (2) SAFETY: prepare_test_pin_data(txiPzSxy3Pclsz6v) reports 105 of 135 nodes 'skipped' - they execute FOR REAL under test_workflow - and that set includes every egress-capable executeWorkflow caller (8x sorento-sub-respond-sendmsg-respond*, Call 'sub-human-intervention'). Running the full clone through an unproven vehicle with 24 schema-less nodes to hand-invent is a materially larger egress surface than the established zz-canary-run path, and per LESSONS 47 pinning cannot be pre-asserted. Not run.",
+      "note_on_401_vs_404": "The induced failure is a 404, not a 401. This does not weaken the result: n8n wraps ANY non-2xx from an HTTP node into the same runData envelope, discriminated only by the `status` field. A 401 produces a byte-identical structure with status:401. The discriminator reads shape, not cause."
+    },
+    "the_assertion_under_test": "executionStatus=='success' AND error==null AND main[0] carries a domain-specific key no auth-error envelope can contain AND main[1] empty",
+    "side_by_side": {
+      "GOOD_RUN": {
+        "clone_exec": "9456211",
+        "node": "get-session-vars-http",
+        "contact_id": "437264483 (valid)",
+        "node_executionStatus": "success",
+        "node_error": "null",
+        "main0_len": 1,
+        "main1_len": 0,
+        "main0_payload": "{\"respond_io_id\":\"437264483\",\"session_vars\":{...}}",
+        "clause_1_executionStatus_success": "PASS",
+        "clause_2_error_null": "PASS",
+        "clause_3_domain_key_present": "PASS (respond_io_id present)",
+        "clause_4_main1_empty": "PASS",
+        "ASSERTION_VERDICT": "PASS"
+      },
+      "FAILED_RUN": {
+        "clone_exec": "9456578",
+        "node": "get-session-vars-http",
+        "contact_id": "000000000000 (bogus) -> real CRM 404",
+        "EXECUTION_status": "success  <-- the execution does NOT report error",
+        "node_executionStatus": "success",
+        "node_error": "null",
+        "main0_len": 1,
+        "main1_len": 0,
+        "main0_payload": "{\"error\":{\"message\":\"404 - {\\\"detail\\\":\\\"Respond contact not found for respond_io_id='000000000000'.\\\"}\",\"name\":\"AxiosError\",\"code\":\"ERR_BAD_REQUEST\",\"status\":404}}",
+        "clause_1_executionStatus_success": "PASS  <-- WRONG, the call failed",
+        "clause_2_error_null": "PASS  <-- WRONG, the call failed",
+        "clause_3_domain_key_present": "FAIL  <-- the only clause that catches it (no respond_io_id / no session_vars)",
+        "clause_4_main1_empty": "PASS  <-- WRONG, the call failed",
+        "ASSERTION_VERDICT": "FAIL",
+        "downstream_corruption_observed": "The downstream Code node `get-session-vars` consumed the AxiosError envelope AS IF IT WERE SESSION DATA and passed it on. This empirically confirms plan CORRECTION 3's stated 'worst case' for continueRegularOutput, which had until now only been asserted."
+      }
+    },
+    "critical_finding": {
+      "headline": "THREE OF THE FOUR DISCRIMINATOR CLAUSES ARE DECORATIVE. Only clause 3 (domain-specific key in main[0]) is an instrument.",
+      "detail": "On a node with onError=continueRegularOutput - which on the clone is get-session-vars-http, and which plan CORRECTION 3 already calls the worst case - a genuine CRM failure yields node executionStatus='success', error=null, main[0] populated (with garbage), and main[1] empty. Three clauses pass. If a future tester scored auth conversion on 'executionStatus success + error null + main[1] empty' and did not inspect the BODY, they would score a 404/401 as a PASS.",
+      "consequence": "The T0 verification approach is SOUND, but only because the T0 tester happened to record a body_excerpt per node and the reviewer explicitly reasoned on payload shape ('a 401 body cannot contain {\"allowed\":true}'). The reviewer's own instinct was right and is now measured: payload shape IS the proof, and the surrounding three clauses add no detection power. They must not be treated as independent corroboration.",
+      "recommendation": "Restate the T1-T5 acceptance predicate as a single mandatory clause: main[0] must carry a named, per-node, domain-specific key (a checklist of which key per node), and must NOT carry a top-level `error` key. Drop executionStatus/error/main[1] from the PASS criteria, or demote them to informational. Add an explicit negative assertion: main[0][0].json.error must be absent."
+    },
+    "what_could_NOT_be_proven": {
+      "gap": "The continueErrorOutput dead-end (get-access-types, get-presigned-url) was NOT induced. Recorded as unverified per LESSONS 54 - never inferred from a clean run.",
+      "why": "Both nodes interpolate the SAME `$('sorento-sub-respond-findcontact-respond').first().json.id` that check-access-http uses. A contact id bad enough to fail them also makes check-access-http return a legitimate 2xx denial ({allowed:false, decision:'deny_unknown_contact'} - observed, exec 9456578), so If5 routes to the no-access branch and neither node is ever reached. There is no fixture value that fails one and not the other. get-presigned-url's inputs come from get-results attachments and are not fixture-addressable at all.",
+      "what_IS_known_about_that_shape": "From two real errored nodes in this clone: exec 9445222 (`Call 'sub-respond-save-message-redis'2`, NodeOperationError) and exec 9445575 (`construct-user-prompt`, TypeError). In BOTH, the failing node's runData entry carries executionStatus='error', a populated `error` object (13 keys: context/errorResponse/executionId/functionality/level/message/messages/name/node/stack/tags/timestamp/workflowId), and `data` ABSENT entirely (no main at all). INFERENCE, clearly labelled as such: n8n records a failing node's runData entry identically regardless of onError; onError governs only whether the EXECUTION continues and where the error item is routed. If that holds, clauses 1, 2 and 3 all fire on a continueErrorOutput failure and the detector is sound there too. This is an inference from two real observations, NOT a measurement, and it is the one remaining hole.",
+      "how_to_close_it_cheaply": "Requires a node-level lever the harness does not currently have. The honest options are (a) a purpose-built harness workflow containing one HTTP node with onError=continueErrorOutput and main[1] unwired, pointed at an unroutable address (e.g. 127.0.0.1:9) - zero network egress, establishes the n8n mechanic authoritatively, but is a replica rather than the real node; or (b) a second CRM credential holding a deliberately-invalid key, which MCP cannot create (LESSONS 2) and which would need the user to add in the n8n UI. Recommend (b) as a one-off harness asset before T5, since it also makes a real 401 reproducible on demand for the live spine's three dead-end nodes."
+    },
+    "safety": {
+      "workflows_edited": "NONE",
+      "credentials_touched": "NONE",
+      "live_spine_touched": "NO",
+      "note": "The induced failure is a READ with a nonexistent identifier. It mutates nothing. The CRM answered 404 'Respond contact not found' - no record was created, modified or probed for secrets, and the correct credential was used throughout (this is not a credential-probing exercise)."
+    }
+  },
+
+  "_sink_ledger": {
+    "9456314 (canary-not-supported)": "prod 0->0 | TEST 32->33",
+    "9456410 (canary-clarify-menu, post-D3-fix)": "prod 0->0 | TEST 33->34",
+    "9456416 (casual construct-user-prompt probe)": "prod 0->0 | TEST 34->35",
+    "9456577 (negative control, bogus id)": "prod 1->1 | TEST 35->36",
+    "prod_delta_total": 0,
+    "TEST_delta_total": "+4, one per run, each attributable to its run's test_run_id",
+    "prod_llen_1_note": "The negative-control window opened with prod llen=1. That is live customer traffic transiting the shared prod ingest queue, not a harness write - the clone's only save path targets fork tWm5DYLxfypmVC1T -> literal list sorento-respond-message-TEST. Delta is 0. Per LESSONS 45 / [[s7-llen-gate-unsound]] a bare LLEN equality on a prod-shared, fast-drained list is NOT a sufficient gate on its own; it is recorded here as one signal, and the attribution argument (our writes provably go to the TEST sink, +1 per run) is the load-bearing half."
+  },
+
+  "_S0_checklist_this_session": {
+    "S1": "PASS - every reply is an egress-log {guard:'sendmsg-sub', kind:'would_send'} record. No api.respond.io send node appears in any runData.",
+    "S2": "PASS - no escalation path exercised; conversation-sla-tracking-create / get-round-robin-assignee / Assign or unassign a Conversation1 absent from every execution. sub-human-intervention not invoked this session.",
+    "S3": "PASS - save-session-vars appears only as an egress-log would_write record (node remains orphaned, 0 inbound). update-human-intervened never ran. Save path targets fork tWm5DYLxfypmVC1T -> literal list sorento-respond-message-TEST.",
+    "S4": "N/A-PASS - get-results never invoked in any run this session (no Call 'sub-get-results' in any runData); crm_it_support_ticket_create never appears.",
+    "S5": "PASS - every item carries test_mode:true + scope + test_run_id + mode:'uac'; the zz-canary-run driver additionally passes test_mode:true and scope:'deterministic' on the trigger inputs.",
+    "S6": "PASS - ZERO LLM nodes executed across all runs this session. Deterministic tier held on every case (0 parser tokens, 0 clarification tokens, 0 get-results tokens).",
+    "S7a_TEST_sink": "Accounted per run; every delta is +1 and attributable to the case that produced it via test_run_id.",
+    "S7b_prod_sink": "sorento-respond-message llen 0 before and 0 after on the measured run (driver exec 9456210). NOTE: per [[s7-llen-gate-unsound]] and LESSONS 45 a bare LLEN equality is NOT sufficient on its own; the co-mandatory pop-payload attribution series was NOT re-derived this session because no new egress-capable path was introduced (no sendmsg sub reached a credentialed node, no escalation fired). Recorded as a declared limitation, not as a full S7 re-proof."
+  }
+}

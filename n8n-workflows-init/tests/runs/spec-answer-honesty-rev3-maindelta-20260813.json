@@ -1,0 +1,63 @@
+{
+  "family": "SR",
+  "rev": 3,
+  "target": "clone txiPzSxy3Pclsz6v @ 48aaa6fd-6ad7-4ef5-a44c-b491888e0130 (versionId==activeVersionId verified before and after; compile-current-state sha 7959776fa7ce, resolve-entity-http sha 7ca14cbfd47e — both exactly as the coder reported)",
+  "seat_deviation": {
+    "what": "Run by the MAIN SESSION, not sorento-tester. The tester agent terminated twice on an API session limit (resets 19:10 Asia/Kuala_Lumpur) with zero rev-3 case files written.",
+    "driver": "the zz-chat console webhook, which is currently repointed at the clone (zz-dispatcher-test.call-spine -> txiPzSxy3Pclsz6v)",
+    "mode": "chat-stateful / scope chat-ui — NOT uac mode, so there is NO test:egress:{run_id} log for these turns. Containment is by guard instead, verified below.",
+    "consequence": "These results establish CUSTOMER-BOUNDARY behaviour at rev 3. They do NOT replace the tester's per-node runData discipline or the §0 S7 sink-delta sweep, which stand from the rev-1 and rev-2 runs on the same two nodes. Recorded as a deviation, not presented as an equivalent."
+  },
+  "safety": {
+    "sendmsg_caller": "sorento-sub-respond-sendmsg-respond2 -> aQUmwMVplmNcyUVc (sub-sendmsg-QRCHUNK)",
+    "is_test": "hardcoded literal true in the caller's workflowInputs (not an expression), matching the reviewer's independent 9/9-callers finding",
+    "reply_path": "redis chat:reply:{chat_id}, read back by zz-chat — no respond.io send",
+    "egress_nodes_executed": "none of send-message-files / images / video / update-human-intervened / save-session-vars appear in runData",
+    "executions_inspected": ["12316566", "12316501"]
+  },
+  "cases": [
+    {
+      "id": "SR-2a",
+      "input": "please get me double bowl kitchen sink with thickness 1.0mm",
+      "verdict": "PASS",
+      "rendered_tail_verbatim": "thickness isn't recorded for these products, so I couldn't narrow by 1.0mm.",
+      "note": "trailing zero preserved — proves the span is quoted from the customer's text, not coerced through Number()"
+    },
+    {
+      "id": "SR-2b",
+      "input": "please get me double bowl kitchen sink with thickness 1.2mm",
+      "verdict": "PASS",
+      "rendered_tail_verbatim": "thickness isn't recorded for these products, so I couldn't narrow by 1.2mm."
+    },
+    {
+      "id": "SR-4",
+      "input": "wall hung basin and SRTZZ999",
+      "verdict": "PASS",
+      "observed": "5 BRAVAT wall-hung basins answered; NO 'wall hung basin' miss line; 'SRTZZ999' — not found. still rendered",
+      "note": "N-3 re-proven at rev 3 on a live turn: suppresses only the raw that the spec rows answered, keeps the genuine miss"
+    },
+    {
+      "id": "CDX-2 (the /codex-review defect, live)",
+      "input": "2m flexible hose with thickness 2mm",
+      "verdict": "PASS — the rev-3 fix is now proven on an EXECUTION, not only offline",
+      "rendered_tail_verbatim": "hose length and thickness aren't recorded for these products, so I couldn't narrow by them.",
+      "note": "Two unmet keys whose values are both 2, with competing spans '2m' and '2mm'. Rev 2 would have quoted '2m' for a 2mm thickness. Rev 3 recognised the ambiguity and fell back to 'by them' — it declined to guess, which is the intended behaviour."
+    },
+    {
+      "id": "SR-6",
+      "input": "do you have a purple levitating sink",
+      "verdict": "PASS",
+      "observed": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team? — zero product rows, no invented N-2 line",
+      "note": "the N-0 widening still does not manufacture an answer out of filler words"
+    },
+    {
+      "id": "SR-5",
+      "input": "check stock SRTWC286",
+      "verdict": "PASS on its own assertions, WITH a pre-existing defect reproduced",
+      "observed": "correct 49-row stock answer for SRTWC286-SH / -SH-UF, no N-2 line, no spec interference",
+      "defect_reproduced": "Couldn't find these: \"2m flexible hose\" — not found. — the entity carried from the PREVIOUS turn (different chat sessionId, same contact 437264483, so the same session_vars) generated a stale miss line under an unrelated stock answer",
+      "attribution": "This is backlog B2 (plans/backlog-from-SR-testing.md), pre-existing and NOT caused by either node in this slice: the carried entity has current_message:false and never reaches free_terms, and N-3 is outcome-keyed so it correctly declines to suppress a token it did not answer. Previously seen by the tester with a carried 'Dealer' entity; now reproduced with a second, independent entity, which upgrades B2 from an anecdote to a repeatable defect."
+    }
+  ],
+  "conclusion": "Rev 3 holds every rev-2 behaviour that mattered (SR-2 spans, SR-4 suppression, SR-6 floor) and fixes both /codex-review span defects, with the ambiguity fallback observed on a real execution. Nothing found at rev 3 blocks the promote. B2 is the one customer-visible ugliness still outstanding, and it lives in the same filter this slice touches — sequencing decision for the user."
+}

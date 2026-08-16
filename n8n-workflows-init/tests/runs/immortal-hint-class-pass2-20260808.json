@@ -1,0 +1,273 @@
+{
+ "run": "immortal-hint-class (C1/C2/C3/M2) \u2014 gap-closing pass 2 (tester)",
+ "date": "2026-08-08",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v @ 544138ca (== activeVersionId)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ aab47959 (== activeVersionId)",
+  "live_spine": "f9205b03 \u2014 verified UNTOUCHED at start (--verify) and at end (REST GET)",
+  "live_parser": "8a813ddc \u2014 verified UNTOUCHED at start (--verify) and at end (REST GET)"
+ },
+ "executions": 18,
+ "VERDICT_IH_0b": {
+  "gate": "\u00a7IH-0b \u2014 does `ordinal` persist into the next turn's get-session-vars? (the M2 premise)",
+  "verdict": "PASS \u2014 OBSERVED, not inferred. M2 STANDS; it is NOT withdrawn.",
+  "method": "scanned 113 real executions (70 live spine + 43 clone, 2026-08-07/08) and read get-session-vars output directly",
+  "evidence_live_spine": [
+   {
+    "exec": "11555030",
+    "wf": "9qVyfUxmRQqrpGRMDLRuz",
+    "contact": "477071887 (real customer, William Tee)",
+    "prior_entities": [
+     {
+      "raw": "SRTBF11415-NEW",
+      "hint": "product",
+      "ordinal": 1,
+      "canonical_code": "SRTBF11415-NEW"
+     }
+    ]
+   },
+   {
+    "exec": "11642553",
+    "wf": "9qVyfUxmRQqrpGRMDLRuz",
+    "contact": "477071888 (real customer, Yu Mong Huei)",
+    "prior_entities": [
+     {
+      "raw": "SRTBF11101-NEW",
+      "hint": "product",
+      "ordinal": 1,
+      "canonical_code": "SRTBF11101-NEW"
+     }
+    ]
+   }
+  ],
+  "evidence_clone_pg": "17 more, all sourced from pg-get-session (the real session read), incl. exec 11641248 (SRTWC286-SH-NEW) and 16 M2399 instances",
+  "negative_control": "all 11 sim-inject-sourced get-session-vars rows carried ZERO ordinal \u2014 so the observation is not an artefact of seeding"
+ },
+ "cases": [
+  {
+   "id": "\u00a7IH-4 arm A (M2 over-eviction \u2014 the coder's own worry)",
+   "exec": "11645628",
+   "scope": "parser",
+   "verdict": "PASS",
+   "fixture": "sim-inject prior state = M2399(hint=product_attachment, ordinal:1) + attachment_type + carried certificate PC 000078; message 'send me the file again'",
+   "evidence": "_parser_raw.entities == [] (genuine reuse turn, not forced). All three entities RETAINED; carried_attachment_evicted ABSENT.",
+   "why_it_discriminates": "pre-M2 the persisted `ordinal` made M2399 permanently not-carried; with C1 its axis is now product_scope, so _rcContribProduct would go true and B2' part 4 would evict the certificate on a turn where nothing changed. M2 prevents exactly that."
+  },
+  {
+   "id": "\u00a7IH-4 arm B (the pick must stay green)",
+   "exec": "11645772",
+   "scope": "parser",
+   "verdict": "PASS",
+   "fixture": "referenced_result_set idx1=product SRTWT2214, idx2=certificate PC 000078 (key also in prior state); message '1 and 2'",
+   "evidence": "reference_positions [1,2], positions_resolved 2; the freshly-picked certificate is RETAINED despite the product contributing product_scope (=> _rcEvict true). _ceRefPickedKeys is doing its job.",
+   "bonus": "row 1 minted hint 'product' \u2014 C2 confirmed live on the byIdx arm (pre-C2 this was the domain name 'product_attachment')"
+  },
+  {
+   "id": "\u00a7CD-10b live (carried non-matching certificate must not confidently deny)",
+   "exec": "11646613",
+   "verdict": "PASS",
+   "evidence": "'SRTWT2214 cert' with carried PC 000078 + carried MWC7602-RL-P -> returns PC 000373 / Valid. No PC 000078 anywhere in user_response."
+  },
+  {
+   "id": "\u00a7CD-11a live (B4 bypass: code-reply dym pick)",
+   "exec": "11646635",
+   "verdict": "PASS",
+   "evidence": "carried_attachment_evicted == ['certificate:PC 000078']; reply is SRTWC8317-RL's OWN certs (01616FC, BPAI/0526-2025, PPS). Composition of C1/C2/M2 with B2' proven at the customer boundary."
+  },
+  {
+   "id": "\u00a7CD-11b live (numbered dym pick over a C3-annotated multi-token offer)",
+   "exec": "11646871",
+   "verdict": "PASS",
+   "note": "first attempt 11646735 was VOID \u2014 invalid fixture, see FINDING F5",
+   "evidence": "positions_resolved 1; minted hint 'product' (C2); reply is SRTWC8317-RL's own certs; no PC 000078. Also proves C3's suffix does not break the numbered round-trip (suffix lives on candLines only)."
+  },
+  {
+   "id": "B1 inert / regression #1 \u2014 did-you-mean, not a 26-cert dump",
+   "exec": "11645797",
+   "verdict": "PASS",
+   "evidence": "'srtwc8317-rl1 cert' -> '1. SRTWC8317-RL - has certificate / 2. SRTWC8317-P-RL - no certificate / 3. SRTWC8317-SH - no certificate'. Doubles as the single-token D1 dym-slice check."
+  },
+  {
+   "id": "B1 inert / regression #2 \u2014 certificate-number query still lists its products",
+   "exec": "11645819",
+   "verdict": "PASS"
+  },
+  {
+   "id": "B1 inert / regression #3 \u2014 SRTWT2214 cert -> PC 000373 Valid",
+   "exec": "11645844",
+   "verdict": "PASS"
+  },
+  {
+   "id": "\u00a7IH-11 multi-token D1 annotate (live corroboration)",
+   "exec": "11646065",
+   "scope": "deterministic-lane, real reads",
+   "verdict": "PASS",
+   "evidence": "probe_lane d1, probe_skip_reason null, probe_cap_applied false, ONE probe_tool string / ONE sub-call for 5 candidates; every probed code annotated; numbering 1..5 global-contiguous across both token blocks, no has-first sort"
+  },
+  {
+   "id": "\u00a7IH-13 probe cap \u2014 overflow renders BARE",
+   "exec": "11646225 and 11646346",
+   "verdict": "PASS (live, twice \u2014 was not on the confirmed list)",
+   "evidence": "9 candidates -> probe_cap_applied true, dym_capped_codes = 4 codes, candidates 6-9 render BARE (never a misleading '- no'), 1..9 numbering unchanged"
+  },
+  {
+   "id": "\u00a7IH-16 non-enabled domain byte-shape",
+   "exec": "11646251",
+   "verdict": "PASS",
+   "evidence": "master_products: probe_skip_reason 'domain_not_enabled', dym_candidate_codes [], render is the single-token CODE-mode sentence with NO suffix anywhere"
+  },
+  {
+   "id": "require-specific",
+   "exec": "11646269",
+   "verdict": "PARTIAL \u2014 gate reached, PICKER NOT reached",
+   "evidence": "'check stock' hits the general-search refusal; the require-specific PICKER (compatible_entities render) was not exercised"
+  },
+  {
+   "id": "partial-resolution lane",
+   "verdict": "NOT REACHED \u2014 'stock for srtwc83' answered instead of offering (exec 11646030, dym-transform-partial probe_skip_reason 'no_d1_candidates')"
+  }
+ ],
+ "IH_0a_CENSUS": {
+  "verdict": "GO \u2014 C1's DOMAIN_SUBJECT_AXIS step is safe on measured traffic",
+  "compared_population": "165 entity-hint occurrences across 108 executions carrying reformulator output (113 scanned)",
+  "distinct_unrecognised_hint_strings": [
+   "product_attachment",
+   "incoming"
+  ],
+  "pairs": [
+   [
+    "product_attachment",
+    "product_attachment",
+    11
+   ],
+   [
+    "product_attachment",
+    "inventory",
+    3
+   ],
+   [
+    "incoming",
+    "incoming",
+    2
+   ],
+   [
+    "product_attachment",
+    "incoming",
+    2
+   ]
+  ],
+  "total_occurrences": 18,
+  "orthogonality_check": "ZERO orthogonal. Every unrecognised hint is a DOMAIN NAME minted by the reference-positions block (each carries `ordinal`), and in every case the entity is a product code whose C1 fallback axis equals the axis its correct hint would have received (product_attachment/inventory -> product_scope; incoming -> incoming_scope, matching AXIS_BY_DOMAIN.incoming.product).",
+  "note": "the ('incoming','incoming') pair is on the LIVE spine for a real customer \u2014 the defect was never confined to the reported contact"
+ },
+ "PROBE_CAP_CALIBRATION": {
+  "IH_0c_product_attachment": {
+   "measured": "3 candidates + 1 attachment_type -> answers.length 4 (exec 11645797); 5 candidates -> answers.length 4 (exec 11646065)",
+   "rows_per_candidate": "~0.8-1.3",
+   "shipped_cap": 8,
+   "implied_worst_case_rows": "~10 of 50",
+   "verdict": "SAFE, very conservative \u2014 could be raised"
+  },
+  "IH_0d_inventory": {
+   "measured": "exec 11646010: 3 candidates -> answers.length 13, ALL 13 rows belong to ONE candidate (SRTWC8317-RL) across 5 distinct warehouses (BERSATU/WH3/MERU/BUKIT RAJA/MULTIMODAL); grain is warehouse x system-location, not warehouse",
+   "rows_per_stocked_candidate": 13,
+   "shipped_cap": 5,
+   "implied_worst_case_rows": "5 x 13 = 65 of 50",
+   "verdict": "NOT SAFE \u2014 see FINDING F1. Measured-safe cap is 3 (3 x 13 = 39)."
+  },
+  "plan_arithmetic": "coder's correction CONFIRMED and tightened: 15 x 3 = 45 < 50 for product_attachment; measured is ~1.3/candidate, so product_attachment is even further from the limit. inventory is the sole driver."
+ },
+ "IH_14": {
+  "verdict": "STILL BLOCKED \u2014 no real >=50-row fixture produced",
+  "attempts": [
+   "11646225 (3 tokens, 5 probed, answer_count 15)",
+   "11646346 (3 tokens, 5 probed, answer_count 17)"
+  ],
+  "why": "a >=50-row page needs >=4 high-warehouse-count candidates in ONE probe; real near-miss candidate sets are dominated by unstocked siblings",
+  "but": "reachability is now MEASURED, not synthetic: one candidate alone returned 13 rows, so 4 such candidates = 52 >= 50. The saturation branch is genuinely reachable at the shipped cap of 5 \u2014 which is the same measurement that makes F1 a defect."
+ },
+ "P3_coder_corrections_independently_confirmed": [
+  {
+   "claim": "\u00a7IH-4's pick-arm fixture is vacuous because the reference-positions block does a wholesale overwrite",
+   "verdict": "CONFIRMED at source \u2014 output_exchange.js:664 `output.output.entities = [...resolved];`, no spread of prior entities",
+   "IMPORTANT_NUANCE": "true only for the byIdx arm. dymNumberedMultiSelect (:562-586) sets `output.output.entities = _base` where _base starts from prevState.entities and then CLEARS reference_positions, so on a reference_target==='dym' pick carried entities DO reach the reconciliation pass. The coder's blanket 'a carried certificate can never reach the reconciliation pass on a pick turn' is too broad; the conclusion for \u00a7IH-4 is unaffected."
+  },
+  {
+   "claim": "\u00a7IH-FP-8 cannot redden \u00a7IH-16",
+   "verdict": "CONFIRMED \u2014 c3-mutate.sh reproduced by me: RED set is \u00a7IH-11.inv only, expected \u00a7IH-11.inv, digest 08aec1d01e2c -> abc25f648a9e, occ 1/1"
+  },
+  {
+   "claim": "\u00a7IH-FP-7's 'clause 3 ONLY' is too narrow",
+   "verdict": "CONFIRMED \u2014 RED set is \u00a7IH-11.3 \u00a7IH-11.inv \u00a7IH-13.n (three clauses), digest 08aec1d01e2c -> 137171b49044, occ 1/1"
+  }
+ ],
+ "MUTATION_SUITES_REPRODUCED": {
+  "c3-mutate.sh": "ALL MUTATIONS BEHAVED AS DECLARED (incl. IH-FP-CTRL negative control RED <none>); every step printed occurrence-count-before and digest-before/after per \u00a70 S9",
+  "ih-mutate.sh": "ALL MUTATIONS BEHAVED AS DECLARED \u2014 IH-FP-3 RED=IH-4a, IH-FP-3b RED=IH-4b (the discriminator pair), IH-FP-4 RED=IH-4b IH-6 IH-8b IH-9, IH-FP-5 RED=IH-8a, IH-FP-6 RED=IH-9, CTRL RED <none>",
+  "oe-probe.js vs the PUBLISHED fork body (export/sub-semantic-parser-FORK/nodes/output_exchange.js)": "GREEN 11/11 \u2014 the coder's 11/11 confirmed against the published artifact, not just their local file"
+ },
+ "SAFETY_SCORECARD_S1_S9": {
+  "S1": "PASS \u2014 18 executions. No node of type respondio in any clone runData; the only send path is sorento-sub-respond-sendmsg-respond2 -> ublq9nSlrpz63xan with is_test:true, recorded in the egress log as guard 'sendmsg-sub'. No api.respond.io message POST executed.",
+  "S2": "PASS \u2014 no human-intervention sub, no Assign*, no sla node in any of the 18 runData sets.",
+  "S3": "PASS \u2014 asserted from the PUBLISHED clone JSON (versionId 544138ca): send-message-files / send-message-images / send-message-video / update-human-intervened / save-session-vars all have inbound == []. Call 'sub-respond-save-message-redis'2 inbound ['if-message-is-audio'], workflowId.value == 'tWm5DYLxfypmVC1T'; that fork's Redis.list is the literal 'sorento-respond-message-TEST' (no '=' prefix). None of the 5 orphans appear in any runData.",
+  "S4": "PASS \u2014 tool-filter resolved crm_master_product_attachments_list or crm_inventory_stock_balance_list only (_tool_pick.rejected [], count 1); dym-transform probe_tool identical set. No *_create/_update/_delete tool string anywhere. crm_it_support_ticket_create never appears.",
+  "S5": "PASS \u2014 When Executed by Another Workflow.json.test_mode === true on all 18; Call 'sub-query-reformulator'.is_test == true and sendmsg is_test == true in the published JSON.",
+  "S6": "PASS, tier-bound \u2014 ZERO LLM nodes in the clone runData on all 18 (no Basic LLM Chain, no AI Agent, no OpenAI node). Parser-tier cases ran the real reformulator inside fork wI5RkNGW3EOJfBdo, evidenced by populated per-turn _parser_raw. The get-results LLM never ran (see F7).",
+  "S7a": "PASS, exact \u2014 TEST sink sorento-respond-message-TEST 688 -> 706 over 18 runs = +18, exactly one save per run.",
+  "S7b": "PASS WITH ATTRIBUTION \u2014 both co-mandatory signals collected. Window 03:28:00-03:39:00Z fully covers the run window 03:30:26-03:38:07Z. 133 consumer executions of Srs08P0Ha3Cv--YPx0-Yn, 0 unretrievable. Per-poll LLEN series: 130 polls at 0, 2 at 1, 1 at 2. Per-poll pop payload: 3 non-empty pops, execs 11645410 / 11645518 / 11645525, ALL contact_id 477071889 (+60162291178, 'Chong'), messages 'wb7099 stock' and two SRTWB7099/SRTWC8152-SH-300 stock answers. Not my contact (437264483), no test_run_id, no message_id from any fixture => attributable to an unrelated live producer => run resumed per the S7b rule.",
+  "S8": "PASS \u2014 no is_test:false run was performed at all; every sub call carried is_test true. No node added to either artifact.",
+  "S9": "PASS \u2014 both mutation suites enforce and printed the three-part procedure (occurrence count N>0 before, digest changed after, abort otherwise); each includes a negative control that must redden nothing."
+ },
+ "FINDINGS": [
+  {
+   "id": "F1",
+   "severity": "HIGH \u2014 blocks promote of C3 as shipped",
+   "title": "inventory probe_cap: 5 is not calibrated-safe; measured-safe value is 3",
+   "detail": "exec 11646010 measured 13 rows for a SINGLE stocked candidate (5 warehouses x system-location grain). At cap 5 a probe with 4-5 stocked candidates returns >=52 rows and saturates page 1. Consequence is fail-closed, not a false negative (mitigation ii fires, meta.ok=false, dym_available_codes=[], zero annotation) \u2014 but the feature then silently vanishes on exactly the multi-token inventory turns it exists for. Re-seed probe_cap.inventory to 3 before promote."
+  },
+  {
+   "id": "F2",
+   "severity": "INFO",
+   "title": "product_attachment probe_cap: 8 is over-conservative",
+   "detail": "measured ~0.8-1.3 rows/candidate; cap 8 yields ~10 of 50 rows."
+  },
+  {
+   "id": "F3",
+   "severity": "MEDIUM \u2014 the C1 residual-class diagnostic under-reports",
+   "title": "unknown_entity_hints is blind on exactly the turns that matter",
+   "detail": "the reconciliation contribution loop does `if (_ceIsCarried(e)) continue;` BEFORE calling _ceAxisFor, so a carried entity never reaches the fallback and never joins _ceUnknownHints. Measured: exec 11645628 has M2399 (hint product_attachment, unrecognised) sitting in state all turn and emits NO unknown_entity_hints. The diagnostic therefore cannot measure a dormant immortal entity \u2014 only one that is actively contributing. Plan \u00a72.1 presents it as the instrument that turns the residual-class premise from assumption into measurement; it only half does."
+  },
+  {
+   "id": "F4",
+   "severity": "MEDIUM \u2014 customer-visible, scope boundary worth stating explicitly",
+   "title": "C1/C2/M2 do not clean a poisoned session on a pure reuse turn",
+   "detail": "exec 11645628: with M2399 + PC 000078 in state, 'send me the file again' returned a 26-product PC 000078 dump \u2014 the original carried-certificate-dump symptom \u2014 because nothing contributed, so nothing evicted. This is correct per the design ('a turn naming any product evicts it'), and M2 is what makes it correct rather than over-evicting, but the reviewer should know the customer-visible symptom survives on no-contribution turns until the user names something."
+  },
+  {
+   "id": "F5",
+   "severity": "HARNESS \u2014 silently vacuous fixtures",
+   "title": "sim-inject-session coerces absent referenced_result_set to [], which disables the parser's last_result_set fallback",
+   "detail": "sim-inject-session.js does `referenced_result_set: item.referenced_result_set ?? []`. output_exchange's byIdx block guards with `Array.isArray(parent_input.referenced_result_set) ? ... : prevState.last_result_set` \u2014 an EMPTY ARRAY passes Array.isArray, so the fallback is never taken and every position is out-of-range. Measured: exec 11646735 dead-ended ('no Certification matched these'); the identical fixture with an explicit referenced_result_set (exec 11646871) resolved correctly. NOT a live defect: on the live spine referenced_result_set is ABSENT in 62 of 67 executions, so Array.isArray is false and the fallback works. Any future sim-inject positional-pick fixture MUST pass referenced_result_set explicitly or it proves nothing."
+  },
+  {
+   "id": "F6",
+   "severity": "PROCESS",
+   "title": "no prior IH run artifact exists",
+   "detail": "tests/runs/ contains no immortal-hint-class file; the previous tester's results were reported to the coordinator only. The already-proven work (six-turn session, C3 driven directly) has no artifact I could diff against."
+  },
+  {
+   "id": "F7",
+   "severity": "INFO \u2014 asked for explicitly",
+   "title": "get-results LLM liveness",
+   "detail": "across all 18 executions no LLM node ran in the clone and Call 'sub-get-results' returned a structured envelope (response/answers/attachments/has_result/alternatives). Consistent with the get-results agent path being orphaned. No new token sink observed anywhere \u2014 the reformulator remains the only one."
+  }
+ ],
+ "NOT_REACHED": [
+  "\u00a7IH-14 \u2014 the real >=50-row saturation fixture (BLOCKED; reachability now measured, see IH_14 above)",
+  "the require-specific PICKER render (only the general-search refusal was reached)",
+  "the partial-resolution offer lane end-to-end",
+  "the remaining \u00a7CD fixtures as LIVE executions \u2014 CD-2, CD-2b, CD-5, CD-7c, CD-7c2, FP8-D. All 11 are GREEN offline against the published fork body; 5 of the 11 shapes were driven live (CD-10b, CD-11a, CD-11b, NI-attach-clean via B1-R3, and the reuse/pick arms). The previous cycle's live CD runs were against fork 95193323, i.e. PRE-C1/C2/M2.",
+  "\u00a7IH-2 / \u00a7IH-7 / \u00a7IH-8 / \u00a7IH-9 byte-identity arms as live executions (offline only)",
+  "\u00a7IH-15 partial-lane multi-token fixture as a live execution"
+ ]
+}

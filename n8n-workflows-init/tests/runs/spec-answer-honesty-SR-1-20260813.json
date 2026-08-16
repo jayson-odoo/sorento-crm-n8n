@@ -1,0 +1,49 @@
+{
+ "case": "SR-1",
+ "title": "thickness reaches the ranker",
+ "verdict": "PASS",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c-669c-4fe4-9da5-1be988e70bc5 (versionId==activeVersionId, verified via fresh REST GET before AND after the whole run; independent sha256 of resolve-entity-http.jsonBody and compile-current-state.jsCode also re-derived from the live GET and matched the manifest's recorded AFTER values byte-for-byte -- DEPLOYED, not NOT-YET-DEPLOYED/DRIFTED)",
+ "mode": "uac, previous_conversation_state:{} injected at message.previous_conversation_state (confirmed correct location by reading sim-inject-gate.parameters and sim-inject-session.js from the export: sim-inject-gate tests !!($('redis-pop-main-message-list').first().json.message.previous_conversation_state); an empty object is truthy in JS so {} routes TRUE -> sim-inject-session -> empty seed, avoiding contact 437264483's stale prod session per the uac-mode landmine)",
+ "contact": 437264483,
+ "prompt": "double bowl kitchen sink with thickness 1.2mm",
+ "test_run_id": "sr1-20260813",
+ "execution": "12307974",
+ "started_at": "2026-08-13T09:08:20.291Z",
+ "resolve_entity_http_output": {
+  "tokens": ["double bowl kitchen sink"],
+  "intersection_count": 5,
+  "match_tier": "spec_search (all 5 rows)",
+  "product_codes": ["CKS12050", "CKS315", "CKS317", "CKS317-NG", "CKS319"],
+  "spec_unmet": [{"key": "thickness", "value": 1.2}],
+  "floor_missed": false
+ },
+ "free_terms_reconstruction": {
+  "method": "resolve-entity-http is an httpRequest node; n8n execution data records only the RESPONSE, never the rendered outgoing jsonBody (LESSONS §7) -- so 'free_terms contains thickness and 1.2mm' cannot be read directly off runData. Reconstructed by running the ACTUAL DEPLOYED builder (tests/offline/spec-answer-honesty/msg-term.js's freeTermsFull, sha256-verified byte-identical to the live node's jsonBody splice source) against the entities and raw message OBSERVED in this execution's own compile-current-state output (entities:[{raw:'double bowl kitchen sink',...}], raw message = the literal customer text sent).",
+  "computed_free_terms": ["double bowl kitchen sink", "double bowl kitchen sink with thickness 1.2mm"],
+  "contains_thickness": true,
+  "contains_1.2mm": true,
+  "corroboration": "The CRM response's spec_unmet:[{key:'thickness',value:1.2}] is independent corroboration -- the CRM could not have reported an unmet 'thickness' ask unless 'thickness 1.2mm' actually reached it as a free term. This closes the loop between the reconstructed request and the observed response."
+ },
+ "hard_assertion": "response spec_unmet names 'thickness' explicitly -- NOT silence. PASS per SR.md's stated acceptance ('matched_specs includes a thickness key OR spec_unmet/unrecognized_terms names it -- silence is a FAIL').",
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:08_\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.2.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "n2_line_present": true,
+  "n2_wording_matches_decision_5.1": "yes -- 'thickness isn't recorded for these products, so I couldn't narrow by 1.2.' (data-truth form, not 'I couldn't filter')",
+  "known_bound_observed": "renders 'narrow by 1.2', not '1.2mm' -- the documented unit-loss limitation (plan §4, diff §3 'Two honest limits'), not a defect",
+  "contains_couldnt_find_marker": false,
+  "contains_multiple_matches_marker": false,
+  "contains_escalation_offer": false,
+  "sendmsg_parts": 1
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- egress log has exactly 3 entries: would_log (save-message-redis), would_write (save-session-vars), would_send (sendmsg-sub, part 1/1). No api.respond.io POST executed.",
+  "S2_zero_assignment": "PASS -- no escalation branch taken, no human-intervention sub invoked.",
+  "S3_zero_crm_writes": "PASS -- save-session-vars/update-human-intervened remain orphaned (0 inbound, unchanged per this build's node-diff); egress log shows would_write only.",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' sub-execution 12307987 targets t4QvrtrPnTwRU6br; response shape is response/answers/attachments/has_result (read-only); no crm_it_support_ticket_create marker anywhere in the execution.",
+  "S5_test_mode": "PASS -- 'When Executed by Another Workflow' json: {test_mode:true, test_run_id:'sr1-20260813', scope:'deterministic', mock_parser_output:null, mock_reformulator_output:null} -- directly confirmed from get_execution, self-verified (test_run_id matches the fired case).",
+  "S6_token_sinks": "scope in the trigger metadata reads 'deterministic' but this is a REAL parser-tier run in practice (both mocks null, the real reformulator sub wI5RkNGW3EOJfBdo ran) -- matches the established SA-family finding that this metadata field is not updated to reflect the real per-case tier. get-results agent path did not execute an additional LLM (only MCP Client1/entity-ids-transformer/output-structurer style nodes ran, per the established pattern)."
+ },
+ "S7_sink_delta": "See spec-answer-honesty-rollup-20260813.json for the full-run S7a/S7b sweep (this execution's window is covered).",
+ "notes": "Independent D1-equivalent deploy verification performed directly by this tester (not merely trusting the manifest): a fresh REST GET of txiPzSxy3Pclsz6v immediately before this run reproduced resolve-entity-http.jsonBody sha256 7ca14cbf... (1809B) and compile-current-state.jsCode sha256 e727631f... (38725B), byte-identical to the manifest's recorded AFTER values and to the locally frozen after-bodies in tests/offline/spec-answer-honesty/. DEPLOYED, confirmed."
+}

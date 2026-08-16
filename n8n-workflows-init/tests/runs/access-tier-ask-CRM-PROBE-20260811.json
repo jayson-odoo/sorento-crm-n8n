@@ -1,0 +1,244 @@
+{
+ "case": "CRM-PROBE",
+ "title": "real-CRM end-to-end proof of the recomposition + D5",
+ "verdict": "EVIDENCE",
+ "mode": "uac, control contact 477071889 (read-only; all writes orphaned/sinked, sends guarded)",
+ "prompt": "cabana promo for SRTWB8013 dealer",
+ "execution": "12041687",
+ "rendered_reply_verbatim": "No promotion found for SRTWB8013 Cabana. Would you like me to escalate to marketing_promotion_cabana team?",
+ "quick_reply_key_present_in_sendmsg_payload": [
+  false
+ ],
+ "quick_reply_value": [
+  null
+ ],
+ "file_attachments_at_boundary": [],
+ "tier_gate": {
+  "tier_stated": [
+   "dealer"
+  ],
+  "entitled_tiers": [
+   "dealer",
+   "office",
+   "end_user"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [
+   "cabana"
+  ],
+  "tier_ask": false,
+  "tier_proceed": true,
+  "access_levels_recomposed": [
+   "Cabana Dealer"
+  ],
+  "brand_gate_empty": false
+ },
+ "entitlement": [
+  "Sorento Office",
+  "Sorento Dealer",
+  "Mocha Dealer",
+  "Mocha Office",
+  "Cabana Office",
+  "Cabana Dealer",
+  "End User"
+ ],
+ "If4_branch": [
+  [
+   0
+  ]
+ ],
+ "persisted_selection_context": null,
+ "D4_access_levels_key_in_persisted_vars": false,
+ "get_results_ran": true,
+ "get_results_semantic_access_levels": [
+  "Cabana Dealer"
+ ],
+ "nodes_run": [
+  "Aggregate",
+  "Call 'sub-get-results'",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If4",
+  "If5",
+  "If6",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "central-exchange",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "disallowed-entity-gate",
+  "dym-gate-partial",
+  "dym-transform-partial",
+  "get-access-types",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "promo-picker",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "resolve-entity-http",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tf-message",
+  "tier-gate",
+  "tool-filter",
+  "validator"
+ ],
+ "S1_hard_egress_nodes_ran": [],
+ "S6_llm_nodes_ran": [],
+ "sendmsg_sub_nodes_run": [
+  [
+   "When Executed by Another Workflow",
+   "chat?",
+   "test-guard",
+   "test-guard-record"
+  ]
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": "477071889",
+    "message": "cabana promo for SRTWB8013 dealer"
+   },
+   "test_run_id": "pr-crm",
+   "ts": "2026-08-11T03:02:07.559-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": "477071889",
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to check the promotion for SRTWB8013 in Cabana dealer access",
+      "entities": [
+       {
+        "raw": "SRTWB8013",
+        "hint": "promotion",
+        "canonical_code": "112c9983-ac68-4458-87d4-a235172575a2",
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "Cabana",
+        "hint": "promotion",
+        "canonical_code": "2a146ee3-8445-4dbc-985b-3c2f0e641a85",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_cabana",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (promotion): no results.",
+      "last_result_set": [],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "No promotion found for SRTWB8013 Cabana. Would you like me to escalate to marketing_promotion_cabana team?"
+    }
+   },
+   "test_run_id": "pr-crm",
+   "ts": "2026-08-11T03:02:07.555-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "477071889",
+   "payload": {
+    "contact_identifer": "477071889",
+    "message": "No promotion found for SRTWB8013 Cabana. Would you like me to escalate to marketing_promotion_cabana team?",
+    "quick_reply": null,
+    "result_set": []
+   },
+   "test_run_id": "pr-crm",
+   "ts": "2026-08-11T03:02:07.509-04:00"
+  }
+ ],
+ "notes": "Two turns against the REAL CRM. (a) 'promo for SRTWB8013 dealer' -> semantic_input.access_levels ['Sorento Dealer','Mocha Dealer','Cabana Dealer'], CRM returned 1 answer + 1 attachment, 1 file egress, reply 'I have attached the file(s) below.' — the §71-class executeWorkflow input hunk works end-to-end and D5 always-attach works against real data (exec 12041667). (b) 'cabana promo for SRTWB8013 dealer' -> semantic_input.access_levels ['Cabana Dealer'], CRM returned ONLY Cabana-dealer files, promo-picker's strict not-found correctly refused to serve them for a Sorento product ('No promotion found for SRTWB8013 Cabana', 0 files) (exec 12041687). Confirms the access_levels filter is real and brand-correct for a NON-EMPTY list.",
+ "static_safety": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 407cbfb7 (versionId == activeVersionId, re-fetched before the run)",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 7c5ff7fd (versionId == activeVersionId)",
+  "live_spine": "9qVyfUxmRQqrpGRMDLRuz NEVER driven — read-only observation of pre-existing executions only",
+  "S3_from_JSON": "orphaned (0 inbound): send-message-files, send-message-images, send-message-video, update-human-intervened, save-session-vars. Sinked: Call 'sub-respond-save-message-redis'2 -> tWm5DYLxfypmVC1T, whose Redis.list is the literal 'sorento-respond-message-TEST'",
+  "sendmsg": "all callers -> ublq9nSlrpz63xan (sub-sendmsg-CHAT). Every run: chat?[1] -> test-guard[0] -> test-guard-record. The credentialed respondio 'Send a Message' executed in ZERO sub-executions.",
+  "S5": "is_test:true is a literal on every sendmsg caller's workflowInputs; trigger json carries test_mode:true",
+  "S4": "Call 'sub-get-results' ran only in CRM-PROBE; tool resolved to a promotion READ; crm_it_support_ticket_create never invoked"
+ },
+ "S7": {
+  "S7a_TEST_sink": "every turn shows LLEN sorento-respond-message-TEST +1 (runner execs 12038829..12041890); no turn wrote anywhere else",
+  "S7b_method": "prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn — per-poll LLEN keyed by list name AND per-poll pop payload, snapshotted DURING/immediately after the run (both signals, per §0)",
+  "S7b_windows": [
+   {
+    "window": "06:33:00Z..06:52:35Z",
+    "polls": 236,
+    "unretrievable": 0,
+    "nonzero_llen": 40,
+    "nonempty_pop": 40,
+    "attribution": "all 40 -> LIVE spine turns for unrelated real contacts (477071889, 428334748, 445659708, 482766267, 423729473); turn_ids 12038725..12040669 are live-spine execution ids, none in this run's execution set; no test_run_id, no fixture message_id. HARNESS-ATTRIBUTABLE = 0 -> resumed"
+   },
+   {
+    "window": "06:52:30Z..07:04:35Z",
+    "polls": 146,
+    "unretrievable": 0,
+    "nonzero_llen": 27,
+    "nonempty_pop": 27,
+    "attribution": "all 27 -> LIVE spine turns for unrelated contacts (423729473, 477071891, 423882401, 445239409). HARNESS-ATTRIBUTABLE = 0"
+   },
+   {
+    "window": "07:04:00Z..07:05:25Z",
+    "polls": 18,
+    "unretrievable": 0,
+    "nonzero_llen": 0,
+    "nonempty_pop": 0,
+    "attribution": "prod-sink delta 0"
+   }
+  ]
+ }
+}

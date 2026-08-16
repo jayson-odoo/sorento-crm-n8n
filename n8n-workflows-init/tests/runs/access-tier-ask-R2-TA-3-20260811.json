@@ -1,0 +1,373 @@
+{
+ "case": "TA-3",
+ "round": 2,
+ "title": "multi-pick '1 and 2' spans office+dealer",
+ "verdict": "PASS",
+ "mode": "uac",
+ "contact": 477071889,
+ "round1_verdict": "PASS (pinning caveat)",
+ "turns": [
+  {
+   "tag": "r2-ta-3",
+   "prompt": "1 and 2",
+   "execution": "12045206",
+   "rendered_reply_verbatim": "I found 4 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n2. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n3. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n4. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n_Data last updated: 07/08/2026 14:49:29_",
+   "quick_reply_key_present_in_sendmsg_payload": [
+    true
+   ],
+   "quick_reply_value": [
+    null
+   ],
+   "file_attachments_at_boundary": [
+    "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+    "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+    "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+    "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+   ],
+   "egress_guards": [
+    "save-message-redis",
+    "save-session-vars",
+    "send-message-files",
+    "sendmsg-sub"
+   ],
+   "persisted_selection_context": "suggest_offer",
+   "D4_access_levels_key_in_persisted_vars": false,
+   "persisted_last_result_set_n": 4,
+   "evidence": {
+    "exec": "12045206",
+    "status": "success",
+    "tier_gate": {
+     "name": [
+      "Sorento Office",
+      "Sorento Dealer",
+      "Mocha Dealer",
+      "Mocha Office",
+      "Cabana Office",
+      "Cabana Dealer",
+      "End User"
+     ],
+     "tier_stated": [
+      "dealer",
+      "office"
+     ],
+     "entitled_tiers": [
+      "dealer",
+      "office",
+      "end_user"
+     ],
+     "entitled_unknown": [],
+     "query_brands": [
+      "sorento",
+      "cabana",
+      "mocha"
+     ],
+     "pending_pick": false,
+     "tier_ask": false,
+     "tier_proceed": true,
+     "access_levels_recomposed": [
+      "Sorento Office",
+      "Sorento Dealer",
+      "Mocha Dealer",
+      "Mocha Office",
+      "Cabana Office",
+      "Cabana Dealer"
+     ],
+     "brand_gate_empty": false
+    },
+    "parser_raw_access_levels": [
+     "Sorento Office",
+     "Mocha Office",
+     "Cabana Office",
+     "Sorento Dealer",
+     "Mocha Dealer",
+     "Cabana Dealer"
+    ],
+    "parser_query_brands": [
+     "sorento",
+     "cabana",
+     "mocha"
+    ],
+    "parser_pending_pick": null,
+    "parser_tier_pick_scope_reused": true,
+    "parser_team": "marketing_promotion_sorento",
+    "promo_picker": {
+     "n_answers": 4,
+     "n_attachments": 4,
+     "_brand_gate_closed": null,
+     "response_intro": "I found 4 promotions for SRTBF11710. I have attached the file(s) below."
+    },
+    "access_notice": "",
+    "If4_branch": [
+     [
+      0
+     ]
+    ],
+    "get_results_ran": true,
+    "S1_hard_egress_nodes_ran": [],
+    "S6_llm_nodes_on_spine": [],
+    "nodes_run": [
+     "Aggregate",
+     "Call 'sub-get-results'",
+     "Call 'sub-query-reformulator'",
+     "Call 'sub-respond-save-message-redis'2",
+     "Edit Fields",
+     "Execute 'sub-get-rag'",
+     "Execution Data",
+     "If",
+     "If-ideate",
+     "If1",
+     "If10",
+     "If2",
+     "If3",
+     "If4",
+     "If5",
+     "If6",
+     "If9",
+     "Loop Over Items1",
+     "Remove Duplicates",
+     "Split Out",
+     "Switch",
+     "When Executed by Another Workflow",
+     "attach-merge",
+     "central-exchange",
+     "chat-attach?",
+     "check-access",
+     "check-access-http",
+     "compile-current-state",
+     "console-incoming-gate",
+     "crossdomain-compose",
+     "crossdomain-gate",
+     "crossdomain-zeroset",
+     "disallowed-entity-gate",
+     "dym-gate-partial",
+     "dym-transform-partial",
+     "get-access-types",
+     "get-session-vars",
+     "guard-d-record",
+     "guard-g-record",
+     "guard-h-record",
+     "if-audio-in",
+     "if-got-attachments",
+     "if-message-is-audio",
+     "if-transcribed-confirm",
+     "is-escalation-declined",
+     "is-human-intervened",
+     "not-supported-domain",
+     "promo-picker",
+     "redis-pop-main-message-list",
+     "replay-check-access",
+     "replay-get-access-types",
+     "replay-get-results",
+     "replay-resolve-entity",
+     "resolve-entity",
+     "resolve-entity-http",
+     "session-save-gate",
+     "sim-inject-gate",
+     "sim-inject-session",
+     "sorento-sub-respond-findcontact-respond",
+     "sorento-sub-respond-sendmsg-respond2",
+     "tf-message",
+     "tier-gate",
+     "tool-filter",
+     "validator"
+    ]
+   },
+   "egress_log": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": 477071889,
+      "message": "1 and 2"
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:47.470-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": 477071889,
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_promotion",
+        "domain_hint": "promotion",
+        "user_goal": "trying to select access levels Office and Dealer",
+        "entities": [
+         {
+          "raw": "SRTBF11710",
+          "hint": "product",
+          "canonical_code": "SRTBF11710",
+          "current_message": false,
+          "confident": true
+         }
+        ],
+        "routing": {
+         "suggested_team": "marketing_promotion_sorento",
+         "suggested_agent": "general_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (promotion): returned 4 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "label": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+          "value": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+          "uuid": null,
+          "entity_type": "promotion",
+          "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+         },
+         {
+          "idx": 2,
+          "label": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+          "value": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+          "uuid": null,
+          "entity_type": "promotion",
+          "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf"
+         },
+         {
+          "idx": 3,
+          "label": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+          "value": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+          "uuid": null,
+          "entity_type": "promotion",
+          "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+         },
+         {
+          "idx": 4,
+          "label": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+          "value": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+          "uuid": null,
+          "entity_type": "promotion",
+          "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf"
+         }
+        ],
+        "selection_context": "suggest_offer",
+        "date_filter_start": null,
+        "date_filter_end": null,
+        "date_mode": null,
+        "match_mode": "and",
+        "contains_flyer": false,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null
+       },
+       "user_response": "I found 4 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n2. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n3. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n4. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n_Data last updated: 07/08/2026 14:49:29_"
+      }
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:47.449-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/promotion/922284a5-d00d-43ab-b131-46116c5450e3/AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+      "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf"
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:47.430-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/promotion/8c8ad7ea-b226-419a-bf34-09b0065c7ff1/AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+      "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:45.904-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/promotion/2bb0b133-23b0-4e86-9189-2935daebf60d/UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+      "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf"
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:44.391-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/promotion/a3b4a59a-212d-4705-9ebf-dac59bb00700/UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+      "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:42.866-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "target": 477071889,
+     "payload": {
+      "contact_identifer": 477071889,
+      "message": "I found 4 promotions for SRTBF11710. I have attached the file(s) below.\n\n1. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n2. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n3. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n4. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n_Data last updated: 07/08/2026 14:49:29_",
+      "quick_reply": null,
+      "result_set": [
+       {
+        "idx": 1,
+        "label": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+        "value": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+        "uuid": null,
+        "entity_type": "promotion",
+        "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+       },
+       {
+        "idx": 2,
+        "label": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+        "value": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+        "uuid": null,
+        "entity_type": "promotion",
+        "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf"
+       },
+       {
+        "idx": 3,
+        "label": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+        "value": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+        "uuid": null,
+        "entity_type": "promotion",
+        "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf"
+       },
+       {
+        "idx": 4,
+        "label": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+        "value": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+        "uuid": null,
+        "entity_type": "promotion",
+        "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf"
+       }
+      ]
+     },
+     "test_run_id": "r2-ta-3",
+     "ts": "2026-08-11T03:40:41.355-04:00"
+    }
+   ]
+  }
+ ],
+ "notes": "4 files == office+dealer for both promotions; END USER excluded. Decidable for the first time (round 1 saw 6 pinned files regardless of the pick).",
+ "static_safety": {
+  "gate_LESSONS_64": "Both forks re-fetched BEFORE the run; versionId == activeVersionId and EVERY node param-hash matches tests/manifests/access-tier/README.md round-2 column. spine RnpxEnAV3g20MmKj @ bba611fa-e8c9-469f-abe3-bc5d64011a94 (tier-gate param fea867736b674f22 / js 9f2a32520576428a; promo-picker param 600c2ec0293d651d / js c7306fbffc06f4dd; If4 e457606a94c49cb9; access-level-choice-message 9613941002af044d; compile-current-state 40c34936407782be; disallowed-entity-gate fc07d691810ec289; Call 'sub-get-results' bebafe8fda5be745). parser RJ326g9dwe3bTWyf @ 668cd772-fb72-468f-810e-3aa2dccb5cc4 (output_exchange param 6c1ad691a401e0ec / js 22a30278d92c3550). Connections: Aggregate->tier-gate->If4 only.",
+  "live_spine": "9qVyfUxmRQqrpGRMDLRuz NEVER driven. No execution in this run targets it; the only live-spine data touched is read-only inspection of the prod ingest consumer's own executions for S7b.",
+  "S1": "sub-sendmsg-CHAT ublq9nSlrpz63xan executed 44 times in the window; the ONLY nodes that ran in ANY of them are ['When Executed by Another Workflow','chat?','test-guard','test-guard-record']. The credentialed respondio 'Send a Message' node never executed in a single sub-execution. Zero api.respond.io message POSTs. On the fork spine, send-message-files/images/video never appear in runData across 45 executions (they are orphaned, 0 inbound, asserted from workflow JSON, not memory).",
+  "S2": "HI fork vUfFUDjLAuMaeQE6 executed twice (r2-d11x, r2-ta-14b-yes); both ran only ['When Executed by Another Workflow','chat?','test-guard','test-guard-record'] — never get-round-robin-assignee, assign, SLA POST, PIC comment or the assignee queue push. Across all 44 fork executions none of those node names appear in runData.",
+  "S3": "From workflow JSON, not memory: send-message-files, send-message-images, send-message-video, update-human-intervened, save-session-vars all have ZERO inbound connections on RnpxEnAV3g20MmKj. Call 'sub-respond-save-message-redis'2 targets tWm5DYLxfypmVC1T, whose only Redis list parameter is the literal 'sorento-respond-message-TEST'. Both writes appear in the egress log as would_write / would_log.",
+  "S4": "sub-get-results t4QvrtrPnTwRU6br ran 17 times; resolved tools were only crm_marketing_promotions_list, crm_inventory_stock_balance_list, crm_incoming_stock_list. crm_it_support_ticket_create never invoked. No MCP write tool ran.",
+  "S5": "When Executed by Another Workflow.json.test_mode === true on 45/45 fork executions; is_test:true is a literal on every sendmsg caller's workflowInputs (param-hashes unchanged from the manifest).",
+  "S6": "Spine LLM nodes across all 45 executions: 'Basic LLM Chain' + 'OpenAI Chat Model' ONLY — the pre-existing consume-main gpt-4.1-mini clarification path, fired on casual/clarify turns. Plus the parser sub (expected; scope=parser) and get-results' MCP Client1 (17 runs). NO new token sink appeared on the spine. get-results LLM liveness: the sub's agent path did NOT appear — only MCP Client1 / entity-ids-transformer / output-structurer ran, consistent with the agent being orphaned there.",
+  "S7a": "TEST-sink LLEN sorento-respond-message-TEST: 1220 -> 1265 across the 45 runner executions, EXACTLY +1 on every single turn (0 turns with a delta != +1). Every expected save landed in the unconsumed TEST sink.",
+  "S7b": "Prod consumer Srs08P0Ha3Cv--YPx0-Yn, snapshotted DURING and immediately after the run (two harvests, 300 polls each, covering 2026-08-11T07:28:05Z..07:53:00Z and 07:35:45Z..08:00:40Z) — together they fully contain the run window 07:34:28..07:59:50. 0 unretrievable consumer executions. BOTH co-mandatory signals recorded per poll: the Redis1 LLEN series and the Redis pop payload. 31 non-empty pops across 13 distinct (contact_id, turn_id) pairs. EVERY ONE attributed to LIVE-SPINE traffic: contacts 423729473, 423882401, 445239414, 477071889, 477071892 with live turn_ids 12044525/12044532/12044606/12044670/12044722/12044835/12046739/12046794/12046841/12045129 — NONE of which is in this run's fork execution set (12044535..12047071). Zero pops carry a test_run_id; zero carry the harness phone +60123456789. HARNESS-ATTRIBUTABLE PROD WRITES = 0. IMPORTANT ATTRIBUTION NOTE: 4 of those pops are for contact 477071889 — the control contact this suite ran on. They are NOT mine: the payloads are 'wc8318 eta' / '9' / 'wc8318 got stock' from first_name 'Chong', phone +60162291178, live turn_ids 12046739/12046794/12046841, at 07:56:40-07:57:45. That contact was holding a real conversation with the LIVE bot concurrently with this run. My turns never reached the prod list (all 45 landed in the TEST sink, S7a). Also note the runner's own llen-prod-before/after readings (0->2 at 07:34:28, 1->0 at 07:35:11 and 07:40:09) — exactly the false signal that retired the LLEN gate; the poll series plus payload attribution resolve all of them to unrelated live traffic.",
+  "S8": "Not applicable in the binding sense: every run was is_test/test_mode true (S5). Recorded anyway from JSON — fork spine carries 1 respondio + 13 httpRequest nodes, sub-sendmsg-CHAT 1 respondio + 1 httpRequest, HI fork 1 respondio + 3 httpRequest. No is_test:false run was performed against any of them."
+ }
+}

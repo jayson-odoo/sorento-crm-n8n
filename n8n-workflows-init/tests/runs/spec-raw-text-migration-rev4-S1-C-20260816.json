@@ -1,0 +1,23 @@
+{
+  "case": "S1-C",
+  "closes": "reviewer F4 (the counterweight -- run as an ordinary clone case, the blocked zz-crm-probe-spec-shapeA proxy is not the reason it went unrun)",
+  "target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e (shas re-verified, see SA-4-B case file)",
+  "act": "do you have stock for SRTWC286 please (a fully-covered code PHRASE, not a bare code -- SR-16 is a bare code and cannot trip the widened arm, so it structurally cannot discharge this)",
+  "test_run_id": "spec-rev4-S1C-1786814901",
+  "execution": "12606828",
+  "verdict": "PASS -- PROVEN, not merely UNPROVEN, because it is paired with SA-7's positive spec-row count from the SAME tester pass (exec 12606807, fired ~10s earlier, same contact, same instrument): SA-7 returned 5 match_tier:spec_search rows on this run's resolve-entity-http; this case returns ZERO. The instrument is demonstrated to be able to discriminate PASS vs FAIL within this session, so the absence assertion below counts as evidence.",
+  "assertions": {
+    "fallback_did_not_fire": "CONFIRMED. resolve-entity-http.intersection: 10 rows, ALL match_field:'product_code', match_tier:'and'. ZERO match_tier:'spec_search' rows anywhere.",
+    "spec_asked_absent": "CONFIRMED. 'spec_asked' key is entirely ABSENT from the resolve-entity-http output JSON (unlike SA-7's output in the same pass, which carries spec_asked/spec_unmet/unrecognized_terms/semantic_used/semantic_ms/floor_missed) -- the spec machinery did not run at all on this AND-arm-succeeded turn.",
+    "code_resolves_normally": "CONFIRMED. All 10 SRTWC286-SH-* variant codes present, tier 'and' (the system's normal code-token tier for this catalogue, consistent with the historical SR-16/SA-2 baseline -- 'and' not 'prefix/exact' is expected here, not a deviation).",
+    "boundary_stock_answer_unchanged": "CONFIRMED. compile-current-state.user_response = 'Stock details found for the requested products.\\n\\n1..50 [warehouse rows across 10 SRTWC286 variants]...' -- no '_Matched on:' line anywhere in the string (grepped, absent)."
+  },
+  "safety_S0": {
+    "S1": "PASS -- egress [would_log, would_write, would_send x4 (multi-part stock reply chunked)] only.",
+    "S2": "PASS -- no escalation.",
+    "S3": "PASS -- save-session-vars would_write/blocked.",
+    "S4": "N/A this case (stock domain routes through a different read path than get-results on this lane; see SR-8 for positive S4 confirmation this pass).",
+    "S5": "PASS -- test_mode:true self-verified against test_run_id spec-rev4-S1C-1786814901.",
+    "S6": "PASS -- reformulator ran (real), no other LLM."
+  }
+}

@@ -1,0 +1,2074 @@
+Reading additional input from stdin...
+OpenAI Codex v0.147.0
+--------
+workdir: /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a00866-def9-7092-879c-8217c827f459
+--------
+user
+Read exactly two files: nodes/compile-current-state.js and nodes/build-suggest-offer.js. They are n8n Code-node bodies for a WhatsApp product-search chatbot. Answer four questions about CORRECTNESS ONLY. Be concise; cite file:line.
+
+Q1. The "Matched on:" line. Find where it is built. For each key it names, does it take the VALUE from a row whose OWN display.matched_specs contains that key, or merely from the first row that HAS the key in display.specifications? Quote the deciding lines. (The second behaviour is a bug: it can tell a customer who asked for brand SORENTO that the match was on brand CABANA.)
+
+Q2. Customer-facing strings built in BOTH files (did-you-mean / "not found" / suggestion blocks). List any string where changing one copy would leave the other stale. Enumerate by the literal output string, not by graph edges.
+
+Q3. Guards that fail OPEN: any check where the unsafe branch runs when a value is missing, null, undefined, or the string "false".
+
+Q4. Any guard in these files that is unnecessary machinery - a second check a single simpler path would already cover. Name it and the simpler path.
+
+Output one finding per line as <file>:<line> | <problem> | <fix>. Final line: for Q1 answer exactly MATCHED-ROW or FIRST-ROW-WITH-KEY. Write NONE for any question with no findings.
+codex
+I’ll inspect only the two requested Code-node files and cite exact line numbers from those reads.
+exec
+/bin/zsh -lc 'nl -ba nodes/compile-current-state.js' in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+     1	// 🔴 FRESH OBJECT LITERAL — LOAD-BEARING, DO NOT CHANGE TO A SPREAD OF $input.
+     2	// dym-transform-partial sits directly upstream on the results lane and APPENDS 14 harness
+     3	// control keys to the item this node receives (dym_probe_entities, dym_candidate_codes,
+     4	// dym_excluded_codes, dym_capped_codes, probe_cap_applied, probe_tool, probe_noun,
+     5	// probe_predicate, probe_needed, probe_skip_reason, probe_lane, _dym_probe_input, plus
+     6	// dym_available_codes / dym_probe_meta added downstream by dym-annotate-partial).
+     7	// This node needs no strip list ONLY because it builds its output from scratch and copies
+     8	// named fields across. (Count was stale at 10 through the dym-probe and C3 changes — reviewer
+     9	// F-STRIP. Keep it accurate: it is the evidence the invariant was re-checked.)
+    10	// Refactoring this to `{...$input.first().json}` would carry every one of those keys into
+    11	// crossdomain-compose, which feeds save-session-vars — the conversation-variables PUT sends
+    12	// `JSON.stringify($json)`, the WHOLE item — persisting harness keys into every real customer
+    13	// session. It would also be INVISIBLE on the clone, because save-session-vars is orphaned
+    14	// there. Gate: tests/offline/dym-probe-before-offer/parity.js (F-CCS-STRIP).
+    15	let output = {};
+    16	const qf = $('Call \'sub-query-reformulator\'').first().json.output;
+    17	const contact = $('sorento-sub-respond-findcontact-respond').first().json;
+    18	let response;
+    19	let includeResponse = true;
+    20	let isEscalateBranch = true;
+    21	let quickReply;
+    22	let manualResponse = false
+    23	// ── unified escalate catalog (replaces the 7-arm isExecuted ladder) ──
+    24	// One catalog Code node resolves response + behavior flags per branch_kind.
+    25	// Escalate branches converge on 'escalate-catalog'; the happy path stays central-exchange.
+    26	const _cat = (() => {
+    27	  try { return $('escalate-catalog').isExecuted ? $('escalate-catalog').first().json : null; }
+    28	  catch (e) { return null; }
+    29	})();
+    30	// Δ3: CS member-offer override — when build-cs-member-offer ran, its numbered-list message
+    31	// + member roster (cs_last_result_set) + selection_context take priority over the catalog.
+    32	const _mem = (() => {
+    33	  try { return $('build-cs-member-offer').isExecuted ? $('build-cs-member-offer').first().json : null; }
+    34	  catch (e) { return null; }
+    35	})();
+    36	// suggest-on-miss override (D1/D2) — highest priority. When build-suggest-offer built a
+    37	// suggestion offer (resolver "did you mean" candidates / data-miss alternatives), its
+    38	// message + quick_reply + candidate roster win over the catalog AND the member offer.
+    39	const _sug = (() => {
+    40	  try {
+    41	    const nf = $('build-suggest-offer').isExecuted ? $('build-suggest-offer').first().json : null;
+    42	    return (nf && nf.suggest_offer === true) ? nf : null;
+    43	  } catch (e) { return null; }
+    44	})();
+    45	// Ideation relay (ideate branch): highest-priority manual reply. build-ideate-reply
+    46	// carried the turn-endpoint's reply_text (+ link) and the ideation pointer.
+    47	const _ideate = (() => {
+    48	  try { return $('build-ideate-reply').isExecuted ? $('build-ideate-reply').first().json : null; }
+    49	  catch (e) { return null; }
+    50	})();
+    51	// Δ4: date-suggest AND CS member roster both present → show BOTH.
+    52	// Date suggestion keeps its quick-reply buttons; the member picker is appended as
+    53	// numbers/names. A numeric/name reply resolves to a member (selection_context =
+    54	// member_offer below); tapping a date re-queries; 'yes' → round-robin.
+    55	const _merge = !!(_sug && _mem);
+    56	if (_ideate) {
+    57	  response        = _ideate.response;
+    58	  manualResponse  = true;
+    59	  includeResponse = true;
+    60	  isEscalateBranch = true;
+    61	} else if (_merge) {
+    62	  const _picker = (Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : [])
+    63	    .map(m => `${m.idx}. ${m.label}`).join('\n');
+    64	  response = `${_sug.suggest_response}\n\nTo escalate, choose who to route to — reply the number or name:\n${_picker}\n\nOr just reply 'yes' and we'll assign automatically.`;
+    65	  manualResponse  = true;
+    66	  includeResponse = true;
+    67	  isEscalateBranch = true;
+    68	} else if (_sug) {
+    69	  response        = _sug.suggest_response;
+    70	  manualResponse  = true;
+    71	  includeResponse = true;
+    72	  isEscalateBranch = true;
+    73	} else if (_mem) {
+    74	  response        = _mem.response;
+    75	  manualResponse  = _mem.manualResponse;
+    76	  includeResponse = _mem.includeResponse;
+    77	  isEscalateBranch = true;
+    78	} else if (_cat) {
+    79	  response        = _cat.response;
+    80	  manualResponse  = _cat.manualResponse;
+    81	  includeResponse = _cat.includeResponse;
+    82	  isEscalateBranch = true;
+    83	} else if ($('central-exchange').isExecuted) {
+    84	  response = $('central-exchange').first().json.response; isEscalateBranch = false;
+    85	}
+    86	if ($('access-level-choice-message').isExecuted) {
+    87	  quickReply = $('access-level-choice-message').first().json.quick_reply.length > 0 ? $('access-level-choice-message').first().json.quick_reply: null
+    88	}
+    89	// suggest-on-miss quick replies (codes/dates + Yes,escalate + No,it's okay), comma-joined
+    90	if (_sug) { quickReply = _sug.suggest_quick_reply; }
+    91	
+    92	function getResultObj() {
+    93	  try { if ($('central-exchange').isExecuted) return $('central-exchange').first().json; } catch (e) {}
+    94	  try { if ($('validator').isExecuted)        return $('validator').first().json; }        catch (e) {}
+    95	  try { if ($('disallowed-entity-gate').isExecuted)        return $('disallowed-entity-gate').first().json; }        catch (e) {}
+    96	  return $input.first().json || {};
+    97	}
+    98	
+    99	let userResponse;
+   100	if (includeResponse) {
+   101	  userResponse = response;
+   102	} // escalate/clarification → short, pass through as-is
+   103	let last_result_set = [];
+   104	
+   105	if (true) {
+   106	  const resultObj = getResultObj();
+   107	
+   108	  // envelope shape: items[]; tolerate legacy answers[] and gate compatible_entities[]
+   109	  let items = Array.isArray(resultObj.items) ? resultObj.items
+   110	              : Array.isArray(resultObj.answers) ? resultObj.answers
+   111	              : Array.isArray(resultObj.compatible_entities) ? resultObj.compatible_entities
+   112	              : [];
+   113	  const domain = qf.domain_hint || 'result';
+   114	  const offeredEscalation = /would you like me to escalate/i.test(userResponse);
+   115	  if (resultObj.require_specific === true && Array.isArray(resultObj.compatible_entities)) {
+   116	    items = items.filter(e => String(e.entity_type).toLowerCase() === 'product');
+   117	  }
+   118	  if (qf.message_type == "business_query" && !manualResponse) {
+   119	    if (items.length === 0 ) {
+   120	      response = `Previous turn (${domain}): no results.`;
+   121	    } else {
+   122	      const fieldVal = (it, labelWanted) => {
+   123	        const f = (it.fields || []).find(x =>
+   124	          String(x.label || '').toLowerCase() === labelWanted.toLowerCase());
+   125	        return f ? f.value : null;
+   126	      };
+   127	
+   128	      const indexed = items.map((it, i) => {
+   129	        const firstField = (it.fields || [])[0];
+   130	        // label priority covers BOTH shapes:
+   131	        //   envelope item → title / fields
+   132	        //   compatible_entity → code / canonical_code / product_name
+   133	        const label =
+   134	          it.title ||
+   135	          it.code ||                              // ← gate compatible_entities
+   136	          it.canonical_code ||                    // ← raw resolver match, if used
+   137	          it.display?.product_name ||             // ← raw resolver match
+   138	          fieldVal(it, 'Form Name') ||
+   139	          fieldVal(it, 'Promotion Name') ||
+   140	          fieldVal(it, 'Product') ||
+   141	          (firstField ? firstField.value : null) ||
+   142	          `item ${i + 1}`;
+   143	
+   144	        return {
+   145	          idx: i + 1,
+   146	          uuid: it.uuid || it.id || null,
+   147	          label: String(label).replace(/\*/g, '').trim(),
+   148	          entity_type: it.entity_type || null,
+   149	          product: fieldVal(it, 'Product') || it.product || it.code || null,
+   150	          attachment_type: it.attachmentType || it.attachment_type || null,
+   151	          filename: it.filename || null,
+   152	        };
+   153	      });
+   154	
+   155	      const what = indexed[0].attachment_type || 'records';
+   156	      response = `Previous turn (${domain}): returned ${items.length} ${what}`;
+   157	      last_result_set = indexed;
+   158	    }
+   159	  }
+   160	}
+   161	
+   162	// ── reconcile parser hints with resolver's authoritative entity_type ──
+   163	// The resolver checked against real data; its entity_type wins over the parser's hint.
+   164	function reconcileEntities(parserEntities, resolverJson) {
+   165	  if (!Array.isArray(parserEntities)) return parserEntities || [];
+   166	
+   167	  const resolutions  = Array.isArray(resolverJson?.resolutions)  ? resolverJson.resolutions  : [];
+   168	  const intersection = Array.isArray(resolverJson?.intersection) ? resolverJson.intersection : [];
+   169	
+   170	  // normalize: a lookup from a raw value → resolved match
+   171	  // OR-mode: match pe.raw to the resolution token, take its first match
+   172	  // AND-mode: match pe.raw to a match's canonical_code / product_name
+   173	  const norm = s => String(s || '').toLowerCase().trim();
+   174	
+   175	  return parserEntities.map(pe => {
+   176	    const raw = norm(pe.raw);
+   177	    let match = null;
+   178	
+   179	    // OR-mode: by token
+   180	    const res = resolutions.find(r => norm(r.token || r.query) === raw);
+   181	    if (res?.matches?.length) match = res.matches[0];
+   182	
+   183	    // AND-mode (or OR-mode that didn't token-match): by the record's own value
+   184	    if (!match && intersection.length) {
+   185	      match = intersection.find(m =>
+   186	        norm(m.canonical_code) === raw ||
+   187	        norm(m.display?.product_name) === raw
+   188	      ) || null;
+   189	    }
+   190	
+   191	    if (match?.entity_type) {
+   192	      return { ...pe, hint: match.entity_type, canonical_code: match.canonical_code };
+   193	    }
+   194	    return pe;   // unresolved → keep parser's guess
+   195	  });
+   196	}
+   197	
+   198	const resolverJson = (() => {
+   199	  try { return $('resolve-entity').first().json; } catch (e) { return {}; }
+   200	})();
+   201	const reconciledEntities = reconcileEntities(qf.entities, resolverJson);
+   202	
+   203	// Δ3: member-offer roster becomes the persisted last_result_set so a round-2 position pick
+   204	// resolves to a member; selection_context flags the next turn as a member-pick context.
+   205	if (_merge) { last_result_set = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : []; }
+   206	else if (_sug) { last_result_set = Array.isArray(_sug.suggest_last_result_set) ? _sug.suggest_last_result_set : []; }
+   207	else if (_mem) { last_result_set = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : []; }
+   208	const _isDisambig = (() => { try { const r = getResultObj(); return !!(r && r.require_specific === true && Array.isArray(r.compatible_entities) && r.compatible_entities.length > 0); } catch (e) { return false; } })();
+   209	const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_mem ? (_mem.selection_context || null) : (_isDisambig ? 'disambiguation' : null)));
+   210	
+   211	// ── N-1a · say WHAT matched, on spec answers only (spec-raw-text-migration) ──────────
+   212	// The customer described a product in their own words and got five codes back with no
+   213	// indication of WHICH part of their description did the work — so a wrong assumption on our
+   214	// side and a right answer look identical to them.
+   215	//
+   216	// THE RULE: `matched_specs ∩ (spec_asked-keys ∪ {class})`, rendered as VALUES.
+   217	//   * `spec_asked` (CRM #142) is what the CUSTOMER asked for. Intersecting with it is what
+   218	//     keeps a HOUSE-PREFERENCE key out of a line that reads as "your words matched this" —
+   219	//     product_spec_search.py appends a preferred key to `matched_specs` exactly when the
+   220	//     customer did NOT state it, so it can never be in `spec_asked`. That is also why
+   221	//     `free_terms` needs no exclusion list: it is machinery, never in `spec_asked`.
+   222	//   * `class` is unioned back because it is customer-earned but structurally cannot arrive
+   223	//     through `spec_asked` on the deterministic path (the registry `class` row ships no
+   224	//     synonyms, so the phrase scores through `implied_classes`). It is NOT safe to assert
+   225	//     class is absent from `spec_asked` — with understand_phrase the model can put it there.
+   226	//   * VALUES come from `display.specifications` (CRM #142) — the compact values-only block.
+   227	//
+   228	// HUMANISING IS THREE LINES, NOT TWO: `class` verbatim, `brand` verbatim, everything else
+   229	// underscores-to-spaces + titlecase. Brand values carry real spaces and case ("NO LOGO",
+   230	// "American Standard"); re-casing them rewrites the catalogue's own spelling at the customer.
+   231	//
+   232	// `class` renders as its VALUE, never the key name, and leads the sentence.
+   233	// Anything that cannot be rendered honestly (boolean, object, missing) is DROPPED, not guessed.
+   234	// No in-answer spec row contributes a key => no line, byte-identical output.
+   235	(() => {
+   236	  const answered = !isEscalateBranch
+   237	    && includeResponse
+   238	    && !manualResponse
+   239	    && qf.message_type === 'business_query'
+   240	    && typeof userResponse === 'string'
+   241	    && userResponse.trim().length > 0
+   242	    && Array.isArray(last_result_set)
+   243	    && last_result_set.length > 0;
+   244	  if (!answered) return;
+   245	  // Named `_specRes`, not `_re`: N-2 below binds the same node to `_re`, and two identical
+   246	  // three-line openings would make the N-2 mutation anchors ambiguous (mutate.sh m8 VOIDs on a
+   247	  // duplicated anchor - which is the guard working, but a suite that cannot mutate N-2 is not
+   248	  // a suite). The names differ so each block stays independently addressable.
+   249	  const _specRes = (() => { try { return $('resolve-entity').first().json ?? {}; } catch (e) { return {}; } })();
+   250	  // The rows the customer was actually shown. Same construction as N-3's `_answerCodes`:
+   251	  // `compatible_entities` carries {uuid, entity_type, code} and no match_tier, so the tier is
+   252	  // read off the resolver rows and joined back to this set by uuid/code.
+   253	  const _shownEnts = [];
+   254	  const _shownSet = (() => {
+   255	    const s = new Set();
+   256	    try {
+   257	      for (const e of ($('disallowed-entity-gate').first().json.compatible_entities ?? [])) {
+   258	        _shownEnts.push(e);
+   259	        for (const v of [e && e.uuid, e && e.code]) {
+   260	          const k = String(v ?? '').trim().toLowerCase();
+   261	          if (k) s.add(k);
+   262	        }
+   263	      }
+   264	    } catch (e) { /* gate not executed -> no answer set -> no line */ }
+   265	    return s;
+   266	  })();
+   267	  if (!_shownSet.size) return;
+   268	  const _all = [];
+   269	  if (Array.isArray(_specRes.resolutions)) {
+   270	    for (const _res of _specRes.resolutions) if (Array.isArray(_res && _res.matches)) _all.push(..._res.matches);
+   271	  }
+   272	  if (Array.isArray(_specRes.intersection)) _all.push(..._specRes.intersection);
+   273	  const _inAnswer = (m) => [m && m.uuid, m && m.canonical_code]
+   274	    .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _shownSet.has(k); });
+   275	  const _specRows = _all.filter(m => String(m?.match_tier ?? '').toLowerCase() === 'spec_search' && _inAnswer(m));
+   276	  // ── F2 · the sentence is WHOLE-ANSWER scoped, so its evidence must be too ──────────
+   277	  // The keys are sourced from spec rows, but the sentence is appended to the WHOLE reply. On
+   278	  // the mixed shape this slice newly makes reachable (the CRM's OR arm APPENDS a spec
+   279	  // resolution beside surviving code rows - conformance §C-1, MEASURED exec 12597847) the
+   280	  // reply carried 15 rows, 10 of them code-prefix matches, and still closed with
+   281	  // `_Matched on: mounting: Wall Hung._` - true of 5 rows and false of 10. Substitute a
+   282	  // product attribute and it sharpens: "SRTWC286 and 1.2mm sink" would invite the customer to
+   283	  // read the SRTWC286 rows as 1.2mm.
+   284	  //
+   285	  // So: emit ONLY when EVERY row the customer was shown is a spec_search row. A partial
+   286	  // attribution is not a weaker claim, it is a false one, and the whole SR family exists to
+   287	  // stop exactly that. Mixed => no line at all; the spec rows are still shown, they are simply
+   288	  // not described. Same join as `_inAnswer`, so "in the answer" and "the whole answer" cannot
+   289	  // disagree about what the answer is.
+   290	  //
+   291	  // Stated bound: a shown entity that is not a product spec row (a category or brand row lifted
+   292	  // into `compatible_entities`) also suppresses. That is the conservative direction and it is
+   293	  // the one this block must err in.
+   294	  const _specKeys = new Set();
+   295	  for (const m of _specRows) {
+   296	    for (const v of [m && m.uuid, m && m.canonical_code]) {
+   297	      const k = String(v ?? '').trim().toLowerCase();
+   298	      if (k) _specKeys.add(k);
+   299	    }
+   300	  }
+   301	  const _allShownAreSpec = _shownEnts.length > 0 && _shownEnts.every(e =>
+   302	    [e && e.uuid, e && e.code].some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _specKeys.has(k); }));
+   303	  if (!_allShownAreSpec) return;
+   304	  // First-seen order across rows, deduped. Row order is the ranker's order.
+   305	  const _keys = [];
+   306	  for (const m of _specRows) {
+   307	    const _ms = (m && m.display && Array.isArray(m.display.matched_specs)) ? m.display.matched_specs : [];
+   308	    for (const _k of _ms) {
+   309	      // STRINGS ONLY, never String(_k): the wire is a list of key names, and coercing junk
+   310	      // renders it. Caught by SR-U6-14 - an object entry became the literal "[object Object]"
+   311	      // inside a customer-facing sentence, the same failure the N-2 block guards against.
+   312	      const _key = typeof _k === 'string' ? _k.trim() : '';
+   313	      if (!_key) continue;
+   314	      if (_keys.indexOf(_key) < 0) _keys.push(_key);
+   315	    }
+   316	  }
+   317	  // THE NO-OP GUARANTEE: no spec key in the answer => no line, and the whole output stays
+   318	  // byte-identical. Deliberately not written as a separate "was there a spec row" flag - a
+   319	  // second guard for the SAME outcome would be unfalsifiable (LESSONS 66). F2's gate above is
+   320	  // a DIFFERENT question (is the whole answer spec-sourced?), not a second copy of this one,
+   321	  // and it has its own mutant.
+   322	  if (!_keys.length) return;
+   323	  // ── THE FILTER · matched_specs INTERSECT (spec_asked-keys UNION {class}) ──────────────
+   324	  // spec_asked is what the CUSTOMER asked for; matched_specs is what SCORED. A house
+   325	  // preference lands in the second and can never be in the first, which is what keeps an
+   326	  // unstated brand out of a sentence that reads as "your words matched this".
+   327	  const _asked = new Set();
+   328	  if (Array.isArray(_specRes.spec_asked)) {
+   329	    for (const _a of _specRes.spec_asked) {
+   330	      const _k = (_a && typeof _a === 'object' && typeof _a.key === 'string') ? _a.key
+   331	        : (typeof _a === 'string' ? _a : '');
+   332	      const _n = String(_k).trim().toLowerCase();
+   333	      if (_n) _asked.add(_n);
+   334	    }
+   335	  }
+   336	  // If `spec_asked` is ABSENT the endpoint predates CRM #142: nothing is asked-for, so only
+   337	  // `class` survives and the line degrades to the description form. That degradation is the
+   338	  // deployment TELL and is asserted (U8-14), not papered over with a fallback to the old
+   339	  // unfiltered behaviour - a fallback would make the deployed and undeployed states
+   340	  // indistinguishable at the customer boundary.
+   341	  const _selected = _keys.filter(k => { const n = k.toLowerCase(); return n === 'class' || _asked.has(n); });
+   342	  // Class leads: it is the noun the customer typed, and the qualifiers modify it. matched_specs
+   343	  // arrives sorted(), so first-seen order alone would bury it mid-sentence.
+   344	  const _ordered = _selected.filter(k => k.toLowerCase() === 'class')
+   345	    .concat(_selected.filter(k => k.toLowerCase() !== 'class'));
+   346	  // VALUES, from the first in-answer spec row that records the key. `display.specifications`
+   347	  // is values-only and may be null on the shape-B require path (CRM F9) - a missing key simply
+   348	  // drops out below.
+   349	  const _valueFor = (_k) => {
+   350	    for (const m of _specRows) {
+   351	      const _sp = m && m.display && m.display.specifications;
+   352	      if (_sp && typeof _sp === 'object' && !Array.isArray(_sp)
+   353	        && Object.prototype.hasOwnProperty.call(_sp, _k)) return _sp[_k];
+   354	    }
+   355	    return undefined;
+   356	  };
+   357	  // ── THE THREE-LINE HUMANISE RULE (conformance report DEV-1) ──────────────────────────
+   358	  // class verbatim, brand verbatim, everything else underscores-to-spaces + titlecase. The
+   359	  // branch exempts BOTH keys from the lower_snake enum pin because brand values carry real
+   360	  // spaces and case; re-casing "NO LOGO" or "SORENTO" rewrites the catalogue's own spelling.
+   361	  const _VERBATIM_KEYS = ['class', 'brand'];
+   362	  // TITLECASE PROPER — lower first, THEN capitalise. An uppercase-only pass would leave
+   363	  // "SORENTO" and "NO LOGO" untouched all by itself, which would make the class/brand
+   364	  // exemption an unfalsifiable guard (LESSONS §66: a mutant that cannot go red is a lie about
+   365	  // the assertion set). It is exempt because it is EXEMPT, and U8-7/U8-8/m24 prove it.
+   366	  const _title = (_s) => _s.replace(/_/g, ' ').toLowerCase()
+   367	    .replace(/\b[a-z]/g, (_c) => _c.toUpperCase()).trim();
+   368	  const _humanVal = (_k, _v) => {
+   369	    if (typeof _v === 'number' && isFinite(_v)) return String(_v);
+   370	    if (Array.isArray(_v)) {
+   371	      const _p = _v.map((_x) => _humanVal(_k, _x)).filter((_x) => typeof _x === 'string' && _x.length > 0);
+   372	      return _p.length ? _p.join(', ') : null;
+   373	    }
+   374	    if (typeof _v !== 'string') return null;      // boolean / object / null -> dropped, never guessed
+   375	    const _s = _v.trim();
+   376	    if (!_s) return null;
+   377	    return _VERBATIM_KEYS.indexOf(String(_k).toLowerCase()) >= 0 ? _s : _title(_s);
+   378	  };
+   379	  const _prettyKey = (_k) => String(_k).replace(/_/g, ' ').trim();
+   380	  const _parts = [];
+   381	  for (const _k of _ordered) {
+   382	    const _v = _humanVal(_k, _valueFor(_k));
+   383	    if (typeof _v !== 'string' || !_v.length) continue;
+   384	    _parts.push(_k.toLowerCase() === 'class' ? _v : `${_prettyKey(_k)}: ${_v}`);
+   385	  }
+   386	  const _and = (a) => (a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+   387	  userResponse += _parts.length
+   388	    ? `\n\n_Matched on: ${_and(_parts)}._`
+   389	    : '\n\n_Matched on your description._';
+   390	})();
+   391	
+   392	// ── N-2 · name the qualifier we could not filter by (spec-answer-honesty) ────────────
+   393	// Silence must never pass as success. When the customer states a spec the catalogue does not
+   394	// record, the rows come back looking like a direct answer to a question that was never asked:
+   395	// measured, "...thickness 1.2mm" and "...thickness 1.0mm" returned a BYTE-IDENTICAL reply
+   396	// (execs 12303472 / 12303548, frozen in tests/offline/spec-answer-honesty/baselines/).
+   397	//
+   398	// Data-truth wording (plan decision §5.1): the spec ISN'T RECORDED for these products. Not
+   399	// "I couldn't filter" — that reads as a broken search and invites "then try again properly".
+   400	//
+   401	// `spec_unmet` is emitted only by the CRM's spec-search fallback and is `[]` when everything
+   402	// asked for was met, so this is a byte-identical no-op on every turn that works today. Runs
+   403	// on the ANSWERED happy path only, with the same guards as the friendly-domain suffix below.
+   404	// Deliberately contains NONE of crossdomain-compose's insertion markers ('Did you mean',
+   405	// 'Try:', 'Related products:', 'Here are the closest matches:', 'Would you like me to
+   406	// escalate'), so it cannot move where the cross-domain block lands.
+   407	(() => {
+   408	  const answered = !isEscalateBranch
+   409	    && includeResponse
+   410	    && !manualResponse
+   411	    && qf.message_type === 'business_query'
+   412	    && typeof userResponse === 'string'
+   413	    && userResponse.trim().length > 0
+   414	    && Array.isArray(last_result_set)
+   415	    && last_result_set.length > 0;
+   416	  if (!answered) return;
+   417	  const _re = (() => { try { return $('resolve-entity').first().json ?? {}; } catch (e) { return {}; } })();
+   418	  // C-2 forward-compat: when the CRM ships `unrecognized_terms` (a term it could not map to a
+   419	  // key at all) it is a DIFFERENT statement from "recorded nowhere", so it is read separately
+   420	  // and only used as a fallback source of names until its own wording lands.
+   421	  const _unmet = Array.isArray(_re.spec_unmet) ? _re.spec_unmet : [];
+   422	  if (_unmet.length === 0) return;
+   423	  // Wire shape is [{key, value}] (product_spec_search.py `unmet`). Tolerate a bare string or a
+   424	  // "key=value" spelling rather than rendering "[object Object]" at the customer.
+   425	  const _pretty = (k) => String(k ?? '').replace(/_/g, ' ').trim();
+   426	  const _named = [];
+   427	  for (const u of _unmet) {
+   428	    if (u == null) continue;
+   429	    if (typeof u === 'string') {
+   430	      const [k, v] = u.split('=');
+   431	      _named.push({ key: _pretty(k), value: v == null ? null : String(v).trim() });
+   432	    } else if (typeof u === 'object' && u.key != null) {
+   433	      _named.push({ key: _pretty(u.key), value: u.value == null ? null : String(u.value).trim() });
+   434	    }
+   435	  }
+   436	  if (_named.length === 0) return;
+   437	  const _shown = _named.slice(0, 3);   // cap, same spirit as the miss-token cap of 5
+   438	  const _and = (a) => (a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+   439	  const _keyList = _and(_shown.map(x => x.key));
+   440	  const _isAre = _shown.length === 1 ? "isn't" : "aren't";
+   441	  // ── QUOTE THE CUSTOMER'S OWN SPAN, never the normalised value ────────────────────────
+   442	  // MEASURED at the customer boundary on clone d59c226c (tester run
+   443	  // tests/runs/spec-answer-honesty-SR-2-20260813.json): a customer who typed "1.0mm" was
+   444	  // told "...so I couldn't narrow by 1." The wire carries `value: 1.0` as the NUMBER 1
+   445	  // (String(1.0) === '1') and the CRM normalises everything to millimetres, so THE UNIT IS
+   446	  // NOT ON THE WIRE AT ALL. Rendered bare that is both a truncation and a different number
+   447	  // from the one asked for.
+   448	  // So the value is echoed from the customer's OWN MESSAGE or not at all: find the span in
+   449	  // their text whose numeric value equals the unmet value, preferring the form that carries
+   450	  // a unit, and print it verbatim ("1.0mm", "1.2 mm" - as typed). Fabricating "mm" would be
+   451	  // inventing data; printing "1" would be stating a number nobody asked for. When no span
+   452	  // exists the value is DROPPED and the key carries the sentence alone.
+   453	  // ONE definition, shared with the `query` field this slice now sends (raw-message.js).
+   454	  // Before the migration the identical accessor was hand-written here AND in build-body.js;
+   455	  // now that the same string decides what the CRM SEARCHES on, two spellings of it would be
+   456	  // LESSONS §63 waiting to happen. Probe U7-10 asserts both shipped artifacts carry the
+   457	  // byte-identical source.
+   458	  const _rawMsg = (() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })();
+   459	  // Units the catalogue's spec keys actually carry. A WHITELIST on purpose: matching "any
+   460	  // letters after the number" would echo "2 sinks" as if it were a measurement.
+   461	  const _units = new Set(['mm', 'cm', 'm', 'mtr', 'meter', 'meters', 'metre', 'metres',
+   462	    'in', 'inch', 'inches', 'ft', 'l', 'ltr', 'litre', 'litres', 'liter', 'liters',
+   463	    'kg', 'g', 'w', 'kw', 'v', 'bar', 'mpa', '"', "'"]);
+   464	  // ── REV 3 - WHICH span, not just any span (/codex-review, review section H) ──────────
+   465	  // Two selection defects, both mechanically reproduced against the deployed rev-2 body
+   466	  // before a line was changed. Neither crashes and neither moves which products come back;
+   467	  // both quote a span the customer did not mean, in the one sentence whose whole purpose is
+   468	  // to avoid misleading them:
+   469	  //   1. the "inside a code" guard rejected [0-9A-Za-z.] before the digits but NOT a code
+   470	  //      SEPARATOR, and /[0-9A-Za-z.]/.test('-') is false - so "do you have ABC-1.2MM in
+   471	  //      stock" rendered "...couldn't narrow by 1.2MM", quoting a part number back as if it
+   472	  //      were the customer's spec;
+   473	  //   2. the scan returned the FIRST span whose number matched, so "2m hose thickness 2mm"
+   474	  //      rendered "...couldn't narrow by 2m" for a THICKNESS of 2mm - a different unit
+   475	  //      family, a different quantity, stated as the customer's own.
+   476	  // The replacement is not a new invention: it is the CRM's own binding rule
+   477	  // (product_spec_search.py _resolve_quantities) - a number belongs to the key whose own
+   478	  // word sits NEAREST it, within _QUANTITY_BINDING_WINDOW = 20 characters, measured in
+   479	  // either direction. The registry synonyms are not on the wire, so the anchor set is the
+   480	  // unmet key's own words (and their plural). Where the CRM keeps the first of two equal
+   481	  // distances, this does NOT: a genuine tie is AMBIGUOUS and drops to "by it", because
+   482	  // guessing is exactly what produced both defects and silence is an approved outcome
+   483	  // (plan decision 5.1). No proximity information at all (the key's word is not in the
+   484	  // sentence, e.g. the CRM resolved it out of free_terms) keeps the rev-2 rule: prefer the
+   485	  // unit-carrying span, and require the survivors to agree.
+   486	  const _WINDOW = 20;
+   487	  const _isTokChar = (_c) => !!_c && /[0-9A-Za-z._\/-]/.test(_c);
+   488	  // A hyphen, underscore or slash does NOT end a token here - that is the whole point.
+   489	  // "ABC-1.2MM" is one part number; if anything outside the number (and the unit already
+   490	  // absorbed into the span) carries a letter, this is a code, not a measurement.
+   491	  const _crossesCode = (_s, _e) => {
+   492	    let _ts = _s, _te = _e;
+   493	    while (_ts > 0 && _isTokChar(_rawMsg.charAt(_ts - 1))) _ts--;
+   494	    while (_te < _rawMsg.length && _isTokChar(_rawMsg.charAt(_te))) _te++;
+   495	    return /[A-Za-z]/.test(_rawMsg.slice(_ts, _s) + _rawMsg.slice(_e, _te));
+   496	  };
+   497	  // The key's own words, normalised to [a-z0-9 ] so no regex escaping is needed, matched
+   498	  // whole-word with an optional plural ("bowl count" also anchors on "bowl"/"bowls").
+   499	  const _keyAnchors = (_k) => {
+   500	    const _out = [];
+   501	    const _norm = String(_k == null ? '' : _k).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+   502	    if (!_norm || !_rawMsg) return _out;
+   503	    const _forms = [];
+   504	    if (_norm.length >= 3) _forms.push(_norm);
+   505	    for (const _w of _norm.split(' ')) if (_w.length >= 3 && _forms.indexOf(_w) < 0) _forms.push(_w);
+   506	    const _hay = _rawMsg.toLowerCase();
+   507	    for (const _f of _forms) {
+   508	      const _rx = new RegExp('\\b' + _f + '(?:s)?\\b', 'g');
+   509	      let _a;
+   510	      while ((_a = _rx.exec(_hay)) !== null) _out.push({ start: _a.index, end: _a.index + _a[0].length });
+   511	    }
+   512	    return _out;
+   513	  };
+   514	  const _numCands = (_n) => {
+   515	    const _out = [];
+   516	    const _rx = /\d+(?:\.\d+)?/g;
+   517	    let _m;
+   518	    while ((_m = _rx.exec(_rawMsg)) !== null) {
+   519	      const _s = _m.index;
+   520	      const _prev = _s > 0 ? _rawMsg.charAt(_s - 1) : '';
+   521	      if (_prev && /[0-9A-Za-z.]/.test(_prev)) continue;          // inside a code or a longer number
+   522	      if (!(Math.abs(Number(_m[0]) - _n) < 1e-9)) continue;       // a different quantity
+   523	      let _end = _s + _m[0].length;
+   524	      const _rest = _rawMsg.slice(_end);
+   525	      const _u = /^ ?([A-Za-z]{1,7}|"|')/.exec(_rest);
+   526	      const _hasUnit = !!(_u && _units.has(_u[1].toLowerCase())
+   527	        && !/[A-Za-z]/.test(_rest.charAt(_u[0].length)));
+   528	      if (_hasUnit) _end += _u[0].length;
+   529	      if (/[0-9A-Za-z]/.test(_rawMsg.charAt(_end))) continue;     // "1.2xyz" - never echo a partial token
+   530	      if (_crossesCode(_s, _end)) continue;                       // "ABC-1.2MM" is a part number
+   531	      _out.push({ start: _s, end: _end, text: _rawMsg.slice(_s, _end), unit: _hasUnit });
+   532	    }
+   533	    return _out;
+   534	  };
+   535	  const _pickSpan = (_cands, _k) => {
+   536	    if (!_cands.length) return null;
+   537	    let _pool = _cands;
+   538	    const _anchors = _keyAnchors(_k);
+   539	    if (_anchors.length) {
+   540	      const _scored = [];
+   541	      for (const _c of _cands) {
+   542	        let _best = Infinity;
+   543	        for (const _a of _anchors) {
+   544	          const _d = _c.start >= _a.end ? _c.start - _a.end : _a.start - _c.end;
+   545	          if (_d >= 0 && _d < _best) _best = _d;
+   546	        }
+   547	        if (_best <= _WINDOW) _scored.push({ c: _c, d: _best });
+   548	      }
+   549	      if (!_scored.length) return null;                           // nothing sits near the key
+   550	      const _min = Math.min(..._scored.map(_x => _x.d));
+   551	      _pool = _scored.filter(_x => _x.d === _min).map(_x => _x.c);
+   552	    } else {
+   553	      const _withUnit = _pool.filter(_c => _c.unit);
+   554	      if (_withUnit.length) _pool = _withUnit;
+   555	    }
+   556	    const _texts = _pool.map(_c => _c.text).filter((_t, _i, _a) => _a.indexOf(_t) === _i);
+   557	    return _texts.length === 1 ? _texts[0] : null;                // a genuine tie is AMBIGUOUS
+   558	  };
+   559	  const _spanFor = (v, _k) => {
+   560	    const _v = v == null ? '' : String(v).trim();
+   561	    // A boolean is not a quantity anyone typed - "couldn't narrow by true" is worse than
+   562	    // silence - and it must not be echoed just because the WORD appears in the message.
+   563	    if (!_v || !_rawMsg || _v === 'true' || _v === 'false') return null;
+   564	    if (/^\d+(?:\.\d+)?$/.test(_v)) return _pickSpan(_numCands(Number(_v)), _k);
+   565	    // Non-numeric (a material, a finish): echo it only if the customer actually wrote it,
+   566	    // in THEIR casing. A CRM-normalised spelling they never typed falls back.
+   567	    const _i = _rawMsg.toLowerCase().indexOf(_v.toLowerCase());
+   568	    if (_i < 0) return null;
+   569	    const _b = _i > 0 ? _rawMsg.charAt(_i - 1) : '';
+   570	    const _a = _rawMsg.charAt(_i + _v.length);
+   571	    if ((_b && /[0-9A-Za-z]/.test(_b)) || (_a && /[0-9A-Za-z]/.test(_a))) return null;
+   572	    if (_crossesCode(_i, _i + _v.length)) return null;             // "ABC-STEEL-X" is a code too
+   573	    return _rawMsg.substr(_i, _v.length);
+   574	  };
+   575	  // ALL-OR-NOTHING, so the key list and the value list can never desync and half a list can
+   576	  // never attribute a number to the customer that they did not write. Deduped: two keys that
+   577	  // failed on the same span read "thickness and depth ... by 1.2mm", not "by 1.2mm and 1.2mm".
+   578	  const _spans = _shown.map(x => _spanFor(x.value, x.key));
+   579	  const _quotable = _spans.every(s => typeof s === 'string' && s.length > 0);
+   580	  const _tail = _quotable
+   581	    ? `so I couldn't narrow by ${_and(_spans.filter((s, i, a) => a.indexOf(s) === i))}.`
+   582	    : (_shown.length === 1 ? "so I couldn't narrow by it." : "so I couldn't narrow by them.");
+   583	  userResponse += `\n\n${_keyList} ${_isAre} recorded for these products, ${_tail}`;
+   584	})();
+   585	
+   586	// ── friendly domain disclaimers (append to user-facing text on the happy path only) ──
+   587	// master_products answered → nudge toward the catalogue for attributes not shown.
+   588	// resource_attachment catalogue answered → tip to search by product code for attributes.
+   589	(() => {
+   590	  const dh = qf.domain_hint;
+   591	  const answered = !isEscalateBranch
+   592	    && includeResponse
+   593	    && typeof userResponse === 'string'
+   594	    && userResponse.trim().length > 0
+   595	    && Array.isArray(last_result_set)
+   596	    && last_result_set.length > 0;
+   597	  if (!answered) return;
+   598	  if (dh === 'master_products') {
+   599	    userResponse += "\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊";
+   600	  } else if (dh === 'resource_attachment') {
+   601	    const ents = Array.isArray(reconciledEntities) ? reconciledEntities : (qf.entities || []);
+   602	    const wantsCatalogue = ents.some(e => /catalog|katalog/i.test(String((e && e.raw) || '')));
+   603	    if (wantsCatalogue) {
+   604	      userResponse += "\n\nTip: looking for a specific detail like material or finish? Search the *product code* inside the catalogue and you'll find all its attributes there 👍";
+   605	    }
+   606	  }
+   607	})();
+   608	
+   609	// ── #3 dym-zerostock-itemize: name resolved products that returned ZERO stock rows ──
+   610	// Customer-facing completeness note on an ANSWERED inventory/incoming turn. Runs AFTER the disclaimer
+   611	// IIFE and BEFORE the #2 partial-miss dym block, so the append order is: stock rows -> #3 line -> #2 block.
+   612	// Disjoint from #2 (Q5): #3 lists customer-REFERENCED empty products (TYPED-exact resolutions U DYM-PICKED);
+   613	// #2 lists UNRESOLVED tokens (missResolutions). Writes ONLY userResponse; byte-identical no-op when missing.length===0.
+   614	//
+   615	// ── HOISTED 2026-08-03 (cross-domain-stock-incoming, Q13/H1: single source of truth) ──
+   616	// The requested[] / returnedCodes / missing[] computation that used to live inline HERE now lives in
+   617	// `crossdomain-zeroset` (upstream of If6), shared with the cross-domain feature. Guards, the 10-item cap
+   618	// and the exact wording below are UNCHANGED — this is a pure refactor with zero observable change, proven
+   619	// by the shadow gate BEFORE the inline copy was deleted. The deleted code is preserved verbatim in
+   620	// tests/diffs/zerostock-inline-computation-preserved.js for rollback.
+   621	// Reachability: #3 only speaks on an answered turn, which by construction ran get-results -> validator,
+   622	// and crossdomain-zeroset sits on that edge — so it has always executed by the time this runs.
+   623	(() => {
+   624	  const dh = qf.domain_hint;
+   625	  if (dh !== 'inventory' && dh !== 'incoming') return;                 // Q4.4 domain gate
+   626	  if (qf.message_type !== 'business_query') return;                    // Q4.1
+   627	  if (manualResponse || isEscalateBranch) return;                      // Q4.2 / Q4.3
+   628	  if (!(Array.isArray(last_result_set) && last_result_set.length > 0)) return;  // Q4.5 has-rows
+   629	  if (typeof userResponse !== 'string' || userResponse.trim().length === 0) return;
+   630	
+   631	  const zsNode = $('crossdomain-zeroset');
+   632	  if (!zsNode.isExecuted) return;                                      // defensive: degrade silently, never throw
+   633	  const zs = (zsNode.first().json || {})._xd || {};
+   634	
+   635	  const returnedCodes = Array.isArray(zs.returned_codes) ? zs.returned_codes : [];
+   636	  if (returnedCodes.length === 0) return;                              // Q4.5 can't attribute -> say nothing
+   637	  const missing = (Array.isArray(zs.missing) ? zs.missing : []).map(m => m && m.code).filter(Boolean);
+   638	  if (missing.length === 0) return;                                    // Q6 no-op
+   639	
+   640	  const shown = missing.slice(0, 10);                                  // Q7 cap
+   641	  // DOMAIN-AWARE NOUN (2026-08-03, user-reported): this line fires on BOTH inventory and incoming turns,
+   642	  // but was hardcoded to "stock records". On an ETA turn it means "no INCOMING records" while literally
+   643	  // saying "stock" — and it now sits one line above a block that reports real on-hand stock, so the two
+   644	  // sentences contradicted each other. The inventory wording is unchanged (still the locked string).
+   645	  const _noun = (dh === 'incoming') ? 'incoming' : 'stock';
+   646	  userResponse += `\n\nNo ${_noun} records found for: ${shown.join(', ')}.`;
+   647	})();
+   648	
+   649	// ── dym-partial-disambiguation v3 §2.1: surface genuine-miss tokens on the ANSWERED happy path ──
+   650	// When SOME tokens resolved (stock answered) and OTHERS are genuine misses, the misses vanish today
+   651	// (build-suggest-offer is downstream of not-found and never runs on the If3-proceeds path). This block
+   652	// reuses build-suggest-offer's D1 detection to (a) APPEND a numbered "did you mean" block to
+   653	// userResponse, (b) persist a SEPARATE dym_last_result_set (idx 1..M) WITHOUT touching last_result_set
+   654	// or selection_context (the stock positional-pick affordance is preserved — the HALT lesson), (c) feed
+   655	// a dym offer into the _newOffer slot so it SURVIVES the _answered kill (rule 1 beats rule 5), and
+   656	// (d) append the SINGLE parser-visible marker to `response`. v3 removes the v2 [results numbered] second
+   657	// bracket and the AMBIGUOUS->CLARIFY branch entirely. No genuine miss -> pure no-op -> byte-identical.
+   658	let _dymLastResultSet = null;   // NEW dym set (idx 1..M); stays null on every no-dym turn (key omitted)
+   659	let _partialOffer = null;       // feeds the _newOffer slot so the offer survives the answered turn
+   660	(() => {
+   661	  const _answered = !isEscalateBranch
+   662	    && includeResponse
+   663	    && typeof userResponse === 'string'
+   664	    && userResponse.trim().length > 0
+   665	    && Array.isArray(last_result_set)
+   666	    && last_result_set.length > 0
+   667	    && qf.message_type === 'business_query'
+   668	    && !manualResponse;
+   669	  if (!_answered) return;
+   670	
+   671	  const r    = (() => { try { return $('resolve-entity').first().json ?? {}; } catch (e) { return {}; } })();
+   672	  const gate = (() => { try { return $('disallowed-entity-gate').first().json ?? {}; } catch (e) { return {}; } })();
+   673	
+   674	  // Guard exactly as build-suggest-offer (defensive parity — both false on a true happy answer).
+   675	  const isClar = (() => { try { return getResultObj().is_clarification === true; } catch (e) { return false; } })();
+   676	  if (isClar || gate.require_specific === true) return;
+   677	
+   678	  // ── D1 detection (ported from build-suggest-offer) ──
+   679	  const cap3 = (a) => (Array.isArray(a) ? a.slice(0, 3) : []);
+   680	  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+   681	  const isUuid = (s) => UUID_RE.test(String(s || ''));
+   682	  const humanLabel = (m) => {
+   683	    const c = m && m.canonical_code;
+   684	    if (c && !isUuid(c)) return String(c);
+   685	    const d = (m && m.display) || {};
+   686	    return d.description || d.product_name || d.name || null;
+   687	  };
+   688	  const isExact = (m) => String(m?.match_tier || '').toLowerCase() === 'exact';
+   689	  const allowedTypes = Array.isArray(gate?.gate_debug?.allowed_lookup) ? gate.gate_debug.allowed_lookup : null;
+   690	  const _mkOffer = (cands) => (Array.isArray(cands) && cands.length)
+   691	    ? { id: String($execution.id), domain: (qf && qf.domain_hint) || null, ttl: 3, candidates: cands, picked: [] }
+   692	    : null;
+   693	  function tokenCandidates(res) {
+   694	    const acc = [];
+   695	    if (Array.isArray(res?.matches)) acc.push(...res.matches);
+   696	    if (Array.isArray(res?.alternatives)) acc.push(...res.alternatives);
+   697	    const seen = new Set(); const keep = [];
+   698	    for (const m of acc) {
+   699	      const code = m && m.canonical_code;
+   700	      if (!code) continue;
+   701	      if (isExact(m)) continue;                                                  // exact would have resolved
+   702	      if (allowedTypes && m.entity_type && !allowedTypes.includes(m.entity_type)) continue;
+   703	      if (seen.has(code)) continue;
+   704	      seen.add(code); keep.push(m);
+   705	    }
+   706	    return keep;
+   707	  }
+   708	
+   709	  // Genuine-miss tokens (their OWN resolution, no exact match). Excludes the resolved answer token.
+   710	  const unresolved = Array.isArray(r?.unresolved_tokens) ? r.unresolved_tokens : [];
+   711	  // ── honour the gate's document-class narrowing (container-status S1) ────────────────
+   712	  // `r` is the RAW resolver node, so a token the GATE resolved still looks unresolved here.
+   713	  // This is the FOURTH surface that builds a did-you-mean from `resolutions`, and the one the
+   714	  // customer actually saw: "container status list" returned the right file AND "Couldn't find
+   715	  // these: ... did you mean Packing List, Stock_List, container_status" underneath it.
+   716	  // Narrow by construction: only tokens stamped `resolved_by === 'document-class-narrowing'`.
+   717	  const _gateResolvedTokens = (() => {
+   718	    try {
+   719	      const _g = $('disallowed-entity-gate').first().json ?? {};
+   720	      return new Set((_g.resolutions ?? [])
+   721	        .filter(x => x && x.resolved === true && x.resolved_by === 'document-class-narrowing')
+   722	        .map(x => String(x.token ?? '').trim().toLowerCase())
+   723	        .filter(Boolean));
+   724	    } catch (e) { return new Set(); }
+   725	  })();
+   726	  // ── a token whose OWN candidates BECAME the answer is not a miss (promo-scope-dym) ──
+   727	  // FIFTH surface of the class the `document-class-narrowing` narrowing above patched fourth.
+   728	  // That one names the MECHANISM; this one names the OUTCOME, so a sixth promotion mechanism
+   729	  // needs no sixth patch. Measured on exec 11889275 ("6047 promo"): resolve-entity returns
+   730	  // `{ token: "6047", resolved: false, ambiguous: true, matches: [15 promotions, every one
+   731	  // match_tier "via_product" and therefore never `isExact`] }`, disallowed-entity-gate lifts all
+   732	  // 15 into `compatible_entities` — which IS the list the customer was shown — and nobody writes
+   733	  // `resolved` back. So this filter offered three rows of the customer's own answer back to them
+   734	  // as "did you mean". Same on the "all" pick turn for "bathroom furniture".
+   735	  //
+   736	  // Keyed PER TOKEN on that token's own candidates, never on "something was answered": a genuine
+   737	  // miss contributes nothing to compatible_entities and is still surfaced, and an empty
+   738	  // compatible_entities suppresses nothing. Gate: tests/offline/promo-scope-dym/probe.js
+   739	  // (A1-A5 the defect, C1-C4 the surviving feature, D1 the no-blanket-mute bound).
+   740	  const _answerCodes = (() => {
+   741	    const s = new Set();
+   742	    try {
+   743	      for (const e of ($('disallowed-entity-gate').first().json.compatible_entities ?? [])) {
+   744	        for (const v of [e && e.uuid, e && e.code]) {
+   745	          const k = String(v ?? '').trim().toLowerCase();
+   746	          if (k) s.add(k);
+   747	        }
+   748	      }
+   749	    } catch (e) { /* gate not executed -> no answer set -> suppress nothing */ }
+   750	    return s;
+   751	  })();
+   752	  // `intersection` is the THIRD place an answer set hides. resolve-entity returns two envelopes:
+   753	  // the per-token `resolutions[]` shape, and a legacy blob { tokens, intersection, alternatives,
+   754	  // unresolved_tokens, ... } with NO `resolutions` at all — that is the one the legacy arm below
+   755	  // renders. Measured on exec 11891721 ("dealer version only"): `unresolved_tokens: ["6047"]`
+   756	  // alongside `intersection: [8 products, match_tier "brand_access_fallback",
+   757	  // display.via_token: "6047"]`, i.e. the token that "failed" is the token that produced the
+   758	  // answer. Reading only matches/alternatives left this envelope unprotected and the customer got
+   759	  // `"6047" — not found.` under four correct rows.
+   760	  const _tokenWasAnswered = (res) => {
+   761	    if (!_answerCodes.size) return false;
+   762	    const cands = [].concat(Array.isArray(res?.matches) ? res.matches : [],
+   763	                            Array.isArray(res?.alternatives) ? res.alternatives : [],
+   764	                            Array.isArray(res?.intersection) ? res.intersection : []);
+   765	    return cands.some(m => [m && m.uuid, m && m.canonical_code]
+   766	      .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _answerCodes.has(k); }));
+   767	  };
+   768	  // ── a token whose WORDS FED SPEC SEARCH was answered by it (spec-answer-honesty N-3) ──
+   769	  // SIXTH surface of the class §67 names, and the first one where the answer arrives on a
+   770	  // DIFFERENT resolution than the token. The CRM appends a new resolution keyed on
+   771	  // `payload.query` (the parser's restatement) carrying every `match_tier: "spec_search"`
+   772	  // row, and leaves the customer's own raw on a resolution with `matches: []`
+   773	  // (references.py `_emit_spec_matches`). `_tokenWasAnswered` reads the token's OWN
+   774	  // candidates, finds none, and the raw is reported missing UNDERNEATH the answer its own
+   775	  // words produced. Measured shape frozen in tests/offline/spec-answer-honesty/baselines/.
+   776	  //
+   777	  // Outcome-keyed, not mechanism-keyed: ANY spec_search row in the answer means the
+   778	  // descriptive words were answered. Scoped by the code-shape rule, which the CRM now shares
+   779	  // (`references.py` _is_code_shaped: a code-shaped unresolved token is NEVER cleared, even
+   780	  // beside a full spec answer) — so an unknown CODE still surfaces its own miss (UAC SR-U5)
+   781	  // and a mixed hit+miss turn renders BOTH. Zero spec_search rows in the answer => inert.
+   782	  const _notCodeShaped = (_e) => (Array.isArray(_e) ? _e : []).map(x => String((x && x.raw) || '').trim()).filter(v => v.length > 0 && !(/[0-9]/.test(v) && /^[A-Za-z][A-Za-z][A-Za-z0-9._\/\-‐-―−﹘﹣－]*$/.test(v))).filter((v, i, a) => a.indexOf(v) === i);
+   783	  const _specSearchAnswered = (() => {
+   784	    if (!_answerCodes.size) return false;
+   785	    const _rows = [];
+   786	    if (Array.isArray(r?.resolutions)) {
+   787	      for (const _res of r.resolutions) if (Array.isArray(_res?.matches)) _rows.push(..._res.matches);
+   788	    }
+   789	    if (Array.isArray(r?.intersection)) _rows.push(...r.intersection);
+   790	    return _rows.some(m => String(m?.match_tier ?? '').toLowerCase() === 'spec_search'
+   791	      && [m && m.uuid, m && m.canonical_code]
+   792	        .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _answerCodes.has(k); }));
+   793	  })();
+   794	  const _tokenReachedSpecSearch = (tok) => _specSearchAnswered && _notCodeShaped([{ raw: tok }]).length > 0;
+   795	  // ── F1 · the CRM's own QUERY-KEYED resolution is NOT a customer token ────────────────
+   796	  // Since spec-raw-text-migration `query` IS the customer's whole sentence, the resolution
+   797	  // the CRM appends for it comes back with `token` == that sentence (MEASURED, exec 12597847:
+   798	  // `resolutions[2].token === "SRTWC286 and wall hung basin"`). Every renderer that groups
+   799	  // misses BY TOKEN then prints the customer's own question back at them as a failed search
+   800	  // term (MEASURED at the customer boundary, exec 12597815). It is not a customer entity:
+   801	  // n8n never sent it.
+   802	  //
+   803	  // Keyed on WHAT WE SENT. `resolve-entity-http` builds its `tokens` from exactly
+   804	  // `qf.entities[].raw`, so the sent set is decidable HERE without trusting anything the CRM
+   805	  // echoes back — and every CRM-derived probe token (the appended query resolution, and any
+   806	  // `_synthesize_alpha_tokens` split of the sentence) falls outside it by construction.
+   807	  //
+   808	  // FAIL-OPEN, deliberately (UAC SR-U5: a genuine miss must never be silenced). When we sent
+   809	  // NO tokens at all the set cannot discriminate, so the rule narrows to the raw turn text
+   810	  // itself; and when neither the entity set nor the turn text is available, nothing is
+   811	  // suppressed.
+   812	  const _sentTokens = (() => {
+   813	    const s = new Set();
+   814	    for (const e of (Array.isArray(qf.entities) ? qf.entities : [])) {
+   815	      const k = String((e && e.raw) ?? '').trim().toLowerCase();
+   816	      if (k) s.add(k);
+   817	    }
+   818	    return s;
+   819	  })();
+   820	  const _rawTurn = String((() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })() ?? '').trim().toLowerCase();
+   821	  const _isDerivedQueryToken = (tok) => {
+   822	    const k = String(tok ?? '').trim().toLowerCase();
+   823	    if (!k) return false;
+   824	    if (_sentTokens.size) return !_sentTokens.has(k);
+   825	    return !!_rawTurn && k === _rawTurn;
+   826	  };
+   827	  let missResolutions = [];
+   828	  if (Array.isArray(r?.resolutions)) {
+   829	    missResolutions = r.resolutions.filter(res => res && res.resolved !== true
+   830	      && !(Array.isArray(res.matches) && res.matches.some(isExact))
+   831	      && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
+   832	      && !_isDerivedQueryToken(res.token)
+   833	      && !_tokenReachedSpecSearch(res.token)
+   834	      && !_tokenWasAnswered(res));
+   835	  } else if (unresolved.length && !_tokenWasAnswered(r)) {
+   836	    missResolutions = [r];   // legacy single-resolution shape
+   837	  }
+   838	  const surfaced = missResolutions.slice(0, 5);   // cap missed tokens shown at 5
+   839	  if (surfaced.length === 0) return;               // no genuine miss -> pure no-op (byte-identical)
+   840	
+   841	  // Render each surfaced token (numbered when it has candidates, else a plain not-found line).
+   842	  // Global CONTIGUOUS idx 1..M across tokens; per-token candidates via its OWN matches/alternatives.
+   843	  // ── dym-probe-before-offer, 2nd consumer: has-it annotation for the PARTIAL-RESOLUTION
+   844	  // renderer. Identical contract to build-suggest-offer's D1 block — same _dymOk/_dymHas/
+   845	  // _dymProbed/_dymNoun names, same fail-open rule, same "not probed ⇒ NO suffix" rule.
+   846	  // Two lanes reach here: the results lane (central-exchange → dym-*-partial) and the
+   847	  // not-found lane (… → dym-annotate → … → cs-offer-gate[1]). Prefer whichever executed.
+   848	  // 🔴 NO SORT HERE. This block assigns a GLOBAL CONTIGUOUS idx across tokens that
+   849	  // _numbered/_dymCands are keyed on, and _numbered carries the for_raw/for_hint/
+   850	  // for_canonical pick-linkage. Reordering would renumber across token blocks and break the
+   851	  // round-trip. Annotation is suffix-only and order-preserving; has-first is D1's alone.
+   852	  const _dymNorm = (s) => String(s ?? '').trim().toLowerCase();
+   853	  const _dymAnn = (() => {
+   854	    for (const n of ['dym-annotate-partial', 'dym-annotate']) {
+   855	      try { const x = $(n); if (x.isExecuted) return x.first().json || {}; } catch (e) { /* not on this path */ }
+   856	    }
+   857	    return null;
+   858	  })();
+   859	  const _dymOk     = !!(_dymAnn && _dymAnn.dym_probe_meta && _dymAnn.dym_probe_meta.ok === true);
+   860	  const _dymHas    = new Set(_dymOk ? (_dymAnn.dym_available_codes || []).map(_dymNorm) : []);
+   861	  const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_dymNorm) : []);
+   862	  const _dymAttNoun = () => {
+   863	    if (qf?.domain_hint !== 'product_attachment') return null;
+   864	    const at = Array.isArray(qf?.entities)
+   865	      ? qf.entities.find(e => String(e.hint || '').toLowerCase() === 'attachment_type') : null;
+   866	    return (at && at.raw) ? at.raw : 'document';
+   867	  };
+   868	  const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
+   869	  const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || _dymAttNoun()) : null;
+   870	  const _dymSfx = (code) => {
+   871	    if (!_dymOk) return '';
+   872	    const k = _dymNorm(code);
+   873	    if (!_dymProbed.has(k)) return '';          // never a misleading "no" for an unprobed code
+   874	    return _dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`;
+   875	  };
+   876	
+   877	  const _entities = Array.isArray(qf.entities) ? qf.entities : [];
+   878	  let idx = 0;
+   879	  const _lines = [];
+   880	  const _numbered = [];   // -> dym_last_result_set rows (only when M >= 1)
+   881	  const _dymCands = [];   // -> dym offer candidates (only when M >= 1)
+   882	  for (const res of surfaced) {
+   883	    const token = res.token || unresolved[0] || (qf.entities?.[0]?.raw) || 'that item';
+   884	    const picks = cap3(tokenCandidates(res)).map(m => ({ m, label: humanLabel(m) })).filter(p => p.label);
+   885	    if (picks.length) {
+   886	      // dym-candidate-map: each candidate keeps its OWN source token (per-token _srcEnt; no borrow).
+   887	      const _srcEnt = _entities.find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
+   888	      _lines.push(`"${token}" — did you mean:`);
+   889	      for (const p of picks) {
+   890	        idx += 1;
+   891	        const isU = isUuid(p.m.canonical_code);
+   892	        const _forRaw = token;
+   893	        const _forHint = p.m.entity_type || (_srcEnt && _srcEnt.hint) || null;
+   894	        const _forCanon = (_srcEnt && _srcEnt.canonical_code) || null;
+   895	        // dym-probe-before-offer: suffix only, keyed on the CODE (never the label), so a
+   896	        // uuid-coded candidate rendered by name is simply not probed and gets nothing.
+   897	        _lines.push(`  ${idx}. ${p.label}${_dymSfx(p.m.canonical_code)}`);
+   898	        // superset row: display shape (idx/label/value/product/uuid/entity_type) + pick-linkage
+   899	        // (for_raw/for_hint/for_canonical) so the numbered-DYM handler in output_exchange can run the
+   900	        // SAME in-place replacement tryDymPick does.
+   901	        _numbered.push({
+   902	          idx, label: p.label, value: isU ? p.label : p.m.canonical_code,
+   903	          product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   904	          for_raw: _forRaw, for_hint: _forHint, for_canonical: _forCanon,
+   905	        });
+   906	        _dymCands.push({
+   907	          code: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   908	          for_raw: _forRaw, for_hint: _forHint, for_canonical: _forCanon,
+   909	        });
+   910	      }
+   911	    } else {
+   912	      _lines.push(`"${token}" — not found.`);   // zero renderable candidates -> plain line, no idx
+   913	    }
+   914	  }
+   915	  const M = _numbered.length;   // total numbered candidates across surfaced tokens
+   916	  const _footer = M >= 1 ? 'Reply a number to check it, or ask again.' : 'Ask again with the correct code.';
+   917	  userResponse += `\n\nCouldn't find these:\n` + _lines.join('\n') + `\n\n` + _footer;
+   918	
+   919	  // Arm the dym set ONLY when there is >= 1 numbered candidate. Do NOT touch last_result_set or
+   920	  // selection_context (the withdrawn HALT behaviour). Append the SINGLE parser-visible marker to
+   921	  // `response` (the compressed, parser-facing view) so the parser learns a dym offer is active next turn.
+   922	  if (M >= 1) {
+   923	    _dymLastResultSet = _numbered;
+   924	    _partialOffer = _mkOffer(_dymCands);
+   925	    response += ` [${M} did-you-mean suggestions active]`;
+   926	  }
+   927	})();
+   928	
+   929	
+   930	// ── dym-single-use-fix: did-you-mean offer LIFECYCLE (supersede / retain / expire) ──
+   931	// Replaces the single-turn dym_candidates erasure with an explicit offer that survives repeated
+   932	// picks but is bounded by domain-switch / escalation / answer / TTL. First matching rule wins;
+   933	// EVERY non-retaining branch writes null explicitly — never reliance on key absence (§3c).
+   934	const _newOffer = (_sug && _sug.dym_offer && Array.isArray(_sug.dym_offer.candidates) && _sug.dym_offer.candidates.length)
+   935	  ? _sug.dym_offer : (_partialOffer || null);   // dym-partial-disambiguation: partial-miss offer survives the answered turn
+   936	const _prevOffer = (() => {
+   937	  try {
+   938	    const s = $('get-session-vars').first().json;
+   939	    const v = (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || null;
+   940	    return (v && v.dym_offer && typeof v.dym_offer === 'object') ? v.dym_offer : null;
+   941	  } catch (e) { return null; }
+   942	})();
+   943	const _pickApplied = qf.dym_pick_applied === true;
+   944	// a human owns the thread once escalation is confirmed OR a specific member was resolved this turn
+   945	const _escalated = !!(qf.escalation && (qf.escalation.is_escalation_confirmation === true || qf.escalation.preferred_assignee_id));
+   946	const _answered = Array.isArray(last_result_set) && last_result_set.length > 0;
+   947	const _dymOffer = (() => {
+   948	  if (_newOffer) return { ..._newOffer, ttl: 3, picked: [] };                    // 1. fresh offer → REPLACE
+   949	  if (!_prevOffer) return null;                                                  //    nothing to carry
+   950	  // 2. domain switch — reads the POST-carry domain_hint (null never kills: a bare-code pick emits null)
+   951	  if (qf.domain_hint && _prevOffer.domain && qf.domain_hint !== _prevOffer.domain) return null;
+   952	  if (_escalated) return null;                                                   // 3. escalation committed → DIE
+   953	  if (_pickApplied) {                                                            // 4. pick applied → RETAIN (T3 fix)
+   954	    const _picked = Array.isArray(_prevOffer.picked) ? _prevOffer.picked.slice() : [];
+   955	    if (qf.dym_offer_pick_code && !_picked.includes(qf.dym_offer_pick_code)) _picked.push(qf.dym_offer_pick_code);
+   956	    return { ..._prevOffer, ttl: 3, picked: _picked };
+   957	  }
+   958	  if (_answered) return null;                                                    // 5. answered, no pick → DIE
+   959	  if (!(Number(_prevOffer.ttl) > 1)) return null;                               // 6. TTL exhausted (ttl-1<=0)
+   960	  return { ..._prevOffer, ttl: Number(_prevOffer.ttl) - 1 };                     // 7. otherwise RETAIN, decrement
+   961	})();
+   962	
+   963	output = {
+   964	  "variables": {
+   965	    "message_type": qf.message_type,
+   966	    "intent_hint": qf.intent_hint,
+   967	    "domain_hint": qf.domain_hint,
+   968	    "user_goal": qf.user_goal,
+   969	    "query_scope": qf.query_scope,
+   970	    "access_levels": qf.access_levels,
+   971	    "entities": reconciledEntities,
+   972	    "routing": qf.routing,
+   973	    "escalation": qf.escalation,
+   974	    "response": response,                 // now the COMPRESSED view (parser-facing)
+   975	    "last_result_set": last_result_set,
+   976	    "selection_context": selection_context,
+   977	    "date_filter_start": qf.date_filter_start,
+   978	    "date_filter_end": qf.date_filter_end,
+   979	    "date_mode": qf.date_mode,
+   980	    "match_mode": qf.match_mode,
+   981	    "contains_flyer": qf.contains_flyer,
+   982	    // dym-single-use-fix: persist the lifecycle-managed offer (null clears it — see §3c above).
+   983	    // dym_candidates is a READ-ONLY LEGACY MIRROR of the offer's candidates, kept only for the
+   984	    // spine↔parser promotion window so an OLD parser can still pick; delete it once both are live.
+   985	    "dym_offer": _dymOffer,
+   986	    "dym_candidates": (_dymOffer && Array.isArray(_dymOffer.candidates)) ? _dymOffer.candidates : [],
+   987	    // Ideation pointer (Rev-3.1): on an ideate turn, persist the endpoint's returned
+   988	    // pointer; on any other turn carry the prior one forward so a CRM question
+   989	    // mid-collection does not wipe an open draft. Reads 'get-session-vars' (the CRM
+   990	    // session read) and tolerates BOTH shapes: the endpoint keys `ideation` flat under
+   991	    // session_vars, n8n's own writer nests it under `variables`. A throw here would
+   992	    // return null and a CRM interrupt would WIPE the open draft (IU3).
+   993	    "ideation": _ideate ? _ideate.ideation : (() => {
+   994	      try {
+   995	        const s = $('get-session-vars').first().json;
+   996	        return (s && s.session_vars && s.session_vars.variables && s.session_vars.variables.ideation)
+   997	          || (s && s.variables && s.variables.ideation) || null;
+   998	      } catch (e) { return null; }
+   999	    })()
+  1000	  },
+  1001	  "user_response": userResponse,
+  1002	  "quick_reply": quickReply
+  1003	};
+  1004	// dym-partial-disambiguation v3: emit dym_last_result_set ONLY when a dym set exists this turn
+  1005	// (absent on every no-dym turn -> output byte-identical to live).
+  1006	if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
+  1007	return output;
+  1008	
+
+exec
+/bin/zsh -lc 'nl -ba nodes/build-suggest-offer.js' in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+     1	// ── build-suggest-offer (D1/D2/D3) ────────
+     2	// Sibling downstream of not-found-error-message. ADDITIVE: passes the not-found
+     3	// payload through and, when the miss carries CONCRETE candidates, attaches a
+     4	// suggestion offer that compile-current-state renders. No candidates → suggest_offer
+     5	// stays false and downstream is byte-identical to before this node existed.
+     6	// dym-probe-before-offer: on the sibling-gate[1] inbound the payload now arrives via
+     7	// dym-transform (gate FALSE) or dym-annotate (gate TRUE). Both PASS THE NOT-FOUND
+     8	// PAYLOAD THROUGH and append their own control keys. Strip those keys here so the
+     9	// object this node emits is byte-identical to pre-change on every un-annotated path.
+    10	// (Deleting appended keys restores the original insertion order too.)
+    11	const _DYM_CTRL_KEYS = ['dym_probe_entities', 'dym_candidate_codes', 'dym_excluded_codes',
+    12	  'probe_tool', 'probe_noun', 'probe_predicate', 'probe_needed', 'probe_skip_reason',
+    13	  'probe_lane', '_dym_probe_input', 'dym_available_codes', 'dym_probe_meta',
+    14	  // C3: both emitted UNCONDITIONALLY by dym-transform, which runs on every not-found turn
+    15	  // including every non-enabled domain. Omitting them leaked two stray keys into this node's
+    16	  // output on most traffic (reviewer F-STRIP). ⚠️ ANY new dym-transform output key must be added
+    17	  // here in the same commit that introduces it.
+    18	  'dym_capped_codes', 'probe_cap_applied'];
+    19	const out  = { ...$input.first().json };
+    20	for (const _k of _DYM_CTRL_KEYS) delete out[_k];
+    21	const q    = (() => { try { return $('Call \'sub-query-reformulator\'').first().json.output; } catch (e) { return {}; } })();
+    22	const r    = (() => { try { return $('resolve-entity').first().json ?? {}; } catch (e) { return {}; } })();
+    23	const gate = (() => { try { return $('disallowed-entity-gate').first().json ?? {}; } catch (e) { return {}; } })();
+    24	
+    25	out.suggest_offer = false;
+    26	
+    27	const team = q?.routing?.suggested_team || 'customer_service';
+    28	const YES  = 'Yes, escalate';
+    29	const NO   = "No, it's okay";
+    30	const cap3 = (a) => (Array.isArray(a) ? a.slice(0, 3) : []);
+    31	const humanList = (codes) => codes.length === 1
+    32	  ? codes[0]
+    33	  : `${codes.slice(0, -1).join(', ')}, or ${codes[codes.length - 1]}`;
+    34	// dym-candidate-map scoping: a did-you-mean candidate must be an ENTITY-CODE correction, never
+    35	// a date-relaxation alternative. isDateLike detects an ISO/day-month-year value so we never build
+    36	// (or later match) a dym entry keyed on a date the bot itself invited ("reply with a date").
+    37	const isDateLike   = (s) => { const v = String(s ?? '').trim(); return /^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(v) || /^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$/.test(v); };
+    38	const isCodeShaped = (s) => { const v = String(s ?? '').trim(); return v.length > 0 && /[a-z0-9]/i.test(v) && !isDateLike(v); };
+    39	// dym-single-use-fix: wrap a candidate list in an offer object carrying identity + lifecycle.
+    40	//   id     = this spine execution id (turn-unique) → stamped onto the picked entity as dym_slot,
+    41	//            giving output_exchange a STABLE handle that survives raw-overwrite across repeated picks.
+    42	//   domain = the reformulator domain_hint at build time → drives the domain-switch supersede rule.
+    43	//   ttl/picked seed the lifecycle that compile-current-state advances each turn.
+    44	// candidates[] shape is UNCHANGED from the shipped map. Returns null for an empty set (no offer).
+    45	const _mkOffer = (cands) => (Array.isArray(cands) && cands.length)
+    46	  ? { id: String($execution.id), domain: (q && q.domain_hint) || null, ttl: 3, candidates: cands, picked: [] }
+    47	  : null;
+    48	
+    49	// ── D3: incoming sibling-family picker (empty-exact incoming miss) — PHASE 1 ──
+    50	// Fires ONLY when sibling-gate routed the not-found through family-fetch →
+    51	// sibling-transform → sibling-probe (all isExecuted). Reuses the shipped suggest_offer
+    52	// envelope so the pick/escalate round-trip is the already-proven suggest-follow-up path
+    53	// (NO reformulator edit). When sibling-probe/-transform did not run (ambiguous incoming
+    54	// picker path, or sibling-gate FALSE), D3 is inert and D1/D2 behave byte-identically.
+    55	// PHASE-2 SEAM: multi-product family union (family-loop) not built — single base only.
+    56	{
+    57	  const sibXfRan    = (() => { try { return $('sibling-transform').isExecuted; } catch (e) { return false; } })();
+    58	  const sibProbeRan = (() => { try { return $('sibling-probe').isExecuted; } catch (e) { return false; } })();
+    59	  const domIncoming = (q && q.domain_hint === 'incoming')
+    60	    || (gate && gate.gate_debug && gate.gate_debug.domain === 'incoming');
+    61	  if (sibXfRan && sibProbeRan && domIncoming) {
+    62	    const normC = s => String(s ?? '').trim().toLowerCase();
+    63	    const fam = (() => { try { return $('sibling-transform').first().json.siblings; } catch (e) { return null; } })();
+    64	    const probe = (() => { try { return $('sibling-probe').first().json ?? {}; } catch (e) { return {}; } })();
+    65	    if (Array.isArray(fam) && fam.length) {
+    66	      // codes WITH incoming from probe answers (crm_incoming_stock_list returns a row per
+    67	      // product that HAS incoming; title / "Product Code" field = the code). Same machinery
+    68	      // as annotate-incoming-picker.
+    69	      const answers = Array.isArray(probe.answers) ? probe.answers
+    70	                    : (Array.isArray(probe.items) ? probe.items : []);
+    71	      const hasInc = new Set();
+    72	      for (const a of answers) {
+    73	        let c = a && a.title;
+    74	        if (!c && a && Array.isArray(a.fields)) {
+    75	          const f = a.fields.find(x => /product\s*code/i.test(x && x.label));
+    76	          c = f && f.value;
+    77	        }
+    78	        if (c) hasInc.add(normC(c));
+    79	      }
+    80	      // dedupe by code; annotate has/no incoming (exact code INCLUDED, annotated too)
+    81	      const seenC = new Set();
+    82	      const sibs = fam
+    83	        .filter(e => e && e.code && !seenC.has(normC(e.code)) && seenC.add(normC(e.code)))
+    84	        .map(e => ({ code: String(e.code), uuid: e.uuid || null, has: hasInc.has(normC(e.code)) }));
+    85	      // the exactly-resolved product code(s) — family must offer MORE than just these
+    86	      const exactCodes = new Set((Array.isArray(gate && gate.compatible_entities) ? gate.compatible_entities : [])
+    87	        .filter(e => e && String(e.entity_type).toLowerCase() === 'product' && e.code)
+    88	        .map(e => normC(e.code)));
+    89	      const extras = sibs.filter(s => !exactCodes.has(normC(s.code)));
+    90	      if (extras.length > 0) {
+    91	        // ALWAYS a numbered picker whenever ≥1 sibling exists — regardless of has-incoming.
+    92	        // (User reversed the earlier anyHasIncoming split: the all-no-incoming family now ALSO
+    93	        // shows a numbered list + number-pick invite, not a list-only/escalate-only variant.)
+    94	        // SORT: has-incoming first, then code order. NO cap. (Collapses to code-order when none has incoming.)
+    95	        sibs.sort((a, b) => (Number(b.has) - Number(a.has)) || String(a.code).localeCompare(String(b.code)));
+    96	        const exactList = [...exactCodes].map(c => c.toUpperCase()).join(', ');
+    97	        // Numbered list of ALL siblings; number-pick invite active; positional pick armed.
+    98	        const numbered = sibs.map((s, i) => `${i + 1}. ${s.code} — ${s.has ? 'has incoming' : 'no incoming'}`).join('\n');
+    99	        out.suggest_offer = true;
+   100	        out.suggest_selection_context = 'suggest_offer';
+   101	        out.suggest_response =
+   102	          `No incoming stock (ETA) found for ${exactList}. Related products:\n` +
+   103	          `${numbered}\n` +
+   104	          `Reply with a number to check its incoming, or reply 'yes' to escalate to ${team} team.`;
+   105	        // Uncapped list → NO per-sibling buttons (respond.io button cap); numbers typed.
+   106	        // Only Yes/No buttons, comma-stripped so labels don't split.
+   107	        out.suggest_quick_reply = [YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+   108	        out.suggest_last_result_set = sibs.map((s, i) => ({
+   109	          idx: i + 1, label: s.code, value: s.code, product: s.code, uuid: s.uuid, entity_type: 'product',
+   110	        }));
+   111	        return out;
+   112	      }
+   113	      // extras.length === 0 → only the exact code itself; fall through to plain escalate.
+   114	    }
+   115	  }
+   116	}
+   117	
+   118	// ── UUID leak guard (promotion did-you-mean) ────────
+   119	// Promotions have no product code: their canonical_code IS the promo uuid, and the
+   120	// human name lives in display.description. Rendering canonical_code as the label leaks
+   121	// a raw uuid to the customer. isUuid() detects that; humanLabel() prefers a REAL code,
+   122	// else the display name; null ⇒ the candidate has no human label and must be dropped.
+   123	const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+   124	const isUuid = (s) => UUID_RE.test(String(s || ''));
+   125	const humanLabel = (m) => {
+   126	  const c = m && m.canonical_code;
+   127	  if (c && !isUuid(c)) return String(c);
+   128	  const d = (m && m.display) || {};
+   129	  return d.description || d.product_name || d.name || null;
+   130	};
+   131	
+   132	const unresolved  = Array.isArray(r?.unresolved_tokens) ? r.unresolved_tokens : [];
+   133	const isClar      = out.is_clarification === true;   // preserve vague/scope clarify prompts
+   134	const requireSpec = gate?.require_specific === true;  // preserve require-specific prompts
+   135	const allowedTypes = Array.isArray(gate?.gate_debug?.allowed_lookup) ? gate.gate_debug.allowed_lookup : null;
+   136	const isExact = (m) => String(m?.match_tier || '').toLowerCase() === 'exact';
+   137	
+   138	// Attachment domain → name the actual doc type the user asked for (photo/certificate/
+   139	// drawing) instead of a generic word. Falls back to 'document'.
+   140	const attachmentNoun = () => {
+   141	  if (q?.domain_hint !== 'product_attachment') return null;
+   142	  const at = Array.isArray(q?.entities)
+   143	    ? q.entities.find(e => String(e.hint || '').toLowerCase() === 'attachment_type') : null;
+   144	  return (at && at.raw) ? at.raw : 'document';
+   145	};
+   146	
+   147	// ── D1: resolution-miss "did you mean" — PER-TOKEN, GENUINE-MISS ONLY ────────
+   148	// Only a token the resolver could not resolve AND that had no exact match drives a
+   149	// did-you-mean, using ITS OWN matches/alternatives. Never aggregate candidates across
+   150	// tokens (bug: in a multi-item order, a dead SRTUB6503-BL borrowed SRTMFV207-NL from a
+   151	// sibling token). An ambiguous token that still had an exact match returned data → not a miss.
+   152	function tokenCandidates(res) {
+   153	  const acc = [];
+   154	  if (Array.isArray(res?.matches)) acc.push(...res.matches);
+   155	  if (Array.isArray(res?.alternatives)) acc.push(...res.alternatives);
+   156	  const seen = new Set(); const keep = [];
+   157	  for (const m of acc) {
+   158	    const code = m && m.canonical_code;
+   159	    if (!code) continue;
+   160	    if (isExact(m)) continue;                                                  // exact would have resolved
+   161	    if (allowedTypes && m.entity_type && !allowedTypes.includes(m.entity_type)) continue;
+   162	    if (seen.has(code)) continue;
+   163	    seen.add(code); keep.push(m);   // API ranks variants-first / by similarity → keep order
+   164	  }
+   165	  return keep;
+   166	}
+   167	
+   168	// Build the list of genuine miss tokens (their own resolution, no exact match).
+   169	
+   170	// ── honour the gate's document-class narrowing (container-status S1) ────────
+   171	// `r` above is bound to the RAW resolver node, so a token the GATE resolved still looks
+   172	// unresolved here. Measured: "please send me the container status list" returned the correct
+   173	// file AND "Couldn't find 'container status list' — did you mean Packing List, Stock_List,
+   174	// container_status" in the same message. The answer was right; the message read as broken.
+   175	// Deliberately narrow: only tokens the gate stamped `resolved_by === 'document-class-narrowing'`
+   176	// are dropped, so this cannot suppress an ordinary miss.
+   177	const _gateResolvedTokens = (() => {
+   178	  try {
+   179	    const _g = $('disallowed-entity-gate').first().json ?? {};
+   180	    return new Set((_g.resolutions ?? [])
+   181	      .filter(x => x && x.resolved === true && x.resolved_by === 'document-class-narrowing')
+   182	      .map(x => String(x.token ?? '').trim().toLowerCase())
+   183	      .filter(Boolean));
+   184	  } catch (e) { return new Set(); }
+   185	})();
+   186	
+   187	// ── F1 · the CRM's own QUERY-KEYED resolution is NOT a customer token ────────
+   188	// Since spec-raw-text-migration `query` IS the customer's whole sentence, the resolution the
+   189	// CRM appends for it comes back with `token` == that sentence (MEASURED, exec 12597847). THIS
+   190	// node is the one that rendered it back at the customer (MEASURED, exec 12597815):
+   191	//     "wall hung basin got SIRIM cert?" — did you mean:
+   192	// i.e. their own question, quoted as something we could not find, heading a second overlapping
+   193	// candidate list. It is not a customer entity: n8n never sent it as a token.
+   194	//
+   195	// Identical rule and identical bytes to compile-current-state's — both are spliced from
+   196	// tests/offline/spec-answer-honesty/derived-token.js, because two hand-maintained copies of
+   197	// this rule is the next LESSONS §63 waiting to happen. Fail-open bounds are documented there.
+   198	const _sentTokens = (() => {
+   199	  const s = new Set();
+   200	  for (const e of (Array.isArray(q.entities) ? q.entities : [])) {
+   201	    const k = String((e && e.raw) ?? '').trim().toLowerCase();
+   202	    if (k) s.add(k);
+   203	  }
+   204	  return s;
+   205	})();
+   206	const _rawTurn = String((() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })() ?? '').trim().toLowerCase();
+   207	const _isDerivedQueryToken = (tok) => {
+   208	  const k = String(tok ?? '').trim().toLowerCase();
+   209	  if (!k) return false;
+   210	  if (_sentTokens.size) return !_sentTokens.has(k);
+   211	  return !!_rawTurn && k === _rawTurn;
+   212	};
+   213	let missResolutions = [];
+   214	if (Array.isArray(r?.resolutions)) {
+   215	  missResolutions = r.resolutions.filter(res => res && res.resolved !== true
+   216	    && !(Array.isArray(res.matches) && res.matches.some(isExact))
+   217	    && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
+   218	    && !_isDerivedQueryToken(res.token));
+   219	} else if (unresolved.length) {
+   220	  missResolutions = [r];   // legacy single-resolution shape
+   221	}
+   222	
+   223	// dym-multitoken: accumulate EVERY genuine-miss token that carries candidates (was: break on
+   224	// the FIRST such token, silently dropping the other missed tokens from a multi-item miss).
+   225	// missResolutions already holds each token's OWN resolution; tokenCandidates(res) already returns
+   226	// its OWN matches/alternatives (no cross-token borrowing). Cap the number of missed tokens shown
+   227	// at 5 (numbered list stays ≤ 15 with cap3 per token).
+   228	let d1s = [];
+   229	if (!isClar && !requireSpec) {
+   230	  for (const res of missResolutions) {
+   231	    const cands = tokenCandidates(res);
+   232	    if (cands.length) {
+   233	      d1s.push({ token: res.token || unresolved[0] || (q?.entities?.[0]?.raw) || 'that item', cands });
+   234	    }
+   235	  }
+   236	  d1s = d1s.slice(0, 5);
+   237	}
+   238	
+   239	// ── dym-probe-before-offer: has-it annotation inputs ────────
+   240	// dym-annotate (upstream, sibling-gate[1] path only) reports which of the offered
+   241	// codes actually HAVE the thing the user asked for. If it did not run, failed, or
+   242	// detected an unscoped probe, _dymOk is false and every render below is
+   243	// byte-identical to pre-change. This can never dead-end a turn.
+   244	// Scope: the single-token D1 CODE mode, the require-specific picker, and — since C3
+   245	// (immortal-hint-class) — the MULTI-TOKEN D1 block. Single-token NUMBERED mode and D2
+   246	// remain deliberately untouched.
+   247	const _dymNorm = (s) => String(s ?? '').trim().toLowerCase();
+   248	const _dymAnn = (() => { try {
+   249	  const n = $('dym-annotate');
+   250	  return n.isExecuted ? (n.first().json || {}) : null;
+   251	} catch (e) { return null; } })();
+   252	const _dymOk     = !!(_dymAnn && _dymAnn.dym_probe_meta && _dymAnn.dym_probe_meta.ok === true);
+   253	const _dymHas    = new Set(_dymOk ? (_dymAnn.dym_available_codes || []).map(_dymNorm) : []);
+   254	const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_dymNorm) : []);
+   255	// The attachment domain's noun comes from the parser's raw word via attachmentNoun()
+   256	// ("cert", "certs", "certification" …). Normalise the certificate family for the
+   257	// customer-facing suffix ONLY — attachmentNoun() itself is left alone so D2's
+   258	// "No {noun} for {code}" text stays byte-identical.
+   259	const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
+   260	const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || attachmentNoun()) : null;
+   261	
+   262	// ── dym-probe-before-offer, 4th surface: the REQUIRE-SPECIFIC PICKER ────────
+   263	// disallowed-entity-gate renders a numbered "needs to be more specific / please choose"
+   264	// list into gate_clarification, which not-found-error-message copies verbatim into
+   265	// escalate_message (not-found-error-message.js:175). D1 never fires on these turns
+   266	// (requireSpec suppresses it), which is why this surface stayed bare while D1 annotated
+   267	// the very same codes — the contradiction the user reported.
+   268	// The `incoming` domain already annotates its copy of this picker via
+   269	// annotate-incoming-picker; this is the same treatment for the other enabled domains,
+   270	// reusing the SAME line regex so the two renderings cannot drift.
+   271	// NO reordering — the numbers are the pick affordance; suffixes only.
+   272	if (requireSpec && _dymOk && typeof out.escalate_message === 'string' && out.escalate_message) {
+   273	  out.escalate_message = out.escalate_message.split('\n').map((line) => {
+   274	    const m = line.match(/^\s*\d+\.\s+(.+?)\s*$/);
+   275	    if (!m) return line;                                   // header / non-item line
+   276	    const k = _dymNorm(m[1]);
+   277	    if (!_dymProbed.has(k)) return line;                   // unprobed (e.g. multi-uuid) → BARE
+   278	    return line + (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`);
+   279	  }).join('\n');
+   280	}
+   281	
+   282	// Renderable survivors: a token whose candidates ALL drop via humanLabel (bare uuid, no display
+   283	// name) is skipped entirely — not shown, and its idx range is never consumed.
+   284	const _survivors = d1s
+   285	  .map(block => ({ block, picks: cap3(block.cands).map(m => ({ m, label: humanLabel(m) })).filter(p => p.label) }))
+   286	  .filter(s => s.picks.length);
+   287	
+   288	// Route on the SURVIVING-token count: 0 → fall through to D2; 1 → existing single-token block
+   289	// (BYTE-IDENTICAL to today, code/uuid split preserved); >1 → new numbered multi-block below.
+   290	let d1 = _survivors.length === 1 ? _survivors[0].block : null;
+   291	
+   292	if (_survivors.length > 1) {
+   293	  // ── D1 (multi-token): one labelled sub-list per surviving token, global CONTIGUOUS idx. ──
+   294	  // Numbered mode subsumes the code/uuid split — humanLabel is rendered for EVERY candidate
+   295	  // (promotion/uuid → name, product → code, never a bare uuid), so there is no anyUuid branching
+   296	  // on the multi-token path. Numbers are typed → Yes/No are the only buttons.
+   297	  let idx = 0;
+   298	  const blocks = [];
+   299	  out.suggest_last_result_set = [];
+   300	  out.dym_candidates = [];
+   301	  for (const s of _survivors) {
+   302	    const token = s.block.token;
+   303	    // dym-candidate-map: each candidate keeps its OWN source token so a code pick replaces the
+   304	    // right entity. _srcEnt looked up PER token (parser entity whose raw === this token).
+   305	    const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
+   306	      .find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
+   307	    const candLines = [];
+   308	    for (const p of s.picks) {
+   309	      idx += 1;
+   310	      const isU = isUuid(p.m.canonical_code);
+   311	      // ── C3 (immortal-hint-class): annotate the RENDERED LINE ONLY. ────────
+   312	      // No sort is introduced: `idx` still increments once per pick in exactly the same order, so
+   313	      // the numbering is preserved BY CONSTRUCTION and §IH-11 clause 3 (strip the suffixes, diff
+   314	      // against the pre-change render) holds byte-for-byte.
+   315	      // The suffix lands on `candLines`, a local array feeding ONLY suggest_response. It is never
+   316	      // applied to `p.label`, so suggest_last_result_set[].label stays BARE and the numbered pick
+   317	      // still round-trips on idx/value. dym_candidates (for_raw/for_hint/for_canonical) is a
+   318	      // separate statement and is untouched.
+   319	      // Unprobed ⇒ BARE, never a misleading `- no`: capped codes, multi-uuid exclusions and
+   320	      // unmappable types are all absent from _dymProbed and all render with no suffix.
+   321	      const _k = _dymNorm(p.m.canonical_code);
+   322	      const _sfx = (_dymOk && _dymProbed.has(_k))
+   323	        ? (_dymHas.has(_k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`)
+   324	        : '';
+   325	      candLines.push(`  ${idx}. ${p.label}${_sfx}`);
+   326	      out.suggest_last_result_set.push({
+   327	        idx, label: p.label, value: isU ? p.label : p.m.canonical_code,
+   328	        product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   329	      });
+   330	      out.dym_candidates.push({
+   331	        code: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   332	        for_raw: token, for_hint: p.m.entity_type || (_srcEnt && _srcEnt.hint) || null,
+   333	        for_canonical: (_srcEnt && _srcEnt.canonical_code) || null,
+   334	      });
+   335	    }
+   336	    blocks.push(`"${token}" — did you mean:\n` + candLines.join('\n'));
+   337	  }
+   338	  out.suggest_offer = true;
+   339	  out.suggest_selection_context = 'suggest_offer';
+   340	  out.suggest_response =
+   341	    `Couldn't find some items:\n\n` + blocks.join('\n') +
+   342	    `\n\nReply a number to pick, or 'yes' to escalate to ${team}.`;
+   343	  // numbers typed → Yes/No only, comma-stripped so labels don't split into extra buttons.
+   344	  out.suggest_quick_reply = [YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+   345	  out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
+   346	  return out;
+   347	}
+   348	
+   349	if (d1) {
+   350	  // Resolve a human label per candidate; DROP any that would still render a bare uuid
+   351	  // (uuid canonical_code with no display name) — never leak a uuid to the customer.
+   352	  const picks = cap3(d1.cands)
+   353	    .map(m => ({ m, label: humanLabel(m) }))
+   354	    .filter(p => p.label);
+   355	  if (picks.length) {
+   356	    const anyUuid = picks.some(p => isUuid(p.m.canonical_code));
+   357	    // dym-candidate-map: the source token that produced this did-you-mean, matched to the
+   358	    // parser entity whose raw == d1.token (for_hint/for_canonical fallback matchers).
+   359	    const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
+   360	      .find(e => String(e.raw || '').toLowerCase().trim() === String(d1.token || '').toLowerCase().trim());
+   361	    out.suggest_offer = true;
+   362	    out.suggest_selection_context = 'suggest_offer';
+   363	    if (anyUuid) {
+   364	      // Numbered mode: any uuid-coded (promotion) candidate → number buttons + human
+   365	      // names listed in the message text. Numbers are 1 char (safe under every respond.io
+   366	      // button/list interpretation) and the pick round-trips by last_result_set[idx].uuid.
+   367	      const numbered = picks.map((p, i) => `${i + 1}. ${p.label}`).join('\n');
+   368	      out.suggest_response =
+   369	        `Couldn't pin down "${d1.token}". Here are the closest matches:\n${numbered}\n` +
+   370	        `Reply with a number to continue, or would you like me to escalate to ${team} team?`;
+   371	      const nums = picks.map((_, i) => String(i + 1));
+   372	      out.suggest_quick_reply = [...nums, YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+   373	      out.suggest_last_result_set = picks.map((p, i) => ({
+   374	        idx: i + 1, label: p.label, value: p.label,
+   375	        product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   376	      }));
+   377	      // dym-candidate-map (numbered mode): key on the pick's CODE (canonical_code), never the label.
+   378	      // for_hint = the RESOLVED entity_type (FINDING 2 alignment), falling back to the parser hint.
+   379	      out.dym_candidates = picks.map(p => ({
+   380	        code: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   381	        for_raw: d1.token, for_hint: p.m.entity_type || (_srcEnt && _srcEnt.hint) || null,
+   382	        for_canonical: (_srcEnt && _srcEnt.canonical_code) || null,
+   383	      }));
+   384	      out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
+   385	    } else {
+   386	      // Code mode: all candidates have real product codes.
+   387	      // dym-probe-before-offer: when the has-it probe succeeded AND at least one offered
+   388	      // code was actually probed, SORT has-first (same comparator as D3) and render one
+   389	      // labelled line per code. The sort runs BEFORE codes / suggest_last_result_set /
+   390	      // dym_candidates are derived, so buttons, rendered lines and the pick round-trip
+   391	      // stay index-consistent. A code that was NOT probed gets no suffix — never a
+   392	      // misleading "no". When the probe is unavailable this whole block is inert and the
+   393	      // render below is BYTE-IDENTICAL to pre-change.
+   394	      // 🔴 suggest_quick_reply stays BARE CODES — the pick round-trips on that exact
+   395	      // button string through output_exchange's tryDymPick. Annotation is text-only.
+   396	      const _dymAnnotate = _dymOk && picks.some(p => _dymProbed.has(_dymNorm(p.m.canonical_code)));
+   397	      if (_dymAnnotate) {
+   398	        picks.sort((a, b) => {
+   399	          const ha = _dymHas.has(_dymNorm(a.m.canonical_code)) ? 1 : 0;
+   400	          const hb = _dymHas.has(_dymNorm(b.m.canonical_code)) ? 1 : 0;
+   401	          // STABLE PARTITION, no tiebreak. Array.prototype.sort is stable, so (hb - ha)
+   402	          // alone moves has-first while preserving the resolver's similarity order both
+   403	          // within each group and, when nobody has the thing, across the whole list.
+   404	          // A localeCompare tiebreak here would alphabetize and destroy that ranking.
+   405	          return hb - ha;
+   406	        });
+   407	      }
+   408	      const codes = picks.map(p => p.m.canonical_code);
+   409	      if (_dymAnnotate) {
+   410	        const _dymLines = picks.map((p, i) => {
+   411	          const c = String(p.m.canonical_code);
+   412	          const k = _dymNorm(c);
+   413	          const sfx = _dymProbed.has(k) ? (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`) : '';
+   414	          return `${i + 1}. ${c}${sfx}`;
+   415	        }).join('\n');
+   416	        out.suggest_response =
+   417	          `Couldn't find "${d1.token}". Did you mean:\n${_dymLines}\n` +
+   418	          `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+   419	      } else {
+   420	        out.suggest_response =
+   421	          `Couldn't find "${d1.token}". Did you mean ${humanList(codes)}? ` +
+   422	          `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+   423	      }
+   424	      out.suggest_quick_reply = [...codes,  YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+   425	      out.suggest_last_result_set = picks.map((p, i) => ({
+   426	        idx: i + 1, label: p.m.canonical_code, value: p.m.canonical_code,
+   427	        product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   428	      }));
+   429	      // dym-candidate-map (code mode): one entry per offered code → its source token.
+   430	      // for_hint = the RESOLVED entity_type (FINDING 2 alignment), falling back to the parser hint.
+   431	      out.dym_candidates = picks.map(p => ({
+   432	        code: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   433	        for_raw: d1.token, for_hint: p.m.entity_type || (_srcEnt && _srcEnt.hint) || null,
+   434	        for_canonical: (_srcEnt && _srcEnt.canonical_code) || null,
+   435	      }));
+   436	      out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
+   437	    }
+   438	    return out;
+   439	  }
+   440	  // All candidates dropped (bare uuid, no display name) → suggest_offer stays false and we
+   441	  // fall through to D2 / escalate-only. Never emit an invented or uuid label.
+   442	}
+   443	
+   444	// ── D2: data-miss "alternatives" (domain tool alternatives[] + relaxed_axis) ────
+   445	// get-results now runs EXACTLY ONCE per turn (tool-loop-removal, 2026-08-03: one tool
+   446	// per turn; the per-tool splitOut + splitInBatches fan-out is deleted). The run scan
+   447	// below is retained UNCHANGED and self-terminates at run 0 via its own catch -> break,
+   448	// so this edit is comment-only. Gate on alternatives != null (never invent).
+   449	let alts = null, axis = 'entity';
+   450	try {
+   451	  const node = $('Call \'sub-get-results\'');
+   452	  if (node.isExecuted) {
+   453	    for (let ri = 0; ri < 25; ri++) {
+   454	      let items;
+   455	      try { items = node.all(0, ri); } catch (e) { break; }
+   456	      if (!items || !items.length) break;
+   457	      const hit = items.find(it => it && it.json && Array.isArray(it.json.alternatives) && it.json.alternatives.length);
+   458	      if (hit) { alts = hit.json.alternatives; axis = hit.json.relaxed_axis || 'entity'; break; }
+   459	    }
+   460	  }
+   461	} catch (e) { alts = null; }
+   462	if (!alts) return out;   // no alternatives on any run → keep existing "escalate?" behaviour
+   463	
+   464	const rawPicks = cap3(alts);
+   465	const anyUuidAlt = rawPicks.some(a => isUuid(a.value));
+   466	
+   467	const compat = Array.isArray(gate?.compatible_entities) ? gate.compatible_entities : [];
+   468	const askedCode = (compat[0] && (compat[0].code || compat[0].canonical_code))
+   469	  || (Array.isArray(q?.entities) && q.entities[0] ? q.entities[0].raw : 'that item');
+   470	// UUID LEAK (display only): promotions have no product code, so askedCode above IS a uuid and
+   471	// the "No {noun} for {askedCode}" templates printed it straight to the customer
+   472	// (observed: "No promotion for 3b9d6b74-5d4a-4b9f-b2b6-110599485332. Try: ..."). The existing
+   473	// guard covered the CANDIDATES, never the subject.
+   474	// askedCode itself is left untouched — it is the dym-candidate-map linkage key (for_raw); only
+   475	// the rendered label changes.
+   476	const askedLabel = (() => {
+   477	  const c0 = compat[0] && (compat[0].code || compat[0].canonical_code);
+   478	  if (c0 && !isUuid(c0)) return String(c0);
+   479	  const d0 = (compat[0] && compat[0].display) || {};
+   480	  const human = d0.description || d0.product_name || d0.name;
+   481	  if (human) return String(human);
+   482	  const raw = Array.isArray(q?.entities) && q.entities[0] ? q.entities[0].raw : null;
+   483	  return raw ? String(raw) : 'that item';
+   484	})();
+   485	
+   486	// Grammatical mass-noun for the "No {noun} for {code}" template (no article).
+   487	const NOUN = { inventory: 'stock', incoming: 'incoming stock (ETA)', master_products: 'product info', promotion: 'promotion' };
+   488	const noun = attachmentNoun() || NOUN[q?.domain_hint] || 'result';
+   489	
+   490	if (!anyUuidAlt) {
+   491	  // ── non-uuid alternatives: BYTE-IDENTICAL to pre-fix ──
+   492	  const picks  = rawPicks;
+   493	  const values = picks.map(a => a.value).filter(Boolean);
+   494	  if (values.length === 0) return out;
+   495	
+   496	  let text;
+   497	  if (axis === 'date') {
+   498	    const asked = q?.date_filter_start
+   499	      ? ((q.date_filter_end && q.date_filter_end !== q.date_filter_start)
+   500	          ? `${q.date_filter_start} to ${q.date_filter_end}` : q.date_filter_start)
+   501	      : 'that date';
+   502	    const custEnt = Array.isArray(q?.entities)
+   503	      ? q.entities.find(e => String(e.hint || '').toLowerCase() === 'customer') : null;
+   504	    const cust = custEnt ? custEnt.raw : 'This customer';
+   505	    const near = picks.map(a => a.display || a.value).join('; ');
+   506	    // datemiss-summary: lead with WHAT we resolved (customer + product bullets from
+   507	    // not-found-error-message) so a date-relaxation offer still confirms the entities it matched on.
+   508	    const _summary = (out.found_summary && String(out.found_summary).trim())
+   509	      ? `Here's what you want:\n${String(out.found_summary).trim()}\n\n` : '';
+   510	    text =
+   511	      `${_summary}No delivery on ${asked}. ${cust} has delivery on ${near}. ` +
+   512	      `Reply with a date to continue, or would you like me to escalate to ${team} team?`;
+   513	  } else {
+   514	    text =
+   515	      `No ${noun} for ${askedLabel}. Try: ${values.join(', ')}. ` +
+   516	      `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+   517	  }
+   518	
+   519	  out.suggest_offer = true;
+   520	  out.suggest_selection_context = 'suggest_offer';
+   521	  out.suggest_response = text;
+   522	  const isCsOrder = (q?.routing?.suggested_team === 'customer_service'
+   523	                  && q?.routing?.suggested_agent === 'order_enquiries');
+   524	  out.suggest_quick_reply = (axis === 'date' && isCsOrder ? [...values] : [...values, YES, NO])
+   525	    .map(s => String(s).replace(/,/g, '')).join(',');
+   526	  out.suggest_last_result_set = picks.map((a, i) => ({
+   527	    idx: i + 1, label: a.value, value: a.value, product: a.value,
+   528	    display: a.display || a.value, order_number: a.order_number || null,
+   529	  }));
+   530	  // dym-candidate-map (D2 alternatives, non-uuid): per-query linkage askedCode → each alternative code.
+   531	  // FINDING-1 FIX: build the map for CODE-corrections ONLY. A date-relaxation offer (axis==='date')
+   532	  // invites a DATE reply ("Reply with a date to continue"); mapping those alternatives keyed on the
+   533	  // customer (askedCode=customer) let a subsequent date reply hijack tryDymPick and DROP the customer.
+   534	  // On the date arm emit nothing (compile-current-state then clears dym_candidates to []); on the code
+   535	  // arm defensively drop any date-valued / non-code-shaped candidate.
+   536	  if (axis !== 'date') {
+   537	    out.dym_candidates = out.suggest_last_result_set
+   538	      .map(r => ({
+   539	        code: r.product || r.value, uuid: r.uuid || null, entity_type: r.entity_type || null,
+   540	        for_raw: askedCode, for_hint: (compat[0] && compat[0].entity_type) || null,
+   541	        for_canonical: (compat[0] && (compat[0].code || compat[0].canonical_code)) || null,
+   542	      }))
+   543	      .filter(c => isCodeShaped(c.code));
+   544	    out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
+   545	  }
+   546	  return out;
+   547	}
+   548	
+   549	// ── uuid-coded alternatives → numbered mode (defensive; never leak a uuid) ──
+   550	// Prefer display name; drop alternatives whose value is a uuid with no display.
+   551	const altPicks = rawPicks
+   552	  .map(a => ({ a, label: isUuid(a.value) ? (a.display || null) : a.value }))
+   553	  .filter(p => p.label);
+   554	if (altPicks.length === 0) return out;   // nothing renderable → escalate-only
+   555	
+   556	const numbered = altPicks.map((p, i) => `${i + 1}. ${p.label}`).join('\n');
+   557	out.suggest_offer = true;
+   558	out.suggest_selection_context = 'suggest_offer';
+   559	out.suggest_response =
+   560	  `No ${noun} for ${askedLabel}. Here are the closest matches:\n${numbered}\n` +
+   561	  `Reply with a number to continue, or would you like me to escalate to ${team} team?`;
+   562	const altNums = altPicks.map((_, i) => String(i + 1));
+   563	out.suggest_quick_reply = [...altNums, YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+   564	out.suggest_last_result_set = altPicks.map((p, i) => ({
+   565	  idx: i + 1, label: p.label, value: p.label, product: p.a.value,
+   566	  uuid: p.a.uuid || null, display: p.a.display || p.label, order_number: p.a.order_number || null,
+   567	}));
+   568	// dym-candidate-map (D2 alternatives, uuid mode): per-query linkage askedCode → each alternative.
+   569	// FINDING-1 FIX (defensive): uuid alternatives are never dates, but mirror the code-only scoping so a
+   570	// date-relaxation offer can never produce a dym entry via this arm either.
+   571	if (axis !== 'date') {
+   572	  out.dym_candidates = out.suggest_last_result_set
+   573	    .map(r => ({
+   574	      code: r.product || r.value, uuid: r.uuid || null, entity_type: r.entity_type || null,
+   575	      for_raw: askedCode, for_hint: (compat[0] && compat[0].entity_type) || null,
+   576	      for_canonical: (compat[0] && (compat[0].code || compat[0].canonical_code)) || null,
+   577	    }))
+   578	    .filter(c => isCodeShaped(c.code));
+   579	  out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
+   580	}
+   581	return out;
+   582	
+
+codex
+I have the broad shape. I’m narrowing to the exact matched-spec block now, because Q1 depends on whether key selection and value lookup are row-scoped or split across rows.
+exec
+/bin/zsh -lc "sed -n '840,918p' nodes/compile-current-state.js | nl -ba -v840" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   840	
+   841	  // Render each surfaced token (numbered when it has candidates, else a plain not-found line).
+   842	  // Global CONTIGUOUS idx 1..M across tokens; per-token candidates via its OWN matches/alternatives.
+   843	  // ── dym-probe-before-offer, 2nd consumer: has-it annotation for the PARTIAL-RESOLUTION
+   844	  // renderer. Identical contract to build-suggest-offer's D1 block — same _dymOk/_dymHas/
+   845	  // _dymProbed/_dymNoun names, same fail-open rule, same "not probed ⇒ NO suffix" rule.
+   846	  // Two lanes reach here: the results lane (central-exchange → dym-*-partial) and the
+   847	  // not-found lane (… → dym-annotate → … → cs-offer-gate[1]). Prefer whichever executed.
+   848	  // 🔴 NO SORT HERE. This block assigns a GLOBAL CONTIGUOUS idx across tokens that
+   849	  // _numbered/_dymCands are keyed on, and _numbered carries the for_raw/for_hint/
+   850	  // for_canonical pick-linkage. Reordering would renumber across token blocks and break the
+   851	  // round-trip. Annotation is suffix-only and order-preserving; has-first is D1's alone.
+   852	  const _dymNorm = (s) => String(s ?? '').trim().toLowerCase();
+   853	  const _dymAnn = (() => {
+   854	    for (const n of ['dym-annotate-partial', 'dym-annotate']) {
+   855	      try { const x = $(n); if (x.isExecuted) return x.first().json || {}; } catch (e) { /* not on this path */ }
+   856	    }
+   857	    return null;
+   858	  })();
+   859	  const _dymOk     = !!(_dymAnn && _dymAnn.dym_probe_meta && _dymAnn.dym_probe_meta.ok === true);
+   860	  const _dymHas    = new Set(_dymOk ? (_dymAnn.dym_available_codes || []).map(_dymNorm) : []);
+   861	  const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_dymNorm) : []);
+   862	  const _dymAttNoun = () => {
+   863	    if (qf?.domain_hint !== 'product_attachment') return null;
+   864	    const at = Array.isArray(qf?.entities)
+   865	      ? qf.entities.find(e => String(e.hint || '').toLowerCase() === 'attachment_type') : null;
+   866	    return (at && at.raw) ? at.raw : 'document';
+   867	  };
+   868	  const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
+   869	  const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || _dymAttNoun()) : null;
+   870	  const _dymSfx = (code) => {
+   871	    if (!_dymOk) return '';
+   872	    const k = _dymNorm(code);
+   873	    if (!_dymProbed.has(k)) return '';          // never a misleading "no" for an unprobed code
+   874	    return _dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`;
+   875	  };
+   876	
+   877	  const _entities = Array.isArray(qf.entities) ? qf.entities : [];
+   878	  let idx = 0;
+   879	  const _lines = [];
+   880	  const _numbered = [];   // -> dym_last_result_set rows (only when M >= 1)
+   881	  const _dymCands = [];   // -> dym offer candidates (only when M >= 1)
+   882	  for (const res of surfaced) {
+   883	    const token = res.token || unresolved[0] || (qf.entities?.[0]?.raw) || 'that item';
+   884	    const picks = cap3(tokenCandidates(res)).map(m => ({ m, label: humanLabel(m) })).filter(p => p.label);
+   885	    if (picks.length) {
+   886	      // dym-candidate-map: each candidate keeps its OWN source token (per-token _srcEnt; no borrow).
+   887	      const _srcEnt = _entities.find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
+   888	      _lines.push(`"${token}" — did you mean:`);
+   889	      for (const p of picks) {
+   890	        idx += 1;
+   891	        const isU = isUuid(p.m.canonical_code);
+   892	        const _forRaw = token;
+   893	        const _forHint = p.m.entity_type || (_srcEnt && _srcEnt.hint) || null;
+   894	        const _forCanon = (_srcEnt && _srcEnt.canonical_code) || null;
+   895	        // dym-probe-before-offer: suffix only, keyed on the CODE (never the label), so a
+   896	        // uuid-coded candidate rendered by name is simply not probed and gets nothing.
+   897	        _lines.push(`  ${idx}. ${p.label}${_dymSfx(p.m.canonical_code)}`);
+   898	        // superset row: display shape (idx/label/value/product/uuid/entity_type) + pick-linkage
+   899	        // (for_raw/for_hint/for_canonical) so the numbered-DYM handler in output_exchange can run the
+   900	        // SAME in-place replacement tryDymPick does.
+   901	        _numbered.push({
+   902	          idx, label: p.label, value: isU ? p.label : p.m.canonical_code,
+   903	          product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   904	          for_raw: _forRaw, for_hint: _forHint, for_canonical: _forCanon,
+   905	        });
+   906	        _dymCands.push({
+   907	          code: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   908	          for_raw: _forRaw, for_hint: _forHint, for_canonical: _forCanon,
+   909	        });
+   910	      }
+   911	    } else {
+   912	      _lines.push(`"${token}" — not found.`);   // zero renderable candidates -> plain line, no idx
+   913	    }
+   914	  }
+   915	  const M = _numbered.length;   // total numbered candidates across surfaced tokens
+   916	  const _footer = M >= 1 ? 'Reply a number to check it, or ask again.' : 'Ask again with the correct code.';
+   917	  userResponse += `\n\nCouldn't find these:\n` + _lines.join('\n') + `\n\n` + _footer;
+   918	
+
+exec
+/bin/zsh -lc "sed -n '323,370p' nodes/compile-current-state.js | nl -ba -v323" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+exec
+/bin/zsh -lc "sed -n '239,345p' nodes/build-suggest-offer.js | nl -ba -v239" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   239	// ── dym-probe-before-offer: has-it annotation inputs ────────
+   240	// dym-annotate (upstream, sibling-gate[1] path only) reports which of the offered
+   241	// codes actually HAVE the thing the user asked for. If it did not run, failed, or
+   242	// detected an unscoped probe, _dymOk is false and every render below is
+   243	// byte-identical to pre-change. This can never dead-end a turn.
+   244	// Scope: the single-token D1 CODE mode, the require-specific picker, and — since C3
+   245	// (immortal-hint-class) — the MULTI-TOKEN D1 block. Single-token NUMBERED mode and D2
+   246	// remain deliberately untouched.
+   247	const _dymNorm = (s) => String(s ?? '').trim().toLowerCase();
+   248	const _dymAnn = (() => { try {
+   249	  const n = $('dym-annotate');
+   250	  return n.isExecuted ? (n.first().json || {}) : null;
+   251	} catch (e) { return null; } })();
+   252	const _dymOk     = !!(_dymAnn && _dymAnn.dym_probe_meta && _dymAnn.dym_probe_meta.ok === true);
+   253	const _dymHas    = new Set(_dymOk ? (_dymAnn.dym_available_codes || []).map(_dymNorm) : []);
+   254	const _dymProbed = new Set(_dymOk ? (_dymAnn.dym_probe_meta.probed || []).map(_dymNorm) : []);
+   255	// The attachment domain's noun comes from the parser's raw word via attachmentNoun()
+   256	// ("cert", "certs", "certification" …). Normalise the certificate family for the
+   257	// customer-facing suffix ONLY — attachmentNoun() itself is left alone so D2's
+   258	// "No {noun} for {code}" text stays byte-identical.
+   259	const _dymNounOf = (n) => { const s = String(n ?? '').trim(); return /^cert/i.test(s) ? 'certificate' : (s || 'document'); };
+   260	const _dymNoun   = _dymOk ? _dymNounOf(_dymAnn.dym_probe_meta.noun || attachmentNoun()) : null;
+   261	
+   262	// ── dym-probe-before-offer, 4th surface: the REQUIRE-SPECIFIC PICKER ────────
+   263	// disallowed-entity-gate renders a numbered "needs to be more specific / please choose"
+   264	// list into gate_clarification, which not-found-error-message copies verbatim into
+   265	// escalate_message (not-found-error-message.js:175). D1 never fires on these turns
+   266	// (requireSpec suppresses it), which is why this surface stayed bare while D1 annotated
+   267	// the very same codes — the contradiction the user reported.
+   268	// The `incoming` domain already annotates its copy of this picker via
+   269	// annotate-incoming-picker; this is the same treatment for the other enabled domains,
+   270	// reusing the SAME line regex so the two renderings cannot drift.
+   271	// NO reordering — the numbers are the pick affordance; suffixes only.
+   272	if (requireSpec && _dymOk && typeof out.escalate_message === 'string' && out.escalate_message) {
+   273	  out.escalate_message = out.escalate_message.split('\n').map((line) => {
+   274	    const m = line.match(/^\s*\d+\.\s+(.+?)\s*$/);
+   275	    if (!m) return line;                                   // header / non-item line
+   276	    const k = _dymNorm(m[1]);
+   277	    if (!_dymProbed.has(k)) return line;                   // unprobed (e.g. multi-uuid) → BARE
+   278	    return line + (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`);
+   279	  }).join('\n');
+   280	}
+   281	
+   282	// Renderable survivors: a token whose candidates ALL drop via humanLabel (bare uuid, no display
+   283	// name) is skipped entirely — not shown, and its idx range is never consumed.
+   284	const _survivors = d1s
+   285	  .map(block => ({ block, picks: cap3(block.cands).map(m => ({ m, label: humanLabel(m) })).filter(p => p.label) }))
+   286	  .filter(s => s.picks.length);
+   287	
+   288	// Route on the SURVIVING-token count: 0 → fall through to D2; 1 → existing single-token block
+   289	// (BYTE-IDENTICAL to today, code/uuid split preserved); >1 → new numbered multi-block below.
+   290	let d1 = _survivors.length === 1 ? _survivors[0].block : null;
+   291	
+   292	if (_survivors.length > 1) {
+   293	  // ── D1 (multi-token): one labelled sub-list per surviving token, global CONTIGUOUS idx. ──
+   294	  // Numbered mode subsumes the code/uuid split — humanLabel is rendered for EVERY candidate
+   295	  // (promotion/uuid → name, product → code, never a bare uuid), so there is no anyUuid branching
+   296	  // on the multi-token path. Numbers are typed → Yes/No are the only buttons.
+   297	  let idx = 0;
+   298	  const blocks = [];
+   299	  out.suggest_last_result_set = [];
+   300	  out.dym_candidates = [];
+   301	  for (const s of _survivors) {
+   302	    const token = s.block.token;
+   303	    // dym-candidate-map: each candidate keeps its OWN source token so a code pick replaces the
+   304	    // right entity. _srcEnt looked up PER token (parser entity whose raw === this token).
+   305	    const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
+   306	      .find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
+   307	    const candLines = [];
+   308	    for (const p of s.picks) {
+   309	      idx += 1;
+   310	      const isU = isUuid(p.m.canonical_code);
+   311	      // ── C3 (immortal-hint-class): annotate the RENDERED LINE ONLY. ────────
+   312	      // No sort is introduced: `idx` still increments once per pick in exactly the same order, so
+   313	      // the numbering is preserved BY CONSTRUCTION and §IH-11 clause 3 (strip the suffixes, diff
+   314	      // against the pre-change render) holds byte-for-byte.
+   315	      // The suffix lands on `candLines`, a local array feeding ONLY suggest_response. It is never
+   316	      // applied to `p.label`, so suggest_last_result_set[].label stays BARE and the numbered pick
+   317	      // still round-trips on idx/value. dym_candidates (for_raw/for_hint/for_canonical) is a
+   318	      // separate statement and is untouched.
+   319	      // Unprobed ⇒ BARE, never a misleading `- no`: capped codes, multi-uuid exclusions and
+   320	      // unmappable types are all absent from _dymProbed and all render with no suffix.
+   321	      const _k = _dymNorm(p.m.canonical_code);
+   322	      const _sfx = (_dymOk && _dymProbed.has(_k))
+   323	        ? (_dymHas.has(_k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`)
+   324	        : '';
+   325	      candLines.push(`  ${idx}. ${p.label}${_sfx}`);
+   326	      out.suggest_last_result_set.push({
+   327	        idx, label: p.label, value: isU ? p.label : p.m.canonical_code,
+   328	        product: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   329	      });
+   330	      out.dym_candidates.push({
+   331	        code: p.m.canonical_code, uuid: p.m.uuid || null, entity_type: p.m.entity_type || null,
+   332	        for_raw: token, for_hint: p.m.entity_type || (_srcEnt && _srcEnt.hint) || null,
+   333	        for_canonical: (_srcEnt && _srcEnt.canonical_code) || null,
+   334	      });
+   335	    }
+   336	    blocks.push(`"${token}" — did you mean:\n` + candLines.join('\n'));
+   337	  }
+   338	  out.suggest_offer = true;
+   339	  out.suggest_selection_context = 'suggest_offer';
+   340	  out.suggest_response =
+   341	    `Couldn't find some items:\n\n` + blocks.join('\n') +
+   342	    `\n\nReply a number to pick, or 'yes' to escalate to ${team}.`;
+   343	  // numbers typed → Yes/No only, comma-stripped so labels don't split into extra buttons.
+   344	  out.suggest_quick_reply = [YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+   345	  out.dym_offer = _mkOffer(out.dym_candidates);   // dym-single-use-fix
+
+ succeeded in 0ms:
+   323	  // ── THE FILTER · matched_specs INTERSECT (spec_asked-keys UNION {class}) ──────────────
+   324	  // spec_asked is what the CUSTOMER asked for; matched_specs is what SCORED. A house
+   325	  // preference lands in the second and can never be in the first, which is what keeps an
+   326	  // unstated brand out of a sentence that reads as "your words matched this".
+   327	  const _asked = new Set();
+   328	  if (Array.isArray(_specRes.spec_asked)) {
+   329	    for (const _a of _specRes.spec_asked) {
+   330	      const _k = (_a && typeof _a === 'object' && typeof _a.key === 'string') ? _a.key
+   331	        : (typeof _a === 'string' ? _a : '');
+   332	      const _n = String(_k).trim().toLowerCase();
+   333	      if (_n) _asked.add(_n);
+   334	    }
+   335	  }
+   336	  // If `spec_asked` is ABSENT the endpoint predates CRM #142: nothing is asked-for, so only
+   337	  // `class` survives and the line degrades to the description form. That degradation is the
+   338	  // deployment TELL and is asserted (U8-14), not papered over with a fallback to the old
+   339	  // unfiltered behaviour - a fallback would make the deployed and undeployed states
+   340	  // indistinguishable at the customer boundary.
+   341	  const _selected = _keys.filter(k => { const n = k.toLowerCase(); return n === 'class' || _asked.has(n); });
+   342	  // Class leads: it is the noun the customer typed, and the qualifiers modify it. matched_specs
+   343	  // arrives sorted(), so first-seen order alone would bury it mid-sentence.
+   344	  const _ordered = _selected.filter(k => k.toLowerCase() === 'class')
+   345	    .concat(_selected.filter(k => k.toLowerCase() !== 'class'));
+   346	  // VALUES, from the first in-answer spec row that records the key. `display.specifications`
+   347	  // is values-only and may be null on the shape-B require path (CRM F9) - a missing key simply
+   348	  // drops out below.
+   349	  const _valueFor = (_k) => {
+   350	    for (const m of _specRows) {
+   351	      const _sp = m && m.display && m.display.specifications;
+   352	      if (_sp && typeof _sp === 'object' && !Array.isArray(_sp)
+   353	        && Object.prototype.hasOwnProperty.call(_sp, _k)) return _sp[_k];
+   354	    }
+   355	    return undefined;
+   356	  };
+   357	  // ── THE THREE-LINE HUMANISE RULE (conformance report DEV-1) ──────────────────────────
+   358	  // class verbatim, brand verbatim, everything else underscores-to-spaces + titlecase. The
+   359	  // branch exempts BOTH keys from the lower_snake enum pin because brand values carry real
+   360	  // spaces and case; re-casing "NO LOGO" or "SORENTO" rewrites the catalogue's own spelling.
+   361	  const _VERBATIM_KEYS = ['class', 'brand'];
+   362	  // TITLECASE PROPER — lower first, THEN capitalise. An uppercase-only pass would leave
+   363	  // "SORENTO" and "NO LOGO" untouched all by itself, which would make the class/brand
+   364	  // exemption an unfalsifiable guard (LESSONS §66: a mutant that cannot go red is a lie about
+   365	  // the assertion set). It is exempt because it is EXEMPT, and U8-7/U8-8/m24 prove it.
+   366	  const _title = (_s) => _s.replace(/_/g, ' ').toLowerCase()
+   367	    .replace(/\b[a-z]/g, (_c) => _c.toUpperCase()).trim();
+   368	  const _humanVal = (_k, _v) => {
+   369	    if (typeof _v === 'number' && isFinite(_v)) return String(_v);
+   370	    if (Array.isArray(_v)) {
+
+exec
+/bin/zsh -lc "sed -n '930,960p' nodes/compile-current-state.js | nl -ba -v930" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   930	// ── dym-single-use-fix: did-you-mean offer LIFECYCLE (supersede / retain / expire) ──
+   931	// Replaces the single-turn dym_candidates erasure with an explicit offer that survives repeated
+   932	// picks but is bounded by domain-switch / escalation / answer / TTL. First matching rule wins;
+   933	// EVERY non-retaining branch writes null explicitly — never reliance on key absence (§3c).
+   934	const _newOffer = (_sug && _sug.dym_offer && Array.isArray(_sug.dym_offer.candidates) && _sug.dym_offer.candidates.length)
+   935	  ? _sug.dym_offer : (_partialOffer || null);   // dym-partial-disambiguation: partial-miss offer survives the answered turn
+   936	const _prevOffer = (() => {
+   937	  try {
+   938	    const s = $('get-session-vars').first().json;
+   939	    const v = (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || null;
+   940	    return (v && v.dym_offer && typeof v.dym_offer === 'object') ? v.dym_offer : null;
+   941	  } catch (e) { return null; }
+   942	})();
+   943	const _pickApplied = qf.dym_pick_applied === true;
+   944	// a human owns the thread once escalation is confirmed OR a specific member was resolved this turn
+   945	const _escalated = !!(qf.escalation && (qf.escalation.is_escalation_confirmation === true || qf.escalation.preferred_assignee_id));
+   946	const _answered = Array.isArray(last_result_set) && last_result_set.length > 0;
+   947	const _dymOffer = (() => {
+   948	  if (_newOffer) return { ..._newOffer, ttl: 3, picked: [] };                    // 1. fresh offer → REPLACE
+   949	  if (!_prevOffer) return null;                                                  //    nothing to carry
+   950	  // 2. domain switch — reads the POST-carry domain_hint (null never kills: a bare-code pick emits null)
+   951	  if (qf.domain_hint && _prevOffer.domain && qf.domain_hint !== _prevOffer.domain) return null;
+   952	  if (_escalated) return null;                                                   // 3. escalation committed → DIE
+   953	  if (_pickApplied) {                                                            // 4. pick applied → RETAIN (T3 fix)
+   954	    const _picked = Array.isArray(_prevOffer.picked) ? _prevOffer.picked.slice() : [];
+   955	    if (qf.dym_offer_pick_code && !_picked.includes(qf.dym_offer_pick_code)) _picked.push(qf.dym_offer_pick_code);
+   956	    return { ..._prevOffer, ttl: 3, picked: _picked };
+   957	  }
+   958	  if (_answered) return null;                                                    // 5. answered, no pick → DIE
+   959	  if (!(Number(_prevOffer.ttl) > 1)) return null;                               // 6. TTL exhausted (ttl-1<=0)
+   960	  return { ..._prevOffer, ttl: Number(_prevOffer.ttl) - 1 };                     // 7. otherwise RETAIN, decrement
+
+exec
+/bin/zsh -lc "sed -n '368,420p' nodes/compile-current-state.js | nl -ba -v368" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   368	  const _humanVal = (_k, _v) => {
+   369	    if (typeof _v === 'number' && isFinite(_v)) return String(_v);
+   370	    if (Array.isArray(_v)) {
+   371	      const _p = _v.map((_x) => _humanVal(_k, _x)).filter((_x) => typeof _x === 'string' && _x.length > 0);
+   372	      return _p.length ? _p.join(', ') : null;
+   373	    }
+   374	    if (typeof _v !== 'string') return null;      // boolean / object / null -> dropped, never guessed
+   375	    const _s = _v.trim();
+   376	    if (!_s) return null;
+   377	    return _VERBATIM_KEYS.indexOf(String(_k).toLowerCase()) >= 0 ? _s : _title(_s);
+   378	  };
+   379	  const _prettyKey = (_k) => String(_k).replace(/_/g, ' ').trim();
+   380	  const _parts = [];
+   381	  for (const _k of _ordered) {
+   382	    const _v = _humanVal(_k, _valueFor(_k));
+   383	    if (typeof _v !== 'string' || !_v.length) continue;
+   384	    _parts.push(_k.toLowerCase() === 'class' ? _v : `${_prettyKey(_k)}: ${_v}`);
+   385	  }
+   386	  const _and = (a) => (a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+   387	  userResponse += _parts.length
+   388	    ? `\n\n_Matched on: ${_and(_parts)}._`
+   389	    : '\n\n_Matched on your description._';
+   390	})();
+   391	
+   392	// ── N-2 · name the qualifier we could not filter by (spec-answer-honesty) ────────────
+   393	// Silence must never pass as success. When the customer states a spec the catalogue does not
+   394	// record, the rows come back looking like a direct answer to a question that was never asked:
+   395	// measured, "...thickness 1.2mm" and "...thickness 1.0mm" returned a BYTE-IDENTICAL reply
+   396	// (execs 12303472 / 12303548, frozen in tests/offline/spec-answer-honesty/baselines/).
+   397	//
+   398	// Data-truth wording (plan decision §5.1): the spec ISN'T RECORDED for these products. Not
+   399	// "I couldn't filter" — that reads as a broken search and invites "then try again properly".
+   400	//
+   401	// `spec_unmet` is emitted only by the CRM's spec-search fallback and is `[]` when everything
+   402	// asked for was met, so this is a byte-identical no-op on every turn that works today. Runs
+   403	// on the ANSWERED happy path only, with the same guards as the friendly-domain suffix below.
+   404	// Deliberately contains NONE of crossdomain-compose's insertion markers ('Did you mean',
+   405	// 'Try:', 'Related products:', 'Here are the closest matches:', 'Would you like me to
+   406	// escalate'), so it cannot move where the cross-domain block lands.
+   407	(() => {
+   408	  const answered = !isEscalateBranch
+   409	    && includeResponse
+   410	    && !manualResponse
+   411	    && qf.message_type === 'business_query'
+   412	    && typeof userResponse === 'string'
+   413	    && userResponse.trim().length > 0
+   414	    && Array.isArray(last_result_set)
+   415	    && last_result_set.length > 0;
+   416	  if (!answered) return;
+   417	  const _re = (() => { try { return $('resolve-entity').first().json ?? {}; } catch (e) { return {}; } })();
+   418	  // C-2 forward-compat: when the CRM ships `unrecognized_terms` (a term it could not map to a
+   419	  // key at all) it is a DIFFERENT statement from "recorded nowhere", so it is read separately
+   420	  // and only used as a fallback source of names until its own wording lands.
+
+exec
+/bin/zsh -lc "sed -n '821,839p' nodes/compile-current-state.js | nl -ba -v821" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   821	  const _isDerivedQueryToken = (tok) => {
+   822	    const k = String(tok ?? '').trim().toLowerCase();
+   823	    if (!k) return false;
+   824	    if (_sentTokens.size) return !_sentTokens.has(k);
+   825	    return !!_rawTurn && k === _rawTurn;
+   826	  };
+   827	  let missResolutions = [];
+   828	  if (Array.isArray(r?.resolutions)) {
+   829	    missResolutions = r.resolutions.filter(res => res && res.resolved !== true
+   830	      && !(Array.isArray(res.matches) && res.matches.some(isExact))
+   831	      && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
+   832	      && !_isDerivedQueryToken(res.token)
+   833	      && !_tokenReachedSpecSearch(res.token)
+   834	      && !_tokenWasAnswered(res));
+   835	  } else if (unresolved.length && !_tokenWasAnswered(r)) {
+   836	    missResolutions = [r];   // legacy single-resolution shape
+   837	  }
+   838	  const surfaced = missResolutions.slice(0, 5);   // cap missed tokens shown at 5
+   839	  if (surfaced.length === 0) return;               // no genuine miss -> pure no-op (byte-identical)
+
+exec
+/bin/zsh -lc "sed -n '207,221p' nodes/build-suggest-offer.js | nl -ba -v207" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   207	const _isDerivedQueryToken = (tok) => {
+   208	  const k = String(tok ?? '').trim().toLowerCase();
+   209	  if (!k) return false;
+   210	  if (_sentTokens.size) return !_sentTokens.has(k);
+   211	  return !!_rawTurn && k === _rawTurn;
+   212	};
+   213	let missResolutions = [];
+   214	if (Array.isArray(r?.resolutions)) {
+   215	  missResolutions = r.resolutions.filter(res => res && res.resolved !== true
+   216	    && !(Array.isArray(res.matches) && res.matches.some(isExact))
+   217	    && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
+   218	    && !_isDerivedQueryToken(res.token));
+   219	} else if (unresolved.length) {
+   220	  missResolutions = [r];   // legacy single-resolution shape
+   221	}
+
+exec
+/bin/zsh -lc "sed -n '396,424p' nodes/build-suggest-offer.js | nl -ba -v396" in /Users/tehjayson/Documents/foundryx/sorento_crm_n8n/n8n-workflows-init/export/clone-sorento-consume-main-TEST
+ succeeded in 0ms:
+   396	      const _dymAnnotate = _dymOk && picks.some(p => _dymProbed.has(_dymNorm(p.m.canonical_code)));
+   397	      if (_dymAnnotate) {
+   398	        picks.sort((a, b) => {
+   399	          const ha = _dymHas.has(_dymNorm(a.m.canonical_code)) ? 1 : 0;
+   400	          const hb = _dymHas.has(_dymNorm(b.m.canonical_code)) ? 1 : 0;
+   401	          // STABLE PARTITION, no tiebreak. Array.prototype.sort is stable, so (hb - ha)
+   402	          // alone moves has-first while preserving the resolver's similarity order both
+   403	          // within each group and, when nobody has the thing, across the whole list.
+   404	          // A localeCompare tiebreak here would alphabetize and destroy that ranking.
+   405	          return hb - ha;
+   406	        });
+   407	      }
+   408	      const codes = picks.map(p => p.m.canonical_code);
+   409	      if (_dymAnnotate) {
+   410	        const _dymLines = picks.map((p, i) => {
+   411	          const c = String(p.m.canonical_code);
+   412	          const k = _dymNorm(c);
+   413	          const sfx = _dymProbed.has(k) ? (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`) : '';
+   414	          return `${i + 1}. ${c}${sfx}`;
+   415	        }).join('\n');
+   416	        out.suggest_response =
+   417	          `Couldn't find "${d1.token}". Did you mean:\n${_dymLines}\n` +
+   418	          `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+   419	      } else {
+   420	        out.suggest_response =
+   421	          `Couldn't find "${d1.token}". Did you mean ${humanList(codes)}? ` +
+   422	          `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
+   423	      }
+   424	      out.suggest_quick_reply = [...codes,  YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
+
+codex
+nodes/compile-current-state.js:349 | Q1: `_valueFor` takes values from the first spec row whose `display.specifications` has the key, not the row whose own `display.matched_specs` named it; deciding lines: `for (const m of _specRows)` / `hasOwnProperty.call(_sp, _k)) return _sp[_k]`. | Lookup value on the same row that contributed the matched key.
+
+nodes/compile-current-state.js:888, nodes/build-suggest-offer.js:336 | Q2: duplicate customer string `"${token}" — did you mean:`. | Centralize the DYM token-heading renderer.
+
+nodes/compile-current-state.js:897, nodes/build-suggest-offer.js:325 | Q2: duplicate customer numbered-candidate string `  ${idx}. ${p.label}${suffix}`. | Centralize the numbered DYM line renderer.
+
+nodes/compile-current-state.js:874, nodes/build-suggest-offer.js:278 | Q2: duplicate customer suffix strings ` - has ${_dymNoun}` / ` - no ${_dymNoun}`. | Centralize the DYM availability suffix renderer.
+
+nodes/compile-current-state.js:829, nodes/build-suggest-offer.js:215 | Q3: `res.resolved !== true` treats missing/null/undefined/string `"false"` as unresolved, so DYM/not-found rendering can run on non-authoritative data. | Require an explicit unresolved signal or normalize booleans before filtering.
+
+nodes/compile-current-state.js:823, nodes/build-suggest-offer.js:209 | Q3: empty/missing token returns `false` from `_isDerivedQueryToken`, so the miss-render branch remains open. | Do not render a miss unless the token is nonempty and known customer-sent.
+
+nodes/build-suggest-offer.js:352 | Q4: single-token D1 recomputes `picks` and guards `if (picks.length)` even though `_survivors.length === 1` already proved renderable picks at lines 284-290. | Carry `_survivors[0].picks` into the single-token path and remove the second guard.
+
+FIRST-ROW-WITH-KEY
+hook: Stop
+hook: Stop Completed
+tokens used
+40,069
+nodes/compile-current-state.js:349 | Q1: `_valueFor` takes values from the first spec row whose `display.specifications` has the key, not the row whose own `display.matched_specs` named it; deciding lines: `for (const m of _specRows)` / `hasOwnProperty.call(_sp, _k)) return _sp[_k]`. | Lookup value on the same row that contributed the matched key.
+
+nodes/compile-current-state.js:888, nodes/build-suggest-offer.js:336 | Q2: duplicate customer string `"${token}" — did you mean:`. | Centralize the DYM token-heading renderer.
+
+nodes/compile-current-state.js:897, nodes/build-suggest-offer.js:325 | Q2: duplicate customer numbered-candidate string `  ${idx}. ${p.label}${suffix}`. | Centralize the numbered DYM line renderer.
+
+nodes/compile-current-state.js:874, nodes/build-suggest-offer.js:278 | Q2: duplicate customer suffix strings ` - has ${_dymNoun}` / ` - no ${_dymNoun}`. | Centralize the DYM availability suffix renderer.
+
+nodes/compile-current-state.js:829, nodes/build-suggest-offer.js:215 | Q3: `res.resolved !== true` treats missing/null/undefined/string `"false"` as unresolved, so DYM/not-found rendering can run on non-authoritative data. | Require an explicit unresolved signal or normalize booleans before filtering.
+
+nodes/compile-current-state.js:823, nodes/build-suggest-offer.js:209 | Q3: empty/missing token returns `false` from `_isDerivedQueryToken`, so the miss-render branch remains open. | Do not render a miss unless the token is nonempty and known customer-sent.
+
+nodes/build-suggest-offer.js:352 | Q4: single-token D1 recomputes `picks` and guards `if (picks.length)` even though `_survivors.length === 1` already proved renderable picks at lines 284-290. | Carry `_survivors[0].picks` into the single-token path and remove the second guard.
+
+FIRST-ROW-WITH-KEY

@@ -1,0 +1,40 @@
+{
+ "case": "SR-8",
+ "title": "junk suppression retest -- no longer observational, D7 must kill SORENTOBAG/SORENTO188/junk",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "sorento double bowl kitchen sink with 1.2mm thickness",
+ "test_run_id": "sr8-20260815",
+ "execution": "12597395",
+ "pre_migration_baseline_for_comparison": "SR-B3 (exec 12303509, frozen in SR.md): '4 junk rows + Couldn't find these: \"double bowl kitchen sink\" — not found.' -- i.e. the OR-path could not run spec search at all pre-C1/D7, so 'sorento' produced garbage code-prefix matches (SORENTOBAG-class junk) instead of a real answer.",
+ "resolve_entity_http_response": {
+  "tokens": ["Sorento", "double bowl kitchen sink"],
+  "fallback_match_mode": "or",
+  "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+  "per_token_resolutions": [
+   {"token": "Sorento", "resolved": false, "matches": [], "alternatives": []},
+   {"token": "double bowl kitchen sink", "resolved": false, "matches": [], "alternatives": []},
+   {"token": "sorento double bowl kitchen sink with 1.2mm thickness (full query)", "resolved": false, "ambiguous": true, "matches": "5 real product rows -- 4x CABANA kitchen sinks + 1x genuine SORENTO-brand kitchen sink (SRTKS4040-O/F)"}
+  ],
+  "floor_missed": false,
+  "spec_asked": [{"key": "bowl_count", "value": 2}, {"key": "brand", "value": "SORENTO"}, {"key": "thickness", "value": 1.2}],
+  "junk_codes_present": false,
+  "junk_codes_checked_for": ["SORENTOBAG", "SORENTO188", "****NOT USE THIS CODE"]
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* SRTKS4040-O/F\n*Description:* SORENTO S/STEEL KITCHEN SINK WITH OVERFLOW SRTKS4040-O/F (440X440X200X1MM)\n*List Price:* MYR 0.00\n*Dimensions:* 440.00 x 440.00 x 200.00 mm\n\n_Data last updated: 14/08/2026 18:37:34_\n\n_Matched on: bowl count: 2, brand: CABANA and thickness: 1._\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "junk_absent": "CONFIRMED -- grepped full reply, none of SORENTOBAG/SORENTO188/****NOT USE THIS CODE present anywhere",
+  "descriptive_half_produces_real_spec_answer": "CONFIRMED -- 5 real, correctly-branded products (CABANA double-bowl sinks + one genuine SORENTO kitchen sink)",
+  "matched_on_line_note": "three keys joined 'X, Y and Z': 'bowl count: 2, brand: CABANA and thickness: 1.' -- note this line's brand value is CABANA (the winning row's brand, drawn from the FIRST in-answer row per ranker order per SR-U8's rule), not SORENTO -- correct per the value-provenance rule since CKS315 (brand=CABANA) is the first-ranked row, not SRTKS4040-O/F",
+  "sendmsg_parts": 1
+ },
+ "verdict_basis": "PASS per SR.md's explicit acceptance: 'no longer observational. D7's _suppress_brand_prefix_junk shipped: SORENTOBAG/SORENTO188/****NOT USE THIS CODE must be ABSENT, and the descriptive half must produce a real spec answer.' Both conditions hold. D7 (junk suppression) is confirmed deployed on the live endpoint the clone calls.",
+ "safety_S0": {
+  "S1_S3": "PASS -- 3-entry would_* egress log.",
+  "S5_test_mode": "{test_mode:true, test_run_id:'sr8-20260815', scope:'deterministic'} self-verified."
+ },
+ "S7": "Execution window 15:40:58Z-15:41:08Z falls inside the rollup's swept 15:34:00Z-15:45:55Z window; all covering polls LLEN=0/pop=empty."
+}

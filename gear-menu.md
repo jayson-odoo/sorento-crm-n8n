@@ -1,0 +1,232 @@
+- generic:
+  - button "Open Next.js Dev Tools" [ref=f10e7] [cursor=pointer]
+  - alert
+  - generic:
+    - generic:
+      - link:
+        - /url: /
+      - button
+    - generic:
+      - generic:
+        - generic:
+          - menu:
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - link:
+                    - /url: /
+                    - generic: Dashboards
+                    - button
+            - generic:
+              - heading [level=3]:
+                - button [expanded]:
+                  - generic: Quick Access
+              - region:
+                - menu:
+                  - group:
+                    - generic:
+                      - button: Add shortcut
+                    - generic: Pin menu items or folders for quick access.
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: User Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Delivery Order Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Complaint Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: SLA Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Product Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Procurement
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Project Sales Admin
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Inventory Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Marketing Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Forms Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Workflow Forms
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: Resource Management
+            - generic:
+              - heading [level=3]:
+                - button:
+                  - generic: System Management
+  - generic:
+    - banner:
+      - generic:
+        - generic:
+          - generic:
+            - button:
+              - generic: Search menu...
+              - generic: ⌘⇧K
+          - generic:
+            - button
+          - generic:
+            - button
+          - generic:
+            - button
+            - generic: "19"
+          - button
+    - main:
+      - generic:
+        - navigation:
+          - list:
+            - listitem:
+              - link:
+                - /url: /
+                - text: Home
+            - listitem
+            - listitem:
+              - link:
+                - /url: /procurement-management
+                - text: Procurement
+            - listitem
+            - listitem:
+              - link:
+                - /url: /procurement-management/purchase-requests
+                - text: Purchase Requests
+            - listitem
+            - listitem:
+              - link [disabled]: Details
+        - generic:
+          - generic:
+            - tablist:
+              - tab [selected]: Details
+              - tab: SLA Tracking
+            - tabpanel:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=1]: Purchase Request - PR26-0344
+                    - paragraph: 25/06/2026 · Purchase Request
+                  - generic:
+                    - button: Approve
+                    - button: Reject
+                    - button [expanded]
+                    - generic:
+                      - button
+                      - generic: 6 / 54
+                      - button
+                    - button: Edit
+                    - button: Delete
+                - generic:
+                  - paragraph:
+                    - generic: Escalated to Tier 3 — not yet claimed. You can act as admin.
+                - generic:
+                  - generic:
+                    - paragraph:
+                      - generic: SLA escalated — tier 3 · now assigned to CK Lee
+                      - generic: — Response/resolution overdue
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic: Purchase Request
+                            - generic: Pending approval
+                        - heading [level=2]: Purchase Request
+                        - generic:
+                          - generic:
+                            - paragraph: Purchase request number
+                            - paragraph: PR26-0344
+                          - generic:
+                            - paragraph: Submitted date
+                            - paragraph: 25/06/2026
+                          - generic:
+                            - paragraph: Customer Name
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Project Title
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Purpose
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Sales Type
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Expected date of delivery
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Expected date to receive PO
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Respond conversation
+                            - generic:
+                              - link:
+                                - /url: https://app.respond.io/space/364817/inbox/452753029
+                                - text: https://app.respond.io/space/364817/inbox/452753029
+                              - button: Chat
+                        - generic:
+                          - paragraph: Line items
+                          - paragraph: No line items.
+                        - generic:
+                          - generic:
+                            - paragraph: Requested by
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Approved by
+                            - paragraph: —
+                            - paragraph: Approved date
+                            - paragraph: —
+                          - generic:
+                            - paragraph: Approval comments
+                            - paragraph: —
+                  - generic:
+                    - generic:
+                      - generic:
+                        - heading [level=3]: Linked Attachments
+                        - button: Link Attachment
+                      - generic: No linked attachments.
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Audit Trail
+                    - generic:
+                      - paragraph: No audit history for this record.
+    - contentinfo:
+      - generic:
+        - generic:
+          - generic: 2026 @ Foundryx
+          - navigation:
+            - link:
+              - /url: /ticket-management/tickets
+              - text: Support
+  - button [ref=f10e169] [cursor=pointer]
+  - region "Notifications alt+T"
+  - menu "Request actions" [active] [ref=f10e173]:
+    - menuitem "Escalate SLA" [ref=f10e174]
+    - menuitem "Copy approval link" [ref=f10e175]
+    - menuitem "Copy view link" [ref=f10e176]
+    - menuitem "Export to Excel" [ref=f10e177]
+    - menuitem "Chat records" [ref=f10e178]
+    - menuitem "Update & Reply" [ref=f10e179]
+    - menuitem "Void" [ref=f10e180]

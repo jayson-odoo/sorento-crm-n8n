@@ -1,0 +1,50 @@
+{
+ "case": "SA-3",
+ "title": "nonsense unchanged",
+ "verdict": "PASS",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "purple levitating sink",
+ "test_run_id": "sa3-20260812",
+ "execution": "12179491",
+ "started_at": "2026-08-12T08:53:13.267Z",
+ "resolve_entity_http_output": {
+   "tokens": ["purple levitating sink"],
+   "resolutions": [{"token": "purple levitating sink", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []}],
+   "unresolved_tokens": ["purple levitating sink"],
+   "spec_candidates": [],
+   "floor_missed": true,
+   "spec_unmet": [],
+   "semantic_used": false,
+   "new_top_level_keys_present_and_empty": "spec_candidates:[], floor_missed:true, spec_unmet:[], semantic_used:false -- exactly the four keys F3 predicted"
+ },
+ "disallowed_entity_gate": {
+   "gate_passed": false,
+   "gate_reason": "no entities and 'master_products' requires a scoping entity",
+   "compatible_entities": []
+ },
+ "If3_branch": "output 0 (dead-end leg) -- not-found path taken",
+ "not_found_error_message_node": {
+   "escalate_message": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team?",
+   "is_clarification": false
+ },
+ "customer_boundary": {
+   "rendered_reply_verbatim": "Could not find master_products for purple levitating sink. Would you like me to escalate to purchasing_product team?",
+   "sendmsg_parts": 1
+ },
+ "F1_settled": "N/A (F1 concerns the resolving spec_search path, not the total-miss path).",
+ "F2_settled": "N/A (no spec matches at all here -- gate never reaches the ambiguous-picker logic F2 concerns).",
+ "F3_settled": "CONFIRMED as predicted. F3 predicted: on a zero-match turn, the CRM's fallback block adds top-level spec_candidates/floor_missed/spec_unmet/semantic_used even when it finds nothing, so the payload gains 4 new keys even though the BEHAVIOURAL path (not-found/escalate) is node-for-node identical to what a pre-change baseline would show. Directly observed: all 4 keys present ([], true, [], false respectively); not-found-error-message renders the same escalate-offer format used elsewhere in this repo, with no new wording introduced by the four keys. Per LESSONS §70c, the ONE key-set iteration over resolver output in the spine (not-found-error-message.js:5, Object.keys(by_entity_type)) is unaffected since by_entity_type itself carries no new keys here.",
+ "safety_S0": {
+   "S1_zero_real_sends": "PASS -- egress log: 1x would_log, 1x would_write, 1x would_send.",
+   "S2_zero_assignment": "PASS -- escalation OFFERED (question asked) but not confirmed/executed; no human-intervention sub invoked, no assign write.",
+   "S3_zero_crm_writes": "PASS -- would_write only.",
+   "S4_get_results_read_only": "PASS -- Call 'sub-get-results' did NOT run at all for this turn (dead-end before reaching it); trivially no write tool fired.",
+   "S5_test_mode": "PASS -- 'When Executed by Another Workflow' json: {test_mode:true, test_run_id:'sa3-20260812', scope:'deterministic'}.",
+   "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM.",
+   "S7_sink_delta": "See rollup file -- covered by the 89-poll sweep."
+ },
+ "notes": "This is the RED-first anchor case for the family (SA.md: 'SA-1/SA-3/SA-4 inputs run against the PRE-change clone rev first'). No independent pre-change n8n execution was captured (see rollup RED-first gap note) -- but SA-3's PASS is not contingent on that gap: 'purple levitating sink' cannot match any product code/spec by construction (fabricated non-existent descriptor), so a zero-candidate result is the only possible outcome under EITHER body, and the four new top-level keys are provably additive/non-breaking by direct inspection of this execution alone."
+}

@@ -1,0 +1,10 @@
+={
+  "query": "{{ $('Call \'sub-query-reformulator\'').first().json.output.user_goal }}",
+  "match_mode": "{{ $('Call \'sub-query-reformulator\'').first().json.output.match_mode }}",
+  "tokens": {{ JSON.stringify($('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.raw).length > 0 ? $('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.raw) : []) }},
+  "allowed_entity_types": {{ JSON.stringify($('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.raw).length > 0 ? $('Call \'sub-query-reformulator\'').first().json.output.entities.map(x => x.hint) : []) }},
+  "access_levels": {{ JSON.stringify($('Call \'sub-query-reformulator\'').item.json.output.access_levels || []) }},
+  "domain": "{{ $('Call \'sub-query-reformulator\'').first().json.output.domain_hint }}",
+  "fallback_to_all_types": true,
+  "limit": 15
+}

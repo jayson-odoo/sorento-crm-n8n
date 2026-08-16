@@ -1,0 +1,82 @@
+{
+  "_provenance": {
+    "shape_source": "clone execution 12041903 (2026-08-11T07:04Z), node Call 'sub-query-reformulator' output.output — every field below is copied from that real payload and only the VALUES that define each case are edited (LESSONS §64: a hand-built fixture encodes what the author believes state contains, which is the belief under test)",
+    "contact_source": "same execution, node sorento-sub-respond-findcontact-respond",
+    "note": "descriptive-turn raws cannot be lifted from history: descriptive turns are exactly the ones that dead-end today, which is the gap this change closes. Their SHAPE is the real one; their raws are the plan's own examples."
+  },
+  "contact": { "id": "437264483", "firstName": "Dev", "lastName": "Test", "phone": "+60100000000", "countryCode": "MY", "status": "open" },
+  "cases": [
+    {
+      "id": "code-only",
+      "why": "SA-2 / SA-P2 parity — the shape of the turn that resolves today. Copied verbatim from exec 12041903.",
+      "output": {
+        "message_type": "business_query", "intent_hint": "check_promotion", "domain_hint": "promotion",
+        "scope_intent": "specific", "user_goal": "trying to check the promotion for SRTBF11710",
+        "access_levels": [], "match_mode": "and",
+        "entities": [{ "raw": "SRTBF11710", "hint": "product", "canonical_code": null, "current_message": true, "confident": true }]
+      },
+      "expect_free_terms": []
+    },
+    {
+      "id": "descriptive",
+      "why": "SA-1 — the turn the change exists for.",
+      "output": {
+        "message_type": "business_query", "intent_hint": "check_product", "domain_hint": "master_products",
+        "scope_intent": "specific", "user_goal": "trying to find a wall hung basin 600mm",
+        "access_levels": [], "match_mode": "and",
+        "entities": [
+          { "raw": "wall hung basin", "hint": "category", "canonical_code": null, "current_message": true, "confident": true },
+          { "raw": "600mm", "hint": "category", "canonical_code": null, "current_message": true, "confident": true }
+        ]
+      },
+      "expect_free_terms": ["wall hung basin", "600mm"]
+    },
+    {
+      "id": "mixed",
+      "why": "SA-5 — a code and a description in one turn. The code is dropped from free_terms; the CRM's zero-match gate then suppresses the fallback entirely because the code resolves.",
+      "output": {
+        "message_type": "business_query", "intent_hint": "check_stock", "domain_hint": "master_products",
+        "scope_intent": "specific", "user_goal": "trying to check SRTWC286 and a wall hung basin",
+        "access_levels": ["Sorento Dealer"], "match_mode": "or",
+        "entities": [
+          { "raw": "SRTWC286", "hint": "product", "canonical_code": null, "current_message": true, "confident": true },
+          { "raw": "wall hung basin", "hint": "category", "canonical_code": null, "current_message": true, "confident": true }
+        ]
+      },
+      "expect_free_terms": ["wall hung basin"]
+    },
+    {
+      "id": "unicode-dash-code",
+      "why": "SA-P5 — the U+2212 paste form must be excluded WITHOUT depending on the parser's dash fold having run first.",
+      "output": {
+        "message_type": "business_query", "intent_hint": "check_stock", "domain_hint": "master_products",
+        "scope_intent": "specific", "user_goal": "trying to check SRT332−GM",
+        "access_levels": [], "match_mode": "and",
+        "entities": [{ "raw": "SRT332−GM", "hint": "product", "canonical_code": null, "current_message": true, "confident": true }]
+      },
+      "expect_free_terms": []
+    },
+    {
+      "id": "no-entities",
+      "why": "SA-6-adjacent / the vague turn — the parser emits an empty entity list. free_terms must render as [], not as null and not as a crash.",
+      "output": {
+        "message_type": "business_query", "intent_hint": "unclear", "domain_hint": "master_products",
+        "scope_intent": "broad", "user_goal": "trying to find out how much",
+        "access_levels": [], "match_mode": "or",
+        "entities": []
+      },
+      "expect_free_terms": []
+    },
+    {
+      "id": "nonsense",
+      "why": "SA-3 / SA-P4 — gibberish still produces free_terms (they are words), the CRM floor rejects them.",
+      "output": {
+        "message_type": "business_query", "intent_hint": "check_product", "domain_hint": "master_products",
+        "scope_intent": "specific", "user_goal": "trying to find a purple levitating sink",
+        "access_levels": [], "match_mode": "and",
+        "entities": [{ "raw": "purple levitating sink", "hint": "category", "canonical_code": null, "current_message": true, "confident": true }]
+      },
+      "expect_free_terms": ["purple levitating sink"]
+    }
+  ]
+}

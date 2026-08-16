@@ -1,0 +1,163 @@
+{
+  "_change_id": "state-transition-monitor",
+  "_plan": "plans/state-transition-monitor-n8n-plan.md (C1/C2 build, §F cases ST-1..ST-7)",
+  "_diff": "tests/diffs/state-transition-monitor.md",
+  "_date": "2026-07-22",
+  "_tester": "sorento-tester",
+  "_scope": "parser (C2 in output_exchange; real-parser tier for ST-1/ST-3/ST-4). ST-2/ST-6/ST-7 deterministic (mock_reformulator_output).",
+  "_target": "CLONE txiPzSxy3Pclsz6v ONLY (active versionId b8fb4c72-10e8-4893-9a07-59cf57e6a12a). Live spine/parser NEVER touched.",
+  "_mechanism": "zz-canary-run (VtIV3TF3aw2Fx8No) webhook zz-run-hint -> seeds test:q:{contact} with body.item -> Run Target executes clone (waitForSubWorkflow) -> reads LLEN(sorento-respond-message / -TEST) before+after + test:egress:{test_run_id}. Clone sub-exec id read from Run Target.metadata.subExecution.",
+
+  "_build_present_confirmation": {
+    "C1_state_trace_key": "PRESENT on clone Call 'sub-respond-save-message-redis'2 /workflowInputs/value/data — full four-layer expression byte-matches coder diff. Target workflowId tWm5DYLxfypmVC1T (TEST sink).",
+    "C2_parser_raw": "PRESENT — fork wI5RkNGW3EOJfBdo output_exchange stamps top-level output._parser_raw; observed non-null on every real-parser run, null on every mock run.",
+    "note_clone_version_moved": "Clone activeVersionId is now b8fb4c72 (coder diff recorded 4182ce3b). The clone was re-published since the coder run (chat-console activity), but the C1 state_trace edit is intact and byte-identical to the coder diff. Reviewer should note the version drift; the code under test is unchanged."
+  },
+
+  "_sink_accounting": {
+    "baseline_before_ST6": {"sorento-respond-message": 0, "sorento-respond-message-TEST": 70},
+    "after_ST6": {"prod": 0, "TEST": 71},
+    "after_ST1": {"prod": "2 -> 1 (DECREASE = live-traffic drain, not a write)", "TEST": 72},
+    "after_ST4": {"prod": 0, "TEST": 73},
+    "after_ST3": {"prod": 0, "TEST": 74},
+    "after_ST2": {"prod": 0, "TEST": 75},
+    "after_ST7": {"prod": 0, "TEST": 76},
+    "TEST_sink_delta": "+6 for 6 canary runs — exactly one save per turn (V-ST-j reconciles).",
+    "prod_attribution": "Only movement was ST1 prod 2->1, a DECREASE. A decrease cannot be a harness write (writes RPUSH => LLEN increases). No state_trace-bearing blob can reach prod: the clone logger targets the TEST sink, and the CHAT sub's real-send path (which alone RPUSHes sorento-respond-message) was never reached (chat? TRUE). Attributed to redis-consume-queue-mongo draining pre-existing live customer traffic. S7 HALT clause NOT triggered."
+  },
+
+  "_S1_egress_barrier_analysis": {
+    "sendmsg_target": "all clone sendmsg callers -> ublq9nSlrpz63xan (sub-sendmsg-CHAT).",
+    "why_egress_log_empty": "Payloads embed contact.chat_id='stm', so sub-sendmsg-CHAT's 'chat?' gate is TRUE -> reply RPUSHed to redis chat:reply:{chat_id} + logged to n8n_test.chat_histories (test DB). The 'test-guard-record' (test:egress) node sits on the chat?=FALSE branch and was never reached, hence test:egress=[] on every run. This is expected, not a miss.",
+    "real_send_nodes": "'Send a Message' (@respond-io respondio) and 'HTTP Request' (api.respond.io) are reachable ONLY via chat?=FALSE AND test-guard=FALSE. Neither executed in any run (chat_id present). Node TYPE asserted from workflow JSON (LESSON 47).",
+    "verdict": "S1 PASS by structure (chat_id barrier) + empirically (prod LLEN never increased across all 7 turns)."
+  },
+
+  "ST-6": {
+    "verdict": "PASS",
+    "title": "Execution-order gate (BLOCKS all others)",
+    "scope": "deterministic (mock)",
+    "runner_exec": "9544256", "clone_exec": "9544257",
+    "executionIndex": {"get-session-vars": 10, "compile-current-state": 39, "Call 'sub-respond-save-message-redis'2": 46},
+    "assertion": "logger(46) > compile-current-state(39) AND logger(46) > get-session-vars(10) — STRICTLY GREATER. lastNodeExecuted downstream (console-incoming-gate). §B2 false-negative did NOT materialise: logger is terminal so n8n schedules it last despite being last in the if-message-is-audio out-1 array [guard-h-record, sim-inject-gate, logger]. No clone connection remediation needed.",
+    "bonus": "Deterministic lane validated: parser_raw=null (mock bypasses output_exchange, §B6); after.last_result_set trimmed {n:2,first:'SRTUFV101'}.",
+    "safety": {"S1":"PASS (chat lane, prod 0->0)","S2":"PASS (no escalation/assign nodes ran)","S3":"PASS","S4":"PASS (get-results = read)","S5":"PASS (is_test true on reformulator; mock lane fired => is_test reached fork)","S6":"PASS (0 tokens, AI Agent bypassed)","S7":"PASS (TEST +1, prod 0->0)","S9":"PASS (save-session-vars orphaned)"}
+  },
+
+  "ST-1": {
+    "verdict": "PASS",
+    "title": "Happy path: all four layers populated (PRIMARY C1+C2)",
+    "scope": "parser (REAL reformulator, subexec 9544415 @ 1845ms)",
+    "runner_exec": "9544412", "clone_exec": "9544413",
+    "message": "check stock srt8408",
+    "assertions": {
+      "v": "1",
+      "before": "= injected previous_conversation_state modulo trim: before.domain_hint='inventory'; last_result_set trimmed {n:17,first:'SRTKS2400'}; dym_candidates {n:3,first:'SRT-0'}; entities/routing byte-match injection. B1 honoured (in-memory get-session-vars, NOT a post-turn re-read).",
+      "parser_applied": "non-empty; carries post-code flags domain_signal_source='intent_explicit', entity_op_applied='replace_combine', entities_filtered=false, entities_emptied_by_filter=false.",
+      "parser_raw": "non-null; LACKS all *_applied flags (proves C2 snapshots pre-code).",
+      "after": "populated; after.domain_hint='inventory'; last_result_set {n:2,first:'SRT8408'} (canonical resolved SRT8408).",
+      "after_neq_before": "TRUE (before has 17-row set + null canonical; after has 2-row set + resolved canonical). Not the B1 trap.",
+      "legacy_keys": "contact_id, phone_number, message, sent_at, first_name, last_name, reply_to_message_id, reply_to_message, type, message_id(=stm-1784702151), turn_id(=9544413) all present, no field regressed.",
+      "order": "get-session-vars 10 < compile 39 < logger 46"
+    },
+    "llm_liveness": "reformulator ran real; Basic LLM Chain / whisper-transcribe / Transcribe a recording ABSENT from runData (S6).",
+    "safety": {"S1":"PASS","S2":"PASS","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS (only reformulator LLM)","S7":"PASS (TEST +1; prod 2->1 drain attributed)","S9":"PASS"}
+  },
+
+  "ST-4": {
+    "verdict": "PASS",
+    "title": "parser_raw != parser_applied via date-gate (PRIMARY C2 acceptance)",
+    "scope": "parser (REAL reformulator, subexec 9544544 @ 1948ms)",
+    "runner_exec": "9544541", "clone_exec": "9544542",
+    "message": "check stock for srt8408 last week",
+    "assertions": {
+      "parser_raw_date": "date_filter_start='2026-07-13', date_filter_end='2026-07-19' (LLM extracted 'last week' — NON-NULL).",
+      "parser_applied_date": "date_filter_start=null AND date_filter_end=null AND date_mode=null.",
+      "date_filter_gated": "parser_applied.date_filter_gated='inventory'; parser_raw has NO date_filter_gated key.",
+      "raw_lacks_applied": "parser_raw has none of domain_signal_source/scope_exclusive_applied/entity_op_applied/entities_filtered/entities_emptied_by_filter.",
+      "differ": "JSON.stringify(parser_raw) !== JSON.stringify(parser_applied) — the C2 acceptance criterion. This is the layer that would have caught the dym bug."
+    },
+    "safety": {"S1":"PASS","S2":"PASS","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS","S7":"PASS (TEST +1, prod 0->0)","S9":"PASS"}
+  },
+
+  "ST-3": {
+    "verdict": "PASS",
+    "title": "Trim rule bounded",
+    "scope": "parser (REAL reformulator)",
+    "runner_exec": "9544656", "clone_exec": "9544657",
+    "assertions": {
+      "before_last_result_set": "{n:17, first:'SRTKS2400'} — object not array, n == injected length.",
+      "before_dym_candidates": "{n:3, first:'SRT-0'}.",
+      "after_last_result_set": "{n:2, first:'SRTUFV101'}; after_dym_candidates {n:0,first:null}.",
+      "no_other_array_collapsed": "entities remains a full array of objects in all layers.",
+      "serialized_bytes": "state_trace serialized = 2872 bytes < 8KB bound.",
+      "real_after_roster_evidence": "Live chat exec 9543709 (unsolicited real member-offer turn) shows an actual 6-member roster in before trimmed to {n:6, first:'Maryam Ariffin'} and dym_candidates {n:3,...} — after-side/roster trim proven on real data."
+    },
+    "safety": {"S1":"PASS","S2":"PASS (member offer NOT built here; no assign)","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS","S7":"PASS (TEST +1, prod 0->0)","S9":"PASS"}
+  },
+
+  "ST-2": {
+    "verdict": "PASS",
+    "title": "Dead-end branch: after === null (PRIMARY §B3)",
+    "scope": "deterministic (mock), contact 457216562 (NO access)",
+    "runner_exec": "9544775", "clone_exec": "9544776",
+    "path": "check-access(real CRM)={allowed:false,decision:'deny_no_access',agent_name:'General Enquiries'} -> If5[1/FALSE] -> sorento-sub-respond-sendmsg-respond5 (CHAT sub 9544778). compile-current-state NOT executed (§D#3).",
+    "assertions": {
+      "after": "=== null (JSON null, not {}, not 'null', not absent).",
+      "before": "populated {marker:'st2-before',domain_hint:'inventory',last_result_set:{n:0,first:null}}.",
+      "parser_applied": "populated (the injected mock).",
+      "parser_raw": "=== null (mock lane bypasses output_exchange, §B6) — asserted explicitly.",
+      "status": "execution success; logger executed (dead-end still yields a chat_histories row). turn_id=9544776."
+    },
+    "safety": {"S1":"PASS — no message reached 457216562 (CHAT sub, chat lane; prod 0->0)","S2":"PASS","S3":"PASS","S4":"PASS (get-results not reached)","S5":"PASS","S6":"PASS (deterministic)","S7":"PASS (TEST +1, prod 0->0)","S9":"PASS (compile never ran; no CRM write)"}
+  },
+
+  "ST-5": {
+    "verdict": "PASS (incoming side) / outgoing-join UNVERIFIABLE ON CLONE (documented, not a defect)",
+    "title": "turn_id equality",
+    "reuses": "ST-1 clone_exec 9544413",
+    "assertions": {
+      "incoming_turn_id": "state_trace row turn_id = '9544413' = String(clone execution id). Verified on all 7 runs (turn_id always == clone exec id).",
+      "row_type": "state_trace sits on the type='incoming' row.",
+      "outgoing_join": "CANNOT be asserted from test:egress: the clone's sendmsg target is the CHAT fork (ublq9nSlrpz63xan). Its chat-lane reply is RPUSHed to chat:reply and its n8n_test outgoing log INSERT carries no turn_id column; test-guard-record was never reached (chat_id present). This is the known F3 stale-CHAT-fork harness gap, NOT a state_trace defect. On LIVE the sendmsg sub (aoydkG1) already threads turn_id (obs-latency C3), so the incoming<->outgoing join holds in production."
+    },
+    "safety": "as ST-1"
+  },
+
+  "ST-7": {
+    "verdict": "PASS",
+    "title": "Exactly one state_trace per turn under outgoing fan-out",
+    "scope": "deterministic (mock), voice mock lane",
+    "runner_exec": "9544870", "clone_exec": "9544871",
+    "path": "if-audio-in[0] audio -> if-voice-allowed[0] -> if-audio-mock[0] (mock_transcript) -> patch-transcript (sets attachment.type=text, folds transcript) -> tf-message -> if-message-is-audio[1] -> logger once.",
+    "assertions": {
+      "logger_runs": "Call 'sub-respond-save-message-redis'2 has EXACTLY ONE run in runData.",
+      "sink_delta": "sorento-respond-message-TEST +1 (75->76).",
+      "fanout_sends": ">=2 sendmsg sub executions: send-transcript-confirm (9544872, idx9) + answer sorento-sub-respond-sendmsg-respond2 (9544878, idx44). (No test:egress records because CHAT chat-lane; sends counted from runData sub-executions instead.)",
+      "after_populated": "voice-allowed reaches compile-current-state (idx43); after populated, last_result_set {n:2,first:'SRTUFV101'}.",
+      "message_id_survived": "message_id='stm-1784702151' — non-empty, NOT 'undefined' (obs-latency OBS-3 regression guard).",
+      "no_real_transcription": "whisper-transcribe, fetch-audio, Transcribe a recording ABSENT from runData."
+    },
+    "safety": {"S1":"PASS","S2":"PASS","S3":"PASS","S4":"PASS","S5":"PASS","S6":"PASS (deterministic; no whisper)","S7":"PASS (TEST +1, prod 0->0)","S9":"PASS"}
+  },
+
+  "_V_items": {
+    "V-ST-a": "GREEN — ST-6 ran first, both executionIndex recorded (46 vs 39/10).",
+    "V-ST-b": "PASS — ST-1 before == injected previous_conversation_state (modulo trim) and != after.",
+    "V-ST-c": "PASS — ST-2 after===null with status success and a chat_histories row produced.",
+    "V-ST-d": "PASS — every last_result_set/dym_candidates in all layers is {n,first}; serialized < 8KB (2872 bytes).",
+    "V-ST-e": "PASS — ST-4 parser_raw!=parser_applied (date fields + *_applied flags); parser_applied additive-only vs pre-change (raw is a pure mirror).",
+    "V-ST-f": "PARTIAL — incoming turn_id == exec id proven; outgoing join unverifiable on clone (CHAT fork), holds on live.",
+    "V-ST-i": "PASS — tester made NO workflow edits; no connection changes. ST-6 required no clone remediation.",
+    "V-ST-j": "PASS — TEST sink delta (+6) == turns executed (6); only prod movement was a decrease (drain), attributed."
+  },
+
+  "_defects_and_notes": [
+    {"id":"N1","severity":"info","title":"C1/C2 build is CORRECT and observed working end-to-end on real traffic","detail":"Live chat exec 9543709 (a real user turn, not tester-driven) independently shows the full four-layer state_trace correctly built + trimmed, before!=after, parser_raw!=parser_applied. Strong corroboration."},
+    {"id":"N2","severity":"low","title":"Clone activeVersionId drifted since coder run","detail":"Coder recorded 4182ce3b; current active is b8fb4c72. C1 edit intact/byte-identical. Chat-console re-publish, not a code change to the state_trace hunk. Reviewer note only."},
+    {"id":"N3","severity":"low","title":"§ST-5 outgoing-join not testable on clone","detail":"Clone sendmsg = stale CHAT fork; its outgoing log omits turn_id and test-guard-record is bypassed by chat_id. Not a state_trace defect. Live sendmsg (aoydkG1) already threads turn_id. F3 known item."},
+    {"id":"N4","severity":"info","title":"S1 egress log empty by design","detail":"chat_id in payload routes CHAT sub to the chat lane, bypassing test:egress. Real respond.io nodes unreachable. Prod LLEN never increased."}
+  ],
+
+  "_verdict": "ALL 7 CASES PASS. §ST-6 order gate GREEN (ran first). C1 (state_trace four-layer blob, trim, null-on-dead-end) and C2 (parser_raw pre-code snapshot) are correctly built on clone+fork and behave per the §0 contract. Zero-egress §0 S1-S9 held on every case (sink-delta +1/turn, prod never increased, no real send, no CRM/state write, no assignment). Recommend REVIEWER SIGN-OFF toward the user-gated C5 promotion, subject to the plan's C5 preconditions (P1 CRM state_trace column + tolerant insert; spine auth change published alone first; re-run fork≡live sha diff V-ST-h). Tester did not promote and made no workflow edits."
+}

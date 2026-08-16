@@ -1,0 +1,17 @@
+# §4.9 backups are full REST GET responses. Until a node is converted, its
+# parameters still contain the literal CRM x-api-key value -- so these files
+# carry a live secret and MUST NOT be committed. They stay on disk for the
+# rollback path (§4.10) only.
+#
+# Plan §1 accepts the key at rest inside n8n. It does NOT sanction copying it
+# into a git repo that has a remote.
+*-before.json
+*-after.json
+*-body.json
+
+# Any full REST GET of a workflow embeds the `activeVersion` block, which still
+# carries the pre-change literal x-api-key until that node is converted. So ANY
+# full-GET dump is a secret at rest. Broaden beyond the specific suffixes above.
+*-preflight.json
+*-preflight-*.json
+*.rawget.json

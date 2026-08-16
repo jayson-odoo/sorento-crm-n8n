@@ -1,0 +1,66 @@
+// ── escalate-catalog ────────────────────────────────
+// Single source of truth for escalation/error messages + their behavior flags.
+// Each upstream branch sets ONE field `branch_kind`; this node maps it to the
+// message + flags that compile-current-state used to derive via a 7-arm ladder.
+// Dynamic kinds (not_found, access_choice) pull their message by reference from
+// the upstream Code node that computed it.
+const qf  = $('Call \'sub-query-reformulator\'').first().json.output;
+const out = $input.first().json;
+const kind = out.branch_kind;
+
+let response = '';
+let manualResponse = false;
+let includeResponse = true;
+let is_escalate_offer = false;
+
+switch (kind) {
+  case 'not_found': {
+    // Normal not-found path uses not-found-error-message. The incoming-picker
+    // availability branch bypasses it (annotate-incoming-picker computes the same
+    // escalate_message/require_specific/is_clarification), so fall back to that node.
+    const nfNode = $('not-found-error-message');
+    const nf = nfNode.isExecuted ? nfNode.first().json : $('annotate-incoming-picker').first().json;
+    response       = nf.escalate_message;
+    manualResponse = !nf.require_specific;
+    is_escalate_offer = !nf.is_clarification;   // offer only when it's not a clarification prompt
+    break;
+  }
+  case 'access_choice':
+    response       = $('access-level-choice-message').first().json.escalate_message;
+    manualResponse = true;
+    break;
+  case 'demand_qty':
+    response       = 'Please specify your demand quantity';
+    manualResponse = true;
+    break;
+  case 'not_supported':
+    response       = "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container";
+    manualResponse = true;
+    break;
+  case 'clarify_menu':
+    response       = `I see you're ${qf.user_goal}, Let me understand more.\n\nAre you asking about any of these?\n\n- Product (List Price, Dimension)\n- Photos, Technical Specs, Cert\n- Promotion\n- Forms\n- Stock\n- Delivery order\n- Incoming\n- Catalogue, Warranty\n\nI can help with the topics listed above.`;
+    manualResponse = true;
+    break;
+  case 'escalate_offer':
+    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${qf.routing.suggested_team} team?`;
+    manualResponse = true;
+    is_escalate_offer = true;
+    break;
+  case 'out_of_scope':
+    response        = `Informed the user that request is out of scope and will proceed to escalate to the ${qf.routing.suggested_team} team`;
+    manualResponse  = true;
+    includeResponse = false;
+    break;
+  case 'escalation_declined':
+    response          = 'Escalation declined.';   // FIXED canned reply — no LLM shaping
+    manualResponse    = true;
+    includeResponse   = true;
+    is_escalate_offer = false;                     // → cs-offer-gate FALSE → straight to compile-current-state
+    break;
+}
+
+out.response          = response;
+out.manualResponse    = manualResponse;
+out.includeResponse   = includeResponse;
+out.is_escalate_offer = is_escalate_offer;
+return out;

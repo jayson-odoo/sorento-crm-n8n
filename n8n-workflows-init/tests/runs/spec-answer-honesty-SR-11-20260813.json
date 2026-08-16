@@ -1,0 +1,55 @@
+{
+ "case": "SR-11",
+ "family": "SR (spec-answer-honesty)",
+ "slice": "SR-1b (N-1a, the \"Matched on\" line) -- rev 4",
+ "title": "spec answer + a Matched-on line; RECORD THE KEY SET VERBATIM (house-preference review trigger check)",
+ "verdict": "PASS -- key set observed does NOT trigger the diff-doc §3b finding-1 review flag on this run (see review_trigger_check below); flagged prominently per instructions regardless",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ c97f2f8f-e335-4a3b-8046-abea89bbfdf9 (versionId==activeVersionId verified before and after the 3-case run, unchanged; node shas re-derived and matched the rev-4 manifest byte-for-byte -- see SR-10's target block for the full verification, not repeated per-case)",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "do you have wall hung basin",
+ "test_run_id": "sr11r4-20260813",
+ "execution": "12323479",
+ "started_at": "2026-08-13T11:58:06.453Z",
+ "stopped_at": "2026-08-13T11:58:13.356Z",
+ "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:04_\n\n_Matched on: mounting._\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+ "hard_assertion": {
+  "requirement": "spec answer + a Matched-on line; still none of the SR-3 banned strings",
+  "matched_on_line_count": 1,
+  "matched_on_line_verbatim": "_Matched on: mounting._",
+  "banned_strings_check": {
+   "Couldn't find": "ABSENT",
+   "did you mean": "ABSENT",
+   "Multiple matches found": "ABSENT",
+   "escalation offer": "ABSENT (no escalate/offer text anywhere in the reply)"
+  },
+  "n2_line_present": false,
+  "n2_note": "spec_unmet is [] for this turn (no dimension/measurement asked) -- N-2's absent-guard correctly renders nothing, unchanged from N-2's pre-existing no-op behaviour."
+ },
+ "review_trigger_check_KEY_SET_VERBATIM": {
+  "instruction": "SR-11 must record the key set verbatim; if a key appears that the customer's words cannot account for (e.g. brand from a house preference), that is the §3b finding-1 review trigger -- report prominently, do NOT score as a simple pass/fail.",
+  "matched_specs_per_row_as_observed_in_resolve-entity_output": "[\"free_terms\",\"mounting\"] on ALL 5 intersection rows (uuid 15e235b8.../8ae24c5b.../14f5ea4e.../1f67b885.../2aaa77aa...) -- identical set on every row, no per-row variance",
+  "key_set_after_free_terms_exclusion_and_dedup": "{ \"mounting\" }  -- SINGLE KEY",
+  "rendered_line": "_Matched on: mounting._",
+  "attributable_to_customers_own_words": "YES -- the customer typed \"wall hung basin\"; \"wall hung\" is exactly a mounting-type descriptor. `mounting` is a key the customer's own words plainly account for.",
+  "house_preference_key_observed_this_run": "NONE. No `brand` key, no other registry value_weights-derived key appeared anywhere in matched_specs for this turn's 5 rows.",
+  "verdict_on_review_trigger": "The §3b finding-1 risk (product_spec_search.py:695-702 appending an unstated house-preference key such as `brand`) is a REAL, DOCUMENTED CRM-side mechanism that this n8n build cannot filter (no wire signal distinguishes a preference-derived key from a customer-stated one). It DID NOT manifest on THIS execution/catalogue slice -- the observed key set is fully explained by the customer's own words. This is a NEGATIVE observation for this run, not proof the mechanism cannot fire on a different query/catalogue slice. Recording verbatim per instruction rather than silently passing: reviewer should treat the underlying risk as still open (per diff §3b finding 1's own framing -- 'Decision needed: either CRM marks preference-derived keys on the row, or SR-1b accepts that a boosted brand can be announced as a match'), independent of this run's clean result."
+ },
+ "node_evidence": {
+  "resolve_entity_matched_specs_per_row": "[\"free_terms\",\"mounting\"] on all 5 rows (same as above)",
+  "spec_unmet": "[] -- correctly empty, no N-2 line",
+  "disallowed_entity_gate": "gate_passed:true, require_specific:false, compatible_entities: 5 uuids matching the 5 rendered rows"
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- egress log 3 entries, all would_*: save-message-redis(would_log) / save-session-vars(would_write) / sendmsg-sub(would_send).",
+  "S2_zero_assignment": "PASS -- no escalation branch taken.",
+  "S3_zero_crm_writes": "PASS -- save-session-vars would_write only; update-human-intervened not invoked.",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' sub-execution 12323490 on fork t4QvrtrPnTwRU6br returned the established read-only answer shape (response/answers/attachments/has_result/requested_attributes/keys_served). No write tool observed.",
+  "S5_test_mode": "PASS -- 'When Executed by Another Workflow': {contact:437264483, test_run_id:'sr11r4-20260813', test_mode:true, scope:'deterministic'}, self-verified.",
+  "S6_token_sinks": "Real reformulator ran (sub-execution 12323482 on fork wI5RkNGW3EOJfBdo), non-mocked, parser tier. 'Basic LLM Chain' did not execute. No other LLM/token sink."
+ },
+ "S7_sink_delta": {
+  "S7a_TEST_sink": "Directly confirmed: 'Call sub-respond-save-message-redis'2' sub-execution 12323493 targets workflowId tWm5DYLxfypmVC1T (TEST sink), payload turn_id:'12323479' self-verified equal to the parent execution id.",
+  "S7b_prod_sink": "See spec-answer-honesty-SR-1b-rollup-20260813.json -- shared covering sweep (8 polls, 11:57:50Z-11:58:25Z) fully contains this case's 11:58:06Z-11:58:13Z span; all polls LLEN 0, empty pop. Zero delta."
+ }
+}

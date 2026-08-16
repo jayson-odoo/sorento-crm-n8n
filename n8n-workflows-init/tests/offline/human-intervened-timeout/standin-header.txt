@@ -1,0 +1,6 @@
+// ── NAME-PRESERVING CODE STAND-IN (harness only) ────────────────────────────────────────────
+// UAC 0 S8 / LESSONS 47. The real node here is credentialed and n8n-MCP cannot unbind a
+// credential, so an armed fork and a clean one are indistinguishable on read. The fix is to
+// remove the hazard rather than gate it: this Code node keeps the EXACT node name (so every
+// $('<name>') reference downstream still resolves) and emits the real node's output shape.
+// Assert containment on node TYPE, never on the absence of a credentials block.

@@ -1,0 +1,39 @@
+{
+ "case": "SA-5",
+ "title": "mixed code+descriptive",
+ "verdict": "PASS",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "SRTWC286 and wall hung basin",
+ "test_run_id": "sa5-20260812",
+ "execution": "12179671",
+ "started_at": "2026-08-12T08:55:03.293Z",
+ "resolve_entity_http_output": {
+   "tokens": ["SRTWC286", "wall hung basin"],
+   "SRTWC286_resolution": {"resolved": false, "ambiguous": true, "match_tier": "prefix", "match_field": "product_code", "match_count": 10, "spec_search_rows": 0},
+   "wall_hung_basin_resolution": {"resolved": false, "ambiguous": false, "matches": [], "alternatives_match_tier": "trgm (NOT spec_search)", "alternatives_count": 3},
+   "unresolved_tokens": ["wall hung basin"]
+ },
+ "customer_boundary": {
+   "rendered_reply_summary": "Part 1/2: 10 numbered SRTWC286-variant product rows (code, description, price) -- same 10-code family SA-2 exercised, matches expected code answer. Part 2/2 (tail): '_Data last updated...' footer + 'Couldn't find these:\\n\"wall hung basin\" — did you mean:\\n  1. BRBC2296-1 (WALL HUNG)\\n  2. MAB7029C-WALL HUNG\\n  3. MAB7029E-WALL HUNG\\n\\nReply a number to check it, or ask again.'",
+   "sendmsg_parts": 2,
+   "code_answer_correct": true,
+   "descriptive_half_fate": "Fell to the pre-existing prefix/trgm did-you-mean mechanism (numbered picker, not scoped-per-attribute this time since no attachment/cert axis is in play) -- NOT spec_search, for the identical reason documented in SA-4 (the catalogue's code text already contains 'WALL HUNG' as a substring, so trgm produces non-empty alternatives before the CRM's zero-match gate can trigger spec_fallback)."
+ },
+ "F1_settled": "N/A (no spec_search matches occurred in this execution).",
+ "F2_settled": "N/A (same reason).",
+ "F3_settled": "N/A (this is not the total-miss path).",
+ "known_v1_gap_confirmed": "Matches SA.md's stated expectation exactly: 'code token resolves normally; fallback suppressed (CRM zero-match gate) -- assert code answer correct, document the descriptive half's fate; known v1 gap, NOT a failure.' Confirmed: SRTWC286 resolved via prefix tier with the same 10 codes as SA-2's baseline; 'wall hung basin' fell to the existing did-you-mean picker instead of spec_search, for the SAME structural reason found independently in SA-4 (trgm code-substring collision suppresses the zero-match gate). This is a real, reproducible v1 gap tied to this catalogue's code-naming convention, not input-specific noise.",
+ "safety_S0": {
+   "S1_zero_real_sends": "PASS -- egress log: 1x would_log, 1x would_write, 2x would_send (chunked, no quick_reply -- numbered-picker via plain text).",
+   "S2_zero_assignment": "PASS -- no escalation branch.",
+   "S3_zero_crm_writes": "PASS -- would_write only; dym_offer/dym_candidates persisted only into the WOULD-write payload.",
+   "S4_get_results_read_only": "PASS -- Call 'sub-get-results' resolved the SRTWC286 side via a stock/inventory-shaped read (same pattern as SA-2); no write tool observed.",
+   "S5_test_mode": "PASS (inferred by identical harness mechanism -- not independently re-fetched to conserve session budget).",
+   "S6_token_sinks": "Real reformulator ran (parser tier). No new LLM sink.",
+   "S7_sink_delta": "See rollup file -- covered by the 89-poll sweep."
+ },
+ "notes": "Same underlying mechanism as SA-4's finding: 'wall hung basin' as a bare phrase never reaches spec_fallback on THIS catalogue because trgm already has non-empty alternatives from code text. Recorded per SA.md instruction to 'document the descriptive half's fate' -- not scored as a failure, matching the plan's explicit v1 scope note (§5: 'spec_mode:\"always\" (CRM ask item 4) unlocks SA-5/cabana-class turns')."
+}

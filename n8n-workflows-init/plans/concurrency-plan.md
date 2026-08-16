@@ -93,7 +93,139 @@ Webhooks: `/webhook/zz-dispatch-test` (fire), `/webhook/zz-seed-conc`, `/webhook
 4. **Live push** `sorento-main` `NwMOBEQ1NW7LVky5`: replace `Redis2 PUSH main-message-list` with `PUSH q:{{contact.id}}` (tail=true) + `PUSH ready-contacts` (tail=true, value contact.id). contact.id = `$('If1').first().json.id`.
 5. Cutover — see the drain-then-flip runbook below (the naive "publish each" leaks in-flight messages).
 
-## Cutover runbook (LIVE — the risky moment, do NOT wing it)
+## ⭐ FAILOVER-ERA PROMOTION UPDATE (2026-07-13) — READ THIS FIRST
+
+The original checklist assumed **one** producer (`sorento-main`). The failover poller added a **second** injector. Enumerated all redis pushes to the real `main-message-list` — **two production injectors**:
+
+| injector | id | node | when it feeds the list |
+|---|---|---|---|
+| `sorento-main` (producer, webhook path) | `NwMOBEQ1NW7LVky5` | `Redis2` push | only **non-carved** contacts (gate `in-failover?` serves them) |
+| `sorento-main-INJECT` (failover poller target) | `sk0zN90Cas4Y6Y2w` | `Redis2` push | **carved** contacts (poller → INJECT → RPUSH) |
+
+**Both must flip** to `PUSH q:{c}` (tail=true) + `PUSH ready-contacts` (tail=true, value `c`), or the one you miss strands its messages on a list nobody pops. Contact key `c = $('If1').first().json.id` in **both** (INJECT is a producer copy → identical findcontact→If1→id).
+
+**Consumer/pop:** live spine `9qVyfUxmRQqrpGRMDLRuz` `redis-pop-main-message-list` — same 2 edits as clone (drop Schedule, pop `=q:{{ $json.contact }}`, add `contact` input).
+
+**Preflight extra:** confirm `sorento-consume-main copy` `oo7LnsedPyKB9bWM` (pops+pushes main-message-list) is **INACTIVE** — else a rogue second consumer competes.
+
+**⚡ Simplifier — cut over NOW while all-on-poller:** currently all 76 contacts are carved onto the poller, so the **producer is dormant** (gate drops everyone → 0 producer pushes) and `main-message-list` is fed **only by INJECT**. So in this state the live-traffic path to flip is just **INJECT → spine → dispatcher**; flip the producer too (for when contacts later return to webhook) but it carries no live traffic during the window = lower risk.
+
+### Failover-era flip sequence (supersedes the generic one below for this window)
+1. **Backup** versions: spine `9qVyfUxmRQqrpGRMDLRuz`, producer `NwMOBEQ1NW7LVky5`, INJECT `sk0zN90Cas4Y6Y2w`.
+2. **Stage drafts** (don't publish): prod dispatcher (de-`-test` keys → `q:`/`ready-contacts`/`lock:`, `call-spine`→live spine, Schedule 1s); spine (drop Schedule + pop `=q:{{ $json.contact }}` + `contact` input); producer push→`q:{c}`+`ready-contacts`; **INJECT push→`q:{c}`+`ready-contacts`**.
+3. **Quiesce:** deactivate the **failover poller** `CYNq34WZx83POLQ5` (stops INJECT firing) AND the live spine Schedule (stops popping). Buffer: carved contacts' new messages sit in respond (poller catches them post-cutover via watermark — nothing lost).
+4. **Drain** `main-message-list` to 0 (let in-flight spine runs finish). Confirm `LLEN main-message-list == 0`, no spine execs in flight.
+5. **Flip producers:** publish producer (push→`q:{c}`+`ready`) + INJECT (push→`q:{c}`+`ready`).
+6. **Flip consumer:** publish spine (Schedule gone, pop `q:{c}`, `contact` input) — now dispatcher-only.
+7. **Arm dispatcher** (Schedule 1s).
+8. **Resume poller** `CYNq34WZx83POLQ5` → INJECT now pushes `q:{c}`+`ready` → dispatcher pops `ready-contacts`, locks `c`, calls spine. Watermark means it re-lists any messages buffered during the window.
+9. **Verify live:** (a) one carved contact sends 2 fast msgs → FIFO + single-flight (one spine at a time for that contact); (b) two carved contacts burst → process in parallel; (c) `ready-contacts` length bounded, no `lock:{c}` older than TTL=120s.
+
+**Rollback:** unpublish dispatcher; republish backed-up spine (Schedule intact, pop main-message-list), producer + INJECT (push main-message-list); reactivate poller. Drain any `q:{c}`/`ready-contacts` residue (or re-push those contacts' messages — watermark will re-catch on poller). Old world restored.
+
+### New validation to add on the CLONE before promote (failover-specific)
+Existing clone tests T1–T4 cover FIFO / single-flight / error-release / cross-contact-parallel. Add:
+- **Burst-via-INJECT:** simulate the poller injecting N same-contact messages 1.2s apart into `test:q:{c}` + N `ready-contacts-test` tokens → dispatcher drains **in order, single-flight** (this is the exact same-contact-burst race the promote fixes).
+- **Mixed burst:** 3 contacts × 3 msgs interleaved → per-contact FIFO + cross-contact parallel, no `session_vars` cross-talk.
+
+### Open decisions (need user)
+1. **Window:** cutover needs ~a few min of quiesce (poller+spine down, drain). Pick a low-traffic slot. During it, carved contacts' replies are delayed (buffered in respond, caught after) — acceptable?
+2. **Inject pacing:** poller's `post-inject` batch = 1.2s. Under the dispatcher, same-contact ordering is guaranteed by the lock, so the 1.2s is no longer needed for correctness — can drop to ~300ms for faster burst drain. Do it as part of the promote?
+3. **Do it now (all-on-poller = easy window) or wait** until you've decided webhook-vs-poller steady state?
+
+---
+
+## ⭐⭐⭐ CHOSEN PLAN (2026-07-23, re-grounded on LIVE) — SINGLE COMBINED CUTOVER
+
+**Decision (supersedes the two-phase idea):** the quiesce/drain step already empties the ONE global `main-message-list` for **all** contacts, so a "poller-first" split was a fake boundary — no isolation gained. Flip **producer + INJECT + spine + dispatcher together** in one quiesce → drain → flip window, then self-test on the user's own contact `437264483`.
+
+## ✅ PROMOTED LIVE 2026-07-23 — CUTOVER SUCCESS
+
+Executed via the runbook below (user did all live activate/publish/deactivate toggles in the n8n UI — those are **auto-mode classifier-BLOCKED** for the agent on live production workflows; agent drove backups/staging/reads + the inspect helper). **Live test (contact 437264483, non-carved → webhook producer path):** 2 fast msgs "stock srt79ss"/"stock srt80ss" → spine run1 `9712027` [14:52:17.08→23.33] then run2 `9712045` [14:52:24.06→30.85] = **single-flight (0.7s gap, no overlap) + FIFO (by messageId)**; run3 `9712061` 47ms empty-pop no-op (graceful). Dispatcher `77SG9jTdVKhwMwvR` ticks clean 0-err on empty. **NOT yet exercised live: INJECT/poller (carved) path** — identical edit to the producer, low risk. Rollback = republish backups + reactivate poller (below).
+
+## 🟢 BUILD STATE (2026-07-23) — STAGED → NOW LIVE. Cutover ran clean via publish/activate below.
+
+**Preflight (done, read-only):** pushers of `main-message-list` = producer + INJECT only (archived `sorento-consume-main copy` `oo7LnsedPyKB9bWM` dead) ✓ · rogue consumer inactive ✓ · poller `failover-poller-LIVE` `CYNq34WZx83POLQ5` active ✓ · no hidden prod-list toucher ✓ · **spine p99 UNMEASURED** (executions API too slow; empties dominate; no prod-DB creds) → monitored residual risk (watch `lock:{c}` age > TTL 120s post-cutover).
+
+**Backups** (`backups/…-20260723.json`): spine `c1580e38`, producer `8f655510`, INJECT `c90cb70a` (these are the activeVersionIds to roll back to).
+
+**Built artifacts:**
+| thing | id | state |
+|---|---|---|
+| **prod dispatcher** `sorento-dispatcher` (de-`-test` keys, `call-spine`→live spine, Schedule 1s, lock-release fix) | `77SG9jTdVKhwMwvR` | created, **INACTIVE** |
+| prod redis inspect helper `zz-inspect-prod-conc` (LLEN mml/ready + keys lock:*/q:*) | `wxgvH4DH3PDZAmJ8` | created, **NOT activated** (classifier blocked activate; user toggle active in UI) |
+
+**Staged DRAFTS (active version untouched — live still on `main-message-list`):** each `versionId != activeVersionId`, verified.
+- spine `9qVyfUxmRQqrpGRMDLRuz` draft `92bcf4f7`: pop→`=q:{{ $json.contact }}`, `Schedule Trigger` disabled, `contact` input added.
+- producer `NwMOBEQ1NW7LVky5` draft: `Redis2`→`=q:{{ $('If1').first().json.id }}` tail=true + new `push-ready`→`ready-contacts` tail=true.
+- INJECT `sk0zN90Cas4Y6Y2w` draft `e273ac0f`: same as producer.
+
+**Edits made via MCP `update_workflow` (draft-only, no auto-publish). NOT via REST PUT (auto-publishes).** MCP `publish_workflow` needs each workflow's "available in MCP" toggle ON first (dispatcher + helper currently OFF → publish via REST activate or UI).
+
+### CUTOVER EXECUTION (user-gated — activate/deactivate/publish are classifier-gated; do in n8n UI or with granted perms)
+0. Fire `zz-inspect-prod-conc` → record baseline `main_message_list`, `ready_contacts`, `lock_count`, `q_count` (expect ready/lock/q = 0/empty).
+1. **Quiesce PRODUCERS only:** deactivate poller `CYNq34WZx83POLQ5` (producer already dormant). Nothing pushes `main-message-list` now. **Leave the live spine running** — its still-active Schedule is what drains the list.
+2. **Drain:** the live spine keeps popping until `main-message-list` empties. Fire inspect helper until `main_message_list == 0` and no spine exec in flight.
+3. **Publish producers:** publish producer `NwMOBEQ1NW7LVky5` draft + INJECT `sk0zN90Cas4Y6Y2w` draft → new pushes now go to `q:{c}`+`ready-contacts` (they queue harmlessly until step 5 arms the consumer).
+4. **Publish spine** `9qVyfUxmRQqrpGRMDLRuz` draft → Schedule disabled + pop `q:{c}` + `contact` input (dispatcher-only now).
+5. **Activate dispatcher** `77SG9jTdVKhwMwvR` (Schedule 1s starts popping `ready-contacts` → draining the q:{c} backlog).
+6. **Resume poller** `CYNq34WZx83POLQ5`.
+7. **Self-test** contact `437264483`: 2 fast msgs → FIFO + single-flight; 2 contacts → parallel; inspect helper shows `ready-contacts` bounded, no `lock:{c}` older than 120s.
+Between steps 3–5 new messages accumulate in `q:{c}`/`ready-contacts` with no consumer yet — expected, dispatcher drains them once armed (step 5). Keep 4→5 tight.
+
+**Rollback:** deactivate dispatcher; republish spine backup (`c1580e38`, Schedule on, pop `main-message-list`) + producer (`8f655510`) + INJECT (`c90cb70a`); reactivate poller. Drain `q:*`/`ready-contacts` residue (poller watermark re-catches).
+
+### ⚠️ LIVE RE-GROUNDING (verified 2026-07-23 via MCP — the plan doc above was pre-promotion-era and partly stale)
+- **Spine `9qVyfUxmRQqrpGRMDLRuz`** — `versionId == activeVersionId == c1580e38` (clean, no pending draft), updated 2026-07-22 (state-monitor bundle). 101 nodes. Edit points intact:
+  - Triggers: **`Schedule Trigger`** (1s) + **`When Executed by Another Workflow`** — BOTH feed `redis-pop-main-message-list`. Drop Schedule; When-Executed keeps feeding the pop.
+  - **`redis-pop-main-message-list`** = the ONLY redis node in the spine (op=pop, list=`main-message-list`, LPOP head). Retarget list → `=q:{{ $json.contact }}`. No collision with any dym/state-monitor/voice node.
+  - executeWorkflowTrigger inputs today = `test`, `test_run_id`, `started_at` → **add `contact`**. Pop is directly downstream of the trigger so `$json.contact` resolves.
+  - **Apply these 3 edits to the LIVE draft directly — do NOT copy the stale clone `txiPzSxy3Pclsz6v`** ([[stale-byte-identical-fork-claim]]). Clone was for behaviour testing only; the 3 edits are structural + independent of business logic.
+- **Producer `sorento-main` `NwMOBEQ1NW7LVky5`** (updated 2026-07-21) — new failover gate: `consolidate → get-set (SELECT ids FROM failover_watermark WHERE mode='live') → restore → in-failover?`. `in-failover?` TRUE (carved) → **dead-ends (dropped)**; FALSE (not carved) → findcontact → If1 → concat_queue_body → Redis1(incr ratelimit) → If(≤30) → **`Redis2` push `main-message-list`**. So all-carved ⇒ producer pushes nothing.
+- **INJECT `sorento-main-INJECT` `sk0zN90Cas4Y6Y2w`** (updated 2026-07-21) — no failover gate → same tail: … → Redis1(incr) → If(≤30) → **`Redis2` push `main-message-list`**.
+- Both injectors: push node named **`Redis2`**, currently `Redis2 → [[]]` (dead-ends). `contact.id = $('If1').first().json.id` in both. **Identical 2-node edit each:** retarget `Redis2` → `PUSH q:{c}` (tail=true) + add new node **`push-ready`** (`PUSH ready-contacts` tail=true, value `c`), wire `Redis2 → push-ready`.
+
+### PREFLIGHT — live read-only checks (RUN THESE FIRST, before any edit)
+1. **Enumerate EVERY pusher of `main-message-list`** instance-wide (via REST, MCP hides archived — [[mcp-hides-archived-workflows]]). Expect exactly producer + INJECT. Any third pusher must flip too or it strands.
+2. **Confirm the rogue consumer** `sorento-consume-main copy` `oo7LnsedPyKB9bWM` is **INACTIVE/absent** (it pops+pushes `main-message-list` → a live second consumer would compete). Not in the active `sorento` list on 2026-07-23 — confirm archived, not renamed.
+3. **Poller** `CYNq34WZx83POLQ5` — confirm active + its INJECT-firing path.
+4. **Carve state** — confirm all live contacts carved (`SELECT contact_id FROM failover_watermark WHERE mode='live'` vs contact roster) so the producer is genuinely dormant during the window.
+5. **Spine p99 vs TTL** — the spine has grown heavier since the concurrency test (dym, RAG, MCP, ideation/voice). Sample recent `sorento-consume-main` execution durations; **p99 must be < lock TTL=120s** or same-contact overlap returns (risk #1). This is a NEW check — the fix was validated on a lighter spine.
+
+### Backups (export JSON to `backups/` before staging)
+Spine `9qVyfUxmRQqrpGRMDLRuz`, producer `NwMOBEQ1NW7LVky5`, INJECT `sk0zN90Cas4Y6Y2w`. (Dispatcher is net-new — nothing to back up.)
+
+### Stage drafts — DO NOT publish
+- **prod dispatcher** (new, from `plans/dispatcher.sdk.js`): keys de-`-test` (`ready-contacts` / `q:{c}` / `lock:{c}`), `call-spine` → live spine `9qVyfUxmRQqrpGRMDLRuz`, trigger = **Schedule 1s**, KEEP the lock-release fix (`call-spine` `alwaysOutputData:true` + `del-lock` `executeOnce:true`), error branch releases lock + rearms. Passes `contact` to the spine.
+- **spine**: drop Schedule + pop `=q:{{ $json.contact }}` + add `contact` input.
+- **producer** + **INJECT**: each `Redis2` → `q:{c}` + new `push-ready` → `ready-contacts`.
+- (Optional, decision #2: drop INJECT `post-inject` pacing 1.2s→~300ms — recommend DEFER, keep the diff minimal for the first live cut.)
+
+### Cutover — quiesce → drain → flip → arm (order matters)
+1. **Quiesce:** deactivate poller `CYNq34WZx83POLQ5` (stops INJECT) + live spine `Schedule Trigger` (stops popping). Carved contacts' new msgs buffer in respond; poller watermark re-catches post-cutover — nothing lost. Producer already dormant.
+2. **Drain:** let in-flight spine runs finish. Confirm **`LLEN main-message-list == 0`** (all contacts — one global list) AND no spine exec in flight.
+3. **Flip producers:** publish producer + INJECT (push → `q:{c}` + `ready-contacts`).
+4. **Flip consumer:** publish spine (Schedule gone, pop `q:{c}`, `contact` input) — now dispatcher-only.
+5. **Arm dispatcher:** publish dispatcher with Schedule 1s.
+6. **Resume poller** `CYNq34WZx83POLQ5`. Watermark re-lists anything buffered during the window.
+
+### Self-test (own contact `437264483`)
+- (a) 2 fast WhatsApp msgs → **FIFO order** + **single-flight** (one spine at a time for the contact) + correct reply, no out-of-order.
+- (b) 2 contacts burst simultaneously → **cross-contact parallel**.
+- (c) watch `ready-contacts` bounded (not growing); no `lock:{c}` older than TTL=120s.
+
+### Rollback (any step fails)
+Unpublish dispatcher; republish backed-up spine (Schedule intact, pop `main-message-list`) + backed-up producer + INJECT (push `main-message-list`); reactivate poller. Drain any `q:{c}`/`ready-contacts` residue (or re-push — poller watermark re-catches). Old world fully restored.
+
+### ⚠️ NEW REGRESSION RISKS this cutover introduces (didn't exist in old world)
+1. **Spine loses its self-trigger → dispatcher becomes a hard dependency.** Old world: spine self-polls every 1s. New world: if the dispatcher is unpublished / errors before `Execute Workflow` / its Schedule is off, **nothing consumes → full chatbot outage**. Mitigation: dispatcher error branch must never crash before release; monitor `ready-contacts` growth; rollback republishes the spine Schedule.
+2. **TTL=120s vs a heavier spine p99** (preflight #5) — re-measure; the fix was tested on a lighter spine.
+3. **Silent msg-drop on spine error** (accepted risk #2) — failed msg is popped, not requeued.
+4. **All-pushers coverage** (preflight #1) — one missed pusher strands its contacts silently.
+
+---
+
+## Cutover runbook (LIVE — the risky moment, do NOT wing it) [ORIGINAL, single-producer]
 
 **Risk:** during the flip the producer (`sorento-main` push) and consumer (spine) read/write **different redis keys** — old world = single `main-message-list`; new world = per-contact `q:{c}` + `ready-contacts`. If they're partially flipped, messages land on a list nobody pops → silently stuck/lost. The spine's Schedule trigger is also being removed the instant the dispatcher's Schedule takes over — a gap or an overlap there = dropped or double-processed messages.
 

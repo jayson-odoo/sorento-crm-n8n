@@ -1,0 +1,48 @@
+{
+ "case": "SR-13",
+ "also_satisfies": ["SR-1 (amended)", "SR-10"],
+ "title": "the whole slice in one turn: query verbatim + no free_terms key + spec_asked on response + three appended lines each once, in order",
+ "verdict": "PASS",
+ "family": "SR-1c (spec-raw-text-migration)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 6656a1de-45e3-4b49-8ded-5286e5250b63 (versionId==activeVersionId, verified by a fresh REST GET immediately before the run -- resolve-entity-http.jsonBody sha256 af7d38527e6b544c55ed1e04d457980d37924f8758fa5c36b0983b0bb369fb81 (1157B) and compile-current-state.jsCode sha256 9a8f141c473028d4054400049baf3f8d622525d616e7d558375fd8f10a0b2aee (56311B), BYTE-IDENTICAL to the diff doc's recorded AFTER values -- DEPLOYED, not drifted. Re-confirmed unchanged by a second REST GET after the entire tester run: same versionId, same two shas, and workflow updatedAt (2026-08-15T15:13:08Z) PREDATES the first case fire (15:35:44Z) -- zero writes to this workflow occurred during this tester pass)",
+ "mode": "uac, previous_conversation_state:{} injected at message.previous_conversation_state (uac-mode prod-session landmine avoided)",
+ "contact": 437264483,
+ "prompt": "double bowl kitchen sink with thickness 1.2mm",
+ "test_run_id": "sr13-20260815",
+ "execution": "12596895",
+ "driver_mechanism": "POST {N8N_BASE_URL}/webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No). NOTE: MCP execute_workflow cannot drive this clone -- its only trigger is n8n-nodes-base.executeWorkflowTrigger ('When Executed by Another Workflow'), confirmed from the fresh REST GET's node list, matching LESSONS #1. The webhook driver is the only mechanism that can inject the redis item; execution ids resolved via search_executions(workflowId, startedAfter) and cross-verified by test_run_id in the trigger node's own json (self-verify guard).",
+ "static_structural_evidence": {
+  "method": "resolve-entity-http.jsonBody read directly from the fresh pre-run REST GET (not execution data -- httpRequest nodes never record the rendered outgoing body in runData, LESSONS #7)",
+  "verbatim_jsonBody": "={\n  \"query\": {{ JSON.stringify((() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })() || '') }},\n  \"match_mode\": \"{{ $('Call \\'sub-query-reformulator\\'').first().json.output.match_mode }}\",\n  \"tokens\": {{ JSON.stringify(...) }},\n  \"allowed_entity_types\": {{ JSON.stringify(...) }},\n  \"access_levels\": {{ JSON.stringify(...) }},\n  \"domain\": \"{{ ... }}\",\n  \"fallback_to_all_types\": true,\n  \"limit\": 15,\n  \"spec_fallback\": true,\n  \"understand_phrase\": false\n}",
+  "no_free_terms_key": "CONFIRMED structurally -- the key set is exactly {query, match_mode, tokens, allowed_entity_types, access_levels, domain, fallback_to_all_types, limit, spec_fallback, understand_phrase}. No free_terms key anywhere in the body. This is a STRONGER proof than reconstruction: it is the literal deployed expression, not an inference.",
+  "query_source": "tf-message-dominant RAW_MESSAGE_SRC (text || attachment.description || ''), matching diff doc decision #4/#5"
+ },
+ "dynamic_corroboration": {
+  "tf_message_text": "double bowl kitchen sink with thickness 1.2mm (runData, exact match to the fired prompt)",
+  "resolve_entity_http_response_via_token": "double bowl kitchen sink with thickness 1.2mm -- every row's display.via_token echoes the FULL raw sentence (not just the entity raw 'double bowl kitchen sink' as pre-migration free_terms would have sent), confirming the raw query reached the CRM",
+  "spec_asked": [{"key": "bowl_count", "value": 2}, {"key": "thickness", "value": 1.2}],
+  "spec_unmet": [{"key": "thickness", "value": 1.2}],
+  "matched_specs_per_row": ["bowl_count", "free_terms"],
+  "note": "spec_asked/matched_specs presence PROVES CRM PR #142 is deployed on the endpoint the clone calls -- this directly resolves the diff doc's §0 'post-deploy probe UNRUN' uncertainty for the LIVE-ENVELOPE half (the dedicated zz-crm-probe-spec-shapeA proxy remains blocked -- see the s0-blocked run file -- but this clone execution IS live envelope evidence, exactly as the task briefing asked this tester to capture)"
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 14/08/2026 18:37:26_\n\n_Matched on: bowl count: 2._\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.2mm.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "three_lines_each_once_in_order": {
+   "product_list": "present, 5 rows",
+   "matched_on_line": "'_Matched on: bowl count: 2._' -- VALUE (2) after the key, matching S4/DEV-1 upgrade (rev4 would have rendered bare '_Matched on: bowl count._' with no value)",
+   "n2_unmet_line": "'thickness isn't recorded for these products, so I couldn't narrow by 1.2mm.' -- carries the unit 'mm' from the customer's own span (SR-U4b rev3 behaviour), each line appears EXACTLY ONCE, in the order product-list -> Matched-on -> N-2"
+  },
+  "sendmsg_parts": 1
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- egress log has exactly 3 entries, all guarded: would_log (save-message-redis), would_write (save-session-vars), would_send (sendmsg-sub, part 1/1). No api.respond.io POST executed.",
+  "S2_zero_assignment": "PASS -- no escalation branch taken, no human-intervention sub invoked.",
+  "S3_zero_crm_writes": "PASS -- save-session-vars/update-human-intervened remain orphaned (0 inbound, unchanged by this slice's node-diff -- only resolve-entity-http and compile-current-state were touched); egress log shows would_write only.",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' sub-execution 12596915 targets t4QvrtrPnTwRU6br (sub-get-results CS-BUILD fork). Response shape is response/response_intro/answers/attachments/action_links/has_result/alternatives/relaxed_axis/field_access/requested_attributes/keys_served -- read-only shape. No crm_it_support_ticket_create marker anywhere in the execution.",
+  "S5_test_mode": "PASS -- 'When Executed by Another Workflow' json: {test_mode:true, test_run_id:'sr13-20260815', scope:'deterministic', mock_parser_output:null, mock_reformulator_output:null}. Self-verified: test_run_id matches the fired case exactly.",
+  "S6_token_sinks": "scope field reads 'deterministic' but this is a REAL parser-tier run (both mocks null, the real reformulator sub wI5RkNGW3EOJfBdo ran; the get-results sub also ran but its own execution shows no additional LLM-agent trace beyond the standard MCP-tool-call structure) -- consistent with the established SA/SR-family finding that this metadata field is not updated per-case. No new token sink observed."
+ },
+ "S7a_TEST_sink": "CONFIRMED: Call 'sub-respond-save-message-redis'2 sub-execution 12596917 targets workflowId tWm5DYLxfypmVC1T (the TEST sink, never the live UrETd-jm46tFj3Xw7w8vL), payload turn_id:'12596895' self-verified equal to the parent execution id.",
+ "S7b_prod_sink": "See spec-raw-text-migration-rollup-20260815.json for the full-run S7a/S7b sweep -- this execution's window (15:35:44Z-15:35:57Z) is fully covered by the rollup's 144-poll sweep (15:34:00Z-15:45:55Z), every poll LLEN=0 and pop=empty.",
+ "notes": "This execution is the single strongest piece of evidence in this run: it independently confirms (a) the exact deployed jsonBody structurally has no free_terms key and sources query from tf-message; (b) CRM PR #142 IS live on the endpoint the clone calls (spec_asked/matched_specs on the wire); (c) the S4 Matched-on VALUE upgrade renders correctly; (d) the SR-U4b unit-preserving N-2 span selection survives the migration."
+}

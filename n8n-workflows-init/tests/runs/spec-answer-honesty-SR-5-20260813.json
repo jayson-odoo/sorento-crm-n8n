@@ -1,0 +1,41 @@
+{
+ "case": "SR-5",
+ "title": "code parity",
+ "verdict": "PASS",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "check stock SRTWC286",
+ "test_run_id": "sr5-20260813",
+ "execution": "12308511",
+ "started_at": "2026-08-13T09:13:24.231Z",
+ "domain_observed": "inventory (check_stock) -- NOT master_products. Important: the inventory/stock-check response shape has NO spec_unmet/spec_candidates/matched_specs fields at all (those are product_spec_search.py concepts, only computed for the master_products domain), so N-2/N-3's rendering hooks are structurally inert on this path. This is itself part of the code-parity claim: N-0/N-2/N-3 must not leak effects onto a domain they were not designed for.",
+ "free_terms_reconstruction": {
+  "method": "Same reconstruction method as SR-1: resolve-entity-http's outgoing jsonBody is not recorded by n8n execution data (LESSONS §7); ran the ACTUAL DEPLOYED msg-term.js freeTermsFull against the entities OBSERVED in this execution's compile-current-state output and the raw customer message.",
+  "observed_entities": [
+   {"raw": "SRTWC286", "hint": "product", "canonical_code": "SRTWC286-SH-200", "current_message": true},
+   {"raw": "Dealer Sales", "hint": "category", "canonical_code": null, "current_message": false, "note": "a carried entity from real prod session state, unrelated to this turn's own words -- pre-existing session-carry behaviour, NOT introduced by this SR build (would happen identically under the pre-N-0 body since it comes from the parser's entity list, not from the message-term addition)"}
+  ],
+  "raw_message": "check stock SRTWC286",
+  "entity_derived_free_terms_CLASSIFIER_alone": ["Dealer Sales"],
+  "full_free_terms_shipped_body": ["Dealer Sales", "check stock"],
+  "code_excluded": true,
+  "conclusion": "SRTWC286 is excluded from free_terms in BOTH the entity-derived half (CLASSIFIER filters the code-shaped raw out entirely) and the message-derived half (MSG_TERM's per-word filter strips 'SRTWC286' from 'check stock SRTWC286', keeping only 'check stock'). Satisfies SR.md's hard assertion: 'resolve-entity-http body free_terms excludes the code.'"
+ },
+ "hard_assertion": "free_terms excludes the code (verified above) -- PASS.",
+ "reply_parity_note": "SR.md also asks for 'reply node-for-node vs the pre-SR baseline' -- there is NO frozen SR-B baseline for this exact phrase (SR-B1..B4 cover different phrases). Recorded honestly: node-for-node parity is established by MECHANISM, not by diffing against a literal frozen pre-SR execution of this exact text. Verified: (a) no N-2 line appears in the reply (spec_unmet is entirely absent from this domain's response shape, so the N-2 guard's 'absent -> byte-identical' no-op branch correctly fires -- confirmed by inspecting the actual rendered text, no 'isn't recorded' sentence present); (b) N-3's suppression never fires either (_specSearchAnswered requires a match_tier:'spec_search' row, which this domain's stock-lookup mechanism never produces -- so 'Dealer' (the genuinely unresolved carried entity) correctly survives in missResolutions and renders, exactly as it would under the pre-N-0/N-2/N-3 body). Both N-2 and N-3 are structural no-ops on this domain by construction, which IS the parity claim.",
+ "customer_boundary": {
+  "rendered_reply_verbatim_excerpt": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWC286-SH\n*Warehouse:* BUKIT RAJA\n... [49 rows total, truncated here for brevity, full text captured in the execution] ...\n\n_Data last updated: 13/08/2026 17:10:27_\n\nCouldn't find these:\n\"Dealer\" — not found.\n\nAsk again with the correct code.",
+  "unrelated_observation_flagged": "'Dealer' is a carried entity from the contact's real prod session (hint:'category', current_message:false) that has nothing to do with the customer's actual message 'check stock SRTWC286' -- it appears to be leakage from an ideation-related session field for this dev contact. This is PRE-EXISTING and orthogonal to the SR-1 build (the two edited nodes, resolve-entity-http and compile-current-state, do not touch entity extraction/carry logic at all) -- flagged for visibility, not scored as an SR-family defect."
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries only.",
+  "S2_zero_assignment": "PASS -- no escalation branch.",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "N/A for this case -- the inventory/stock-check answer in this execution renders directly from resolve-entity-http's response via compile-current-state (no Call 'sub-get-results' invocation observed in this path for the inventory domain in this run); no write tool of any kind fired.",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr5-20260813', scope:'deterministic'}, directly confirmed.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": "See rollup."
+}

@@ -1,0 +1,83 @@
+{
+ "case": "SA-7",
+ "title": "widened arm at the customer boundary (review §D, required before promote)",
+ "verdict": "PASS -- WITH A PRECISE MECHANISM FINDING (see below; not a failure, per the coordinator's explicit instruction)",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8-3d4f-41ff-a52d-5061bc9f25cd (re-verified versionId==activeVersionId via export --verify immediately before this run; unmoved since the 6-case run)",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "do you have wall hung basin",
+ "test_run_id": "sa7-20260812",
+ "execution": "12183425",
+ "started_at": "2026-08-12T09:36:39.398Z",
+ "resolve_entity_http_output": {
+  "tokens": ["wall hung basin"],
+  "match_mode": "and",
+  "intersection_composition": "5 rows, ALL match_tier:'spec_search' / match_field:'specifications'. ZERO code-tier partial rows mixed in (no 'and'/'prefix'/'trgm' rows present).",
+  "product_codes": ["BRBC22137W-1 (WALL HUNG)", "BRBC22292W", "BRBC22350W-1-SG", "BRBC22589W", "BRBC22590W"],
+  "resolutions_array_length": 1,
+  "resolutions_single_entry": {
+   "token": "trying to check whether wall hung basin is available as a product (the LLM restatement)",
+   "resolved": false,
+   "ambiguous": true,
+   "matches_count": 5,
+   "alternatives": []
+  },
+  "no_second_resolution_for_raw_customer_token": true,
+  "unresolved_tokens": [],
+  "fallback_reason_field_present": false,
+  "floor_missed": false,
+  "spec_candidates_count": 5
+ },
+ "disallowed_entity_gate": {
+  "gate_passed": true,
+  "require_specific": false,
+  "gate_reason": "ok",
+  "compatible_entities_count": 5
+ },
+ "If3_branch": "output 1 (resolved leg). No dead-end.",
+ "get_results": {
+  "ran": true,
+  "sub_execution": "12183440",
+  "sub_workflow": "t4QvrtrPnTwRU6br (sub-get-results-CS-BUILD, confirmed current again)",
+  "has_result": true,
+  "answer_product_codes": ["BRBC22350W-1-SG", "BRBC22137W-1 (WALL HUNG)", "BRBC22292W", "BRBC22589W", "BRBC22590W"],
+  "matches_resolve_entity_uuids": true
+ },
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:04_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "grep_couldnt_find": "ABSENT",
+  "grep_did_you_mean": "ABSENT",
+  "grep_multiple_matches_found": "ABSENT",
+  "grep_escalation_offer": "ABSENT",
+  "sendmsg_parts": 1
+ },
+ "SA7_hard_assertion_result": "PASS, literally as written in SA.md: 'resolve-entity-http runData: widened arm fired (intersection = spec_search rows only, no code partials); the WHOLE reply: spec-product list present, and NONE of: Couldn't find, did you mean, Multiple matches found, an escalation offer.' Both halves directly confirmed above -- intersection is spec_search-only with zero code partials, and the rendered reply is clean.",
+ "mechanism_finding_precise": {
+  "title": "The specific §D leftover-resolution defect (two resolution entries, one abandoned) does NOT reproduce on this single-token phrasing -- and structurally cannot, independent of which CRM arm fired.",
+  "detail": "Review §D's predicted mechanism requires TWO resolution entries to exist side-by-side after `_emit_spec_matches` runs: (1) the customer's ORIGINAL per-token resolution, left with `matches:[]` + its trgm `alternatives` untouched, and (2) a NEW resolution keyed on `payload.query` (the restated string) carrying the spec matches -- with `_tokenWasAnswered` then failing entry (1) against `_answerCodes` built from entry (2)'s uuids, producing a leaked did-you-mean under the spec answer. Directly observed here: `resolutions` has exactly ONE entry total, keyed on the restated string, with the spec matches. There is no second entry for the raw token 'wall hung basin' at all -- not even one carrying `matches:[]`. §D's two-entry precondition is simply absent for a SINGLE-TOKEN AND query: resolutions is sized to the token count (1 token in, 1 slot total), so there is no separate slot for a leftover to occupy in the first place.",
+  "contrast_with_SA4_SA5": "SA-4 ('wall hung basin got SIRIM cert?') and SA-5 ('SRTWC286 and wall hung basin') ARE multi-token queries, and in both, 'wall hung basin' DOES get its own independent resolution entry (matches:[], alternatives: 3 trgm codes) sitting alongside a SIBLING token's entry -- the exact shape §D's mechanism needs a leftover to occupy. But in those two cases the widened arm never engaged for the 'wall hung basin' token at all (per the rollup's review_corrections_20260812 note: 'SA-4/SA-5 floor-missed on the widened arm') -- no spec rows appeared, so there was nothing for '_tokenWasAnswered' to fail against. So: SA-4/SA-5 have the RIGHT STRUCTURAL SHAPE (multi-token, independent per-token slot) but the widened arm doesn't fire; SA-7 has the widened arm firing cleanly but the WRONG STRUCTURAL SHAPE (single-token, no independent slot to leak) for §D's specific defect to manifest. Neither of the three n8n-level runs I have (SA-4, SA-5, SA-7) sits at the intersection §D actually worries about: a MULTI-TOKEN query where the widened arm fires for one token above the ranker floor while a SIBLING token's own resolution survives unanswered alongside it.",
+  "cannot_fully_disambiguate": "From n8n-side output alone I cannot prove whether this execution's underlying CRM state was (a) a true zero-AND-intersection from the start (mechanically identical to SA-1), or (b) a 13-row partial AND-intersection (matching SA-P6's own contract-level probe on the same phrase, which recorded before_intersection_rows:13 -> after_spec_rows:10) that got wholesale-REPLACED per contract fact #1 -- both are byte-identical at this node once REPLACE has happened, by design. The absence of a 'fallback_reason'/'fallback_match_mode' field (present in SA-3/SA-4/SA-5, all clearly zero/partial-fallback shapes) matches SA-1's shape exactly, which weakly favors (a), but this field's absence is not independently documented as a discriminator anywhere in the plan/diff/review, so this is a hedge, not a claim.",
+  "recommendation": "A genuine end-to-end test of review §D's specific risk needs a MULTI-TOKEN query where (i) one token is a real product/attribute qualifier that resolves fine (giving the sibling-slot structure SA-4/SA-5 have), AND (ii) the OTHER token ('wall hung basin'-shaped) clears the ranker floor for spec_search under the widened gate (which SA-7 alone proves is achievable for this exact phrase). E.g. a variant of SA-4/SA-5 using a phrase combination tuned so the descriptive token individually produces >=1 spec_search row above floor while the sibling token also resolves -- SA-7's own successful single-token trigger ('do you have wall hung basin') is the needed building block; it was not combined with a second token here because SA.md specified SA-7 as a bare single-phrase case."
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- egress log: 1x would_log, 1x would_write, 1x would_send. No real respond.io POST.",
+  "S2_zero_assignment": "PASS -- no escalation branch (clean answer, no offer).",
+  "S3_zero_crm_writes": "PASS -- save-session-vars/update-human-intervened orphaned; would_write only. Call 'sub-respond-save-message-redis'2 confirmed sinked to tWm5DYLxfypmVC1T (sub-execution 12183442), self-verified turn_id '12183425' == this execution's own id (LESSONS §8).",
+  "S4_get_results_read_only": "PASS -- Call 'sub-get-results' (sub-execution 12183440, workflowId t4QvrtrPnTwRU6br) returned a read-shaped answer (response/answers/attachments/has_result), uuids match resolve-entity's spec matches. No ticket-create or write-tool marker present.",
+  "S5_test_mode": "PASS -- directly confirmed from 'When Executed by Another Workflow' json: {test_mode:true, test_run_id:'sa7-20260812', scope:'deterministic'}.",
+  "S6_token_sinks": "Real reformulator ran (parser tier, sub wI5RkNGW3EOJfBdo -- same as all prior SA cases). No new LLM/token sink observed.",
+  "S7_sink_delta": {
+   "S7a_TEST_sink": "Confirmed via self-verified turn_id match (sub-execution 12183442 -> tWm5DYLxfypmVC1T, turn_id == parent execution id 12183425).",
+   "S7b_prod_sink": {
+    "method": "Two co-mandatory signals (per-poll LLEN from Redis1, per-poll pop payload from Redis) on the prod ingest consumer Srs08P0Ha3Cv--YPx0-Yn.",
+    "window_covered": "2026-08-12T09:36:25Z through 2026-08-12T09:36:55Z -- 7/7 covering polls individually fetched, 0 unretrievable. Window fully brackets this execution (started 09:36:39.398Z, stopped 09:36:47.940Z).",
+    "nonzero_llen_polls": 0,
+    "nonempty_pop_polls": 0,
+    "harness_attributable_delta": 0,
+    "verdict": "PASS -- zero prod-sink movement of any kind in this window (cleaner than the 6-case run, which had one unrelated-traffic window)."
+   }
+  }
+ },
+ "notes": "Fires the widened-gate contract shape end-to-end through the real parser for the first time at the n8n level, corroborating SA-P6's CRM-level evidence (single query token, partial-or-zero intersection replaced wholesale by spec rows, unresolved_tokens empty, one clean resolution entry). Confirms review §D's hard assertion (no leaked did-you-mean under a widened-arm spec answer) for the SINGLE-TOKEN shape. Does NOT by itself confirm §D's specific two-entry-leftover risk is unreachable in the multi-token case -- SA-4/SA-5 already show that shape exists structurally but never got the widened arm to fire (floor-missed); no run in this family has yet combined both preconditions in one input. Recorded as an open follow-up, not a blocker for this case's own PASS."
+}

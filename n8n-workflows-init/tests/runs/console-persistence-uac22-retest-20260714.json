@@ -1,0 +1,56 @@
+{
+  "test_run_id": "console-persistence-uac22-retest-20260714",
+  "supersedes_case": "22.4 of console-persistence-uac22-20260714.json (was FAIL)",
+  "change": "console-incoming-logger sent_at fix (V-CP6 re-test): incoming.sent_at now sourced from injection-time messageId epoch via COALESCE(to_timestamp(NULLIF($7,'')::float8/1000.0), NOW())",
+  "tester": "sorento-tester",
+  "date": "2026-07-14",
+  "target": "clone txiPzSxy3Pclsz6v (active versionId 9eb9762e-d502-4f02-bf9d-d54a344ba699 -- coder-claimed, REST-confirmed active+published)",
+  "scope": "deterministic (pg INSERT column source change); driver=zz-chat webpage so live reformulator runs 1x/turn (structural assertions only)",
+  "driver": "execute_workflow(zz-chat oyYfVvZHRZpWubTy, {type:chat, chatInput}) x3 -> zz-dispatcher -> clone spine; contact 437264483, session reset to {\"variables\":{}} before turn-1",
+  "clone_execs": {"turn1": 8564359, "turn2": 8564409, "turn3": 8564442},
+  "baseline_chat_histories_max_id": 9150024,
+  "rows_written": [9150025, 9150026, 9150027, 9150028, 9150029, 9150030],
+  "cases": [
+    {
+      "case": "22.4 (RE-TEST) incoming.sent_at pairing invariant -- THE FIX",
+      "verdict": "PASS",
+      "per_turn_ordering": [
+        {"turn": 1, "in_id": 9150026, "in_epoch": 1784022509.620000, "out_id": 9150025, "out_epoch": 1784022514.470613, "delta_in_before_out_s": 4.850, "ok": true},
+        {"turn": 2, "in_id": 9150028, "in_epoch": 1784022539.253000, "out_id": 9150027, "out_epoch": 1784022543.960332, "delta_in_before_out_s": 4.707, "ok": true},
+        {"turn": 3, "in_id": 9150030, "in_epoch": 1784022556.965000, "out_id": 9150029, "out_epoch": 1784022563.798270, "delta_in_before_out_s": 6.833, "ok": true}
+      ],
+      "incoming_sourced_from_messageId_epoch": "PROVEN -- incoming rows carry clean-millisecond sent_at (.620000/.253000/.965000 = to_timestamp(messageId epoch)); outgoing rows carry micro-fractional (.470613/.960332/.798270 = NOW()). Distinct clock sources confirm the fix (incoming no longer NOW()).",
+      "v_turns_pairing": [
+        {"turn_index": 849, "incoming_id": 9150026, "incoming_text": "check the price for SRTWT7301", "paired_outgoing_id": 9150025, "paired_reply": "Here are the matching products...", "own_turn_reply": true},
+        {"turn_index": 850, "incoming_id": 9150028, "incoming_text": "2", "paired_outgoing_id": 9150027, "paired_reply": "Here are the matching products...", "own_turn_reply": true},
+        {"turn_index": 851, "incoming_id": 9150030, "incoming_text": "price for srt7ss", "paired_outgoing_id": 9150029, "paired_reply": "Couldn't find \"srt7ss\"...", "own_turn_reply": true}
+      ],
+      "note": "Each incoming pairs with ITS OWN turn's reply. No off-by-one (contrast prior FAIL: 9150015 paired 9150016). Last incoming (851) is NOT NULL-paired (has out 9150029). v_turns LATERAL join (o.sent_at >= i.sent_at) resolves correctly because inc_N.sent_at sits strictly between out_{N-1} and out_N."
+    }
+  ],
+  "zero_egress_gate_s0": {
+    "verdict": "PASS (all 3 turns, new version 9eb9762e)",
+    "S1_no_whatsapp_send": "PASS -- zero 'api.respond.io/.../message' string hits in any exec; no send-message-* node in runData keys; send fork sorento-sub-respond-sendmsg-respond2 executed with is_test=True, reply routed to redis (zz-chat read-list/format-out returned it; DB rows source=chat-console). No real HTTP send.",
+    "S2_no_assign_sla_pic": "PASS -- Call 'sub-human-intervention' did NOT execute in any turn; is-human-intervened is a read IF (check flag, not write); no assign/SLA/PIC node executed.",
+    "S3_no_prod_write": "PASS -- save-session-vars (prod PUT) orphaned, never executed; session write -> pg-upsert-session (Dnnofg8Xb27VQOhI); incoming+outgoing chat_histories -> Dnnofg8Xb27VQOhI. All 3 postgres nodes (pg-get-session/pg-upsert-session/log-incoming-chat-history-n8ntest) bind n8n_test-db, NONE bind prod ETJL5KoaA1UpkDip. No save-message-redis executed.",
+    "S4_get_results_read_only": "PASS -- get-results resolved tool=crm_incoming_stock_list (READ allowlist); no crm_it_support_ticket_create or any write tool executed. The _assign/_escalat/_write/save-session-vars tokens in the exec blob are embedded workflowData node DEFINITIONS, not runData executions (confirmed: none appear as executed node keys).",
+    "S5_test_mode_present": "PASS -- redis-pop mode='chat-stateful' + contact.chat_id present all 3 turns; sendmsg fork is_test=True; reformulator sub-call is_test=True; human-intervention sub-call is_test=True (hardcoded on clone).",
+    "S6_token_sinks": "reformulator (sub XTODTw-dJcV0uRdC056hG, live gpt-5.4-mini) ran 1x/turn (driver cost, allowed); no unexpected extra LLM node; Basic LLM Chain not triggered."
+  },
+  "regression_spotcheck": {
+    "verdict": "PASS",
+    "session_evolution": "PASS -- turn-2 pg-get-session read persisted turn-1 state (last_result_set len=3); turn-2 reformulator user_goal='trying to select the 2nd product from the previous results', resolved ordinal 2 -> entity SRTWT7301-GM (canonical). Reply 9150027 result_set len=1. Proves the pg round-trip carries state turn->turn on new version.",
+    "plaintext_outgoing_logged": "PASS -- outgoing rows 9150025, 9150027 logged (type=outgoing, source=chat-console, message text).",
+    "quick_reply_outgoing_logged": "PASS -- turn-3 outgoing 9150029 result.quick_reply=[\"SRT79-SS\",\"SRTKT37SS\",\"SRTESS\",\"Yes escalate\",\"No it's okay\"] (non-empty)."
+  },
+  "static_verification": {
+    "active_versionId": "9eb9762e-d502-4f02-bf9d-d54a344ba699 (REST-confirmed, active=true)",
+    "incoming_logger_query": "sent_at = COALESCE(to_timestamp(NULLIF($7,'')::double precision/1000.0), NOW()); queryReplacement IIFE extracts trailing epoch-ms from messageId/test_run_id. Cred = Dnnofg8Xb27VQOhI.",
+    "egress_nodes_orphaned": "send-message-files/images/video, update-human-intervened, prod save-session-vars all have 0 inbound connections (orphaned)."
+  },
+  "observations_for_reviewer": [
+    "Clone's get-results sub id is rysSPgUssLDf6xJc (also used by probe-incoming); CLAUDE.md lists Fss5aAaXthJSWpZCgKiKR as the get-results sub. The clone calls rysSPgUssLDf6xJc -- a read sub (resolved crm_incoming_stock_list, no egress). Not a defect for this change; flag ID-map drift in CLAUDE.md.",
+    "get-rag and get-results sub-calls do NOT pass is_test (is_test_present=false) -- acceptable since they are read-only subs; egress-capable subs (sendmsg forks, human-intervention, reformulator) all pass is_test=true."
+  ],
+  "overall": "PASS. §22.4 pairing invariant FIXED on active version 9eb9762e -- incoming.sent_at < own outgoing.sent_at every turn (5-7s margin), incoming sourced from messageId epoch not NOW(), v_turns pairs each incoming with its own turn's reply (no off-by-one, no NULL). §0 zero-egress re-confirmed PASS on new version (S1-S6). Regression spot-check PASS (session evolution + plaintext + quick_reply logging intact). Prior 22.4 FAIL is resolved."
+}

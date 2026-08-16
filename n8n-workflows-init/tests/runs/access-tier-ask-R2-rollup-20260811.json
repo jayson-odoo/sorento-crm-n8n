@@ -1,0 +1,248 @@
+{
+ "family": "TA — tier-only access ask (tests/uac/TA.md) — ROUND 2",
+ "date": "2026-08-11",
+ "target": "FORK spine RnpxEnAV3g20MmKj @ bba611fa-e8c9-469f-abe3-bc5d64011a94 + FORK parser RJ326g9dwe3bTWyf @ 668cd772-fb72-468f-810e-3aa2dccb5cc4. LIVE spine 9qVyfUxmRQqrpGRMDLRuz NEVER driven.",
+ "presence_gate_LESSONS_64": "Both forks re-fetched BEFORE the first run. versionId == activeVersionId on both. Every node param-hash and jsCode sha in tests/manifests/access-tier/README.md's round-2 column matched live exactly (tier-gate fea867736b674f22/9f2a32520576428a, promo-picker 600c2ec0293d651d/c7306fbffc06f4dd, output_exchange 6c1ad691a401e0ec/22a30278d92c3550, plus the four unchanged round-1 rows). Connections: Aggregate->tier-gate->If4, no other edge. Harness wiring unchanged: all 8 sendmsg callers -> ublq9nSlrpz63xan, save-message-redis -> tWm5DYLxfypmVC1T (list literal 'sorento-respond-message-TEST'), get-results -> t4QvrtrPnTwRU6br. Nobody reverted or re-edited between the coder's build and this run.",
+ "method": {
+  "driver": "zz-canary-run PROMO-PICKER (M5m6EYDLdSc0ofto), webhook /zz-run-promo-picker -> seeds test:q:{contact} -> fork. 45 turns.",
+  "state": "previous_conversation_state supplied EXPLICITLY on every turn ({} for a fresh case), so sim-inject-gate always fires and the dev contact's stale prod session is never read. Multi-turn cases thread the PRIOR TURN'S OWN persisted `variables` object taken from the save-session-vars egress record (LESSONS 64: state derived from a real payload, never hand-built).",
+  "assertions": "per-node runData + the rendered reply + the sendmsg payload + the send-message-files egress entries. Execution status is never used as a verdict.",
+  "lane_change_vs_round_1": "Round 1 had to run most answering cases under regress-replay because contact 437264483 gets 0 matches / 0 alternatives from the CRM resolver. That is still true today. I therefore ran the WHOLE suite on control contact 477071889 in **uac mode against the real CRM**, and used regress-replay ONLY where TA.md requires an injected entitlement (TA-6, TA-9, TA-11, D10-BOUND, and the F1/F2 probes). This discharges round 1's pinning caveats on TA-2/3/4/10."
+ },
+ "BLOCKED_ENVIRONMENT": {
+  "status": "still present, still not this change's fault, and it did NOT mask anything this round",
+  "evidence": "Same fork, same lane, same message 'promo for SRTBF11710 dealer', same entitlement (both contacts hold all 7 compound levels). 437264483 (exec 12044583): resolutions[0] matches 0, alternatives 0, resolved false, 1155 ms -> dead-ends at not-found. 477071889 (exec 12044625): token resolved, unresolved_tokens [], 36 ms -> 2 dealer files.",
+  "how_I_distinguished_it": "A failure is BLOCKED-ENVIRONMENT only if the identical input on the identical fork lane succeeds on 477071889 and fails on 437264483 at the RESOLVER (matches 0 / alternatives 0), before tier-gate's decision is consumed. Every case scored below ran on 477071889, so no verdict in this run rests on the broken contact. The one 437264483 case I kept (TA-1) does not touch the resolver at all — the ask fires before resolve-entity — and it passed there too (exec 12044535)."
+ },
+ "discriminator_S9_70d": {
+  "what": "The SAME three round-2 predicates, evaluated mechanically against round-1 (spine 407cbfb7) executions and against round-2 executions of the SAME input phrasing. Round-1 code is reached without editing or republishing anything: the round-1 executions are still retrievable, so they ARE 407cbfb7 running.",
+  "results": [
+   "D10 'brand gate closed => zero answers, zero attachments, zero send-message-files guard runs' — round-1 exec 12041565: RED (answers=6, attachments=6, file-guard ran). round-2 exec 12045533: PASS (0/0/0).",
+   "D9 'compound-stated brand recovered => query_brands==[cabana] AND team==marketing_promotion_cabana' — round-1 exec 12041502: RED (raw levels ['Cabana Dealer'], query_brands ABSENT, team marketing_promotion_sorento). round-2 exec 12045342: PASS (query_brands ['cabana'], team marketing_promotion_cabana).",
+   "D11 'a resolved pick on a non-tier roster => tier_ask false' — round-1 exec 12041783: RED (tier_ask true, pending_pick absent). round-2 exec 12045025: PASS (tier_ask false, pending_pick true)."
+  ],
+  "code_presence_corollary": "tier-gate's output on round-1 executions has no `pending_pick` key at all and the parser has no `query_brands` key; both are present on every round-2 execution. That is an execution-shape discriminator (LESSONS 64 rule iii/iv), independent of any rendered string.",
+  "also": "Round 1's pre-change-clone control (clone txiPzSxy3Pclsz6v renders the OLD 'Please specify which access level…' prompt, exec 12041903) still stands for the ask string itself; I did not re-run it because the round-1-execution control above is strictly sharper for the round-2 hunks."
+ },
+ "verdicts": [
+  {
+   "case": "TA-1",
+   "verdict": "PASS",
+   "round1": "PASS",
+   "exec": "12044816 (+12044535 on 437264483)",
+   "mode": "uac"
+  },
+  {
+   "case": "TA-2",
+   "verdict": "PASS — round-1 pinning caveat DISCHARGED",
+   "round1": "BLOCKED / PASS-with-caveat",
+   "exec": "12044827",
+   "mode": "uac real CRM",
+   "note": "picked tier dealer -> exactly 2 of the product's 6 files"
+  },
+  {
+   "case": "TA-3",
+   "verdict": "PASS — caveat discharged",
+   "round1": "PASS (pinned)",
+   "exec": "12045206",
+   "mode": "uac real CRM",
+   "note": "'1 and 2' -> 4 files (office+dealer), END USER excluded"
+  },
+  {
+   "case": "TA-4",
+   "verdict": "PASS — caveat discharged",
+   "round1": "PASS (pinned)",
+   "exec": "12045240",
+   "mode": "uac real CRM",
+   "note": "'all' -> 6 files"
+  },
+  {
+   "case": "TA-5",
+   "verdict": "PASS",
+   "round1": "PASS",
+   "exec": "12047071",
+   "mode": "uac real CRM",
+   "note": "stated tier skips the ask, 2 dealer files. See F2 — D9 also narrowed the brand to sorento off an LLM-guessed compound level"
+  },
+  {
+   "case": "TA-6",
+   "verdict": "PASS",
+   "round1": "PASS",
+   "exec": "12045493",
+   "mode": "replay, entitlement ['End User']"
+  },
+  {
+   "case": "TA-7",
+   "verdict": "PASS — the 'D11 must not repeal D4' bound holds",
+   "round1": "PASS",
+   "exec": "12044880",
+   "mode": "uac"
+  },
+  {
+   "case": "TA-8",
+   "verdict": "PARTIAL PASS — round-1 blocker cleared, TA.md's own assertion still fails",
+   "round1": "FAIL",
+   "exec": "12044849",
+   "mode": "uac real CRM",
+   "note": "see F4"
+  },
+  {
+   "case": "TA-9",
+   "verdict": "FAIL — REGRESSION vs round 1",
+   "round1": "PASS",
+   "exec": "12045520",
+   "mode": "replay, entitlement ['End User']",
+   "note": "see F1 — this is the blocking finding"
+  },
+  {
+   "case": "TA-10",
+   "verdict": "PASS",
+   "round1": "PASS",
+   "exec": "12045322",
+   "mode": "uac real CRM"
+  },
+  {
+   "case": "TA-11",
+   "verdict": "PASS — both word orders, leak closed",
+   "round1": "FAIL (both arms)",
+   "exec": "12045533 / 12045546",
+   "mode": "replay, entitlement ['Sorento Dealer','End User']"
+  },
+  {
+   "case": "TA-12",
+   "verdict": "PASS (now full)",
+   "round1": "PASS (partial)",
+   "exec": "12045090",
+   "mode": "uac"
+  },
+  {
+   "case": "TA-13",
+   "verdict": "PASS",
+   "round1": "PASS",
+   "exec": "12045293",
+   "mode": "uac"
+  },
+  {
+   "case": "TA-14a",
+   "verdict": "PASS",
+   "round1": "FAIL",
+   "exec": "12045025",
+   "mode": "uac real CRM"
+  },
+  {
+   "case": "TA-14b",
+   "verdict": "NOT ARRANGEABLE (unchanged)",
+   "round1": "NOT ARRANGED",
+   "exec": "12046117 / 12046130",
+   "mode": "replay",
+   "note": "no lane produces a CS member roster on this fork; 'yes escalate' goes straight to the guarded HI sub. Reported, not faked."
+  },
+  {
+   "case": "TA-15",
+   "verdict": "PASS (now full)",
+   "round1": "PASS (partial)",
+   "exec": "12045639 / 12045654",
+   "mode": "uac"
+  },
+  {
+   "case": "D11-EXCL (new bound)",
+   "verdict": "PASS",
+   "round1": "n/a",
+   "exec": "12045163",
+   "mode": "uac",
+   "note": "entity-less non-pick with the ask pending -> the ask RE-FIRES"
+  },
+  {
+   "case": "D10-BOUND (new bound)",
+   "verdict": "SPLIT — PASS with a branded entitlement, FAIL with End-User-only",
+   "round1": "n/a",
+   "exec": "12046052 (pass arm) / 12045520 (fail arm)",
+   "mode": "replay"
+  },
+  {
+   "case": "D9-FALLBACK (new bound)",
+   "verdict": "NOT ARRANGEABLE end-to-end; code-read only",
+   "round1": "n/a",
+   "exec": "12045714 / 12045736 (VACUOUS — recorded as such)",
+   "mode": "uac",
+   "note": "parser-bypass-gate gates the CLARIFICATION LLM, not the semantic-parser sub, so mock_parser_output cannot simulate an older parser here"
+  }
+ ],
+ "findings": [
+  {
+   "id": "F1",
+   "severity": "BLOCKING — functional regression vs round 1, introduced by D9+D10 together",
+   "title": "An End-User-only contact is brand-gate-DENIED, and D10 then deletes the Q23 answer",
+   "customer_boundary": "exec 12045520, entitlement ['End User'], message 'office promo for SRTBF11710'. Verbatim reply: \"You don't have access to office promotions — here's what you do have:\\n\\nWould you like me to escalate to marketing_promotion_sorento team?\" — the sentence promises a list and is followed by nothing. 0 answers, 0 attachments, 0 file egress. Round 1 (exec 12041445) answered with the notice + 6 files.",
+   "mechanism": "tier-gate.js: parseLevel('End User') returns {brand:null,...}, so mapEntitlement(['End User']).brands === []. The LLM emitted access_levels ['Sorento Office'] for a message that said only 'office'; D9 unions that into query_brands ['sorento']. recompose() computes brandGateEmpty = qb.length>0 && !qb.some(b => entMap.brands.includes(b)), which is UNCONDITIONALLY TRUE for any brandless entitlement. brand_gate_empty true then (a) skips the Q23 widen branch, which is guarded on !brand_gate_empty, and (b) triggers D10's top-of-node guard in promo-picker, which wipes answers and attachments before any other exit path.",
+   "why_it_matters": "It contradicts plan §3 verbatim ('\"End User\" -> {brand: null (all entitled brands)}') and plan journey rows 4 and 6, and it is the exact bound the round-2 brief asked me to check ('D10 must not eat the tier-level Q23 answer'). recompose()'s own loop even has a comment saying end_user is brandless and should be included whenever its tier is chosen — but that inclusion happens AFTER brandGateEmpty has already been decided and exported.",
+   "bounded_by": "exec 12046052 — the SAME query on entitlement ['Sorento Dealer','End User'] passes (notice + answer + 6 files, brand_gate_empty false). So the defect is specifically the brandless End-User-only contact.",
+   "suggested_shape_of_fix": "brandGateEmpty must not be true when the contact's chosen tier(s) include a brandless level, or more generally when entMap.brands is empty (no brand axis to gate on). Not my call to make — flagged for the planner/coder."
+  },
+  {
+   "id": "F2",
+   "severity": "design risk, no wrong denial observed",
+   "title": "The brand gate now keys on a brand the LLM inferred, not one the customer said",
+   "evidence": "'promo for SRTBF11710 dealer' — no brand word anywhere — makes the LLM emit access_levels ['Sorento Dealer'] (execs 12044625, 12047071), and D9 promotes that to query_brands ['sorento'], which is a security-gate input. Deterministic: 4/4 identical runs (12045877/12045892/12045908/12045921) produced the same denial for a Cabana-Dealer contact. Round 1 discarded the brand half and recomposed all three brands here.",
+   "counter_evidence_I_looked_for": "I tried to make it produce a WRONG denial — a Cabana product, no brand word, Cabana-entitled contact (execs 12045972/12045990/12046006). It did not: the LLM emitted the cabana-inclusive set and the gate stayed open, 2 files served. So in practice the inference tracks the product-code prefix. I am reporting the coupling, not claiming a live leak.",
+   "why_it_still_matters": "An access boundary whose input is an LLM field the customer never uttered will drift with the model. It is also the proximate trigger of F1."
+  },
+  {
+   "id": "F3",
+   "severity": "observation — D9 is narrower than 'word order no longer matters'",
+   "title": "D9 fixes the ACCESS/routing half of the word-order dependency, not the SEARCH half",
+   "evidence": "Same contact, same product, full entitlement, uac: 'cabana promo for CBS212-WH dealer' (12045322) -> 2 Cabana files. 'cabana dealer promo for CBS212-WH' (12045342) -> 'No promotion for CBS212-WH. Try: CBS202-WH, CBS204-WH…'. Both now produce query_brands ['cabana'] and route to marketing_promotion_cabana (that is the D9 fix, and it works), but only the first phrasing yields a hint:'brand' ENTITY, and the entity is what scopes the SEARCH. Per D6 that is by design — worth saying out loud because 'the gate fires regardless of word order' can be misread as 'the answer is the same regardless of word order'. It is not."
+  },
+  {
+   "id": "F4",
+   "severity": "functional gap, contradicts TA.md TA-8 and plan journey row 5",
+   "title": "A follow-up on a tier-scoped answer silently re-widens to the full entitlement",
+   "evidence": "exec 12044849. After TA-2's dealer-scoped answer (2 DEALER pdfs), 'the august one' no longer re-asks the tier (D11 works: _pending_pick true, tier_ask false) but it also does not resolve against the ANSWER: reference_positions [], no date narrowing, tier-gate recomposes all 7 entitlement names, and the customer receives 6 files including the OFFICE and END USER pdfs plus both non-August promotions. Not an entitlement violation for a fully-entitled contact, and arguably a consequence of D4's per-query tier, but the round-1 blocker is only half discharged."
+  },
+  {
+   "id": "F5",
+   "severity": "reporting/quality (LESSONS 68 class)",
+   "title": "The F1 reply is internally incoherent",
+   "evidence": "\"…here's what you do have:\" followed by nothing. Any assertion that only checked for the notice string would have passed. This is why I asserted the WHOLE reply plus the file count rather than the notice."
+  }
+ ],
+ "observations_to_surface": [
+  "get-results LLM liveness: across 17 real get-results sub executions the only nodes that ran were MCP Client1, entity-ids-transformer, output-structurer — the agent path never appears, consistent with it being orphaned in t4QvrtrPnTwRU6br. No new token sink on the spine either: only the pre-existing 'Basic LLM Chain' + 'OpenAI Chat Model' clarification pair fired, on casual/clarify turns.",
+  "CONTROL CONTACT IS A LIVE CUSTOMER. 477071889 was holding a real conversation with the LIVE bot during this run (prod-list pops at 07:56:40-07:57:45: 'wc8318 eta', '9', 'wc8318 got stock', first_name 'Chong', live turn_ids 12046739/12046794/12046841). Nothing from my run reached them (S1/S3/S7a all clean, every turn landed in the TEST sink) and I injected previous_conversation_state on every turn so their live session was never read or threaded. But running a suite on a live contact's id is a standing risk and the harness should get a resolver-working synthetic contact instead of leaning on 477071889 — this is the second cycle in a row that has had to.",
+  "My first D9-fallback attempt was VACUOUS and is recorded as such rather than as a pass: mock_parser_output does not bypass the semantic parser on this fork (parser-bypass-gate is fed from construct-user-prompt and gates 'Basic LLM Chain'). Worth adding a real parser-output injection point to the harness if that bound is to be tested end-to-end.",
+  "not-found-error-message still echoes TIER TOKENS ('for dealer'), as flagged in round 1 — unchanged, still an improvement."
+ ],
+ "safety_gate": {
+  "gate_LESSONS_64": "Both forks re-fetched BEFORE the run; versionId == activeVersionId and EVERY node param-hash matches tests/manifests/access-tier/README.md round-2 column. spine RnpxEnAV3g20MmKj @ bba611fa-e8c9-469f-abe3-bc5d64011a94 (tier-gate param fea867736b674f22 / js 9f2a32520576428a; promo-picker param 600c2ec0293d651d / js c7306fbffc06f4dd; If4 e457606a94c49cb9; access-level-choice-message 9613941002af044d; compile-current-state 40c34936407782be; disallowed-entity-gate fc07d691810ec289; Call 'sub-get-results' bebafe8fda5be745). parser RJ326g9dwe3bTWyf @ 668cd772-fb72-468f-810e-3aa2dccb5cc4 (output_exchange param 6c1ad691a401e0ec / js 22a30278d92c3550). Connections: Aggregate->tier-gate->If4 only.",
+  "live_spine": "9qVyfUxmRQqrpGRMDLRuz NEVER driven. No execution in this run targets it; the only live-spine data touched is read-only inspection of the prod ingest consumer's own executions for S7b.",
+  "S1": "sub-sendmsg-CHAT ublq9nSlrpz63xan executed 44 times in the window; the ONLY nodes that ran in ANY of them are ['When Executed by Another Workflow','chat?','test-guard','test-guard-record']. The credentialed respondio 'Send a Message' node never executed in a single sub-execution. Zero api.respond.io message POSTs. On the fork spine, send-message-files/images/video never appear in runData across 45 executions (they are orphaned, 0 inbound, asserted from workflow JSON, not memory).",
+  "S2": "HI fork vUfFUDjLAuMaeQE6 executed twice (r2-d11x, r2-ta-14b-yes); both ran only ['When Executed by Another Workflow','chat?','test-guard','test-guard-record'] — never get-round-robin-assignee, assign, SLA POST, PIC comment or the assignee queue push. Across all 44 fork executions none of those node names appear in runData.",
+  "S3": "From workflow JSON, not memory: send-message-files, send-message-images, send-message-video, update-human-intervened, save-session-vars all have ZERO inbound connections on RnpxEnAV3g20MmKj. Call 'sub-respond-save-message-redis'2 targets tWm5DYLxfypmVC1T, whose only Redis list parameter is the literal 'sorento-respond-message-TEST'. Both writes appear in the egress log as would_write / would_log.",
+  "S4": "sub-get-results t4QvrtrPnTwRU6br ran 17 times; resolved tools were only crm_marketing_promotions_list, crm_inventory_stock_balance_list, crm_incoming_stock_list. crm_it_support_ticket_create never invoked. No MCP write tool ran.",
+  "S5": "When Executed by Another Workflow.json.test_mode === true on 45/45 fork executions; is_test:true is a literal on every sendmsg caller's workflowInputs (param-hashes unchanged from the manifest).",
+  "S6": "Spine LLM nodes across all 45 executions: 'Basic LLM Chain' + 'OpenAI Chat Model' ONLY — the pre-existing consume-main gpt-4.1-mini clarification path, fired on casual/clarify turns. Plus the parser sub (expected; scope=parser) and get-results' MCP Client1 (17 runs). NO new token sink appeared on the spine. get-results LLM liveness: the sub's agent path did NOT appear — only MCP Client1 / entity-ids-transformer / output-structurer ran, consistent with the agent being orphaned there.",
+  "S7a": "TEST-sink LLEN sorento-respond-message-TEST: 1220 -> 1265 across the 45 runner executions, EXACTLY +1 on every single turn (0 turns with a delta != +1). Every expected save landed in the unconsumed TEST sink.",
+  "S7b": "Prod consumer Srs08P0Ha3Cv--YPx0-Yn, snapshotted DURING and immediately after the run (two harvests, 300 polls each, covering 2026-08-11T07:28:05Z..07:53:00Z and 07:35:45Z..08:00:40Z) — together they fully contain the run window 07:34:28..07:59:50. 0 unretrievable consumer executions. BOTH co-mandatory signals recorded per poll: the Redis1 LLEN series and the Redis pop payload. 31 non-empty pops across 13 distinct (contact_id, turn_id) pairs. EVERY ONE attributed to LIVE-SPINE traffic: contacts 423729473, 423882401, 445239414, 477071889, 477071892 with live turn_ids 12044525/12044532/12044606/12044670/12044722/12044835/12046739/12046794/12046841/12045129 — NONE of which is in this run's fork execution set (12044535..12047071). Zero pops carry a test_run_id; zero carry the harness phone +60123456789. HARNESS-ATTRIBUTABLE PROD WRITES = 0. IMPORTANT ATTRIBUTION NOTE: 4 of those pops are for contact 477071889 — the control contact this suite ran on. They are NOT mine: the payloads are 'wc8318 eta' / '9' / 'wc8318 got stock' from first_name 'Chong', phone +60162291178, live turn_ids 12046739/12046794/12046841, at 07:56:40-07:57:45. That contact was holding a real conversation with the LIVE bot concurrently with this run. My turns never reached the prod list (all 45 landed in the TEST sink, S7a). Also note the runner's own llen-prod-before/after readings (0->2 at 07:34:28, 1->0 at 07:35:11 and 07:40:09) — exactly the false signal that retired the LLEN gate; the poll series plus payload attribution resolve all of them to unrelated live traffic.",
+  "S8": "Not applicable in the binding sense: every run was is_test/test_mode true (S5). Recorded anyway from JSON — fork spine carries 1 respondio + 13 httpRequest nodes, sub-sendmsg-CHAT 1 respondio + 1 httpRequest, HI fork 1 respondio + 3 httpRequest. No is_test:false run was performed against any of them."
+ },
+ "recommendation": {
+  "verdict": "DO NOT PROMOTE",
+  "reasons": [
+   "F1 is a functional REGRESSION against round 1 on a case TA.md specifies and the plan's own journey rows 4 and 6 depend on: an End-User-only contact asking for an unheld tier gets a notice promising a list and then nothing. Promoting this trades the round-1 leak for a round-1 answer that has stopped being served.",
+   "F1 also contradicts plan §3's stated mapper semantics ('End User -> all entitled brands'), so it is a plan-conformance defect, not a debatable edge case.",
+   "F4 leaves TA-8 / plan journey row 5 only half satisfied.",
+   "The D9-fallback bound (an older/live parser with no query_brands) is UNTESTED end-to-end because the fork has no injection point for it; the promote order in the node-diff is 'parser first, then spine', which is exactly the window in which a spine running against a not-yet-promoted parser matters."
+  ],
+  "what_is_genuinely_fixed_and_should_survive_a_rework": [
+   "D10 — the brand-gate leak is closed at the customer boundary, proven against a deliberately NON-EMPTY pinned CRM payload, so the denial is n8n's own and round 1's BLOCKER-2 (the unverified 'CRM returns nothing for access_levels: []' assumption) no longer sits on the access boundary.",
+   "D9 — the compound-stated brand is recovered regardless of word order AND the escalation offer now names the cabana team (round 1 silently downgraded it to sorento).",
+   "D11 — a pending non-tier pick no longer has the ask fired on top of it (TA-14a), a continuation no longer re-asks (TA-8's blocker), the ask still re-fires on an entity-less non-pick (D11-EXCL), and D4 is not repealed (TA-7).",
+   "The tier filter is now proven load-bearing against the real CRM rather than under pinning: same product, 2 / 4 / 6 files for dealer / office+dealer / all."
+  ],
+  "before_the_next_round": [
+   "Fix F1 and add a case with an End-User-only entitlement AND a tier word in the message — TA-6 does not cover it because that phrasing makes the LLM emit no access_levels at all.",
+   "Decide F2: whether query_brands may be sourced from an LLM-inferred compound level at all, or must be corroborated by the brand appearing in the customer's text / as an entity.",
+   "Give the harness a parser-output injection point so the D9 legacy-parser bound can be driven, and a resolver-working contact that is not a live customer."
+  ]
+ }
+}

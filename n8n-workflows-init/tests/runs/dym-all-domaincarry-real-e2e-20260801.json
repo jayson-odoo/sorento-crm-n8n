@@ -1,0 +1,106 @@
+{
+  "run": "dym-all-and-domaincarry (#4 select-ALL + #5 pick-domain-carry) REAL e2e + full-bundle re-confirm at current deployed shas",
+  "date": "2026-08-01",
+  "tester": "sorento-tester",
+  "target_clone_only": "parser fork wI5RkNGW3EOJfBdo @ versionId a570efc0 (active); spine txiPzSxy3Pclsz6v @ versionId 0a647e8b (active). LIVE parser XTODTw and LIVE spine 9qVyfUxmRQqrpGRMDLRuz NEVER touched. No promote. No workflow edited.",
+  "driver": "zz-chat-console POST /webhook/zz-chat-console {text,chat_id,contact_id,mode:'regress-capture'} -> per-contact dispatcher (test:q:{437264483}) -> clone; session persists by contact in n8n_test.respond_contacts_test (pg-upsert-session). Multi-turn = same contact 437264483 (FULL access) across T1/T2. HARNESS NOTE: the per-contact dispatcher is single-flight and does NOT auto-advance the queue after a turn completes; a follow-up POST fires the dispatch webhook while the lock is held and no-ops, leaving the item queued -> must re-kick zz-dispatch-test after T1 completes. Over-kicking produces spurious null-pop clone executions (redis-pop message:null, lastNode tf-message) that inflate exec-ids; drive kept to kick-until-picked-up then poll-to-completion. Every asserted exec was ownership-verified via redis-pop text + test_run_id.",
+
+  "deployed_build_integrity": {
+    "method": "REST GET workflow -> jq -r of node body -> shasum -a256 first16 (coder diff-doc method, trailing newline included)",
+    "parser-fork.versionId": {"got": "a570efc0-c885-41ea-9345-fa291e678b53", "active": true, "archived": false},
+    "parser-fork.output_exchange": {"got": "292db8dc565b9b90", "expected": "292db8dc565b9b90", "match": true},
+    "parser-fork.AI-Agent.systemMessage": {"got": "fb7f1258d5ea16c8", "expected": "fb7f1258d5ea16c8", "match": true},
+    "spine.versionId": {"got": "0a647e8b-bf87-44ae-b0d2-3846ad045a87", "active": true, "archived": false},
+    "spine.compile-current-state": {"got": "1f5e7a678736d612", "expected": "1f5e7a678736d612", "match": true},
+    "spine.build-suggest-offer": {"got": "2cc445251bbfeaf7", "expected": "2cc445251bbfeaf7 (MUST be unchanged)", "match": true},
+    "spine.trigger": "executeWorkflowTrigger ONLY (no Respond.io/Schedule trigger -> no shared-prod-list consumption hazard)",
+    "change_markers_present": "output_exchange contains #5 (_isBareCode/_viaNumbered gate L214, dym_pick_domain_forced), #4 (_dymActive L409, select_all_expanded, ALL branch L410), applyDymPick, dymNumberedMultiSelect; the DC-0 deleted line (tryDymPick prior-domain overwrite) is ABSENT. compile contains #3 'No stock records found for' + rq.strict (C-#3 prefix-family satisfaction) + #2 marker.",
+    "NOTE_shas_moved_since_prior_rollup": "prior tester rollup (dym-v3-zerostock-revised-rollup-20260801b) ran at compile 39e2478b + output_exchange df868326. Current deployed = compile 1f5e7a67 (C-#3 satisfaction: resolver-family -> PREFIX-family) + output_exchange 292db8dc (#4/#5 added). This cycle re-confirms the bundle at the CURRENT shas."
+  },
+
+  "PRIORITY_1_image_repro_and_no_force": {
+    "#5_DC5-1_image_repro": {
+      "verdict": "PASS (HARD). The exact screenshot bug (pick -> master_products catalogue) is fixed.",
+      "T1": {"exec": 10822361, "text": "check stock for C21263XUW-P-ENG", "result": "did-you-mean offer, candidates [C2181XUW-P-ENG,C21131XUW-P-ENG,C21132XUW-P-ENG], dym_offer.domain=inventory, picked=[]"},
+      "T2": {"exec": 10822461, "text": "C2181XUW-P-ENG (bare-code pick)",
+        "_parser_raw": "domain_hint=master_products, intent_hint=check_product, routing.suggested_team=purchasing_product, scope_exclusive=true  <- THE RAW LLM CATALOGUE MISROUTE (the screenshot bug)",
+        "applied_output.output": "domain_hint=inventory, intent_hint=check_stock, routing.suggested_team=warehouse/general_enquiries, dym_pick_applied=true, dym_offer_pick_code=C2181XUW-P-ENG, dym_pick_domain_forced=inventory, entities=[C2181XUW-P-ENG uuid 522807a8 dym_slot 10822361]",
+        "compile": "domain inventory, warehouse; answer STOCK-domain ('...no inventory matched these. Would you like me to escalate to warehouse team?') NOT master_products catalogue (no 'Here are the matching products'/list price/discontinued)",
+        "get-results": "resolved tool crm_inventory_stock_balance_list (READ); queried as STOCK; no rows -> stock no-result escalation",
+        "negative_control": "the _parser_raw values ARE the pre-#5/LIVE misroute (master_products/purchasing_product); output_exchange #5 hunk overrode them to inventory/warehouse. Instrument proven able to go red."
+      }
+    },
+    "#6_DC5-REGR-newquery": {
+      "verdict": "PASS (CRITICAL). New query after an offer keeps its OWN domain; no inventory-force.",
+      "T1_exec": 10822670, "T1": "check stock for C21263XUW-P-ENG -> fresh inventory offer (dym_offer.id 10822670, picked [])",
+      "T2_exec": 10822751, "T2": "what promotions do you have",
+      "assert": "applied domain_hint=promotion (NOT inventory), routing=marketing_promotion_sorento, dym_pick_domain_forced ABSENT, dym_pick_applied ABSENT; _parser_raw domain=promotion; compile answered full 31-promotion list, dym_offer cleared. Negative assertion domain_hint!==inventory HOLDS."
+    },
+    "#7_DC5-REGR-embedded-offered-code": {
+      "verdict": "PASS. Offered code in a new-domain phrase is NOT force-routed to the offer domain.",
+      "T2_exec": 10823031, "T2": "promotions for C2181XUW-P-ENG (C2181XUW-P-ENG is an offered candidate)",
+      "assert": "applied domain_hint=promotion (NOT inventory), routing=marketing_promotion_sorento, dym_pick_domain_forced ABSENT; dym_pick_applied=true (pick retained -> entity resolved to offered uuid 522807a8) BUT domain NOT forced (strict gate: norm(code)!==msg AND not numbered); compile answer promotion-domain."
+    },
+    "#8_DC5-REGR-unrelated-bare-code": {
+      "verdict": "PASS. A bare code NOT in the offer resolves on its own, no pick, no force.",
+      "T2_exec": 10823319, "T2": "SRTWT902 (not among the offered candidates)",
+      "assert": "applied domain_hint=master_products (the parser's OWN classification for a bare code), intent_hint=check_product, dym_pick_applied ABSENT, dym_pick_domain_forced ABSENT; resolved as a fresh product-catalogue query (5-record SRTWT902 family); NOT forced to the offer's inventory domain."
+    },
+    "#9_DC5-REGR-abort": {
+      "verdict": "PASS. Casual abort after an offer -> no pick, no force, existing decline behavior.",
+      "T2_exec": 10823192, "T2": "never mind",
+      "assert": "message_type=casual, domain_hint=null, escalation.escalation_declined=true, response 'Escalation declined.'; dym_pick_applied ABSENT, dym_pick_domain_forced ABSENT; offer retained un-consumed (ttl 3->2); Call 'sub-human-intervention' did NOT run (no escalation write)."
+    }
+  },
+
+  "PRIORITY_2_hash4_select_all": {
+    "#4_all": {
+      "verdict": "PASS (flagship). 'all' expands EVERY dym suggestion; each queried in the stock domain; #3 names the empty picks; NO broaden prompt.",
+      "T1_exec": 10823395, "T1": "check stock for SRTWT902, SRTW808 and SRTW809 -> SRTWT902 stock (9 rows) + 6-suggestion partial-miss offer (SRTW808->SRTWT808/1808/4808, SRTW809->SRTWT809/1809/4809); dym_last_result_set 6 rows idx1..6 for_raw; marker '[6 did-you-mean suggestions active]' (single bracket)",
+      "T2_exec": 10823417, "T2": "all",
+      "assert": "_parser_raw: domain=null, entities=[], scope_intent=broaden, reference_target=null (raw LLM broaden reading). APPLIED: reference_target='dym', select_all_expanded=true, entities=ALL 6 picks (each uuid+dym_slot 10823395) PLUS SRTWT902 retained (7 total, ADD-BOTH accumulate), reference_positions cleared [], domain forced inventory, dym_pick_domain_forced=inventory. get-results (10823427) queried all -> 14 stock rows has_result:true. Answer = full stock listing + 'No stock records found for: SRTWT1809, SRTWT4808, SRTWT1808.' (#3 naming empty PICKED codes, strict). NO 'broaden/focus?' prompt."
+    },
+    "#4_semua": {"verdict": "PASS", "T2_exec": 10823539, "assert": "reference_target='dym', select_all_expanded=true, all 6 picks + SRTWT902 retained (dym_slot 10823512), domain inventory forced. _parser_raw broaden. Identical to 'all'."},
+    "#4_everything": {"verdict": "PASS", "T2_exec": 10823582, "assert": "reference_target='dym', select_all_expanded=true, all 6 picks + SRTWT902 (dym_slot 10823557), domain inventory. Identical to 'all'."},
+    "#4_nondym_all_UNCHANGED": {"verdict": "PASS (regression guard).", "T1_exec": 10823602, "T1": "what promotions do you have", "T2_exec": 10823856, "T2": "all", "assert": "applied reference_target=null (NOT dym), select_all_expanded ABSENT, scope_intent=broaden; compile response 'Would you like to see all promotions regardless of date or filter by specific criteria?' (existing broaden/clarify path, Basic LLM Chain ran as expected for has_result=false). _dymActive false -> #4 branch does not fire -> LLM broaden reading preserved."}
+  },
+
+  "PRIORITY_3_bundle_reconfirm_at_current_shas": {
+    "#3_ZS-1b_variant_suppression": {"verdict": "PASS", "exec": 10824038, "input": "check stock for SRTWT902 (bare typed, AND-mode)", "assert": "stock rows only, NO 'No stock records found for:' line at all; -FRG/-GM-NL never named; dym_offer=null. At the CURRENT compile sha 1f5e7a67 (C-#3 prefix-family satisfaction). OBS-B from prior cycle addressed: prefix-family works in AND-mode."},
+    "#3_ZS-1_typed_plus_empty": {"verdict": "PASS", "exec": 10824065, "input": "check stock for SRTWT902, C2181XUW-P-ENG (OR-mode)", "assert": "user_response ends 'No stock records found for: C2181XUW-P-ENG.' -- ONLY the typed-exact zero-row code named; SRTWT902 family-suppressed (variants stocked); prefix siblings not named. Exactly one code named."},
+    "#2v3_classifier": {"verdict": "PASS (dym + result routing intact at new output_exchange sha).",
+      "bare_2 (exec 10824157)": "_parser_raw.reference_target=dym positions[2]; APPLIED dym_pick_applied=true, dym_offer_pick_code=SRTWT1808 (dym#2), dym_pick_domain_forced=inventory, entity SRTWT1808 resolved (dym_slot 10824127). NO clarify.",
+      "the_2nd_one (exec 10824215)": "_parser_raw.reference_target=result positions[2]; APPLIED entity SRTWT902-GM ordinal2 (2nd STOCK row), reference_target=result, dym handler SKIPPED; resolved 4 stock rows.",
+      "multi_1-4 + product_2": "covered structurally: dymNumberedMultiSelect multi-loop proven by #4 'all' (7-entity accumulate) which is a superset; 'product 2'->result and '1,4'->multi were 2/2 and ADD-BOTH in prior rollup 20260801b at the same handler (unchanged by #4/#5 except the additive domain-force).",
+      "ratio_this_cycle": "dym {2, all, semua, everything} = 4/4 dym-routed; result {the 2nd one} = 1/1; 0 misroutes."
+    },
+    "#1_MT": {"verdict": "PASS (byte-identical gate).", "assert": "build-suggest-offer jq-r sha = 2cc445251bbfeaf7 == expected == prior-cycle harness body (unchanged). #1 §MT-1/§MT-R are offline units against build-suggest-offer; node byte-identical -> prior 23/23 PASS carries. No re-run needed."},
+    "#13_regression_byte_identical_HARD": {"verdict": "PASS (structural + real).",
+      "parser": "on no-dym/no-pick/fully-resolved turns (execs 10823319 SRTWT902-fresh, 10822751 promotions, 10824038 SRTWT902-stock, 10823856 nondym-all) the applied output carries reference_target:null and NONE of the new diagnostic keys {dym_pick_domain_forced, select_all_expanded, dym_pick_applied, dym_offer_pick_code}. Byte-identical to LIVE XTODTw modulo the documented drop-when-null reference_target key (v3) -- deployed output_exchange sha 292db8dc == validated deploy file whose offline gate (g) proved no-dym byte-identical to LIVE.",
+      "spine": "no-dym/all-resolved turns (10824038, 10824065-stock-portion) show clean stock answers; #3 IIFE no-ops (missing=[]) and #2 no-ops (surfaced=[]) -> _partialOffer/_dymLastResultSet null -> compile output byte-identical to LIVE (structural, deployed compile 1f5e7a67 built LIVE+hunks). Negative control: a miss turn (10824065) DOES append the #3 line -> instrument can go red.",
+      "note": "Cannot run LIVE to byte-diff at runtime (never touch LIVE); relies on deployed-sha match + the coder diff-doc's offline byte-identical proofs which I independently sha-validated."
+    }
+  },
+
+  "safety_§0": {
+    "S1_no_real_send": "PASS -- every run ran ONLY sendmsg CHAT fork (ublq9nSlrpz63xan); inside it (sub-exec 10822478) is_test:true -> 'chat?' branch -> chat-push (redis chat:reply) + log-chat-history-n8ntest; the credentialed respondio 'Send a Message' + HTTP Request nodes did NOT run. Zero api.respond.io message POST.",
+    "S2_no_assign_escalation": "PASS -- Call 'sub-human-intervention' NEVER invoked in any run, INCLUDING the escalation-decline turn (#9 exec 10823192, verified absent). No assign/SLA/PIC/assignee-queue write.",
+    "S3_no_crm_write": "PASS -- save-session-vars (prod CRM PUT) and update-human-intervened never ran (orphaned); session persisted only to n8n_test via pg-upsert-session (returned {success:true}).",
+    "S4_getresults_read_only": "PASS -- resolved tool = crm_inventory_stock_balance_list (READ allowlist) via MCP Client1 -> output-structurer (deterministic); never crm_it_support_ticket_create. No get-results LLM agent executed (orphaned).",
+    "S5_test_mode_present": "PASS -- redis item mode=regress-capture; is_test:true asserted at CHAT sub entry (sub 10822478). Clone hardcodes is_test on all sub-call nodes (static).",
+    "S6_token_sinks": "PASS -- only reformulator gpt-5.4-mini ran per turn (parser tier, expected). The non-dym 'all' broaden turn (10823856) additionally ran Basic LLM Chain (clarify gpt-4.1-mini) -- EXPECTED for the has_result=false broaden path (LESSON 22), NOT a new sink. No reformulator-side extra token sink (e.g. reformulator carries _parser_raw diagnostic, already live -- no new LLM).",
+    "S7_structural_sink_attribution": "PASS -- the clone has NO node that writes the prod list sorento-respond-message. The only save-message call (Call 'sub-respond-save-message-redis'2) routes to the TEST sink fork tWm5DYLxfypmVC1T -> RPUSH sorento-respond-message-TEST (unconsumed), verified on execs 10822461/10823192 carrying MY turn_ids + contact 437264483. Zero harness contribution to the prod list by construction (sink-delta on prod list = 0 from the harness). Combined with the prior-cycle full 60-poll payload attribution on the IDENTICAL lane (same day, same contact, same forks).",
+    "S8_stale_fork_flag": "NOTED (non-blocking) -- CHAT fork ublq9nSlrpz63xan STILL contains a credentialed respondio 'Send a Message' + HTTP Request node behind the is_test guard. Runs are full-clone at is_test:true; S1 empirically confirmed the Send node did NOT fire (sub 10822478 routed to the chat branch). Not structurally S8-clean; containment rests on the runtime is_test guard, verified to hold this cycle. HI fork also carries an assign node (never ran)."
+  },
+
+  "observations": [
+    "OBS-1 (#5 answer cosmetic): the DC5-1 / #7 stock/promo no-result answer shows '• product: C2181XUW-P-ENG (+1 more)' -- the '(+1 more)' count appears when a single picked code resolves to >1 underlying uuid (get-results user_prompt for DC5-1 carried C2181XUW-P-ENG + BRC2181XUW-P-ENG). Cosmetic, not an acceptance criterion; domain routing is correct.",
+    "OBS-2 (#3 root cause corroboration): §ZS-1b at the NEW compile sha 1f5e7a67 emits NO line for bare SRTWT902 (AND-mode) -- the prior cycle's OBS-B (AND-mode had no family suppression, would name a bare-empty-typed code with a stocked sibling) is now addressed by the prefix-family satisfaction which works in both OR and AND mode.",
+    "OBS-3 (get-results LLM liveness, per task): no get-results LLM agent executed in ANY run; get-results ran the deterministic MCP-read + output-structurer path (workflowId rysSPgUssLDf6xJc, node MCP Client1). Consistent with the get-results agent being orphaned.",
+    "OBS-4 (no new token sink, per task): only the reformulator (gpt-5.4-mini) parser LLM ran per business turn. It emits _parser_raw (state-monitor C2 diagnostic, already live) -- no additional LLM/reformulator-side token sink.",
+    "OBS-5 (harness): per-contact dispatcher is single-flight with NO auto-advance -> a follow-up POST does not run until zz-dispatch-test is re-kicked after the prior turn completes; over-kicking spawns spurious null-pop clone executions (redis-pop message:null). Non-safety, but inflates exec-ids and can mislead exec-selection -- every asserted exec must be ownership-verified via redis-pop text + test_run_id (done here).",
+    "OBS-6 (async fetch race): get_execution mid-flight returns status 'running' with empty runData; poll to success/error before reading."
+  ],
+
+  "final_verdict": "ALL PASS. PRIORITY-1: #5 image-repro FIXED (pick -> STOCK not master_products catalogue; raw LLM misroute overridden by output_exchange #5 hunk; instrument proven red-able via _parser_raw negative control); the 4 no-force regressions (#6 new-query, #7 embedded offered code, #8 unrelated bare code, #9 abort) ALL keep the parser's own domain with dym_pick_domain_forced ABSENT. PRIORITY-2: #4 'all'/'semua'/'everything' expand EVERY dym suggestion (reference_target=dym, select_all_expanded, all picks + resolved-stock accumulate, positions cleared, domain forced inventory), every suggestion queried in stock domain + #3 names empty picks, NO broaden prompt; non-dym 'all' UNCHANGED. PRIORITY-3: #3 §ZS-1/§ZS-1b PASS at the new compile sha 1f5e7a67; #2-v3 classifier dym/result routing intact at new output_exchange sha; #1 build-suggest-offer byte-unchanged (2cc44525); regression byte-identical structurally + real. SAFETY §0 S1-S7 all hold (S7 structural sink attribution to the unconsumed -TEST fork, zero harness write to the prod list); S8 CHAT/HI forks carry credentialed nodes but the runtime is_test guard held empirically. Build integrity verified: parser fork 292db8dc/fb7f1258 @ a570efc0, spine compile 1f5e7a67 + build-suggest-offer 2cc44525 @ 0a647e8b, LIVE untouched. No promote, no edit."
+}

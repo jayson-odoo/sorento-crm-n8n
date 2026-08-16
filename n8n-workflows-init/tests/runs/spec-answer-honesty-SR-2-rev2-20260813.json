@@ -1,0 +1,49 @@
+{
+ "case": "SR-2",
+ "revision": "rev2",
+ "title": "the number changes the answer -- N-2 unit-quoting fix",
+ "verdict": "PASS -- THE POINT OF REV 2 IS CONFIRMED",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ 8ed4e464-02ae-47cd-9494-d8328162c254 (versionId==activeVersionId, verified via fresh REST GET immediately before this delta run; resolve-entity-http.jsonBody sha256 7ca14cbfd47e... UNCHANGED from rev1 as the coordinator stated; compile-current-state.jsCode sha256 e3b844c6cb674f... CHANGED (was e727631f... at rev1), len 42402 (was 38725))",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "mandatory_assertion": "This line had never been rendered by the clone before this run. Read VERBATIM from the live execution's compile-current-state output and the sendmsg egress payload -- not inferred, not copy-pasted from the coordinator's claim.",
+ "case_1.2mm": {
+  "prompt": "double bowl kitchen sink with thickness 1.2mm",
+  "test_run_id": "sr2r2a-20260813",
+  "note_duplicate_execution": "The first HTTP call to zz-run-hint returned a client-side 504 Gateway Timeout, but the n8n backend had already accepted and completed the request independently -- TWO clone executions resulted from ONE logical case (12311930, the original timed-out-but-completed request; 12311935, the retry). Both carry test_run_id 'sr2r2a-20260813' and BOTH produced a byte-identical compile-current-state.user_response (verified by direct comparison, see raw_evidence below). No safety concern (both are test_mode:true, zero real egress either way) and no double-charge concern (both are pure reads). Recorded as evidence of transport flakiness, not a functional defect.",
+  "executions": ["12311930", "12311935"],
+  "rendered_n2_line_verbatim": "thickness isn't recorded for these products, so I couldn't narrow by 1.2mm.",
+  "matches_rev1_defect_text": false,
+  "rev1_text_for_comparison": "thickness isn't recorded for these products, so I couldn't narrow by 1.2. (bare number, no unit -- the rev1 cosmetic flagged for the reviewer)",
+  "unit_present": true,
+  "unit_correct": "mm, matching the customer's own '1.2mm' span exactly",
+  "hard_check": "NOT a bare '1.2' with no unit, NOT an invented/wrong unit -- 'mm' is quoted verbatim from the customer's own typed span, satisfying the coordinator's exact bar."
+ },
+ "case_1.0mm": {
+  "prompt": "double bowl kitchen sink with thickness 1.0mm",
+  "test_run_id": "sr2r2b-20260813",
+  "execution": "12312058",
+  "rendered_n2_line_verbatim": "thickness isn't recorded for these products, so I couldn't narrow by 1.0mm.",
+  "matches_coordinator_required_text": "EXACT MATCH -- coordinator specified '...so I couldn't narrow by 1.0mm.' verbatim; this is precisely what rendered.",
+  "matches_rev1_defect_text": false,
+  "rev1_text_for_comparison": "thickness isn't recorded for these products, so I couldn't narrow by 1. (the rev1 bare-digit-plus-trailing-period defect flagged for the reviewer)",
+  "unit_present": true,
+  "trailing_zero_preserved": "YES -- '1.0mm' renders as '1.0mm', not '1mm' or a bare '1.' -- confirms the fix quotes the customer's own numeric SPAN (a substring/string extraction) rather than coercing through a JS Number, which would have dropped the trailing zero exactly as rev1 did."
+ },
+ "customer_boundary_full_replies": {
+  "1.2mm_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:08_\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.2mm.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "1.0mm_verbatim": "Here are the matching products.\n\n1. *Product Code:* CKS315\n*Description:* CABANA KITCHEN SINK CKS315 -DOUBLE BOWL-\n*List Price:* MYR 492.00\n*Dimensions:* Not defined\n\n2. *Product Code:* CKS319\n*Description:* CABANA KITCHEN SINK CKS319 -DOUBLE BOWL-\n*List Price:* MYR 350.00\n*Dimensions:* Not defined\n\n3. *Product Code:* CKS317-NG\n*Description:* CABANA NANOGRAIN KITCHEN SINK CKS317-NG -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n4. *Product Code:* CKS317\n*Description:* CABANA KITCHEN SINK CKS317 -DOUBLE BOWL-\n*List Price:* MYR 447.00\n*Dimensions:* Not defined\n\n5. *Product Code:* CKS12050\n*Description:* CABANA KITCHEN SINK DOUBLE BOWL SINGLE DRAINER CKS12050\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:08_\n\nthickness isn't recorded for these products, so I couldn't narrow by 1.0mm.\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊",
+  "rows_still_identical_between_1.0mm_and_1.2mm": true,
+  "note": "Row identity is unchanged from rev1 (a CRM-side ranking property for this catalogue slice, not fixable by this n8n change) -- what changed is ONLY the honesty of the explanation, exactly as intended. The rev1 cosmetic (bare '1.' / missing unit) flagged for the reviewer is now RESOLVED."
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS both attempts -- 3 egress entries only (would_log/would_write/would_send), no real send.",
+  "S2_zero_assignment": "PASS -- no escalation branch.",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS by mechanism identity with rev1 (same domain, same read-only answer path).",
+  "S5_test_mode": "PASS -- directly confirmed for all 3 executions: 12311930/12311935 {test_mode:true, test_run_id:'sr2r2a-20260813'}, 12312058 {test_mode:true, test_run_id:'sr2r2b-20260813'}.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": "See spec-answer-honesty-rollup-20260813-rev2-addendum.json for the full delta-window sweep (covers both executions)."
+}

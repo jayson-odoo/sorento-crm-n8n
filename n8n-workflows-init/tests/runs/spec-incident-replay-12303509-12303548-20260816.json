@@ -1,0 +1,79 @@
+{
+  "purpose": "Replay of two live incident turns for the CRM lane, who have no prod credentials and asked us to close them out (plan spec-raw-text-migration-slice-plan.md § 'Queued replay'). Deliverable: full resolve-entity-http response bodies verbatim, since the CRM lane needs the CRM half; our renderer text is only indicative.",
+  "IMPORTANT_provenance_note": "The original executions 12303509 and 12303548 are NO LONGER RETRIEVABLE. Verified directly: mcp get_execution returns 'not found' against both the live spine workflowId and the clone workflowId, AND a raw REST GET on /executions/12303509 (which needs no workflowId) returns HTTP 404 {\"message\":\"Not Found\"} -- confirmed against a sanity-check on a known-good recent execution id (12596895), which returns normally via the same endpoint. This means the executions have been pruned by n8n's retention policy, not merely mis-referenced. Per the stale-fixture rule, the input text for each replay is therefore NOT taken from tests/cases/*.json (never touched) but from the two COMMITTED repo docs that independently recorded each execution's own input verbatim at capture time, before this build started: tests/uac/SR.md (rows SR-B2/SR-B3) and plans/spec-answer-honesty-plan.md §0 (rows B/C). Both docs agree on the phrasing. This is disclosed plainly because it is a weaker provenance chain than 'fetched the execution directly' -- the original raw envelopes cannot be independently re-verified now.",
+  "incident_12303509": {
+    "original_defect_C-1": "AND-mode matched nothing -> OR-degraded. 'Sorento' prefix-matched 4 JUNK codes (SORENTOBAG, SORENTO CATALOGUE, ****NOT USE THIS CODE); the descriptive token got 0 matches. Response carried NO spec fields at all -- spec search never ran (widened gate cannot fire in OR-shape at the time; zero-match was false). Root cause per plans/spec-answer-honesty-plan.md: CRM-side (their prefix-match ranking), tagged C-1 for the CRM lane.",
+    "replay_act": "sorento double bowl kitchen sink with thickness 1.2mm (SR.md SR-B3's recorded verbatim input for this exec)",
+    "replay_target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e, uac mode, previous_conversation_state:{}, contact 437264483",
+    "replay_test_run_id": "spec-rev4-INC509-1786815151",
+    "replay_execution": "12607257",
+    "verdict": "C-1 IS FIXED. Zero junk rows. Spec search now runs and returns 5 real product matches.",
+    "resolve_entity_http_output_FULL_VERBATIM": {
+      "tokens": ["Sorento", "double bowl kitchen sink"],
+      "elapsed_ms": 684.94,
+      "resolutions": [
+        {"token": "Sorento", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []},
+        {"token": "double bowl kitchen sink", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []},
+        {"token": "sorento double bowl kitchen sink with thickness 1.2mm", "resolved": false, "ambiguous": true, "matches": [
+          {"entity_type":"product","canonical_code":"CKS12050","uuid":"df3a94e7-3416-4782-b48e-0f8b48fdc110","match_field":"specifications","match_tier":"spec_search","similarity":8.3,"display":{"product_name":"Cabana kitchen sink. Double bowl. With drainer board.","via_token":"sorento double bowl kitchen sink with thickness 1.2mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","bowl_count":2,"has_drainer":true},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}},
+          {"entity_type":"product","canonical_code":"SRTKS4040-O/F","uuid":"1733c945-593f-4dd1-8319-baa6b6c33fdb","match_field":"specifications","match_tier":"spec_search","similarity":8.2984,"display":{"product_name":"Sorento kitchen sink. Stainless steel. With overflow. 440 x 440 x 200 mm. 1 mm thick.","via_token":"sorento double bowl kitchen sink with thickness 1.2mm","class":"Kitchen Sink","specifications":{"brand":"SORENTO","class":"Kitchen Sink","material":"stainless_steel","dim_width":440,"thickness":1,"dim_height":200,"dim_length":440,"has_overflow":true},"matched_specs":["brand","free_terms","thickness"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"438cab0b-ec83-4eae-bbcf-e1dc5bf7943c","brand_code":"SORENTO","brand_name":"SORENTO"}}},
+          {"entity_type":"product","canonical_code":"CKS315","uuid":"48271c9a-4b58-4782-97b2-5f6cb143ada2","match_field":"specifications","match_tier":"spec_search","similarity":7.1,"display":{"product_name":"Cabana kitchen sink. Double bowl.","via_token":"sorento double bowl kitchen sink with thickness 1.2mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","bowl_count":2},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}},
+          {"entity_type":"product","canonical_code":"CKS317","uuid":"af3fa49a-040c-418e-bd02-c28483d0e8d6","match_field":"specifications","match_tier":"spec_search","similarity":7.1,"display":{"product_name":"Cabana kitchen sink. Double bowl.","via_token":"sorento double bowl kitchen sink with thickness 1.2mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","bowl_count":2},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}},
+          {"entity_type":"product","canonical_code":"CKS317-NG","uuid":"9cffa025-7f35-436a-8537-58359d4d062d","match_field":"specifications","match_tier":"spec_search","similarity":7.1,"display":{"product_name":"Cabana kitchen sink. Double bowl. Nanograin.","via_token":"sorento double bowl kitchen sink with thickness 1.2mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","material":"nanograin","bowl_count":2},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}}
+        ], "alternatives": []}
+      ],
+      "unresolved_tokens": [],
+      "fallback_match_mode": "or",
+      "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+      "floor_missed": false,
+      "spec_unmet": [],
+      "spec_asked": [{"key":"bowl_count","value":2},{"key":"brand","value":"SORENTO"},{"key":"thickness","value":1.2}],
+      "unrecognized_terms": [],
+      "semantic_used": false,
+      "semantic_ms": 2
+    },
+    "rendered_reply_boundary": "Here are the matching products.\n\n1. *Product Code:* CKS315\n2. *Product Code:* CKS317-NG\n3. *Product Code:* CKS317\n4. *Product Code:* CKS12050\n5. *Product Code:* SRTKS4040-O/F\n\n_Matched on: bowl count: 2, brand: CABANA and thickness: 1._\n\nP/S: ..."
+  },
+  "incident_12303548": {
+    "original_defect_N-0": "Parser entities = ['double bowl kitchen sink'] only. Pre-migration free_terms was built from entity RAWS, so the words 'thickness'/'1.0mm' were never sent to the CRM at all. matched_specs:['bowl_count','free_terms'], spec_unmet:[] -- nothing was reported unmet because nothing was ever asked. Root cause per plans/spec-answer-honesty-plan.md: OURS (n8n's free_terms construction), tagged N-0, and this exact migration slice is the fix.",
+    "replay_act": "sorento double bowl kitchen sink with thickness 1.0mm (same phrase as incident 12303509 with 1.0mm substituted for 1.2mm, per plans/spec-answer-honesty-plan.md row C: 'same phrase with 1.0mm vs 1.2mm')",
+    "replay_target": "TEST clone txiPzSxy3Pclsz6v @ 98e93d6e, uac mode, previous_conversation_state:{}, contact 437264483",
+    "replay_test_run_id": "spec-rev4-INC548-1786815163",
+    "replay_execution": "12607284",
+    "verdict": "N-0 IS FIXED. spec_asked now correctly threads {key:'thickness', value:1} (the 1.0mm was correctly parsed and reached the CRM's scorer) where pre-migration it was silently dropped. Confirmed against INC509's sibling replay in the SAME run: spec_asked.thickness differs (1.2 vs 1) EXACTLY as the two different customer inputs differ -- proving the number is no longer being silently ignored.",
+    "resolve_entity_http_output_FULL_VERBATIM": {
+      "tokens": ["Sorento", "double bowl kitchen sink"],
+      "elapsed_ms": 616.82,
+      "resolutions": [
+        {"token": "Sorento", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []},
+        {"token": "double bowl kitchen sink", "resolved": false, "ambiguous": false, "matches": [], "alternatives": []},
+        {"token": "sorento double bowl kitchen sink with thickness 1.0mm", "resolved": false, "ambiguous": true, "matches": [
+          {"entity_type":"product","canonical_code":"CKS12050","uuid":"df3a94e7-3416-4782-b48e-0f8b48fdc110","match_field":"specifications","match_tier":"spec_search","similarity":8.3,"display":{"product_name":"Cabana kitchen sink. Double bowl. With drainer board.","via_token":"sorento double bowl kitchen sink with thickness 1.0mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","bowl_count":2,"has_drainer":true},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}},
+          {"entity_type":"product","canonical_code":"SRTKS4040-O/F","uuid":"1733c945-593f-4dd1-8319-baa6b6c33fdb","match_field":"specifications","match_tier":"spec_search","similarity":8.3,"display":{"product_name":"Sorento kitchen sink. Stainless steel. With overflow. 440 x 440 x 200 mm. 1 mm thick.","via_token":"sorento double bowl kitchen sink with thickness 1.0mm","class":"Kitchen Sink","specifications":{"brand":"SORENTO","class":"Kitchen Sink","material":"stainless_steel","dim_width":440,"thickness":1,"dim_height":200,"dim_length":440,"has_overflow":true},"matched_specs":["brand","free_terms","thickness"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"438cab0b-ec83-4eae-bbcf-e1dc5bf7943c","brand_code":"SORENTO","brand_name":"SORENTO"}}},
+          {"entity_type":"product","canonical_code":"CKS315","uuid":"48271c9a-4b58-4782-97b2-5f6cb143ada2","match_field":"specifications","match_tier":"spec_search","similarity":7.1,"display":{"product_name":"Cabana kitchen sink. Double bowl.","via_token":"sorento double bowl kitchen sink with thickness 1.0mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","bowl_count":2},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}},
+          {"entity_type":"product","canonical_code":"CKS317","uuid":"af3fa49a-040c-418e-bd02-c28483d0e8d6","match_field":"specifications","match_tier":"spec_search","similarity":7.1,"display":{"product_name":"Cabana kitchen sink. Double bowl.","via_token":"sorento double bowl kitchen sink with thickness 1.0mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","bowl_count":2},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}},
+          {"entity_type":"product","canonical_code":"CKS317-NG","uuid":"9cffa025-7f35-436a-8537-58359d4d062d","match_field":"specifications","match_tier":"spec_search","similarity":7.1,"display":{"product_name":"Cabana kitchen sink. Double bowl. Nanograin.","via_token":"sorento double bowl kitchen sink with thickness 1.0mm","class":"Kitchen Sink","specifications":{"brand":"CABANA","class":"Kitchen Sink","material":"nanograin","bowl_count":2},"matched_specs":["bowl_count","free_terms"],"preferred_specs":[],"is_discontinued":false,"brand":{"brand_id":"9f1277f0-42fa-442c-978f-ab5f41e72a20","brand_code":"CABANA","brand_name":"CABANA"}}}
+        ], "alternatives": []}
+      ],
+      "unresolved_tokens": [],
+      "fallback_match_mode": "or",
+      "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+      "floor_missed": false,
+      "spec_unmet": [],
+      "spec_asked": [{"key":"bowl_count","value":2},{"key":"brand","value":"SORENTO"},{"key":"thickness","value":1}],
+      "unrecognized_terms": [],
+      "semantic_used": false,
+      "semantic_ms": 2
+    },
+    "rendered_reply_boundary": "Here are the matching products.\n\n1. *Product Code:* CKS315\n2. *Product Code:* CKS317-NG\n3. *Product Code:* CKS317\n4. *Product Code:* CKS12050\n5. *Product Code:* SRTKS4040-O/F\n\n_Matched on: bowl count: 2, brand: CABANA and thickness: 1._\n\nP/S: ..."
+  },
+  "CRM_lane_capture_preferred_specs_key_check": {
+    "requirement": "on any turn that returns spec rows, check whether every match_tier:'spec_search' row carries a preferred_specs key (absent on such a row = real CRM defect)",
+    "finding": "NO DEFECT FOUND. Every match_tier:'spec_search' row observed across this ENTIRE tester pass (SA-7 x5, SR-8 x5, SR-15 x5, SA-5 x5, INC509 x5, INC548 x5 -- 30 spec_search rows total across 6 distinct executions) carries preferred_specs, always present as an array (observed value [] in every single instance). This is consistent with the CRM lane's own confirmed floor fact (plan §5: '_emit_spec_matches builds each spec row's display with preferred_specs: candidate.get(..., [])'). No exec id needs escalating to the CRM lane."
+  },
+  "safety_S0_both_replays": {
+    "S1_S3": "PASS on both -- egress [would_log, would_write, would_send] only, no real sends/writes.",
+    "S5": "PASS on both -- test_mode:true self-verified against each fired test_run_id.",
+    "S7": "Covered by the whole-pass S7 gate file (spec-raw-text-migration-rev4-S7-gate-20260816.json) -- both replay executions fall inside the swept window."
+  }
+}

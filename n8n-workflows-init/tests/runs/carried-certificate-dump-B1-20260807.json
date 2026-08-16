@@ -1,0 +1,105 @@
+{
+ "run": "B1 attachment-subject-gate (carried-certificate-dump)",
+ "date": "2026-08-07",
+ "verdict": "B1 works as specified. TWO issues to rule on: acceptance \u00a78.4 is NOT met (pre-existing, B2's job), and plan item 4's interaction is REAL.",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "2d1627c8",
+  "rollback": "3a196c44",
+  "live_spine": "f9205b03 at start AND end \u2014 no drift this pass"
+ },
+ "FP_BLINDNESS_RULING": {
+  "verdict": "ALL THREE COODER CLAIMS CONFIRMED \u2014 \u00a7CD as written would have certified B1 while proving nothing about any of its three guard terms",
+  "method": "ran the coder's mutate.sh (occurrence-count + digest gates) and recorded WHICH of the 8 fixtures reddened",
+  "results": {
+   "CD-FP-1 domain guard -> true": "occ 1/1, digest a8938abe2e5c->a0e09fc5d966, RED on **FP1-D only** (1 of 8). \u00a7CD-4's own fixtures stayed GREEN.",
+   "CD-FP-2 drop !_haveProduct": "occ 1/1, digest a8938abe2e5c->feb673867506, RED on **FP2-D only**. \u00a7CD-3 stayed GREEN.",
+   "CD-FP-3 product-hint filter -> all": "occ 1/1, digest a8938abe2e5c->220b4158d30c, RED on **FP3-D only**. \u00a7CD-2 stayed GREEN.",
+   "CD-FP-0 negative control": "occ 0 (expected 1) -> ABORT, suite not run, VOID. Correct behaviour."
+  },
+  "mechanism_verified_independently_from_cases.json": {
+   "\u00a7CD-4 blind to FP-1": "CD-4 is domain `inventory` with unresolved_tokens ['srtwc8317-rl1']. With the domain guard forced true it STILL did not fire, which can only mean gate_passed was already false at B1 \u2014 the `gate_passed &&` short-circuit. Confirms the coder's stated reason.",
+   "\u00a7CD-3 blind to FP-2": "CD-3 has `unresolved_tokens: []` -> _missedSubject false regardless of _haveProduct. Confirmed from cases.json.",
+   "\u00a7CD-2 blind to FP-3": "CD-2 has `unresolved_tokens: []` AND `product_raws: []` -> predicate false either way. Confirmed from cases.json."
+  },
+  "assessment": "this is the FOURTH instance of the 'green that cannot fail' class in this repo. The coder found it in its own harness and fixed it with FP1-D/FP2-D/FP3-D; \u00a7CD.md still carries the hole and should be amended to require the discriminator shapes, not the currently-prescribed turns."
+ },
+ "acceptance_results": [
+  {
+   "id": "\u00a78.1 + \u00a78.2",
+   "case": "CD1-seeded-dump",
+   "exec": "11524911",
+   "verdict": "PASS",
+   "delivered": "Couldn't find \"srtwc8317-rl1\". Did you mean:\\n1. SRTWC8317-RL - no certificate\\n2. SRTWC8317-P-RL - no certificate\\n3. SRTWC8317-SH - no certificate\\nReply with a code to continue, or would you like me to escalate to purchasing_certification team?",
+   "forbidden substrings": "'PC 000078' absent, 'WCM PC 000078' absent, 'Validity' absent, 'PC000078' absent",
+   "attachment": "send-message-files guard did NOT fire \u2014 no PDF",
+   "gate runData": "gate_passed:false; gate_reason: \"'product_attachment' subject product did not resolve; refusing to scope on carried entities\"; require_specific:false",
+   "\u00a78.2 answer": "the sub was NEVER CALLED \u2014 `Call 'sub-get-results'` is ABSENT from runData because B1 dead-ended first. So there is no certificate_ids to inspect; stating which, as asked.",
+   "plan item 5 confirmed": "compatible_entities still carries attachment_type Certification AND certificate PC 000078, but NO entity of type `product`. Asserting absence of product (not of the certificate) is the correct assertion \u2014 eviction is B2's job."
+  },
+  {
+   "id": "\u00a78.3",
+   "case": "CD2-certnum",
+   "exec": "11524931",
+   "verdict": "PASS",
+   "note": "`certification with number PC000078` still lists the products that certificate covers (SRTWT5815, BRHSD213C, CB 8113A, \u2026) with the PDF. B1 correctly did NOT fire \u2014 this is the legitimate certificate-first query."
+  },
+  {
+   "id": "\u00a78.4",
+   "case": "CD4-resolving-real",
+   "exec": "11525013",
+   "verdict": "**FAIL as written** \u2014 see RESIDUAL_DEFECT",
+   "note": "the coder/plan fixture `MWC7602-RL-P` does not resolve live (CD3-resolving-product, exec 11524951, returned a did-you-mean), so \u00a7CD-3 as prescribed never tests this criterion at all. I substituted SRTWT2214, which resolves `match_tier: exact`."
+  },
+  {
+   "id": "\u00a78.6",
+   "case": "CD6-nonenabled",
+   "exec": "11525050",
+   "verdict": "PASS \u2014 order domain unchanged (escalate + CS roster), no B1 string, byte-identical shape. Offline byte-identity.js independently shows 7 of 8 fixtures identical before/after, exactly 1 differing (CD-1)."
+  }
+ ],
+ "RESIDUAL_DEFECT": {
+  "id": "F-CARRY-NARROW",
+  "severity": "acceptance \u00a78.4 is not met; NOT introduced by B1; B2's territory",
+  "observed": "with the \u00a74.2 seed, `SRTWT2214 cert` returns 'No certificate for SRTWT2214. Try: SRTWT2216, SRTWT2219, SRTWT2225.'",
+  "control": "CD4-CONTROL-clean \u2014 the SAME utterance on a CLEAN session returns the real certificate: 'I have attached the file(s) below. 1. Product Code: SRTWT2214, Attachment Type: Certification, File Name: WCM - Cold Tap - EXP 13 SEP 2026.pdf, Certificate Number: PC 000373, Validity: Valid'. So the seed causes it, not the utterance.",
+  "mechanism": "gate runData exec 11525013 \u2014 SRTWT2214 resolved `exact`, unresolved_tokens [], gate_passed TRUE, so **B1 was provably inert** (no B1 gate_reason). compatible_entities carried product SRTWT2214 + attachment_type + the stale certificate PC 000078. The lookup therefore ran product_ids \u2227 certificate_ids, and since SRTWT2214's real certificate is PC 000373, the intersection is empty. Call 'sub-get-results' (sub 11525025) returned answers:[], has_result:false.",
+  "why_it_matters": "the dump became a CONFIDENT FALSE NEGATIVE. B1 removes the 26-product dump on the missed-subject path but does nothing for the resolved-subject path, where the same carried certificate silently narrows a correct query to empty. Arguably worse than the dump for a customer who owns that product.",
+  "attribution": "pre-existing; B1 neither causes nor worsens it. It is exactly what B2 (eviction) exists to fix, and B2 is not built. Recorded so \u00a78.4 is not signed off on an untested fixture."
+ },
+ "PLAN_ITEM_4_RULING": {
+  "question": "B1 sets gate_passed=false but the require-specific block below can still overwrite gate_reason and set require_specific=true",
+  "verdict": "REAL \u2014 reproduced live, exactly as the coder predicted",
+  "case": "CD5-planitem4, exec 11525030, `srtwc8317-rl1 and SRTWC19 cert` (missed product raw + a second AMBIGUOUS product token)",
+  "what_actually_renders": "the require-specific PICKER, not the B1 dead-end: 'product_attachment search needs to be more specific. Multiple matches found \u2014 please choose:' followed by the 8 SRTWC19 candidates, each annotated '- no certificate' by the dym change.",
+  "why": "SRTWC19's matches put products into compatible_entities, so `_haveProduct` is TRUE at B1 and B1 does not fire; the require-specific block below then takes over.",
+  "safety": "the outcome is SAFE \u2014 no dump, no PDF, no PC 000078, and the picker is a reasonable reply. This is an ASSERTION-COVERAGE gap, not a customer-facing defect: \u00a7CD-1's regex would not match this render, so a future regression on this shape would go unnoticed.",
+  "recommendation": "either add a \u00a7CD case pinning the picker render for this shape, or add the guard the coder deliberately omitted. My preference is the \u00a7CD case \u2014 the picker is the better answer here than a dead-end."
+ },
+ "gate_reason_consumer": {
+  "verified": "exactly ONE consumer in the clone \u2014 not-found-error-message.js:11 reads gate.gate_reason, used at :32 as /requires a scoping entity/.test(gateReason)",
+  "B1 string": "\"'product_attachment' subject product did not resolve; refusing to scope on carried entities\" \u2014 does NOT contain 'requires a scoping entity', so the regex stays false and that branch is unaffected. CONFIRMED."
+ },
+ "clone_sanity_by_my_own_means": {
+  "note": "the coder could not use validate_workflow (no workflow-id form on this MCP surface). Independent checks I ran:",
+  "checks": [
+   "export-workflows.py --verify green at start and end (clone 2d1627c8, live f9205b03)",
+   "the offline suites run the REAL pre/post bodies pulled byte-exact from the clone (gate.before sha 7626c83e / gate.after sha a8938abe) \u2014 byte-identity.js is a genuine cross-file gate",
+   "8/8 probe fixtures pass on gate.after; CD-1 alone fails on gate.before, i.e. the defect provably reproduces on the rollback body",
+   "6 live turns executed end-to-end with no execution error and no node-level error"
+  ]
+ },
+ "safety_scorecard": {
+  "S1": "PASS \u2014 7 runs; egress guards all would_*; send-message-files fired only on CD-2 (the legitimate certificate-first query that SHOULD return a PDF) and CD4-CONTROL; never on CD-1.",
+  "S2": "PASS \u2014 Call 'sub-human-intervention' absent from runData on all runs.",
+  "S3": "PASS \u2014 save-session-vars / update-human-intervened absent from runData; sink unchanged.",
+  "S4": "PASS \u2014 reads only; on CD-1 no get-results call happened at all.",
+  "S5": "PASS \u2014 trigger test_mode===true.",
+  "S6": "PASS \u2014 no LLM beyond the per-turn reformulator.",
+  "S7a": "PASS \u2014 TEST sink 636->637 on exec 11524910, +1 per run.",
+  "S7b": "PARTIAL, unchanged and stated \u2014 prod sorento-respond-message LLEN 0 before AND after; per-poll pop-payload series not collected; rests on structural containment (B1 adds no node, no edge).",
+  "S8": "PASS \u2014 1 node changed, 0 added; no banned type introduced.",
+  "S9": "PASS \u2014 all three FP mutations plus a negative control ran through mutate.sh with occurrence-count and digest assertions; the negative control correctly ABORTED."
+ },
+ "session_lane_note": "used the sim-inject seeded lane per plan \u00a74. Confirmed working: the seeded certificate PC 000078 (uuid aa10fd73-96bf-4418-91c3-7780a36305fe) resolved at test time and drove the behaviour. The planner's LESSONS \u00a731 correction is right \u2014 redis-item session injection DOES work via this lane."
+}

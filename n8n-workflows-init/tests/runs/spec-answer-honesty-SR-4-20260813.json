@@ -1,0 +1,45 @@
+{
+ "case": "SR-4",
+ "title": "genuine miss survives",
+ "verdict": "PASS",
+ "family": "SR (spec-answer-honesty)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ d59c226c",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "wall hung basin and SRTZZ999",
+ "test_run_id": "sr4-20260813",
+ "execution": "12308336",
+ "started_at": "2026-08-13T09:11:33.923Z",
+ "resolve_entity_http_output": {
+  "tokens": ["wall hung basin", "SRTZZ999"],
+  "fallback_match_mode": "or",
+  "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+  "resolutions_count": 3,
+  "resolutions_shape": [
+   {"token": "wall hung basin", "resolved": false, "matches": [], "alternatives_count": 3, "alternatives_tier": "trgm", "note": "OWN resolution carries matches:[] -- this is the per-raw-miss shape N-3 exists to suppress"},
+   {"token": "SRTZZ999", "resolved": false, "matches": [], "alternatives_count": 0, "note": "genuinely nonexistent code -- no candidates of any kind"},
+   {"token": "trying to check the product details for wall hung basin and SRTZZ999", "resolved": false, "ambiguous": true, "matches_count": 5, "match_tier": "spec_search", "note": "the query-keyed restatement resolution, carrying the answer"}
+  ],
+  "compatible_entities": ["BRBC22137W-1 (WALL HUNG)", "BRBC22292W", "BRBC22350W-1-SG", "BRBC22589W", "BRBC22590W"]
+ },
+ "hard_assertion": "spec answer renders (5 Bravat wall-hung-basin rows) AND the nonexistent code SRTZZ999 still gets its own miss line -- N-3 suppressed ONLY the raw that fed the spec answer ('wall hung basin'), not the genuinely-missing one.",
+ "customer_boundary": {
+  "rendered_reply_verbatim": "Here are the matching products.\n\n1. *Product Code:* BRBC22350W-1-SG\n*Description:* BRAVAT WALL HUNG BASIN C22350W-1-SG\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n2. *Product Code:* BRBC22137W-1 (WALL HUNG)\n*Description:* BRAVAT COUNTER-TOP BASIN C22137W-1 (WALL HUNG)\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n3. *Product Code:* BRBC22292W\n*Description:* BRAVAT WALL HUNG BASIN C22292W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n4. *Product Code:* BRBC22589W\n*Description:* BRAVAT WALL HUNG BASIN C22589W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n5. *Product Code:* BRBC22590W\n*Description:* BRAVAT WALL HUNG BASIN C22590W\n*List Price:* MYR 0.00\n*Dimensions:* Not defined\n\n_Data last updated: 04/08/2026 19:17:04_\n\nP/S: if the spec you're after isn't shown above, just ask me for the *product catalogue* and I'll pull it up for you 😊\n\nCouldn't find these:\n\"SRTZZ999\" — not found.\n\nAsk again with the correct code.",
+  "wall_hung_basin_miss_absent": true,
+  "srtzz999_miss_present": true,
+  "sendmsg_parts": 1
+ },
+ "SR9_cross_reference": {
+  "note": "This execution ALSO settles SR-9's reachability question -- see spec-answer-honesty-SR-9-20260813.json for the full analysis. Recorded once here to avoid re-deriving: 'wall hung basin' is a token with its OWN resolution carrying matches:[] (structurally poised to wrongly render a duplicate miss) that coexists on this same turn with spec_search rows in the answer -- exactly the shape N-3 guards against, reached live on the clone."
+ },
+ "safety_S0": {
+  "S1_zero_real_sends": "PASS -- 3 egress entries only.",
+  "S2_zero_assignment": "PASS -- no escalation branch (no dangling escalation offer text either; this reply is a clean answer + a genuine per-code miss, not an escalation prompt).",
+  "S3_zero_crm_writes": "PASS -- would_write only.",
+  "S4_get_results_read_only": "PASS -- sub-execution 12308357 targets t4QvrtrPnTwRU6br; response shape is read-only (answers/has_result), no ticket-create marker.",
+  "S5_test_mode": "PASS -- {test_mode:true, test_run_id:'sr4-20260813', scope:'deterministic'}, directly confirmed via get_execution.",
+  "S6_token_sinks": "Real reformulator ran (parser tier); no other LLM."
+ },
+ "S7_sink_delta": "See rollup.",
+ "notes": "This is a stronger case than the diff doc's own reachability table anticipated: the coder's table considered only SINGLE-token AND-collapse (SR-B1/B2/B4 shape, non-reachable) and SR-B3's OR-degrade-with-a-partial-prefix-match (spec search never runs, non-reachable). This TWO-token AND-zero-intersection-forces-OR-mode shape is a THIRD combination not enumerated there: each unresolved token keeps its OWN per-token resolution (with empty matches + trgm alternatives) AND a separate query-keyed spec_search resolution is appended. That is a genuinely different CRM code path from SR-B3's degrade (there, no per-token resolution for the descriptive token existed at all outside its trgm-alternatives shape; here, the token literally carries the empty-matches shape N-3's predicate is written against)."
+}

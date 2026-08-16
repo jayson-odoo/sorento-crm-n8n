@@ -1,0 +1,424 @@
+{
+ "run": "dym-probe-before-offer UAC (\u00a7DP)",
+ "date": "2026-08-06/07",
+ "tester": "sorento-tester",
+ "target": {
+  "clone": "txiPzSxy3Pclsz6v",
+  "versionId": "9aa24cc9-fead-4aaa-94eb-ec63b8b0eeb4",
+  "baseline": "545210e7",
+  "live_spine": "f03086ac UNTOUCHED (export --verify before and after)"
+ },
+ "driver": {
+  "lane": "POST /webhook/zz-run-hint -> zz-canary-run VtIV3TF3aw2Fx8No -> clone",
+  "session": "mode=uac + item.previous_conversation_state set => sim-inject-gate TRUE => sim-inject-session; NO prod session read, NO pg read/write. This removes the `uac-mode-reads-prod-session` landmine entirely.",
+  "tier_actually_run": "PARSER tier (real reformulator wI5RkNGW3EOJfBdo per turn), NOT the `deterministic` tier \u00a7DP specifies. Reason: the redis item cannot pin resolve-entity/probe answers, and the real CRM envelopes were the largest unverified assumption. Deterministic-tier coverage is provided offline against the published bytes."
+ },
+ "safety_scorecard": {
+  "S1": "PASS \u2014 send-message-files/images/video ABSENT from runData; every send is an egress `would_send` row; no api.respond.io POST executed.",
+  "S2": "PASS \u2014 proven on the one escalating turn (11468571): HI fork vUfFUDjLAuMaeQE6 exec 11468579 ran EXACTLY 4 nodes (trigger, chat?, test-guard, test-guard-record), lastNodeExecuted=test-guard-record. No Assign, no SLA POST, no PIC comment, no get-round-robin-assignee, no assignee-queue push. Asserted from runData, not status.",
+  "S3": "PASS \u2014 save-session-vars and update-human-intervened ABSENT from runData on every run; both recorded as `would_write`. Sinked node re-asserted FROM JSON: clone `Call 'sub-respond-save-message-redis'2` -> tWm5DYLxfypmVC1T, whose Redis node pushes the LITERAL list `sorento-respond-message-TEST` (no `=` prefix), published (versionId==activeVersionId).",
+  "S4": "PASS \u2014 dym-probe `tool` resolved to crm_master_product_attachments_list / crm_inventory_stock_balance_list only; both READ. Never crm_it_support_ticket_create. Sub-exec runData shows MCP Client1 invoked a _list tool. dym-probe.workflowId.value == rysSPgUssLDf6xJc verified from the export JSON AND from the live sub-execution metadata.",
+  "S5": "PASS-with-documented-exception \u2014 `When Executed by Another Workflow.json.test_mode === true` (exec 11468750); HI sub received is_test:true. `dym-probe` passes NO is_test because sub-get-results TEST declares no such input (parity with sibling-probe/probe-incoming); containment for that node is the FORK TARGET, verified two ways.",
+  "S6": "PASS for the tier actually run \u2014 `Basic LLM Chain` and `OpenAI Chat Model` ABSENT from runData. Sole token sink = the reformulator sub, one call per turn (pre-existing). THE CHANGE ADDS ZERO TOKEN COST: dym-probe -> sub-get-results ran only entity-ids-transformer + MCP Client1 + output-structurer; no AI Agent node executed.",
+  "S7a": "PASS \u2014 TEST sink `sorento-respond-message-TEST` 553 -> 576 across 23 canary runs = EXACTLY +1 per run, no gaps. Sampled brackets: 11467918 553->554, 11468097 557->558, 11468570 565->566, 11468749 568->569, 11468974 575->576.",
+  "S7b": "PARTIAL \u2014 prod `sorento-respond-message` LLEN 0 before AND after on all 5 sampled brackets (10 samples spread over the 11-min window); no non-zero delta anywhere, so no attribution was triggered. The per-poll CONSUMER pop-payload half of \u00a70 S7b was NOT collected. Scored primarily on STRUCTURAL containment: the only node in the changed graph that can push to a respond-message list is the sinked save node (above); this change added no redis node and no executeWorkflow node other than dym-probe, whose sub contains no redis node. Reviewer: treat S7b as structurally-verified, poll-series-not-collected.",
+  "S8": "PASS \u2014 dym-probe is n8n-nodes-base.executeWorkflow with no node of type respondio / httpRequest / memoryPostgresChat added anywhere. Asserted on node TYPE (credentials are not readable via MCP)."
+ },
+ "assertion_integrity": {
+  "principle": "Every gate below was mutated on purpose and observed RED before any case was scored.",
+  "offline_suites_run_the_real_bytes": "sha256 verified: tests/offline/.../build-suggest-offer.js|dym-transform.js|dym-annotate.js == the CLONE export node bodies; live-bso.js == the LIVE export node body. byteid.js is therefore a genuine cross-file gate.",
+  "mutations_observed_RED": [
+   "drop 'probe_needed' from _DYM_CTRL_KEYS -> byteid.js 9/10 fixtures RED (the strip is load-bearing and the gate sees it)",
+   "one-char edit to the un-annotated D1 render -> byteid.js 5/10 RED",
+   "delete the has-first sort -> harness.js 6 assertions RED (DP-1 rendered-first, lrs[0], dym_candidates[0], quick_reply, DP-2 order, DP-5 first)",
+   "leak ' \u2014 has <noun>' into suggest_quick_reply -> 5 RED (DP-11a regex, no-em-dash, DP-1 quick_reply, DP-11b qr==lrs, DP-5 qr bare)",
+   "remove the no_candidate_uuid hard gate -> DP-9 probe_needed + reason RED",
+   "switch qty_gt_zero to row-presence -> DP-5 and DP-14 RED (5 assertions)"
+  ],
+  "assertion_found_NOT_to_be_an_instrument": "\u00a7DP-FP-3 requires EVERY clause of \u00a7DP-11a to go red when annotation leaks into suggest_quick_reply. The `splits to picks.length+2 entries` clause stayed GREEN \u2014 a comma-free suffix cannot change the split count. The regex and em-dash clauses caught it. \u00a7DP-FP-3's wording is over-strong; the entry-count clause is not an instrument for this fault and must not be relied on alone.",
+  "runData-absence_is_a_real_signal": "exec 11468750 was queried for 10 node names and returned 1 (the trigger). Omission is therefore meaningful, not a silent empty \u2014 which is what makes every 'ABSENT from runData' assertion above sound.",
+  "false_RED_caught": "DP-C1 (see cases). A code reply dead-ended; the control DP-C1b with referenced_result_set populated resolved correctly. Had I reported DP-C1 as a defect it would have been wrong."
+ },
+ "coverage_gaps_NOT_passes": {
+  "\u00a7DP-1 (attachment SOME-have)": "NOT OBSERVED LIVE. Five attempts (ibwc8315-s10, SRTWC193, SRTWC1930, MWC7601-RL-P) all returned zero attachment rows. The POSITIVE branch of `row_present_with_type`, and the real `Attachment Type` field label (\u00a7DP-0b), remain UNVERIFIED against a live CRM envelope \u2014 by the coder and by me. Offline-only.",
+  "\u00a7DP-3b unscoped_probe (F3 layer 2)": "OFFLINE-ONLY \u2014 depends on the same unobserved attachment envelope.",
+  "\u00a7DP-14 discriminating half": "OFFLINE-ONLY \u2014 no product found whose rows sum to exactly 0 while rows exist. DP-P2 shows genuine-zero rows exist, but alongside positive rows for the same code, so it does not separate qty_gt_zero from row-presence.",
+  "\u00a7DP-4 / \u00a7DP-8 (probe ERROR)": "NOT INDUCED LIVE \u2014 inducing it requires editing the clone, which is outside the tester role. Covered by (a) static config: dym-probe.onError == 'continueRegularOutput', explicitly NOT continueErrorOutput, no main[1] to leave unwired; (b) offline `_dym_probe_input` sentinel path -> ok:false, reason:'probe_error', offer preserved.",
+  "\u00a7DP-9 live": "OFFLINE-ONLY (incl. the category/brand F2a variant below). No natural live turn produced a uuid-less candidate set.",
+  "\u00a7DP-13b dynamic half": "NOT RUN.",
+  "\u00a7DP-12 inbound (b) sibling-probe[0]": "NOT RUN \u2014 only inbound (a) annotate-incoming-picker[0] was exercised (DP-R9)."
+ },
+ "f2a_must_cover": {
+  "question": "a UUID-shaped but category/brand-ONLY candidate set must NOT reach the probe",
+  "result": "PASS (offline, against the published dym-transform bytes)",
+  "detail": [
+   "category-only w/ real UUIDs -> probe_needed:false, reason:'no_candidate_uuid', entities []",
+   "brand-only w/ real UUIDs -> same",
+   "mixed brand+product -> probes, dym_probe_entities contains ONLY the product (no unscoped widening)",
+   "CONTROL: product-only DOES probe (so the three checks above are not vacuous)"
+  ],
+  "note": "This holds ONLY because of the coder's deviation D5 (candidate must map to a narrowing *_ids param in entity-ids-transformer). The plan's literal guard ('>=1 candidate carries a UUID-shaped uuid') would have let category/brand through and produced the F2a full-table read."
+ },
+ "cases": [
+  {
+   "id": "DP-R1",
+   "uac": "\u00a7DP-2 shape (attachment, NONE have it) \u2014 real turn",
+   "exec_id": "11467919",
+   "sub_exec": "11467938",
+   "tag": "DP-R1-att-ibwc8315",
+   "msg": "ibwc8315-s10 cert",
+   "verdict": "PASS",
+   "evidence": {
+    "dym-transform": {
+     "probe_needed": true,
+     "probe_tool": "crm_master_product_attachments_list",
+     "probe_predicate": "row_present_with_type",
+     "probe_skip_reason": null,
+     "dym_probe_entities": "3 product uuids + attachment_type Certification 1439736c-\u2026-4599"
+    },
+    "dym-probe.sub": {
+     "workflowId": "rysSPgUssLDf6xJc",
+     "entity-ids-transformer": {
+      "product_ids": 3,
+      "attachment_type_ids": 1,
+      "unmapped_types": [],
+      "skipped": []
+     },
+     "MCP Client1": "items:[] has_result:false"
+    },
+    "dym-annotate": {
+     "ok": true,
+     "answer_count": 0,
+     "probed": [
+      "ibwc8315-s",
+      "ibwc7606-s10",
+      "ibwcx7605-s10"
+     ],
+     "dym_available_codes": [],
+     "escalate_message": "survived"
+    },
+    "render": "3 lines all '\u2014 no certificate'; suggest_offer stayed true"
+   },
+   "note": "Probe correctly SCOPED (product_ids + attachment_type_ids), not a full-table read."
+  },
+  {
+   "id": "DP-R4",
+   "uac": "independent truth-check of DP-R1's annotation",
+   "exec_id": "11468080",
+   "tag": "DP-R4-xcheck-ibwc8315s",
+   "msg": "IBWC8315-S certificate",
+   "verdict": "PASS",
+   "evidence": {
+    "main get-results path": "'no certificate matched these'"
+   },
+   "note": "MAIN data path agrees with the probe: IBWC8315-S genuinely has no certificate. The '\u2014 no certificate' label is TRUE, and correctly predicts the live dead-end this change targets."
+  },
+  {
+   "id": "DP-R2",
+   "uac": "\u00a7DP-5/\u00a7DP-6 (inventory, NONE have stock)",
+   "exec_id": "11468043",
+   "sub_exec": "11468056",
+   "tag": "DP-R2-inv-srtub",
+   "msg": "Have stock SRTUB2232-1600?",
+   "verdict": "PASS",
+   "evidence": {
+    "dym-transform": {
+     "probe_tool": "crm_inventory_stock_balance_list",
+     "probe_predicate": "qty_gt_zero",
+     "candidates": 2
+    },
+    "dym-annotate": {
+     "ok": true,
+     "answer_count": 0,
+     "dym_available_codes": []
+    },
+    "render": "both '\u2014 no stock'; suggest_offer true"
+   }
+  },
+  {
+   "id": "DP-R6",
+   "uac": "independent truth-check of DP-R2",
+   "exec_id": "11468312",
+   "tag": "DP-R6-inv-xcheck",
+   "msg": "stock for SRTBT2232-1600",
+   "verdict": "PASS",
+   "evidence": {
+    "main path": "'no inventory matched these'"
+   },
+   "note": "No false negative."
+  },
+  {
+   "id": "DP-P2",
+   "uac": "\u2605 \u00a7DP-5 POSITIVE + \u00a7DP-0c envelope + \u00a7DP-14 premise",
+   "exec_id": "11468750",
+   "sub_exec": "11468763",
+   "tag": "DP-P2-inv-positive",
+   "msg": "Have stock SRTWC1930?",
+   "verdict": "PASS",
+   "evidence": {
+    "probe envelope (REAL)": "fields carry 'Product Code' and 'Quantity On Hand'; values NUMERIC (1,0,12,0); 4 rows = 1 product x 4 warehouses",
+    "genuine-zero rows observed": "MERU/MWH-BB=0, MERU/MWH=0 alongside BRW-BB=1, BRW=12",
+    "dym-annotate": {
+     "ok": true,
+     "answer_count": 4,
+     "probed": [
+      "srtwc193",
+      "srtwc190",
+      "srtwc191"
+     ],
+     "dym_available_codes": [
+      "srtwc193"
+     ]
+    },
+    "render": "1. SRTWC193 \u2014 has stock / 2. SRTWC190 \u2014 no stock / 3. SRTWC191 \u2014 no stock",
+    "suggest_quick_reply": "SRTWC193,SRTWC190,SRTWC191,Yes escalate,No it's okay (bare)"
+   },
+   "note": "Only live case with a positive annotation. Sum(1+0+12+0)=13>0 -> has. Does NOT discriminate qty_gt_zero from row-presence (SRTWC193 has both zero and non-zero rows); the discriminating half of \u00a7DP-14 remains OFFLINE-ONLY."
+  },
+  {
+   "id": "DP-P1",
+   "uac": "attachment D1, none have it (same token as DP-P2, other domain)",
+   "exec_id": "11468731",
+   "tag": "DP-P1-att-positive",
+   "msg": "SRTWC1930 certificate",
+   "verdict": "PASS-with-finding",
+   "evidence": {
+    "render": "1. SRTWC190 / 2. SRTWC191 / 3. SRTWC193, all '\u2014 no certificate'"
+   },
+   "note": "FINDING F-RANK: identical candidate set to DP-P2 but rendered in ALPHABETICAL order, demoting SRTWC193 (best similarity 0.727) from line 1 to line 3. See rollup finding F-RANK."
+  },
+  {
+   "id": "DP-R5",
+   "uac": "\u2605 \u00a7DP-10 non-enabled domain BYTE-IDENTITY (the plan's most dangerous miss)",
+   "exec_id": "11468101",
+   "tag": "DP-R5-order-nonenabled",
+   "msg": "status of order PO-ZZZ-NOPE-991",
+   "verdict": "PASS",
+   "evidence": {
+    "dym-transform": {
+     "probe_needed": false,
+     "probe_skip_reason": "domain_not_enabled"
+    },
+    "dym-gate": "output 1 taken (main[0] empty, main[1] populated)",
+    "dym-probe": "ABSENT from runData",
+    "dym-annotate": "ABSENT from runData",
+    "build-suggest-offer input": "dym-gate[1]",
+    "_DYM_CTRL_KEYS strip": "VERIFIED on a real turn \u2014 output key set == input key set minus all 8 control keys, insertion order preserved, not-found payload (escalate_message/is_clarification/found_summary) intact"
+   }
+  },
+  {
+   "id": "DP-R3",
+   "uac": "\u00a7DP-13c D2 untouched",
+   "exec_id": "11468063",
+   "tag": "DP-R3-att-srtwc193",
+   "msg": "SRTWC193 certificate",
+   "verdict": "PASS",
+   "evidence": {
+    "dym-transform": {
+     "probe_needed": false,
+     "probe_skip_reason": "no_d1_candidates"
+    },
+    "dym-probe/dym-annotate": "ABSENT",
+    "render": "D2 'No certificate for SRTWC193. Try: \u2026' unchanged"
+   }
+  },
+  {
+   "id": "DP-R9",
+   "uac": "\u00a7DP-12 dynamic \u2014 annotate-incoming-picker[0] inbound stays un-annotated",
+   "exec_id": "11468975",
+   "tag": "DP-R9-incoming-picker",
+   "msg": "when is SRTWC19 coming in",
+   "verdict": "PASS",
+   "evidence": {
+    "dym-transform/dym-gate/dym-probe/dym-annotate": "ALL ABSENT from runData",
+    "build-suggest-offer input": "annotate-incoming-picker[0]; output = input + suggest_offer:false, no ctrl keys"
+   }
+  },
+  {
+   "id": "DP-C1",
+   "uac": "control \u2014 code reply with referenced_result_set EMPTY",
+   "exec_id": "11468403",
+   "tag": "DP-C1-code-nonmerged",
+   "msg": "SRTBT2231-1600",
+   "verdict": "VOID (harness artefact)",
+   "evidence": {
+    "parser": {
+     "dym_pick_applied": true,
+     "dym_offer_pick_code": "SRTBT2231-1600",
+     "reference_positions": [
+      1
+     ],
+     "positions_out_of_range": [
+      1
+     ],
+     "output.entities": []
+    },
+    "result": "require-specific dead-end"
+   },
+   "note": "Caused by injecting referenced_result_set:[]. NOT a product defect \u2014 proven by DP-C1b. Recorded because it is exactly the false-RED this repo keeps producing."
+  },
+  {
+   "id": "DP-C1b",
+   "uac": "\u00a7DP-11b code round-trip (rrs populated)",
+   "tag": "DP-C1b-code-nonmerged-rrs",
+   "msg": "SRTBT2231-1600",
+   "verdict": "PASS",
+   "evidence": {
+    "reply": "Here's what you want:\n\u2022 product: SRTBT2231-1600\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?"
+   }
+  },
+  {
+   "id": "DP-C4",
+   "uac": "\u2605 digit reply on a NON-merged annotated offer",
+   "tag": "DP-C4-digit-nonmerged-rrs",
+   "msg": "1",
+   "verdict": "PASS",
+   "evidence": {
+    "reply": "Here's what you want:\n\u2022 product: SRTBT2231-1600\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?"
+   },
+   "note": "Bare digit resolves via reference_positions to the line-1 code. Answers parent Q1: YES."
+  },
+  {
+   "id": "DP-C5",
+   "uac": "\u2605 \u00a7DP-11b post-SORT index consistency (sort actually reordered)",
+   "tag": "DP-C5-digit1-att-reordered",
+   "msg": "1 (on DP-P1 offer, line1=SRTWC190)",
+   "verdict": "PASS",
+   "evidence": {
+    "reply": "No Certification for SRTWC190. Try: SRTWC195, SRTWC191-G2, SRTWC192-300. Reply with a code to continue, or would you like me to escalate to purchasing_certification team?"
+   },
+   "note": "Resolved SRTWC190 = sorted line 1, NOT the pre-sort first candidate SRTWC193. No stale mapping."
+  },
+  {
+   "id": "DP-C7",
+   "uac": "\u00a7DP-11b, third position",
+   "tag": "DP-C7-digit3-att-reordered",
+   "msg": "3 (line3=SRTWC193)",
+   "verdict": "PASS",
+   "evidence": {
+    "reply": "No Certification for SRTWC193. Try: SRTWC195, SRTWC191-G2, SRTWC192-300. Reply with a code to continue, or would you like me to escalate to purchasing_certification team?"
+   }
+  },
+  {
+   "id": "DP-C6",
+   "uac": "\u2605 end-to-end value proof",
+   "tag": "DP-C6-digit1-inv",
+   "msg": "1 (on DP-P2 offer)",
+   "verdict": "PASS",
+   "evidence": {
+    "reply": "Stock details for SRTWC193: BRW=12, MWH=0, BRW-BB=1, MWH-BB=0"
+   },
+   "note": "'\u2014 has stock' was true and the pick delivered the data. The measured live dead-end is closed."
+  },
+  {
+   "id": "DP-R8",
+   "uac": "\u2605 MERGED dym-offer + CS member roster (constructed)",
+   "exec_id": "11468341",
+   "tag": "DP-R8-order-nearmiss",
+   "msg": "any orders for SRTBT2232-1601",
+   "verdict": "PASS (offer) / FINDING (state)",
+   "evidence": {
+    "render": "un-annotated dym prose + 6-member roster in one message",
+    "compile-current-state": {
+     "selection_context": "member_offer",
+     "last_result_set": "6 CS members",
+     "dym_offer": "PRESERVED (3 codes)",
+     "quick_reply": "the 3 DYM CODES"
+    },
+    "\u00a7DP-11a/b on this message": "FAILS \u2014 quick_reply(5 entries, dym codes) vs result_set(6 members); qr[i]!=lrs[i]"
+   },
+   "note": "Pre-existing (compile-current-state.js:76 vs :191), NOT introduced here \u2014 order is a non-enabled domain and dym-gate went FALSE."
+  },
+  {
+   "id": "DP-C2/C2b",
+   "uac": "\u2605 digit reply on the MERGED offer",
+   "exec_id": "11468571",
+   "sub_exec": "11468579 (vUfFUDjLAuMaeQE6)",
+   "tag": "DP-C2b-digit-merged-rrs",
+   "msg": "1",
+   "verdict": "FINDING",
+   "evidence": {
+    "outcome": "NOT a loop \u2014 consumed as a CS-member pick and ESCALATED",
+    "state written": {
+     "is_escalation_confirmation": true,
+     "preferred_assignee_id": "0d69dfb7-dcf7-41fe-8457-f45897895182 (Maryam Ariffin)",
+     "dym_offer": null,
+     "user_goal": "trying to select the first escalation contact"
+    },
+    "bot text": null,
+    "egress": [
+     "save-message-redis",
+     "save-session-vars",
+     "sendmsg-sub",
+     "human-intervention-sub"
+    ],
+    "reproduced with referenced_result_set EMPTY too": "DP-C2, same outcome",
+    "dym chain": "dym-transform/probe/annotate ABSENT (turn routed divert-suggest-yes[1] -> HI)"
+   },
+   "note": "Corrects the parent's hypothesis: not a re-emitted offer, a silent escalation+assignment."
+  },
+  {
+   "id": "DP-C3b",
+   "uac": "code reply on the MERGED offer",
+   "tag": "DP-C3b-code-merged-rrs",
+   "msg": "SRTBT2232-1600",
+   "verdict": "PASS",
+   "evidence": {
+    "reply": "resolved the dym code, re-queried order, re-offered roster"
+   },
+   "note": "dym_offer survives the merge, so the CODE path still works; only the DIGIT path is hijacked."
+  }
+ ],
+ "s7_brackets": {
+  "11467918": {
+   "prod": [
+    0,
+    0
+   ],
+   "sink": [
+    553,
+    554
+   ]
+  },
+  "11468097": {
+   "prod": [
+    0,
+    0
+   ],
+   "sink": [
+    557,
+    558
+   ]
+  },
+  "11468570": {
+   "prod": [
+    0,
+    0
+   ],
+   "sink": [
+    565,
+    566
+   ]
+  },
+  "11468749": {
+   "prod": [
+    0,
+    0
+   ],
+   "sink": [
+    568,
+    569
+   ]
+  },
+  "11468974": {
+   "prod": [
+    0,
+    0
+   ],
+   "sink": [
+    575,
+    576
+   ]
+  }
+ }
+}

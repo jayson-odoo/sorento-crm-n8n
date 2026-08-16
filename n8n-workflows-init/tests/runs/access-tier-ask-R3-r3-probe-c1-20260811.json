@@ -1,0 +1,266 @@
+{
+ "case": "r3-probe-c1",
+ "round": 3,
+ "verdict": "evidence",
+ "target": {
+  "fork_spine": "RnpxEnAV3g20MmKj @ 2b9e3dfa-f98e-4fb1-8bfb-dffcb85a091e",
+  "fork_parser": "RJ326g9dwe3bTWyf @ 668cd772 / 5dd1f43d (see rollup presence_gate)",
+  "live_spine_9qVyfUxmRQqrpGRMDLRuz": "NEVER DRIVEN"
+ },
+ "contact": 437264483,
+ "mode": "uac (real CRM reads)",
+ "message": "cabana promo for CBS202-WH dealer",
+ "execution": "12055077",
+ "rendered_reply_verbatim": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA COMBINE PROMO DEALER_08072026.pdf\n\n_Data last updated: 08/07/2026 17:54:55_",
+ "sendmsg_payload": {
+  "contact_identifer": 437264483,
+  "message": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA COMBINE PROMO DEALER_08072026.pdf\n\n_Data last updated: 08/07/2026 17:54:55_",
+  "quick_reply": null,
+  "result_set": [
+   {
+    "idx": 1,
+    "uuid": null,
+    "label": "CABANA COMBINE PROMO DEALER_08072026.pdf",
+    "entity_type": null,
+    "product": null,
+    "attachment_type": null,
+    "filename": null
+   }
+  ]
+ },
+ "file_attachments_at_customer_boundary": [
+  "@ CABANA COMBINE PROMO (DEALER)_08072026.pdf"
+ ],
+ "tier_gate": {
+  "name": [
+   "Sorento Office",
+   "Sorento Dealer",
+   "Mocha Dealer",
+   "Mocha Office",
+   "Cabana Office",
+   "Cabana Dealer",
+   "End User"
+  ],
+  "tier_stated": [
+   "dealer"
+  ],
+  "entitled_tiers": [
+   "dealer",
+   "office",
+   "end_user"
+  ],
+  "entitled_unknown": [],
+  "query_brands": [
+   "cabana"
+  ],
+  "pending_pick": false,
+  "tier_ask": false,
+  "tier_proceed": true,
+  "access_levels_recomposed": [
+   "Cabana Dealer"
+  ],
+  "brand_gate_empty": false,
+  "brand_unheld": false
+ },
+ "promo_picker": {
+  "n_answers": 1,
+  "n_attachments": 1,
+  "_brand_gate_closed": null
+ },
+ "parser": {
+  "domain_hint": "promotion",
+  "access_levels": [
+   "dealer"
+  ],
+  "query_brands": [
+   "cabana"
+  ],
+  "entities": [
+   {
+    "raw": "CBS202-WH",
+    "hint": "product",
+    "canonical_code": null,
+    "current_message": true,
+    "confident": true
+   }
+  ],
+  "_tier_pick_scope_reused": null,
+  "_pending_pick": null,
+  "routing": {
+   "suggested_team": "marketing_promotion_cabana",
+   "suggested_agent": "general_enquiries"
+  }
+ },
+ "assertions": null,
+ "safety_per_case": null,
+ "nodes_run": [
+  "Aggregate",
+  "Call 'sub-get-results'",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Edit Fields",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If4",
+  "If5",
+  "If6",
+  "If9",
+  "Loop Over Items1",
+  "Remove Duplicates",
+  "Split Out",
+  "Switch",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "central-exchange",
+  "chat-attach?",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "disallowed-entity-gate",
+  "dym-gate-partial",
+  "dym-transform-partial",
+  "get-access-types",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-g-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "promo-picker",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-access-types",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "resolve-entity-http",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sim-inject-session",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tf-message",
+  "tier-gate",
+  "tool-filter",
+  "validator"
+ ],
+ "egress_log": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "payload": {
+    "contact_id": 437264483,
+    "message": "cabana promo for CBS202-WH dealer"
+   },
+   "test_run_id": "r3-probe-c1",
+   "ts": "2026-08-11T05:24:37.347-04:00"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "payload": {
+    "contact_id": 437264483,
+    "body": {
+     "variables": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "trying to check the promotion for CBS202-WH for Cabana Dealer",
+      "entities": [
+       {
+        "raw": "CBS202-WH",
+        "hint": "product",
+        "canonical_code": "CBS202-WH",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing_promotion_cabana",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "response": "Previous turn (promotion): returned 1 records",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": null,
+        "label": "CABANA COMBINE PROMO DEALER_08072026.pdf",
+        "entity_type": null,
+        "product": null,
+        "attachment_type": null,
+        "filename": null
+       }
+      ],
+      "selection_context": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "date_mode": null,
+      "match_mode": "and",
+      "contains_flyer": false,
+      "dym_offer": null,
+      "dym_candidates": [],
+      "ideation": null
+     },
+     "user_response": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA COMBINE PROMO DEALER_08072026.pdf\n\n_Data last updated: 08/07/2026 17:54:55_"
+    }
+   },
+   "test_run_id": "r3-probe-c1",
+   "ts": "2026-08-11T05:24:37.336-04:00"
+  },
+  {
+   "guard": "send-message-files",
+   "kind": "would_send",
+   "target": "respondio:contact:message",
+   "payload": {
+    "presigned_url": "https://cdn-sorento.com/promotion/0e3451c3-5cbe-41c2-b94a-0caef09042cb/CABANA COMBINE PROMO DEALER_08072026.pdf",
+    "filename": "@ CABANA COMBINE PROMO (DEALER)_08072026.pdf"
+   },
+   "test_run_id": "r3-probe-c1",
+   "ts": "2026-08-11T05:24:37.324-04:00"
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": 437264483,
+   "payload": {
+    "contact_identifer": 437264483,
+    "message": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA COMBINE PROMO DEALER_08072026.pdf\n\n_Data last updated: 08/07/2026 17:54:55_",
+    "quick_reply": null,
+    "result_set": [
+     {
+      "idx": 1,
+      "uuid": null,
+      "label": "CABANA COMBINE PROMO DEALER_08072026.pdf",
+      "entity_type": null,
+      "product": null,
+      "attachment_type": null,
+      "filename": null
+     }
+    ]
+   },
+   "test_run_id": "r3-probe-c1",
+   "ts": "2026-08-11T05:24:35.874-04:00"
+  }
+ ],
+ "notes": ""
+}

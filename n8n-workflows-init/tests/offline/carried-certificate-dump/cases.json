@@ -1,0 +1,379 @@
+[
+ {
+  "name": "CD-1 bad turn (srtwc8317-rl1 cert, carried cert)",
+  "parser": {
+   "domain_hint": "product_attachment",
+   "entities": [
+    {
+     "raw": "srtwc8317-rl1",
+     "hint": "product",
+     "current_message": true
+    },
+    {
+     "raw": "cert",
+     "hint": "attachment_type",
+     "canonical_code": "certificate",
+     "current_message": true
+    },
+    {
+     "raw": "PC000078",
+     "hint": "certificate",
+     "canonical_code": "PC 000078"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [
+    "srtwc8317-rl1"
+   ],
+   "tokens": [
+    "srtwc8317-rl1",
+    "cert",
+    "PC000078"
+   ],
+   "resolutions": [
+    {
+     "token": "srtwc8317-rl1",
+     "matches": []
+    },
+    {
+     "token": "cert",
+     "matches": [
+      {
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4599",
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "match_tier": "exact"
+      }
+     ]
+    },
+    {
+     "token": "PC000078",
+     "matches": [
+      {
+       "uuid": "aa10fd73-96bf-4418-91c3-7780a36305fe",
+       "entity_type": "certificate",
+       "canonical_code": "PC 000078",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "CD-2 certification with number PC000078 (no product hint)",
+  "parser": {
+   "domain_hint": "product_attachment",
+   "entities": [
+    {
+     "raw": "PC000078",
+     "hint": "certificate"
+    },
+    {
+     "raw": "certification",
+     "hint": "attachment_type"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [],
+   "tokens": [
+    "PC000078",
+    "certification"
+   ],
+   "resolutions": [
+    {
+     "token": "PC000078",
+     "matches": [
+      {
+       "uuid": "aa10fd73",
+       "entity_type": "certificate",
+       "canonical_code": "PC 000078",
+       "match_tier": "exact"
+      }
+     ]
+    },
+    {
+     "token": "certification",
+     "matches": [
+      {
+       "uuid": "1439736c",
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "CD-3 MWC7602-RL-P cert (product RESOLVES) + carried cert",
+  "parser": {
+   "domain_hint": "product_attachment",
+   "entities": [
+    {
+     "raw": "MWC7602-RL-P",
+     "hint": "product"
+    },
+    {
+     "raw": "cert",
+     "hint": "attachment_type"
+    },
+    {
+     "raw": "PC000078",
+     "hint": "certificate"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [],
+   "tokens": [
+    "MWC7602-RL-P",
+    "cert",
+    "PC000078"
+   ],
+   "resolutions": [
+    {
+     "token": "MWC7602-RL-P",
+     "matches": [
+      {
+       "uuid": "72aa8105",
+       "entity_type": "product",
+       "canonical_code": "MWC7602-RL-P",
+       "match_tier": "exact"
+      }
+     ]
+    },
+    {
+     "token": "cert",
+     "matches": [
+      {
+       "uuid": "1439736c",
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "match_tier": "exact"
+      }
+     ]
+    },
+    {
+     "token": "PC000078",
+     "matches": [
+      {
+       "uuid": "aa10fd73",
+       "entity_type": "certificate",
+       "canonical_code": "PC 000078",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "CD-4 inventory miss with carried certificate",
+  "parser": {
+   "domain_hint": "inventory",
+   "entities": [
+    {
+     "raw": "srtwc8317-rl1",
+     "hint": "product"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [
+    "srtwc8317-rl1"
+   ],
+   "tokens": [
+    "srtwc8317-rl1"
+   ],
+   "resolutions": [
+    {
+     "token": "srtwc8317-rl1",
+     "matches": []
+    },
+    {
+     "token": "PC000078",
+     "matches": [
+      {
+       "uuid": "aa10fd73",
+       "entity_type": "certificate",
+       "canonical_code": "PC 000078",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "CD-x product_attachment, unresolved product, no attachment_type (pre-blocked by required-type)",
+  "parser": {
+   "domain_hint": "product_attachment",
+   "entities": [
+    {
+     "raw": "srtwc8317-rl1",
+     "hint": "product"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [
+    "srtwc8317-rl1"
+   ],
+   "tokens": [
+    "srtwc8317-rl1"
+   ],
+   "resolutions": [
+    {
+     "token": "srtwc8317-rl1",
+     "matches": []
+    }
+   ]
+  }
+ },
+ {
+  "name": "FP1-D master_products: brand resolves, product raw MISSES (B1 must stay inert)",
+  "parser": {
+   "domain_hint": "master_products",
+   "entities": [
+    {
+     "raw": "srtwc8317-rl1",
+     "hint": "product"
+    },
+    {
+     "raw": "sorento",
+     "hint": "brand"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [
+    "srtwc8317-rl1"
+   ],
+   "tokens": [
+    "srtwc8317-rl1",
+    "sorento"
+   ],
+   "resolutions": [
+    {
+     "token": "srtwc8317-rl1",
+     "matches": []
+    },
+    {
+     "token": "sorento",
+     "matches": [
+      {
+       "uuid": "brand-1",
+       "entity_type": "brand",
+       "canonical_code": "SORENTO",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "FP2-D product_attachment: MWC7602-RL-P resolves, srtwc8317-rl1 misses (B1 must stay inert)",
+  "parser": {
+   "domain_hint": "product_attachment",
+   "entities": [
+    {
+     "raw": "MWC7602-RL-P",
+     "hint": "product"
+    },
+    {
+     "raw": "srtwc8317-rl1",
+     "hint": "product"
+    },
+    {
+     "raw": "cert",
+     "hint": "attachment_type"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [
+    "srtwc8317-rl1"
+   ],
+   "tokens": [
+    "MWC7602-RL-P",
+    "srtwc8317-rl1",
+    "cert"
+   ],
+   "resolutions": [
+    {
+     "token": "MWC7602-RL-P",
+     "matches": [
+      {
+       "uuid": "72aa8105",
+       "entity_type": "product",
+       "canonical_code": "MWC7602-RL-P",
+       "match_tier": "exact"
+      }
+     ]
+    },
+    {
+     "token": "srtwc8317-rl1",
+     "matches": []
+    },
+    {
+     "token": "cert",
+     "matches": [
+      {
+       "uuid": "1439736c",
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "FP3-D product_attachment: unknown certificate number misses, no product hint (B1 must stay inert)",
+  "parser": {
+   "domain_hint": "product_attachment",
+   "entities": [
+    {
+     "raw": "PC000079",
+     "hint": "certificate"
+    },
+    {
+     "raw": "certification",
+     "hint": "attachment_type"
+    }
+   ]
+  },
+  "resolver": {
+   "unresolved_tokens": [
+    "pc000079"
+   ],
+   "tokens": [
+    "PC000079",
+    "certification"
+   ],
+   "resolutions": [
+    {
+     "token": "PC000079",
+     "matches": []
+    },
+    {
+     "token": "certification",
+     "matches": [
+      {
+       "uuid": "1439736c",
+       "entity_type": "attachment_type",
+       "canonical_code": "Certification",
+       "match_tier": "exact"
+      }
+     ]
+    }
+   ]
+  }
+ }
+]

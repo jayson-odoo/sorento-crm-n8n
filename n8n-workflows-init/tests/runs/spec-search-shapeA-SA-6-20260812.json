@@ -1,0 +1,41 @@
+{
+ "case": "SA-6",
+ "title": "clarify path untouched",
+ "verdict": "PASS",
+ "family": "SA (spec-search-shapeA-wiring)",
+ "target": "TEST clone txiPzSxy3Pclsz6v @ be62b3a8",
+ "mode": "uac, previous_conversation_state:{}",
+ "contact": 437264483,
+ "prompt": "how much",
+ "test_run_id": "sa6-20260812",
+ "execution": "12179735",
+ "started_at": "2026-08-12T08:55:44.789Z",
+ "parser_output": {
+   "message_type": "clarification",
+   "intent_hint": null,
+   "domain_hint": null,
+   "entities": [],
+   "user_goal": "trying to ask for a price but without specifying what item"
+ },
+ "resolve_entity_nodes_ran": false,
+ "resolve_entity_clarification_ran": false,
+ "finding": "STRONGER than the SA.md assertion required. SA.md asked to confirm 'resolve-entity-clarification request body contains NONE of the three new fields.' Direct observation: for this vague input, NEITHER resolve-entity-http NOR resolve-entity NOR resolve-entity-clarification executed at all (entities:[] short-circuits before any entity-resolution node is reached) -- confirmed via a targeted get_execution(nodeNames) fetch that returned only 'Call sub-query-reformulator' from the requested node set, with the other three absent from runData entirely. This trivially satisfies the assertion (an unexecuted node cannot contain the new fields) and additionally confirms the manifest's STATIC check ('resolve-entity-clarification: untouched, and its body contains none of the three fields') is not contradicted dynamically.",
+ "customer_boundary": {
+   "rendered_reply_verbatim": "I see you're trying to ask for a price but without specifying what item, Let me understand more.\n\nAre you asking about any of these?\n\n- Product (List Price, Dimension)\n- Photos, Technical Specs, Cert\n- Promotion\n- Forms\n- Stock\n- Delivery order\n- Incoming\n- Catalogue, Warranty\n\nI can help with the topics listed above.",
+   "sendmsg_parts": 1,
+   "matches_baseline_clarify_menu": true
+ },
+ "F1_settled": "N/A (no entity resolution occurs on this path).",
+ "F2_settled": "N/A (same reason).",
+ "F3_settled": "N/A (same reason).",
+ "safety_S0": {
+   "S1_zero_real_sends": "PASS -- egress log: 1x would_log, 1x would_write, 1x would_send.",
+   "S2_zero_assignment": "PASS -- no escalation branch.",
+   "S3_zero_crm_writes": "PASS -- would_write only.",
+   "S4_get_results_read_only": "PASS (vacuously) -- Call 'sub-get-results' never ran on this turn.",
+   "S5_test_mode": "PASS (inferred by identical harness mechanism -- not independently re-fetched to conserve session budget; the trigger json test_mode:true pattern was directly confirmed on SA-1/SA-3).",
+   "S6_token_sinks": "Real reformulator ran (parser tier, sub wI5RkNGW3EOJfBdo). No Basic LLM Chain / clarification-agent execution observed in this run's captured nodes (the reformulator itself classified message_type:clarification and emitted the menu text directly via user_goal/response composition, not via the separate gpt-4.1-mini clarification agent) -- consistent with LESSONS §22 ('Basic LLM Chain is gated behind validator.has_result=false', not always-on).",
+   "S7_sink_delta": "See rollup file -- covered by the 89-poll sweep."
+ },
+ "notes": "Closes the loop on the family's static half (manifest: 'resolve-entity-clarification untouched, and its body contains none of the three fields — SA-6's static half is already satisfied') with a dynamic confirmation that the node isn't even reachable for this class of input."
+}

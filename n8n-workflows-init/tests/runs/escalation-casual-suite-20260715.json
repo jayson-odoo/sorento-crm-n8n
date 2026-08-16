@@ -1,0 +1,126 @@
+{
+  "test_run_id": "escalation-casual-suite-20260715",
+  "change": "escalation/casual multi-turn suite — validate plain-offer escalation_declined fix + domain-continuity change on fork wI5RkNGW3EOJfBdo @ 00157a2e",
+  "tester": "sorento-tester",
+  "date": "2026-07-15",
+  "target": "clone txiPzSxy3Pclsz6v (active versionId 45699b20) -> forked reformulator wI5RkNGW3EOJfBdo (published, versionId==activeVersionId==00157a2e)",
+  "driver": "chat-stateful console lane: execute_workflow(zz-chat oyYfVvZHRZpWubTy, chat) -> zz-dispatcher-test 2D0cw2Y1aPW2LOlU -> clone spine -> fork reformulator; reply via redis chat:reply -> zz-chat format-out {output}",
+  "contact": "437264483",
+  "session": "respond_contacts_test (n8n_test @ 72.62.195.19), reset to {\"variables\":{}} ONCE before turn-1 of each scenario, never between turns",
+  "scope": "parser (real reformulator each turn; assertions structural)",
+  "s_cred_gate": {
+    "verdict": "PASS (GREEN)",
+    "method": "REST GET /workflows/{clone,ublq9nSlrpz63xan}, assert postgres cred id",
+    "evidence": {
+      "clone pg-get-session": "Dnnofg8Xb27VQOhI (n8n_test-db)",
+      "clone pg-upsert-session": "Dnnofg8Xb27VQOhI",
+      "clone log-incoming-chat-history-n8ntest": "Dnnofg8Xb27VQOhI",
+      "send fork ublq9nSlrpz63xan log-chat-history-n8ntest": "Dnnofg8Xb27VQOhI"
+    },
+    "note": "NONE bind prod ETJL5KoaA1UpkDip. Human-intervention call -> guarded fork vUfFUDjLAuMaeQE6 (not live rrYXzE61)."
+  },
+  "wiring_confirmed": {
+    "clone Call 'sub-query-reformulator'": "wI5RkNGW3EOJfBdo (sub-semantic-parser FORK domain-continuity-carry), published @ 00157a2e",
+    "clone all 6 sendmsg calls": "ublq9nSlrpz63xan (sub-sendmsg-CHAT)",
+    "clone Call 'sub-human-intervention'": "vUfFUDjLAuMaeQE6 (guarded fork)"
+  },
+  "cases": [
+    {
+      "scenario": "S1 plain escalation offer -> ACCEPT",
+      "verdict": "PASS",
+      "t1": {"msg": "incoming stock for SRTUFV101", "clone_exec": "8686265", "reply": "No incoming stock (ETA) for SRTUFV101. Try: SRTFV1001. Reply with a code to continue, or would you like me to escalate to purchasing team?", "branch": "escalate-catalog is_escalate_offer=true -> cs-offer-gate FALSE -> build-suggest-offer (plain); selection_context=suggest_offer; routing purchasing/incoming_stock_enquiries"},
+      "t2": {"msg": "yes", "clone_exec": "8686373", "reformulator": {"message_type": "casual", "domain_hint": null, "domain_signal": "none", "is_affirmative": true, "escalation": {"is_escalation_confirmation": true}, "suggest_pick_context": true}, "branch": "If2 TRUE -> Call 'sub-human-intervention' (fork vUfFUDjLAuMaeQE6, is_test=true, team=purchasing)", "hi_sub_exec": "8686380", "hi_nodes_ran": ["When Executed by Another Workflow", "chat? (TRUE)", "chat-escalation-push"], "reply": "⚠️ [escalated to purchasing team]"},
+      "egress_s0": "S1 no whatsapp send (Send a Message not run; reply via chat:reply). S2 no assign/SLA/PIC/round-robin/queue-push (HI fork short-circuited to chat-escalation-push redis). S3 save-session-vars not run. S5 is_test=true received by HI fork."
+    },
+    {
+      "scenario": "S2 plain escalation offer -> DECLINE (THE FIX)",
+      "verdict": "FAIL",
+      "t1": {"msg": "incoming stock for SRTUFV101", "clone_exec_end": "8686499", "clone_exec_no": "8686842", "reply": "...would you like me to escalate to purchasing team? (plain suggest_offer, as S1 T1)"},
+      "t2_end": {"msg": "end", "clone_exec": "8686556", "reformulator": {"message_type": "casual", "is_affirmative": false, "escalation": {"is_escalation_confirmation": false}, "escalation_declined_present": false}, "branch": "is-escalation-declined FALSE -> fell through to Basic LLM Chain (clarification LLM, 363 tokens)", "reply": "Got it! If you'd like, I can help you with declining the escalation offer. Just let me know if you want to proceed. (CONTRADICTORY CLARIFICATION LLM)"},
+      "t2_no": {"msg": "no it's okay", "clone_exec": "8686889", "reformulator": {"message_type": "casual", "is_affirmative": false, "escalation": {"is_escalation_confirmation": false}, "escalation_declined_present": false}, "branch": "is-escalation-declined FALSE -> Basic LLM Chain (clarification LLM, 360 tokens)", "reply": "No problem, I've noted your decision to decline escalation. If you need anything else, feel free to ask! (still LLM-generated, non-deterministic)"},
+      "expected": "escalation.escalation_declined=true -> is-escalation-declined TRUE -> deterministic 'Escalation declined.', NEVER the clarification LLM",
+      "root_cause": "The plain-offer escalation_declined fix in fork output_exchange (L470-472) IS applied, but is CLOBBERED by the downstream node 'suggest-follow-up' (wired output_exchange -> suggest-follow-up). suggest-follow-up runs only when prevState.selection_context==='suggest_offer' and on is_affirmative===false does `_o.escalation = { is_escalation_confirmation: false }` (line 27), DROPPING the escalation_declined:true set by output_exchange. Result: is-escalation-declined keys FALSE, turn is bare casual, clarification Basic LLM Chain fires. Fix must mirror L471 in suggest-follow-up L27: `_o.escalation = { is_escalation_confirmation: false, escalation_declined: true }`.",
+      "egress_s0": "PASS (functional fail only). No whatsapp send, no assign/SLA/PIC, no prod write. Extra token spend on clarification Basic LLM Chain (~360 tokens/turn) is a symptom of the wrong branch."
+    },
+    {
+      "scenario": "S3 escalation + MEMBER roster -> ACCEPT (yes / round-robin)",
+      "verdict": "PASS",
+      "t1": {"msg": "what is the status of order SMC202606-9999", "clone_exec": "8686986", "branch": "order not found -> routing customer_service/order_enquiries -> cs-offer-gate TRUE -> build-cs-member-offer (roster: 1.Maryam Ariffin 2.Cyndi 3.Aisyah 4.Balqis 5.Niki 6.Nurain); selection_context=member_offer"},
+      "t2": {"msg": "yes", "clone_exec": "8687057", "reformulator": {"message_type": "casual", "is_affirmative": true, "escalation": {"is_escalation_confirmation": true}, "member_pick_context": true}, "branch": "member_offer round-robin (no preferred_assignee_id) -> If2 TRUE -> HI fork is_test=true, explicit_assignee_id='' , team=customer_service", "hi_sub_exec": "8687063", "hi_nodes_ran": ["When Executed by Another Workflow", "chat? (TRUE)", "chat-escalation-push"], "reply": "⚠️ [escalated to customer_service team]"},
+      "egress_s0": "PASS. HI fork short-circuited to chat-escalation-push (redis); NO assign/SLA/PIC/round-robin/queue-push. No send/prod-write."
+    },
+    {
+      "scenario": "S4 escalation + MEMBER roster -> CHOOSE member (number)",
+      "verdict": "PASS",
+      "t1": {"msg": "what is the status of order SMC202606-9999", "clone_exec": "8687201", "persisted": "selection_context=member_offer; last_result_set idx2=Cyndi uuid=12246ae8-59e0-46a1-9cf0-fd80f45c1db9"},
+      "t2": {"msg": "2", "clone_exec": "8687282", "reformulator": {"message_type": "casual", "escalation": {"is_escalation_confirmation": true, "preferred_assignee_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9"}, "entities": [], "member_pick_context": true, "user_goal": "trying to select Cyndi for escalation"}, "branch": "member-pick idx2 -> preferred_assignee_id=Cyndi uuid; entities cleared; If2 TRUE -> HI fork is_test=true explicit_assignee_id=12246ae8-... team=customer_service", "hi_sub_exec": "8687289", "reply": "⚠️ [escalated to customer_service team]"},
+      "egress_s0": "PASS. Correct member resolved (idx2=Cyndi, no wrong-member). HI fork short-circuited; no assign/SLA/PIC. No send/prod-write."
+    },
+    {
+      "scenario": "S5 escalation + MEMBER roster -> DECLINE (end)",
+      "verdict": "PASS",
+      "t1": {"msg": "what is the status of order SMC202606-9999", "clone_exec": "8687419-t1", "branch": "member_offer roster (as S3/S4 T1)"},
+      "t2": {"msg": "end", "clone_exec": "8687419", "reformulator": {"message_type": "casual", "is_affirmative": false, "escalation": {"is_escalation_confirmation": false, "escalation_declined": true}, "member_pick_context": true}, "branch": "is-escalation-declined TRUE -> tag-escalation-declined (branch_kind=escalation_declined) -> deterministic close; Basic LLM Chain did NOT fire; If2 FALSE (no HI call)", "reply": "Escalation declined."},
+      "note": "Deterministic decline WORKS for member_offer because suggest-follow-up is inert (selection_context!='suggest_offer'), so output_exchange L609 escalation_declined:true survives. This is the mirror-image proof of the S2 defect.",
+      "egress_s0": "PASS. No send, no assign/SLA/PIC (declined, no HI call), no prod write, no clarification LLM."
+    },
+    {
+      "scenario": "S6 normal answer -> CASUAL (thanks)",
+      "verdict": "PASS",
+      "t1": {"msg": "incoming stock for SRTKT72SS", "clone_exec": "8687551", "reply": "real incoming answer (2 containers + xlsx attachments via chat-attach-push)"},
+      "t2": {"msg": "thank you", "clone_exec": "8687614", "reformulator": {"message_type": "casual", "is_affirmative": null, "domain_hint": null, "entities": [], "escalation": {"is_escalation_confirmation": false}, "user_goal": "trying to express thanks"}, "branch": "If2 FALSE, If9 TRUE (casual) -> friendly ack; Call 'sub-get-results' NOT run (no re-answer); no roster reprompt", "reply": "You're very welcome! If you need any help, just let me know."},
+      "egress_s0": "PASS. No re-answer, no roster reprompt, no send/assign/write."
+    },
+    {
+      "scenario": "S7 normal answer -> CONTINUE different domain",
+      "verdict": "PASS",
+      "t1": {"msg": "incoming stock for SRTKT72SS", "clone_exec": "8687722", "reply": "incoming answer (domain incoming)"},
+      "t2": {"msg": "what is the list price of SRTUFV101", "clone_exec": "8687762", "reformulator": {"message_type": "business_query", "domain_hint": "master_products", "domain_signal": "explicit", "requested_attributes": ["price"], "entities": [{"raw": "SRTUFV101", "hint": "product"}], "routing": {"suggested_team": "purchasing_product", "suggested_agent": "general_enquiries"}}, "branch": "new turn answered on NEW domain (master_products/price), domain switched from incoming with domain_signal=explicit -> NO wrong carry", "reply": "Here are the matching products. 1. SRTUFV101 ... List Price: MYR 220.00 ; 2. SRTUFV101-WEPLS ... MYR 220.00 ..."},
+      "note": "Confirms the domain-continuity change does NOT trap the user in the prior domain: an explicit new-domain query wins (domain_signal=explicit).",
+      "egress_s0": "PASS. No send/assign/write; reply via chat:reply only."
+    }
+  ],
+  "zero_egress_gate_s0_overall": {
+    "verdict": "PASS (all 16 turns across 7 scenarios)",
+    "S1_no_whatsapp_send": "PASS - no 'Send a Message'/respond.io HTTP POST executed in any clone exec; all replies via redis chat:reply -> format-out. Attachments (S6/S7 T1) via chat-attach-push (redis), not send-message-files.",
+    "S2_no_assign_sla_pic": "PASS - on every escalation-accept turn (S1/S3/S4 T2) the human-intervention fork vUfFUDjLAuMaeQE6 ran only [trigger -> chat? TRUE -> chat-escalation-push(redis)]; NONE of assign / SLA-create / add-comment / round-robin / assignee-queue-push executed. S5 declined -> no HI call at all.",
+    "S3_no_prod_write": "PASS - clone save-session-vars (prod PUT) never executed (0 inbound, orphaned); session persisted via pg-upsert-session to respond_contacts_test; chat_histories bound to n8n_test-db (S-CRED GREEN).",
+    "S4_get_results_read_only": "PASS - get-results ran read-only where reached (S6/S7 T1); no write tool present; never crm_it_support_ticket_create.",
+    "S5_test_mode_present": "PASS - redis-pop mode=chat-stateful every turn; every invoked sub (reformulator, sendmsg fork, human-intervention fork) received is_test/test_mode===true; contact.chat_id present.",
+    "S6_token_sinks": "reformulator (fork wI5RkNGW3EOJfBdo, gpt) ran 1x/turn (driver cost, allowed). EXTRA sink flagged: S2 turns fired the clarification Basic LLM Chain (~360 tok) due to the wrong branch (see S2 root cause) - a defect symptom, not a safety leak."
+  },
+  "flags": [
+    "S2 REGRESSION PERSISTS (NOT FIXED): plain-offer (selection_context=suggest_offer) DECLINE does not reach the deterministic 'Escalation declined.' branch. The output_exchange L470-472 escalation_declined fix is clobbered by the 'suggest-follow-up' node L27 (`_o.escalation = { is_escalation_confirmation: false }`). Both 'end' and 'no it's okay' fall into the clarification Basic LLM Chain. Coder fix: in suggest-follow-up, set escalation_declined:true on the is_affirmative===false arm (mirror output_exchange L471).",
+    "get-results LLM liveness: not exercised as a distinct agent in this suite; the get-results path ran deterministically (structured output) on S6/S7 T1 reads - no orphaned-agent token sink observed.",
+    "No new token sink observed beyond the reformulator driver cost and the (defective) S2 clarification-LLM invocation."
+  ],
+  "retest_s2_fix": {
+    "date": "2026-07-15 (same day, after coder fix)",
+    "fix": "suggest-follow-up decline arm (L27) now sets `_o.escalation = { is_escalation_confirmation: false, escalation_declined: true }` — mirrors output_exchange L471. Fork wI5RkNGW3EOJfBdo republished, versionId==activeVersionId==f7e6afd0-83c2-4887-94b0-fef5e1c59c07 (draft==active); clone still -> fork wI5RkNGW3EOJfBdo.",
+    "cases": [
+      {
+        "scenario": "S2 plain offer -> DECLINE 'end' (RETEST)",
+        "verdict": "PASS",
+        "t1": {"msg": "incoming stock for SRTUFV101", "clone_exec": "8688530", "reply": "...would you like me to escalate to purchasing team? (plain suggest_offer)"},
+        "t2": {"msg": "end", "clone_exec": "8688576", "reformulator": {"message_type": "casual", "is_affirmative": false, "escalation": {"is_escalation_confirmation": false, "escalation_declined": true}, "suggest_pick_context": true}, "branch": "is-escalation-declined TRUE -> tag-escalation-declined (branch_kind=escalation_declined); Basic LLM Chain did NOT fire; If2 FALSE (no HI call)", "reply": "Escalation declined."},
+        "egress_s0": "PASS. No Send a Message, no save-session-vars, no HI/assign/SLA/PIC. is_test=true. Reply via chat:reply only."
+      },
+      {
+        "scenario": "S2 plain offer -> DECLINE 'no it's okay' (RETEST spot-check)",
+        "verdict": "PASS",
+        "t1": {"msg": "incoming stock for SRTUFV101", "clone_exec": "8688685", "reply": "plain suggest_offer escalate prompt"},
+        "t2": {"msg": "no it's okay", "clone_exec": "8688749", "reformulator": {"message_type": "casual", "is_affirmative": false, "escalation": {"is_escalation_confirmation": false, "escalation_declined": true}, "suggest_pick_context": true}, "branch": "is-escalation-declined TRUE -> tag-escalation-declined; Basic LLM Chain did NOT fire; If2 FALSE", "reply": "Escalation declined."},
+        "egress_s0": "PASS. No send/assign/SLA/PIC/prod-write. is_test=true."
+      },
+      {
+        "scenario": "S5 member roster -> DECLINE 'end' (NO-REGRESSION recheck)",
+        "verdict": "PASS",
+        "t1": {"msg": "what is the status of order SMC202606-9999", "clone_exec": "8688862", "branch": "member_offer roster"},
+        "t2": {"msg": "end", "clone_exec": "8688903", "reformulator": {"message_type": "casual", "is_affirmative": false, "escalation": {"is_escalation_confirmation": false, "escalation_declined": true}, "member_pick_context": true}, "branch": "is-escalation-declined TRUE -> tag-escalation-declined; Basic LLM Chain did NOT fire; If2 FALSE", "reply": "Escalation declined."},
+        "egress_s0": "PASS. Member_offer decline still deterministic; no regression from the suggest-follow-up patch."
+      }
+    ],
+    "retest_verdict": "S2 FIXED. Both 'end' and 'no it's okay' on the plain (suggest_offer) offer now yield escalation.escalation_declined===true -> is-escalation-declined TRUE -> deterministic 'Escalation declined.' The clarification Basic LLM Chain no longer fires (0 clarification-LLM tokens on decline). S5 member_offer decline unchanged (no-regression). §0 zero-egress holds on all 6 retest turns."
+  },
+  "overall": "AFTER FIX: 7/7 PASS. S1,S3,S4,S5,S6,S7 green in the original run; S2 re-run PASS after the suggest-follow-up escalation_declined patch (fork @ f7e6afd0). Full §0 zero-egress gate PASS across all turns (original 16 + 6 retest). Deterministic 'Escalation declined.' now fires on BOTH the plain suggest_offer decline (S2) and the member_offer decline (S5); no clarification LLM on either. Suite is functionally green and zero-egress-clean on the clone."
+}
