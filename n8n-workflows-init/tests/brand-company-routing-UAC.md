@@ -1,0 +1,35 @@
+# UAC — brand-company-routing (n8n half)
+
+Plan: `plans/brand-company-routing-plan.md`. Target: clone `txiPzSxy3Pclsz6v` (+ forks `vUfFUDjLAuMaeQE6`,
+`wI5RkNGW3EOJfBdo`). **scope: `deterministic`** except §P (one `parser`-tier case). Contact `437264483` (two-company
+contact, FULL access). Every case is bound to `UAC.md` **§0 S1–S6** (zero egress) — a §0 failure is a hard FAIL and halts.
+
+Mechanics: seed the redis item (`zz-canary-seed 4eDGDBL3rEkGQuBV` or the chat-console loop) → fire `zz-canary-run
+VtIV3TF3aw2Fx8No` → `get_execution(includeData:true, nodeNames:[…])` → read `test:egress:{test_run_id}` (`zz-canary-read
+LLIbMXAixexM9Cwc`). Two-turn cases run in **`mode=regress-capture`** so turn-1 state round-trips through
+`n8n_test.respond_contacts_test` (Lesson 31); reset that contact row to `{"variables":{}}` between INDEPENDENT cases, never
+inside a pair. Use `run_label`/`conversation_id` prefix `UAC-BCR-` (Lesson 41: exclude from any later full-corpus capture).
+Deterministic turns inject `message.mock_reformulator_output` (Lesson 28). Never call `next-assignee` from a test.
+
+Roster probe (AC6): a read-only helper (`zz-roster-probe`, httpRequest GET `…/external/team-members?…` bound to the same
+`httpHeaderAuth` cred `get-cs-members` uses; Manual trigger; params via a Set node) — CRM READ, allowed. Record the JSON.
+
+## Cases
+
+| # | case | turns | expect | AC |
+|---|---|---|---|---|
+| B1 | single-company order enquiry, not found. Msg "any order for SRTWC287A-RL-7405" · mock: `message_type:business_query, domain_hint:order, intent_hint:check_order, entities:[{raw:"SRTWC287A-RL-7405",hint:"product",current_message:true}], routing:{suggested_team:"customer_service",suggested_agent:"order_enquiries"}` | 1 | `disallowed-entity-gate.routing_companies.length==1` (Sorento id `00000000-0000-0000-0000-000000000001`), `routing_company==that`, `routing_brand` = the row's brand or null; `cs-roster-plan` 1 item; `get-cs-members` executed once, request URL contains `company_id=<Sorento>` (+`brand_code=` iff routing_brand); `build-cs-member-offer.response` = today's shape (no "Note:", no "(Sorento)" labels); `cs_last_result_set[].company_id` all == Sorento; ccs `variables.routing_company/companies` persisted; egress: only `would_send` + `would_write` session; §0 | AC1 |
+| B2 | two-company order enquiry. Msg "any order for MWC-SC08B" · same mock with MWC-SC08B | 1 | `routing_companies` == [Mocha, Sorento] (sorted by name), Sorento entry `brand_code:"mocha"`, Mocha entry brand null; `routing_company==null`; `cs-roster-plan` 2 items; `get-cs-members` ran 2 items (2 requests: one `company_id=<Mocha>`, one `company_id=<Sorento>&brand_code=mocha`); reply contains "MWC-SC08B is carried by more than one company (Mocha and Sorento)" (or the exact plan wording), a `Mocha:` group and a `Sorento:` group, every member line ends `(Mocha)`/`(Sorento)`, numbering continuous; if one company has no roster ⇒ the omission sentence names it; `cs_last_result_set[]` rows carry `company_id/company_name`; §0 | AC2 |
+| B3 | pick a labelled member after B2 (same session, regress-capture). Msg "2" · mock: `escalation:{is_escalation_confirmation:true, preferred_assignee_id:"<uuid of row idx 2>"}, routing CS/order_enquiries, message_type:"escalation_confirmation" (as the real parser emits), suggest_pick_context:false` | 2 | `escalation-context` json: `company_id` == row-2 company, `company_name`, `brand_code` == row-2 brand_code (or prior routing_brand), `routing_source=="picked_member"`; `Call 'sub-human-intervention'` inputs carry `brand_code`,`company_id`; egress `human-intervention-sub would_write.payload.{brand_code,company_id}` equal; `get-round-robin-assignee` NOT executed; §0 | AC3 |
+| B4 | bare "yes" after B1 (single company; regress-capture pair) · mock: `escalation.is_escalation_confirmation:true`, no preferred_assignee_id, routing CS/order | 2 | `escalation-context.company_id` == Sorento id, `routing_source=="prior_state"`, brand = prior `routing_brand`; egress payload matches; §0 | AC4 |
+| B5 | bare "yes" after B2 (multi company) | 2 | `escalation-context.company_id==null`, `routing_source=="multi_company_unpicked"`; §0 | AC4 |
+| B6 | domain-switch guard: B1 turn-1, then "stock of SRTWC287A-RL-7405" (mock: domain inventory, routing warehouse/general_enquiries) then "yes" (mock: escalation confirm, routing warehouse) | 3 | after turn 2 ccs `routing_company==null` (team changed → not carried); turn 3 `escalation-context.company_id==null && brand_code==null` (no stale leak); §0 | AC5 |
+| B7 | roster parity: `zz-roster-probe` GET `team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483&company_id=<Sorento>&brand_code=mocha` and `…&company_id=<Mocha>` | – | user_id sets == exactly the ids offered per company in B2 (after the `respond_user_id` filter). Also probe base `marketing_promotion` for `general_enquiries` in Sorento (A4 gate for §P) | AC6 |
+| B8 | no-resolve escalation (request_for_help, no product): "I want to talk to customer service about my order" · mock `message_type:request_for_help, domain_hint:order, routing CS/order` | 1 | `escalation-context` brand/company null (`routing_source=="none"` unless `query_brands`), HI inputs `brand_code:""`,`company_id:""`; §0 (regression: unchanged behaviour) | – |
+| B9 | fallback roster path (deg not executed → `cs-roster-plan` single null item): trigger any escalate-offer path that reaches `cs-offer-gate` without resolve (e.g. `tag-not-supported` with CS/order routing) | 1 | `get-cs-members` URL has NO `company_id`/`brand_code` params; bcmo single-company shape; no crash | AC1 |
+| R1 | replay sanity: `aROEBlQyyoQaB7a1` norm rule present; replay ≥3 golden turns (non-CS) | – | 0 new `replay_node_diffs` attributable to `routing_*` keys | AC8 |
+| P1 | **parser tier** (real reformulator on fork `wI5RkNGW3EOJfBdo`, `is_test=true`, no mock): "any promotion for MWC-SC08B" | 1 | `output.routing.suggested_team === 'marketing_promotion'` (no suffix); everything else as B2 for the promotion offer path; live `XTODTw` versionId unchanged | AC9 |
+
+Evidence: per-case JSON under `tests/runs/brand-company-routing-<case>-<date>.json` (execution id, node outputs asserted,
+egress list, verdict) + rollup `tests/runs/brand-company-routing-rollup-<date>.md`. Node-diff (coder):
+`tests/diffs/brand-company-routing.md`. Review: `tests/reviews/brand-company-routing.md`.
