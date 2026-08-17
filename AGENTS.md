@@ -1,6 +1,8 @@
-# CLAUDE.md
+# AGENTS.md
 
-Guidance for Claude Code working in this repo. **Read this + `docs/LESSONS.md` before doing n8n work** — it will save you hours of re-discovery. Detailed design lives in `n8n-workflows-init/plans/` and `n8n-workflows-init/tests/`.
+(`CLAUDE.md` is a symlink to this file — edit this one.)
+
+Guidance for coding agents working in this repo. **Read this + `docs/LESSONS.md` before doing n8n work** — it will save you hours of re-discovery. Detailed design lives in `n8n-workflows-init/plans/` and `n8n-workflows-init/tests/`.
 
 ## What this is
 
@@ -20,8 +22,8 @@ n8n workflows integrating **Sorento CRM** with **respond.io** (WhatsApp). The ch
 
 - **`sorento-consume-main`** (`9qVyfUxmRQqrpGRMDLRuz`, ~75 nodes, LIVE/active) — the spine: redis-pop → reformulator (gpt-5.4-mini, the "semantic parser", sub `XTODTw-dJcV0uRdC056hG`) → branch (escalation/no-access/ask-access/not-supported/clarify/happy) → resolve-entity → get-rag → get-results (MCP read) → shape → send + log. A second LLM, `Basic LLM Chain` (gpt-4.1-mini), is the **clarification** path (gated behind `validator.has_result=false`, NOT always-on).
 - **`sorento-consume-main TEST`** (`txiPzSxy3Pclsz6v`, ~97 nodes) — the **fail-closed clone** we test against. Driven by a redis item on list `main-message-list-test` via a Manual-Trigger wrapper (`zz-canary-run` `VtIV3TF3aw2Fx8No`). It is **structurally incapable of real egress**:
-  - 5 egress nodes orphaned (0 inbound): `send-message-files/images/video`, `update-human-intervened`, the prod `save-session-vars` PUT; plus `Call 'sub-respond-save-message-redis'2`.
-  - All 8 shared-sub calls pass `is_test=true` → the (forked) subs short-circuit before any real send/assign.
+  - 5 egress nodes orphaned (0 inbound): `send-message-files/images/video`, `update-human-intervened`, the prod `save-session-vars` PUT. `Call 'sub-respond-save-message-redis'2` is **not** orphaned on today's clone (verified 2026-08-17) — it calls TEST fork `tWm5DYLxfypmVC1T`, which pushes only to `sorento-respond-message-TEST`, never the prod list.
+  - Shared-sub calls pass `is_test=true` → the (forked) subs short-circuit before any real send/assign. Exception: the get-results TEST fork receives no `is_test` (pre-existing design); its safety rests on the read-tool allowlist (§0 S4).
   - ⚠️ **Clone sub wiring ≠ live IDs and it MOVES (re-verified 2026-08-17):** the clone calls TEST **forks**, not the live-published subs — parser `wI5RkNGW3EOJfBdo`, human-intervention `vUfFUDjLAuMaeQE6`, get-results `t4QvrtrPnTwRU6br`, sendmsg `aQUmwMVplmNcyUVc`, save-msg `tWm5DYLxfypmVC1T`. Do not trust this list either: first `jq` the clone's `executeWorkflow` nodes (`.parameters.workflowId.value`) from `get_workflow_details`. Forks are guarded (`is_test` short-circuit). Edit/publish the **fork** the clone calls; promotion targets the live sub. Live and clone diverge in both directions (clone carries unpromoted lane work, live carries newer promotions) — rebase a node onto live only when the clone node is a strict ancestor; otherwise ship additive hunks anchored on lines both share (pattern: `plans/brand-company-routing-plan.md` §1).
   - **Mode field** in the redis item: `uac` (default — egress blocked, real reads) | `regress-capture` (real LLMs+reads, session→`n8n_test` copy) | `regress-replay` (everything pinned from golden: 0 token/0 prod-read/0 egress).
 - **NEVER edit the live spine `9qVyfUxmRQqrpGRMDLRuz`.** Build/test on the clone; promote only a reviewed business-logic diff (guards stripped), user-gated.
