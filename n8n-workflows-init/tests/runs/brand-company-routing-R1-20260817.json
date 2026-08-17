@@ -18,13 +18,14 @@
  "assertions": [
   {
    "id": "norm() rule present in aROEBlQyyoQaB7a1 › Diff (versionId d52af206-8d1d-435a-b6a6-e515140416a4)",
-   "pass": true,
-   "observed": "if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined)) continue; — live body == tests/diffs/brand-company-routing/replay-Diff.js (content-identical; file has one trailing newline)"
+   "pass": false,
+   "status": "superseded",
+   "observed": "AT RUN TIME the orchestrator draft carried the rev-1 TREE-WIDE rule and matched the file: if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined)) continue; — that body is what `aROEBlQyyoQaB7a1 › Diff` still holds. ⚠️ The claimed identity is now FALSE: rev-4 replaced tests/diffs/brand-company-routing/replay-Diff.js with the container-scoped split rule + the new ROUTING_VARS constant (and registered routing_roster_plan), and the orchestrator was deliberately not touched. Re-apply the rev-4 body and re-assert — tracked in review §4 P4."
   },
   {
    "id": "static reasoning: non-CS golden turns",
    "pass": true,
-   "observed": "compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert."
+   "observed": "compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert. ⚠️ Scope: this reasoning covers the four rev-1 keys only. The rev-4 key routing_roster_plan (and the container-scoped form of the generic-name rule) post-dates every execution here and is unverified until P6."
   },
   {
    "id": "sample replay run (AC8, turn_limit=3 non-CS golden turns → zero new replay_node_diffs)",
@@ -42,6 +43,6 @@
   "S5": "PASS (n/a — no execution)",
   "S6": "PASS (n/a — no execution)"
  },
- "verdict": "DEFERRED — static rule check only; AC8 sample replay NOT RUN and deferred to promote-time. Not a PASS.",
+ "verdict": "DEFERRED — static rule check only, and that check is now SUPERSEDED: the orchestrator still holds the rev-1 tree-wide rule while the committed replay-Diff.js is the rev-4 container-scoped version. AC8 sample replay NOT RUN. Not a PASS.",
  "S0_all_pass": true
 }

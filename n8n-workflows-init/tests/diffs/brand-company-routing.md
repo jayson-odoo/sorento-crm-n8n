@@ -100,6 +100,20 @@ Same containment as §1b: **the clone still runs rev-2** — rev-3 and rev-4 exi
 `B5rev2` run JSON records the old rev-2 behaviour). Republish + re-test is P6 in the review checklist, a hard prerequisite
 to the promote. No n8n instance touched; `tests/backups/` untouched.
 
+### 1d. rev-5 patch (third review round, captain-decided) — `compile-current-state` only, **clone republish PENDING**
+
+Rev-4 made `routing_roster_plan` the single definition of pool identity but recorded it too eagerly, in two ways. Both are
+fixed in the one expression that produces the key; `escalation-context`, `cs-roster-plan` and `replay-Diff.js` are unchanged.
+
+| # | change | why |
+|---|---|---|
+| 1 | carry-forward now requires `!_fresh` as well as `_sameTeam` | a turn that resolved a FRESH company set without re-fetching a roster (resolving order enquiry that never reaches `cs-offer-gate`) kept the previous plan while `routing_company`/`routing_companies`/`last_result_set` all moved on. Because the unpicked arm reads the plan BEFORE `routing_company`, the stale plan outranked the freshly resolved company — a Mocha enquiry would escalate to the Sorento CS team, the exact failure this change exists to prevent. Fresh resolve wins on every axis; the plan drops to null and the arm falls back to `routing_company` with brand unknown |
+| 2 | the plan is intersected with the distinct `company_id`s in the roster actually shown (`build-cs-member-offer.cs_last_result_set`, ignored when `_ideate` overrode the reply) before being persisted | the plan recorded the calls MADE, not the companies that contributed members. With `onError: continueRegularOutput`, a two-company plan whose second roster returns empty renders an offer with one company's members plus the `[ B: … omitted. ]` line, yet persisted length 2 ⇒ the bare-"yes" turn took the multi-company arm and sent both axes null ⇒ `next-assignee` could assign from company B, whom the customer was never shown. Now it persists length 1 and replays that pair verbatim; a plan that yielded no members at all persists nothing |
+
+New UAC cases for P6: **B5b** (degraded multi-company roster ⇒ single persisted pair) and **B5c** (fresh resolve
+invalidates the carried plan). Same containment as §1b/§1c: repo bodies are the reviewed source, the clone still runs
+rev-2, republish + re-test is P6. No n8n instance touched; `tests/backups/` untouched.
+
 ## 2. HI fork `vUfFUDjLAuMaeQE6` (before `3186d960-2c39-4bfd-a3b1-9e8d4d5e0295` → published **`d2b82e80-8f22-437d-bf33-3781c505cd5f`**) §3.8
 
 One `update_workflow` (5 `setNodeParameter` ops), 0 warnings, then `publish_workflow`. Full before/after param bodies:
@@ -151,8 +165,8 @@ if ((k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] 
 ⚠️ The `after (published)` column describes what is published on the clone at rev-2. The rev-3 edits of §1b changed the repo
 bodies of `spine-escalation-context.js`, `spine-disallowed-entity-gate.js` and `spine-build-cs-member-offer.js`, and the
 rev-4 edits of §1c changed `spine-escalation-context.js`, `spine-compile-current-state.js`, `spine-cs-roster-plan.js` and
-`replay-Diff.js`; their shas must be recomputed from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and
-re-verified after the clone republish of rev-4.
+`replay-Diff.js`, and the rev-5 edit of §1d changed `spine-compile-current-state.js` again; their shas must be recomputed
+from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and re-verified after the clone republish of rev-5.
 
 | body | before (pre-edit) | live source (rebase) | after (published) |
 |---|---|---|---|

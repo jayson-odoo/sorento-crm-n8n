@@ -129,17 +129,31 @@ Insert immediately BEFORE the final `return output;` (after the `dym_last_result
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);
   output.variables.routing_companies    = _fresh ? _g.routing_companies              : (_sameTeam && Array.isArray(_prev.routing_companies) ? _prev.routing_companies : null);
   const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
-  output.variables.routing_roster_plan = (Array.isArray(_planItems) && _planItems.length)
-    ? _planItems.map((p, i) => ({ plan_idx: …, company_id: …, company_name: …, brand_code: … }))
-    : (_sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
+  const _shownRows = (!_ideate && _mem && Array.isArray(_mem.cs_last_result_set)) ? _mem.cs_last_result_set : [];
+  const _shownCos = new Set(_shownRows.map(r => (r && r.company_id) || null));
+  const _usedPlan = (Array.isArray(_planItems) ? _planItems : []).filter(p => _shownCos.has((p && p.company_id) || null));
+  output.variables.routing_roster_plan = _usedPlan.length
+    ? _usedPlan.map((p, i) => ({ plan_idx: …, company_id: …, company_name: …, brand_code: … }))
+    : (!_fresh && _sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
 }
 ```
 Carry-forward only under the same-team guard (clarify → offer → yes chains keep the axes; a domain switch drops them).
-**rev-4 `routing_roster_plan`:** the trimmed `(plan_idx, company_id, company_name, brand_code)` rows of the
-`cs-roster-plan` items that `get-cs-members` actually ran with — the ONE record of which pool the offered members came
-from. Fresh whenever the plan node ran this turn, else carried under the same-team guard, else null (null-inert for
-replay norm §3.10). Note the plan node is keyed independently of `_fresh`: an offer built from the fallback item
-(gate resolved no companies) still records its brand, which is what closes the fetch-vs-assign gap.
+**rev-4 `routing_roster_plan` (tightened in rev-5):** the trimmed `(plan_idx, company_id, company_name, brand_code)` rows
+of the `cs-roster-plan` items `get-cs-members` actually ran with — the ONE record of which pool the offered members came
+from (null-inert for replay norm §3.10). Two rules keep it honest, both stated negatively because both were reachable
+bugs:
+- **Only companies that CONTRIBUTED a member are recorded** — the plan is intersected with the distinct `company_id`s in
+  the roster the customer was actually shown (`build-cs-member-offer.cs_last_result_set`; the fallback item's null
+  company matches its own null-stamped rows). A two-company plan whose second roster came back empty (`onError` 404/5xx
+  degrade, or no CS members configured) is a de-facto SINGLE pool, so it persists length 1 and the bare-"yes" turn
+  replays that pair verbatim instead of falling into the "both axes null" multi-company arm and assigning someone the
+  customer never saw. A plan that yielded no members at all persists nothing.
+- **A plan never outlives the roster it describes** — the carry-forward requires `!_fresh` as well as `_sameTeam`. A turn
+  that resolves a fresh company set WITHOUT re-fetching a roster (e.g. a resolving order enquiry that does not reach
+  `cs-offer-gate`) refreshes `routing_company`/`routing_companies` and replaces `last_result_set`, so keeping the old
+  plan would let it outrank the freshly resolved company on the next escalation — a Mocha enquiry escalating to the
+  Sorento CS team. Fresh resolve wins on EVERY axis, including this one; the plan simply drops to null and the unpicked
+  arm falls back to `routing_company` with brand unknown.
 
 ### 3.6 NEW Code node `escalation-context` (spine) — what the escalation turn sends
 Insert on edge `divert-suggest-yes[1] → Call 'sub-human-intervention'` (keep `divert-suggest-yes[1] → tag-out-of-scope`).
@@ -168,12 +182,13 @@ Bare "yes" on a multi-company offer ⇒ **both axes null** (CRM resolves via con
 - picked member ⇒ the row's own `company_id` / `brand_code`, verbatim, whenever the row matched (including a
   `cs-roster-plan` fallback row whose `company_id` is null). Fallback to `routing_brand` only for a legacy row with no
   `brand_code` key.
-- bare "yes" ⇒ the persisted `routing_roster_plan`: exactly one item ⇒ its `(company_id, brand_code)` pair verbatim;
-  more than one ⇒ both axes null. `routing_brand` and this turn's `query_brands` are NOT consulted on this arm — a brand
+- bare "yes" ⇒ the persisted `routing_roster_plan`, which (rev-5) lists only the companies that actually put a member in
+  front of the customer and is dropped whenever a fresher resolve superseded it: exactly one item ⇒ its
+  `(company_id, brand_code)` pair verbatim; more than one ⇒ both axes null. `routing_brand` and this turn's `query_brands` are NOT consulted on this arm — a brand
   stated on the confirmation turn must not re-narrow a pool the roster call never used (plan A1: ambiguity never
   first-wins, and `qb` itself now requires exactly one stated brand).
-- no persisted plan at all (pre-rev-4 session, or an offer that never fetched a roster) ⇒ company from prior state,
-  brand null — brand unknown stays unknown.
+- no persisted plan at all (pre-rev-4 session, an offer that never fetched a roster or showed no member, or a plan
+  invalidated by a fresher resolve) ⇒ company from prior state, brand null — brand unknown stays unknown.
 
 ### 3.7 `Call 'sub-human-intervention'` (spine executeWorkflow) — two new inputs
 `workflowInputs.value.brand_code = {{ $('escalation-context').first().json.brand_code || '' }}`,

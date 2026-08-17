@@ -1013,10 +1013,18 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   // The roster plan ACTUALLY used by get-cs-members this turn — the (company_id, brand_code) pairs the
   // offered members were fetched with. escalation-context reads this back so the pool assigned from is the
   // pool shown; it is the single definition of pool identity, never re-derived from routing_brand.
+  // Only the plan items that CONTRIBUTED a member are kept: a company whose roster came back empty
+  // (404/5xx degraded by onError, or no CS members configured) was named in the reply but has nobody
+  // to assign, so it must not turn a de-facto single pool into "both axes null" on the bare-"yes" turn.
+  // Carried forward ONLY when this turn neither fetched a roster nor resolved a fresh company set — a
+  // plan must never outlive the roster (and result set) it describes.
   const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
-  output.variables.routing_roster_plan = (Array.isArray(_planItems) && _planItems.length)
-    ? _planItems.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))
-    : (_sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
+  const _shownRows = (!_ideate && _mem && Array.isArray(_mem.cs_last_result_set)) ? _mem.cs_last_result_set : [];
+  const _shownCos = new Set(_shownRows.map(r => (r && r.company_id) || null));
+  const _usedPlan = (Array.isArray(_planItems) ? _planItems : []).filter(p => _shownCos.has((p && p.company_id) || null));
+  output.variables.routing_roster_plan = _usedPlan.length
+    ? _usedPlan.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))
+    : (!_fresh && _sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
   output.variables.routing_brand        = _fresh ? (_g.routing_brand ?? null)        : (_sameTeam ? (_prev.routing_brand ?? null) : null);
   output.variables.routing_brand_source = _fresh ? (_g.routing_brand_source ?? null) : (_sameTeam ? (_prev.routing_brand_source ?? null) : null);
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);

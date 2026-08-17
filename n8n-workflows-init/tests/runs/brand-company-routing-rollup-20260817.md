@@ -7,15 +7,18 @@ replay orchestrator `aROEBlQyyoQaB7a1` @ `d52af206-…` (unpublished, as before)
 `XTODTw-dJcV0uRdC056hG` `9df39ff6-…` (updatedAt 2026-08-11), `rrYXzE61gCNUck_zmXe-G` `5018a189-…`. At the time of this run the published Code bodies of
 `disallowed-entity-gate / build-cs-member-offer / compile-current-state / cs-roster-plan / escalation-context` were byte-identical to
 `tests/diffs/brand-company-routing/*.js` (sha256 re-checked from a REST fetch); replay `Diff.jsCode` identical modulo one trailing newline in the file.
-⚠️ **Superseded by rev-3 + rev-4** (review fixes to `escalation-context`, `disallowed-entity-gate`, `build-cs-member-offer`, `compile-current-state`, `cs-roster-plan`,
-`replay-Diff` — see `tests/diffs/brand-company-routing.md` §1b/§1c): those repo bodies now differ from the clone; the clone republish + re-test is pending and tracked
-in the promote/verify checklist (review §4 P6). **Rev-4 also CHANGED the B4/B5 expectations** — the bare-"yes" arm now sends the persisted `routing_roster_plan` pair
+⚠️ **Superseded by rev-3 + rev-4 + rev-5** (review fixes to `escalation-context`, `disallowed-entity-gate`, `build-cs-member-offer`, `compile-current-state`,
+`cs-roster-plan`, `replay-Diff` — see `tests/diffs/brand-company-routing.md` §1b/§1c/§1d): those repo bodies now differ from the clone; the clone republish + re-test is
+pending and tracked in the promote/verify checklist (review §4 P6). Rev-5 further tightened `routing_roster_plan` (only companies that contributed a member; a fresh
+resolve invalidates a carried plan) and added UAC B5b/B5c. **Rev-4 also CHANGED the B4/B5 expectations** — the bare-"yes" arm now sends the persisted `routing_roster_plan` pair
 verbatim (single company) or BOTH axes null (multi company), so the B5/B5rev2 observation `brand_code:"mocha"` below is rev-2 behaviour that rev-4 deliberately replaces
 with `brand_code:null`. Those two cases carry NO current execution evidence until P6 re-runs them.
 
-**Headline: §0 S1–S6 ZERO-EGRESS HELD on all 17 clone executions. No HALT.** Functional: B1 B2 B3 B4 B5 B7 B8 B9 P1 PASS; B6 PASS-WITH-NOTE
+**Headline: §0 S1–S6 ZERO-EGRESS HELD on all 17 clone executions. No HALT.** Functional: B1 B2 B3 B7 B8 B9 P1 PASS; B6 PASS-WITH-NOTE
 (guard proven by variant B6b; the literal B6 sequence exposes a UAC-wording vs implementation ambiguity, see notes);
-**R1 DEFERRED — not a PASS** (static rule check only; the AC8 sample replay was never run). No code defect found in the cases that did run.
+**B4 B5 UNVERIFIED — pending P6** (the bare-"yes" arm was rewritten in rev-4/rev-5, so the runs below record superseded behaviour and B5's
+expectation changed; new cases B5b/B5c have never run either); **R1 DEFERRED — not a PASS** (static rule check only, itself now superseded;
+the AC8 sample replay was never run). No code defect found in the cases that did run.
 
 ## Mechanism
 `zz-canary-run VtIV3TF3aw2Fx8No` fired via `execute_workflow` (webhook body `{test_run_id, contact:"437264483", item}`) — it clears+seeds
