@@ -1,0 +1,68 @@
+{
+  "case": "3 - single-company code WITH stock rows (no label on found path)",
+  "change_id": "mc-label-n8n",
+  "chat_id": "mcl-case3-1786931183",
+  "test_run_id": "chatcon-1786931184417",
+  "trigger": {
+    "text": "SRTFC2031 check stock",
+    "contact_id": "437264483",
+    "mode": "uac"
+  },
+  "execution_ids": {
+    "clone_spine": "12775298",
+    "sub_get_results_main_stock": "12775311",
+    "sub_sendmsg_qrchunk": "12775312"
+  },
+  "verdict": "PASS",
+  "key_assertions": [
+    {
+      "assertion": "resolver shows 1 match (single company)",
+      "result": "PASS",
+      "observed": "resolve-entity-http .intersection = [{\"canonical_code\":\"SRTFC2031\",\"uuid\":\"95acc0e3-85ce-4315-bce6-9b255137144f\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}] -- exactly 1 element"
+    },
+    {
+      "assertion": "happy path taken (If6 true)",
+      "result": "PASS",
+      "observed": "If6 output branches: [1 item on true, 0 items on false]"
+    },
+    {
+      "assertion": "reply renders the stock row(s) with NO 'Company:' field",
+      "result": "PASS",
+      "observed_reply": "Stock details found for the requested products.\n\n1. *Product Code:* SRTFC2031\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 0\n\n_Data last updated: 14/08/2026 17:17:46_",
+      "observed_answers_fields": "Call 'sub-get-results' json.answers[0].fields = [product_code, warehouse, system_location, quantity_on_hand] -- no company_name field present"
+    },
+    {
+      "assertion": "no lookup_companies in envelope or output-structurer json",
+      "result": "PASS",
+      "observed": "grep for 'lookup_companies' over the full includeData execution JSON = 0 occurrences"
+    }
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": {
+      "result": "PASS",
+      "detail": "sub-sendmsg-QRCHUNK exec 12775312 runData = [When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]. HTTP Request node (real respond.io send) did not execute. Delivery via chat-push (redis chat:reply:{chat_id}) only."
+    },
+    "S2_zero_assignment_escalation_writes": {
+      "result": "PASS",
+      "detail": "No assign/SLA/PIC-comment/assignee-queue node in the clone execution's runData; only 'is-human-intervened' (read check) ran."
+    },
+    "S3_zero_crm_contact_writes": {
+      "result": "PASS",
+      "detail": "'save-session-vars' and 'update-human-intervened' absent from runData (orphaned, unreachable)."
+    },
+    "S4_get_results_read_only": {
+      "result": "PASS",
+      "detail": "Resolved tool for the single sub-get-results call (12775311): 'crm_inventory_stock_balance_list ' -- READ allowlist, not crm_it_support_ticket_create. Only one sub-get-results call this turn since it is the happy/found path (no crossdomain zero-probe needed)."
+    },
+    "S5_test_mode_present": {
+      "result": "PASS",
+      "detail": "redis-pop item test_run_id='chatcon-1786931184417' matches seed response; 11 literal \"is_test\":true occurrences in the clone's sub-call node parameters; sendmsg call carries hardcoded is_test:true."
+    },
+    "S6_token_sinks_bounded": {
+      "result": "PASS (informational, live parser+get-results tier)",
+      "detail": "No mock_parser_output/mock_reformulator_output on the redis item -- live reformulator + get-results run. sub-get-results ran a read-only MCP Client1 tool only; no write-tool node executed."
+    },
+    "overall": "PASS"
+  },
+  "anomalies": []
+}

@@ -1,0 +1,77 @@
+{
+  "case": "1 - multi-company all-empty (captain's reported case)",
+  "change_id": "mc-label-n8n",
+  "chat_id": "mcl-case1-1786930746",
+  "test_run_id": "chatcon-1786930750003",
+  "trigger": {
+    "text": "MWC-SC08B check stock",
+    "contact_id": "437264483",
+    "mode": "uac"
+  },
+  "execution_ids": {
+    "clone_spine": "12774464",
+    "sub_get_results_crossdomain_probe_incoming_stock": "12774475",
+    "sub_get_results_main_stock": "12774472",
+    "sub_sendmsg_qrchunk": "12774477"
+  },
+  "verdict": "PASS",
+  "key_assertions": [
+    {
+      "assertion": "final reply contains both 'MWC-SC08B (Mocha)' and 'MWC-SC08B (Sorento)' (not deduped)",
+      "result": "PASS",
+      "observed": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no inventory matched these — checked in Mocha and Sorento. Would you like me to escalate to warehouse team?",
+      "source": "chat:reply poll (chat-read webhook) + not-found-error-message node output, exec 12774464"
+    },
+    {
+      "assertion": "miss sentence carries ' — checked in Mocha and Sorento'",
+      "result": "PASS",
+      "observed": "But no inventory matched these — checked in Mocha and Sorento. Would you like me to escalate to warehouse team?"
+    },
+    {
+      "assertion": "sub-get-results CS-BUILD MCP Client1 envelope has lookup_companies=[Mocha,Sorento] on both the crossdomain-probe (incoming_stock) and main (stock) calls",
+      "result": "PASS",
+      "observed_incoming_stock_exec_12774475": "MCP Client1: {\"result_type\":\"incoming_stock\",...,\"lookup_companies\":[{\"id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"name\":\"Mocha\"},{\"id\":\"00000000-0000-0000-0000-000000000001\",\"name\":\"Sorento\"}]}",
+      "observed_stock_exec_12774472": "MCP Client1: {\"result_type\":\"stock\",...,\"lookup_companies\":[{\"id\":\"38db4f20-...\",\"name\":\"Mocha\"},{\"id\":\"00000000-...\",\"name\":\"Sorento\"}]}"
+    },
+    {
+      "assertion": "output-structurer passes lookup_companies through in returned json AND response contains one per-company no-records line per lookup company",
+      "result": "PASS",
+      "observed_exec_12774472": "output-structurer json.response = \"No matching results found for Mocha or Sorento.\\n\\n*Mocha:* no stock records for MWC-SC08B.\\n*Sorento:* no stock records for MWC-SC08B.\"; json.lookup_companies present with both entries",
+      "observed_exec_12774475": "output-structurer json.response = \"No matching results found for Mocha or Sorento.\\n\\n*Mocha:* no incoming stock records for MWC-SC08B.\\n*Sorento:* no incoming stock records for MWC-SC08B.\"; json.lookup_companies present"
+    },
+    {
+      "assertion": "crossdomain change: entity-ids-transformer args product_ids contain BOTH uuids (142fdca2-... Mocha + e5f1a203-... Sorento), not just Mocha's",
+      "result": "PASS",
+      "observed": "entity-ids-transformer output in BOTH sub-execs (12774475 crossdomain-probe, 12774472 main call): product_ids=[\"142fdca2-ae30-40b5-8abb-a112a3b99773\",\"e5f1a203-5132-490d-b14f-07049913cdf2\"]",
+      "note": "crossdomain-zeroset node output in clone exec 12774464 also shows _xd.missing[0].uuids and _xd.probe_entities carrying both uuids, confirming change 3 (the union fix) fired end to end"
+    }
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": {
+      "result": "PASS",
+      "detail": "sorento-sub-respond-sendmsg-respond2 (executeWorkflow node) called sub 'sub-sendmsg-QRCHUNK' (aQUmwMVplmNcyUVc) with hardcoded is_test:true. That sub's own execution (12774477) runData = [When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]. The sub's 'HTTP Request' node (url=https://api.respond.io/v2/contact/.../message) is defined in the workflow but did NOT execute (absent from runData). Delivery was via 'chat-push' (n8n-nodes-base.redis, operation push, list=chat:reply:{chat_id}) only."
+    },
+    "S2_zero_assignment_escalation_writes": {
+      "result": "PASS",
+      "detail": "No assign/SLA/PIC-comment/assignee-queue node appears anywhere in the clone execution's runData keys (62 nodes total). Only 'is-human-intervened' (a read/branch check on custom_fields.is_human_intervened=false) ran; no human-intervention sub-workflow was invoked this turn (the reply only asks the customer whether to escalate, it does not action an escalation)."
+    },
+    "S3_zero_crm_contact_writes": {
+      "result": "PASS",
+      "detail": "'save-session-vars' and 'update-human-intervened' do not appear in the clone execution's runData (orphaned nodes, 0 inbound, structurally unreachable) — confirmed absent from the full 62-node key list."
+    },
+    "S4_get_results_read_only": {
+      "result": "PASS",
+      "detail": "Resolved tool in the two sub-get-results calls: 'crm_incoming_stock_list' (crossdomain probe) and 'crm_inventory_stock_balance_list ' (main). Both are in the READ allowlist; neither is crm_it_support_ticket_create."
+    },
+    "S5_test_mode_present": {
+      "result": "PASS",
+      "detail": "redis-pop-main-message-list item carries scope='chat-console', mode='uac', test_run_id='chatcon-1786930750003' matching the seed response. All 8+ shared-sub-call node PARAMETERS in the clone workflow definition hardcode is_test:true (11 occurrences of literal \"is_test\":true found in the clone's node config across sendmsg/save-session-vars-style calls); is_test:true is also present as a literal on the sub-sendmsg-QRCHUNK call. Note: 'When Executed by Another Workflow' trigger node itself reads as null for test_mode/test_run_id at runtime — this is the documented lesson-1 quirk (exec-trigger inputs aren't readable via this firing mechanism); control correctly rides in the redis item instead, which is present and correct."
+    },
+    "S6_token_sinks_bounded": {
+      "result": "PASS (informational, not deterministic-tier)",
+      "detail": "This case is not scope:deterministic (no mock_parser_output/mock_reformulator_output on the redis item) — it is a live parser+get-results run by design (case explicitly requires proving the real backend PR #193 envelope). Call 'sub-query-reformulator' executed for real (gpt-5.4-mini), and the two sub-get-results calls each ran their MCP Client1 read tool. No write-tool node executed anywhere."
+    },
+    "overall": "PASS"
+  },
+  "anomalies": []
+}

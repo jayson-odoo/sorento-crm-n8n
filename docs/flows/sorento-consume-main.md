@@ -5,10 +5,13 @@ versionId `131cf660-be93-474b-b33a-4e1a5363ea51`, 79 nodes, active) on 2026-06-2
 Branch logic is shared with the fail-closed TEST clone `txiPzSxy3Pclsz6v` (which adds
 harness/guard nodes + orphaned egress; business branches are identical by node-name).
 
-> One arm of `not-found-error-message` — **vague-token clarify** — is NEW (change
-> `vague-token-clarify-split`). It is currently shipped only on the clone and is pending
-> user-gated promotion to this live spine. It is documented here as part of the four-arm
-> design; the live spine still has the three-arm version until promotion.
+> The **vague-token clarify** arm (change `vague-token-clarify-split`) is now on the
+> live spine — verified against the live 334-line node body captured 2026-08-17 in
+> `n8n-workflows-init/tests/diffs/mc-label-n8n.md`, which also shows a later live-only
+> **entitlement-miss** arm this doc predates. A further change to this node plus
+> `output-structurer` (sub-get-results) and `crossdomain-zeroset` — **multi-company
+> labelling** (`mc-label-n8n`) — is published on the clone/CS-BUILD forks only and is
+> pending user-gated promotion; see that diff doc + `tests/reviews/mc-label-n8n.md`.
 
 ---
 

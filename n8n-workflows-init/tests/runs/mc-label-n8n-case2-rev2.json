@@ -1,0 +1,67 @@
+{
+  "case": "2-rev2 - single-company code, not found, re-run on the rev-2 published clone spine",
+  "change_id": "mc-label-n8n",
+  "reviewer_context": "Same rev-2 context as case1-rev2 (commit 267af01): FIX 1 (found-lines cap now counts distinct codes), FIX 2 (crossdomain-zeroset uuid backfill removed), VERIFY 3 (_searchedCos excludes brand/category). Reused the same known single-company/zero-stock candidate from pass 1 (SRTWC287A-RL-7405) to re-confirm single-company byte-identity holds after the rev-2 edits.",
+  "chat_id": "mcl-case2rev2-1786935873",
+  "test_run_id": "chatcon-1786935877507",
+  "trigger": {
+    "text": "SRTWC287A-RL-7405 check stock",
+    "contact_id": "437264483",
+    "mode": "uac"
+  },
+  "execution_ids": {
+    "clone_spine": "12782576",
+    "sub_get_results_crossdomain_probe_incoming_stock": "12782587",
+    "sub_get_results_main_stock": "12782586",
+    "sub_sendmsg_qrchunk": "12782588"
+  },
+  "verdict": "PASS",
+  "key_assertions": [
+    {
+      "assertion": "resolver matches exactly ONE company (single-match), unchanged from pass 1",
+      "result": "PASS",
+      "observed": "resolve-entity-http .intersection = [{\"canonical_code\":\"SRTWC287A-RL-7405\",\"uuid\":\"571befb0-8fdc-4f8c-b4d6-4acbfca34117\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}] -- exactly 1 element"
+    },
+    {
+      "assertion": "ZERO company mentions anywhere in the actual reply / node output data, no 'checked in'",
+      "result": "PASS",
+      "observed_not_found_error_message": "escalate_message = \"Here's what you want:\\n• product: SRTWC287A-RL-7405\\n\\nBut no inventory matched these. Would you like me to escalate to warehouse team?\" -- no '(Sorento)' suffix, no suffix at all",
+      "observed_final_reply": "\"No stock for SRTWC287A-RL-7405. Try: SRTWC287A-RL, SRTWC287A-P-RL, SRTWC287A-RL-200. Reply with a code to continue, or would you like me to escalate to warehouse team?\"",
+      "grep_note": "grep for the literal string 'checked in' over the full includeData execution JSON returns 3 hits, but all 3 are inside the not-found-error-message NODE SOURCE CODE's own comments (workflowData.nodes[].parameters.jsCode, e.g. the FIX-1/VERIFY-3 doc comments quoting the multi-company example) -- zero occurrences in any runtime output/message data. Confirmed by inspecting each hit's surrounding context directly."
+    },
+    {
+      "assertion": "no lookup_companies anywhere (single-company byte-identity preserved after rev-2 edits)",
+      "result": "PASS",
+      "observed": "grep -c 'lookup_companies' over the full execution JSON = 0; crossdomain-zeroset._xd.missing[0] has no 'uuids' key (single-uuid, inert -- FIX 2's removed backfill does not change this shape since ex.uuid was already set on first _add here)"
+    },
+    {
+      "assertion": "executed spine's workflowData carries the rev-2 shas",
+      "result": "PASS",
+      "observed": "jq -j on both nodes' jsCode | sha256sum from exec 12782576's own workflowData.nodes = not-found-error-message 79888de7862725448d10fd0210bf8d8dcf1da6fbd131b1c3427ddc94db2f3da1 (MATCH), crossdomain-zeroset a880d01e3629538bdde874f60875b481af7415acb6c7f12d4795171074518f92 (MATCH)"
+    }
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": {
+      "result": "PASS",
+      "detail": "sub-sendmsg-QRCHUNK exec 12782588 runData = [When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]. HTTP Request node did not execute."
+    },
+    "S2_zero_assignment_escalation_writes": {
+      "result": "PASS",
+      "detail": "No assign/SLA/PIC-comment/assignee-queue node in the clone execution's runData; only 'is-human-intervened' (read check) ran."
+    },
+    "S3_zero_crm_contact_writes": {
+      "result": "PASS",
+      "detail": "'save-session-vars' and 'update-human-intervened' absent from runData (orphaned, unreachable)."
+    },
+    "S4_get_results_read_only": {
+      "result": "PASS",
+      "detail": "Resolved tools: 'crm_incoming_stock_list' (12782587) and 'crm_inventory_stock_balance_list ' (12782586), both READ allowlist."
+    },
+    "S5_test_mode_present": {
+      "result": "PASS",
+      "detail": "redis-pop item test_run_id='chatcon-1786935877507' matches seed response; 11 literal \"is_test\":true occurrences in the clone's sub-call node parameters."
+    },
+    "overall": "PASS"
+  },
+  "anomalies": []
+}
