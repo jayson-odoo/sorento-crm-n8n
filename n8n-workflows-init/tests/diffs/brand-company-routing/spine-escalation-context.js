@@ -2,6 +2,8 @@
 // What the escalation turn sends to sub-human-intervention: the brand/company axes, resolved
 // from (1) the picked member's row in the frozen last_result_set, else (2) prior-turn state
 // (same team only — a domain switch drops the axes), else (3) a brand the customer stated.
+// rev-2: a picked row's brand_code is authoritative (null stays null — the SAME pool the roster
+// call used); prev.routing_brand is only a fallback for a legacy row that has no brand_code key.
 // Bare "yes" after a multi-company offer => company_id null (CRM resolves via contact/default).
 // Pass-through: the incoming item is spread so downstream $json refs are unchanged.
 const o = $('Call \'sub-query-reformulator\'').first().json.output || {};
@@ -15,7 +17,7 @@ let brand_code = null, company_id = null, company_name = null, source = 'none';
 if (row && row.company_id) {
   company_id = row.company_id;
   company_name = row.company_name || null;
-  brand_code = row.brand_code || (sameTeam ? prev.routing_brand : null) || null;
+  brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null);
   source = 'picked_member';
 } else if (sameTeam) {
   const cos = Array.isArray(prev.routing_companies) ? prev.routing_companies : [];

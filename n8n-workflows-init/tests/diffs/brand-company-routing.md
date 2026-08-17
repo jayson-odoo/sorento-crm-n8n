@@ -24,7 +24,7 @@ post-edit `get_workflow_details` re-fetch — see sha table). Pre-edit backups: 
 - Live `disallowed-entity-gate` (rebase source) references `$('tier-gate')` inside try/catch; the clone has no `tier-gate`
   node → the catch fires → legacy `Aggregate` branch runs. Rebase is safe on the clone.
 
-## 1. Spine clone `txiPzSxy3Pclsz6v` (before `35dcfd40-561b-46de-b86b-ecf6fa32a4a8` → published **`ac51a12e-1493-4bc8-82a1-8beef6065dd8`**)
+## 1. Spine clone `txiPzSxy3Pclsz6v` (before `35dcfd40-561b-46de-b86b-ecf6fa32a4a8` → published `ac51a12e-1493-4bc8-82a1-8beef6065dd8` → **rev-2 published `e816e2da-f39b-47fb-a486-83c9a470fbf6`**, see §1a)
 
 Two `update_workflow` calls (16 ops + 1 op), then `publish_workflow`. Node-set diff vs pre-edit dump: changed =
 `disallowed-entity-gate, get-cs-members, build-cs-member-offer, compile-current-state, Call 'sub-human-intervention'`;
@@ -43,6 +43,25 @@ divert-suggest-yes, escalation-context`. Nothing else moved.
 
 Validation (from `update_workflow`): only the pre-existing LESSONS #13 warnings (DISCONNECTED_NODE ×9 orphaned nodes,
 `Transcribe a recording` expression prefix, OpenAI `builtInTools`). No errors.
+
+
+### 1a. rev-2 patch (planner, after UAC B3) — `escalation-context` only
+
+UAC B3 showed the picked-member arm fell back to `prev.routing_brand` when the picked row's `brand_code` was null, so a Mocha
+member picked from a roster fetched WITHOUT brand was sent with `brand_code=mocha` — a different pool than the roster call
+(plan §3.6 rev-2 pool-identity rule). Fix (one line + comment header), spine clone only, live untouched:
+
+```js
+brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null);
+```
+(the fallback now applies only to a legacy row that predates this change and has no `brand_code` key.)
+
+- op: `setNodeParameter escalation-context /jsCode` (byte-exact), then `publish_workflow` → **versionId/activeVersionId
+  `e816e2da-f39b-47fb-a486-83c9a470fbf6`** (was `ac51a12e-…`). Re-fetch node-set diff: only `escalation-context` changed;
+  connections identical. Validation: same pre-existing LESSONS #13 warnings, no errors.
+- sha256 `escalation-context.jsCode`: rev-1 `d8196aa2dc47d4f5ccd31f57bf0fd33de9df3d3dbc8a4b377d4f17db55daf63f` →
+  rev-2 `ce8c6417bd5bda0d1652af32d44fb2b70dd7572b11da6f5847d41f58cb5c947d` (re-fetched body == intended).
+  `diffs/brand-company-routing/spine-escalation-context.js` updated to the rev-2 body.
 
 ## 2. HI fork `vUfFUDjLAuMaeQE6` (before `3186d960-2c39-4bfd-a3b1-9e8d4d5e0295` → published **`d2b82e80-8f22-437d-bf33-3781c505cd5f`**) §3.8
 
@@ -94,7 +113,7 @@ if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_com
 | spine `build-cs-member-offer.jsCode` | `bd3a2b24…f1cb4` (== live) | — | `4069afe5…66061` |
 | spine `compile-current-state.jsCode` | `97d2f6a2…00925` (live is `3fa9d170…98249`; hunk anchor present once in both) | — | `60dc1540…6400a` |
 | spine `cs-roster-plan.jsCode` (new) | — | — | `ad6ff798…286c1` |
-| spine `escalation-context.jsCode` (new) | — | — | `d8196aa2…af63f` |
+| spine `escalation-context.jsCode` (new) | — | — | rev-1 `d8196aa2…af63f` → **rev-2 `ce8c6417…c947d`** |
 | parser fork `output_exchange.jsCode` | `41996074…9453f` | `67a73561…e2017` (live `XTODTw`) | `3ee5b658…7eed` |
 | parser fork `AI Agent.systemMessage` | `0555a9e8…19246` | `0555a9e8…19246` (identical) | `583bcfb0…45f37` |
 | replay `Diff.jsCode` | `4e9b8c45…efc8b` | — | `893fddd8…855d` |
