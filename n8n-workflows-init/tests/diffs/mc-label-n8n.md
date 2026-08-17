@@ -997,3 +997,22 @@ expected source of any clone behaviour delta on promotion or zero-resolution cas
 **Evidence:** chat_id `gatefix-1786948517`, run `chatcon-1786948517691` → reply `• product: MUB5202 (Mocha), MUB5202 (Sorento)` / `But no incoming matched these — checked in Mocha and Sorento.` + Mocha stock rows; no choose-prompt.
 
 **Promote mapping:** add spine node #4 `disallowed-entity-gate` → live spine `9qVyfUxmRQqrpGRMDLRuz` (same two hunks; verify live body first — clone/live drift not re-checked for this node). Review: NOT independently reviewed (captain "just fix" + usage limit) — reviewer pass pending before promote.
+
+## PROMOTED TO LIVE — 2026-08-17 (captain-gated: "ok good to promote")
+
+Executed via n8n MCP `update_workflow setNodeParameter` + `publish_workflow` (captain chose MCP over REST PUT — PUT has previously bitten credentials). Order per checklist P3: subs → spine. All P2 pre-flight gates passed (baseline shas = checklist rev-2, versionId==activeVersionId, backups `tests/backups/mc-label-n8n/*-promote-pre.json`).
+
+| target | published activeVersionId | node(s) | live sha256-16 (jq -j) | vs artifact |
+|---|---|---|---|---|
+| `rysSPgUssLDf6xJc` | `5780d2c8-2b88-4008-959e-58710ecd9087` | output-structurer | `25a2eed93b7fe677` | byte-exact |
+| `Fss5aAaXthJSWpZCgKiKR` | `f214cb7e-2d07-45c8-abd9-765bb927d76d` | output-structurer | `25a2eed93b7fe677` | byte-exact |
+| `9qVyfUxmRQqrpGRMDLRuz` | `4324428b-76f5-41a1-b044-74bd13761afa` | crossdomain-zeroset | `a880d01e3629538b` | byte-exact |
+| ″ | ″ | not-found-error-message | `6b86073456f93e35` | code-identical; diff = decorative `──` comment-rule dash counts only (context-relay), body saved `not-found-error-message.live-published.js` |
+| ″ | ″ | disallowed-entity-gate | `8e1b54703a67933e` | 2 mc-label hunks ported onto LIVE body (clone rebase NOT folded, per P5); dash-count-only comment diffs; body saved `disallowed-entity-gate.live-published.js` |
+| ″ | ″ | crossdomain-render | `a9901e8ce10aa14f` | follow-up silent-note hunk on live body (live==clone-pre verified); dash-count-only comment diffs; body saved `crossdomain-render.live-published.js` |
+
+Post-publish gates: versionId==activeVersionId & active=true on all three; ONLY the intended nodes differ from the `-promote-pre` backups; connections / settings / node sets identical. First live executions after publish all `success` (spine 12807483, 12807161; sub 12807493).
+
+**Revert** (single publish each): `rysSPgUssLDf6xJc` → `eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a`; `Fss5aAaXthJSWpZCgKiKR` → `fd248b16-82ee-4307-abfb-657b9b6a4aa7`; `9qVyfUxmRQqrpGRMDLRuz` → `469e7259-6cfb-4505-bef4-f37a36bf454f`.
+
+P4 watch items in `tests/reviews/mc-label-n8n.md` remain in force. Note: the gate/render follow-up fixes went live captain-directed without a separate reviewer pass (verified on clone: chats `gatefix-1786948517`, `xrfix-1786948850`).
