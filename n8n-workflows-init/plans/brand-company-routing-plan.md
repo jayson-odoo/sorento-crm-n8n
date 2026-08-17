@@ -135,12 +135,13 @@ const picked = (o.escalation || {}).preferred_assignee_id || null;
 const row = picked ? (Array.isArray(prev.last_result_set) ? prev.last_result_set : []).find(r => r && r.uuid === picked) : null;
 const qb = (Array.isArray(o.query_brands) && o.query_brands.length) ? String(o.query_brands[0]).toLowerCase() : null;
 let brand_code = null, company_id = null, company_name = null, source = 'none';
-if (row && row.company_id) { company_id = row.company_id; company_name = row.company_name || null; brand_code = row.brand_code || (sameTeam ? prev.routing_brand : null) || null; source = 'picked_member'; }
+if (row && row.company_id) { company_id = row.company_id; company_name = row.company_name || null; brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null); source = 'picked_member'; }
 else if (sameTeam) { const cos = Array.isArray(prev.routing_companies) ? prev.routing_companies : []; company_id = prev.routing_company || null; brand_code = qb || prev.routing_brand || null; const c = cos.find(x => x && x.company_id === company_id); company_name = c ? (c.company_name || null) : null; source = company_id ? 'prior_state' : (cos.length > 1 ? 'multi_company_unpicked' : 'prior_state_no_company'); }
 else if (qb) { brand_code = qb; source = 'stated_brand'; }
 return [{ json: { ...$input.first().json, brand_code, company_id, company_name, routing_source: source, team } }];
 ```
 Bare "yes" on a multi-company offer ⇒ `company_id=null` (CRM resolves via contact/default — assumption A2 below).
+**Pool identity rule (rev-2, from UAC B3):** for a picked member the brand sent MUST be exactly the `brand_code` the roster row was fetched with (null stays null) — never a fallback to `routing_brand`, else the pick can land outside the pool `next-assignee` narrows to. Fallback only when the row predates this change (no `brand_code` key).
 
 ### 3.7 `Call 'sub-human-intervention'` (spine executeWorkflow) — two new inputs
 `workflowInputs.value.brand_code = {{ $('escalation-context').first().json.brand_code || '' }}`,
