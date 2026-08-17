@@ -1,0 +1,351 @@
+{
+ "date": "2026-08-17",
+ "tester": "sorento-tester",
+ "change": "brand-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ ac51a12e-1493-4bc8-82a1-8beef6065dd8 (versionId==activeVersionId)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ d2b82e80-8f22-437d-bf33-3781c505cd5f",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 7b4baaa8-5cb5-460e-b2f4-94a562dcc54f",
+  "live_untouched": {
+   "9qVyfUxmRQqrpGRMDLRuz": "d6f6b90c-3d8a-4704-a103-d1d0f99b78db",
+   "XTODTw-dJcV0uRdC056hG": "9df39ff6-3604-421b-b727-b45f65545200",
+   "rrYXzE61gCNUck_zmXe-G": "5018a189-22df-4cb9-aa89-fa509377abe9"
+  }
+ },
+ "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No (execute_workflow webhook body {test_run_id,contact,item}) seeds test:q:437264483 + fires clone (waitForSubWorkflow) + reads test:egress:{test_run_id}; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with message.mock_reformulator_output (consumed by parser fork test-reformulator-bypass, is_test=true); execution data read via n8n REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; session row reset to {\"variables\":{}} between independent cases via host psql to n8n_test (guarded current_database()=n8n_test; never a prod DB)",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "B7 roster parity via zz-roster-probe (READ-ONLY GET team-members; never next-assignee)",
+ "helper": {
+  "workflow": "zz-roster-probe ZS0KErse7GDh9mJK (created via n8n REST; Manual Trigger → probe-params Code → httpRequest GET fullResponse, cred httpHeaderAuth crm-n8n-auth mNsZWyU82NYV58k2 = same cred as clone get-cs-members; left in place, safe to archive)",
+  "exec": "12834976"
+ },
+ "probes": [
+  {
+   "label": "B2-sorento+mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "name": "Maryam Ariffin",
+     "respond_user_id": "1144607"
+    },
+    {
+     "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "name": "Cyndi",
+     "respond_user_id": "1144556"
+    },
+    {
+     "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "name": "Aisyah",
+     "respond_user_id": "1144561"
+    },
+    {
+     "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "name": "Balqis",
+     "respond_user_id": "1144558"
+    },
+    {
+     "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "name": "Niki",
+     "respond_user_id": "1144554"
+    },
+    {
+     "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+     "name": "Nurain",
+     "respond_user_id": "1144604"
+    }
+   ]
+  },
+  {
+   "label": "B2-mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "3a66bad8-1bee-4834-b486-4d9332887409",
+     "name": "Ms Bay",
+     "respond_user_id": "1177529"
+    },
+    {
+     "user_id": "450e8690-cf73-4706-a5e3-f3b248515cba",
+     "name": "Nicky",
+     "respond_user_id": "1177427"
+    },
+    {
+     "user_id": "730049fc-2181-4792-9f06-4e9a3c7e6b7e",
+     "name": "Kah Xin",
+     "respond_user_id": "1177418"
+    }
+   ]
+  },
+  {
+   "label": "B1-sorento+sorento",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=sorento",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "name": "Maryam Ariffin",
+     "respond_user_id": "1144607"
+    },
+    {
+     "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "name": "Cyndi",
+     "respond_user_id": "1144556"
+    },
+    {
+     "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "name": "Aisyah",
+     "respond_user_id": "1144561"
+    },
+    {
+     "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "name": "Balqis",
+     "respond_user_id": "1144558"
+    },
+    {
+     "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "name": "Niki",
+     "respond_user_id": "1144554"
+    },
+    {
+     "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+     "name": "Nurain",
+     "respond_user_id": "1144604"
+    }
+   ]
+  },
+  {
+   "label": "B9-fallback-noparams",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "name": "Maryam Ariffin",
+     "respond_user_id": "1144607"
+    },
+    {
+     "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "name": "Cyndi",
+     "respond_user_id": "1144556"
+    },
+    {
+     "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "name": "Aisyah",
+     "respond_user_id": "1144561"
+    },
+    {
+     "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "name": "Balqis",
+     "respond_user_id": "1144558"
+    },
+    {
+     "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "name": "Niki",
+     "respond_user_id": "1144554"
+    },
+    {
+     "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+     "name": "Nurain",
+     "respond_user_id": "1144604"
+    }
+   ]
+  },
+  {
+   "label": "A4-marketing_promotion-general-sorento",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_promotion&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "b295e6c5-da3a-42b3-812c-c4236a750b3c",
+     "name": "Am",
+     "respond_user_id": "1055234"
+    },
+    {
+     "user_id": "f54ca6e5-fb5e-4697-b9aa-381109f67b9a",
+     "name": "Kia Yee",
+     "respond_user_id": "1102988"
+    },
+    {
+     "user_id": "eb6ef9e2-ebec-41ab-be63-8c7cb916c9b3",
+     "name": "Aqi",
+     "respond_user_id": "1073074"
+    }
+   ]
+  },
+  {
+   "label": "A4-marketing_promotion-general-sorento-mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_promotion&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "f54ca6e5-fb5e-4697-b9aa-381109f67b9a",
+     "name": "Kia Yee",
+     "respond_user_id": "1102988"
+    }
+   ]
+  },
+  {
+   "label": "A4-marketing_promotion-general-mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_promotion&tier=1&contact_id=437264483&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+   "statusCode": 200,
+   "error": null,
+   "rows": [
+    {
+     "user_id": "f54ca6e5-fb5e-4697-b9aa-381109f67b9a",
+     "name": "Kia Yee",
+     "respond_user_id": "1102988"
+    }
+   ]
+  }
+ ],
+ "assertions": [
+  {
+   "id": "Sorento+brand_code=mocha probe == ids offered for Sorento in B2",
+   "pass": true,
+   "observed": {
+    "probe": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ],
+    "offered": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ]
+   }
+  },
+  {
+   "id": "Mocha probe == ids offered for Mocha in B2",
+   "pass": true,
+   "observed": {
+    "probe": [
+     "3a66bad8-1bee-4834-b486-4d9332887409",
+     "450e8690-cf73-4706-a5e3-f3b248515cba",
+     "730049fc-2181-4792-9f06-4e9a3c7e6b7e"
+    ],
+    "offered": [
+     "3a66bad8-1bee-4834-b486-4d9332887409",
+     "450e8690-cf73-4706-a5e3-f3b248515cba",
+     "730049fc-2181-4792-9f06-4e9a3c7e6b7e"
+    ]
+   }
+  },
+  {
+   "id": "Sorento+brand_code=sorento probe == ids offered in B1",
+   "pass": true,
+   "observed": {
+    "probe": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ],
+    "offered": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ]
+   }
+  },
+  {
+   "id": "no-params probe == ids offered in B9 fallback",
+   "pass": true,
+   "observed": {
+    "probe": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ],
+    "offered": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ]
+   }
+  },
+  {
+   "id": "A4 gate: base marketing_promotion / general_enquiries in Sorento returns members (parser flip safe)",
+   "pass": true,
+   "observed": {
+    "A4-marketing_promotion-general-sorento": {
+     "statusCode": 200,
+     "rows": [
+      {
+       "user_id": "b295e6c5-da3a-42b3-812c-c4236a750b3c",
+       "name": "Am",
+       "respond_user_id": "1055234"
+      },
+      {
+       "user_id": "f54ca6e5-fb5e-4697-b9aa-381109f67b9a",
+       "name": "Kia Yee",
+       "respond_user_id": "1102988"
+      },
+      {
+       "user_id": "eb6ef9e2-ebec-41ab-be63-8c7cb916c9b3",
+       "name": "Aqi",
+       "respond_user_id": "1073074"
+      }
+     ]
+    },
+    "A4-marketing_promotion-general-sorento-mocha": {
+     "statusCode": 200,
+     "rows": [
+      {
+       "user_id": "f54ca6e5-fb5e-4697-b9aa-381109f67b9a",
+       "name": "Kia Yee",
+       "respond_user_id": "1102988"
+      }
+     ]
+    },
+    "A4-marketing_promotion-general-mocha": {
+     "statusCode": 200,
+     "rows": [
+      {
+       "user_id": "f54ca6e5-fb5e-4697-b9aa-381109f67b9a",
+       "name": "Kia Yee",
+       "respond_user_id": "1102988"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "egress": [],
+ "safety_S1_S6": {
+  "S1": "PASS — no send",
+  "S2": "PASS — no assignment (GET only)",
+  "S3": "PASS — CRM READ only",
+  "S4": "PASS (n/a)",
+  "S5": "PASS (n/a helper)",
+  "S6": "PASS — 0 LLM"
+ },
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

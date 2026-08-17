@@ -1,0 +1,359 @@
+{
+ "date": "2026-08-17",
+ "tester": "sorento-tester",
+ "change": "brand-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ ac51a12e-1493-4bc8-82a1-8beef6065dd8 (versionId==activeVersionId)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ d2b82e80-8f22-437d-bf33-3781c505cd5f",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 7b4baaa8-5cb5-460e-b2f4-94a562dcc54f",
+  "live_untouched": {
+   "9qVyfUxmRQqrpGRMDLRuz": "d6f6b90c-3d8a-4704-a103-d1d0f99b78db",
+   "XTODTw-dJcV0uRdC056hG": "9df39ff6-3604-421b-b727-b45f65545200",
+   "rrYXzE61gCNUck_zmXe-G": "5018a189-22df-4cb9-aa89-fa509377abe9"
+  }
+ },
+ "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No (execute_workflow webhook body {test_run_id,contact,item}) seeds test:q:437264483 + fires clone (waitForSubWorkflow) + reads test:egress:{test_run_id}; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with message.mock_reformulator_output (consumed by parser fork test-reformulator-bypass, is_test=true); execution data read via n8n REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; session row reset to {\"variables\":{}} between independent cases via host psql to n8n_test (guarded current_database()=n8n_test; never a prod DB)",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "B9 fallback roster path (deg not executed → single null plan item)",
+ "attempts": {
+  "B9 (UAC example tag-not-supported, goods_receive)": {
+   "run": "12834736",
+   "clone": "12834737",
+   "result": "cs-offer-gate FALSE — escalate-catalog sets is_escalate_offer only for not_found(!clarification) and escalate_offer; not_supported never offers CS members. UAC example does not reach cs-roster-plan (doc issue, not a code defect). Zero egress.",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "test_run_id": "UAC-BCR-B9-20260817"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "test_run_id": "UAC-BCR-B9-20260817",
+     "payload": {
+      "routing_brand": null,
+      "routing_brand_source": null,
+      "routing_company": null,
+      "routing_companies": null,
+      "selection_context": null,
+      "last_result_set_len": 0
+     }
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "target": "437264483",
+     "test_run_id": "UAC-BCR-B9-20260817",
+     "payload": {
+      "channel": "text",
+      "message_len": 134,
+      "message_head": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container"
+     }
+    }
+   ],
+   "safety_S1_S6": {
+    "S1": "PASS — sendmsg sub(s) ['12834745'] on ['aQUmwMVplmNcyUVc'] received is_test=true; nodes=['Chat Memory Manager', 'Code in JavaScript', 'If1', 'Loop Over Items', 'When Executed by Another Workflow', 'chat?', 'guard-record-text', 'guard-text', 'is-last-quickreply']; no respond.io message node/HTTP executed; send-message-files/images/video absent from clone runData",
+    "S2": "PASS — Call 'sub-human-intervention' not executed this turn (no assignment path reached)",
+    "S3": "PASS — save-session-vars (prod PUT) + update-human-intervened absent from runData (orphaned); guard-d-record would_write only; session persisted to n8n_test.respond_contacts_test via pg-upsert-session (cred n8n_test-db)",
+    "S4": "PASS (trivial) — Call 'sub-get-results' not executed",
+    "S5": "PASS — trigger test_mode=true; redis item test_run_id/scope/mode present; reformulator fork wI5RkNGW3EOJfBdo called with is_test=true (bypass fired) ; sendmsg/HI subs is_test=true. NOTE get-results TEST fork t4QvrtrPnTwRU6br takes no is_test input (pre-existing; read-only tool verified under S4)",
+    "S6": "PASS — deterministic: reformulator fork nodes=['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass'] (AI Agent NOT executed, 0 token); clone LLM nodes executed=[]; get-results sub nodes=None (MCP Client1 only, no agent LLM)"
+   }
+  },
+  "B9b (correction:true, business_query)": {
+   "run": "12834813",
+   "clone": "12834814",
+   "result": "If10 requires message_type !== 'business_query' → not-found path with entities=[] → is_clarification → no offer. Zero egress.",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "test_run_id": "UAC-BCR-B9b-20260817"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "test_run_id": "UAC-BCR-B9b-20260817",
+     "payload": {
+      "routing_brand": null,
+      "routing_brand_source": null,
+      "routing_company": null,
+      "routing_companies": null,
+      "selection_context": null,
+      "last_result_set_len": 0
+     }
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "target": "437264483",
+     "test_run_id": "UAC-BCR-B9b-20260817",
+     "payload": {
+      "channel": "text",
+      "message_len": 152,
+      "message_head": "A order enquiry can't be answered with a general search — please specify a order, customer_order, transporter, customer, or product so I can look it up."
+     }
+    }
+   ],
+   "safety_S1_S6": {
+    "S1": "PASS — sendmsg sub(s) ['12834823'] on ['aQUmwMVplmNcyUVc'] received is_test=true; nodes=['Chat Memory Manager', 'Code in JavaScript', 'If1', 'Loop Over Items', 'When Executed by Another Workflow', 'chat?', 'guard-record-text', 'guard-text', 'is-last-quickreply']; no respond.io message node/HTTP executed; send-message-files/images/video absent from clone runData",
+    "S2": "PASS — Call 'sub-human-intervention' not executed this turn (no assignment path reached)",
+    "S3": "PASS — save-session-vars (prod PUT) + update-human-intervened absent from runData (orphaned); guard-d-record would_write only; session persisted to n8n_test.respond_contacts_test via pg-upsert-session (cred n8n_test-db)",
+    "S4": "PASS (trivial) — Call 'sub-get-results' not executed",
+    "S5": "PASS — trigger test_mode=true; redis item test_run_id/scope/mode present; reformulator fork wI5RkNGW3EOJfBdo called with is_test=true (bypass fired) ; sendmsg/HI subs is_test=true. NOTE get-results TEST fork t4QvrtrPnTwRU6br takes no is_test input (pre-existing; read-only tool verified under S4)",
+    "S6": "PASS — deterministic: reformulator fork nodes=['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass'] (AI Agent NOT executed, 0 token); clone LLM nodes executed=[]; get-results sub nodes=None (MCP Client1 only, no agent LLM)"
+   }
+  },
+  "B9c (correction:true, message_type complaint) — the asserted run": {
+   "run": "12834885",
+   "clone": "12834886",
+   "subs": {
+    "Call 'sub-query-reformulator'": [
+     {
+      "executionId": "12834892",
+      "workflowId": "wI5RkNGW3EOJfBdo"
+     }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+     {
+      "executionId": "12834893",
+      "workflowId": "aQUmwMVplmNcyUVc"
+     }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+     {
+      "executionId": "12834894",
+      "workflowId": "tWm5DYLxfypmVC1T"
+     }
+    ]
+   }
+  }
+ },
+ "message": "that is wrong, my order is still not delivered",
+ "mock_reformulator_output": {
+  "message_type": "complaint",
+  "intent_hint": null,
+  "domain_hint": "order",
+  "scope_intent": "specific",
+  "is_affirmative": null,
+  "user_goal": "complains the previous answer was wrong",
+  "access_levels": [
+   "dealer"
+  ],
+  "date_mode": null,
+  "date_filter_start": null,
+  "date_filter_end": null,
+  "match_mode": "and",
+  "demand_qty": null,
+  "entities": [],
+  "entity_op": "reuse",
+  "scope_exclusive": false,
+  "requested_attributes": [
+   "__all__"
+  ],
+  "contains_flyer": false,
+  "reference_positions": [],
+  "reference_target": null,
+  "person_mention": null,
+  "is_active": null,
+  "order_status": null,
+  "correction": true,
+  "routing": {
+   "suggested_team": "customer_service",
+   "suggested_agent": "order_enquiries"
+  },
+  "escalation": {
+   "is_escalation_confirmation": false
+  },
+  "suggest_pick_context": false
+ },
+ "branch": "If2 F → If-ideate F → If10 T → tag-escalate-offer → escalate-catalog(is_escalate_offer) → cs-offer-gate T → cs-roster-plan(fallback) → get-cs-members(no axes) → bcmo → ccs",
+ "assertions": [
+  {
+   "id": "deg NOT executed on this path; cs-roster-plan emits ONE fallback item (null company/brand)",
+   "pass": true,
+   "observed": [
+    {
+     "plan_idx": 0,
+     "company_id": null,
+     "company_name": null,
+     "brand_code": null,
+     "codes": [],
+     "multi_company": false,
+     "companies": []
+    }
+   ]
+  },
+  {
+   "id": "get-cs-members URL has NO company_id/brand_code (both null → expression appends nothing); 200, roster returned",
+   "pass": true,
+   "observed": {
+    "url_reconstructed": "…/team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483",
+    "statusCode": 200,
+    "ids": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ],
+    "note": "B7 no-params probe returns the identical roster"
+   }
+  },
+  {
+   "id": "bcmo single-company shape (no Note:/labels); cs_last_result_set company/brand keys null; no crash",
+   "pass": true,
+   "observed": {
+    "response": "I am sorry the provided answer does not meet your requirements. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+    "rows": [
+     {
+      "idx": 1,
+      "label": "Maryam Ariffin",
+      "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null
+     },
+     {
+      "idx": 2,
+      "label": "Cyndi",
+      "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null
+     },
+     {
+      "idx": 3,
+      "label": "Aisyah",
+      "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null
+     },
+     {
+      "idx": 4,
+      "label": "Balqis",
+      "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null
+     },
+     {
+      "idx": 5,
+      "label": "Niki",
+      "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null
+     },
+     {
+      "idx": 6,
+      "label": "Nurain",
+      "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null
+     }
+    ]
+   }
+  },
+  {
+   "id": "ccs routing_* null, selection_context member_offer",
+   "pass": true,
+   "observed": {
+    "routing_brand": null,
+    "routing_company": null,
+    "routing_companies": null,
+    "selection_context": "member_offer"
+   }
+  }
+ ],
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "test_run_id": "UAC-BCR-B9c-20260817"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "test_run_id": "UAC-BCR-B9c-20260817",
+   "payload": {
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_company": null,
+    "routing_companies": null,
+    "selection_context": "member_offer",
+    "last_result_set_len": 6
+   }
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "test_run_id": "UAC-BCR-B9c-20260817",
+   "payload": {
+    "channel": "text",
+    "message_len": 317,
+    "message_head": "I am sorry the provided answer does not meet your requirements. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply wi"
+   }
+  }
+ ],
+ "safety_S1_S6": {
+  "S1": "PASS — sendmsg sub(s) ['12834893'] on ['aQUmwMVplmNcyUVc'] received is_test=true; nodes=['Chat Memory Manager', 'Code in JavaScript', 'If1', 'Loop Over Items', 'When Executed by Another Workflow', 'chat?', 'guard-record-text', 'guard-text', 'is-last-quickreply']; no respond.io message node/HTTP executed; send-message-files/images/video absent from clone runData",
+  "S2": "PASS — Call 'sub-human-intervention' not executed this turn (no assignment path reached)",
+  "S3": "PASS — save-session-vars (prod PUT) + update-human-intervened absent from runData (orphaned); guard-d-record would_write only; session persisted to n8n_test.respond_contacts_test via pg-upsert-session (cred n8n_test-db)",
+  "S4": "PASS (trivial) — Call 'sub-get-results' not executed",
+  "S5": "PASS — trigger test_mode=true; redis item test_run_id/scope/mode present; reformulator fork wI5RkNGW3EOJfBdo called with is_test=true (bypass fired) ; sendmsg/HI subs is_test=true. NOTE get-results TEST fork t4QvrtrPnTwRU6br takes no is_test input (pre-existing; read-only tool verified under S4)",
+  "S6": "PASS — deterministic: reformulator fork nodes=['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass'] (AI Agent NOT executed, 0 token); clone LLM nodes executed=[]; get-results sub nodes=None (MCP Client1 only, no agent LLM)"
+ },
+ "nodes_executed": [
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execution Data",
+  "If-ideate",
+  "If10",
+  "If2",
+  "If5",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "build-cs-member-offer",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "cs-offer-gate",
+  "cs-roster-plan",
+  "escalate-catalog",
+  "get-cs-members",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-human-intervened",
+  "pg-get-session",
+  "pg-upsert-session",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "session-get-gate",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-escalate-offer",
+  "tf-message"
+ ],
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

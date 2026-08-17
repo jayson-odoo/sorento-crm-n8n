@@ -1,0 +1,46 @@
+{
+ "date": "2026-08-17",
+ "tester": "sorento-tester",
+ "change": "brand-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ ac51a12e-1493-4bc8-82a1-8beef6065dd8 (versionId==activeVersionId)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ d2b82e80-8f22-437d-bf33-3781c505cd5f",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 7b4baaa8-5cb5-460e-b2f4-94a562dcc54f",
+  "live_untouched": {
+   "9qVyfUxmRQqrpGRMDLRuz": "d6f6b90c-3d8a-4704-a103-d1d0f99b78db",
+   "XTODTw-dJcV0uRdC056hG": "9df39ff6-3604-421b-b727-b45f65545200",
+   "rrYXzE61gCNUck_zmXe-G": "5018a189-22df-4cb9-aa89-fa509377abe9"
+  }
+ },
+ "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No (execute_workflow webhook body {test_run_id,contact,item}) seeds test:q:437264483 + fires clone (waitForSubWorkflow) + reads test:egress:{test_run_id}; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with message.mock_reformulator_output (consumed by parser fork test-reformulator-bypass, is_test=true); execution data read via n8n REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; session row reset to {\"variables\":{}} between independent cases via host psql to n8n_test (guarded current_database()=n8n_test; never a prod DB)",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "R1 replay norm() rule (static verification)",
+ "assertions": [
+  {
+   "id": "norm() rule present in aROEBlQyyoQaB7a1 › Diff (versionId d52af206-8d1d-435a-b6a6-e515140416a4)",
+   "pass": true,
+   "observed": "if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined)) continue; — live body == tests/diffs/brand-company-routing/replay-Diff.js (content-identical; file has one trailing newline)"
+  },
+  {
+   "id": "static reasoning: non-CS golden turns",
+   "pass": true,
+   "observed": "compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert."
+  },
+  {
+   "id": "sample replay run",
+   "pass": true,
+   "observed": "NOT RUN — replay orchestrator attributes turns by \"latest clone execution\" and shares the clone lane (Lessons 29/30); running it requires editing its Init Params defaults (turn_limit) which is a workflow edit outside my remit and risks a wedge; static verification above stands in. Reviewer may run a turn_limit=3 replay if desired."
+  }
+ ],
+ "egress": [],
+ "safety_S1_S6": {
+  "S1": "PASS (n/a — no execution)",
+  "S2": "PASS (n/a — no execution)",
+  "S3": "PASS (n/a — no execution)",
+  "S4": "PASS (n/a — no execution)",
+  "S5": "PASS (n/a — no execution)",
+  "S6": "PASS (n/a — no execution)"
+ },
+ "verdict": "PASS (static; sample replay not run — see assertions)",
+ "S0_all_pass": true
+}
