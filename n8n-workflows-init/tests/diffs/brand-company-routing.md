@@ -128,6 +128,19 @@ Note for the replay diff: `cs_last_result_set` rows gain a non-null `company_ids
 diffs against golden — as they already do for every other new key on those turns (intended, Lesson 40). Same containment
 as §1b–§1d: repo bodies are the reviewed source, the clone still runs rev-2, republish + re-test is P6.
 
+### 1f. rev-7 patch (fifth review round, captain-decided) — `build-cs-member-offer` + `compile-current-state`
+
+| # | body | change | why |
+|---|---|---|---|
+| 1 | `spine-compile-current-state.js` (Δ4 merge arm) | when the shown rows span >1 company (membership set), each picker line is rendered `${idx}. ${label} (${companies.join(' / ')})` and `build-cs-member-offer.cs_multi_note` is prepended | the merge arm (date-suggest AND member roster in the same reply) rebuilt the picker as bare `idx. label`, so on a two-company offer the customer saw 9 unlabelled names with no explanation — intent criterion (3) violated on that path while the non-merged path satisfied it. `idx`→`uuid` mapping untouched; single-company output byte-identical |
+| 2 | `spine-build-cs-member-offer.js` | the multi-company sentence is built once into `multiNote`, exported as `out.cs_multi_note`, and `cs_last_result_set` rows gain `companies` (the label names) | one wording, one source: the merge arm reuses this string instead of inventing a second copy that could drift |
+| 3 | `spine-compile-current-state.js` (roster plan) | carry-forward now also requires `_planItems === null` | the stated invariant is "a plan never outlives the roster it describes", but a same-team turn that DID fetch a roster and got nothing back (`onError` 404 degrade / no default CS members) left `_fresh` false and carried the previous plan, so the next bare "yes" replayed a `brand_code` from a superseded fetch. Whenever a fetch happened, the fetch-derived intersection is the answer — empty included |
+
+Evidence bookkeeping in the same round: rollup marks B2/B3 `PASS — re-run pending P6` (their recorded reply literal is the
+rev-2 copy and their row observations predate `company_ids`/`routing_roster_plan`), and R1 assertion 2 is re-recorded as an
+observation rather than a pass — R1 now has no passing assertion, matching its DEFERRED verdict. Same containment as
+§1b–§1e: repo bodies are the reviewed source, the clone still runs rev-2, republish + re-test is P6.
+
 ## 2. HI fork `vUfFUDjLAuMaeQE6` (before `3186d960-2c39-4bfd-a3b1-9e8d4d5e0295` → published **`d2b82e80-8f22-437d-bf33-3781c505cd5f`**) §3.8
 
 One `update_workflow` (5 `setNodeParameter` ops), 0 warnings, then `publish_workflow`. Full before/after param bodies:
@@ -180,8 +193,9 @@ if ((k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] 
 bodies of `spine-escalation-context.js`, `spine-disallowed-entity-gate.js` and `spine-build-cs-member-offer.js`, and the
 rev-4 edits of §1c changed `spine-escalation-context.js`, `spine-compile-current-state.js`, `spine-cs-roster-plan.js` and
 `replay-Diff.js`, the rev-5 edit of §1d changed `spine-compile-current-state.js` again, and the rev-6 edits of §1e changed
-`spine-build-cs-member-offer.js` + `spine-compile-current-state.js`; their shas must be recomputed from the files
-(`sha256sum tests/diffs/brand-company-routing/*.js`) and re-verified after the clone republish of rev-6.
+`spine-build-cs-member-offer.js` + `spine-compile-current-state.js`, and the rev-7 edits of §1f changed those same two
+bodies again; their shas must be recomputed from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and
+re-verified after the clone republish of rev-7.
 
 | body | before (pre-edit) | live source (rebase) | after (published) |
 |---|---|---|---|

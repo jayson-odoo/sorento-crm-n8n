@@ -59,9 +59,23 @@ if (_ideate) {
   includeResponse = true;
   isEscalateBranch = true;
 } else if (_merge) {
-  const _picker = (Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : [])
-    .map(m => `${m.idx}. ${m.label}`).join('\n');
-  response = `${_sug.suggest_response}\n\nTo escalate, choose who to route to — reply the number or name:\n${_picker}\n\nOr just reply 'yes' and we'll assign automatically.`;
+  // brand-company-routing: this arm rebuilds its own picker, so it must carry the SAME company labels
+  // and the SAME explanation build-cs-member-offer wrote (exported as cs_multi_note) — otherwise a
+  // two-company roster reaches the customer here as a bare list of names with no company at all.
+  // Single-company output is unchanged.
+  const _rows = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : [];
+  const _memCos = new Set();
+  for (const m of _rows) {
+    const _ids = (m && Array.isArray(m.company_ids) && m.company_ids.length) ? m.company_ids : [(m && m.company_id) || null];
+    for (const _id of _ids) _memCos.add(_id || null);
+  }
+  const _multiCo = _memCos.size > 1;
+  const _picker = _rows.map(m => {
+    const _lbl = (Array.isArray(m.companies) && m.companies.length) ? m.companies : (m.company_name ? [m.company_name] : []);
+    return (_multiCo && _lbl.length) ? `${m.idx}. ${m.label} (${_lbl.join(' / ')})` : `${m.idx}. ${m.label}`;
+  }).join('\n');
+  const _note = (_multiCo && _mem.cs_multi_note) ? `${_mem.cs_multi_note}\n\n` : '';
+  response = `${_sug.suggest_response}\n\n${_note}To escalate, choose who to route to — reply the number or name:\n${_picker}\n\nOr just reply 'yes' and we'll assign automatically.`;
   manualResponse  = true;
   includeResponse = true;
   isEscalateBranch = true;
@@ -1016,8 +1030,9 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   // Only the plan items that CONTRIBUTED a member are kept: a company whose roster came back empty
   // (404/5xx degraded by onError, or no CS members configured) was named in the reply but has nobody
   // to assign, so it must not turn a de-facto single pool into "both axes null" on the bare-"yes" turn.
-  // Carried forward ONLY when this turn neither fetched a roster nor resolved a fresh company set — a
-  // plan must never outlive the roster (and result set) it describes.
+  // Carried forward ONLY when this turn fetched NO roster at all AND did not resolve a fresh company set:
+  // whenever cs-roster-plan ran, the fetch-derived intersection is the answer even when it is empty (the
+  // roster shown this turn superseded the old one). A plan must never outlive the roster it describes.
   const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
   const _shownRows = (!_ideate && _mem && Array.isArray(_mem.cs_last_result_set)) ? _mem.cs_last_result_set : [];
   const _shownCos = new Set();
@@ -1028,7 +1043,7 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   const _usedPlan = (Array.isArray(_planItems) ? _planItems : []).filter(p => _shownCos.has((p && p.company_id) || null));
   output.variables.routing_roster_plan = _usedPlan.length
     ? _usedPlan.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))
-    : (!_fresh && _sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
+    : (_planItems === null && !_fresh && _sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
   output.variables.routing_brand        = _fresh ? (_g.routing_brand ?? null)        : (_sameTeam ? (_prev.routing_brand ?? null) : null);
   output.variables.routing_brand_source = _fresh ? (_g.routing_brand_source ?? null) : (_sameTeam ? (_prev.routing_brand_source ?? null) : null);
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);

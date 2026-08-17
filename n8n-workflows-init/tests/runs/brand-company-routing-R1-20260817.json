@@ -24,8 +24,9 @@
   },
   {
    "id": "static reasoning: non-CS golden turns",
-   "pass": true,
-   "observed": "compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert. ⚠️ Scope: this reasoning covers the four rev-1 keys only. The rev-4 key routing_roster_plan (and the container-scoped form of the generic-name rule) post-dates every execution here and is unverified until P6."
+   "pass": false,
+   "status": "observation",
+   "observed": "NOT AN ASSERTION — recorded as an observation: the supporting node outputs are real execution data, but the step from \"the new keys are null on non-CS turns\" to \"the replay diff is empty\" is inference over the norm() body, which is exactly what AC8 measures and what assertions 1/3 were downgraded for. compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert. ⚠️ Scope: this reasoning covers the four rev-1 keys only. The rev-4 key routing_roster_plan (and the container-scoped form of the generic-name rule) post-dates every execution here and is unverified until P6."
   },
   {
    "id": "sample replay run (AC8, turn_limit=3 non-CS golden turns → zero new replay_node_diffs)",
@@ -43,6 +44,6 @@
   "S5": "PASS (n/a — no execution)",
   "S6": "PASS (n/a — no execution)"
  },
- "verdict": "DEFERRED — static rule check only, and that check is now SUPERSEDED: the orchestrator still holds the rev-1 tree-wide rule while the committed replay-Diff.js is the rev-4 container-scoped version. AC8 sample replay NOT RUN. Not a PASS.",
+ "verdict": "DEFERRED — no passing assertion in this case: the rule check is SUPERSEDED and the remaining entry is an observation, not a measurement. the orchestrator still holds the rev-1 tree-wide rule while the committed replay-Diff.js is the rev-4 container-scoped version. AC8 sample replay NOT RUN. Not a PASS.",
  "S0_all_pass": true
 }

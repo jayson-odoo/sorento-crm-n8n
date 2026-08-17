@@ -79,11 +79,17 @@ const codes = [...new Set(planItems.flatMap(p => Array.isArray(p.codes) ? p.code
 const names = planItems.map(p => p.company_name).filter(Boolean);
 const joinNames = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : (names[0] || '');
 const subject = codes.length ? codes.join(', ') : (cat.subject || cat.entity_label || 'This item');
+// The multi-company explanation is written ONCE here and exported on the item: compile-current-state's
+// Δ4 merge arm rebuilds its own picker and must say the same thing rather than a second wording.
+const multiNote = multi
+  ? `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the customer-service team members from each of them — that is why there are more names than usual.`
+  : null;
+out.cs_multi_note = multiNote;
 // Preserve the not-found preamble from the catalog ("Could not find X for Y. Would you like me to escalate...?")
 // then append the member picker — do NOT discard cat.response.
 out.response = multi
   ? `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
-    `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the customer-service team members from each of them — that is why there are more names than usual. Please choose who to route to (reply with the number):\n${numbered}\n\n` +
+    `${multiNote} Please choose who to route to (reply with the number):\n${numbered}\n\n` +
     `If you have no preference, just reply 'yes' and we'll assign automatically.`
   : `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
     `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
@@ -94,6 +100,7 @@ out.cs_last_result_set = members.map((m, i) => ({
   idx: i + 1, label: m.name, uuid: m.user_id, respond_user_id: m.respond_user_id,
   company_id: m.company_id || null, company_name: m.company_name || null, brand_code: m.brand_code || null,
   company_ids: Array.isArray(m.company_ids) ? m.company_ids : [m.company_id || null],
+  companies: Array.isArray(m.companies) ? m.companies : (m.company_name ? [m.company_name] : []),
 }));
 out.manualResponse = true;     // member offer is a manual response (skip business-summary overwrite)
 out.includeResponse = true;

@@ -121,7 +121,7 @@ drift from what the assignment call sends. One shared definition, not one deriva
   Each line ends with ` (${company_name})`. `codes` = union of plan `codes` (fallback: `cat`'s subject if empty).
   Wording is N-safe (rev-3): `joinNames` renders "A and B" / "A, B and C", "from each of them" replaces "from both", and the
   subject verb agrees with the number of codes listed.
-- `cs_last_result_set` rows: `{idx,label,uuid,respond_user_id, company_id, company_name, brand_code}` (new keys **null on the single-company fallback item** so replay norm treats them inert). `out.routing_companies = plan` (debug/evidence).
+- `cs_last_result_set` rows: `{idx,label,uuid,respond_user_id, company_id, company_name, brand_code, company_ids, companies}` (the scalar company keys are **null on the single-company fallback item** so replay norm treats them inert; `company_ids`/`companies` are the rev-6 membership set + its labels, read back by `compile-current-state`). `out.routing_companies = plan` (debug/evidence) and `out.cs_multi_note` = the multi-company explanation sentence, written once here so the Δ4 merge arm reuses this wording instead of inventing a second one.
 
 ### 3.5 `compile-current-state` (spine Code) — persist the axes (Lesson 40)
 Insert immediately BEFORE the final `return output;` (after the `dym_last_result_set` line — anchor identical on clone + live):
@@ -138,11 +138,15 @@ Insert immediately BEFORE the final `return output;` (after the `dym_last_result
   output.variables.routing_companies    = _fresh ? _g.routing_companies              : (_sameTeam && Array.isArray(_prev.routing_companies) ? _prev.routing_companies : null);
   const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
   const _shownRows = (!_ideate && _mem && Array.isArray(_mem.cs_last_result_set)) ? _mem.cs_last_result_set : [];
-  const _shownCos = new Set(_shownRows.map(r => (r && r.company_id) || null));
+  const _shownCos = new Set();   // MEMBERSHIP: every company each shown row belongs to (rev-6)
+  for (const r of _shownRows) {
+    const _ids = (r && Array.isArray(r.company_ids) && r.company_ids.length) ? r.company_ids : [(r && r.company_id) || null];
+    for (const _id of _ids) _shownCos.add(_id || null);
+  }
   const _usedPlan = (Array.isArray(_planItems) ? _planItems : []).filter(p => _shownCos.has((p && p.company_id) || null));
   output.variables.routing_roster_plan = _usedPlan.length
     ? _usedPlan.map((p, i) => ({ plan_idx: …, company_id: …, company_name: …, brand_code: … }))
-    : (!_fresh && _sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
+    : (_planItems === null && !_fresh && _sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
 }
 ```
 Carry-forward only under the same-team guard (clarify → offer → yes chains keep the axes; a domain switch drops them).
@@ -159,12 +163,21 @@ bugs:
   degrade, or no CS members configured) is a de-facto SINGLE pool, so it persists length 1 and the bare-"yes" turn
   replays that pair verbatim instead of falling into the "both axes null" multi-company arm and assigning someone the
   customer never saw. A plan that yielded no members at all persists nothing.
-- **A plan never outlives the roster it describes** — the carry-forward requires `!_fresh` as well as `_sameTeam`. A turn
+- **A plan never outlives the roster it describes** — the carry-forward requires ALL THREE of: `cs-roster-plan` did NOT
+  run this turn (`_planItems === null`), `!_fresh`, and `_sameTeam`. Whenever a roster WAS fetched, the fetch-derived
+  intersection is the answer even when it is empty — the roster shown this turn (a generic no-names offer when nothing
+  came back) supersedes the previous one, so the old pair must not be replayed on the next bare "yes". A turn
   that resolves a fresh company set WITHOUT re-fetching a roster (e.g. a resolving order enquiry that does not reach
   `cs-offer-gate`) refreshes `routing_company`/`routing_companies` and replaces `last_result_set`, so keeping the old
   plan would let it outrank the freshly resolved company on the next escalation — a Mocha enquiry escalating to the
   Sorento CS team. Fresh resolve wins on EVERY axis, including this one; the plan simply drops to null and the unpicked
   arm falls back to `routing_company` with brand unknown.
+
+**rev-7 — the Δ4 merge arm must not undo the labelling.** `compile-current-state` rebuilds its own picker when
+`build-suggest-offer` AND `build-cs-member-offer` both fired (date suggestion + member roster shown together). That arm now
+labels each line with the member's `companies` and prepends `build-cs-member-offer.cs_multi_note` whenever the shown rows
+span more than one company (membership set), so criterion (3) — label every member, say why the list is longer — holds on
+this path too. `idx`→`uuid` mapping unchanged; the single-company rendering is byte-identical.
 
 ### 3.6 NEW Code node `escalation-context` (spine) — what the escalation turn sends
 Insert on edge `divert-suggest-yes[1] → Call 'sub-human-intervention'` (keep `divert-suggest-yes[1] → tag-out-of-scope`).
@@ -182,7 +195,13 @@ else if (sameTeam) {
   const rp = Array.isArray(prev.routing_roster_plan) ? prev.routing_roster_plan : [];
   if (rp.length === 1) { company_id = rp[0].company_id || null; company_name = rp[0].company_name || null; brand_code = rp[0].brand_code || null; source = company_id ? 'prior_state' : 'prior_state_no_company'; }
   else if (rp.length > 1) { source = 'multi_company_unpicked'; }            // both axes null
-  else { /* no roster was fetched this session (or a pre-rev-4 session): company from prior state, brand stays unknown */ }
+  else {   // no roster was fetched this session (or a pre-rev-4 session): company from prior state, brand stays unknown
+    const cos = Array.isArray(prev.routing_companies) ? prev.routing_companies : [];
+    company_id = prev.routing_company || null;
+    const c = cos.find(x => x && x.company_id === company_id);
+    company_name = c ? (c.company_name || null) : null;
+    source = company_id ? 'prior_state' : (cos.length > 1 ? 'multi_company_unpicked' : 'prior_state_no_company');
+  }
 }
 else if (qb) { brand_code = qb; source = 'stated_brand'; }
 return [{ json: { ...$input.first().json, brand_code, company_id, company_name, routing_source: source, team } }];
