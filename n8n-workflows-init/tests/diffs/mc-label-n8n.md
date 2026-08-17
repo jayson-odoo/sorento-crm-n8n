@@ -987,3 +987,13 @@ expected source of any clone behaviour delta on promotion or zero-resolution cas
  out.escalate_message = escalate_message;
  out.is_clarification = is_clarification;
 ```
+
+## Follow-up (2026-08-17, post-PR #21): `disallowed-entity-gate` — same-code multi-company exact hits must not prompt
+
+**Symptom (captain, chat console):** `incoming for MUB5202` → "incoming search needs to be more specific. Multiple matches found — please choose: MUB5202 / MUB5202". Two exact hits (Mocha + Sorento uuids, same code) were treated as ambiguous because the gate required `exacts.length === 1` (OR-mode) / `prodExacts.length === 1` (AND-mode).
+
+**Fix (spine node `disallowed-entity-gate`, `tests/diffs/mc-label-n8n/disallowed-entity-gate.js`, sha `5f92319ffb10ed7125a35a996603e3ece719966ee02d15b70c919d3949abfb3f`):** when all exact hits share one canonical_code, resolve every uuid as an exact entity (no prompt); downstream `crossdomain-zeroset` / `not-found-error-message` already label per company. Two hunks, ~8 lines. Published on clone spine `txiPzSxy3Pclsz6v` versionId `1e3ce430-ff50-4f3f-a10a-af7ad69404b7` (pre-fix backup `tests/backups/mc-label-n8n/txiPzSxy3Pclsz6v-pre-gatefix.json`, versionId `33746137-…`).
+
+**Evidence:** chat_id `gatefix-1786948517`, run `chatcon-1786948517691` → reply `• product: MUB5202 (Mocha), MUB5202 (Sorento)` / `But no incoming matched these — checked in Mocha and Sorento.` + Mocha stock rows; no choose-prompt.
+
+**Promote mapping:** add spine node #4 `disallowed-entity-gate` → live spine `9qVyfUxmRQqrpGRMDLRuz` (same two hunks; verify live body first — clone/live drift not re-checked for this node). Review: NOT independently reviewed (captain "just fix" + usage limit) — reviewer pass pending before promote.
