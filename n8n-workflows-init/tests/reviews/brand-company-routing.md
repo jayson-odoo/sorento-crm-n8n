@@ -60,9 +60,10 @@ one row, `escalation-context` sends that pair verbatim) and **B5 with its CHANGE
 **B5c** (a fresh resolve without a roster fetch nulls the carried plan, so the next escalation uses the turn-2 company,
 not the turn-1 one), the rev-6 shared-staff case (a two-company offer whose second roster is entirely members already
 listed under the first: no "no customer-service members" line for that company, both pairs in `routing_roster_plan`,
-bare "yes" ⇒ both axes null), **literal B6** (turn 3 must now observe `brand_code:null`), and the rev-7 cases: a merged
-date-suggest + two-company member offer (every picker line labelled, `cs_multi_note` present) and a same-team turn whose
-roster fetch returned nothing (carried plan dropped, next bare "yes" sends no stale `brand_code`). Also run the deferred
+bare "yes" ⇒ both axes null — **UAC B5d**), **literal B6** (turn 3 must now observe `brand_code:null`), and the rev-7 cases: a
+merged date-suggest + two-company member offer (every picker line labelled, `cs_multi_note` present — **UAC B5e**) and a
+same-team turn whose roster fetch returned nothing (carried plan dropped, next bare "yes" sends no stale `brand_code` —
+**UAC B2b**). The UAC table and this list are the same set. Also run the deferred
 AC8 check here: replay `turn_limit=3` over non-CS golden turns → zero new `replay_node_diffs` (F5), which now also covers
 the container-scoped norm rule and the new `routing_roster_plan` key. Promote only after these pass.
 P5 Post-promote watch: first real CS escalation → `next-assignee` response `company_id`/`brand_code`/`team_set_code` echo matches the offer; revert trigger = any 404 "No team found … in company" on `next-assignee` (means a company lacks the `customer_service` set — admin config, not code).
