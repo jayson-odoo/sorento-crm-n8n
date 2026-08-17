@@ -95,6 +95,9 @@ drift from what the assignment call sends. One shared definition, not one deriva
 ### 3.4 `build-cs-member-offer` (spine Code) — merge, label, explain
 - Inputs: `plan = $('cs-roster-plan').all().map(i=>i.json)`; `resp = $('get-cs-members').all().map(i=>i.json)`; roster_i = `Array.isArray(resp[i]?.body) ? resp[i].body : (Array.isArray(resp[i]) ? resp[i] : [])` (tolerate old shapes; an `error` item ⇒ []).
 - Members: filter `user_id && respond_user_id`; stamp `company_id, company_name, brand_code` from plan[i]; **dedupe by `user_id`** across companies (keep first, `companies:[…]` label lists all).
+  **rev-6 membership set:** each deduped row also carries `company_ids:[…]` — EVERY company whose roster returned that
+  member, not just the one that won the dedupe. The renderer and `compile-current-state` both read this set (§3.5), so a
+  company is never treated as absent merely because its people were listed first under another company.
 - `members.length === 0` ⇒ existing fallback (unchanged: `member_offer=false`, `cs_last_result_set=[]`).
 - **Single company (plan.length===1)** ⇒ text **byte-identical to today** (`${cat.response}\n\nPlease choose who to route to (reply with the number):\n1. Name…\n\nIf you have no preference…`).
 - **Multi company (plan.length>1)** ⇒
@@ -110,7 +113,12 @@ drift from what the assignment call sends. One shared definition, not one deriva
   [ ${C}: no customer-service members are configured — omitted. ]   ← only when a company returned nothing
   If you have no preference, just reply 'yes' and we'll assign automatically.
   ```
-  Continuous numbering across groups; each line ends with ` (${company_name})`. `codes` = union of plan `codes` (fallback: `cat`'s subject if empty).
+  Numbering is the member's own `cs_last_result_set` index, so a member shared by two companies appears under BOTH
+  groups with the SAME number and a reply of that number still resolves the one uuid (rev-6; with no shared staff the
+  numbers are consecutive and the rendering is byte-identical to rev-5). The
+  `[ X: no customer-service members are configured — omitted. ]` line is emitted only when company X put nobody in the
+  offer — never for a company whose entire roster was already listed under another company's heading.
+  Each line ends with ` (${company_name})`. `codes` = union of plan `codes` (fallback: `cat`'s subject if empty).
   Wording is N-safe (rev-3): `joinNames` renders "A and B" / "A, B and C", "from each of them" replaces "from both", and the
   subject verb agrees with the number of codes listed.
 - `cs_last_result_set` rows: `{idx,label,uuid,respond_user_id, company_id, company_name, brand_code}` (new keys **null on the single-company fallback item** so replay norm treats them inert). `out.routing_companies = plan` (debug/evidence).
@@ -142,9 +150,12 @@ Carry-forward only under the same-team guard (clarify → offer → yes chains k
 of the `cs-roster-plan` items `get-cs-members` actually ran with — the ONE record of which pool the offered members came
 from (null-inert for replay norm §3.10). Two rules keep it honest, both stated negatively because both were reachable
 bugs:
-- **Only companies that CONTRIBUTED a member are recorded** — the plan is intersected with the distinct `company_id`s in
-  the roster the customer was actually shown (`build-cs-member-offer.cs_last_result_set`; the fallback item's null
-  company matches its own null-stamped rows). A two-company plan whose second roster came back empty (`onError` 404/5xx
+- **Only companies that CONTRIBUTED a member are recorded** — the plan is intersected with the companies present in the
+  roster the customer was actually shown, taken from each row's `company_ids` MEMBERSHIP set (rev-6) and falling back to
+  `company_id` on a legacy row; the fallback plan item's null company matches its own null-stamped rows. Using the
+  membership set matters when the two companies share CS staff: the dedupe keeps a shared member under the first
+  company, so intersecting on `company_id` alone would drop the second company and send the first company's pair
+  verbatim on the bare "yes" — a single pool the customer was never offered. A two-company plan whose second roster came back empty (`onError` 404/5xx
   degrade, or no CS members configured) is a de-facto SINGLE pool, so it persists length 1 and the bare-"yes" turn
   replays that pair verbatim instead of falling into the "both axes null" multi-company arm and assigning someone the
   customer never saw. A plan that yielded no members at all persists nothing.

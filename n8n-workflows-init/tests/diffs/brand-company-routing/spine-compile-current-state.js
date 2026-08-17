@@ -1020,7 +1020,11 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   // plan must never outlive the roster (and result set) it describes.
   const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
   const _shownRows = (!_ideate && _mem && Array.isArray(_mem.cs_last_result_set)) ? _mem.cs_last_result_set : [];
-  const _shownCos = new Set(_shownRows.map(r => (r && r.company_id) || null));
+  const _shownCos = new Set();
+  for (const r of _shownRows) {
+    const _ids = (r && Array.isArray(r.company_ids) && r.company_ids.length) ? r.company_ids : [(r && r.company_id) || null];
+    for (const _id of _ids) _shownCos.add(_id || null);
+  }
   const _usedPlan = (Array.isArray(_planItems) ? _planItems : []).filter(p => _shownCos.has((p && p.company_id) || null));
   output.variables.routing_roster_plan = _usedPlan.length
     ? _usedPlan.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))

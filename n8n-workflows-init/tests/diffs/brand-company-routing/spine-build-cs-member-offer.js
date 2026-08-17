@@ -23,13 +23,20 @@ let members = [];
 const seen = new Map();
 if (planItems.length === 1 && resp.length > 1 && !resp.some(r => r && (Array.isArray(r.body) || Array.isArray(r) || r.error))) {
   // legacy: get-cs-members split the array into one item per member
-  members = resp.filter(isRow).map(m => ({ ...m, company_id: planItems[0].company_id || null, company_name: planItems[0].company_name || null, brand_code: planItems[0].brand_code || null, companies: planItems[0].company_name ? [planItems[0].company_name] : [] }));
+  members = resp.filter(isRow).map(m => ({ ...m, company_id: planItems[0].company_id || null, company_name: planItems[0].company_name || null, brand_code: planItems[0].brand_code || null, companies: planItems[0].company_name ? [planItems[0].company_name] : [], company_ids: [planItems[0].company_id || null] }));
 } else {
   planItems.forEach((p, i) => {
     for (const m of rosterAt(i).filter(isRow)) {
       const prev = seen.get(m.user_id);
-      if (prev) { if (p.company_name && !prev.companies.includes(p.company_name)) prev.companies.push(p.company_name); continue; }   // dedupe by user_id across companies (keep first)
-      const row = { ...m, company_id: p.company_id || null, company_name: p.company_name || null, brand_code: p.brand_code || null, companies: p.company_name ? [p.company_name] : [] };
+      // dedupe by user_id across companies (first company wins the assignment axes), but MEMBERSHIP is
+      // a set: the row records every company whose roster returned it, so the renderer and the persisted
+      // plan both see a shared member as belonging to all of them.
+      if (prev) {
+        if (p.company_name && !prev.companies.includes(p.company_name)) prev.companies.push(p.company_name);
+        if (!prev.company_ids.includes(p.company_id || null)) prev.company_ids.push(p.company_id || null);
+        continue;
+      }
+      const row = { ...m, company_id: p.company_id || null, company_name: p.company_name || null, brand_code: p.brand_code || null, companies: p.company_name ? [p.company_name] : [], company_ids: [p.company_id || null] };
       seen.set(m.user_id, row);
       members.push(row);
     }
@@ -47,18 +54,23 @@ if (members.length === 0) {
 }
 
 const multi = planItems.length > 1;
+// Group by MEMBERSHIP, not by the single company that won the dedupe: a member both companies returned
+// is listed under each of them, keeping ONE number (its index in cs_last_result_set) so replying with it
+// still resolves the same uuid. A company only earns the "no customer-service members" line when its own
+// roster put nobody in the offer — otherwise a company sharing all its CS staff with the first one would
+// be declared empty two lines under a member labelled with its name.
+const inCo = (m, p) => (Array.isArray(m.company_ids) ? m.company_ids : [m.company_id || null]).some(id => (id || null) === (p.company_id || null));
 let numbered;
 if (!multi) {
   numbered = members.map((m, i) => `${i + 1}. ${m.name}`).join('\n');
 } else {
   const lines = [];
-  let n = 0;
   const empty = [];
   for (const p of planItems) {
-    const group = members.filter(m => m.company_id === p.company_id);
+    const group = members.map((m, i) => ({ m, n: i + 1 })).filter(x => inCo(x.m, p));
     if (!group.length) { if (p.company_name) empty.push(p.company_name); continue; }
     lines.push(`${p.company_name || 'Other'}:`);
-    for (const m of group) { n += 1; lines.push(`${n}. ${m.name} (${(m.companies && m.companies.length ? m.companies : [m.company_name || p.company_name || '']).join(' / ')})`); }
+    for (const g of group) { lines.push(`${g.n}. ${g.m.name} (${(g.m.companies && g.m.companies.length ? g.m.companies : [g.m.company_name || p.company_name || '']).join(' / ')})`); }
   }
   for (const nm of empty) lines.push(`[ ${nm}: no customer-service members are configured — omitted. ]`);
   numbered = lines.join('\n');
@@ -81,6 +93,7 @@ out.selection_context = 'member_offer';
 out.cs_last_result_set = members.map((m, i) => ({
   idx: i + 1, label: m.name, uuid: m.user_id, respond_user_id: m.respond_user_id,
   company_id: m.company_id || null, company_name: m.company_name || null, brand_code: m.brand_code || null,
+  company_ids: Array.isArray(m.company_ids) ? m.company_ids : [m.company_id || null],
 }));
 out.manualResponse = true;     // member offer is a manual response (skip business-summary overwrite)
 out.includeResponse = true;

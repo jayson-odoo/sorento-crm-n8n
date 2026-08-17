@@ -114,6 +114,20 @@ New UAC cases for P6: **B5b** (degraded multi-company roster ⇒ single persiste
 invalidates the carried plan). Same containment as §1b/§1c: repo bodies are the reviewed source, the clone still runs
 rev-2, republish + re-test is P6. No n8n instance touched; `tests/backups/` untouched.
 
+### 1e. rev-6 patch (fourth review round, captain-decided) — `build-cs-member-offer` + `compile-current-state`
+
+Cross-company dedupe kept a shared member under the FIRST company only, but two consumers still asked "which company is
+this member's" instead of "which companies returned this member".
+
+| # | body | change | why |
+|---|---|---|---|
+| 1 | `spine-build-cs-member-offer.js` | deduped rows carry `company_ids:[…]` (every company whose roster returned them); the multi-company renderer groups by that membership and numbers each line with the member's own `cs_last_result_set` index; `cs_last_result_set` rows expose `company_ids` too | when company B's CS roster is entirely staff already listed under company A, grouping by the dedupe-winning `company_id` left B's group empty and printed `[ B: no customer-service members are configured — omitted. ]` two lines under `1. A (Mocha / Sorento)` — a false statement contradicted by the label above it. Now a shared member is listed under every company it belongs to, with ONE number (a reply of that number resolves the same uuid), and the omitted-line is reserved for companies that genuinely put nobody in the offer. With no shared staff the rendering is byte-identical to rev-5 |
+| 2 | `spine-compile-current-state.js` | `_shownCos` is built from the rows' `company_ids` membership set (falling back to `company_id` on a legacy row) | the rev-5 intersection inherited the same blind spot: company B would be dropped from `routing_roster_plan`, so a shared-staff two-company offer persisted ONE pair and the bare "yes" sent it verbatim instead of taking the multi-company both-axes-null arm. Now both contributing companies are recorded |
+
+Note for the replay diff: `cs_last_result_set` rows gain a non-null `company_ids` array, so member-offer turns surface as
+diffs against golden — as they already do for every other new key on those turns (intended, Lesson 40). Same containment
+as §1b–§1d: repo bodies are the reviewed source, the clone still runs rev-2, republish + re-test is P6.
+
 ## 2. HI fork `vUfFUDjLAuMaeQE6` (before `3186d960-2c39-4bfd-a3b1-9e8d4d5e0295` → published **`d2b82e80-8f22-437d-bf33-3781c505cd5f`**) §3.8
 
 One `update_workflow` (5 `setNodeParameter` ops), 0 warnings, then `publish_workflow`. Full before/after param bodies:
@@ -165,8 +179,9 @@ if ((k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] 
 ⚠️ The `after (published)` column describes what is published on the clone at rev-2. The rev-3 edits of §1b changed the repo
 bodies of `spine-escalation-context.js`, `spine-disallowed-entity-gate.js` and `spine-build-cs-member-offer.js`, and the
 rev-4 edits of §1c changed `spine-escalation-context.js`, `spine-compile-current-state.js`, `spine-cs-roster-plan.js` and
-`replay-Diff.js`, and the rev-5 edit of §1d changed `spine-compile-current-state.js` again; their shas must be recomputed
-from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and re-verified after the clone republish of rev-5.
+`replay-Diff.js`, the rev-5 edit of §1d changed `spine-compile-current-state.js` again, and the rev-6 edits of §1e changed
+`spine-build-cs-member-offer.js` + `spine-compile-current-state.js`; their shas must be recomputed from the files
+(`sha256sum tests/diffs/brand-company-routing/*.js`) and re-verified after the clone republish of rev-6.
 
 | body | before (pre-edit) | live source (rebase) | after (published) |
 |---|---|---|---|
