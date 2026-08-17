@@ -1,0 +1,33 @@
+{
+ "When Executed by Another Workflow": {
+  "workflowInputs.values": [
+   "contact_id",
+   "agent",
+   "team",
+   "contact_phone_number",
+   "current_assignee",
+   "message_id",
+   "is_test",
+   "test_run_id",
+   "input_message",
+   "started_at",
+   "contact",
+   "explicit_assignee_id",
+   "turn_id",
+   "brand_code",
+   "company_id"
+  ]
+ },
+ "get-round-robin-assignee": {
+  "jsonBody": "={\n    \"agent_code\": \"{{ $('When Executed by Another Workflow').first().json.agent }}\",\n    \"team_code\": \"{{ $('When Executed by Another Workflow').first().json.team }}\",\n    \"contact_phone_number\": \"{{ $('When Executed by Another Workflow').first().json.contact_phone_number }}\",\n    \"policy_code\": \"NORMAL\",\n    \"preferred_assignee_id\": \"{{ $('When Executed by Another Workflow').first().json.explicit_assignee_id || '' }}\",\n    \"tier\": 1,\n    \"brand_code\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.brand_code || null) }},\n    \"company_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.company_id || null) }}\n}"
+ },
+ "conversation-sla-tracking-create": {
+  "jsonBody": "={\n    \"assigned_to_id\": {{ JSON.stringify($('get-round-robin-assignee').item.json.assignee_id ?? '') }},\n    \"contact_phone_number\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_phone_number ?? '') }},\n    \"agent_code\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.agent ?? '') }},\n    \"team_set_code\": {{ JSON.stringify($('get-round-robin-assignee').item.json.team_set_code ?? ($('When Executed by Another Workflow').first().json.team ?? '')) }},\n    \"brand_code\": {{ JSON.stringify($('get-round-robin-assignee').item.json.brand_code ?? ($('When Executed by Another Workflow').first().json.brand_code || null)) }},\n    \"company_id\": {{ JSON.stringify($('get-round-robin-assignee').item.json.company_id ?? ($('When Executed by Another Workflow').first().json.company_id || null)) }},\n    \"message_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.message_id ?? null) }},\n    \"source_message_id\": {{ $('When Executed by Another Workflow').first().json.message_id == null ? 'null' : JSON.stringify(String($('When Executed by Another Workflow').first().json.message_id)) }},\n    \"source_message_text\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.input_message || '') }}\n}"
+ },
+ "test-guard-record": {
+  "messageData": "={\n  \"guard\": \"human-intervention-sub\",\n  \"kind\": \"would_write\",\n  \"target\": \"respondio:assign+crm:sla+respondio:comment\",\n  \"payload\": { \"contact_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.contact_id) }}, \"agent\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.agent || null) }}, \"team\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.team || null) }}, \"current_assignee\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.current_assignee || null) }}, \"explicit_assignee_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.explicit_assignee_id || null) }}, \"brand_code\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.brand_code || null) }}, \"company_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.company_id || null) }} },\n  \"turn_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.turn_id ?? null) }},\n  \"test_run_id\": {{ JSON.stringify($('When Executed by Another Workflow').first().json.test_run_id || null) }},\n  \"ts\": {{ JSON.stringify($now.toISO()) }}\n}"
+ },
+ "chat-escalation-push": {
+  "messageData": "={{ JSON.stringify({ type: 'escalation', text: '[escalated to ' + ($('When Executed by Another Workflow').first().json.team || 'team') + ' team]', team: $('When Executed by Another Workflow').first().json.team || null, agent: $('When Executed by Another Workflow').first().json.agent || null, brand_code: $('When Executed by Another Workflow').first().json.brand_code || null, company_id: $('When Executed by Another Workflow').first().json.company_id || null, ts: $now.toISO() }) }}"
+ }
+}
