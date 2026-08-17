@@ -62,19 +62,27 @@ if (_ideate) {
   // brand-company-routing: this arm rebuilds its own picker, so it must carry the SAME company labels
   // and the SAME explanation build-cs-member-offer wrote (exported as cs_multi_note) — otherwise a
   // two-company roster reaches the customer here as a bare list of names with no company at all.
-  // Single-company output is unchanged.
+  // Multi-company is decided by the SAME signal build-cs-member-offer used — the presence of the note it
+  // wrote, i.e. companies QUERIED — so a company whose roster came back empty is disclosed on this path
+  // too instead of silently vanishing. Single-company output is unchanged.
   const _rows = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : [];
   const _memCos = new Set();
   for (const m of _rows) {
     const _ids = (m && Array.isArray(m.company_ids) && m.company_ids.length) ? m.company_ids : [(m && m.company_id) || null];
     for (const _id of _ids) _memCos.add(_id || null);
   }
-  const _multiCo = _memCos.size > 1;
-  const _picker = _rows.map(m => {
+  const _multiCo = !!_mem.cs_multi_note;
+  const _lines = _rows.map(m => {
     const _lbl = (Array.isArray(m.companies) && m.companies.length) ? m.companies : (m.company_name ? [m.company_name] : []);
     return (_multiCo && _lbl.length) ? `${m.idx}. ${m.label} (${_lbl.join(' / ')})` : `${m.idx}. ${m.label}`;
-  }).join('\n');
-  const _note = (_multiCo && _mem.cs_multi_note) ? `${_mem.cs_multi_note}\n\n` : '';
+  });
+  if (_multiCo) {
+    for (const p of (Array.isArray(_mem.routing_companies) ? _mem.routing_companies : [])) {
+      if (p && p.company_name && !_memCos.has(p.company_id || null)) _lines.push(`[ ${p.company_name}: no customer-service members are configured — omitted. ]`);
+    }
+  }
+  const _picker = _lines.join('\n');
+  const _note = _multiCo ? `${_mem.cs_multi_note}\n\n` : '';
   response = `${_sug.suggest_response}\n\n${_note}To escalate, choose who to route to — reply the number or name:\n${_picker}\n\nOr just reply 'yes' and we'll assign automatically.`;
   manualResponse  = true;
   includeResponse = true;

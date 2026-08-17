@@ -221,8 +221,12 @@ Bare "yes" on a multi-company offer ⇒ **both axes null** (CRM resolves via con
   invalidated by a fresher resolve) ⇒ company from prior state, brand null — brand unknown stays unknown.
 
 ### 3.7 `Call 'sub-human-intervention'` (spine executeWorkflow) — two new inputs
-`workflowInputs.value.brand_code = {{ $('escalation-context').first().json.brand_code || '' }}`,
-`company_id = {{ $('escalation-context').first().json.company_id || '' }}`; add both to `schema` (type string, removed:false).
+`workflowInputs.value.brand_code = {{ $('escalation-context').isExecuted ? ($('escalation-context').first().json.brand_code || '') : '' }}`,
+`company_id = {{ $('escalation-context').isExecuted ? ($('escalation-context').first().json.company_id || '') : '' }}`
+(rev-8: `$('node').first()` on an existing-but-unexecuted node THROWS — `|| ''` never runs — so an inbound edge that
+reaches this node without passing through `escalation-context` would break every escalation on that path; the
+`isExecuted` guard makes the reference safe regardless of topology, and P3 additionally enumerates live's inbound edges);
+add both to `schema` (type string, removed:false).
 
 ### 3.8 HI fork `vUfFUDjLAuMaeQE6` (publish after edit — Lesson 37)
 - Trigger `workflowInputs.values` += `{name:'brand_code'}, {name:'company_id'}`.

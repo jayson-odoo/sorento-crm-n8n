@@ -12,7 +12,9 @@ replay orchestrator `aROEBlQyyoQaB7a1` @ `d52af206-…` (unpublished, as before)
 pending and tracked in the promote/verify checklist (review §4 P6). Rev-5 further tightened `routing_roster_plan` (only companies that contributed a member; a fresh
 resolve invalidates a carried plan) and added UAC B5b/B5c; rev-6 (§1e) made the multi-company grouping and that same intersection read each member's
 `company_ids` MEMBERSHIP set, so shared CS staff no longer make a company look empty in the reply or vanish from the persisted plan; rev-7 (§1f) carried the company
-labels + explanation into `compile-current-state`'s Δ4 merge arm and made a roster fetch always supersede the carried plan. **Rev-4 also CHANGED the B4/B5 expectations** — the bare-"yes" arm now sends the persisted `routing_roster_plan` pair
+labels + explanation into `compile-current-state`'s Δ4 merge arm and made a roster fetch always supersede the carried plan; rev-8 (§1g) guarded the two
+`Call 'sub-human-intervention'` inputs with `isExecuted` (a bare `.first()` on an unexecuted node throws) and keyed the merge arm's multi-company copy off the
+companies QUERIED so an empty second roster is disclosed on both reply paths. **The P6 republish must include the HI-call param change, not only the Code bodies.** **Rev-4 also CHANGED the B4/B5 expectations** — the bare-"yes" arm now sends the persisted `routing_roster_plan` pair
 verbatim (single company) or BOTH axes null (multi company), so the B5/B5rev2 observation `brand_code:"mocha"` below is rev-2 behaviour that rev-4 deliberately replaces
 with `brand_code:null`. Those two cases carry NO current execution evidence until P6 re-runs them.
 
