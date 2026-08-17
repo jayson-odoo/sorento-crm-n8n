@@ -312,6 +312,20 @@ let msg = (e.intro || 'Here are the results.').trim() + '\n\n';
       return f ? String(f.value ?? '').trim() : '';
     };
     const _shownCos = new Set((e.items || []).map(_coOfRow).filter(Boolean));
+    // B1 (reviewer, 2026-08-17). NEVER assert absence from a NEGATIVE. If rows were rendered but
+    // not one of them carries a Company field, the CRM did not stamp them — and that is a live
+    // shape, not a hypothetical: `lookup_companies` rides the SHARED ListResponse passthrough and
+    // already reaches `incoming_stock` (exec 12774475), while the leading `company_name` row field
+    // is a per-presenter change. In that case `_shownCos` is empty and EVERY lookup company would
+    // be declared silent directly underneath the rows we just printed:
+    //   1. *Product Code:* MWC-SC08B / *Qty:* 12
+    //   *Mocha:* no stock records for MWC-SC08B.
+    // — a worse statement than the one this block exists to fix. So speak only when we CAN tell:
+    // either nothing was returned at all (every lookup company genuinely came back empty), or the
+    // rows are company-attributed, in which case a company missing from `_shownCos` is genuinely
+    // silent. Rows present but unattributed ⇒ say nothing. Same rule `crossdomain-render` states
+    // three nodes over: "positive facts only — say nothing rather than assert absence".
+    const _canAttribute = !(e.items || []).length || _shownCos.size > 0;
     // Codes come from the entities the gate resolved and the tool was actually asked about — the
     // same set the CRM derived the company span from. `code` is the canonical code the customer
     // recognises (MWC-SC08B), never a uuid. Deduped: one code resolving in two companies arrives
@@ -331,7 +345,7 @@ let msg = (e.intro || 'Here are the results.').trim() + '\n\n';
     const _silent = _lookupCos
       .map(c => String((c && c.name) ?? '').trim())
       .filter(n => n && !_shownCos.has(n));
-    if (_silent.length) msg += _silent.map(n => `*${n}:* no ${_what}.`).join('\n') + '\n\n';
+    if (_canAttribute && _silent.length) msg += _silent.map(n => `*${n}:* no ${_what}.`).join('\n') + '\n\n';
   }
 
   if (_accessNotes.length) msg += _accessNotes.join('\n') + '\n\n';
@@ -358,5 +372,7 @@ let msg = (e.intro || 'Here are the results.').trim() + '\n\n';
     // mc-label (2026-08-17): carried through so downstream state knows the answer spanned more
     // than one company. Spread-in rather than defaulted to null, so a single-company reply's json
     // keeps EXACTLY the keys it has today.
-    ...(_lookupCos.length ? { lookup_companies: _lookupCos } : {}),
+    // `> 1` matches the MESSAGE gate above. The contract says a 1-element list cannot occur, but
+    // asymmetric gates are how a "cannot occur" turns into a stray key on a single-company reply.
+    ...(_lookupCos.length > 1 ? { lookup_companies: _lookupCos } : {}),
   } }];

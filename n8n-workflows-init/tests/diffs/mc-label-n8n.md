@@ -1,6 +1,14 @@
 # Node diff — `mc-label-n8n` (multi-company reply clarity, n8n half)
 
-**Branch** `fm/mc-label-n8n` · **Coder pass** 2026-08-17 · **n8n MCP unavailable this session — every edit made over the public REST API with curl.**
+**Branch** `fm/mc-label-n8n` · **Coder pass** 2026-08-17 · **revised 2026-08-17 for reviewer B1 + B2** (`n8n-workflows-init/tests/reviews/mc-label-n8n.md`, commit `a0d2a45`) · **n8n MCP unavailable this session — every edit made over the public REST API with curl.**
+
+> **Revision log.** Reviewer returned REQUEST-CHANGES on two blockers.
+> **B1** (correctness, `output-structurer`) — fixed and republished to `t4QvrtrPnTwRU6br`; §1 below carries the new
+> sha, line count, fix hunk and probe rows. The reviewer's endorsed non-blocking finding 1 (asymmetric
+> `lookup_companies` json gate) rode along in the same edit. **B2** (promote mapping incomplete) — fixed in the
+> promote-mapping table below; no publish was involved. `not-found-error-message` and `crossdomain-zeroset` were
+> approved as-is and are **unchanged** by this revision (clone still at `63967fff-120c-4157-822e-083916fd88d0`).
+> **B3** (multi-company-with-rows UAC case) is the tester's; still open.
 
 Backend counterpart: sorento_crm PR **#193** (merged + deployed). Wire contract, verified on a live clone run (sub-exec 12772435):
 when — and only when — a lookup/result set spans **more than one company**, the MCP render envelope gains
@@ -19,7 +27,7 @@ statement about work never done.
 
 | workflow | id | node | versionId pre | versionId post |
 |---|---|---|---|---|
-| `sub-get-results CS-BUILD` | `t4QvrtrPnTwRU6br` | `output-structurer` | `4eb8ad78-d5af-42ef-b899-d9baec4e1efb` | `6dbcf061-d626-4bb6-b63b-7451aeb7f827` |
+| `sub-get-results CS-BUILD` | `t4QvrtrPnTwRU6br` | `output-structurer` | `4eb8ad78-d5af-42ef-b899-d9baec4e1efb` | `6dbcf061-d626-4bb6-b63b-7451aeb7f827` → **`179f1842-8061-4e59-9c72-74ad2b602f29`** (B1) |
 | `sorento-consume-main TEST` (clone spine) | `txiPzSxy3Pclsz6v` | `not-found-error-message`, `crossdomain-zeroset` | `98e93d6e-41b4-4a1f-999c-5fe70daeacc6` | `63967fff-120c-4157-822e-083916fd88d0` |
 
 Untouched and re-checked after both publishes: live spine `9qVyfUxmRQqrpGRMDLRuz` (`v=av=469e7259-…`, updatedAt
@@ -36,9 +44,38 @@ Published node bodies (the promote artifacts, byte-exact):
 
 | artifact | built on | applies at promote to |
 |---|---|---|
-| `output-structurer.js` | CS-BUILD `t4QvrtrPnTwRU6br` current (byte-identical to the live sub) | live sub **`rysSPgUssLDf6xJc`** node `output-structurer` — this is the sub the LIVE spine calls (verified drift; **not** `Fss5aAaXthJSWpZCgKiKR`, which carries identical code today and should be promoted alongside if it is to stay in sync) |
+| `output-structurer.js` | CS-BUILD `t4QvrtrPnTwRU6br` current (byte-identical to both live subs, sha `68bd130c…`) | **BOTH live subs, MANDATORY — `rysSPgUssLDf6xJc` AND `Fss5aAaXthJSWpZCgKiKR`**, node `output-structurer` in each. See the B2 note directly below. |
 | `not-found-error-message.js` | **LIVE spine `9qVyfUxmRQqrpGRMDLRuz` current** (334 lines) | live spine `9qVyfUxmRQqrpGRMDLRuz` node `not-found-error-message` — applies cleanly, no rebase |
 | `crossdomain-zeroset.js` | clone `txiPzSxy3Pclsz6v` current (byte-identical to live) | live spine `9qVyfUxmRQqrpGRMDLRuz` node `crossdomain-zeroset` |
+
+### B2 — `output-structurer` must go to BOTH live subs (this supersedes the earlier "optional sync" wording)
+
+My first pass mapped this artifact to `rysSPgUssLDf6xJc` alone and called `Fss5aAaXthJSWpZCgKiKR` an optional sync.
+That was wrong. The reviewer enumerated every `executeWorkflow` node in both spines: **live splits its eight
+`sub-get-results` call sites across two subs**, while the clone funnels all six of its call sites through the one sub
+I edited — which is exactly why the UAC passed end to end and why the asymmetry was invisible from the clone.
+
+| call site | LIVE `9qVyfUxmRQqrpGRMDLRuz` targets | CLONE `txiPzSxy3Pclsz6v` targets |
+|---|---|---|
+| `Call 'sub-get-results'` | `rysSPgUssLDf6xJc` | `t4QvrtrPnTwRU6br` |
+| `probe-incoming` | `rysSPgUssLDf6xJc` | `t4QvrtrPnTwRU6br` |
+| `tier-probe` | `rysSPgUssLDf6xJc` | *(not on clone)* |
+| `sibling-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
+| `crossdomain-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
+| `dym-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
+| `dym-probe-partial` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
+| `promo-dym-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | *(not on clone)* |
+
+Promoting only `rysSPgUssLDf6xJc` ships an **asymmetric bot**: the main stock answer names the empty company while the
+crossdomain / sibling / did-you-mean answers do not, and the `_IDENTITY_KEYS` fix never reaches the projected
+`incoming_stock` envelope that `crossdomain-probe` requests — the very path change 3 now deliberately routes both
+companies into. Cost of doing it right is nil: both subs' `output-structurer` bodies are byte-identical today
+(`68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935`), so the same artifact applies to both with no
+rebase. Confirmed still true after the B1 republish: `rysSPgUssLDf6xJc` `v=av=eb0bbcec-…`,
+`Fss5aAaXthJSWpZCgKiKR` `v=av=fd248b16-…`, both untouched.
+
+**Promote order (LESSONS 37, subs before the spine):** `rysSPgUssLDf6xJc` → `Fss5aAaXthJSWpZCgKiKR` →
+`9qVyfUxmRQqrpGRMDLRuz` (both spine nodes in one write).
 
 ## Zero-egress note
 No egress node, connection, node-set, setting, or pinData was touched. Only `.parameters.jsCode` of the three named
@@ -53,8 +90,10 @@ and republishing it cannot consume a prod item.
 
 * **workflow** `sub-get-results CS-BUILD` (`t4QvrtrPnTwRU6br`) · **node** `output-structurer` (`n8n-nodes-base.code`)
 * **baseline** CS-BUILD current, which is byte-identical to live sub `rysSPgUssLDf6xJc` (both sha `a05cb661…` as `jq -r` files)
-* **lines** 310 → 362
-* **sha256(`jsCode`)** old `68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` → new `8b68273f57f2151135b03a419597b1c521a82d0191396137f4c699f8b8ced1d4` (re-read from the server after publish: **MATCH**)
+* **lines** 310 → **378** (was 362 before the B1 fix)
+* **sha256(`jsCode`)** old `68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` → **new `25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de`** (re-read from the server after publish: **MATCH**; the committed artifact was rewritten *from the server copy*, so it cannot drift from what is published)
+* **published versionId** `4eb8ad78-d5af-42ef-b899-d9baec4e1efb` → `6dbcf061-d626-4bb6-b63b-7451aeb7f827` (first pass) → **`179f1842-8061-4e59-9c72-74ad2b602f29`** (B1 fix)
+* ~~`8b68273f57f2151135b03a419597b1c521a82d0191396137f4c699f8b8ced1d4`~~ — superseded, do **not** promote that body
 
 ### Before / after intent
 **Before.** The node rendered the envelope's rows through a generic field loop and stopped. On a multi-company
@@ -78,21 +117,69 @@ multi-company lookup the CRM's own intro named both companies and n8n added noth
    discipline the key-based projection is built on. Found rows are **not** re-labelled: they already carry the CRM's
    `Company` field and the existing generic field loop renders it.
 3. `lookup_companies` is carried into the returned `json` via a conditional spread, so downstream state knows the
-   answer spanned companies while a single-company reply's `json` keeps **exactly** the keys it has today.
+   answer spanned companies while a single-company reply's `json` keeps **exactly** the keys it has today. Gated on
+   `> 1`, symmetric with the message gate (reviewer finding 1 — an asymmetric gate is how a "cannot occur" 1-element
+   list turns into a stray key on a single-company reply).
+4. **`_canAttribute` (reviewer B1).** The silent-company lines are emitted only when they *can* be true.
 
-### Offline behaviour probe (no execution, pure function replay of old vs new)
-| case | result |
-|---|---|
-| single-company, found rows, no `lookup_companies` | **byte-identical** to old |
-| single-company `incoming_stock` with projection active | **byte-identical** to old |
-| multi-company **empty** | intro unchanged, then `*Mocha:* no stock records for MWC-SC08B.` / `*Sorento:* …` |
-| multi-company **partial** (Mocha has rows) | Mocha's row renders with its `*Company:* Mocha` line; then `*Sorento:* no stock records for MWC-SC08B.` |
-| multi-company `incoming_stock` | old **dropped** the `*Company:*` line (projection); new keeps it and adds the Sorento line |
+### B1 — the bug the reviewer caught, and the fix
 
-### Unified diff (vs CS-BUILD pre-change)
+My first pass asserted absence from a **negative**: a lookup company was called silent when its name was not found
+among the rendered rows' `Company` fields. If the envelope returns rows carrying **no** company field at all,
+`_shownCos` is empty and **every** lookup company gets declared silent — directly underneath the rows just printed:
+
+```
+1. *Product Code:* MWC-SC08B
+*Quantity On Hand:* 12
+
+*Mocha:* no stock records for MWC-SC08B.
+*Sorento:* no stock records for MWC-SC08B.
+```
+
+The customer is shown 12 units and told in the same breath that neither company has any — a worse statement than the
+one this block exists to fix. **And it is a live shape, not a hypothetical:** `lookup_companies` rides the *shared*
+`ListResponse` passthrough and already reaches `incoming_stock` (exec `12774475`), while the leading `company_name`
+row field is a *per-presenter* change; the reviewer scanned all 15 `t4QvrtrPnTwRU6br` executions this cycle and found
+every multi-company envelope was empty and every non-empty envelope single-company — so the row half of the wire
+contract has never actually been observed. My probe table asserted a partial case built on a fixture, and the fixture
+was the assumption.
+
+The fix is the rule the codebase already states three nodes over in `crossdomain-render`
+(`// positive facts only — say nothing rather than assert absence`):
+
+```js
+const _canAttribute = !(e.items || []).length || _shownCos.size > 0;
+```
+
+— speak only when nothing was returned at all (so every lookup company genuinely came back empty), or when the rows
+*are* company-attributed (so a company missing from `_shownCos` is genuinely silent). Rows present but unattributed ⇒
+say nothing. The captain's reported empty-envelope case is unaffected, and the partial case still works.
+
+### Offline behaviour probe — re-run after B1 (10 shapes, pure function replay, no execution)
+
+Replayed three-way: the **pre-mc-label baseline** (`68bd130c…`), the **first publish** (`8b68273f…`, pre-B1) and the
+**published body** (`25a2eed9…`). "identical to baseline" is the byte-for-byte no-regression claim.
+
+| # | case | vs pre-mc-label baseline | vs first publish (pre-B1) | new behaviour |
+|---|---|---|---|---|
+| A | single-company, found rows, no `lookup_companies` | **identical** | identical | — |
+| B | single-company **empty**, no `lookup_companies` | **identical** | identical | — |
+| C | single-company `incoming_stock`, projection active | **identical** | identical | — |
+| D | multi-company **empty** | differs (intended) | identical | `*Mocha:* no stock records for MWC-SC08B.` / `*Sorento:* …` |
+| E | multi-company **partial**, rows attributed (Mocha only) | differs (intended) | identical | Mocha's row keeps its `*Company:*` line; `*Sorento:* no stock records…` follows |
+| F | multi-company, **both** companies have attributed rows | differs (intended) | identical | both rows labelled, **no** silent line — nothing is silent |
+| **G** | **B1 shape** — multi-company, rows present, **no** `company_name` | differs (intended) | **DIFFERS — the fix** | rows render, **no** silent lines (pre-B1 wrongly emitted both) |
+| **H** | **B1 shape** on `incoming_stock` (the `crossdomain-probe` path) | differs (intended) | **DIFFERS — the fix** | rows render, **no** silent lines (pre-B1 wrongly emitted both) |
+| I | multi-company `incoming_stock`, rows attributed | differs (intended) | identical | projection keeps the `*Company:*` line the pre-change node stripped; silent line still emitted |
+| J | 1-element `lookup_companies` (finding 1) | **identical** | differs | the stray `lookup_companies` json key pre-B1 added to a single-company reply is gone; message was already identical |
+
+G and H are the reviewer's B1 case and the reason for this revision; J is the endorsed finding 1. A, B, C and J are the
+single-company no-regression guarantee — **byte-identical to the pre-mc-label baseline**, message *and* json keys.
+
+### Unified diff (vs the CS-BUILD pre-change body — the whole mc-label change, B1 included)
 ```diff
---- a/output-structurer.js (CS-BUILD t4QvrtrPnTwRU6br, pre)
-+++ b/output-structurer.js (published)
+--- a/output-structurer.js (CS-BUILD t4QvrtrPnTwRU6br, pre-change)
++++ b/output-structurer.js (published, incl. B1 fix)
 @@ -76,6 +76,12 @@
      'product_code', 'product_name', 'shipment_number', 'shipping_container_number',
      'batch_number', 'remaining_incoming_quantity', 'warehouse_allocations',
@@ -106,7 +193,7 @@ multi-company lookup the CRM's own intro named both companies and n8n added noth
    ]);
    let _reqAttrs = [];
    try {
-@@ -285,6 +291,48 @@
+@@ -285,6 +291,62 @@
      else if (it.flags && it.flags.partially_allocated) line += '\n🚩  *(PARTIAL ALLOCATION)*';
      msg += line + '\n\n';
    });
@@ -131,6 +218,20 @@ multi-company lookup the CRM's own intro named both companies and n8n added noth
 +      return f ? String(f.value ?? '').trim() : '';
 +    };
 +    const _shownCos = new Set((e.items || []).map(_coOfRow).filter(Boolean));
++    // B1 (reviewer, 2026-08-17). NEVER assert absence from a NEGATIVE. If rows were rendered but
++    // not one of them carries a Company field, the CRM did not stamp them — and that is a live
++    // shape, not a hypothetical: `lookup_companies` rides the SHARED ListResponse passthrough and
++    // already reaches `incoming_stock` (exec 12774475), while the leading `company_name` row field
++    // is a per-presenter change. In that case `_shownCos` is empty and EVERY lookup company would
++    // be declared silent directly underneath the rows we just printed:
++    //   1. *Product Code:* MWC-SC08B / *Qty:* 12
++    //   *Mocha:* no stock records for MWC-SC08B.
++    // — a worse statement than the one this block exists to fix. So speak only when we CAN tell:
++    // either nothing was returned at all (every lookup company genuinely came back empty), or the
++    // rows are company-attributed, in which case a company missing from `_shownCos` is genuinely
++    // silent. Rows present but unattributed ⇒ say nothing. Same rule `crossdomain-render` states
++    // three nodes over: "positive facts only — say nothing rather than assert absence".
++    const _canAttribute = !(e.items || []).length || _shownCos.size > 0;
 +    // Codes come from the entities the gate resolved and the tool was actually asked about — the
 +    // same set the CRM derived the company span from. `code` is the canonical code the customer
 +    // recognises (MWC-SC08B), never a uuid. Deduped: one code resolving in two companies arrives
@@ -150,19 +251,67 @@ multi-company lookup the CRM's own intro named both companies and n8n added noth
 +    const _silent = _lookupCos
 +      .map(c => String((c && c.name) ?? '').trim())
 +      .filter(n => n && !_shownCos.has(n));
-+    if (_silent.length) msg += _silent.map(n => `*${n}:* no ${_what}.`).join('\n') + '\n\n';
++    if (_canAttribute && _silent.length) msg += _silent.map(n => `*${n}:* no ${_what}.`).join('\n') + '\n\n';
 +  }
  
    if (_accessNotes.length) msg += _accessNotes.join('\n') + '\n\n';
  
-@@ -307,4 +355,8 @@
+@@ -307,4 +369,10 @@
      // A sustained false here with a non-empty requested_attributes means the MCP process
      // needs restarting, NOT that the parser stopped emitting keys.
      keys_served: _anyKeyed,
 +    // mc-label (2026-08-17): carried through so downstream state knows the answer spanned more
 +    // than one company. Spread-in rather than defaulted to null, so a single-company reply's json
 +    // keeps EXACTLY the keys it has today.
-+    ...(_lookupCos.length ? { lookup_companies: _lookupCos } : {}),
++    // `> 1` matches the MESSAGE gate above. The contract says a 1-element list cannot occur, but
++    // asymmetric gates are how a "cannot occur" turns into a stray key on a single-company reply.
++    ...(_lookupCos.length > 1 ? { lookup_companies: _lookupCos } : {}),
+   } }];
+\ No newline at end of file
+```
+
+### Isolated B1 fix hunk (first publish `8b68273f…` → published `25a2eed9…`)
+```diff
+--- a/output-structurer.js (first publish, pre-B1)
++++ b/output-structurer.js (B1 fix, published)
+@@ -312,6 +312,20 @@
+       return f ? String(f.value ?? '').trim() : '';
+     };
+     const _shownCos = new Set((e.items || []).map(_coOfRow).filter(Boolean));
++    // B1 (reviewer, 2026-08-17). NEVER assert absence from a NEGATIVE. If rows were rendered but
++    // not one of them carries a Company field, the CRM did not stamp them — and that is a live
++    // shape, not a hypothetical: `lookup_companies` rides the SHARED ListResponse passthrough and
++    // already reaches `incoming_stock` (exec 12774475), while the leading `company_name` row field
++    // is a per-presenter change. In that case `_shownCos` is empty and EVERY lookup company would
++    // be declared silent directly underneath the rows we just printed:
++    //   1. *Product Code:* MWC-SC08B / *Qty:* 12
++    //   *Mocha:* no stock records for MWC-SC08B.
++    // — a worse statement than the one this block exists to fix. So speak only when we CAN tell:
++    // either nothing was returned at all (every lookup company genuinely came back empty), or the
++    // rows are company-attributed, in which case a company missing from `_shownCos` is genuinely
++    // silent. Rows present but unattributed ⇒ say nothing. Same rule `crossdomain-render` states
++    // three nodes over: "positive facts only — say nothing rather than assert absence".
++    const _canAttribute = !(e.items || []).length || _shownCos.size > 0;
+     // Codes come from the entities the gate resolved and the tool was actually asked about — the
+     // same set the CRM derived the company span from. `code` is the canonical code the customer
+     // recognises (MWC-SC08B), never a uuid. Deduped: one code resolving in two companies arrives
+@@ -331,7 +345,7 @@
+     const _silent = _lookupCos
+       .map(c => String((c && c.name) ?? '').trim())
+       .filter(n => n && !_shownCos.has(n));
+-    if (_silent.length) msg += _silent.map(n => `*${n}:* no ${_what}.`).join('\n') + '\n\n';
++    if (_canAttribute && _silent.length) msg += _silent.map(n => `*${n}:* no ${_what}.`).join('\n') + '\n\n';
+   }
+ 
+   if (_accessNotes.length) msg += _accessNotes.join('\n') + '\n\n';
+@@ -358,5 +372,7 @@
+     // mc-label (2026-08-17): carried through so downstream state knows the answer spanned more
+     // than one company. Spread-in rather than defaulted to null, so a single-company reply's json
+     // keeps EXACTLY the keys it has today.
+-    ...(_lookupCos.length ? { lookup_companies: _lookupCos } : {}),
++    // `> 1` matches the MESSAGE gate above. The contract says a 1-element list cannot occur, but
++    // asymmetric gates are how a "cannot occur" turns into a stray key on a single-company reply.
++    ...(_lookupCos.length > 1 ? { lookup_companies: _lookupCos } : {}),
    } }];
 \ No newline at end of file
 ```
@@ -447,10 +596,14 @@ when it had never been asked about.
 
 ## Verification evidence (all re-read from the server after publish)
 
-| check | `t4QvrtrPnTwRU6br` | `txiPzSxy3Pclsz6v` |
+Two columns for `t4QvrtrPnTwRU6br`: the first publish and the B1 republish. `txiPzSxy3Pclsz6v` was **not** rewritten
+for B1 — `not-found-error-message` and `crossdomain-zeroset` were approved as-is.
+
+| check | `t4QvrtrPnTwRU6br` (B1 republish) | `txiPzSxy3Pclsz6v` (unchanged since first publish) |
 |---|---|---|
-| PUT / activate HTTP | 200 / 200 | 200 / 200 |
-| `versionId == activeVersionId` | ✅ `6dbcf061-d626-4bb6-b63b-7451aeb7f827` | ✅ `63967fff-120c-4157-822e-083916fd88d0` |
+| PUT / activate HTTP | 200 / 200 (both passes) | 200 / 200 |
+| pre-edit `v == av`, no stale draft | ✅ `6dbcf061-…`, and the node's sha still equalled my first publish — **live had not moved** | n/a this pass |
+| `versionId == activeVersionId` | ✅ `179f1842-8061-4e59-9c72-74ad2b602f29` | ✅ `63967fff-120c-4157-822e-083916fd88d0` |
 | `active` | true | true |
 | node count unchanged | 8 → 8 | 148 → 148 |
 | `connections` identical to pre | ✅ | ✅ |
@@ -459,9 +612,24 @@ when it had never been asked about.
 | `pinData` intact | n/a (null before and after) | ✅ same 2 keys, byte-identical (`Schedule Trigger`, `When Executed by Another Workflow`) |
 | published `jsCode` sha matches what was written | ✅ | ✅ (both nodes) |
 
-Live workflows re-checked after both publishes, unchanged:
-`9qVyfUxmRQqrpGRMDLRuz` `v=av=469e7259-6cfb-4505-bef4-f37a36bf454f` (updatedAt 2026-08-11T16:23:58Z);
-`rysSPgUssLDf6xJc` `v=av=eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a` (updatedAt 2026-08-10T06:13:06Z).
+Live workflows re-checked after the B1 republish, all still unchanged:
+
+| workflow | id | versionId (== activeVersionId) | updatedAt |
+|---|---|---|---|
+| live spine | `9qVyfUxmRQqrpGRMDLRuz` | `469e7259-6cfb-4505-bef4-f37a36bf454f` | 2026-08-11T16:23:58Z |
+| live sub `sub-get-results TEST` | `rysSPgUssLDf6xJc` | `eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a` | 2026-08-10T06:13:06Z |
+| live sub `sub-get-results` | `Fss5aAaXthJSWpZCgKiKR` | `fd248b16-82ee-4307-abfb-657b9b6a4aa7` | 2026-08-11T00:50:25Z |
+
+**Artifact sha256 as committed (these are the promote bytes):**
+
+```
+25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de  output-structurer.js        (B1-fixed; supersedes 8b68273f…)
+cfd8a3804d2f4cb28acd247bc990692b19f8e58379728a2a923655c9ead982cb  not-found-error-message.js
+2c562c7e974fa043e5bffe12b10ab97ed523c19df04196a1980119a2e4d4ff42  crossdomain-zeroset.js
+```
+
+Each artifact was written **from the server's own copy** after publish, so a repo/live divergence is not possible;
+re-verified byte-for-byte against a fresh `GET` for all three.
 
 `validate_workflow` was **not** run — the n8n MCP server is unavailable in this session and the public REST API has
 no equivalent endpoint. The substitutes actually performed: `POST /activate` (which runs n8n's own node-config
