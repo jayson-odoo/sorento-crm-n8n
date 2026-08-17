@@ -15,7 +15,7 @@ Never probe production hosts, never use hardcoded credentials/JWTs found in the 
 
 ## Context (verify IDs still exist before relying on them)
 - Live (NEVER target): `sorento-consume-main` = `9qVyfUxmRQqrpGRMDLRuz`. Dev clone (build target): `sorento-consume-main copy 2` = `txiPzSxy3Pclsz6v`.
-- Shared subs: send `aoydkG1dbItXR5jXFEQsP`, human-intervention `rrYXzE61gCNUck_zmXe-G`, get-results `Fss5aAaXthJSWpZCgKiKR`, reformulator `XTODTw-dJcV0uRdC056hG`, get-rag `tWP33QOFT7SxThfT`.
+- Shared subs: send `aoydkG1dbItXR5jXFEQsP`, human-intervention `rrYXzE61gCNUck_zmXe-G`, get-results = TWO live subs (main `rysSPgUssLDf6xJc` + probe sibling `Fss5aAaXthJSWpZCgKiKR` — see Key IDs in AGENTS.md), reformulator `XTODTw-dJcV0uRdC056hG`, get-rag `tWP33QOFT7SxThfT`.
 - Two LLMs: parser `gpt-4.1-mini` in consume-main; get-results agent `gpt-5.4-mini` (may be orphaned/dead — confirm).
 - CRM API base = PROD `https://fe-sorento.foundryx.my`. CRM code (read-only ref): `/Users/tehjayson/Documents/foundryx/sorento_crm`.
 - Source of truth for workflows = live n8n MCP (not files). Large `get_workflow_details` outputs save to files — jq/grep them, don't read whole.

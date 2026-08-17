@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-Guidance for Claude Code working in this repo. **Read this + `docs/LESSONS.md` before doing n8n work** — it will save you hours of re-discovery. Detailed design lives in `n8n-workflows-init/plans/` and `n8n-workflows-init/tests/`.
+Guidance for agents working in this repo (`CLAUDE.md` is a symlink to this file). **Read this + `docs/LESSONS.md` before doing n8n work** — it will save you hours of re-discovery. Detailed design lives in `n8n-workflows-init/plans/` and `n8n-workflows-init/tests/`.
 
 ## What this is
 
@@ -37,7 +37,9 @@ n8n workflows integrating **Sorento CRM** with **respond.io** (WhatsApp). The ch
 | ↳ human-intervention fork the CLONE actually calls | `vUfFUDjLAuMaeQE6` |
 | sub: reformulator / semantic-parser gpt-5.4-mini (live published+guarded) | `XTODTw-dJcV0uRdC056hG` |
 | ↳ reformulator fork the CLONE actually calls (build/test parser changes here) | `CpxE8LroLzCkrAQN` |
-| sub: get-results (MCP read) | `Fss5aAaXthJSWpZCgKiKR` |
+| sub: get-results (MCP read) — TWO live subs, spine main `Call 'sub-get-results'` + `probe-incoming`/`tier-probe` | `rysSPgUssLDf6xJc` |
+| ↳ get-results sibling the spine's probes call (`sibling/crossdomain/dym/promo-dym`) — promote BOTH or the bot goes asymmetric (see `tests/diffs/mc-label-n8n.md` §1) | `Fss5aAaXthJSWpZCgKiKR` |
+| ↳ get-results CS-BUILD fork the CLONE actually calls (build/test target) | `t4QvrtrPnTwRU6br` |
 | sub: get-rag (pgvector) | `tWP33QOFT7SxThfT` |
 | sub: save-message-redis (msg logger) | `UrETd-jm46tFj3Xw7w8vL` |
 | capture orchestrator | `MGm32814G7XcGSD2` |
