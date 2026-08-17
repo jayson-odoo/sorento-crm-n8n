@@ -1,10 +1,23 @@
 # UAC rollup — `mc-label-n8n` (multi-company reply clarity, n8n half)
 
-**Tester pass 1** 2026-08-17 · **tester pass 2** 2026-08-17 (post-reviewer B1 fix, blocker B3) · branch `fm/mc-label-n8n`
-· target clone `sorento-consume-main TEST` (`txiPzSxy3Pclsz6v`) only. Mechanism: n8n MCP unavailable this session —
-chat-console curl loop (`zz-chat-console` seed → `zz-dispatch-test` fire → `zz-chat-read` poll /
-`GET /executions?workflowId=...` polling → `GET /executions/{id}?includeData=true`), per the tester task brief.
-Contact `437264483` (genuine two-company Mocha+Sorento contact) for all five cases.
+**Tester pass 1** 2026-08-17 · **tester pass 2** 2026-08-17 (post-reviewer B1 fix, blocker B3) · **tester pass 3**
+2026-08-17 (post review-2 fixes) · branch `fm/mc-label-n8n` · target clone `sorento-consume-main TEST`
+(`txiPzSxy3Pclsz6v`) only. Mechanism: n8n MCP unavailable this session — chat-console curl loop (`zz-chat-console`
+seed → `zz-dispatch-test` fire → `zz-chat-read` poll / `GET /executions?workflowId=...` polling →
+`GET /executions/{id}?includeData=true`), per the tester task brief. Contact `437264483` (genuine two-company
+Mocha+Sorento contact) for all seven cases.
+
+**Pass 3 context:** a second, independent fresh-context review (commit `267af01`) found three more items, all in the
+clone spine (`output-structurer` untouched): **FIX 1** (MAJOR, `not-found-error-message`) — the `_multiCo` arm had
+dropped the `(+N more)` cap for the *entire turn*, so a turn resolving many distinct multi-company products would
+dump them all into the reply; fixed to cap on **distinct codes**, rendering only the representative code's company
+variants in full. **FIX 2** (MINOR, `crossdomain-zeroset`) — an `ex.uuid` backfill could wrongly flip
+`_xd.active` false→true on a shape outside this change's blast radius; removed. **VERIFY 3** (MAJOR-conditional,
+`not-found-error-message`) — investigated and found **REACHABLE**: `brand`/`category` entity types pass the gate
+but carry no tool param, so `_searchedCos` now excludes them (deny-list) to avoid a false "checked in X and Y" claim.
+Both nodes republished together to `txiPzSxy3Pclsz6v` (versionId `33746137-f998-4105-abe3-2d591997ce39`):
+`not-found-error-message` sha `79888de7…`, `crossdomain-zeroset` sha `a880d01e…`. Pass 3 re-runs Case 1 and Case 2
+against this rev-2 spine to confirm both shas are live in the executed workflow and both cases still hold.
 
 **Pass 2 context:** reviewer (`n8n-workflows-init/tests/reviews/mc-label-n8n.md`) returned REQUEST-CHANGES: **B1**
 (`output-structurer` could emit a self-contradictory "no records" line underneath rows it had just rendered, when
@@ -22,8 +35,10 @@ which is what let B1 through). Coder fixed B1 with a `_canAttribute` guard and r
 | 3 — single-company, found | `SRTFC2031 check stock` | **PASS** | `12775298` | resolver returns exactly 1 match (Sorento); `If6` happy branch taken; reply renders the stock row with no `Company:` field; `answers[0].fields` has no `company_name` key; `lookup_companies` occurs **0** times anywhere in the execution |
 | 4 — multi-company **with rows** (B3) | `MUB5202 check stock` | **PASS** | `12778370` | resolver 2 matches (Mocha `d77629fc…`, Sorento `911d2093…`); Mocha has 2 stock rows (rows carry leading `company_name:"Mocha"`/`Company` field — **row-stamp confirmed on the wire** for the `stock` presenter), Sorento has 0; reply renders `*Company:* Mocha` on both Mocha rows and exactly **one** trailing `*Sorento:* no stock records for MUB5202.` line — **no** line for Mocha, the company that DID render rows. This is the B1 fix (`_canAttribute`) working correctly on real rows, on the republished sub (jsCode sha `25a2eed9…` byte-verified from the exec) |
 | 1-recheck — same as case 1, re-run post-B1 | `MWC-SC08B check stock` | **PASS** | `12778877` | identical structural result to case 1 (`(Mocha)`/`(Sorento)` labels, ` — checked in Mocha and Sorento`, both per-company no-record lines present since `items=[]` ⇒ `_canAttribute=true`), confirming the B1 fix did not regress the all-empty path; both sub-execs' `output-structurer` jsCode sha byte-verified as `25a2eed9…` |
+| 1-rev2 — same as case 1, re-run on rev-2 spine | `MWC-SC08B check stock` | **PASS** | `12782358` | identical reply to case 1/1-recheck: `MWC-SC08B (Mocha), MWC-SC08B (Sorento)` both named IN FULL with **no** `(+1 more)` (the two labels share one bare code, so FIX 1's cap never engages — matches the diff doc's replay case 3 exactly), ` — checked in Mocha and Sorento` present (VERIFY 3's `brand`/`category` exclusion is inert here — both entities are `product`), both per-company no-record lines present in output-structurer json (untouched by rev-2). **Executed `workflowData.nodes` sha-verified directly from the exec:** `not-found-error-message` → `79888de7…` (MATCH), `crossdomain-zeroset` → `a880d01e…` (MATCH) |
+| 2-rev2 — same as case 2, re-run on rev-2 spine | `SRTWC287A-RL-7405 check stock` | **PASS** | `12782576` | resolver still 1 match (Sorento); reply and all node output data carry zero company mentions and zero `checked in` occurrences (the only 3 `grep` hits for "checked in" in the raw execution JSON are inside the node's own **source-code comments**, not runtime data — verified by context); `lookup_companies` occurs 0 times; `_xd.missing[0]` still has no `uuids` key. Same sha-verification as 1-rev2, both MATCH |
 
-**Overall verdict: PASS (5/5).** All five cases match the coder's node-diff spec (`n8n-workflows-init/tests/diffs/mc-label-n8n.md`, post-B1 revision) structurally, and every case passed the §0 safety gate (S1–S6). **B3 is closed.**
+**Overall verdict: PASS (7/7).** All seven cases match the coder's node-diff spec (`n8n-workflows-init/tests/diffs/mc-label-n8n.md`, through review-2) structurally, and every case passed the §0 safety gate (S1–S6). **B3 is closed; review-2's FIX 1/FIX 2/VERIFY 3 are confirmed live on the executed clone and behave as specified on both the multi-company and single-company shapes re-run.**
 
 ## Row-stamp wire observation (new in pass 2, answers B1's open question for the `stock` presenter)
 
@@ -119,8 +134,19 @@ contradicting itself — the failure mode B1 exists to prevent.
 - `n8n-workflows-init/tests/runs/mc-label-n8n-case3.json`
 - `n8n-workflows-init/tests/runs/mc-label-n8n-case4.json` (B3, pass 2)
 - `n8n-workflows-init/tests/runs/mc-label-n8n-case1-recheck.json` (pass 2)
+- `n8n-workflows-init/tests/runs/mc-label-n8n-case1-rev2.json` (review-2, pass 3)
+- `n8n-workflows-init/tests/runs/mc-label-n8n-case2-rev2.json` (review-2, pass 3)
 - `n8n-workflows-init/tests/runs/mc-label-n8n-rollup.md` (this file)
 
-No workflow was edited in either pass. Live spine `9qVyfUxmRQqrpGRMDLRuz` was not touched by this tester (read via
-prior coder/reviewer artifacts only). The only workflow write in this change's history remains the coder's B1
-republish of `t4QvrtrPnTwRU6br`, already landed before this tester pass began.
+## Rev-2 published shas (for reference, both sha-verified live from the pass-3 executions, not taken on trust)
+
+| workflow | node | versionId | jsCode sha256 |
+|---|---|---|---|
+| `txiPzSxy3Pclsz6v` (clone spine) | `not-found-error-message` | `33746137-f998-4105-abe3-2d591997ce39` | `79888de7862725448d10fd0210bf8d8dcf1da6fbd131b1c3427ddc94db2f3da1` |
+| `txiPzSxy3Pclsz6v` (clone spine) | `crossdomain-zeroset` | `33746137-f998-4105-abe3-2d591997ce39` | `a880d01e3629538bdde874f60875b481af7415acb6c7f12d4795171074518f92` |
+| `t4QvrtrPnTwRU6br` (CS-BUILD sub) | `output-structurer` | `179f1842-8061-4e59-9c72-74ad2b602f29` (unchanged since B1) | `25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de` |
+
+No workflow was edited in any of the three tester passes. Live spine `9qVyfUxmRQqrpGRMDLRuz` was not touched by
+this tester (read via prior coder/reviewer artifacts only). The only workflow writes in this change's history
+remain the coder's: the B1 republish of `t4QvrtrPnTwRU6br` and the review-2 republish of `txiPzSxy3Pclsz6v`, both
+already landed before the corresponding tester pass began.

@@ -1,0 +1,67 @@
+{
+  "case": "1-rev2 - multi-company all-empty, re-run on the rev-2 published clone spine",
+  "change_id": "mc-label-n8n",
+  "reviewer_context": "Second independent review (commit 267af01) found three items in the clone spine: FIX 1 (MAJOR, not-found-error-message) -- the (+N more) cap must count DISTINCT CODES not labels, so a turn resolving many distinct multi-company products does not dump them all; FIX 2 (MINOR, crossdomain-zeroset) -- removed an ex.uuid backfill that could wrongly flip _xd.active on a single-company turn; VERIFY 3 (MAJOR-conditional, not-found-error-message) -- investigated and found REACHABLE (brand/category types resolve but carry no tool param), so _searchedCos now excludes them (deny-list). Both nodes republished together to txiPzSxy3Pclsz6v versionId 33746137-f998-4105-abe3-2d591997ce39: not-found-error-message sha 79888de7862725448d10fd0210bf8d8dcf1da6fbd131b1c3427ddc94db2f3da1, crossdomain-zeroset sha a880d01e3629538bdde874f60875b481af7415acb6c7f12d4795171074518f92. t4QvrtrPnTwRU6br (output-structurer) unchanged at 179f1842-8061-4e59-9c72-74ad2b602f29.",
+  "chat_id": "mcl-case1rev2-1786935755",
+  "test_run_id": "chatcon-1786935755794",
+  "trigger": {
+    "text": "MWC-SC08B check stock",
+    "contact_id": "437264483",
+    "mode": "uac"
+  },
+  "execution_ids": {
+    "clone_spine": "12782358",
+    "sub_get_results_crossdomain_probe_incoming_stock": "12782372",
+    "sub_get_results_main_stock": "12782371",
+    "sub_sendmsg_qrchunk": "12782373"
+  },
+  "verdict": "PASS",
+  "key_assertions": [
+    {
+      "assertion": "MWC-SC08B (Mocha), MWC-SC08B (Sorento) both named -- single-code two-company group renders in full, NO (+1 more) cap",
+      "result": "PASS",
+      "observed": "not-found-error-message.escalate_message / final reply: \"Here's what you want:\\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\\n\\nBut no inventory matched these — checked in Mocha and Sorento. Would you like me to escalate to warehouse team?\"",
+      "note": "Under FIX 1's new grouping, MWC-SC08B (Mocha) and MWC-SC08B (Sorento) share the SAME bare code 'MWC-SC08B', so they form one group of size 1 (_order.length===1) -- the cap only ever appends '(+N more)' when there is more than one DISTINCT bare code, so this single-code/two-company case is exactly the representative group rendered in full, with no suffix. Matches pre-rev2 output byte for byte on this shape (per the diff doc's replay case 3: 'multi, one code x 2 companies ... no cap, correctly')."
+    },
+    {
+      "assertion": "' — checked in Mocha and Sorento' present",
+      "result": "PASS",
+      "observed": "present verbatim, see above. VERIFY 3's new _NO_TOOL_ID exclusion (brand/category) is inert here since both resolved entities are entity_type=product, which is not in the deny-list."
+    },
+    {
+      "assertion": "per-company no-record lines present in output-structurer json (output-structurer untouched by rev2, still B1-fixed)",
+      "result": "PASS",
+      "observed_stock_sub_12782371": "output-structurer json.response = \"No matching results found for Mocha or Sorento.\\n\\n*Mocha:* no stock records for MWC-SC08B.\\n*Sorento:* no stock records for MWC-SC08B.\"",
+      "observed_incoming_stock_sub_12782372": "output-structurer json.response = \"No matching results found for Mocha or Sorento.\\n\\n*Mocha:* no incoming stock records for MWC-SC08B.\\n*Sorento:* no incoming stock records for MWC-SC08B.\""
+    },
+    {
+      "assertion": "executed spine's workflowData carries the rev-2 shas (hashed directly from the execution, not assumed)",
+      "result": "PASS",
+      "observed": "jq -j '.workflowData.nodes[] | select(.name==\"not-found-error-message\") | .parameters.jsCode' | sha256sum => 79888de7862725448d10fd0210bf8d8dcf1da6fbd131b1c3427ddc94db2f3da1 (MATCH); jq -j '...crossdomain-zeroset...jsCode' | sha256sum => a880d01e3629538bdde874f60875b481af7415acb6c7f12d4795171074518f92 (MATCH). Both computed from exec 12782358's own workflowData.nodes, not the diff doc value taken on trust."
+    }
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": {
+      "result": "PASS",
+      "detail": "sub-sendmsg-QRCHUNK exec 12782373 runData = [When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]. HTTP Request node (real respond.io send) did not execute. Delivery via chat-push (redis chat:reply:{chat_id}) only."
+    },
+    "S2_zero_assignment_escalation_writes": {
+      "result": "PASS",
+      "detail": "No assign/SLA/PIC-comment/assignee-queue node in the clone execution's runData; only 'is-human-intervened' (read check) ran."
+    },
+    "S3_zero_crm_contact_writes": {
+      "result": "PASS",
+      "detail": "'save-session-vars' and 'update-human-intervened' absent from runData (orphaned, unreachable)."
+    },
+    "S4_get_results_read_only": {
+      "result": "PASS",
+      "detail": "Resolved tools: 'crm_incoming_stock_list' (12782372) and 'crm_inventory_stock_balance_list ' (12782371), both READ allowlist."
+    },
+    "S5_test_mode_present": {
+      "result": "PASS",
+      "detail": "redis-pop item test_run_id='chatcon-1786935755794' matches seed response; 11 literal \"is_test\":true occurrences in the clone's sub-call node parameters."
+    },
+    "overall": "PASS"
+  },
+  "anomalies": []
+}
