@@ -9,6 +9,13 @@
 > promote-mapping table below; no publish was involved. `not-found-error-message` and `crossdomain-zeroset` were
 > approved as-is and are **unchanged** by this revision (clone still at `63967fff-120c-4157-822e-083916fd88d0`).
 > **B3** (multi-company-with-rows UAC case) is the tester's; still open.
+>
+> **Revision 2 (second, independent fresh-context review).** Three more items, all in the clone spine:
+> **FIX 1** (MAJOR, `not-found-error-message`) — the `_multiCo` arm dropped the `(+N more)` cap for the whole turn;
+> **FIX 2** (MINOR, `crossdomain-zeroset`) — the `ex.uuid` backfill could flip `_xd.active` on a single-company turn;
+> **VERIFY 3** (MAJOR-conditional, `not-found-error-message`) — investigated and found **REACHABLE**, so narrowed.
+> Both nodes republished together to `txiPzSxy3Pclsz6v` (`33746137-f998-4105-abe3-2d591997ce39`).
+> `output-structurer` was **not** touched in revision 2 (`t4QvrtrPnTwRU6br` stays at `179f1842-…`).
 
 Backend counterpart: sorento_crm PR **#193** (merged + deployed). Wire contract, verified on a live clone run (sub-exec 12772435):
 when — and only when — a lookup/result set spans **more than one company**, the MCP render envelope gains
@@ -28,7 +35,7 @@ statement about work never done.
 | workflow | id | node | versionId pre | versionId post |
 |---|---|---|---|---|
 | `sub-get-results CS-BUILD` | `t4QvrtrPnTwRU6br` | `output-structurer` | `4eb8ad78-d5af-42ef-b899-d9baec4e1efb` | `6dbcf061-d626-4bb6-b63b-7451aeb7f827` → **`179f1842-8061-4e59-9c72-74ad2b602f29`** (B1) |
-| `sorento-consume-main TEST` (clone spine) | `txiPzSxy3Pclsz6v` | `not-found-error-message`, `crossdomain-zeroset` | `98e93d6e-41b4-4a1f-999c-5fe70daeacc6` | `63967fff-120c-4157-822e-083916fd88d0` |
+| `sorento-consume-main TEST` (clone spine) | `txiPzSxy3Pclsz6v` | `not-found-error-message`, `crossdomain-zeroset` | `98e93d6e-41b4-4a1f-999c-5fe70daeacc6` | `63967fff-120c-4157-822e-083916fd88d0` → **`33746137-f998-4105-abe3-2d591997ce39`** (rev 2) |
 
 Untouched and re-checked after both publishes: live spine `9qVyfUxmRQqrpGRMDLRuz` (`v=av=469e7259-…`, updatedAt
 2026-08-11), live sub `rysSPgUssLDf6xJc` (`v=av=eb0bbcec-…`, updatedAt 2026-08-10).
@@ -316,6 +323,32 @@ single-company no-regression guarantee — **byte-identical to the pre-mc-label 
 \ No newline at end of file
 ```
 
+
+### Review-2 dispositions on `output-structurer` (accepted as-is, no code change)
+
+**MAJOR-1 — the silent-company line names the UNION of requested codes, not that company's own codes.**
+`*Sorento:* no stock records for MWC-SC08B, ZZ1.` lists every code the turn asked about, even if Sorento's catalogue
+only ever contained one of them. **Accepted, and the statement is still factually true:** the tool was called once with
+every product id under the full scope, so a company that returned zero rows returned zero rows *for all of them*.
+Refining to per-company codes is not derivable here — for a **silent** company the envelope carries no row, therefore
+no `company_id`, therefore nothing to join its codes on; `lookup_companies` gives names and ids only, and
+`compatible_entities` (the code source) carries no company. The only way to compute it would be a second CRM read purely
+to attribute codes we already know returned nothing. Not worth it, and the current sentence is not wrong.
+
+**MAJOR-2 — the `_shownCos` join is an exact string match between two backend-supplied names.**
+Row `company_name` and `lookup_companies[].name` must agree byte-for-byte or a company with rows is wrongly declared
+silent. **Structurally prevented backend-side:** both originate from the *same* `names` map inside PR #193's single
+`stamp_lookup_companies` — one batched `db.query(Company.id, Company.name)` — which is then used for both
+`row["company_name"] = name` and `payload["lookup_companies"] = [{"id": cid, "name": names.get(cid)}]`. One query, one
+map, two consumers: a format divergence cannot arise without splitting the sources.
+
+> **NAMED CONTRACT DEPENDENCY.** If the backend ever sources row `company_name` and `lookup_companies[].name`
+> separately (a second query, a different column, per-presenter formatting, or trimming/casing on one side only), the
+> exact-string join in `_coOfRow`/`_shownCos` breaks **toward false silent lines** — a company that did return rows gets
+> a "no records" line under it. The B1 `_canAttribute` guard does **not** catch this: rows would still be attributed, so
+> `_shownCos` is non-empty and the block still speaks. If that change is ever made, join on `company_id` instead (the
+> ids are already on both sides — `lookup_companies[].id` and the row's `company_id`) and this becomes drift-proof.
+
 ---
 
 ## 2. `not-found-error-message` — qualify the resolved entities, and name the companies searched
@@ -323,8 +356,9 @@ single-company no-regression guarantee — **byte-identical to the pre-mc-label 
 * **workflow** `sorento-consume-main TEST` (clone spine, `txiPzSxy3Pclsz6v`) · **node** `not-found-error-message` (`n8n-nodes-base.code`)
 * **baseline** the **LIVE** spine's current body (334 lines). The clone's own copy was 65 lines **behind** live; building
   on the clone would have regressed live at promote, so the published body is live + this change.
-* **lines** 334 → 374
-* **sha256(`jsCode`)** old (live) `d796e28d84e302130546e750eafaa901f9d5cfb81093a4f401c616536891fee3` → new `cfd8a3804d2f4cb28acd247bc990692b19f8e58379728a2a923655c9ead982cb` (re-read from the server after publish: **MATCH**)
+* **lines** 334 → **404** (was 374 before revision 2)
+* **sha256(`jsCode`)** old (live) `d796e28d84e302130546e750eafaa901f9d5cfb81093a4f401c616536891fee3` → **new `79888de7862725448d10fd0210bf8d8dcf1da6fbd131b1c3427ddc94db2f3da1`** (re-read from the server after publish: **MATCH**; artifact rewritten from the server copy)
+* ~~`cfd8a3804d2f4cb28acd247bc990692b19f8e58379728a2a923655c9ead982cb`~~ — revision-1 body, superseded, do **not** promote
 
 > **Reviewer/tester flag — this publish also imports the live→clone drift.** Three pre-existing live hunks that the
 > clone did not have now run on the clone: the `_entitlementMiss` promotion arm, the
@@ -359,24 +393,95 @@ is byte-identical:
    `_entitlementMiss` arm deliberately does **not** take the suffix: it is about a promotion being withheld from
    this contact, not about where we looked.
 
-### Offline behaviour probe (old-live vs new, pure function replay)
-| case | result |
+### FIX 1 (review 2) — the `(+N more)` cap must count DISTINCT CODES, not labels
+
+My revision-1 arm was `if (_multiCo) { _foundLines.push(`• ${et}: ${codes.join(', ')}`); continue; }` — it skipped the
+cap **for the whole turn** whenever any two companies were in play. The reasoning ("the extra entries are the same code
+in another company") is true for *one* code and false for the *turn*: a turn resolving eight distinct products in a
+multi-company set dumped all eight into the WhatsApp reply. The cap is not incidental — it is what keeps this line a
+summary.
+
+The fix groups each type's labels by their **bare code** (insertion order preserved, so the typed-code-first reorder
+still chooses the representative), renders the representative group **in full** — naming its company variants is the
+entire point of the qualification — and counts the remaining **distinct codes**:
+
+```js
+const extra = _order.length > 1 ? ` (+${_order.length - 1} more)` : '';
+_foundLines.push(`• ${et}: ${_byCode.get(_order[0]).join(', ')}${extra}`);
+```
+
+Single-company is byte-identical by construction: `_bareLabel` is the identity there, so every label is its own group
+and this collapses to exactly `codes[0]` + `(+N more)`.
+
+### VERIFY 3 (review 2) — investigated, found REACHABLE, narrowed
+
+**Question.** `_searchedCos` was computed over **all** `compatible_entities` regardless of `entity_type`. Can the gate
+emit types that span companies but never reach the tool — making " — checked in Mocha and Sorento" a false statement
+about work not done?
+
+**Gate evidence** (`disallowed-entity-gate` fetched fresh from `txiPzSxy3Pclsz6v`, sha `7d6ad3ac6053…`). Its matrix:
+
+```js
+inventory:          ['product', 'category', 'brand'],
+incoming:           ['product', 'inbound_shipment', 'category', 'brand'],
+promotion:          ['product', 'promotion', 'category', 'brand'],
+order:              ['order', 'customer_order', 'transporter', 'customer', 'product'],
+```
+
+and the only narrowing after it is `compatible_entities = entities.filter(e => allowed.includes(e.entity_type))` (plus
+did-you-mean/document-class narrowing that never restricts to products). Cross-referencing every allowed type against
+`entity-ids-transformer`'s `TYPE_TO_PARAM` in `sub-get-results`:
+
+| | types |
 |---|---|
-| single company | **byte-identical** (message + `found_summary`) |
-| resolver returns **no** `company_name` at all (pre-#193 CRM) | **byte-identical** — `_searchedCos` is empty, `_multiCo` false |
-| single-company order (`DO123 (Acme Sdn Bhd)` label) | **byte-identical** — the suffix strip stays off |
-| two companies | `• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)` … `But no inventory matched these — checked in Mocha and Sorento. Would you like me to escalate to warehouse team?` |
-| three companies + an unresolved token | `… — checked in Mocha, Sorento and Cabana Co.`; the `Couldn't find: "zzz".` part is unchanged |
+| `TYPE_TO_PARAM` keys (reach the tool as ids) | `attachment, attachment_type, certificate, customer, customer_order, form, inbound_shipment, order, order_number, product, promotion, shipment, transporter` |
+| allowed by the gate across all domains | `attachment, attachment_type, brand, category, certificate, customer, customer_order, form, inbound_shipment, order, product, promotion, transporter` |
+| **allowed but reaching NO tool param** | **`brand`, `category`** |
 
-### Node references verified present in the clone before publishing
-`$('Aggregate')`, `$('Call \'sub-query-reformulator\'')`, `$('disallowed-entity-gate')`, `$('resolve-entity')` —
-all four extracted from the live body and confirmed by name against the clone's 148-node set. **4/4 OK.**
+**Conclusion: REACHABLE.** The reviewer's literal example (a `customer` on `domain_hint=inventory`) is *not* reachable —
+`customer` is absent from `ALLOWED.inventory` — but `category` and `brand` are, on inventory, incoming, promotion,
+master_products and product_attachment alike. The gate passes them for compatibility and the transformer then drops them
+as `unmapped_types`, so a category resolved in Mocha beside a product resolved in Sorento produced
+" — checked in Mocha and Sorento" for a lookup that only ever queried Sorento's product id. I also sampled 30 recent
+spine executions (667 resolver matches): `company_name` is carried on `product`, `customer`, `promotion`,
+`customer_order` and (null-valued) `attachment_type` — so the field is real and general; no `brand`/`category` match
+appeared in that sample, which makes this rare rather than impossible.
 
-### Unified diff (vs the LIVE pre-change body)
+**Narrowing chosen** — exclude the types that carry no tool parameter:
+
+```js
+const _NO_TOOL_ID = new Set(['brand', 'category']);
+```
+
+A **deny**-list rather than an allow-list, deliberately: every other allowed type does carry a tool param today, and if
+the CRM later gives `category` one, this **under**-claims (omits a company we did search) instead of over-claiming.
+Silence is recoverable; a false statement about work not done is not. This touches `_searchedCos` only — `_byType` still
+renders brand/category bullets exactly as before.
+
+### Offline behaviour probe — re-run after review 2 (8 shapes, three-way replay)
+
+Replayed against the **live pre-change body**, the **revision-1 publish** (`cfd8a380…`) and the **published body**
+(`79888de7…`).
+
+| # | case | vs live baseline | vs rev-1 publish | rendered |
+|---|---|---|---|---|
+| 1 | single company, 1 code | **identical** | identical | `• product: MWC-SC08B` |
+| 2 | single company, **8 distinct products** | **identical** | identical | `• product: P0 (+7 more)` |
+| 3 | multi, one code × 2 companies | differs (intended) | identical | `• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)` — no cap, correctly |
+| **4** | **multi, 8 distinct products** | differs (intended) | **DIFFERS — FIX 1** | `• product: P0 (Mocha) (+7 more)`; rev-1 dumped all eight |
+| **5** | **multi, rep × 2 companies + 3 other codes** | differs (intended) | **DIFFERS — FIX 1** | `• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento) (+3 more)`; rev-1 listed all five |
+| **6** | **VERIFY 3** — product (Sorento) + **category** (Mocha) | **identical** | **DIFFERS — VERIFY 3** | no suffix, no qualification; rev-1 falsely said "checked in Sorento and Mocha" |
+| **7** | **VERIFY 3** — product (Sorento) + **brand** (Mocha) | **identical** | **DIFFERS — VERIFY 3** | as above |
+| 8 | VERIFY 3 must not over-narrow: order (Sorento) + **customer** (Mocha) | differs (intended) | identical | still multi — `customer` does reach a tool param |
+
+Case 8 is the guard against over-narrowing, and cases 6/7 return to **byte-identity with the live baseline**, because
+once the non-queried type is excluded the turn is single-company and nothing should have changed at all.
+
+### Unified diff (vs the LIVE pre-change body — the whole mc-label change, revision 2 included)
 ```diff
---- a/not-found-error-message.js (LIVE spine 9qVyfUxmRQqrpGRMDLRuz, pre)
-+++ b/not-found-error-message.js (published to clone)
-@@ -137,12 +137,39 @@
+--- a/not-found-error-message.js (LIVE spine, pre-change)
++++ b/not-found-error-message.js (published, incl. review-2 fixes)
+@@ -137,12 +137,55 @@
    for (const res of (Array.isArray(r?.resolutions) ? r.resolutions : [])) {
      if ((res.matches ?? []).some(m => _compatUuids.has(m.uuid))) _resolvedToks.add(normRaw(res.token));
    }
@@ -395,7 +500,23 @@ all four extracted from the live body and confirmed by name against the clone's 
 +  // Keyed to what was ACTUALLY sent to the tool (`_compat`), NEVER to the caller's access list:
 +  // a contact entitled to three companies who asked about a one-company product searched ONE, and
 +  // "checked in Mocha, Sorento and Cabana" would be a false statement about work never done.
-+  const _searchedCos = [...new Set(_compat.map(c => _coByUuid.get(c.uuid)).filter(Boolean))];
++  // VERIFY 3 (review 2, 2026-08-17). Only entity types that actually become TOOL IDS may
++  // contribute to a claim about what was searched. `sub-get-results`' entity-ids-transformer maps
++  // entity_type -> an `*_ids` tool param, and `brand` / `category` appear in NEITHER map: the gate
++  // lets them through for compatibility (ALLOWED.inventory = ['product','category','brand'],
++  // ALLOWED.incoming adds inbound_shipment) and the transformer then drops them as
++  // `unmapped_types`. So a category or brand resolved in Mocha, beside a product resolved in
++  // Sorento, would make " — checked in Mocha and Sorento" a false statement about a lookup that
++  // only ever queried Sorento's product id.
++  // DENY-list, not an allow-list, ON PURPOSE: every other allowed type (product, promotion, order,
++  // customer_order, customer, transporter, form, inbound_shipment, attachment, attachment_type,
++  // certificate) does carry a tool param today, and if the CRM later gives `category` one this
++  // UNDER-claims — it omits a company we did search — instead of over-claiming. Silence is
++  // recoverable; a false statement about work not done is not.
++  const _NO_TOOL_ID = new Set(['brand', 'category']);
++  const _searchedCos = [...new Set(_compat
++    .filter(c => !_NO_TOOL_ID.has(String((c && c.entity_type) ?? '')))
++    .map(c => _coByUuid.get(c.uuid)).filter(Boolean))];
 +  const _multiCo = _searchedCos.length > 1;
 +  // "Mocha and Sorento"; "A, B and C" beyond two.
 +  const _andList = (a) => a.length <= 1
@@ -418,7 +539,7 @@ all four extracted from the live body and confirmed by name against the clone's 
      if (!_byType.has(et)) _byType.set(et, []);
      const arr = _byType.get(et);
      if (!arr.includes(label)) arr.push(label);
-@@ -151,8 +178,13 @@
+@@ -151,8 +194,13 @@
    // representative. `_compat` order is arbitrary, so codes[0] could name a sibling variant
    // (SRTSH1040-T for a typed SRTSH1040), reading as if we looked up a different product.
    const _tokSet = new Set(tokens.map(t => String(t ?? '').trim().toLowerCase()).filter(Boolean));
@@ -433,17 +554,37 @@ all four extracted from the live body and confirmed by name against the clone's 
      if (i > 0) arr.unshift(arr.splice(i, 1)[0]);
    }
    // ── entitlement miss ≠ data miss ─────────────────────────────────────────────
-@@ -201,6 +233,9 @@
+@@ -201,9 +249,26 @@
  
    const _foundLines = [];
    for (const [et, codes] of _byType) {
-+    // mc-label: in the multi-company case the extra entries are the SAME code in another company,
-+    // not other products, so "(+1 more)" hides the one fact this change exists to state. Name them.
-+    if (_multiCo) { _foundLines.push(`• ${et}: ${codes.join(', ')}`); continue; }
-     // one representative per type + count; true ambiguity is handled by the gate (did-you-mean)
-     const extra = codes.length > 1 ? ` (+${codes.length - 1} more)` : '';
-     _foundLines.push(`• ${et}: ${codes[0]}${extra}`);
-@@ -211,13 +246,18 @@
+-    // one representative per type + count; true ambiguity is handled by the gate (did-you-mean)
+-    const extra = codes.length > 1 ? ` (+${codes.length - 1} more)` : '';
+-    _foundLines.push(`• ${et}: ${codes[0]}${extra}`);
++    // one representative per type + count; true ambiguity is handled by the gate (did-you-mean).
++    // FIX 1 (review 2, 2026-08-17). The cap is over DISTINCT CODES, not over labels. My first
++    // version skipped it entirely whenever `_multiCo`, on the reasoning that the extra entries are
++    // the same code in another company — true for ONE code, false for the turn: a turn that
++    // resolved eight distinct products in a multi-company set dumped all eight into the WhatsApp
++    // reply. The cap is not incidental, it is what keeps this line a summary.
++    // So: group the type's labels by their BARE code (insertion order preserved, so the
++    // typed-code-first reorder above still chooses the representative), render the representative
++    // group IN FULL — naming its company variants is the entire point of the qualification — and
++    // count the remaining DISTINCT CODES. Single-company is byte-identical: `_bareLabel` is the
++    // identity there, so every label is its own group and this collapses to `codes[0]` + (+N).
++    const _order = [];
++    const _byCode = new Map();
++    for (const l of codes) {
++      const bare = _bareLabel(l);
++      if (!_byCode.has(bare)) { _byCode.set(bare, []); _order.push(bare); }
++      _byCode.get(bare).push(l);
++    }
++    const extra = _order.length > 1 ? ` (+${_order.length - 1} more)` : '';
++    _foundLines.push(`• ${et}: ${_byCode.get(_order[0]).join(', ')}${extra}`);
+   }
+   _found_summary = _foundLines.join('\n');   // datemiss-summary: reused by build-suggest-offer
+   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
+@@ -211,13 +276,18 @@
    const _useBreakdown = _foundLines.length > 0;
    // notFoundRaw override lets a branch fold some unresolved tokens into the searched noun
    // instead of listing them as "couldn't find" (e.g. attachment qualifiers like "SPAN").
@@ -465,14 +606,79 @@ all four extracted from the live body and confirmed by name against the clone's 
  
 ```
 
+### Isolated review-2 hunks (rev-1 `cfd8a380…` → published `79888de7…`)
+```diff
+--- a/not-found-error-message.js (review-1 publish)
++++ b/not-found-error-message.js (review-2: FIX 1 + VERIFY 3)
+@@ -152,7 +152,23 @@
+   // Keyed to what was ACTUALLY sent to the tool (`_compat`), NEVER to the caller's access list:
+   // a contact entitled to three companies who asked about a one-company product searched ONE, and
+   // "checked in Mocha, Sorento and Cabana" would be a false statement about work never done.
+-  const _searchedCos = [...new Set(_compat.map(c => _coByUuid.get(c.uuid)).filter(Boolean))];
++  // VERIFY 3 (review 2, 2026-08-17). Only entity types that actually become TOOL IDS may
++  // contribute to a claim about what was searched. `sub-get-results`' entity-ids-transformer maps
++  // entity_type -> an `*_ids` tool param, and `brand` / `category` appear in NEITHER map: the gate
++  // lets them through for compatibility (ALLOWED.inventory = ['product','category','brand'],
++  // ALLOWED.incoming adds inbound_shipment) and the transformer then drops them as
++  // `unmapped_types`. So a category or brand resolved in Mocha, beside a product resolved in
++  // Sorento, would make " — checked in Mocha and Sorento" a false statement about a lookup that
++  // only ever queried Sorento's product id.
++  // DENY-list, not an allow-list, ON PURPOSE: every other allowed type (product, promotion, order,
++  // customer_order, customer, transporter, form, inbound_shipment, attachment, attachment_type,
++  // certificate) does carry a tool param today, and if the CRM later gives `category` one this
++  // UNDER-claims — it omits a company we did search — instead of over-claiming. Silence is
++  // recoverable; a false statement about work not done is not.
++  const _NO_TOOL_ID = new Set(['brand', 'category']);
++  const _searchedCos = [...new Set(_compat
++    .filter(c => !_NO_TOOL_ID.has(String((c && c.entity_type) ?? '')))
++    .map(c => _coByUuid.get(c.uuid)).filter(Boolean))];
+   const _multiCo = _searchedCos.length > 1;
+   // "Mocha and Sorento"; "A, B and C" beyond two.
+   const _andList = (a) => a.length <= 1
+@@ -233,12 +249,26 @@
+ 
+   const _foundLines = [];
+   for (const [et, codes] of _byType) {
+-    // mc-label: in the multi-company case the extra entries are the SAME code in another company,
+-    // not other products, so "(+1 more)" hides the one fact this change exists to state. Name them.
+-    if (_multiCo) { _foundLines.push(`• ${et}: ${codes.join(', ')}`); continue; }
+-    // one representative per type + count; true ambiguity is handled by the gate (did-you-mean)
+-    const extra = codes.length > 1 ? ` (+${codes.length - 1} more)` : '';
+-    _foundLines.push(`• ${et}: ${codes[0]}${extra}`);
++    // one representative per type + count; true ambiguity is handled by the gate (did-you-mean).
++    // FIX 1 (review 2, 2026-08-17). The cap is over DISTINCT CODES, not over labels. My first
++    // version skipped it entirely whenever `_multiCo`, on the reasoning that the extra entries are
++    // the same code in another company — true for ONE code, false for the turn: a turn that
++    // resolved eight distinct products in a multi-company set dumped all eight into the WhatsApp
++    // reply. The cap is not incidental, it is what keeps this line a summary.
++    // So: group the type's labels by their BARE code (insertion order preserved, so the
++    // typed-code-first reorder above still chooses the representative), render the representative
++    // group IN FULL — naming its company variants is the entire point of the qualification — and
++    // count the remaining DISTINCT CODES. Single-company is byte-identical: `_bareLabel` is the
++    // identity there, so every label is its own group and this collapses to `codes[0]` + (+N).
++    const _order = [];
++    const _byCode = new Map();
++    for (const l of codes) {
++      const bare = _bareLabel(l);
++      if (!_byCode.has(bare)) { _byCode.set(bare, []); _order.push(bare); }
++      _byCode.get(bare).push(l);
++    }
++    const extra = _order.length > 1 ? ` (+${_order.length - 1} more)` : '';
++    _foundLines.push(`• ${et}: ${_byCode.get(_order[0]).join(', ')}${extra}`);
+   }
+   _found_summary = _foundLines.join('\n');   // datemiss-summary: reused by build-suggest-offer
+   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
+```
+
 ---
 
 ## 3. `crossdomain-zeroset` — probe every company's product, not just the first
 
 * **workflow** `sorento-consume-main TEST` (clone spine, `txiPzSxy3Pclsz6v`) · **node** `crossdomain-zeroset` (`n8n-nodes-base.code`)
 * **baseline** clone current, **byte-identical to the live spine's copy** (both sha `2c3b4fff…` as `jq -r` files)
-* **lines** 104 → 138
-* **sha256(`jsCode`)** old `2eef3fa37454d5931e50747631df0463e152afdd58e6aeecea0a804040646245` → new `2c562c7e974fa043e5bffe12b10ab97ed523c19df04196a1980119a2e4d4ff42` (re-read from the server after publish: **MATCH**)
+* **lines** 104 → **143** (was 138 before revision 2)
+* **sha256(`jsCode`)** old `2eef3fa37454d5931e50747631df0463e152afdd58e6aeecea0a804040646245` → **new `a880d01e3629538bdde874f60875b481af7415acb6c7f12d4795171074518f92`** (re-read from the server after publish: **MATCH**; artifact rewritten from the server copy)
+* ~~`2c562c7e974fa043e5bffe12b10ab97ed523c19df04196a1980119a2e4d4ff42`~~ — revision-1 body, superseded, do **not** promote
 
 ### Before / after intent
 **Before.** The requested set is deduped by **code**, and both `_add()` and `_uuidByCode` were **first-wins** on the
@@ -485,6 +691,11 @@ when it had never been asked about.
 
 * `_add()` accumulates into a new `uuids` array. `uuid` still holds the first one, so `missing[].uuid` and the
   `probeable = missing.filter(m => m.uuid)` filter keep the exact shape their consumers read.
+  **FIX 2 (review 2):** revision 1 also carried `if (!ex.uuid) ex.uuid = ex.uuids[0] || null;`. That backfill reaches
+  outside this change's blast radius — on a turn where the FIRST `_add` for a code carried no uuid and a later one did,
+  it promoted the entry into `probeable` and flipped `_xd.active` **false → true**, starting a cross-domain probe that
+  does not run today. Removed; `uuid` keeps first-add semantics exactly as before mc-label. The `uuids` union
+  accumulation itself is unchanged — that is the actual feature.
 * `_uuidByCode` maps code → **all** uuids (it feeds the DYM-picked `_add` calls, which now accept an array).
 * `missing[]` gains a `uuids` key **only when the code really spans companies** — so a single-company turn's
   `_xd.missing` keeps exactly the keys it has today. This matters: `_xd.missing` is read by `crossdomain-render`
@@ -501,19 +712,28 @@ when it had never been asked about.
 | `compile-current-state` | `zs.missing[].code` | unchanged; the extra `uuids` key is inert |
 | `attach-merge` | `_xdBlock` | untouched |
 
-### Offline behaviour probe (old vs new, pure function replay)
-| case | result |
-|---|---|
-| single company | `_xd` **byte-identical** |
-| multi-company w/ a returned row (nothing missing) | `_xd` **byte-identical** (`active:false`, `missing:[]`) |
-| two companies, both missing | `missing[0].uuids: ["u1","u2"]`; `probe_entities` gains the second `{uuid:"u2", entity_type:"product", code:"MWC-SC08B"}` |
-| DYM-picked code spanning two companies | same union, via the rewritten `_uuidByCode` |
+### Offline behaviour probe — re-run after review 2 (6 shapes, three-way replay)
 
-### Unified diff (vs the clone pre-change body)
+Replayed against the **live/clone pre-change body**, the **revision-1 publish** (`2c562c7e…`) and the **published body**
+(`a880d01e…`). Compared on the whole `_xd` object.
+
+| # | case | vs pre-change baseline | vs rev-1 publish | `_xd` |
+|---|---|---|---|---|
+| 1 | single company, exact | **identical** | identical | `active:true`, one uuid |
+| 2 | two companies, both missing | differs (intended) | identical | `missing[0].uuids:["u1","u2"]`, 2 `probe_entities` |
+| **3** | **FIX 2 shape** — first `_add` for the code is uuid-less, a later resolution supplies one | **identical** | **DIFFERS — FIX 2** | new: `active:false`, `uuid:null`, no probe. Rev-1: `active:true`, `uuid:"u9"`, **a probe that does not run today** |
+| 4 | DYM-picked, single company | **identical** | identical | unchanged |
+| 5 | DYM-picked spanning two companies | differs (intended) | identical | union via the rewritten `_uuidByCode` |
+| 6 | a row was returned ⇒ nothing missing | **identical** | identical | `active:false`, `missing:[]` |
+
+Case 3 reproduces the reviewer's finding exactly, and the fixed body is **byte-identical to the pre-change baseline**
+there — which is the whole point: that shape is outside what mc-label was supposed to change.
+
+### Unified diff (vs the clone pre-change body — the whole change, FIX 2 included)
 ```diff
---- a/crossdomain-zeroset.js (clone txiPzSxy3Pclsz6v, pre)
-+++ b/crossdomain-zeroset.js (published)
-@@ -39,21 +39,41 @@
+--- a/crossdomain-zeroset.js (clone, pre-change)
++++ b/crossdomain-zeroset.js (published, incl. FIX 2)
+@@ -39,21 +39,46 @@
  const _isProd = m => m && String(m.entity_type).toLowerCase() === 'product';
  const requested = [];
  const _seen = new Set();
@@ -535,7 +755,12 @@ when it had never been asked about.
 +    if (ex) {
 +      if (strict) ex.strict = true;
 +      for (const u of us) if (!ex.uuids.includes(u)) ex.uuids.push(u);
-+      if (!ex.uuid) ex.uuid = ex.uuids[0] || null;
++      // FIX 2 (review 2, 2026-08-17): NO backfill of `ex.uuid`. It used to read
++      // `if (!ex.uuid) ex.uuid = ex.uuids[0] || null;`, which reaches outside this change's blast
++      // radius: on a turn where the FIRST `_add` for a code carried no uuid and a later one did,
++      // it promoted the entry into `probeable` and flipped `_xd.active` false -> true, starting a
++      // cross-domain probe that does not run today. `uuid` keeps first-add semantics exactly as it
++      // did before mc-label; only the `uuids` union above is new.
 +    }
      return;
    }
@@ -558,7 +783,7 @@ when it had never been asked about.
    }
  }
  if (_or) {
-@@ -87,7 +107,14 @@
+@@ -87,7 +112,14 @@
    let ok = false;
    if (rq.strict) ok = returnedCodes.has(rq._n);
    else for (const rc of returnedCodes) if (rc === rq._n || rc.startsWith(rq._n)) { ok = true; break; }
@@ -574,7 +799,7 @@ when it had never been asked about.
  }
  const probeable = missing.filter(m => m.uuid);
  
-@@ -99,6 +126,13 @@
+@@ -99,6 +131,13 @@
    requested: requested.map(r => r.code),
    returned_codes: [...returnedCodes],
    missing,
@@ -592,18 +817,38 @@ when it had never been asked about.
 \ No newline at end of file
 ```
 
+### Isolated review-2 hunk (rev-1 `2c562c7e…` → published `a880d01e…`)
+```diff
+--- a/crossdomain-zeroset.js (review-1 publish)
++++ b/crossdomain-zeroset.js (review-2: FIX 2)
+@@ -56,7 +56,12 @@
+     if (ex) {
+       if (strict) ex.strict = true;
+       for (const u of us) if (!ex.uuids.includes(u)) ex.uuids.push(u);
+-      if (!ex.uuid) ex.uuid = ex.uuids[0] || null;
++      // FIX 2 (review 2, 2026-08-17): NO backfill of `ex.uuid`. It used to read
++      // `if (!ex.uuid) ex.uuid = ex.uuids[0] || null;`, which reaches outside this change's blast
++      // radius: on a turn where the FIRST `_add` for a code carried no uuid and a later one did,
++      // it promoted the entry into `probeable` and flipped `_xd.active` false -> true, starting a
++      // cross-domain probe that does not run today. `uuid` keeps first-add semantics exactly as it
++      // did before mc-label; only the `uuids` union above is new.
+     }
+     return;
+   }
+```
+
 ---
 
 ## Verification evidence (all re-read from the server after publish)
 
-Two columns for `t4QvrtrPnTwRU6br`: the first publish and the B1 republish. `txiPzSxy3Pclsz6v` was **not** rewritten
-for B1 — `not-found-error-message` and `crossdomain-zeroset` were approved as-is.
+`t4QvrtrPnTwRU6br` last written in **revision 1** (B1); `txiPzSxy3Pclsz6v` last written in **revision 2**
+(FIX 1 + FIX 2 + VERIFY 3). Every row below was re-read from the server after the write that owns it.
 
-| check | `t4QvrtrPnTwRU6br` (B1 republish) | `txiPzSxy3Pclsz6v` (unchanged since first publish) |
+| check | `t4QvrtrPnTwRU6br` (B1 republish) | `txiPzSxy3Pclsz6v` (revision-2 republish) |
 |---|---|---|
 | PUT / activate HTTP | 200 / 200 (both passes) | 200 / 200 |
-| pre-edit `v == av`, no stale draft | ✅ `6dbcf061-…`, and the node's sha still equalled my first publish — **live had not moved** | n/a this pass |
-| `versionId == activeVersionId` | ✅ `179f1842-8061-4e59-9c72-74ad2b602f29` | ✅ `63967fff-120c-4157-822e-083916fd88d0` |
+| pre-edit `v == av`, no stale draft | ✅ `6dbcf061-…`, node sha still equalled my first publish — **had not moved** | ✅ `63967fff-…`, both node shas still equalled revision 1 — **had not moved** |
+| `versionId == activeVersionId` | ✅ `179f1842-8061-4e59-9c72-74ad2b602f29` | ✅ `33746137-f998-4105-abe3-2d591997ce39` |
 | `active` | true | true |
 | node count unchanged | 8 → 8 | 148 → 148 |
 | `connections` identical to pre | ✅ | ✅ |
@@ -623,9 +868,9 @@ Live workflows re-checked after the B1 republish, all still unchanged:
 **Artifact sha256 as committed (these are the promote bytes):**
 
 ```
-25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de  output-structurer.js        (B1-fixed; supersedes 8b68273f…)
-cfd8a3804d2f4cb28acd247bc990692b19f8e58379728a2a923655c9ead982cb  not-found-error-message.js
-2c562c7e974fa043e5bffe12b10ab97ed523c19df04196a1980119a2e4d4ff42  crossdomain-zeroset.js
+25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de  output-structurer.js        (rev 1 / B1; supersedes 8b68273f…)
+79888de7862725448d10fd0210bf8d8dcf1da6fbd131b1c3427ddc94db2f3da1  not-found-error-message.js  (rev 2 / FIX 1 + VERIFY 3; supersedes cfd8a380…)
+a880d01e3629538bdde874f60875b481af7415acb6c7f12d4795171074518f92  crossdomain-zeroset.js      (rev 2 / FIX 2; supersedes 2c562c7e…)
 ```
 
 Each artifact was written **from the server's own copy** after publish, so a repo/live divergence is not possible;

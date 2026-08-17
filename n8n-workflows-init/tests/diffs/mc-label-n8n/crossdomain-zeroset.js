@@ -56,7 +56,12 @@ const _add = (code, uuid, strict) => {
     if (ex) {
       if (strict) ex.strict = true;
       for (const u of us) if (!ex.uuids.includes(u)) ex.uuids.push(u);
-      if (!ex.uuid) ex.uuid = ex.uuids[0] || null;
+      // FIX 2 (review 2, 2026-08-17): NO backfill of `ex.uuid`. It used to read
+      // `if (!ex.uuid) ex.uuid = ex.uuids[0] || null;`, which reaches outside this change's blast
+      // radius: on a turn where the FIRST `_add` for a code carried no uuid and a later one did,
+      // it promoted the entry into `probeable` and flipped `_xd.active` false -> true, starting a
+      // cross-domain probe that does not run today. `uuid` keeps first-add semantics exactly as it
+      // did before mc-label; only the `uuids` union above is new.
     }
     return;
   }

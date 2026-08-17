@@ -152,7 +152,23 @@ if (missingAttachmentType) {
   // Keyed to what was ACTUALLY sent to the tool (`_compat`), NEVER to the caller's access list:
   // a contact entitled to three companies who asked about a one-company product searched ONE, and
   // "checked in Mocha, Sorento and Cabana" would be a false statement about work never done.
-  const _searchedCos = [...new Set(_compat.map(c => _coByUuid.get(c.uuid)).filter(Boolean))];
+  // VERIFY 3 (review 2, 2026-08-17). Only entity types that actually become TOOL IDS may
+  // contribute to a claim about what was searched. `sub-get-results`' entity-ids-transformer maps
+  // entity_type -> an `*_ids` tool param, and `brand` / `category` appear in NEITHER map: the gate
+  // lets them through for compatibility (ALLOWED.inventory = ['product','category','brand'],
+  // ALLOWED.incoming adds inbound_shipment) and the transformer then drops them as
+  // `unmapped_types`. So a category or brand resolved in Mocha, beside a product resolved in
+  // Sorento, would make " — checked in Mocha and Sorento" a false statement about a lookup that
+  // only ever queried Sorento's product id.
+  // DENY-list, not an allow-list, ON PURPOSE: every other allowed type (product, promotion, order,
+  // customer_order, customer, transporter, form, inbound_shipment, attachment, attachment_type,
+  // certificate) does carry a tool param today, and if the CRM later gives `category` one this
+  // UNDER-claims — it omits a company we did search — instead of over-claiming. Silence is
+  // recoverable; a false statement about work not done is not.
+  const _NO_TOOL_ID = new Set(['brand', 'category']);
+  const _searchedCos = [...new Set(_compat
+    .filter(c => !_NO_TOOL_ID.has(String((c && c.entity_type) ?? '')))
+    .map(c => _coByUuid.get(c.uuid)).filter(Boolean))];
   const _multiCo = _searchedCos.length > 1;
   // "Mocha and Sorento"; "A, B and C" beyond two.
   const _andList = (a) => a.length <= 1
@@ -233,12 +249,26 @@ if (missingAttachmentType) {
 
   const _foundLines = [];
   for (const [et, codes] of _byType) {
-    // mc-label: in the multi-company case the extra entries are the SAME code in another company,
-    // not other products, so "(+1 more)" hides the one fact this change exists to state. Name them.
-    if (_multiCo) { _foundLines.push(`• ${et}: ${codes.join(', ')}`); continue; }
-    // one representative per type + count; true ambiguity is handled by the gate (did-you-mean)
-    const extra = codes.length > 1 ? ` (+${codes.length - 1} more)` : '';
-    _foundLines.push(`• ${et}: ${codes[0]}${extra}`);
+    // one representative per type + count; true ambiguity is handled by the gate (did-you-mean).
+    // FIX 1 (review 2, 2026-08-17). The cap is over DISTINCT CODES, not over labels. My first
+    // version skipped it entirely whenever `_multiCo`, on the reasoning that the extra entries are
+    // the same code in another company — true for ONE code, false for the turn: a turn that
+    // resolved eight distinct products in a multi-company set dumped all eight into the WhatsApp
+    // reply. The cap is not incidental, it is what keeps this line a summary.
+    // So: group the type's labels by their BARE code (insertion order preserved, so the
+    // typed-code-first reorder above still chooses the representative), render the representative
+    // group IN FULL — naming its company variants is the entire point of the qualification — and
+    // count the remaining DISTINCT CODES. Single-company is byte-identical: `_bareLabel` is the
+    // identity there, so every label is its own group and this collapses to `codes[0]` + (+N).
+    const _order = [];
+    const _byCode = new Map();
+    for (const l of codes) {
+      const bare = _bareLabel(l);
+      if (!_byCode.has(bare)) { _byCode.set(bare, []); _order.push(bare); }
+      _byCode.get(bare).push(l);
+    }
+    const extra = _order.length > 1 ? ` (+${_order.length - 1} more)` : '';
+    _foundLines.push(`• ${et}: ${_byCode.get(_order[0]).join(', ')}${extra}`);
   }
   _found_summary = _foundLines.join('\n');   // datemiss-summary: reused by build-suggest-offer
   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
