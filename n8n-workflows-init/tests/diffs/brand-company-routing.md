@@ -33,10 +33,10 @@ divert-suggest-yes, escalation-context`. Nothing else moved.
 
 | node (clone id) | change | ops |
 |---|---|---|
-| `disallowed-entity-gate` (`b07ca5db-…`) §3.1 | **Rebase** jsCode → live body (`5928ae64-…`), then append the routing-axes hunk inside the `#9` block right after `out.resolved_companies = _brands;`. Emits `routing_brand`, `routing_brand_source` (`resolved|stated|access_level|null`), `routing_companies[{company_id,company_name,brand_code,codes}]` (sorted by company_name), `routing_company` (id iff exactly one). | `setNodeParameter /jsCode` |
+| `disallowed-entity-gate` (`b07ca5db-…`) §3.1 | **Rebase** jsCode → live body (`5928ae64-…`), then append the routing-axes hunk inside the `#9` block right after `out.resolved_companies = _brands;`. Emits `routing_brand`, `routing_brand_source` (`resolved|stated|null` — the `access_level` guess was removed in rev-3, §1b), `routing_companies[{company_id,company_name,brand_code,codes}]` (sorted by company_name), `routing_company` (id iff exactly one). | `setNodeParameter /jsCode` |
 | `cs-roster-plan` (NEW, `9ac0159b-ff73-4b0c-9b63-fc4870bd3d2c`, code v2, pos [11520,2112]) §3.2 | One item per `routing_companies` entry (`plan_idx, company_id, company_name, brand_code, codes, multi_company, companies`); when the gate did not run / no companies → ONE fallback item with null company/brand (today's single call). | `addNode`; `removeConnection cs-offer-gate[0]→get-cs-members`; `addConnection cs-offer-gate[0]→cs-roster-plan`; `addConnection cs-roster-plan→get-cs-members` |
 | `get-cs-members` (`get-cs-members-node`) §3.3 | `url` += `{{ $json.brand_code ? '&brand_code=' + encodeURIComponent($json.brand_code) : '' }}{{ $json.company_id ? '&company_id=' + encodeURIComponent($json.company_id) : '' }}` (agent/team/tier/contact_id part byte-identical); `options.response.response.fullResponse=true` (1 output item per input item, roster under `.body`); node setting `onError: continueRegularOutput`. Credentials NOT touched (still `httpHeaderAuth`). | `setNodeParameter /url`; `updateNodeParameters {options:{response:{response:{fullResponse:true}}}}` (deep-merge); `setNodeSettings {onError}` |
-| `build-cs-member-offer` (`build-cs-member-offer-node`) §3.4 | Whole body replaced. Reads `plan=$('cs-roster-plan').all()`, `resp=$('get-cs-members').all()`; roster_i = `resp[i].body` (tolerates legacy `json=array` / split-per-member shapes; an `error` item ⇒ `[]`); filters `user_id && respond_user_id`; stamps `company_id/company_name/brand_code` from plan[i]; dedupes by `user_id` across companies (first wins, `companies[]` collects all). `members.length===0` ⇒ unchanged fallback (`member_offer=false`, `cs_last_result_set=[]`). Single company ⇒ text **byte-identical** to today. Multi ⇒ `Note: <codes> is carried by more than one company (<A> and <B>), so I am listing the customer-service team members from both — that is why there are more names than usual. Please choose who to route to (reply with the number):` + `A:` / `n. Name (A)` groups (continuous numbering) + `[ C: no customer-service members are configured — omitted. ]` for an empty company + `If you have no preference, just reply 'yes' and we'll assign automatically.` `cs_last_result_set[]` rows += `company_id, company_name, brand_code` (null on the fallback item). `out.routing_companies = plan` (evidence). | `setNodeParameter /jsCode` |
+| `build-cs-member-offer` (`build-cs-member-offer-node`) §3.4 | Whole body replaced. Reads `plan=$('cs-roster-plan').all()`, `resp=$('get-cs-members').all()`; roster_i = `resp[i].body` (tolerates legacy `json=array` / split-per-member shapes; an `error` item ⇒ `[]`); filters `user_id && respond_user_id`; stamps `company_id/company_name/brand_code` from plan[i]; dedupes by `user_id` across companies (first wins, `companies[]` collects all). `members.length===0` ⇒ unchanged fallback (`member_offer=false`, `cs_last_result_set=[]`). Single company ⇒ text **byte-identical** to today. Multi ⇒ `Note: <codes> is/are carried by more than one company (<A> and <B> / <A>, <B> and <C>), so I am listing the customer-service team members from each of them — that is why there are more names than usual. Please choose who to route to (reply with the number):` + `A:` / `n. Name (A)` groups (continuous numbering) + `[ C: no customer-service members are configured — omitted. ]` for an empty company + `If you have no preference, just reply 'yes' and we'll assign automatically.` `cs_last_result_set[]` rows += `company_id, company_name, brand_code` (null on the fallback item). `out.routing_companies = plan` (evidence). | `setNodeParameter /jsCode` |
 | `compile-current-state` (`7a130a0c-…`) §3.5 | Additive hunk inserted between `if (_dymLastResultSet) …` and `return output;` (anchor present exactly once on clone AND live): persists `variables.routing_brand / routing_brand_source / routing_company / routing_companies` — fresh from the gate when it resolved ≥1 company, else carried from prior state ONLY when `prev.routing.suggested_team === qf.routing.suggested_team`, else null. Keys always present (null-inert for replay norm). | `setNodeParameter /jsCode` |
 | `escalation-context` (NEW, `f014f4d5-074d-474b-a521-b26e27153689`, code v2, pos [12304,4144]) §3.6 | Spreads the incoming item and adds `brand_code, company_id, company_name, routing_source (picked_member|prior_state|multi_company_unpicked|prior_state_no_company|stated_brand|none), team`. Sources: picked member row in `prev.last_result_set` (by `preferred_assignee_id`) → same-team prior state → stated `query_brands[0]`. | `addNode`; `removeConnection divert-suggest-yes[1]→Call 'sub-human-intervention'`; `addConnection divert-suggest-yes[1]→escalation-context`; `addConnection escalation-context→Call 'sub-human-intervention'` (`divert-suggest-yes[1]→tag-out-of-scope` kept) |
 | `Call 'sub-human-intervention'` (`133fcc06-…`) §3.7 | `workflowInputs.value.brand_code = ={{ $('escalation-context').first().json.brand_code || '' }}`, `.company_id = ={{ … .company_id || '' }}`; `workflowInputs.schema` += `{id:'brand_code',type:'string',removed:false}`, `{id:'company_id',…}` (12 existing entries unchanged). Still targets the fork `vUfFUDjLAuMaeQE6`, still `is_test: true`. | `setNodeParameter /workflowInputs/value/brand_code`, `…/company_id`, `…/schema` |
@@ -62,6 +62,25 @@ brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? pre
 - sha256 `escalation-context.jsCode`: rev-1 `d8196aa2dc47d4f5ccd31f57bf0fd33de9df3d3dbc8a4b377d4f17db55daf63f` →
   rev-2 `ce8c6417bd5bda0d1652af32d44fb2b70dd7572b11da6f5847d41f58cb5c947d` (re-fetched body == intended).
   `diffs/brand-company-routing/spine-escalation-context.js` updated to the rev-2 body.
+
+### 1b. rev-3 patch (review round, captain-decided) — repo bodies only, **clone republish PENDING**
+
+Review of the rev-2 branch surfaced three defects and one copy issue. The captain's decisions are applied to the **committed
+bodies under `tests/diffs/brand-company-routing/`**, which are from here on the **reviewed source of truth** for the promote.
+The spine clone `txiPzSxy3Pclsz6v` still runs the rev-2 bodies (`e816e2da-…`): **the clone republish of rev-3 and the
+re-run of UAC B2/B3/B3rev2 against it are PENDING**, tracked in the promote/verify checklist (review §4 P3/P6). Until then the
+§5 sha table and the tester rollup describe rev-2, not the files. No n8n instance was touched by this round; `tests/backups/`
+untouched.
+
+| # | body | change | why |
+|---|---|---|---|
+| 1 | `spine-escalation-context.js` | picked-member arm condition `if (row && row.company_id)` → `if (row)`, `company_id = row.company_id \|\| null` | The rev-2 pool-identity rule only fired when the picked row carried a company. A row from the `cs-roster-plan` fallback item (company null, brand stamped from `routing_brand`) fell into the `sameTeam` arm, where `qb \|\| prev.routing_brand` could send a *different* brand than the roster call used — the exact pool disagreement rev-2 was written to close. The row's own `brand_code` is now authoritative whenever the row matched. |
+| 2 | `spine-disallowed-entity-gate.js` | `_acc` / `_accBrand` removed; `_qb` requires `query_brands.length === 1`; `routing_brand_source` loses `access_level` | Brand unknown stays unknown. The access-level list of a multi-brand contact was resolved by a fixed mocha>cabana>sorento order, so an unbranded product from a FULL-access contact was routed to an arbitrary brand pool — while the resolved-brand path deliberately returns null on ambiguity (D3). Same reasoning applied to a multi-entry `query_brands`. Company stays authoritative from resolve; a null brand makes the CRM use the company-bounded base pool. |
+| 3 | `spine-build-cs-member-offer.js` | multi-company sentence: `from both` → `from each of them`; subject verb `${codes.length > 1 ? 'are' : 'is'}` | Customer-facing copy assumed exactly two companies / one code while `joinNames` and `codes.join` already render N. |
+| — | `brand-company-routing-R1-20260817.json`, rollup, review F5 | R1 sample-replay assertion re-recorded `pass:false` / `status:deferred`; R1 verdict DEFERRED | The assertion was `pass:true` with `observed:"NOT RUN"`; AC8 is deferred to promote-time, not met. |
+
+Docs updated with the same decisions: plan §3.1 (snippet + precedence note) / §3.4 (template) / §3.6 (snippet + widened
+pool-identity rule) / A1, UAC B3 expectation, review §1/§3 F5 + promote checklist.
 
 ## 2. HI fork `vUfFUDjLAuMaeQE6` (before `3186d960-2c39-4bfd-a3b1-9e8d4d5e0295` → published **`d2b82e80-8f22-437d-bf33-3781c505cd5f`**) §3.8
 
@@ -105,7 +124,12 @@ if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_com
 ```
 (Pre-existing warning `Get Exec Id … executionId undefined` unrelated.)
 
-## 5. sha256 table (byte-exact, `jq -j`; verified by re-fetching each workflow after the edit)
+## 5. sha256 table (byte-exact, `jq -j`; verified by re-fetching each workflow after the edit) — **rev-2 state**
+
+⚠️ The `after (published)` column describes what is published on the clone at rev-2. The rev-3 edits of §1b changed the repo
+bodies of `spine-escalation-context.js`, `spine-disallowed-entity-gate.js` and `spine-build-cs-member-offer.js`; their shas
+must be recomputed from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and re-verified after the clone
+republish of rev-3.
 
 | body | before (pre-edit) | live source (rebase) | after (published) |
 |---|---|---|---|

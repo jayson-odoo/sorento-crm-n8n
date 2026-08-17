@@ -27,9 +27,10 @@
    "observed": "compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert."
   },
   {
-   "id": "sample replay run",
-   "pass": true,
-   "observed": "NOT RUN — replay orchestrator attributes turns by \"latest clone execution\" and shares the clone lane (Lessons 29/30); running it requires editing its Init Params defaults (turn_limit) which is a workflow edit outside my remit and risks a wedge; static verification above stands in. Reviewer may run a turn_limit=3 replay if desired."
+   "id": "sample replay run (AC8, turn_limit=3 non-CS golden turns → zero new replay_node_diffs)",
+   "pass": false,
+   "status": "deferred",
+   "observed": "NOT RUN — replay orchestrator attributes turns by \"latest clone execution\" and shares the clone lane (Lessons 29/30); running it requires editing its Init Params defaults (turn_limit) which is a workflow edit outside my remit and risks a wedge. The static assertions above do NOT stand in for this: reading the norm() body cannot show the rule suppresses the diffs. AC8 is therefore DEFERRED to promote-time (reviewer/captain runs a turn_limit=3 replay), not satisfied."
   }
  ],
  "egress": [],
@@ -41,6 +42,6 @@
   "S5": "PASS (n/a — no execution)",
   "S6": "PASS (n/a — no execution)"
  },
- "verdict": "PASS (static; sample replay not run — see assertions)",
+ "verdict": "DEFERRED — static rule check only; AC8 sample replay NOT RUN and deferred to promote-time. Not a PASS.",
  "S0_all_pass": true
 }

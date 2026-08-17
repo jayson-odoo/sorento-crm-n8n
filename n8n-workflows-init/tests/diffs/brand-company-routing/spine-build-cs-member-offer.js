@@ -71,7 +71,7 @@ const subject = codes.length ? codes.join(', ') : (cat.subject || cat.entity_lab
 // then append the member picker — do NOT discard cat.response.
 out.response = multi
   ? `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
-    `Note: ${subject} is carried by more than one company (${joinNames}), so I am listing the customer-service team members from both — that is why there are more names than usual. Please choose who to route to (reply with the number):\n${numbered}\n\n` +
+    `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the customer-service team members from each of them — that is why there are more names than usual. Please choose who to route to (reply with the number):\n${numbered}\n\n` +
     `If you have no preference, just reply 'yes' and we'll assign automatically.`
   : `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
     `Please choose who to route to (reply with the number):\n${numbered}\n\n` +

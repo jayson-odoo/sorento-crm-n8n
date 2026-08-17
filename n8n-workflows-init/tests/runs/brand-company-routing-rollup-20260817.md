@@ -4,12 +4,15 @@ Plan `plans/brand-company-routing-plan.md` · UAC `tests/brand-company-routing-U
 Targets (all `versionId == activeVersionId`, verified via REST before the run): spine clone `txiPzSxy3Pclsz6v` @ `ac51a12e-1493-4bc8-82a1-8beef6065dd8`,
 HI fork `vUfFUDjLAuMaeQE6` @ `d2b82e80-8f22-437d-bf33-3781c505cd5f`, parser fork `wI5RkNGW3EOJfBdo` @ `7b4baaa8-5cb5-460e-b2f4-94a562dcc54f`,
 replay orchestrator `aROEBlQyyoQaB7a1` @ `d52af206-…` (unpublished, as before). **Live untouched:** `9qVyfUxmRQqrpGRMDLRuz` `d6f6b90c-…`,
-`XTODTw-dJcV0uRdC056hG` `9df39ff6-…` (updatedAt 2026-08-11), `rrYXzE61gCNUck_zmXe-G` `5018a189-…`. Published Code bodies of
-`disallowed-entity-gate / build-cs-member-offer / compile-current-state / cs-roster-plan / escalation-context` are byte-identical to
+`XTODTw-dJcV0uRdC056hG` `9df39ff6-…` (updatedAt 2026-08-11), `rrYXzE61gCNUck_zmXe-G` `5018a189-…`. At the time of this run the published Code bodies of
+`disallowed-entity-gate / build-cs-member-offer / compile-current-state / cs-roster-plan / escalation-context` were byte-identical to
 `tests/diffs/brand-company-routing/*.js` (sha256 re-checked from a REST fetch); replay `Diff.jsCode` identical modulo one trailing newline in the file.
+⚠️ **Superseded by rev-3** (review fixes to `escalation-context`, `disallowed-entity-gate`, `build-cs-member-offer` — see `tests/diffs/brand-company-routing.md` §1b):
+those three repo bodies now differ from the clone; the clone republish + re-test of rev-3 is pending and tracked in the promote/verify checklist.
 
-**Headline: §0 S1–S6 ZERO-EGRESS HELD on all 17 clone executions. No HALT.** Functional: B1 B2 B3 B4 B5 B7 B8 B9 P1 R1 PASS; B6 PASS-WITH-NOTE
-(guard proven by variant B6b; the literal B6 sequence exposes a UAC-wording vs implementation ambiguity, see notes). No code defect found.
+**Headline: §0 S1–S6 ZERO-EGRESS HELD on all 17 clone executions. No HALT.** Functional: B1 B2 B3 B4 B5 B7 B8 B9 P1 PASS; B6 PASS-WITH-NOTE
+(guard proven by variant B6b; the literal B6 sequence exposes a UAC-wording vs implementation ambiguity, see notes);
+**R1 DEFERRED — not a PASS** (static rule check only; the AC8 sample replay was never run). No code defect found in the cases that did run.
 
 ## Mechanism
 `zz-canary-run VtIV3TF3aw2Fx8No` fired via `execute_workflow` (webhook body `{test_run_id, contact:"437264483", item}`) — it clears+seeds
@@ -34,7 +37,7 @@ trigger/bypass/mock only, **AI Agent never executed**), P1 without mock (`scope=
 | B8 | 12834674 → **12834675** (parser 12834679, **HI 12834681**, sendmsg 12834682) | PASS | ✓ | ✓ | ✓ | ✓ (n/a) | ✓ | ✓ | `escalation-context {null,null,routing_source:none}`, HI inputs `brand_code:"", company_id:""`, egress payload null |
 | B9 | B9 12834736→12834737 (not-supported: no offer); B9b 12834813→12834814 (business_query+correction: If10 F); **B9c 12834885→12834886** (correction + `message_type:complaint`) | PASS | ✓ | ✓ | ✓ | ✓ (n/a) | ✓ | ✓ | deg not executed → plan = 1 fallback item (null company/brand) → get-cs-members URL without `company_id`/`brand_code` → 6 members → single-company shape, `cs_last_result_set` company/brand keys null, ccs `routing_*` null. UAC's example trigger (`tag-not-supported`) never reaches `cs-offer-gate` (is_escalate_offer only for not_found/escalate_offer) — doc issue |
 | P1 | 12835027 → **12835028** (parser fork **12835031 real LLM**, sendmsg 12835039) | PASS | ✓ | ✓ | ✓ | ✓ (n/a) | ✓ | ✓ only reformulator AI Agent | raw AI Agent + output_exchange both `routing.suggested_team="marketing_promotion"` (no suffix), domain promotion, entity MWC-SC08B; clone then asked for an access level (pre-existing multi-access behaviour) |
-| R1 | – (static) | PASS (static) | n/a | n/a | n/a | n/a | n/a | n/a | norm() rule present in `Diff`; null-both-sides keys dropped (verified they ARE null on non-CS turns B6bt2/B9c/P1); sample replay NOT run (see below) |
+| R1 | – (nothing executed) | **DEFERRED** (static rule check only; AC8 sample replay deferred to promote-time) | n/a | n/a | n/a | n/a | n/a | n/a | norm() rule present in `Diff` and the new keys are null on the non-CS turns that DID run (B6bt2/B9c/P1) — but that is source/derived reasoning, not the AC8 evidence. AC8 (≥3 non-CS golden turns replayed, zero new `replay_node_diffs`) is **NOT satisfied**; see below |
 
 Egress lists (from `read-egress`) per case contained only: `save-message-redis would_log` (TEST sink `sorento-respond-message-TEST`; prod list `sorento-respond-message` llen 0→0),
 `save-session-vars would_write` (guard-d-record; the orphaned prod PUT never ran), `sendmsg-sub would_send` (TEST sendmsg fork `aQUmwMVplmNcyUVc`, `is_test=true`, terminal
@@ -61,7 +64,7 @@ ran only `MCP Client1` with read tools (`crm_order_management_orders_list`, `crm
 5. **P1** proves the parser flip at the LLM level (raw output already `marketing_promotion`); the offer/roster path for promotions was not exercised because the two-company contact is asked for an access level first (`access_levels=[]`) — pre-existing, out of scope.
 6. **get-cs-members URL evidence**: n8n runData does not retain the resolved httpRequest URL; asserted by (a) the input item(s) from `cs-roster-plan` + the node URL expression, (b) distinct rosters per item, (c) B7 probes with the reconstructed URLs returning identical rosters.
 7. **S5 nuance**: get-results TEST fork receives no `is_test` (pre-existing design); covered by S4 (read tools only). `Call 'sub-respond-save-message-redis'2` is NOT orphaned on today's clone (CLAUDE.md drift) — it calls TEST fork `tWm5DYLxfypmVC1T` which pushes to `sorento-respond-message-TEST` only (prod list llen unchanged 0→0 in every run).
-8. **R1 sample replay not run**: the replay orchestrator attributes turns by "latest clone execution" and would need its `Init Params` defaults edited (`turn_limit`) — a workflow edit outside the tester remit + wedge risk (Lessons 29/30). Static check: rule present, keys verified null on non-CS turns → inert; non-null on CS-resolve turns → surfaces (intended, Lesson 40).
+8. **R1 sample replay NOT run ⇒ AC8 DEFERRED (open)**: the replay orchestrator attributes turns by "latest clone execution" and would need its `Init Params` defaults edited (`turn_limit`) — a workflow edit outside the tester remit + wedge risk (Lessons 29/30). What was checked is static only (rule present in the `Diff` body) plus the observation that the new keys are null on the non-CS turns that ran → expected to be inert; non-null on CS-resolve turns → surfaces (intended, Lesson 40). Reading a node body cannot prove the rule suppresses the diffs, so R1 is recorded as DEFERRED, not PASS; the turn_limit=3 replay is carried in the promote checklist (review §4 P4).
 
 ## Cleanup
 - `n8n_test.respond_contacts_test[437264483].session_vars` reset to `{"variables":{},"referenced_result_set":[]}` after the last run (was reset before every independent case; multi-turn pairs B3←B2, B4←B1, B5, B6, B6b kept state within the pair).

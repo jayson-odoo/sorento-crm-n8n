@@ -60,16 +60,18 @@ single-company path byte-identical in shape.
    const _byCo = new Map();
    for (const m of _rows) { if (!m.company_id) continue; const g = _byCo.get(m.company_id) || { company_id: m.company_id, company_name: m.company_name || null, brands: new Set(), codes: new Set() }; const b = _bc(m); if (b) g.brands.add(b); if (m.canonical_code) g.codes.add(m.canonical_code); _byCo.set(m.company_id, g); }
    const _allBrands = [...new Set(_rows.map(_bc).filter(Boolean))];
-   const _qb = (Array.isArray(parser.query_brands) && parser.query_brands.length) ? String(parser.query_brands[0]).toLowerCase() : null;
-   const _acc = (parser.access_levels || []).map(a => String(a).toLowerCase());
-   const _accBrand = _acc.some(a => a.includes('mocha')) ? 'mocha' : _acc.some(a => a.includes('cabana')) ? 'cabana' : _acc.some(a => a.includes('sorento')) ? 'sorento' : null;
-   out.routing_brand = _allBrands.length === 1 ? _allBrands[0] : (_qb || _accBrand || null);
-   out.routing_brand_source = _allBrands.length === 1 ? 'resolved' : (_qb ? 'stated' : (_accBrand ? 'access_level' : null));
+   const _qb = (Array.isArray(parser.query_brands) && parser.query_brands.length === 1) ? String(parser.query_brands[0]).toLowerCase() : null;
+   out.routing_brand = _allBrands.length === 1 ? _allBrands[0] : (_qb || null);
+   out.routing_brand_source = _allBrands.length === 1 ? 'resolved' : (_qb ? 'stated' : null);
    out.routing_companies = [..._byCo.values()].map(g => ({ company_id: g.company_id, company_name: g.company_name, brand_code: g.brands.size === 1 ? [...g.brands][0] : (out.routing_brand || null), codes: [...g.codes] })).sort((a, b) => String(a.company_name).localeCompare(String(b.company_name)));
    out.routing_company = out.routing_companies.length === 1 ? out.routing_companies[0].company_id : null;
    ```
-   Precedence per report §7 assumptions: resolved brand > stated brand > access-level brand > null; multi-brand ⇒ not
-   first-wins (D3). Company: exactly one ⇒ it, else null (`routing_companies` keeps them all — R3).
+   Precedence (rev-3, captain override of the report's access-level fallback — **brand unknown stays unknown**):
+   resolved brand > stated brand > null. Ambiguity never first-wins on EITHER axis input (D3): >1 distinct resolved brand ⇒
+   skip to the stated brand, >1 `query_brands` entry ⇒ null. No access-level guess (`routing_brand_source` has no
+   `access_level` value). Company is authoritative from resolve, so a null brand simply lets the CRM resolve from the
+   company-bounded base pool — wider than an arbitrarily narrowed one, and never the wrong company's people.
+   Company: exactly one ⇒ it, else null (`routing_companies` keeps them all — R3).
 
 ### 3.2 NEW Code node `cs-roster-plan` (spine) — one item per company to query
 Insert on edge `cs-offer-gate[0] → get-cs-members`: `cs-offer-gate[0] → cs-roster-plan → get-cs-members`.
@@ -95,7 +97,7 @@ Fallback item (no resolve this turn) keeps today's single call, unchanged params
   ```
   ${cat.response}
 
-  Note: ${codes.join(', ')} is carried by more than one company (${A} and ${B}), so I am listing the customer-service team members from both — that is why there are more names than usual. Please choose who to route to (reply with the number):
+  Note: ${codes.join(', ')} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the customer-service team members from each of them — that is why there are more names than usual. Please choose who to route to (reply with the number):
   ${A}:
   1. Name (A)
   2. Name (A)
@@ -105,6 +107,8 @@ Fallback item (no resolve this turn) keeps today's single call, unchanged params
   If you have no preference, just reply 'yes' and we'll assign automatically.
   ```
   Continuous numbering across groups; each line ends with ` (${company_name})`. `codes` = union of plan `codes` (fallback: `cat`'s subject if empty).
+  Wording is N-safe (rev-3): `joinNames` renders "A and B" / "A, B and C", "from each of them" replaces "from both", and the
+  subject verb agrees with the number of codes listed.
 - `cs_last_result_set` rows: `{idx,label,uuid,respond_user_id, company_id, company_name, brand_code}` (new keys **null on the single-company fallback item** so replay norm treats them inert). `out.routing_companies = plan` (debug/evidence).
 
 ### 3.5 `compile-current-state` (spine Code) — persist the axes (Lesson 40)
@@ -135,13 +139,13 @@ const picked = (o.escalation || {}).preferred_assignee_id || null;
 const row = picked ? (Array.isArray(prev.last_result_set) ? prev.last_result_set : []).find(r => r && r.uuid === picked) : null;
 const qb = (Array.isArray(o.query_brands) && o.query_brands.length) ? String(o.query_brands[0]).toLowerCase() : null;
 let brand_code = null, company_id = null, company_name = null, source = 'none';
-if (row && row.company_id) { company_id = row.company_id; company_name = row.company_name || null; brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null); source = 'picked_member'; }
+if (row) { company_id = row.company_id || null; company_name = row.company_name || null; brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null); source = 'picked_member'; }
 else if (sameTeam) { const cos = Array.isArray(prev.routing_companies) ? prev.routing_companies : []; company_id = prev.routing_company || null; brand_code = qb || prev.routing_brand || null; const c = cos.find(x => x && x.company_id === company_id); company_name = c ? (c.company_name || null) : null; source = company_id ? 'prior_state' : (cos.length > 1 ? 'multi_company_unpicked' : 'prior_state_no_company'); }
 else if (qb) { brand_code = qb; source = 'stated_brand'; }
 return [{ json: { ...$input.first().json, brand_code, company_id, company_name, routing_source: source, team } }];
 ```
 Bare "yes" on a multi-company offer ⇒ `company_id=null` (CRM resolves via contact/default — assumption A2 below).
-**Pool identity rule (rev-2, from UAC B3):** for a picked member the brand sent MUST be exactly the `brand_code` the roster row was fetched with (null stays null) — never a fallback to `routing_brand`, else the pick can land outside the pool `next-assignee` narrows to. Fallback only when the row predates this change (no `brand_code` key).
+**Pool identity rule (rev-2, from UAC B3; widened in rev-3):** for a picked member the brand sent MUST be exactly the `brand_code` the roster row was fetched with (null stays null) — never a fallback to `routing_brand`, else the pick can land outside the pool `next-assignee` narrows to. The rule applies **whenever the row matched**, including the `cs-roster-plan` fallback item whose `company_id` is null (a stated `query_brands` on the pick turn must not re-narrow a pool that was fetched under a different brand); `company_id` comes from the row when it has one. Fallback to `routing_brand` only when the row predates this change (no `brand_code` key).
 
 ### 3.7 `Call 'sub-human-intervention'` (spine executeWorkflow) — two new inputs
 `workflowInputs.value.brand_code = {{ $('escalation-context').first().json.brand_code || '' }}`,
@@ -164,7 +168,7 @@ Bare "yes" on a multi-company offer ⇒ `company_id=null` (CRM resolves via cont
 Register `routing_brand, routing_brand_source, routing_company, routing_companies` (and `cs_last_result_set[].company_id/company_name/brand_code`) as **ignore-when-null-both-sides / retain-when-non-null**. Coder edits the orchestrator Code node; document the exact rule line in the diff doc.
 
 ## 4. Assumptions (no captain decision needed; flag in report)
-- A1 precedence resolved-brand > stated > access-level > null; multi-brand ⇒ null brand (D3), companies kept.
+- A1 (rev-3) precedence resolved-brand > stated > null; no access-level guess. Ambiguous on either input ⇒ fall through (multi-brand resolve ⇒ try stated; >1 stated brand ⇒ null), companies kept. Null brand = CRM resolves from the company-bounded base pool (D3).
 - A2 bare "yes" after a multi-company offer ⇒ `company_id=null` → CRM `resolve_routing_company` (contact's company / default). Not silently picking a company.
 - A3 a member present in both companies' rosters is listed once, labelled with both companies, and assigned in the first-listed company.
 - A4 the parser flip (§3.9) is built as specified; it is safe because migration 371 created the base `marketing_promotion` rows. If the tester's roster probe shows base `marketing_promotion` missing for `general_enquiries` in Sorento, STOP the parser flip and report.

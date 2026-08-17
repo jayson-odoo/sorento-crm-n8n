@@ -384,11 +384,12 @@ out.require_specific = require_specific;
   const _byCo = new Map();
   for (const m of _rows) { if (!m.company_id) continue; const g = _byCo.get(m.company_id) || { company_id: m.company_id, company_name: m.company_name || null, brands: new Set(), codes: new Set() }; const b = _bc(m); if (b) g.brands.add(b); if (m.canonical_code) g.codes.add(m.canonical_code); _byCo.set(m.company_id, g); }
   const _allBrands = [...new Set(_rows.map(_bc).filter(Boolean))];
-  const _qb = (Array.isArray(parser.query_brands) && parser.query_brands.length) ? String(parser.query_brands[0]).toLowerCase() : null;
-  const _acc = (parser.access_levels || []).map(a => String(a).toLowerCase());
-  const _accBrand = _acc.some(a => a.includes('mocha')) ? 'mocha' : _acc.some(a => a.includes('cabana')) ? 'cabana' : _acc.some(a => a.includes('sorento')) ? 'sorento' : null;
-  out.routing_brand = _allBrands.length === 1 ? _allBrands[0] : (_qb || _accBrand || null);
-  out.routing_brand_source = _allBrands.length === 1 ? 'resolved' : (_qb ? 'stated' : (_accBrand ? 'access_level' : null));
+  // brand unknown stays unknown: the resolved rows' brand only when unambiguous, else the customer's
+  // OWN stated brand only when they named exactly one. No access-level guess — a null brand makes the
+  // CRM resolve from the company-bounded base pool, which is wider than an arbitrarily narrowed one.
+  const _qb = (Array.isArray(parser.query_brands) && parser.query_brands.length === 1) ? String(parser.query_brands[0]).toLowerCase() : null;
+  out.routing_brand = _allBrands.length === 1 ? _allBrands[0] : (_qb || null);
+  out.routing_brand_source = _allBrands.length === 1 ? 'resolved' : (_qb ? 'stated' : null);
   // per-company brand = that company's OWN row brand (unambiguous) — the global routing_brand is only
   // inherited when there is a single company (multi-company entries never borrow another company's brand)
   const _cos = [..._byCo.values()];
