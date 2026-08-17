@@ -1,0 +1,66 @@
+{
+  "case": "1-recheck - multi-company all-empty, re-run on the B1-republished output-structurer",
+  "change_id": "mc-label-n8n",
+  "reviewer_context": "Cheap re-confirmation that the B1 fix (_canAttribute guard) did not regress the original captain's-reported all-empty case. Runs against t4QvrtrPnTwRU6br versionId 179f1842-8061-4e59-9c72-74ad2b602f29, jsCode sha256 25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de.",
+  "chat_id": "mcl-case1recheck-1786933414",
+  "test_run_id": "chatcon-1786933417354",
+  "trigger": {
+    "text": "MWC-SC08B check stock",
+    "contact_id": "437264483",
+    "mode": "uac"
+  },
+  "execution_ids": {
+    "clone_spine": "12778877",
+    "sub_get_results_crossdomain_probe_incoming_stock": "12778886",
+    "sub_get_results_main_stock": "12778885",
+    "sub_sendmsg_qrchunk": "12778889"
+  },
+  "verdict": "PASS",
+  "key_assertions": [
+    {
+      "assertion": "both (Mocha) and (Sorento) labels present, not deduped",
+      "result": "PASS",
+      "observed": "not-found-error-message.escalate_message / final reply: \"Here's what you want:\\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\\n\\nBut no inventory matched these — checked in Mocha and Sorento. Would you like me to escalate to warehouse team?\""
+    },
+    {
+      "assertion": "' — checked in Mocha and Sorento' present",
+      "result": "PASS",
+      "observed": "present verbatim, see above"
+    },
+    {
+      "assertion": "all-empty path means _canAttribute is true (items=[]), so per-company no-record lines MUST still appear (this is exactly what B1's fix guards, not removes)",
+      "result": "PASS",
+      "observed_stock_sub_12778885": "output-structurer json.response = \"No matching results found for Mocha or Sorento.\\n\\n*Mocha:* no stock records for MWC-SC08B.\\n*Sorento:* no stock records for MWC-SC08B.\"",
+      "observed_incoming_stock_sub_12778886": "output-structurer json.response = \"No matching results found for Mocha or Sorento.\\n\\n*Mocha:* no incoming stock records for MWC-SC08B.\\n*Sorento:* no incoming stock records for MWC-SC08B.\""
+    },
+    {
+      "assertion": "both sub-execs ran the B1-republished jsCode (not stale)",
+      "result": "PASS",
+      "observed": "jq -j '...jsCode' | sha256sum on both 12778885 and 12778886 workflowData = 25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de, matching the diff doc's post-B1 published sha exactly"
+    }
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": {
+      "result": "PASS",
+      "detail": "sendmsg exec 12778889 runData = [When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]; HTTP Request node did not execute."
+    },
+    "S2_zero_assignment_escalation_writes": {
+      "result": "PASS",
+      "detail": "No assign/SLA/PIC-comment/assignee-queue node in the clone execution's runData; only 'is-human-intervened' (read check) ran."
+    },
+    "S3_zero_crm_contact_writes": {
+      "result": "PASS",
+      "detail": "'save-session-vars' and 'update-human-intervened' absent from runData (orphaned, unreachable)."
+    },
+    "S4_get_results_read_only": {
+      "result": "PASS",
+      "detail": "Resolved tools: 'crm_incoming_stock_list' (12778886) and 'crm_inventory_stock_balance_list ' (12778885), both READ allowlist."
+    },
+    "S5_test_mode_present": {
+      "result": "PASS",
+      "detail": "redis-pop item test_run_id='chatcon-1786933417354' matches seed response; 11 literal \"is_test\":true occurrences in the clone's sub-call node parameters."
+    },
+    "overall": "PASS"
+  },
+  "anomalies": []
+}

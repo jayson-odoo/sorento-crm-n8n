@@ -1,0 +1,80 @@
+{
+  "case": "4 - multi-company lookup WITH stock rows (blocker B3)",
+  "change_id": "mc-label-n8n",
+  "reviewer_context": "Addresses reviewer REQUEST-CHANGES blocker B3 (n8n-workflows-init/tests/reviews/mc-label-n8n.md section 4): the multi-company-with-rows shape was never run in the first UAC pass, which is what left B1 (self-contradictory silent-company line under rendered rows) undetected. Coder fixed B1 with the `_canAttribute` guard and republished output-structurer to t4QvrtrPnTwRU6br (versionId 179f1842-8061-4e59-9c72-74ad2b602f29, jsCode sha256 25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de). This case runs against that republished sub.",
+  "chat_id": "mcl-case4probe3-1786933090",
+  "test_run_id": "chatcon-1786933091890",
+  "trigger": {
+    "text": "MUB5202 check stock",
+    "contact_id": "437264483",
+    "mode": "uac"
+  },
+  "candidate_search_note": "5 probe runs used (within the ~5 allowed): (1) MWC-WB101 -> not found at all (guessed prefix wrong). (2) MWC-UB5202 -> not found under AND-mode but returned fuzzy 'alternatives' revealing the REAL cross-company code is 'MUB5202' (canonical_code, no MWC- prefix), with uuids in both Mocha (d77629fc-...) and Sorento (911d2093-...). (3) 'MUB5202 check stock' -> exactly the target shape: resolver 2 matches (Mocha+Sorento), has_result=true, Mocha has 2 stock rows, Sorento has 0 -- USED AS THE CASE. (4) 'any incoming stock for MUB5202' -> resolver still 2 matches, but this code has ZERO incoming-stock rows in either company (probe-incoming envelope empty, has_result=false) -- so this did NOT yield an incoming_stock-with-rows observation; it did re-confirm B1's all-empty guard works correctly on the incoming presenter (both per-company no-record lines emitted, no contradiction, since items=[] so _canAttribute=true). (5) 'any incoming for MFC2031' (guessed candidate for a Mocha-catalog code with incoming activity) -> did not resolve at all, no useful data. NET: the wire-contract 'do incoming_stock rows carry company_name' question from B1's appendix remains UNOBSERVED after budget was exhausted -- flagged loudly below as an open backend-verification item, per the review's own guidance that this is an acceptable follow-up if it cannot be reached.",
+  "execution_ids": {
+    "clone_spine": "12778370",
+    "sub_get_results_main_stock": "12778383",
+    "sub_sendmsg_qrchunk": "12778384",
+    "probe_incoming_empty_side_observation_exec": "12778466"
+  },
+  "verdict": "PASS",
+  "row_stamp_observation": {
+    "headline": "ROW STAMP OBSERVED ON THE WIRE for the 'stock' (crm_inventory_stock_balance_list) presenter: YES, stamped.",
+    "detail": "answers[0].fields[0] = {\"key\":\"company_name\",\"label\":\"Company\",\"value\":\"Mocha\"} -- the leading company_name/Company field IS present on every rendered row for this result_type. This is the first direct wire observation of the row half of backend PR #193 (all prior executions this cycle, per the reviewer's B1 finding, only ever saw empty multi-company envelopes).",
+    "incoming_stock_presenter": "NOT OBSERVED THIS PASS -- no multi-company product with actual incoming-stock rows was found in 5 probes (MUB5202's incoming set is empty in both companies). This is the specific risk B1's appendix called out (scout spec said the row-stamp was added to the _stock presenter only; lookup_companies rides the shared passthrough and DOES reach incoming_stock per exec 12774475/12778466, but whether incoming ROWS get company_name is still unconfirmed on the wire). RECOMMEND: backend follow-up / a future UAC pass with a known multi-company incoming-stock candidate to close this out. n8n-side behavior is verified CORRECT either way: if incoming rows are unstamped, B1's _canAttribute guard prevents any contradictory silent-company line from appearing under them (confirmed by code review of the identical guard applying uniformly to both result_types, and behaviorally by the all-empty incoming case in probe 4 which shows the guard's true branch works)."
+  },
+  "key_assertions": [
+    {
+      "assertion": "envelope has lookup_companies = [Mocha, Sorento]",
+      "result": "PASS",
+      "observed": "Call 'sub-get-results' / output-structurer json.lookup_companies = [{\"id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"name\":\"Mocha\"},{\"id\":\"00000000-0000-0000-0000-000000000001\",\"name\":\"Sorento\"}]"
+    },
+    {
+      "assertion": "rows carry the leading {key:company_name,label:Company} field (row-stamp check)",
+      "result": "PASS (stock presenter) -- see row_stamp_observation",
+      "observed": "answers[0].fields = [{\"key\":\"company_name\",\"label\":\"Company\",\"value\":\"Mocha\"},{\"key\":\"product_code\",...},{\"key\":\"warehouse\",...},{\"key\":\"system_location\",...},{\"key\":\"quantity_on_hand\",...}]; answers[1].fields likewise starts with company_name=Mocha"
+    },
+    {
+      "assertion": "reply renders *Company:* <name> per row (rows ARE stamped branch)",
+      "result": "PASS",
+      "observed_reply": "Stock details found for the requested products.\n\n1. *Company:* Mocha\n*Product Code:* MUB5202\n*Warehouse:* HQ\n*System Location:* HQ\n*Quantity On Hand:* 21\n\n2. *Company:* Mocha\n*Product Code:* MUB5202\n*Warehouse:* MERU\n*System Location:* MOCHA-WH\n*Quantity On Hand:* 7\n\n*Sorento:* no stock records for MUB5202.\n\n_Data last updated: 14/08/2026 17:17:46_"
+    },
+    {
+      "assertion": "only one company (Mocha) has rows -> exactly one silent-company line for the other (Sorento), no line for the company that DID render rows (the B1 fix in action)",
+      "result": "PASS",
+      "observed": "Exactly one trailing line '*Sorento:* no stock records for MUB5202.' -- no '*Mocha:* no stock records ...' line appears anywhere, even though Mocha's own rows are directly above it. This is precisely the B1 guard working: _shownCos={'Mocha'} from the rendered rows' company_name fields, so only Sorento (the company NOT in _shownCos) is named silent."
+    },
+    {
+      "assertion": "output-structurer returned json carries lookup_companies",
+      "result": "PASS",
+      "observed": "json.lookup_companies present with both entries (see above); confirmed on the sub exec running the B1-republished code (jsCode sha256 25a2eed9... verified byte-exact via jq -j | sha256sum against the executed workflowData.nodes)"
+    }
+  ],
+  "safety_gate": {
+    "S1_zero_real_sends": {
+      "result": "PASS",
+      "detail": "sub-sendmsg-QRCHUNK exec 12778384 runData = [When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]. HTTP Request node (real respond.io send) did not execute. Delivery via chat-push (redis chat:reply:{chat_id}) only."
+    },
+    "S2_zero_assignment_escalation_writes": {
+      "result": "PASS",
+      "detail": "No assign/SLA/PIC-comment/assignee-queue node in the clone execution's runData; only 'is-human-intervened' (read check) ran."
+    },
+    "S3_zero_crm_contact_writes": {
+      "result": "PASS",
+      "detail": "'save-session-vars' and 'update-human-intervened' absent from runData (orphaned, unreachable)."
+    },
+    "S4_get_results_read_only": {
+      "result": "PASS",
+      "detail": "Resolved tool for the sub-get-results call (12778383): 'crm_inventory_stock_balance_list ' -- READ allowlist, not crm_it_support_ticket_create."
+    },
+    "S5_test_mode_present": {
+      "result": "PASS",
+      "detail": "redis-pop item test_run_id='chatcon-1786933091890' matches seed response; 11 literal \"is_test\":true occurrences in the clone's sub-call node parameters; sendmsg call carries hardcoded is_test:true."
+    },
+    "S6_token_sinks_bounded": {
+      "result": "PASS (informational, live parser+get-results tier)",
+      "detail": "No mock_parser_output/mock_reformulator_output on the redis item -- live reformulator + get-results run. sub-get-results ran a read-only MCP Client1 tool only; no write-tool node executed."
+    },
+    "overall": "PASS"
+  },
+  "anomalies": []
+}
