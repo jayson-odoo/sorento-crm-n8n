@@ -11,6 +11,7 @@ const replayRunId = $('Insert replay_run').first().json.id;
 const STRIP_KEYS = new Set(['pairedItem','mode','mock_parser_output','mock_reformulator_output','fixtures','test_run_id','scope']);
 const TS_KEY = /(_at$|^ts$|^timestamp$|last_updated|elapsed_ms|^elapsed$|startTime|executionTime|captured_at|started_at|finished_at)/i;
 const ISO = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/;
+const ROUTING_VARS = ['routing_brand','routing_brand_source','routing_company','routing_companies','routing_roster_plan'];
 function norm(v){
   if (Array.isArray(v)) return v.map(norm);
   if (v && typeof v === 'object'){
@@ -20,7 +21,8 @@ function norm(v){
       if (TS_KEY.test(k)) { o[k] = '<V>'; continue; }
       if (k === 'person_mention' && (v[k] === null || v[k] === undefined)) continue; // order-member-pick-name-resolve: additive always-extract key, ignore-when-null / surface-when-non-null (LESSON 21 - not a blanket ignore)
       if (k === '_parser_raw') continue; // state-transition-monitor C2/C4: _parser_raw is a top-level sibling on the parser sub output — a PURE MIRROR of output.output (== parser_applied), which is diffed in full at this same node. Stripping it on BOTH sides loses nothing observable (LESSON 21: legitimate strip, not a blanket ignore). It is absent in golden and present post-C2 on every real-parser replay turn; without this it would regress all ~2.2k turns (LESSON 40).
-      if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined)) continue; // brand-company-routing (LESSON 40): additive routing-axis keys on compile-current-state (routing_*) and cs_last_result_set rows (company_id/company_name/brand_code) — ignore-when-null on BOTH sides, retain (surface) when non-null. Not a blanket ignore (LESSON 21).
+      if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'routing_roster_plan') && (v[k] === null || v[k] === undefined)) continue; // brand-company-routing (LESSON 40): additive routing-axis keys on compile-current-state `variables` — ignore-when-null on BOTH sides, retain (surface) when non-null. Names are new + unique to this change, so no scoping needed. Not a blanket ignore (LESSON 21).
+      if ((k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined) && (ROUTING_VARS.some(rk => rk in v) || ('idx' in v && 'respond_user_id' in v) || ('plan_idx' in v))) continue; // brand-company-routing: the SAME ignore-when-null rule for the three generic CRM field names, but ONLY inside the containers this change added them to — the compile-current-state variables object, a cs_last_result_set member row (idx+respond_user_id) or a routing_roster_plan row (plan_idx). Tree-wide it would mask a real null-vs-absent regression on resolve-entity/order/MCP payloads, which use these same names (LESSON 21).
       if (k === 'similarity' && typeof v[k] === 'number') { o[k] = Math.round(v[k] * 1000) / 1000; continue; }
       o[k] = norm(v[k]);
     }

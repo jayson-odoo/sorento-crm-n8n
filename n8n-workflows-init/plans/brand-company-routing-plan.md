@@ -81,6 +81,10 @@ const cos = Array.isArray(g.routing_companies) && g.routing_companies.length ? g
 return cos.map((c, i) => ({ json: { plan_idx: i, company_id: c.company_id || null, company_name: c.company_name || null, brand_code: c.brand_code || null, codes: c.codes || [], multi_company: cos.length > 1, companies: cos.map(x => x.company_name).filter(Boolean) } }));
 ```
 Fallback item (no resolve this turn) keeps today's single call, unchanged params except a null-guarded brand.
+**These items are the pool identity (rev-4):** `compile-current-state` persists them verbatim as
+`variables.routing_roster_plan` and `escalation-context` assigns from that same pair on the bare-"yes" turn, so the
+fallback item's brand (taken from the gate's `routing_brand` even when it resolved zero companies) can no longer
+drift from what the assignment call sends. One shared definition, not one derivation per node.
 
 ### 3.3 `get-cs-members` (spine httpRequest) — carry the axes, one call per plan item
 - URL: append `{{ $json.brand_code ? '&brand_code=' + encodeURIComponent($json.brand_code) : '' }}{{ $json.company_id ? '&company_id=' + encodeURIComponent($json.company_id) : '' }}` to the existing URL expression (agent/team/tier/contact_id unchanged).
@@ -124,9 +128,18 @@ Insert immediately BEFORE the final `return output;` (after the `dym_last_result
   output.variables.routing_brand_source = _fresh ? (_g.routing_brand_source ?? null) : (_sameTeam ? (_prev.routing_brand_source ?? null) : null);
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);
   output.variables.routing_companies    = _fresh ? _g.routing_companies              : (_sameTeam && Array.isArray(_prev.routing_companies) ? _prev.routing_companies : null);
+  const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
+  output.variables.routing_roster_plan = (Array.isArray(_planItems) && _planItems.length)
+    ? _planItems.map((p, i) => ({ plan_idx: …, company_id: …, company_name: …, brand_code: … }))
+    : (_sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
 }
 ```
 Carry-forward only under the same-team guard (clarify → offer → yes chains keep the axes; a domain switch drops them).
+**rev-4 `routing_roster_plan`:** the trimmed `(plan_idx, company_id, company_name, brand_code)` rows of the
+`cs-roster-plan` items that `get-cs-members` actually ran with — the ONE record of which pool the offered members came
+from. Fresh whenever the plan node ran this turn, else carried under the same-team guard, else null (null-inert for
+replay norm §3.10). Note the plan node is keyed independently of `_fresh`: an offer built from the fallback item
+(gate resolved no companies) still records its brand, which is what closes the fetch-vs-assign gap.
 
 ### 3.6 NEW Code node `escalation-context` (spine) — what the escalation turn sends
 Insert on edge `divert-suggest-yes[1] → Call 'sub-human-intervention'` (keep `divert-suggest-yes[1] → tag-out-of-scope`).
@@ -137,15 +150,30 @@ const team = (o.routing || {}).suggested_team || null;
 const sameTeam = !!(prev.routing && team && prev.routing.suggested_team === team);
 const picked = (o.escalation || {}).preferred_assignee_id || null;
 const row = picked ? (Array.isArray(prev.last_result_set) ? prev.last_result_set : []).find(r => r && r.uuid === picked) : null;
-const qb = (Array.isArray(o.query_brands) && o.query_brands.length) ? String(o.query_brands[0]).toLowerCase() : null;
+const qb = (Array.isArray(o.query_brands) && o.query_brands.length === 1) ? String(o.query_brands[0]).toLowerCase() : null;
 let brand_code = null, company_id = null, company_name = null, source = 'none';
 if (row) { company_id = row.company_id || null; company_name = row.company_name || null; brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null); source = 'picked_member'; }
-else if (sameTeam) { const cos = Array.isArray(prev.routing_companies) ? prev.routing_companies : []; company_id = prev.routing_company || null; brand_code = qb || prev.routing_brand || null; const c = cos.find(x => x && x.company_id === company_id); company_name = c ? (c.company_name || null) : null; source = company_id ? 'prior_state' : (cos.length > 1 ? 'multi_company_unpicked' : 'prior_state_no_company'); }
+else if (sameTeam) {
+  const rp = Array.isArray(prev.routing_roster_plan) ? prev.routing_roster_plan : [];
+  if (rp.length === 1) { company_id = rp[0].company_id || null; company_name = rp[0].company_name || null; brand_code = rp[0].brand_code || null; source = company_id ? 'prior_state' : 'prior_state_no_company'; }
+  else if (rp.length > 1) { source = 'multi_company_unpicked'; }            // both axes null
+  else { /* no roster was fetched this session (or a pre-rev-4 session): company from prior state, brand stays unknown */ }
+}
 else if (qb) { brand_code = qb; source = 'stated_brand'; }
 return [{ json: { ...$input.first().json, brand_code, company_id, company_name, routing_source: source, team } }];
 ```
-Bare "yes" on a multi-company offer ⇒ `company_id=null` (CRM resolves via contact/default — assumption A2 below).
-**Pool identity rule (rev-2, from UAC B3; widened in rev-3):** for a picked member the brand sent MUST be exactly the `brand_code` the roster row was fetched with (null stays null) — never a fallback to `routing_brand`, else the pick can land outside the pool `next-assignee` narrows to. The rule applies **whenever the row matched**, including the `cs-roster-plan` fallback item whose `company_id` is null (a stated `query_brands` on the pick turn must not re-narrow a pool that was fetched under a different brand); `company_id` comes from the row when it has one. Fallback to `routing_brand` only when the row predates this change (no `brand_code` key).
+Bare "yes" on a multi-company offer ⇒ **both axes null** (CRM resolves via contact/default — assumption A2 below).
+**Pool identity rule (rev-2, from UAC B3; widened in rev-3, completed in rev-4):** the axes sent MUST be exactly what the
+`get-cs-members` call used — never re-derived.
+- picked member ⇒ the row's own `company_id` / `brand_code`, verbatim, whenever the row matched (including a
+  `cs-roster-plan` fallback row whose `company_id` is null). Fallback to `routing_brand` only for a legacy row with no
+  `brand_code` key.
+- bare "yes" ⇒ the persisted `routing_roster_plan`: exactly one item ⇒ its `(company_id, brand_code)` pair verbatim;
+  more than one ⇒ both axes null. `routing_brand` and this turn's `query_brands` are NOT consulted on this arm — a brand
+  stated on the confirmation turn must not re-narrow a pool the roster call never used (plan A1: ambiguity never
+  first-wins, and `qb` itself now requires exactly one stated brand).
+- no persisted plan at all (pre-rev-4 session, or an offer that never fetched a roster) ⇒ company from prior state,
+  brand null — brand unknown stays unknown.
 
 ### 3.7 `Call 'sub-human-intervention'` (spine executeWorkflow) — two new inputs
 `workflowInputs.value.brand_code = {{ $('escalation-context').first().json.brand_code || '' }}`,
@@ -165,11 +193,19 @@ Bare "yes" on a multi-company offer ⇒ `company_id=null` (CRM resolves via cont
 > Live `disallowed-entity-gate` #9 still builds `company_team = marketing_promotion_<brand>` for the OFFER TEXT only — cosmetic, untouched (out of scope; note in diff doc).
 
 ### 3.10 Replay `norm()` (`aROEBlQyyoQaB7a1` › `Diff`) — Lesson 40
-Register `routing_brand, routing_brand_source, routing_company, routing_companies` (and `cs_last_result_set[].company_id/company_name/brand_code`) as **ignore-when-null-both-sides / retain-when-non-null**. Coder edits the orchestrator Code node; document the exact rule line in the diff doc.
+Register `routing_brand, routing_brand_source, routing_company, routing_companies, routing_roster_plan` (and
+`cs_last_result_set[].company_id/company_name/brand_code`, `routing_roster_plan[].company_id/company_name/brand_code`) as
+**ignore-when-null-both-sides / retain-when-non-null**. Coder edits the orchestrator Code node; document the exact rule line
+in the diff doc.
+**Scoping (rev-4):** the `routing_*` names are new and unique to this change, so their rule is unscoped. The three generic
+CRM names (`company_id`, `company_name`, `brand_code`) already occur all over the corpus (resolve-entity rows, order rows,
+MCP payloads); their rule must fire ONLY inside the containers this change added them to — the `variables` object (detected
+by a sibling `routing_*` key), a `cs_last_result_set` member row (`idx` + `respond_user_id`), or a `routing_roster_plan`
+row (`plan_idx`). Tree-wide it would mask a real null-vs-absent regression on unrelated payloads (Lesson 21).
 
 ## 4. Assumptions (no captain decision needed; flag in report)
 - A1 (rev-3) precedence resolved-brand > stated > null; no access-level guess. Ambiguous on either input ⇒ fall through (multi-brand resolve ⇒ try stated; >1 stated brand ⇒ null), companies kept. Null brand = CRM resolves from the company-bounded base pool (D3).
-- A2 bare "yes" after a multi-company offer ⇒ `company_id=null` → CRM `resolve_routing_company` (contact's company / default). Not silently picking a company.
+- A2 (rev-4) bare "yes" after a multi-company offer ⇒ **`company_id=null` AND `brand_code=null`** → CRM `resolve_routing_company` (contact's company / default) over the unnarrowed base pool. Not silently picking a company, and not silently narrowing to one company's brand either: with >1 roster call there is no single pool the offer corresponds to, so neither axis can be sent honestly. After a SINGLE-company offer the persisted `routing_roster_plan` pair is sent verbatim, so the bare-"yes" pool is exactly the offered one.
 - A3 a member present in both companies' rosters is listed once, labelled with both companies, and assigned in the first-listed company.
 - A4 the parser flip (§3.9) is built as specified; it is safe because migration 371 created the base `marketing_promotion` rows. If the tester's roster probe shows base `marketing_promotion` missing for `general_enquiries` in Sorento, STOP the parser flip and report.
 
@@ -177,7 +213,7 @@ Register `routing_brand, routing_brand_source, routing_company, routing_companie
 AC1 single-company product (order enquiry, not found) ⇒ `get-cs-members` called ONCE with `company_id=<that company>` (+`brand_code` when the row has one); reply text byte-identical shape to today; `cs_last_result_set[].company_id` = that company.
 AC2 two-company product (MWC-SC08B) ⇒ `cs-roster-plan` emits 2 items (Mocha, Sorento), `get-cs-members` runs 2× (one per company, Sorento call carries `brand_code=mocha`), reply lists both groups labelled `(Mocha)`/`(Sorento)` and contains the explanation sentence naming both companies.
 AC3 turn-2 pick of a labelled member ⇒ `escalation-context.company_id` = that member's company, `brand_code` per row; HI fork `test-guard-record` payload shows the same `brand_code`/`company_id`; **no** real next-assignee call (guard) — zero egress.
-AC4 turn-2 bare "yes" single-company ⇒ `company_id` = the company from prior state; multi-company ⇒ null + `routing_source='multi_company_unpicked'`.
+AC4 (rev-4) turn-2 bare "yes" single-company ⇒ `company_id`/`brand_code` = the persisted `routing_roster_plan[0]` pair verbatim (== what the single `get-cs-members` call used); multi-company ⇒ BOTH axes null + `routing_source='multi_company_unpicked'`; in neither case does a brand stated on the confirmation turn change the axes.
 AC5 domain switch guard: offer on CS team, then a stock question (routing warehouse), then "yes" ⇒ escalation-context brand/company null.
 AC6 same-pool proof: read-only `team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483&company_id=<X>[&brand_code=…]` returns exactly the ids offered for company X (probe via an n8n helper using the header cred; **never call next-assignee**).
 AC7 §0 S1–S6 zero-egress on every run. AC8 replay `norm()` rule present; a sample replay of ≥3 non-CS golden turns shows no new diffs.

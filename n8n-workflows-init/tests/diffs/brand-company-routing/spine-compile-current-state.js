@@ -1010,6 +1010,13 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   const _prev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
   const _sameTeam = _prev && _prev.routing && qf.routing && _prev.routing.suggested_team === qf.routing.suggested_team;
   const _fresh = _g && Array.isArray(_g.routing_companies) && _g.routing_companies.length > 0;
+  // The roster plan ACTUALLY used by get-cs-members this turn — the (company_id, brand_code) pairs the
+  // offered members were fetched with. escalation-context reads this back so the pool assigned from is the
+  // pool shown; it is the single definition of pool identity, never re-derived from routing_brand.
+  const _planItems = (() => { try { const n = $('cs-roster-plan'); return n.isExecuted ? n.all().map(i => i.json) : null; } catch (e) { return null; } })();
+  output.variables.routing_roster_plan = (Array.isArray(_planItems) && _planItems.length)
+    ? _planItems.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))
+    : (_sameTeam && Array.isArray(_prev.routing_roster_plan) ? _prev.routing_roster_plan : null);
   output.variables.routing_brand        = _fresh ? (_g.routing_brand ?? null)        : (_sameTeam ? (_prev.routing_brand ?? null) : null);
   output.variables.routing_brand_source = _fresh ? (_g.routing_brand_source ?? null) : (_sameTeam ? (_prev.routing_brand_source ?? null) : null);
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);

@@ -1,8 +1,11 @@
 // ── cs-roster-plan (brand-company-routing) ──────────────────────────────────
 // One item per company to query for the CS roster. Reads the routing axes computed by
 // disallowed-entity-gate (routing_companies[{company_id,company_name,brand_code,codes}]).
-// No resolve this turn (gate not executed / no companies) => ONE fallback item with null
-// company/brand => get-cs-members makes exactly today's single call (null-guarded params).
+// No resolve this turn (gate not executed / no companies) => ONE fallback item carrying the gate's
+// routing_brand when it has one => get-cs-members makes exactly today's single call (null-guarded params).
+// These items ARE the pool identity: compile-current-state persists them verbatim as
+// variables.routing_roster_plan and escalation-context assigns from that same pair on the bare-"yes"
+// turn, so the fetch-time and assignment-time axes cannot drift apart.
 const g = (() => { try { const n = $('disallowed-entity-gate'); return n.isExecuted ? n.first().json : {}; } catch (e) { return {}; } })();
 const cos = (Array.isArray(g.routing_companies) && g.routing_companies.length)
   ? g.routing_companies

@@ -82,6 +82,24 @@ untouched.
 Docs updated with the same decisions: plan §3.1 (snippet + precedence note) / §3.4 (template) / §3.6 (snippet + widened
 pool-identity rule) / A1, UAC B3 expectation, review §1/§3 F5 + promote checklist.
 
+### 1c. rev-4 patch (second review round, captain-decided) — repo bodies only, **clone republish PENDING**
+
+Rev-3 fixed pool identity for a PICKED member; the bare-"yes" arm still re-derived the brand, so the roster shown and the
+pool `next-assignee` assigns from could still disagree. Rev-4 makes both arms share ONE definition of pool identity: the
+roster plan that `get-cs-members` actually ran with is persisted and read back.
+
+| # | body | change | why |
+|---|---|---|---|
+| 1 | `spine-compile-current-state.js` | new `variables.routing_roster_plan` — the `cs-roster-plan` items of this turn, trimmed to `{plan_idx, company_id, company_name, brand_code}`; carried under the same-team guard when the plan node did not run; null otherwise. Keyed on the plan node running, NOT on `_fresh` | the `(company_id, brand_code)` pairs the offered members were fetched with are now recorded state, not something each consumer re-derives |
+| 2 | `spine-escalation-context.js` | unpicked (`sameTeam`) arm: exactly one persisted plan row ⇒ its pair VERBATIM (null stays null); >1 row ⇒ both axes null (`multi_company_unpicked`); no persisted plan ⇒ company from prior state, brand null. `qb \|\| prev.routing_brand` dropped from this arm. `qb` now requires `query_brands.length === 1` (plan A1) and is used only on the no-roster `stated_brand` arm. Picked arm unchanged from rev-3 | (a) after a multi-company offer the global `routing_brand` ('mocha', derived from the Sorento rows only) was sent while the Mocha roster was fetched unbranded — `next-assignee` could round-robin a pool that excludes offered members; (b) a brand stated on the confirmation turn re-narrowed a pool the roster call never used; (c) a stated-brand-but-zero-company gate turn persisted `routing_brand:null` while the roster HAD been fetched with `&brand_code=`, the mirror-image drift — all three close because both fetch and assign now read the same persisted plan |
+| 3 | `spine-cs-roster-plan.js` | comment only: the plan items are the pool identity (persisted verbatim by ccs) | the fallback item's brand is now recorded rather than re-derived downstream — path (c) above |
+| 4 | `replay-Diff.js` | `norm()` split in two: `routing_brand/_source/_company/_companies/_roster_plan` stay unscoped (new, unique names); `company_id/company_name/brand_code` are dropped-when-null ONLY inside a `variables` container (sibling `routing_*` key), a `cs_last_result_set` row (`idx`+`respond_user_id`) or a `routing_roster_plan` row (`plan_idx`) | tree-wide the rule masked a real null-vs-absent regression on resolve-entity / order / MCP payloads, which use those same generic names (Lesson 21) |
+
+Same containment as §1b: **the clone still runs rev-2** — rev-3 and rev-4 exist only as committed bodies, the §5 sha table's
+`after (published)` column is rev-2, and UAC B4/B5 expectations CHANGED in rev-4 (B5 brand is now null; the committed
+`B5rev2` run JSON records the old rev-2 behaviour). Republish + re-test is P6 in the review checklist, a hard prerequisite
+to the promote. No n8n instance touched; `tests/backups/` untouched.
+
 ## 2. HI fork `vUfFUDjLAuMaeQE6` (before `3186d960-2c39-4bfd-a3b1-9e8d4d5e0295` → published **`d2b82e80-8f22-437d-bf33-3781c505cd5f`**) §3.8
 
 One `update_workflow` (5 `setNodeParameter` ops), 0 warnings, then `publish_workflow`. Full before/after param bodies:
@@ -120,16 +138,21 @@ Two `update_workflow` calls (1 op each), then `publish_workflow`. Node-set diff:
 One `setNodeParameter /jsCode`. Exact rule inserted in `norm()` right after the `_parser_raw` line:
 
 ```js
-if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined)) continue; // brand-company-routing (LESSON 40): additive routing-axis keys on compile-current-state (routing_*) and cs_last_result_set rows (company_id/company_name/brand_code) — ignore-when-null on BOTH sides, retain (surface) when non-null. Not a blanket ignore (LESSON 21).
+if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'routing_roster_plan') && (v[k] === null || v[k] === undefined)) continue;
+if ((k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined) && (ROUTING_VARS.some(rk => rk in v) || ('idx' in v && 'respond_user_id' in v) || ('plan_idx' in v))) continue;
 ```
+(rev-4 §1c item 4: the second line is container-scoped — `ROUTING_VARS` is the new module-level list of the five
+`routing_*` names, so the predicate fires on the `variables` object, a `cs_last_result_set` member row or a
+`routing_roster_plan` row and nowhere else.)
 (Pre-existing warning `Get Exec Id … executionId undefined` unrelated.)
 
 ## 5. sha256 table (byte-exact, `jq -j`; verified by re-fetching each workflow after the edit) — **rev-2 state**
 
 ⚠️ The `after (published)` column describes what is published on the clone at rev-2. The rev-3 edits of §1b changed the repo
-bodies of `spine-escalation-context.js`, `spine-disallowed-entity-gate.js` and `spine-build-cs-member-offer.js`; their shas
-must be recomputed from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and re-verified after the clone
-republish of rev-3.
+bodies of `spine-escalation-context.js`, `spine-disallowed-entity-gate.js` and `spine-build-cs-member-offer.js`, and the
+rev-4 edits of §1c changed `spine-escalation-context.js`, `spine-compile-current-state.js`, `spine-cs-roster-plan.js` and
+`replay-Diff.js`; their shas must be recomputed from the files (`sha256sum tests/diffs/brand-company-routing/*.js`) and
+re-verified after the clone republish of rev-4.
 
 | body | before (pre-edit) | live source (rebase) | after (published) |
 |---|---|---|---|

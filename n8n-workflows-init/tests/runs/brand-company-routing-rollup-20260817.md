@@ -7,8 +7,11 @@ replay orchestrator `aROEBlQyyoQaB7a1` @ `d52af206-…` (unpublished, as before)
 `XTODTw-dJcV0uRdC056hG` `9df39ff6-…` (updatedAt 2026-08-11), `rrYXzE61gCNUck_zmXe-G` `5018a189-…`. At the time of this run the published Code bodies of
 `disallowed-entity-gate / build-cs-member-offer / compile-current-state / cs-roster-plan / escalation-context` were byte-identical to
 `tests/diffs/brand-company-routing/*.js` (sha256 re-checked from a REST fetch); replay `Diff.jsCode` identical modulo one trailing newline in the file.
-⚠️ **Superseded by rev-3** (review fixes to `escalation-context`, `disallowed-entity-gate`, `build-cs-member-offer` — see `tests/diffs/brand-company-routing.md` §1b):
-those three repo bodies now differ from the clone; the clone republish + re-test of rev-3 is pending and tracked in the promote/verify checklist.
+⚠️ **Superseded by rev-3 + rev-4** (review fixes to `escalation-context`, `disallowed-entity-gate`, `build-cs-member-offer`, `compile-current-state`, `cs-roster-plan`,
+`replay-Diff` — see `tests/diffs/brand-company-routing.md` §1b/§1c): those repo bodies now differ from the clone; the clone republish + re-test is pending and tracked
+in the promote/verify checklist (review §4 P6). **Rev-4 also CHANGED the B4/B5 expectations** — the bare-"yes" arm now sends the persisted `routing_roster_plan` pair
+verbatim (single company) or BOTH axes null (multi company), so the B5/B5rev2 observation `brand_code:"mocha"` below is rev-2 behaviour that rev-4 deliberately replaces
+with `brand_code:null`. Those two cases carry NO current execution evidence until P6 re-runs them.
 
 **Headline: §0 S1–S6 ZERO-EGRESS HELD on all 17 clone executions. No HALT.** Functional: B1 B2 B3 B4 B5 B7 B8 B9 P1 PASS; B6 PASS-WITH-NOTE
 (guard proven by variant B6b; the literal B6 sequence exposes a UAC-wording vs implementation ambiguity, see notes);
@@ -89,3 +92,7 @@ Forks/live unchanged (HI fork `d2b82e80`, parser fork `7b4baaa8`, live ids untou
 
 Rev-1 note 3 (B3 brand fallback) is resolved by rev-2. Session row reset to `{"variables":{}}` after the last rev-2 run. Evidence:
 `tests/runs/brand-company-routing-B3rev2-20260817.json`, `…-B5rev2-20260817.json`.
+
+⚠️ **B5rev2 records rev-2 behaviour, not the current expectation.** Its observed `{company null, brand mocha, multi_company_unpicked}` is exactly the pool
+disagreement rev-4 closes (the Mocha roster was fetched unbranded, so sending `mocha` narrows `next-assignee` to a pool the customer was not shown). Under rev-4 the
+same case must observe `brand_code:null`. Re-run under P6; until then B4/B5 are UNVERIFIED against the committed bodies.
