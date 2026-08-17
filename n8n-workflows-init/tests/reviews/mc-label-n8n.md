@@ -1,402 +1,273 @@
 # Review — `mc-label-n8n` (multi-company reply clarity, n8n half)
 
-**Reviewer pass** 2026-08-17 · branch `fm/mc-label-n8n` · coder diff `n8n-workflows-init/tests/diffs/mc-label-n8n.md` · tester rollup `n8n-workflows-init/tests/runs/mc-label-n8n-rollup.md`
+**Reviewer pass 1** 2026-08-17 — REQUEST-CHANGES (3 blockers) · commit `a0d2a45`
+**Reviewer pass 2 (re-review)** 2026-08-17 — **APPROVE** · this document
 
-**n8n MCP unavailable this session.** Every check below was made read-only over the public REST API
-(`GET /workflows/{id}`, `GET /executions/{id}?includeData=true`). No PUT/POST/DELETE was issued. No workflow was edited.
+Branch `fm/mc-label-n8n` · coder diff `n8n-workflows-init/tests/diffs/mc-label-n8n.md` · tester rollup
+`n8n-workflows-init/tests/runs/mc-label-n8n-rollup.md` (5/5 PASS)
 
----
-
-# VERDICT: REQUEST-CHANGES
-
-Two blocking items, both narrow. **Zero-egress is clean and independently re-confirmed** — the safety axis passes without
-reservation. The change is blocked on a correctness gap, not a safety one:
-
-* **B1** — the new empty-company block in `output-structurer` can emit a **self-contradictory message** on the exact
-  multi-company shape that was never observed on the wire. One-line guard fixes it.
-* **B2** — the promote mapping is **incomplete**: live splits its 8 `sub-get-results` call sites across **two** subs, and
-  the artifact is mapped to only one. Promoting as written half-deploys the change and leaves the crossdomain path — the
-  very path change 3 feeds — on stale code.
-
-Plus **B3**, a required UAC case before promotion (multi-company **with rows**), which is what would have caught B1.
-
-Everything else reviewed is approve-grade: the three node bodies are correct, single-company output is provably
-byte-identical (independently replayed, not taken on trust), and no egress node, connection, setting or pinData moved.
+**n8n MCP unavailable in both passes.** Every check was made read-only over the public REST API
+(`GET /workflows/{id}`, `GET /executions/{id}?includeData=true`, `GET /executions?workflowId=…`). No PUT/POST/DELETE
+was ever issued. No workflow was edited by the reviewer.
 
 ---
 
-## 1. Zero egress — PASS (independently re-verified, not relayed)
+# VERDICT: APPROVE
 
-### 1a. Structural: exactly three `jsCode` leaves changed, nothing else
+All three pass-1 blockers are closed, and I re-verified each independently rather than accepting the report.
 
-Fetched both edited workflows live and diffed **every node by stable `id`** against the committed pre-edit backups
-(`n8n-workflows-init/tests/backups/mc-label-n8n/*.json`), field by field, plus top-level `connections` / `settings` /
-`pinData` / `staticData` / `active`:
+| # | blocker | closed by | independently verified |
+|---|---|---|---|
+| **B1** | `output-structurer` could assert absence from a negative — declare every lookup company empty underneath rows it just printed | coder `b234cdd` — `_canAttribute` guard | **yes** — server sha, hunk diff, and 5-shape replay incl. the exact failure shape |
+| **B2** | promote mapping missed `Fss5aAaXthJSWpZCgKiKR`, which serves 5 of live's 8 get-results call sites | diff doc revised — both subs now MANDATORY, with the call-site table and subs-before-spine order | **yes** — re-read the doc; call-site table matches my enumeration |
+| **B3** | multi-company **with rows** never executed; the row-stamp half of the wire contract never observed | tester `97fb449` — case 4 (`MUB5202`) + case-1 recheck | **yes** — pulled execs `12778370` / `12778383` / `12778877` myself |
 
-| workflow | nodes added | nodes removed | nodes differing | fields differing | connections | settings | pinData | staticData |
-|---|---|---|---|---|---|---|---|---|
-| `t4QvrtrPnTwRU6br` | none | none | `output-structurer` only | `parameters.jsCode` only | identical | identical | identical | identical |
-| `txiPzSxy3Pclsz6v` | none | none | `not-found-error-message`, `crossdomain-zeroset` only | `parameters.jsCode` only | identical | identical | identical | identical |
-
-`settings` survived the PUT intact on both, including the keys the REST schema rejects
-(`availableInMCP:true`, `callerPolicy`, `binaryMode:"separate"`). The coder's claim holds exactly.
-
-### 1b. Live workflows untouched
-
-| workflow | id | versionId | == activeVersionId | updatedAt |
-|---|---|---|---|---|
-| live spine `sorento-consume-main` | `9qVyfUxmRQqrpGRMDLRuz` | `469e7259-6cfb-4505-bef4-f37a36bf454f` | yes | 2026-08-11T16:23:58Z |
-| live sub `sub-get-results TEST` | `rysSPgUssLDf6xJc` | `eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a` | yes | 2026-08-10T06:13:06Z |
-| live sub `sub-get-results` | `Fss5aAaXthJSWpZCgKiKR` | `fd248b16-82ee-4307-abfb-657b9b6a4aa7` | yes | 2026-08-11T00:50:25Z |
-
-All three match the values recorded in the diff doc (Fss5 added by me). Nothing live was written.
-
-### 1c. Runtime: re-confirmed from the execution data myself
-
-Pulled `12774464` (case 1 clone spine), `12774472` / `12774475` (both sub-get-results calls), `12774477` (sendmsg sub),
-`12775076` (case 2), `12775298` (case 3).
-
-* **S1 — zero real sends.** `12774477` runData = `[When Executed by Another Workflow, chat-build-parts, chat-push, chat?,
-  console-loggable?, log-chat-history-n8ntest]`. The sub's `HTTP Request` node
-  (`https://api.respond.io/v2/contact/…/message`) is **absent from runData** in every case. Delivery was `chat-push`
-  (redis LPUSH to `chat:reply:{chat_id}`) only.
-* **S2/S3 — zero writes.** `save-session-vars`, `update-human-intervened`, `send-message-files/images/video` and
-  `Call 'sub-human-intervention'` are absent from all three clone runData key sets. Only three HTTP nodes executed in
-  every case: `get-session-vars-http` (GET), `resolve-entity-http` (POST `/references/resolve` — a read query),
-  `check-access-http` (POST `/access-agent/check` — a read query). The clone's only PUT node (`save-session-vars`,
-  `…/conversation-variables/{id}`) never ran and is orphaned. **No prod mutation on any path.**
-* **S4 — read-only tools.** Resolved tools: `crm_inventory_stock_balance_list` (main) and `crm_incoming_stock_list`
-  (crossdomain probe). `crm_it_support_ticket_create` appears nowhere, not even in the MCP tool catalogue the client
-  enumerated.
-* **S5 — test control present.** Popped redis item carries `mode:"uac"`, `scope:"chat-console"`,
-  `test_run_id:"chatcon-1786930750003"` matching the seed (rules out latest-by-time mis-attribution). All sub-calls in
-  the clone definition hardcode `is_test:true`. The `test_mode`-null-on-the-trigger observation is LESSONS 1, correctly
-  diagnosed by the tester, not a gap.
-* **S6.** Live-parser + live-read by design (the point was to prove the deployed PR #193 envelope). No write tool ran.
-
-Independent spot-check of the tester's central claim: `entity-ids-transformer` in **both** sub-execs carries
-`product_ids: ["142fdca2-…" (Mocha), "e5f1a203-…" (Sorento)]`, and `crossdomain-zeroset._xd` in `12774464` carries
-`missing[0].uuids` with both and two `probe_entities`. Change 3 demonstrably fired end to end. Cases 2 and 3: the strings
-` — checked in` and `lookup_companies` occur **zero** times in runData (their only occurrences in the execution JSON are
-inside the `workflowData` jsCode source). Single-company output is untouched in the wild, not just in replay.
-
-**Egress verdict: PASS.** Nothing in this change can reach a real contact or mutate prod.
+Zero egress remains clean across all five cases. Promotion stays **user-gated**; the finalized checklist is §7.
 
 ---
 
-## 2. B1 (BLOCKING) — `output-structurer` can contradict itself when rows are present but unstamped
+## 1. B1 — closed and verified
 
-The new block asserts absence from a **negative**: a lookup company is called silent when its name is not found among
-the rendered rows' `Company` fields. If the envelope returns rows that carry **no** company field at all, `_shownCos` is
-empty and **every** lookup company is declared silent — directly underneath the rows that were just rendered.
+### 1a. The published body is what the coder says it is
 
-I replayed the published body against that shape (rows present, `lookup_companies` present, no `company_name` on rows):
-
-```
-"Here are the results.
-
-1. *Product Code:* MWC-SC08B
-*Qty:* 12
-
-*Mocha:* no stock records for MWC-SC08B.
-*Sorento:* no stock records for MWC-SC08B."
-```
-
-A customer is shown 12 units of the product and told in the same message that neither company has any. That is a worse
-statement than the one this change exists to fix.
-
-**This is not hypothetical, because the row half of the wire contract has never been observed.** I scanned every
-execution of `t4QvrtrPnTwRU6br` in this cycle (15 of them, including the exec **12772435** the diff doc cites as the
-wire-contract verification):
-
-| exec | result_type | items | `lookup_companies` | `company_name` in rows |
-|---|---|---|---|---|
-| 12772435 | stock | **0** | yes | 0 |
-| 12774472 | stock | **0** | yes | 0 |
-| 12774475 | incoming_stock | **0** | yes | 0 |
-| 12775028 / 12774978 / 12774879 / 12775311 | stock | 15 / 8 / 2 / 1 | no | 0 |
-| 12775948 | promotions | 3 | no | 0 |
-
-Every multi-company envelope seen was **empty**; every non-empty envelope was single-company. So the leading
-`{key:"company_name", label:"Company"}` row field — which `_shownCos`, the `_IDENTITY_KEYS` addition and the whole
-"partial" and "found-in-several" behaviours depend on — is **assumed, never seen**. Two concrete ways the assumption
-fails today:
-
-1. The scout spec (§4 PR-A step 4) adds the row field to the **`_stock`** presenter only, while `lookup_companies` rides
-   the **shared** `ListResponse` passthrough — and exec `12774475` proves `lookup_companies` already reaches
-   `incoming_stock`. If the incoming presenter does not stamp rows, **every multi-company incoming answer with rows
-   contradicts itself** — and that is the `crossdomain-probe` path, which change 3 now deliberately routes both
-   companies into.
-2. The FastMCP-restart gotcha the scout flagged in step 6 (registration happens at startup).
-
-The codebase already states the correct rule, three nodes over, in `crossdomain-render`:
-`// positive facts only — say nothing rather than assert absence`. The new block breaks that invariant in a case it
-cannot detect.
-
-**Required fix** (in `n8n-workflows-init/tests/diffs/mc-label-n8n/output-structurer.js`, and republished to the clone):
-gate the emission so it never speaks when it cannot tell. After `_shownCos` is built:
-
-```js
-// Rows rendered but NOT ONE carries a Company field ⇒ the CRM did not stamp them, so we cannot
-// tell which company is silent. Positive facts only: say nothing rather than assert absence
-// underneath rows we just printed.
-const _canAttribute = !(e.items || []).length || _shownCos.size > 0;
-```
-
-and require `_canAttribute` alongside `_silent.length` on the append. Empty-envelope behaviour (the captain's reported
-case) is unaffected — `items` is empty, so `_canAttribute` is true.
-
-This is ~2 lines, removes the entire failure class, and makes B3 a confirmation rather than a gate.
-
----
-
-## 3. B2 (BLOCKING) — the promote mapping misses half the live call sites
-
-The diff doc maps `output-structurer.js` to `rysSPgUssLDf6xJc` and calls `Fss5aAaXthJSWpZCgKiKR` an optional
-"promote alongside if it is to stay in sync". It is not optional. I enumerated every `executeWorkflow` node in both
-spines:
-
-| call site | LIVE `9qVyfUxmRQqrpGRMDLRuz` targets | CLONE `txiPzSxy3Pclsz6v` targets |
-|---|---|---|
-| `Call 'sub-get-results'` | `rysSPgUssLDf6xJc` | `t4QvrtrPnTwRU6br` |
-| `probe-incoming` | `rysSPgUssLDf6xJc` | `t4QvrtrPnTwRU6br` |
-| `tier-probe` | `rysSPgUssLDf6xJc` | *(not present on clone)* |
-| `sibling-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
-| `crossdomain-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
-| `dym-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
-| `dym-probe-partial` | **`Fss5aAaXthJSWpZCgKiKR`** | `t4QvrtrPnTwRU6br` |
-| `promo-dym-probe` | **`Fss5aAaXthJSWpZCgKiKR`** | *(not present on clone)* |
-
-The clone funnels **all six** of its call sites through the one sub that was edited — which is exactly why the UAC
-passed end to end. Live does not. Promoting only `rysSPgUssLDf6xJc` ships an asymmetric bot: the main stock answer names
-the empty company, the crossdomain / sibling / did-you-mean answers do not, and the `_IDENTITY_KEYS` fix (which matters
-precisely on the projected `incoming_stock` envelope the crossdomain probe requests) never lands on that path.
-
-Cost of doing it right is nil: both subs' `output-structurer` bodies are **byte-identical today**
-(`sha256 = 68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` on `rysSPgUssLDf6xJc` and
-`Fss5aAaXthJSWpZCgKiKR` alike), so the same artifact applies cleanly to both with no rebase. The checklist below treats
-Fss5 as a mandatory third target.
-
----
-
-## 4. B3 (REQUIRED before promote) — the multi-company-with-rows case was never run
-
-The three executed cases match the task brief exactly and are well-evidenced. But the scout's §4 validation list names a
-third shape — *"and with a code stocked in both (expect `Company:` on every row)"* — and the executed suite substituted
-"single-company found → no label" for it. The result is that **all three** multi-company observations in this cycle were
-empty envelopes, and the "found-in-several" and "partial" behaviours the fix is scoped to cover
-(§4: *"the smallest that covers found / not found / partial"*) rest on offline replay alone. That is what left B1
-undetected.
-
-**Required:** one further UAC case on the clone, a product code stocked in **both** companies, asserting on both
-`crm_inventory_stock_balance_list` and `crm_incoming_stock_list` result types:
-1. every rendered row carries `*Company:*`;
-2. **no** `*<Company>:* no … records` line follows rows for a company that did render rows;
-3. `answers[].fields` retains the `company_name` key through the `incoming_stock` projection.
-
-If (1) fails on the incoming envelope, B1's guard is what keeps the reply honest — and a backend follow-up is needed to
-stamp the incoming presenter.
-
----
-
-## 5. Code correctness — otherwise correct, independently replayed
-
-I did not take the coder's probe tables on trust; I re-ran old-vs-new as pure function replays against the **live**
-pre-change bodies.
-
-**`crossdomain-zeroset`** (live `9qVyfUxmRQqrpGRMDLRuz` body vs artifact — 7 shapes):
-
-| case | result |
+| check | result |
 |---|---|
-| single-company missing / returned | **byte-identical `_xd`** |
-| multi-token single-company | **byte-identical** |
-| no resolutions / domain off | **byte-identical** |
-| two companies, one returned | **byte-identical** (`active:false`) |
-| two companies, both missing | `missing[0].uuids:["u1","u2"]`, `probe_entities` gains the second — as specified |
+| `t4QvrtrPnTwRU6br` versionId | `179f1842-8061-4e59-9c72-74ad2b602f29`, `== activeVersionId`, `active: true` |
+| server `output-structurer` jsCode sha256 | `25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de` |
+| committed artifact sha256 | `25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de` — **MATCH** |
+| structural re-diff vs pre-edit backup | still **only** `output-structurer.parameters.jsCode`; no node added/removed; `connections` / `settings` / `pinData` / `staticData` identical |
 
-**`output-structurer`** (live `rysSPgUssLDf6xJc` body vs artifact — 10 shapes): single-company stock found / stock empty /
-`incoming_stock` under active projection / unkeyed orders envelope all **byte-identical**. Multi-company empty, partial
-and `incoming_stock` behave exactly as the diff doc tabulates, including the projection fix keeping the `*Company:*` line
-that the pre-change node stripped. Malformed input (missing `name`, `entities` as a JSON string) degrades gracefully.
+The artifact was rewritten from the server's copy, so the promote artifact and the tested body are the same bytes.
 
-**`not-found-error-message`**: the promote artifact diffs against the **live current** body as exactly the four mc-label
-hunks and nothing else — verified by `diff -u`, see §6. `_compat` (`gate.compatible_entities`), `_allMatches`,
-`_dispByUuid` are all defined before first use; all four `$('…')` refs (`Aggregate`, `Call 'sub-query-reformulator'`,
-`disallowed-entity-gate`, `resolve-entity`) exist by name in **both** clone and live. All three bodies parse
-(`new Function`).
+### 1b. The delta is exactly the two changes I asked for — nothing rode along
 
-**Captain's rule: honoured in all three nodes.** `output-structurer` keys on `e.lookup_companies` (the envelope's own
-lookup set); `not-found-error-message` keys on `gate.compatible_entities` — the entities actually sent to the tool —
-never on `Aggregate`/access levels. I checked: `Aggregate` is read in this node only by the pre-existing
-`_entitlementMiss` arm, and nothing in the new code touches the caller grant.
+`diff -u` of the pass-1-reviewed artifact against the new one yields two hunks and no others:
 
-**State-pollution checks (all clean):**
-* `compile-current-state` builds its output from **explicit keys**, not `{...$input.first().json}` (the node says so at
-  line 10) — the new `lookup_companies` key does **not** reach persisted session vars.
-* `_xd.missing[]` is consumed by `compile-current-state` (`m.code`) and `crossdomain-render` (`m._n`); the conditional
-  `uuids` key is inert in both. It is only added when the code genuinely spans companies, so single-company `_xd` is
-  key-for-key unchanged (replayed).
-* `found_summary` (which now carries `(Company)` suffixes in the multi-company case) is consumed by
-  `build-suggest-offer` as **display text only** (`Here's what you want:\n${found_summary}`) — not parsed for codes. Safe.
-* `_IDENTITY_KEYS` is referenced in exactly one place (the projection filter). Adding `company_name` has no other reach.
-* `probe_entities` fan-out vs dedupe: verified empirically — `entity-ids-transformer` collapsed the two entries to
-  `product_ids` with 2 uuids, `_diagnostics.entities_in:2, total_uuids_passed:2, skipped:[]`. Shape is correct.
+1. `const _canAttribute = !(e.items || []).length || _shownCos.size > 0;`, applied as
+   `if (_canAttribute && _silent.length) …`
+2. the json spread gate tightened from `_lookupCos.length` to `_lookupCos.length > 1` (pass-1 finding 1, endorsed)
 
-### Non-blocking findings
+No third edit slipped in. The comment block records the reasoning and cites the shared-passthrough evidence, so the
+next reader will not "simplify" the guard away.
 
-1. **Asymmetric gate on the `lookup_companies` spread.** The message gate is `_lookupCos.length > 1` but the json spread
-   is `_lookupCos.length`. A 1-element list (which the contract says cannot occur) would add the key to a single-company
-   reply's json. Replay confirms the *message* stays identical; only the key appears. Tighten to `> 1` for symmetry
-   while you are editing the file for B1.
-2. **`crossdomain-probe` prompt string now repeats the code.** Observed live: `"cross-domain probe (inventory ->
-   crm_incoming_stock_list) for: MWC-SC08B, MWC-SC08B"`. Cosmetic LLM hint only, and fixing it means editing the node's
-   *parameters* rather than a Code body — leave it, but note it so it is not mistaken for a bug later.
-3. **`_add`'s new `if (!ex.uuid) ex.uuid = ex.uuids[0] || null;`** is a mutation on the dedup path that the coder's probe
-   table does not cover. I traced the call sites: no path adds a code with a falsy uuid before one with a uuid
-   (lines 84/85/91 always pass `m.uuid`; lines 98/100 pass the same `_uuidByCode` lookup), so it is unreachable today.
-   Informational.
-4. **`_coOfRow` also matches `label === 'Company'`** with no key. If `lookup_companies` ever rides an envelope where
-   "Company" means the *customer's* company (orders — `DO123 (Acme Sdn Bhd)`), that fallback compares customer names to
-   lookup-company names. Only reachable if the backend starts emitting `lookup_companies` on order envelopes; worth a
-   comment recording the constraint.
-5. **`_foundLines` drops the `(+N more)` cap entirely when `_multiCo`.** N products × M companies all land on one bullet.
-   Grouping as `MWC-SC08B (Mocha, Sorento)` would read better and bound the length — follow-up, not this change.
-6. **`_bareLabel` strips one trailing parenthetical when `_multiCo`.** A promotion display label that legitimately ends
-   in a parenthetical could shift the typed-code-first reorder. Multi-company only, cosmetic ordering. Acceptable.
+### 1c. Replayed against the live pre-change body — the failure mode is gone, nothing else moved
+
+Re-ran my pass-1 harness (10 shapes) plus 5 new ones, all against the **live** `rysSPgUssLDf6xJc` body:
+
+| shape | pass-1 body | new body |
+|---|---|---|
+| **rows present, NO row stamped** (the B1 failure) | `1. *Product Code:* MWC-SC08B *Qty:* 12` **+ "*Mocha:* no stock records… *Sorento:* no stock records…"** | `1. *Product Code:* MWC-SC08B *Qty:* 12` — **silent, correct** |
+| `lookup_companies` with 1 element | json gained a stray key | **byte-identical to old** — gate now symmetric |
+| single-co stock found / stock empty / `incoming_stock` under projection / unkeyed orders | identical | **still byte-identical** |
+| all empty, 2 companies (case 1) | both per-company lines | **unchanged** — `items` empty ⇒ `_canAttribute` true |
+| Mocha rows + Sorento silent (case 4) | — | one `*Sorento:*` line, **none** for Mocha |
+| both companies have rows | — | **no** silent lines at all |
+
+The guard is correctly one-sided: it suppresses only the case where the node cannot tell, and leaves every case where
+it can tell exactly as specified.
+
+### 1d. Residual, non-blocking
+
+**Partial stamping.** If *some* rows carry `company_name` and others do not, `_shownCos` is non-empty so
+`_canAttribute` is true, and a company whose only row was the unstamped one would still be wrongly called silent.
+Replayed: rows `[Mocha, <unstamped>]` still emits `*Sorento:* no stock records for MUB5202.` This is far narrower than
+the systemic case B1 covered — the presenter stamps from a company-name map, so an unstamped row means a row whose
+`company_id` is NULL, not a deploy-skew shape. **Recorded, not blocking.** If you ever want it airtight, the stricter
+gate is "every row is attributed" (`_shownCos.size > 0 && (e.items||[]).every(_coOfRow)`); I am not asking for it,
+because it would trade a real behaviour (case 4) against a hypothetical row with no company.
 
 ---
 
-## 6. Drift import — safe on the clone, and correctly **not** carried into the promote artifact
+## 2. B3 — closed, and it did what a UAC case is for: it proved the wire
 
-The clone's `not-found-error-message` was 65 lines behind live; the publish rebased it onto the live body. I verified the
-consequences rather than accepting them:
+Case 4 (`MUB5202 check stock`, exec `12778370`, sub-exec `12778383`) is the shape whose absence blocked pass 1. I
+pulled the sub-execution and read the envelope directly rather than trusting the summary:
 
-* **The promote artifact contains ONLY the mc-label hunks.** `diff -u` of live `9qVyfUxmRQqrpGRMDLRuz`'s current
-  `not-found-error-message` (sha `d796e28d84e3…`, 334 lines) against
-  `n8n-workflows-init/tests/diffs/mc-label-n8n/not-found-error-message.js` yields exactly four hunks: `_coByUuid` /
-  `_searchedCos` / `_multiCo` / `_andList`; the `_byType` label qualification; the `_bareLabel` strip; the `_multiCo`
-  `_foundLines` arm and `_coSuffix`. **No drift is promoted** — the drift already *is* live. The doc's claim
-  "applies cleanly, no rebase" is correct.
-* **The import is safe on the clone.** The three imported live arms (`_entitlementMiss`, the zero-resolution arm, the
-  `gate.access_notice` prefix) reference `$('Aggregate')` and `gate.*`. `Aggregate` exists on the clone (confirmed by
-  name; the clone also has a separate `Aggregate1`), and the imported code guards it with `isExecuted` inside a
-  try/catch. The clone's `disallowed-entity-gate` contains **0** occurrences of `access_notice` (live has 4), so the
-  prefix is simply falsy there — graceful, exactly as the coder predicted.
-* **New clone blind spot worth a follow-up.** The clone's `not-found-error-message` is now live-current while its
-  `disallowed-entity-gate` is still behind live. The Q23 `access_notice` prefix can therefore **never** be exercised on
-  the clone. Recommend a separate change to rebase the clone's gate onto live — do not fold it into this one.
+* **Row-stamp confirmed on the wire.** Both rows' `fields[0]` is literally
+  `{"key":"company_name","label":"Company","value":"Mocha"}` — a *leading* field, exactly the contract the scout
+  report specified and which nothing in the previous cycle had ever shown. The assumption pass 1 flagged as unverified
+  is now a measurement.
+* **`lookup_companies`** present with both companies; carried through into the returned json.
+* **Rendered response** (verbatim from `output-structurer`):
+  `"Stock details found for the requested products.\n\n1. *Company:* Mocha … 2. *Company:* Mocha …\n\n*Sorento:* no stock records for MUB5202.\n\n_Data last updated: …_"`
+  → `*Company:*` on every row, **exactly one** silent-company line, and **none** for Mocha, which did return rows.
+  This is the whole change working against real CRM data.
+* **Executed against the fixed body**: the execution's own `workflowData` carries jsCode sha
+  `25a2eed93b7f…` — I hashed it from the execution payload, so the run provably used the B1 code, not the old body.
+* **Case-1 recheck** (exec `12778877`) on the republished sub: `not-found-error-message.escalate_message` is
+  `"Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no inventory matched these — checked in Mocha and Sorento. …"`
+  and `_xd.missing[0].uuids` carries both uuids. No regression from the B1 fix on the all-empty path.
 
-Likewise for `crossdomain-zeroset`: live's body (sha `2eef3fa37454…`) is byte-identical to the clone's pre-change body,
-so that artifact also applies with zero rebase. Both `output-structurer` targets are at `68bd130cf367…`. Every promote
-artifact was built on live current — claim verified, not relayed.
+### The one open item, and why it is genuinely not a blocker
 
----
+The `incoming_stock` presenter's row-stamp is **still unobserved** — 5 probes did not surface a multi-company product
+with actual incoming rows. The tester reported this loudly instead of quietly dropping it, which is the right call.
 
-## 7. Scope / tier
-
-Scope is a **business-logic jsCode-only change across three Code nodes**, exercised at the **live-parser + live-read**
-tier (not deterministic — correctly so: the point was to prove the deployed PR #193 envelope, which a mock would hide;
-LESSONS 28). The tester's tier matches the scope. There is no planner doc for this change (`n8n-workflows-init/plans/`
-has no `mc-label-n8n.md`) — it came from the scout report + captain refinement directly. That is acceptable for a change
-this size, but it is why the UAC case list was assembled ad hoc and why the scout's third case (§4, "stocked in both")
-fell out — see B3.
-
-**Regression note.** `_xd.missing[].uuids` and the json `lookup_companies` are *conditional* new keys, emitted only on
-multi-company turns. LESSONS 40's `norm()` rule is for *always*-emitted fields and does **not** apply here — no
-orchestrator change needed. A full-corpus replay against the current golden base will legitimately diff on any
-multi-company turn; that is the change, not a regression.
+I agree it does not block, and the reason is specifically the B1 fix: `_canAttribute` is the same code on both
+presenters, so **n8n is correct under either backend outcome.** If the incoming presenter stamps, the labels are
+right; if it does not, the block goes silent rather than lying. Before B1 this open item would have been a blocker.
+It is now an observability gap, carried into the checklist as a post-promote watch item (§7 P4) rather than a gate.
 
 ---
 
-# PROMOTE CHECKLIST
+## 3. B2 — closed
 
-**Promotion is USER-GATED. This checklist does not authorise it; it is what must be true when the user does.**
-**Do not run any of it until B1, B2 and B3 are cleared.** B1 changes `output-structurer.js`, so **every sha below for
-that artifact must be regenerated after the fix** — do not carry the current values forward.
+The diff doc's promote mapping now reads *"BOTH live subs, MANDATORY — `rysSPgUssLDf6xJc` AND
+`Fss5aAaXthJSWpZCgKiKR`"*, carries the call-site table, and states the subs-before-spine order (LESSONS 37). The table
+matches my own enumeration of every `executeWorkflow` node in the live spine:
 
-### P0 — clear the blockers first
-- [ ] **B1** — add the `_canAttribute` guard to `output-structurer.js`; republish to `t4QvrtrPnTwRU6br`; update the diff
-      doc's probe table with the rows-present/unstamped case. Optionally tighten the `lookup_companies` spread to `> 1`
-      (finding 1) in the same edit.
-- [ ] **B3** — tester runs the multi-company-with-rows case (both `stock` and `incoming_stock`) on the clone and records
-      it as `mc-label-n8n-case4.json`. §0 S1–S6 must pass. Reviewer re-confirms before the gate reopens.
-- [ ] **B2** — the mapping below is authoritative; the diff doc's "optional sync" line is superseded.
+| target | live call sites |
+|---|---|
+| `rysSPgUssLDf6xJc` | `Call 'sub-get-results'`, `probe-incoming`, `tier-probe` |
+| `Fss5aAaXthJSWpZCgKiKR` | `sibling-probe`, `crossdomain-probe`, `dym-probe`, `dym-probe-partial`, `promo-dym-probe` |
 
-### P1 — artifact → target mapping (three artifacts, **four** target nodes)
+Both subs' `output-structurer` remain byte-identical today (`68bd130c…`), so one artifact covers both with no rebase.
 
-| # | artifact | target workflow | node | target's current sha256 (gate on this) | target's current versionId (revert to this) |
+---
+
+## 4. Zero egress — re-confirmed across all five cases
+
+Re-verified after the B1 republish, not carried over from pass 1.
+
+* **Structural.** `t4QvrtrPnTwRU6br` still differs from its pre-edit backup in `output-structurer.parameters.jsCode`
+  **only**; `txiPzSxy3Pclsz6v` is untouched since the first publish (`63967fff…`, updatedAt 2026-08-17T01:33), and its
+  two node bodies still match their committed artifacts (`cfd8a380…`, `2c562c7e…`). No egress node, connection,
+  setting or pinData moved in either workflow at any point.
+* **Runtime (execs `12778370`, `12778877`).** `save-session-vars`, `update-human-intervened`,
+  `send-message-files/images/video` and `Call 'sub-human-intervention'` are **absent from runData**. The only HTTP
+  nodes that executed are `get-session-vars-http` (GET), `resolve-entity-http` and `check-access-http` (read queries).
+  The clone's sole PUT node never ran and is orphaned.
+* **S1 swept, not sampled.** I pulled **all 8** `aQUmwMVplmNcyUVc` sendmsg sub-executions in the session window
+  (`12776629` … `12778889`). Every one has runData
+  `[When Executed by Another Workflow, chat-build-parts, chat-push, chat?, console-loggable?, log-chat-history-n8ntest]`
+  — the respond.io `HTTP Request` node executed in **none** of them. Delivery was redis `chat-push` throughout.
+* **S4/S5.** Tools: `crm_inventory_stock_balance_list`, `crm_incoming_stock_list` — reads only;
+  `crm_it_support_ticket_create` appears nowhere. Both new runs carry `mode:"uac"`, `scope:"chat-console"` and a
+  `test_run_id` matching their seed.
+
+### Live workflows: untouched, and every promote baseline still current
+
+| workflow | id | versionId (== activeVersionId) | updatedAt |
+|---|---|---|---|
+| live spine | `9qVyfUxmRQqrpGRMDLRuz` | `469e7259-6cfb-4505-bef4-f37a36bf454f` | 2026-08-11T16:23:58Z |
+| live sub `sub-get-results TEST` | `rysSPgUssLDf6xJc` | `eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a` | 2026-08-10T06:13:06Z |
+| live sub `sub-get-results` | `Fss5aAaXthJSWpZCgKiKR` | `fd248b16-82ee-4307-abfb-657b9b6a4aa7` | 2026-08-11T00:50:25Z |
+
+Nothing live was written across either pass.
+
+---
+
+## 5. Carried forward from pass 1 (still valid, unchanged by the fix)
+
+* **Single-company output byte-identical** — independently replayed against the live pre-change bodies, 4/4 shapes for
+  `output-structurer` and 5/5 for `crossdomain-zeroset`. This is the property the captain's refinement turns on.
+* **Captain's rule honoured** — labels key on `e.lookup_companies` and `gate.compatible_entities` (what was sent to
+  the tool), never on `Aggregate`/the caller's access list.
+* **No state pollution** — `compile-current-state` is explicit-key (not `{...json}`), so `lookup_companies` never
+  reaches persisted session vars; `_xd.missing[].uuids` is inert in both its consumers; `found_summary` is consumed by
+  `build-suggest-offer` as display text only, never parsed for codes.
+* **Drift** — the `not-found-error-message` promote artifact diffs against live current as **exactly** the four
+  mc-label hunks; no clone drift is promoted. The clone's `disallowed-entity-gate` remains behind live (0
+  `access_notice` occurrences vs live's 4), so the Q23 prefix cannot be exercised on the clone — **follow-up: rebase
+  the clone's gate in a separate change, not this one.**
+* **Non-blocking findings** — `crossdomain-probe`'s prompt now repeats the code (`"for: MWC-SC08B, MWC-SC08B"`,
+  cosmetic, would need a node-parameter edit); `_add`'s new `if (!ex.uuid) …` is unreachable today; `_coOfRow`'s
+  `label === 'Company'` fallback would misread an orders envelope if `lookup_companies` ever rides one; `_foundLines`
+  drops the `(+N more)` cap when `_multiCo` (consider grouping as `MWC-SC08B (Mocha, Sorento)` later); `_bareLabel`
+  strips one trailing parenthetical in the multi-company case only.
+* **Regression** — `uuids` and `lookup_companies` are *conditional* keys, so LESSONS 40's `norm()` rule does not
+  apply; a full-corpus replay will legitimately diff on multi-company turns. That is the change, not a regression.
+
+---
+
+## 6. Scope / tier
+
+Business-logic `jsCode`-only change across three Code nodes, exercised at the live-parser + live-read tier — correct,
+since a mock would have hidden the very wire contract case 4 proved (LESSONS 28). Five cases now cover: multi-company
+all-empty, multi-company with rows (partial), single-company not-found, single-company found, and an all-empty
+recheck post-fix. That is the found / not-found / partial matrix the scout report scoped the fix to.
+
+---
+
+# 7. PROMOTE CHECKLIST (final)
+
+**Promotion is USER-GATED. This checklist authorises nothing; it is what must be true when the user gates it.**
+Three artifacts → **four** target nodes. No guard scaffolding to strip: this change built no `IF test_mode` gates and
+touched no egress node, and all three artifacts are live-based, so the promoted diff *is* the business-logic diff.
+
+### P1 — artifact → target mapping
+
+| # | artifact (sha256, final) | target workflow | node | target's current sha256 — **gate on this** | revert versionId |
 |---|---|---|---|---|---|
-| 1 | `output-structurer.js` | `rysSPgUssLDf6xJc` (`sub-get-results TEST`) | `output-structurer` | `68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` | `eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a` |
-| 2 | `output-structurer.js` *(same bytes)* | `Fss5aAaXthJSWpZCgKiKR` (`sub-get-results`) — **MANDATORY, not optional** | `output-structurer` | `68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` | `fd248b16-82ee-4307-abfb-657b9b6a4aa7` |
-| 3 | `not-found-error-message.js` | `9qVyfUxmRQqrpGRMDLRuz` (live spine) | `not-found-error-message` | `d796e28d84e302130546e750eafaa901f9d5cfb81093a4f401c616536891fee3` | `469e7259-6cfb-4505-bef4-f37a36bf454f` |
-| 4 | `crossdomain-zeroset.js` | `9qVyfUxmRQqrpGRMDLRuz` (live spine) | `crossdomain-zeroset` | `2eef3fa37454d5931e50747631df0463e152afdd58e6aeecea0a804040646245` | `469e7259-6cfb-4505-bef4-f37a36bf454f` |
+| 1 | `output-structurer.js`<br>`25a2eed93b7fe677a6e1d7d9002522fc3051e4bae415ebe645377ad25f4973de` | `rysSPgUssLDf6xJc` | `output-structurer` | `68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` | `eb0bbcec-daab-4c79-8a68-c7d5eca5cf0a` |
+| 2 | `output-structurer.js` *(same bytes)* | `Fss5aAaXthJSWpZCgKiKR` — **MANDATORY** | `output-structurer` | `68bd130cf367bb7aa644e6bb79194f7360c7430a8d2c6d642d3c2d80b6126935` | `fd248b16-82ee-4307-abfb-657b9b6a4aa7` |
+| 3 | `not-found-error-message.js`<br>`cfd8a3804d2f4cb28acd247bc990692b19f8e58379728a2a923655c9ead982cb` | `9qVyfUxmRQqrpGRMDLRuz` | `not-found-error-message` | `d796e28d84e302130546e750eafaa901f9d5cfb81093a4f401c616536891fee3` | `469e7259-6cfb-4505-bef4-f37a36bf454f` |
+| 4 | `crossdomain-zeroset.js`<br>`2c562c7e974fa043e5bffe12b10ab97ed523c19df04196a1980119a2e4d4ff42` | `9qVyfUxmRQqrpGRMDLRuz` | `crossdomain-zeroset` | `2eef3fa37454d5931e50747631df0463e152afdd58e6aeecea0a804040646245` | `469e7259-6cfb-4505-bef4-f37a36bf454f` |
 
-Artifact sha256 **as committed today** (regenerate #1/#2 after B1):
+All four baseline shas re-read from the server at the time of this re-review. Artifacts live in
+`n8n-workflows-init/tests/diffs/mc-label-n8n/`.
 
-```
-8b68273f57f2151135b03a419597b1c521a82d0191396137f4c699f8b8ced1d4  output-structurer.js        <-- WILL CHANGE (B1)
-cfd8a3804d2f4cb28acd247bc990692b19f8e58379728a2a923655c9ead982cb  not-found-error-message.js
-2c562c7e974fa043e5bffe12b10ab97ed523c19df04196a1980119a2e4d4ff42  crossdomain-zeroset.js
-```
+### P2 — pre-flight, per target, before any write
+- [ ] Re-fetch each target; confirm `versionId == activeVersionId` and `active == true` (no unpublished draft —
+      LESSONS 24: publish ships the *whole* draft, and a stale draft is a revert-landmine).
+- [ ] Re-confirm the target node's current jsCode sha equals the P1 value. **Mismatch ⇒ STOP and re-review** — live
+      moved and the artifact's baseline is void.
+- [ ] Back up each full target workflow JSON to `n8n-workflows-init/tests/backups/mc-label-n8n/` with a
+      `-promote-pre` suffix; record its versionId (P1) as the revert target.
+- [ ] `diff -u <live node body> <artifact>` and confirm the hunks are exactly the mc-label hunks. (I ran this for all
+      four during review; re-run at promote time — it is the cheapest possible check.)
 
-**No guard scaffolding to strip.** This change built no `IF test_mode` gates and touched no egress node; the promoted
-diff is the business-logic diff. The only clone-specific content in any artifact is the live→clone drift already
-resolved in §6 — the artifacts are live-based, so nothing has to be un-done.
-
-### P2 — pre-flight (per target, before any write)
-- [ ] Re-fetch each target and confirm `versionId == activeVersionId` and `active == true`.
-- [ ] Re-confirm the target node's **current** `jsCode` sha equals the P1 table value. Any mismatch = live moved since
-      this review; **stop** and re-review — the artifact's baseline is void.
-- [ ] Save a full backup of each target workflow JSON to `n8n-workflows-init/tests/backups/mc-label-n8n/` with a
-      `-promote-pre` suffix, and record its `versionId` (P1 table) as the revert target.
-- [ ] `diff -u <live node body> <artifact>` and confirm the hunks are exactly the mc-label hunks — no drift, no
-      surprises. (I ran this today for all four; re-run at promote time.)
-- [ ] Confirm no unpublished draft exists on any target (LESSONS 24: publish ships the **whole** draft, and a stale
-      draft is a revert-landmine). `versionId == activeVersionId` is the check.
-
-### P3 — publish, byte-exact and sha-gated (LESSONS 25/32/37)
-- [ ] **Subs before the spine** (LESSONS 37: a parent only ever sees a sub's *published* version). Order:
-      `rysSPgUssLDf6xJc` → `Fss5aAaXthJSWpZCgKiKR` → `9qVyfUxmRQqrpGRMDLRuz`.
-- [ ] Never hand-retype a 17–21 KB `jsCode`. Source the exact bytes from the committed artifact file (LESSONS 25).
-- [ ] If MCP is available: `setNodeParameter {nodeName, path:"/jsCode", value}` — one leaf, byte-exact — batched into a
-      single `update_workflow` per workflow (spine gets both nodes in one call, ≤100 ops, atomic; LESSONS 32/33).
-- [ ] If MCP is unavailable (as this session): `PUT $N8N_API_BASE/workflows/{id}` with a **settings-whitelist** body,
-      then `POST $N8N_API_BASE/workflows/{id}/activate`. Both must return 200. The REST PUT schema rejects some settings
-      keys — carry `executionOrder`, `availableInMCP`, `callerPolicy` and (spine) `binaryMode` through explicitly and
-      re-verify them after, exactly as the coder did on the clone.
-- [ ] **Gate the draft before publish:** re-read the draft node body and confirm its sha equals the artifact sha.
+### P3 — publish: byte-exact, sha-gated (LESSONS 25 / 32 / 33 / 37)
+- [ ] **Subs before the spine.** Order: `rysSPgUssLDf6xJc` → `Fss5aAaXthJSWpZCgKiKR` → `9qVyfUxmRQqrpGRMDLRuz`.
+      A parent only ever sees a sub's *published* version.
+- [ ] Never hand-retype a 17–23 KB `jsCode`. Source the exact bytes from the committed artifact file.
+- [ ] **If MCP is available:** `setNodeParameter {nodeName, path:"/jsCode", value}` — one leaf, byte-exact — batched
+      into a single `update_workflow` per workflow (the spine gets both nodes in one atomic call).
+- [ ] **If MCP is unavailable (as in this cycle):** `PUT $N8N_API_BASE/workflows/{id}` with a **settings-whitelist**
+      body, then `POST $N8N_API_BASE/workflows/{id}/activate`. Both must return 200. The PUT schema rejects some
+      settings keys — carry `executionOrder`, `availableInMCP`, `callerPolicy` and (spine) `binaryMode` through
+      explicitly and re-verify them after.
+- [ ] **Gate the draft BEFORE publish:** re-read the draft node body; its sha must equal the artifact sha.
       Draft ≠ intended ⇒ **do not publish**.
-- [ ] **Gate the active after publish:** re-read and confirm `versionId == activeVersionId`, `active == true`, node
-      count unchanged, `connections` / `settings` / `pinData` identical to the P2 backup, and the **only** differing
-      node is the intended one with the intended sha.
-- [ ] Any mismatch at either gate ⇒ **auto-revert immediately**: publish the P1 versionId for that workflow, re-verify
-      `active`, and stop the whole promotion (do not proceed to the next target).
+- [ ] **Gate the active AFTER publish:** `versionId == activeVersionId`, `active == true`, node count unchanged,
+      `connections` / `settings` / `pinData` identical to the P2 backup, and the **only** differing node is the
+      intended one at the intended sha.
+- [ ] **Any mismatch at either gate ⇒ auto-revert now:** publish the P1 revert versionId for that workflow, confirm
+      `active`, and halt the entire promotion — do not proceed to the next target.
 
 ### P4 — post-promote verification on live
-- [ ] Confirm the four target nodes' shas equal the artifact shas, and that **no other node** in any of the three
-      workflows changed vs the P2 backups.
-- [ ] Watch the first live multi-company turn end to end: both company names in the reply, `*Company:*` on every
-      rendered row, and **no** "no … records" line under a company that did render rows (the B1 failure mode).
-- [ ] Watch one single-company turn and confirm it is byte-identical to yesterday's wording — no `(Company)` suffix, no
-      ` — checked in`, no `Company:` row field.
-- [ ] Confirm the crossdomain path specifically (a code that misses in inventory and spans two companies) now probes
-      both uuids — this is the half that P1 #2 exists to enable.
-- [ ] Keep the P2 backups and the P1 versionIds to hand for the whole first day; revert is a single publish.
+- [ ] All four target nodes at the artifact shas; **no other node** in any of the three workflows differs from its
+      P2 backup.
+- [ ] First live **multi-company with rows** turn: `*Company:*` on every row, and **no** "no … records" line under a
+      company that did render rows (the case-4 shape).
+- [ ] First live **multi-company all-empty** turn: both company names in the reply and the
+      ` — checked in A and B` suffix (the captain's reported case).
+- [ ] First live **single-company** turn: byte-identical to yesterday — no `(Company)` suffix, no ` — checked in`,
+      no `Company:` row field.
+- [ ] **Crossdomain path specifically** (a code that misses in inventory and spans two companies): confirm both uuids
+      are probed. This is the half P1 #2 exists to enable.
+- [ ] **Open item — `incoming_stock` row-stamp** (§2). Watch the first live multi-company *incoming* answer that
+      returns rows: either it carries `*Company:*` (backend stamps — labels correct) or it stays silent
+      (`_canAttribute` false — correct by design, no false statement either way). If silent, raise a backend
+      follow-up to stamp the incoming presenter; **do not** patch it in n8n by loosening the guard.
+- [ ] Keep the P2 backups and P1 versionIds to hand for the first full day; revert is a single publish.
 
-### P5 — do-not-do
-- [ ] Do **not** edit live mid-cycle for anything else while this promotion is open.
+### P5 — do not
 - [ ] Do **not** promote `output-structurer` to only one of the two subs.
-- [ ] Do **not** fold the clone's `disallowed-entity-gate` rebase (§6) into this promotion.
+- [ ] Do **not** edit live mid-cycle for anything else while this promotion is open.
+- [ ] Do **not** fold the clone `disallowed-entity-gate` rebase (§5) into this promotion.
 
 ---
 
-## Appendix — what I checked and how
+## Appendix — what the reviewer checked, across both passes
 
-Read-only REST throughout: `GET /workflows/{9qVyfUxmRQqrpGRMDLRuz, txiPzSxy3Pclsz6v, t4QvrtrPnTwRU6br,
-rysSPgUssLDf6xJc, Fss5aAaXthJSWpZCgKiKR}`; `GET /executions/{12774464, 12774472, 12774475, 12774477, 12775076, 12775298,
-12772435, 12772436, 12774879, 12774978, 12775028, 12775089, 12775091, 12775311, 12775948}?includeData=true`;
-`GET /executions?workflowId=t4QvrtrPnTwRU6br&limit=100`. Node-by-node structural diff keyed on stable node `id`
-(LESSONS 20) against the committed pre-edit backups. Old-vs-new pure-function replay of `crossdomain-zeroset` (7 shapes)
-and `output-structurer` (11 shapes) with mocked `$()` / `$input`, against the **live** pre-change bodies. `new Function`
-parse of all three artifacts. No production host was probed and no repo-hardcoded credential was used against live
-beyond the read-only `N8N_API_KEY` the task supplied.
+Read-only REST only. `GET /workflows/{9qVyfUxmRQqrpGRMDLRuz, txiPzSxy3Pclsz6v, t4QvrtrPnTwRU6br, rysSPgUssLDf6xJc,
+Fss5aAaXthJSWpZCgKiKR}` (twice — pre- and post-B1). `GET /executions/{12774464, 12774472, 12774475, 12774477,
+12775076, 12775298, 12772435, 12772436, 12774879, 12774978, 12775028, 12775089, 12775091, 12775311, 12775948,
+12778370, 12778383, 12778877}?includeData=true` plus all 8 `aQUmwMVplmNcyUVc` sendmsg sub-executions in the window.
+`GET /executions?workflowId={t4QvrtrPnTwRU6br, aQUmwMVplmNcyUVc}`. Node-by-node structural diff keyed on stable node
+`id` (LESSONS 20) against the committed pre-edit backups. Old-vs-new pure-function replay against the **live**
+pre-change bodies — 7 shapes for `crossdomain-zeroset`, 15 for `output-structurer` across the two passes — with
+mocked `$()` / `$input`. `new Function` parse of all three artifacts. jsCode sha recomputed from execution
+`workflowData` to prove which body actually ran. No production host was probed; no repo-hardcoded credential was used
+against live beyond the read-only `N8N_API_KEY` supplied with the task.
