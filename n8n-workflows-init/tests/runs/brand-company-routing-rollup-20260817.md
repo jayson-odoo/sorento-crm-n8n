@@ -71,3 +71,18 @@ ran only `MCP Client1` with read tools (`crm_order_management_orders_list`, `crm
 - Nothing edited on the spine clone, forks, live workflows, or the replay orchestrator.
 
 Evidence files: `tests/runs/brand-company-routing-{B1,B2,B3,B4,B5,B6,B7,B8,B9,P1,R1}-20260817.json`.
+
+## Rev-2 re-test (escalation-context pool-identity fix) · 2026-08-17 12:5x UTC
+Clone `txiPzSxy3Pclsz6v` re-verified via REST: `versionId == activeVersionId == e816e2da-f39b-47fb-a486-83c9a470fbf6`; vs the rev-1 fetch (`ac51a12e`)
+the ONLY changed node is `escalation-context` (jsCode sha256 `ce8c6417bd5bda0d1652af32d44fb2b70dd7572b11da6f5847d41f58cb5c947d`; node set + connections
+identical). New rule observed in body: `brand_code = ('brand_code' in row) ? (row.brand_code || null) : ((sameTeam ? prev.routing_brand : null) || null)`.
+Forks/live unchanged (HI fork `d2b82e80`, parser fork `7b4baaa8`, live ids untouched). Fresh session reset before each pair; zero-egress on all 6 executions.
+
+| case | zz-canary-run → clone exec (subs) | verdict | S1 | S2 | S3 | S4 | S5 | S6 | notes |
+|---|---|---|---|---|---|---|---|---|---|
+| B3rev2-a | t1 12835828→12835829 (B2 msg); t2 12835880→**12835881** (parser 12835884, HI **12835886**, sendmsg 12835887) | PASS | ✓ | ✓ HI short-circuit | ✓ | ✓ (t1 orders_list) | ✓ | ✓ 0 LLM | pick "2" = Nicky (Mocha; roster fetched w/o brand) → `escalation-context {company Mocha 38db4f20…, brand_code **null**, picked_member}`; HI input `brand_code:""`, egress payload `brand_code:null, company_id:<Mocha>, explicit_assignee_id 450e8690…` |
+| B3rev2-b | t1 12835932→12835933; t2 12836011→**12836012** (HI **12836019**) | PASS | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | pick "4" = Maryam Ariffin (Sorento; roster fetched with `brand_code=mocha`) → `{company Sorento, brand_code "mocha", picked_member}`; HI + egress payload equal, `explicit_assignee_id 0d69dfb7…` |
+| B5rev2 | t1 12836067→12836068; t2 12836118→**12836119** (HI **12836125**) | PASS (unchanged) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | `{company null, brand mocha, multi_company_unpicked}`; HI `company_id:""`, egress `company_id:null` |
+
+Rev-1 note 3 (B3 brand fallback) is resolved by rev-2. Session row reset to `{"variables":{}}` after the last rev-2 run. Evidence:
+`tests/runs/brand-company-routing-B3rev2-20260817.json`, `…-B5rev2-20260817.json`.
