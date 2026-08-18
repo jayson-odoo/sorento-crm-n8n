@@ -1,0 +1,1478 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round-3 rev-2 (F-R3-4 sandbox-safe miss-roster-gate d24dd81b, cs-offer-gate g2 cfa8c18e, build-cs-member-offer 63c1c46e)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ e54e114e-86e6-4023-8926-3fec6fc1ef51 (public-API versionId, unchanged before/after the pass; all 9 lane bodies sha-verified == tests/diffs/miss-company-routing/*: miss-roster-gate d24dd81b, cs-offer-gate g2 cfa8c18e, build-cs-member-offer 63c1c46e, build-miss-member-offer 68eef4c7, escalation-context cca7a245, compile-current-state 5a84dfea, escalate-catalog 0168df84, clarify-company-reply 7ff06aa8, miss-roster-plan 0b7907d6)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (unchanged)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa (Postgres Chat Memory1 cred Dnnofg8Xb27VQOhI n8n_test-db)",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": {
+    "versionId": "cfd0e776-f310-4066-bc1b-ce4c40cfd955",
+    "updatedAt": "2026-08-18T04:28:14.679Z",
+    "same_as_PRE": true
+   },
+   "XTODTw-dJcV0uRdC056hG": {
+    "versionId": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+    "updatedAt": "2026-08-18T00:03:06.965Z",
+    "same_as_PRE": true
+   },
+   "aoydkG1dbItXR5jXFEQsP": {
+    "versionId": "91171ac3-ddad-4452-ace5-98da59480c48",
+    "updatedAt": "2026-08-11T09:00:35.893Z",
+    "same_as_PRE": true
+   },
+   "rrYXzE61gCNUck_zmXe-G": {
+    "versionId": "9249e00e-3dd9-4766-8c49-2f32f8f66bda",
+    "updatedAt": "2026-08-18T00:04:13.380Z",
+    "same_as_PRE": "n/a(no PRE)"
+   }
+  },
+  "clone_and_forks_after_pass": {
+   "txiPzSxy3Pclsz6v": {
+    "versionId": "e54e114e-86e6-4023-8926-3fec6fc1ef51",
+    "updatedAt": "2026-08-18T04:48:12.628Z",
+    "same_as_PRE": true
+   },
+   "wI5RkNGW3EOJfBdo": {
+    "versionId": "c7d9cfa2-b46e-43b4-a227-8104616401e4",
+    "updatedAt": "2026-08-18T03:32:31.780Z",
+    "same_as_PRE": true
+   },
+   "vUfFUDjLAuMaeQE6": {
+    "versionId": "0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+    "updatedAt": "2026-08-17T23:51:13.991Z",
+    "same_as_PRE": true
+   },
+   "aQUmwMVplmNcyUVc": {
+    "versionId": "b48e0eaa-6dbd-4f1b-bf81-40cf6804c933",
+    "updatedAt": "2026-08-18T03:10:03.002Z",
+    "same_as_PRE": true
+   }
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes the clone waitForSubWorkflow, returns the test:egress list) -> REST GET /executions/{id}?includeData=true matched by test_run_id (UAC-MCR3-r2-*-20260818) + every sub-execution via metadata.subExecution. Item mode=uac (session read = prod CRM get-session-vars-http, save guarded/orphaned; save-session-vars would_write payload = the persisted variables), follow-up turns STATE-INJECTED at item top level as previous_conversation_state (= previous turn's would_write variables). Deterministic turns: mock_reformulator_output at item top level (fork bypass, 0 LLM token); parser-tier turn (N4b) omits the mock (real fork, is_test=true). Contact 437264483. No contact.chat_id. n8n_test session table untouched.",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "N5 incoming no-miss -> no offer. (a) Sorento-only product with incoming SRTWT6801 (no lookup_companies); (b) two-company product with incoming in BOTH MWCX7605-RL-S10-NEW; + fixture probe (no-entity incoming)",
+ "turns": {
+  "a": {
+   "msg": "incoming for SRTWT6801",
+   "mock": "incoming mock SRTWT6801",
+   "state_injected_from": null,
+   "test_run_id": "UAC-MCR3-r2-N5a-t1-20260818",
+   "clone_exec": "12923438",
+   "status": "success",
+   "error": null,
+   "subs": {
+    "Call 'sub-query-reformulator'#12923443": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ]
+    },
+    "Execute 'sub-get-rag'#12923446": {
+     "workflowId": "tWP33QOFT7SxThfT",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Code in JavaScript",
+      "Code in JavaScript1",
+      "Execute a SQL query",
+      "HTTP Request",
+      "When Executed by Another Workflow"
+     ]
+    },
+    "Call 'sub-get-results'#12923447": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "sorento-sub-respond-sendmsg-respond2#12923449": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "Chat Memory Manager",
+      "Code in JavaScript",
+      "If1",
+      "Loop Over Items",
+      "When Executed by Another Workflow",
+      "chat?",
+      "guard-record-text",
+      "guard-text",
+      "is-last-quickreply"
+     ]
+    },
+    "Call 'sub-respond-save-message-redis'2#12923454": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ]
+    }
+   },
+   "nodes_executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "gates": {
+    "miss-roster-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "cs-offer-gate": null,
+    "clarify-company-gate": null,
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If2": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If10": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If-ideate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "is-escalation-declined": [
+     [
+      0,
+      1
+     ]
+    ],
+    "crossdomain-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "lane_nodes_executed": [],
+   "tool_filter": {
+    "name": "crm_incoming_stock_list",
+    "similarity": 0.2714323846304181,
+    "_tool_pick": {
+     "chosen": "crm_incoming_stock_list",
+     "rejected": [],
+     "count": 1,
+     "has_product": true
+    }
+   },
+   "miss_roster_plan": [],
+   "cs_roster_plan": [],
+   "roster_calls": {},
+   "escalation_context": null,
+   "reformulator_output": {
+    "message_type": "business_query",
+    "domain_hint": "incoming",
+    "intent_hint": "check_incoming",
+    "requested_attributes": [
+     "__all__"
+    ],
+    "entities": [
+     {
+      "raw": "SRTWT6801",
+      "hint": "inbound_shipment",
+      "current_message": true
+     }
+    ],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    }
+   },
+   "would_send": [
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/bc0ee8ff-8795-4d51-8689-84284a36da95/TIIU7904597.xlsx",
+     "filename": "TIIU7904597.xlsx"
+    },
+    {
+     "part": 1,
+     "total_parts": 1,
+     "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT6801\n*Container:* TIIU7904597\n*Loading:* 2026-07-30\n*ETC:* 2026-08-11\n*ETD:* 2026-08-13\n*ETA:* 2026-08-20\n*ETA Delay:* 2026-08-23\n*Liner:* CMA\n*China Forwarder:* Onetouch\n*Malaysia Forwarder:* MPM\n*Consignee:* Sorento (Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 900\n🚩  *(PENDING ALLOCATION)*",
+     "message_len": 363,
+     "quick_reply": null,
+     "result_idx": [
+      1
+     ]
+    }
+   ],
+   "would_write": [
+    {
+     "guard": "save-session-vars",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "SRTWT6801",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWT6801"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 1 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "SRTWT6801",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": "sorento",
+        "routing_brand_source": "resolved",
+        "routing_company": "00000000-0000-0000-0000-000000000001",
+        "routing_companies": [
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "codes": [
+           "SRTWT6801"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT6801\n*Container:* TIIU7904597\n*Loading:* 2026-07-30\n*ETC:* 2026-08-11\n*ETD:* 2026-08-13\n*ETA:* 2026-08-20\n*ETA Delay:* 2026-08-23\n*Liner:* CMA\n*China Forwarder:* Onetouch\n*Malaysia Forwarder:* MPM\n*Consignee:* Sorento (Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 900\n🚩  *(PENDING ALLOCATION)*"
+      }
+     }
+    }
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "incoming for SRTWT6801"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5a-t1-20260818",
+     "ts": "2026-08-18T00:59:40.488-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "SRTWT6801",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWT6801"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 1 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "SRTWT6801",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": "sorento",
+        "routing_brand_source": "resolved",
+        "routing_company": "00000000-0000-0000-0000-000000000001",
+        "routing_companies": [
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "codes": [
+           "SRTWT6801"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT6801\n*Container:* TIIU7904597\n*Loading:* 2026-07-30\n*ETC:* 2026-08-11\n*ETD:* 2026-08-13\n*ETA:* 2026-08-20\n*ETA Delay:* 2026-08-23\n*Liner:* CMA\n*China Forwarder:* Onetouch\n*Malaysia Forwarder:* MPM\n*Consignee:* Sorento (Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 900\n🚩  *(PENDING ALLOCATION)*"
+      }
+     },
+     "test_run_id": "UAC-MCR3-r2-N5a-t1-20260818",
+     "ts": "2026-08-18T00:59:40.474-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/bc0ee8ff-8795-4d51-8689-84284a36da95/TIIU7904597.xlsx",
+      "filename": "TIIU7904597.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5a-t1-20260818",
+     "ts": "2026-08-18T00:59:40.463-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "I have attached the file(s) below.\n\n1. *Product Code:* SRTWT6801\n*Container:* TIIU7904597\n*Loading:* 2026-07-30\n*ETC:* 2026-08-11\n*ETD:* 2026-08-13\n*ETA:* 2026-08-20\n*ETA Delay:* 2026-08-23\n*Liner:* CMA\n*China Forwarder:* Onetouch\n*Malaysia Forwarder:* MPM\n*Consignee:* Sorento (Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 900\n🚩  *(PENDING ALLOCATION)*",
+      "message_len": 363,
+      "quick_reply": null,
+      "result_idx": [
+       1
+      ]
+     },
+     "test_run_id": "UAC-MCR3-r2-N5a-t1-20260818",
+     "ts": "2026-08-18T00:59:38.578-04:00"
+    }
+   ],
+   "S0": {
+    "S1_no_send_http": true,
+    "S2_hi_shortcircuit": true,
+    "S3_orphans_not_executed": true,
+    "S4_read_tool": "crm_incoming_stock_list",
+    "S5_is_test": {
+     "Call 'sub-query-reformulator'#12923443": true,
+     "Execute 'sub-get-rag'#12923446": null,
+     "Call 'sub-get-results'#12923447": null,
+     "sorento-sub-respond-sendmsg-respond2#12923449": true,
+     "Call 'sub-respond-save-message-redis'2#12923454": null
+    },
+    "S6_llm_nodes_in_parser_fork": [],
+    "egress_kinds": [
+     [
+      "would_log",
+      "save-message-redis"
+     ],
+     [
+      "would_send",
+      "send-message-files"
+     ],
+     [
+      "would_send",
+      "sendmsg-sub"
+     ],
+     [
+      "would_write",
+      "save-session-vars"
+     ]
+    ]
+   }
+  },
+  "b": {
+   "msg": "incoming for MWCX7605-RL-S10-NEW",
+   "mock": "incoming mock MWCX7605-RL-S10-NEW",
+   "state_injected_from": null,
+   "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+   "clone_exec": "12923457",
+   "status": "success",
+   "error": null,
+   "subs": {
+    "Call 'sub-query-reformulator'#12923461": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ]
+    },
+    "Execute 'sub-get-rag'#12923465": {
+     "workflowId": "tWP33QOFT7SxThfT",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Code in JavaScript",
+      "Code in JavaScript1",
+      "Execute a SQL query",
+      "HTTP Request",
+      "When Executed by Another Workflow"
+     ]
+    },
+    "Call 'sub-get-results'#12923467": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "sorento-sub-respond-sendmsg-respond2#12923468": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "Chat Memory Manager",
+      "Code in JavaScript",
+      "If1",
+      "Loop Over Items",
+      "When Executed by Another Workflow",
+      "chat?",
+      "guard-record-text",
+      "guard-text",
+      "is-last-quickreply"
+     ]
+    },
+    "Call 'sub-respond-save-message-redis'2#12923479": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ]
+    }
+   },
+   "nodes_executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "gates": {
+    "miss-roster-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "cs-offer-gate": null,
+    "clarify-company-gate": null,
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If2": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If10": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If-ideate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "is-escalation-declined": [
+     [
+      0,
+      1
+     ]
+    ],
+    "crossdomain-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "lane_nodes_executed": [],
+   "tool_filter": {
+    "name": "crm_incoming_stock_list",
+    "similarity": 0.2714855577456964,
+    "_tool_pick": {
+     "chosen": "crm_incoming_stock_list",
+     "rejected": [],
+     "count": 1,
+     "has_product": true
+    }
+   },
+   "miss_roster_plan": [],
+   "cs_roster_plan": [],
+   "roster_calls": {},
+   "escalation_context": null,
+   "reformulator_output": {
+    "message_type": "business_query",
+    "domain_hint": "incoming",
+    "intent_hint": "check_incoming",
+    "requested_attributes": [
+     "__all__"
+    ],
+    "entities": [
+     {
+      "raw": "MWCX7605-RL-S10-NEW",
+      "hint": "inbound_shipment",
+      "current_message": true
+     }
+    ],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    }
+   },
+   "would_send": [
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/77989a58-92bd-41f4-bb54-26393514b255/WHSU6286109 - WH SRT.xlsx",
+     "filename": "WHSU6286109 - WH SRT.xlsx"
+    },
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/f95924cd-acd0-4c71-b11a-99496b02e9a0/WHSU6286109 - WH SRT.xlsx",
+     "filename": "WHSU6286109 - WH SRT.xlsx"
+    },
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/a8e9019d-afae-4a1a-addd-3616f41f5823/REVISE WHSU8239298 - WH.xlsx",
+     "filename": "REVISE WHSU8239298 - WH.xlsx"
+    },
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/485905fd-5ce7-4b3b-ba50-b1494ff5c373/REVISE TGHU6295708 - WH.xlsx",
+     "filename": "REVISE TGHU6295708 - WH.xlsx"
+    },
+    {
+     "part": 1,
+     "total_parts": 1,
+     "message": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* TGHU6295708\n*ETA:* 2026-08-01\n*Incoming Quantity:* 223\n*Warehouse Allocations:* MOCHA-WH (223)\n\n2. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU8239298\n*ETA:* 2026-08-06\n*Incoming Quantity:* 350\n*Warehouse Allocations:* MOCHA-WH (350)\n\n3. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*ETA:* 2026-08-26\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*\n\n4. *Company:* Sorento\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*Loading:* 2026-08-10\n*ETC:* 2026-08-12\n*ETD:* 2026-08-14\n*ETA:* 2026-08-26\n*ETA Delay:* 2026-08-27\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento (Full Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*",
+     "message_len": 880,
+     "quick_reply": null,
+     "result_idx": [
+      1,
+      2,
+      3,
+      4
+     ]
+    }
+   ],
+   "would_write": [
+    {
+     "guard": "save-session-vars",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MWCX7605-RL-S10-NEW",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MWCX7605-RL-S10-NEW"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 4 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 3,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 4,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWCX7605-RL-S10-NEW"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* TGHU6295708\n*ETA:* 2026-08-01\n*Incoming Quantity:* 223\n*Warehouse Allocations:* MOCHA-WH (223)\n\n2. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU8239298\n*ETA:* 2026-08-06\n*Incoming Quantity:* 350\n*Warehouse Allocations:* MOCHA-WH (350)\n\n3. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*ETA:* 2026-08-26\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*\n\n4. *Company:* Sorento\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*Loading:* 2026-08-10\n*ETC:* 2026-08-12\n*ETD:* 2026-08-14\n*ETA:* 2026-08-26\n*ETA Delay:* 2026-08-27\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento (Full Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*"
+      }
+     }
+    }
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "incoming for MWCX7605-RL-S10-NEW"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:54.068-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MWCX7605-RL-S10-NEW",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MWCX7605-RL-S10-NEW"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 4 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 3,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 4,
+          "uuid": null,
+          "label": "MWCX7605-RL-S10-NEW",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWCX7605-RL-S10-NEW"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* TGHU6295708\n*ETA:* 2026-08-01\n*Incoming Quantity:* 223\n*Warehouse Allocations:* MOCHA-WH (223)\n\n2. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU8239298\n*ETA:* 2026-08-06\n*Incoming Quantity:* 350\n*Warehouse Allocations:* MOCHA-WH (350)\n\n3. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*ETA:* 2026-08-26\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*\n\n4. *Company:* Sorento\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*Loading:* 2026-08-10\n*ETC:* 2026-08-12\n*ETD:* 2026-08-14\n*ETA:* 2026-08-26\n*ETA Delay:* 2026-08-27\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento (Full Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*"
+      }
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:54.049-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/77989a58-92bd-41f4-bb54-26393514b255/WHSU6286109 - WH SRT.xlsx",
+      "filename": "WHSU6286109 - WH SRT.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:54.016-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/f95924cd-acd0-4c71-b11a-99496b02e9a0/WHSU6286109 - WH SRT.xlsx",
+      "filename": "WHSU6286109 - WH SRT.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:52.139-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/a8e9019d-afae-4a1a-addd-3616f41f5823/REVISE WHSU8239298 - WH.xlsx",
+      "filename": "REVISE WHSU8239298 - WH.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:50.311-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/485905fd-5ce7-4b3b-ba50-b1494ff5c373/REVISE TGHU6295708 - WH.xlsx",
+      "filename": "REVISE TGHU6295708 - WH.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:48.458-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* TGHU6295708\n*ETA:* 2026-08-01\n*Incoming Quantity:* 223\n*Warehouse Allocations:* MOCHA-WH (223)\n\n2. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU8239298\n*ETA:* 2026-08-06\n*Incoming Quantity:* 350\n*Warehouse Allocations:* MOCHA-WH (350)\n\n3. *Company:* Mocha\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*ETA:* 2026-08-26\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*\n\n4. *Company:* Sorento\n*Product Code:* MWCX7605-RL-S10-NEW\n*Container:* WHSU6286109\n*Loading:* 2026-08-10\n*ETC:* 2026-08-12\n*ETD:* 2026-08-14\n*ETA:* 2026-08-26\n*ETA Delay:* 2026-08-27\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento (Full Mocha)\n*Free Days Available:* 14\n*Incoming Quantity:* 314\n🚩  *(PENDING ALLOCATION)*",
+      "message_len": 880,
+      "quick_reply": null,
+      "result_idx": [
+       1,
+       2,
+       3,
+       4
+      ]
+     },
+     "test_run_id": "UAC-MCR3-r2-N5b-t1-20260818",
+     "ts": "2026-08-18T00:59:46.545-04:00"
+    }
+   ],
+   "S0": {
+    "S1_no_send_http": true,
+    "S2_hi_shortcircuit": true,
+    "S3_orphans_not_executed": true,
+    "S4_read_tool": "crm_incoming_stock_list",
+    "S5_is_test": {
+     "Call 'sub-query-reformulator'#12923461": true,
+     "Execute 'sub-get-rag'#12923465": null,
+     "Call 'sub-get-results'#12923467": null,
+     "sorento-sub-respond-sendmsg-respond2#12923468": true,
+     "Call 'sub-respond-save-message-redis'2#12923479": null
+    },
+    "S6_llm_nodes_in_parser_fork": [],
+    "egress_kinds": [
+     [
+      "would_log",
+      "save-message-redis"
+     ],
+     [
+      "would_send",
+      "send-message-files"
+     ],
+     [
+      "would_send",
+      "sendmsg-sub"
+     ],
+     [
+      "would_write",
+      "save-session-vars"
+     ]
+    ]
+   }
+  },
+  "probe": {
+   "msg": "any incoming stock",
+   "mock": "incoming mock, entities []",
+   "state_injected_from": null,
+   "test_run_id": "UAC-MCR3-r2-N5probe-20260818",
+   "clone_exec": "12923358",
+   "status": "success",
+   "error": null,
+   "subs": {
+    "Call 'sub-query-reformulator'#12923363": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ]
+    },
+    "Execute 'sub-get-rag'#12923368": {
+     "workflowId": "tWP33QOFT7SxThfT",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Code in JavaScript",
+      "Code in JavaScript1",
+      "Execute a SQL query",
+      "HTTP Request",
+      "When Executed by Another Workflow"
+     ]
+    },
+    "Call 'sub-get-results'#12923373": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "sorento-sub-respond-sendmsg-respond2#12923375": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "Chat Memory Manager",
+      "Code in JavaScript",
+      "If1",
+      "Loop Over Items",
+      "When Executed by Another Workflow",
+      "chat?",
+      "guard-record-text",
+      "guard-text",
+      "is-last-quickreply"
+     ]
+    },
+    "Call 'sub-respond-save-message-redis'2#12923376": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ]
+    }
+   },
+   "nodes_executed": [
+    "Aggregate1",
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-cs-member-offer",
+    "build-suggest-offer",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "cs-offer-gate",
+    "cs-roster-plan",
+    "disallowed-entity-gate",
+    "dym-gate",
+    "dym-transform",
+    "escalate-catalog",
+    "get-cs-members",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-found-error-message",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sibling-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-not-found",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "gates": {
+    "miss-roster-gate": null,
+    "cs-offer-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "clarify-company-gate": null,
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If2": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If10": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If-ideate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "is-escalation-declined": [
+     [
+      0,
+      1
+     ]
+    ],
+    "crossdomain-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "lane_nodes_executed": [
+    "cs-roster-plan",
+    "get-cs-members",
+    "build-cs-member-offer",
+    "escalate-catalog",
+    "tag-not-found"
+   ],
+   "tool_filter": {
+    "name": "crm_incoming_stock_list",
+    "similarity": 0.2714323846304181,
+    "_tool_pick": {
+     "chosen": "crm_incoming_stock_list",
+     "rejected": [],
+     "count": 1,
+     "has_product": false
+    }
+   },
+   "miss_roster_plan": [],
+   "cs_roster_plan": [
+    {
+     "plan_idx": 0,
+     "company_id": null,
+     "company_name": null,
+     "brand_code": null,
+     "codes": [],
+     "multi_company": false,
+     "companies": []
+    }
+   ],
+   "roster_calls": {
+    "get-cs-members": [
+     {
+      "status": 200,
+      "members": [
+       [
+        "Jereen Tee",
+        "1037238"
+       ]
+      ]
+     }
+    ]
+   },
+   "escalation_context": null,
+   "reformulator_output": {
+    "message_type": "business_query",
+    "domain_hint": "incoming",
+    "intent_hint": "check_incoming",
+    "requested_attributes": [
+     "__all__"
+    ],
+    "entities": [],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    }
+   },
+   "would_send": [
+    {
+     "part": 1,
+     "total_parts": 1,
+     "message": "Could not find incoming. Would you like me to escalate to purchasing team?\n\nPlease choose who to route to (reply with the number):\n1. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+     "message_len": 221,
+     "quick_reply": null,
+     "result_idx": [
+      1
+     ]
+    }
+   ],
+   "would_write": [
+    {
+     "guard": "save-session-vars",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Could not find incoming. Would you like me to escalate to purchasing team?\n\nPlease choose who to route to (reply with the number):\n1. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "label": "Jereen Tee",
+          "uuid": "3760012d-7f5a-4b44-bf1a-e3349f7b398d",
+          "respond_user_id": "1037238",
+          "company_id": null,
+          "company_name": null,
+          "brand_code": null,
+          "company_ids": [
+           null
+          ],
+          "companies": []
+         }
+        ],
+        "selection_context": "member_offer",
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": null,
+          "company_name": null,
+          "brand_code": null
+         }
+        ],
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": null
+       },
+       "user_response": "Could not find incoming. Would you like me to escalate to purchasing team?\n\nPlease choose who to route to (reply with the number):\n1. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+      }
+     }
+    }
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "any incoming stock"
+     },
+     "test_run_id": "UAC-MCR3-r2-N5probe-20260818",
+     "ts": "2026-08-18T00:58:52.218-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Could not find incoming. Would you like me to escalate to purchasing team?\n\nPlease choose who to route to (reply with the number):\n1. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "label": "Jereen Tee",
+          "uuid": "3760012d-7f5a-4b44-bf1a-e3349f7b398d",
+          "respond_user_id": "1037238",
+          "company_id": null,
+          "company_name": null,
+          "brand_code": null,
+          "company_ids": [
+           null
+          ],
+          "companies": []
+         }
+        ],
+        "selection_context": "member_offer",
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": null,
+          "company_name": null,
+          "brand_code": null
+         }
+        ],
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": null
+       },
+       "user_response": "Could not find incoming. Would you like me to escalate to purchasing team?\n\nPlease choose who to route to (reply with the number):\n1. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+      }
+     },
+     "test_run_id": "UAC-MCR3-r2-N5probe-20260818",
+     "ts": "2026-08-18T00:58:52.215-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Could not find incoming. Would you like me to escalate to purchasing team?\n\nPlease choose who to route to (reply with the number):\n1. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+      "message_len": 221,
+      "quick_reply": null,
+      "result_idx": [
+       1
+      ]
+     },
+     "test_run_id": "UAC-MCR3-r2-N5probe-20260818",
+     "ts": "2026-08-18T00:58:52.117-04:00"
+    }
+   ],
+   "S0": {
+    "S1_no_send_http": true,
+    "S2_hi_shortcircuit": true,
+    "S3_orphans_not_executed": true,
+    "S4_read_tool": "crm_incoming_stock_list",
+    "S5_is_test": {
+     "Call 'sub-query-reformulator'#12923363": true,
+     "Execute 'sub-get-rag'#12923368": null,
+     "Call 'sub-get-results'#12923373": null,
+     "sorento-sub-respond-sendmsg-respond2#12923375": true,
+     "Call 'sub-respond-save-message-redis'2#12923376": null
+    },
+    "S6_llm_nodes_in_parser_fork": [],
+    "egress_kinds": [
+     [
+      "would_log",
+      "save-message-redis"
+     ],
+     [
+      "would_send",
+      "sendmsg-sub"
+     ],
+     [
+      "would_write",
+      "save-session-vars"
+     ]
+    ]
+   }
+  }
+ },
+ "assertions": [
+  "a: central-exchange has_result true, lookup_companies null; miss-roster-gate FALSE [[0,1]]; no lane node; reply = the incoming block only, no phrase/picker; persisted selection_context null, routing_roster_plan null, routing_company Sorento, routing_brand sorento",
+  "b: lookup_companies [Mocha,Sorento], answers Mocha×3 + Sorento×1 (miss set empty); gate FALSE; no lane node; reply = 4 blocks, no phrase/picker; selection_context null, routing_roster_plan null",
+  "byte-identical to the round-2 body is asserted structurally (round-2 body no longer deployed): the ONLY round-3 nodes on this path are miss-roster-gate (FALSE branch = pass-through) — no other node body changed for the answered no-miss path",
+  "probe (no entity): not-found path → cs-offer-gate TRUE (widened) → single picker (Jereen Tee) with plan company null — pre-existing no-entity not-found shape now on the incoming pair, recorded as observation"
+ ],
+ "verdict": "PASS",
+ "S0_all_pass": true
+}
