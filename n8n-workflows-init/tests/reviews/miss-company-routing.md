@@ -237,8 +237,8 @@ change needed. Promotion is captain-gated on the checklist above; F2's harness f
 # Re-review — rev-3 + rev-4 deltas (reviewer pass 2, 2026-08-18)
 
 Verdict: **APPROVE** for the rev-3 + rev-4 code as published (clone `0557b0b4`, parser fork `de9ff09d`, sendmsg fork
-`b48e0eaa`), **with promotion gated** on (a) the rev-4 tester rollup landing green (M8a–M8g + S3 — see "Evidence not in
-hand" below; it was still running when this review closed) and (b) the captain's disposition of F5. Findings F5–F9 below;
+`b48e0eaa`), **with promotion gated** on (a) the rev-4 tester evidence (M8a–M8g + M8reg + S3) being green — it LANDED while
+this review was closing and is green on all 15 executions (R6) — and (b) the captain's disposition of F5. Findings F5–F9 below;
 none is a code defect that blocks the round on its own.
 
 Inputs: commits 7c73a44 (rev-3 coder), 3e5b75e (rev-3 tester), 98420ec (rev-4 coder), 4370429 (planner R4verify);
@@ -414,11 +414,43 @@ only on hold turns. Plan §3 stands.
   (the hold turn on 12913195 persisted `entities: []` while the offer state carried the product); the next reply that
   resolves the offer needs no entity, but a follow-up business query after a hold turn loses the entity carry. Same shape
   as the rev-1 clarify arm; note for the planner.
-- **F9 (evidence gap, closes when the tester lands):** rev-4 UAC rows M8a–M8g and S3 had no tester run files on the
-  branch when this review closed (only the planner's R4verify + offline units + this review's own execution checks). See
-  below.
+- **F9 (CLOSED):** the rev-4 tester run files (M8a–M8g, M8reg, S3) landed while this review was closing — all PASS, §0
+  held on all 15 executions, S3 credential verified from the sub-executions' workflowData. See R6.
 
-## R6. Evidence not in hand at review close
+## R6. Rev-4 tester evidence — LANDED while this review was closing (F9 CLOSED)
+
+The rev-4 tester run files appeared in the worktree (untracked at the time of this commit — the tester's own commit
+with the rollup section will follow): `tests/runs/miss-company-routing-{M8a,M8b,M8c,M8d,M8e,M8f,M8g,M8reg,S3}-20260818.json`.
+Read in full by this review: **every case `verdict: PASS`, `S0_all_pass: true`; every per-execution S0 block GATE PASS with
+S1–S6 true; 15 clone executions (12913499 … 12913930) all on `0557b0b4`/`de9ff09d`/`b48e0eaa`; live re-checked
+unchanged after the pass (spine `efa21057`, parser `89b63c51`, HI `9249e00e`, sendmsg `91171ac3`).** Highlights that close
+the gaps listed in the previous draft of this section:
+- M8a/M8b/M8c (real parser): pool rendered `Mocha (code MCH) / Sorento (code SRT)`; `company_pick:"Sorento"` (canonical
+  name) on all three phrasings incl. the `request_for_help` / `is_affirmative:null` shape; `routing_source company_pick`,
+  Sorento/mocha pair verbatim; `clarify-company-gate` FALSE; `offer-hold-gate`/`If10`/`Basic LLM Chain` NOT executed; HI
+  short-circuit, no explicit assignee.
+- M8d: t2 junk → `offer_hold` + `member_reprompt`, `correction` not true; spine `offer-hold-gate` TRUE → hold lane; If10 /
+  LLM / roster / HI NOT executed; rev-4 clarify copy sent; state survived (member_offer, 9 rows, 2-row plan, companies,
+  phrase); t3 "sorento" on the survived state → `company_pick Sorento` → HI with the pair. **Single-offer companion:**
+  fork emits `{member_reprompt}` with NO `offer_hold`; `offer-hold-gate` executed FALSE → the pre-rev-4 If10 path.
+- M8e: "no" and "no it's okay" → `escalation_declined`, `offer-hold-gate` FALSE, `Escalation declined.`, offer cleared;
+  a later "sorento" → NO `company_pick`, `member_pick_context` not true (phrase-gated no-context arm confirmed on the clone).
+- M8f: "any mocha promotions this month" → Tier 3 abandon (no pick, no hold, `member_pick_context` not true), normal
+  promotion processing; companion "stock for MWB7629" (current-message entity) → real READ lookup only
+  (`crm_inventory_stock_balance_list`, `crm_incoming_stock_list`), no pick.
+- M8g: Sorento-only seed + "yes mocha" → pool `Sorento (code SRT)` only, NO `company_pick`, `prior_state` Sorento/mocha,
+  HI `company_id` Sorento (never Mocha); companion "srt" → `company_pick Sorento`.
+- M8reg: single-company CS offer + "yes" (mock AND real parser) → `prior_state` Sorento, unchanged behaviour.
+- **S3:** the tester read the sub-executions' `workflowData` (which, unlike MCP `get_workflow_details`, carries
+  credentials): `Postgres Chat Memory1.credentials.postgres == {id: Dnnofg8Xb27VQOhI, name: n8n_test-db}` on the published
+  `b48e0eaa` and on all 15 sendmsg sub-executions; no fork node carries `sorento-crm-db`; `Chat Memory Manager` insert
+  `{success:true}` on the 7 text-reply turns; no `Send a Message`/`HTTP Request`/`Send Template` executed. **S3 gate
+  PASSED — the credential-id gap noted in R2 is closed.**
+
+Promotion-gate (a) is therefore satisfied. Remaining gates: (b) captain's disposition of F5, (c) the sha-gated node-hunk
+promote map in R7 applied on live-at-promote-time (F6).
+
+## R6-old. Evidence not in hand at review close (superseded — kept for the record)
 
 The concurrent rev-4 tester pass (rollup section + `miss-company-routing-M8*-20260818.json`, S3 file) had NOT landed on
 `fm/miss-company-routing` (last commit 4370429). Consequently NOT independently confirmed by a tester run: M8d's
@@ -505,6 +537,7 @@ Order (sub before parent, Lesson 37; backup-first; byte/param-gate draft → pub
 decisions; frozen-prefix contract intact in all three render arms; offer-hold lane LLM-free, read-free, arm-gated and
 re-persisting the full offer; plan-first pool in all four places; alias stopgap mirrored; final parser body is
 phrase-gated; S3 fix fork-only; zero egress re-confirmed on every execution in hand (rev-3 tester 9 execs + R4verify 4
-execs incl. this review's own re-checks); no replay-norm change. **Promotion gate:** (a) rev-4 tester rollup M8a–M8g + S3
-green with §0 held (F9), (b) captain disposition of F5 (accept the ≤4-word short-path bound, or ship the rev-5
+execs incl. this review's own re-checks); no replay-norm change. **Promotion gate:** (a) rev-4 tester evidence M8a–M8g + M8reg + S3 —
+LANDED and green with §0 held on all 15 executions (R6; F9 closed — the tester's rollup section/commit is still to
+follow), (b) captain disposition of F5 (accept the ≤4-word short-path bound, or ship the rev-5
 tightening after a tester pass), (c) apply the promote map above as sha-gated node hunks on live-at-promote-time (F6).
