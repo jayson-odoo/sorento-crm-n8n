@@ -1,4 +1,21 @@
-# Promote record — miss-company-routing (round 2 + round 3 rev-3) → LIVE — **STAGED, NOT APPLIED** (2026-08-18)
+# Promote record — miss-company-routing (rounds 2 + 3 + 4) → LIVE — **STAGED, NOT APPLIED** (2026-08-18)
+
+> **Round-4 re-stage (captain: "all domain … if no record, then offer to escalate", + the uuid leak, 2026-08-18):**
+> the miss-offer LANE now equals the CRM's full 11-function `stamp_lookup_companies` set (orders ×2 keep the member
+> picker; promotions ×2, master products, product attachments, certificates join incoming/stock as PLAIN offers naming
+> their own team). The multi-company miss line no longer prints uuid placeholders — that fix lives in the **get-results
+> sub**, so this promotion now touches **two live subs** as well (`rysSPgUssLDf6xJc` = the customer-visible path,
+> `Fss5aAaXthJSWpZCgKiKR` = the probe path), each as its own anchored hunk. Captain also approved **F-R4-3**: the
+> promotions team collapses from `marketing_promotion_<brand>` to `marketing_promotion` (`disallowed-entity-gate` +
+> `promo-picker`), so one turn can no longer name two teams and a "yes" cannot 404 at `next-assignee`.
+> Clone `3e7fa66d` / fork `9ee992e9`; tester round-4 PASS (32 execs, 117 egress records, 0 real). Spine sweep is now
+> **6 changed + 10 new + 12 connection keys @ 137 nodes**.
+>
+> ⚠️ **Live parser moved under us**: `XTODTw-dJcV0uRdC056hG` went `89b63c51` → **`b9ac64a2`** at 07:17:57Z (someone added
+> one line, `- "videos","actual video"  → attachment_type "video"`, to the `AI Agent` systemMessage). The staged parser
+> payload was REBASED onto that body: systemMessage `138008c2` → **`f0a825a9`** = our hunks **+ their line** (verified:
+> payload-vs-fork delta is exactly that one line); `output_exchange` `a68c5992` unchanged. PRE backup refreshed to
+> `PRE-XTODTw-dJcV0uRdC056hG-b9ac64a2.json`. Re-check this again at apply time — that workflow has an active editor.
 
 > **⚠️ ROUND 4 SUPERSEDES PARTS OF THIS RECORD (planner, 2026-08-18) — see `plans/miss-company-routing-plan.md`
 > §"Round 4".** Captain reversed D2': promotions ×2, master products, product attachments and certificates
@@ -76,13 +93,27 @@ Rollback = PUT the PRE body back (or `publish_workflow` the versionId above).
 
 ## Payloads (exact live change)
 
+### 0. Live get-results subs — `subs/PAYLOAD-{rysSPgUssLDf6xJc,Fss5aAaXthJSWpZCgKiKR}-output-structurer.js` (NEW in round 4)
+
+The mc-label `_codes` hunk (uuid-placeholder filter) applied **per copy, anchored** — never body-copied between them,
+because `Fss` is older than `rys` in an unrelated timeline block and a body copy would smuggle that rewrite in.
+
+| sub | called by (live) | PRE versionId / `output-structurer` sha | POST sha |
+|---|---|---|---|
+| `rysSPgUssLDf6xJc` | `Call 'sub-get-results'`, `probe-incoming`, `tier-probe` — the customer-visible miss line | `cacd7c95` / `3b1995d4` | **`698f89f1`** (byte-identical to the tested fork `t4Qv` POST — its PRE was byte-equal to the fork's) |
+| `Fss5aAaXthJSWpZCgKiKR` | `sibling-probe`, `crossdomain-probe`, `dym-probe`, `dym-probe-partial`, `promo-dym-probe` | `f214cb7e` / `25a2eed9` | **`d6d3f1fd`** (own body + the same two hunks) |
+
+Apply with MCP `update_workflow` `setNodeParameter /jsCode` (these subs' `settings` shape is rejected by the public REST
+API), gate on the PRE sha, then re-fetch + sha. Backups: `subs/PRE-*.json` + `subs/PRE-*-output-structurer.js`.
+⚠️ `CLAUDE.md`'s "sub: get-results = `Fss5aAaXthJSWpZCgKiKR`" row is **stale** — live's customer-visible path is `rys`.
+
 ### 1. Parser `XTODTw-dJcV0uRdC056hG` — `PAYLOAD-XTODTw-dJcV0uRdC056hG.json`
 `output_exchange.jsCode` := `tests/diffs/miss-company-routing/parser-fork-output_exchange.js` (**`a68c5992`**, rev-5),
 `AI Agent.options.systemMessage` := `parser-fork-AI-Agent.systemMessage.txt` (`138008c2`). All other nodes/connections =
 live as-is (the fork's `Postgres Chat Memory` and its OLDER `suggest-follow-up` are NOT carried — live's
 `suggest-follow-up` keeps its dash-normalise hunk).
 
-### 2. Spine `9qVyfUxmRQqrpGRMDLRuz` — `PAYLOAD-9qVyfUxmRQqrpGRMDLRuz.json` (one PUT, 127 → 137 nodes; 4 changed + 10 new + 12 connection keys)
+### 2. Spine `9qVyfUxmRQqrpGRMDLRuz` — `PAYLOAD-9qVyfUxmRQqrpGRMDLRuz.json` (one PUT, 127 → 137 nodes; 6 changed + 10 new + 12 connection keys)
 
 | node | change | resulting sha |
 |---|---|---|
@@ -90,10 +121,12 @@ live as-is (the fork's `Postgres Chat Memory` and its OLDER `suggest-follow-up` 
 | `build-cs-member-offer` | jsCode := repo `spine-build-cs-member-offer.js` (== clone, round-3 rev-2 F-R3-5 team-label note) | `63c1c46e` |
 | `escalate-catalog` | LIVE body + anchored insert of the `case 'offer_hold': … break;` block after `case 'escalation_declined'` (F6-i — live's `#9 _ct` hunk KEPT; NOT the clone body `0168df84`) — `PAYLOAD-node-escalate-catalog.js` | `5ec7d6a7` |
 | `compile-current-state` | LIVE body `0b0912f1` + (1) the Δ4 merge-arm hunk **keeping live's sentence "choose who to route to. Reply the number or name:"** (F6-ii) + (2) the rev-3 miss/clarify block (plain-offer arm incl.) re-extracted from clone `7db593b0` (`6bff997d`) by its comment anchors, inserted before the unique final `return output;`. Live→payload diff = exactly those two hunks (5 hunk ranges incl. the merge-arm split); clone's unpromoted lane blocks NOT carried — `PAYLOAD-node-compile-current-state.js` | `c864f204` |
-| + 10 nodes copied from clone `7db593b0` byte-equal: `miss-roster-gate` (if 2.3, leftValue `92ca1ccc` — rev-3 LANE: orders×2 members:true, incoming×3 members:false, stock `crm_inventory_stock_balance_list` inventory/warehouse/general_enquiries members:false; xd precedence; sandbox-safe), `miss-roster-plan` (`c4a19b6f`, LANE lockstep + team/members stamped), **`miss-members-gate` (NEW if 2.3, `14576e69` — TRUE→roster, FALSE→plain)**, `get-cs-members-miss` (== live `get-cs-members` params/cred), `build-miss-member-offer` (`fab11982`, plain arm), `clarify-company-gate` (`63e30a3d`), `clarify-company-reply` (`377c2df4`, plain-clarify copy branch), `offer-hold-gate` (if 2.3, `8f14a430`), `offer-hold-reply` (`377c2df4`), `tag-offer-hold` (set 3.4 `branch_kind=offer_hold`) | — |
+| `disallowed-entity-gate` (F-R4-3, captain-approved) | jsCode := clone body — promotions team collapses `'marketing_promotion_' + brand` → `marketing_promotion`, matching the parser's `deriveRouting` and CRM migration 371. Live body was byte-equal to the clone PRE (`ca13af1c`), so the hunk applies as measured | `069b3691` |
+| `promo-picker` (F-R4-3) | jsCode := clone body — same collapse, incl. the hardcoded last-resort default `'marketing_promotion_sorento'` | `05a96e3a` |
+| + 10 nodes copied from clone `3e7fa66d` byte-equal (round-4 bodies where changed): `miss-roster-gate` (if 2.3, leftValue **`e4575d3e`** — round-4 full 11-tool LANE + the already-offered/promo-picker precedence legs — rev-3 LANE: orders×2 members:true, incoming×3 members:false, stock `crm_inventory_stock_balance_list` inventory/warehouse/general_enquiries members:false; xd precedence; sandbox-safe), `miss-roster-plan` (**`95d6c814`**, LANE lockstep + team stamped from the parser's actual `suggested_team`), **`miss-members-gate` (NEW if 2.3, `14576e69` — TRUE→roster, FALSE→plain)**, `get-cs-members-miss` (== live `get-cs-members` params/cred), `build-miss-member-offer` (`fab11982`, plain arm), `clarify-company-gate` (`63e30a3d`), `clarify-company-reply` (`377c2df4`, plain-clarify copy branch), `offer-hold-gate` (if 2.3, `8f14a430`), `offer-hold-reply` (`377c2df4`), `tag-offer-hold` (set 3.4 `branch_kind=offer_hold`) | — |
 | connections | `central-exchange[0]→miss-roster-gate` {T→`miss-roster-plan→miss-members-gate` {T→`get-cs-members-miss→build-miss-member-offer`, F→`build-miss-member-offer`} →`dym-transform-partial`, F→`dym-transform-partial`}; `escalation-context[0]→clarify-company-gate` {T→`clarify-company-reply` (terminal), F→`Call 'sub-human-intervention'`}; `If-ideate[1]→offer-hold-gate` {T→`offer-hold-reply→tag-offer-hold→escalate-catalog`, F→`If10`}. `If-ideate[0]` stays live's `ideate-turn-http`. | — |
 
-Sweep of the payload: vs LIVE — param mismatches on exactly the 4 nodes above (`cs-offer-gate` reverted to live byte-equal, dropped from the payload delta), 10 new, 0 dropped, connection keys changed = exactly 12; vs CLONE `7db593b0` — all touched/new nodes byte-equal except `escalate-catalog` and `compile-current-state` (by design, F6 anchored transplants); the new/rewired connection entries byte-equal to the clone.
+Sweep of the payload: vs LIVE — param mismatches on exactly the 6 nodes above (`cs-offer-gate` reverted to live byte-equal, dropped from the payload delta), 10 new, 0 dropped, connection keys changed = exactly 12; vs CLONE `7db593b0` — all touched/new nodes byte-equal except `escalate-catalog` and `compile-current-state` (by design, F6 anchored transplants); the new/rewired connection entries byte-equal to the clone.
 
 ### 3. HI sub `rrYXzE61gCNUck_zmXe-G` / sendmsg `aoydkG1dbItXR5jXFEQsP` / replay `aROEBlQyyoQaB7a1` — nothing (R7 §4/§5, R4/R5 no norm rule).
 
@@ -101,8 +134,8 @@ Sweep of the payload: vs LIVE — param mismatches on exactly the 4 nodes above 
 
 1. Re-fetch all three; assert versionIds/updatedAt above unchanged and draft==active — else STOP and re-measure.
 2. PUT parser payload → assert `activeVersionId==versionId`, `output_exchange` `a68c5992`, systemMessage `138008c2`.
-3. PUT spine payload → assert active, 137 nodes, the shas above (incl. `miss-roster-gate` `92ca1ccc`, `miss-members-gate` `14576e69`, ccs `c864f204`; `cs-offer-gate` must equal live), 10 new nodes present, the 3 rewires + miss-members-gate split, hotfix leaves intact;
-   full param-hash sweep vs `PRE-9qVy…` shows exactly the 4 changed + 10 new + 12 connection keys. Post-PUT: smoke ONE answered turn (LESSONS #45).
+3. PUT spine payload → assert active, 137 nodes, the shas above (incl. `miss-roster-gate` `e4575d3e`, `miss-members-gate` `14576e69`, ccs `c864f204`; `cs-offer-gate` must equal live), 10 new nodes present, the 3 rewires + miss-members-gate split, hotfix leaves intact;
+   full param-hash sweep vs `PRE-9qVy…` shows exactly the 6 changed + 10 new + 12 connection keys. Post-PUT: smoke ONE answered turn (LESSONS #45).
    ⚠️ Live currently carries a content-empty UI draft `cfd0e776` ≠ active `7aba1447` (nodes/connections/settings identical to the
    PRE backup — verified twice); the PUT supersedes it. Re-check before applying that the draft is still content-identical.
 4. Re-assert HI `9249e00e` unchanged. Record POST versionIds here. Any mismatch ⇒ PUT PRE bodies back.
@@ -127,3 +160,25 @@ fail-closed (missing tool-filter / non-allowlisted tool / routing mismatch / thr
 `tests/runs/miss-company-routing-round3-rollup-20260818.md` (N1–N10, R-M1/M5/M8/B, S — PASS, 25 execs zero egress); rev-1 blocker F-R3-4
 (`Object.prototype` banned by the n8n expression sandbox → LESSONS #45) fixed in rev-2. Prerequisite P1: purchasing/incoming rosters exist for
 both companies (Sorento: Jereen Tee; Mocha: Lucas) — an empty roster would fail closed (byte-identical turn), not mis-route.
+
+## Round-4 additions to the audit (captain: every domain offers on a miss)
+
+| status | tools | note |
+|---|---|---|
+| members picker (orders only, captain-locked) | `crm_order_management_orders_list`, `…orders_by_product_list` | unchanged |
+| plain offer | `crm_incoming_stock_list`, `…_by_product`, `…_shipments` (purchasing) · `crm_inventory_stock_balance_list` (warehouse) | rounds 3/3rev3 |
+| **plain offer (round 4)** | `crm_marketing_promotions_list`, `crm_marketing_promotion_products_list` (marketing_promotion) · `crm_master_products_list` (purchasing_product) · `crm_master_product_attachments_list` (marketing_product **or** purchasing_certification) · `crm_certificates_list` (purchasing_certification) | LANE now **equals** the CRM's 11-function `stamp_lookup_companies` set — completeness is structural, not enumerated |
+
+Total-not-found already offered in every domain before round 4 (`not-found-error-message` is domain-agnostic); the only
+non-offering arms are its four clarification questions, whose answers land on a path that does offer (captain-confirm C1:
+leave). Precedence: one offer per turn — the lane yields to an already-rendered escalate phrase, to promo-picker's own
+offer markers, and to a crossdomain block; a tier-ask turn never reaches the lane at all.
+
+### ⚠️ BLOCKED-BY-CONFIG (admin, not code — surfaced by the round-4 roster probe)
+
+`team-members` for **company Mocha × team `purchasing_certification`** returns **404** — *"No team found for agent and
+team_code='purchasing_certification' in company '38db4f20-…'. Configure that company's team set before routing to it."*
+All other new pairs resolve for both companies. The offer still renders (plain lanes make no roster call), but a live
+"yes" on a **Mocha certificates** miss would hit `next-assignee` with an unconfigured team. Fix is a CRM admin team-set
+entry; until then that one path can fail at assignment. (Observed side effect D4: certificate asks currently resolve to
+the *attachments* tool, so the certificates row is rarely the one that fires.)
