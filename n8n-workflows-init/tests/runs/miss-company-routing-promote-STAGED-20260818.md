@@ -230,6 +230,18 @@ auto-activates on this instance — `activeVersionId == versionId` asserted ever
   change *adds* `String(… ?? '')` coercion and handles `entities` as array **or** JSON string inside a catching
   `try/catch`.
 
+## First live turn after the promote — PASS (exec `12956511`, 10:58:35Z, real contact `477071885`)
+
+Real stock enquiry ("check stock for Srtwb8004", inventory / warehouse routing, 3 rows incl. two qty-0):
+
+- **`miss-roster-gate` executed with NO ExpressionError** and took the FALSE branch — the outage-class risk (a
+  sandbox throw on a new mid-path If, LESSONS #45) is now disproven on live traffic, not just on the clone.
+- **`offer-hold-gate` executed clean**, FALSE branch → `If10`, as before the promote.
+- `compile-current-state` ran normally: no phrase appended, `selection_context` null, `last_result_set` unchanged in
+  shape, axes persisted (`routing_company` Sorento, `routing_brand` sorento, one `routing_companies` row).
+- Reply byte-normal for a single-company answer, and **correctly no escalation offer** — one company was queried and it
+  answered, and the two qty-0 rows are answers (captain decision 2 holds on live).
+
 ## Watch list (live now)
 
 1. First answered turns through the two new mid-path If gates (`miss-roster-gate`, `offer-hold-gate`) — an expression
