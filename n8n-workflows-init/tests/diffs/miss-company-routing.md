@@ -169,3 +169,25 @@ the predecessor's P3 note), and apply the ccs + escalation-context hunks as ANCH
 final `return output;` line; the `qb` const line + `} else if (sameTeam) {`) — do NOT copy the clone bodies wholesale (clone
 and live diverge in both directions). Backup-first, sha-verify draft before publish + active after, auto-revert (Lessons 24/25).
 Guards to strip at promote: none — no node in this change is test-only; the clone's pre-existing guards stay clone-only.
+
+## rev-2 (captain decision 2026-08-18, mid-round): carry resolved brand on the no-roster arm
+
+Captain journey `photo for MWCX7608-SH-S10` → `yes` (a `marketing_product` escalation — the CS roster lane
+never runs) escalated with `brand: n/a` although the photo turn had persisted `routing_brand: mocha`
+(source `resolved`; traced on clone executions 12894240/12894262 and 12906044/12906192). Cause: the rev-4
+pool-identity rule zeroed the brand on the `sameTeam` no-plan arm — but with NO roster fetched there is no
+shown pool for a brand to disagree with, so the null is pure information loss. Captain: "pass the brand
+along regardless".
+
+- `escalation-context` (clone `txiPzSxy3Pclsz6v`): one guarded line at the end of the no-plan branch —
+  `if (source !== 'multi_company_unpicked') brand_code = prev.routing_brand ?? null;` (comment block in the
+  body). Roster-backed arms (picked row / persisted plan) stay fetch-verbatim: forcing a different brand
+  there can 400 a pinned pick or exclude offered members — the exact regressions rev-3/rev-4 closed.
+- Published `a1969f5c-…` → **`d4ce02eb-e337-447c-bf05-9a13f504dd53`** (draft==active).
+  sha `4d7bbe29…` → **`c14da5d7…`** (repo body updated, re-fetch verified `==`).
+- Applied while the tester's M-pass was in flight: the M-cases all exercise roster-backed arms
+  (plan rows present), so their assertions are unaffected; the tester/reviewer should note the clone
+  versionId moved mid-pass. Re-verification of the photo→yes journey (marker `brand: mocha`) is queued
+  behind the tester run (shared canary contact).
+- Live carries the SAME null-brand behaviour on this arm (promoted `efa21057-…`); this rev promotes with
+  the miss-company batch at the captain's gate.

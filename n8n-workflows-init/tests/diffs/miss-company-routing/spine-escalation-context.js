@@ -55,6 +55,12 @@ if (row) {
     const c = cos.find(x => x && x.company_id === company_id);
     company_name = c ? (c.company_name || null) : null;
     source = company_id ? 'prior_state' : (cos.length > 1 ? 'multi_company_unpicked' : 'prior_state_no_company');
+    // miss-company-routing rev-2 (captain decision 2026-08-18): NO roster was fetched for this offer
+    // (routing_roster_plan empty), so there is no shown pool for a brand to disagree with — carry the
+    // resolved brand from prior state instead of dropping it. next-assignee narrows to
+    // brand-tagged + untagged members, so this can only refine the pool, and there is no pinned
+    // pick on this arm to exclude. The roster-backed arms above keep their fetch-verbatim brand.
+    if (source !== 'multi_company_unpicked') brand_code = prev.routing_brand ?? null;
   }
 } else if (qb) {
   brand_code = qb;
