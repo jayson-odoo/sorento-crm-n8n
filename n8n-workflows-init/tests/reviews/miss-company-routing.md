@@ -866,3 +866,286 @@ live, ccs = live body + the two anchored hunks with zero clone lane leakage, par
    of the LANE unless explicitly ordered (each = one LANE row + `members:false` in BOTH mirrored copies).
 7. Apply order (parser → spine), rollback method (PUT the PRE body back), settings-extras post-check
    (`availableInMCP`/`callerPolicy`/`binaryMode` survive), HI untouched: **unchanged from R7/R10.**
+
+---
+
+## R13. Round-4 review + final rounds-2+3+4 payload verification (2026-08-18)
+
+Reviewer pass over plan §"Round 4" (W0–W6), the coder's `tests/diffs/miss-company-routing.md` §round-4 +
+`diffs/miss-company-routing/spine-company-team-collapse.hunk.md`, the tester's round-4 rollup
+(`runs/miss-company-routing-round4-rollup-20260818.md` + 17 evidence JSONs), and the **re-staged combined
+rounds-2+3+4 live payload** (`LIVE-PROMOTE-STAGED-20260818/`, commit `7b9d51c`). Read-only: 9 workflow REST
+GETs + 4 execution REST GETs (incl. 1 HI sub-exec) + repo reads; all 7 unit suites re-run locally. **Nothing
+edited, nothing executed, nothing promoted.** Shas = sha256 first 8 hex of the exact raw param bytes
+(`printf '%s'`), the §round-4 convention.
+
+### Per-check table
+
+| # | check | result | measured |
+|---|---|---|---|
+| 1 | live current state (re-fetched twice, start + end of pass — no drift) | PASS | spine `9qVy…` active **`7aba1447`** / draft `cfd0e776`, 127 nodes, updatedAt 04:28:14Z; parser `XTODTw` draft==active **`b9ac64a2`** (07:17:57Z); `rys` `cacd7c95`; `Fss` `f214cb7e`; sendmsg `aoydkG1…` `91171ac3`; HI `rrYXz…` `9249e00e` — all unmoved between the two fetches |
+| 2 | live draft is content-empty vs active | PASS | draft `cfd0e776` **byte-identical to `PRE-9qVy…-7aba1447.json` on all four of `nodes`/`connections`/`settings`/`name`** (whole-object JSON compare, not spot shas) |
+| 3 | clone + fork published, at the declared versions | PASS | `txiPzSxy3Pclsz6v` draft==active **`3e7fa66d`**, 171 nodes; `t4QvrtrPnTwRU6br` draft==active **`9ee992e9`**, 8 nodes; parser fork `wI5RkNGW3EOJfBdo` **`c7d9cfa2`** untouched (`output_exchange a68c5992` / systemMessage `138008c2`) |
+| 4 | the 5 round-4 POST shas on the published targets == repo artifacts | PASS | fork `output-structurer` **`698f89f1`** (== `diffs/…/getresults-output-structurer.js`); clone `miss-roster-gate.leftValue` **`e4575d3e`**, `miss-roster-plan` **`95d6c814`**, `disallowed-entity-gate` **`069b3691`**, `promo-picker` **`05a96e3a`** |
+| 5 | clone PRE→POST sweep is EXACTLY the claimed set | PASS | `061e46c9`→`3e7fa66d`: 171→171 nodes, 0 new / 0 dropped, param-changed = exactly `{miss-roster-gate, miss-roster-plan, disallowed-entity-gate, promo-picker}`, **connections byte-identical (155 keys, 0 delta)**. (The 29 "credentials" field diffs are an artifact of the PRE being an MCP capture, which strips `credentials`; the REST-side values are the expected prod-read/`n8n_test` creds.) Fork `87df404c`→`9ee992e9`: exactly `{output-structurer}` |
+| 6 | LANE == the CRM `stamp_lookup_companies` set, byte-mirrored | PASS | 11 rows extracted programmatically from the deployed `miss-roster-gate` leftValue; **LANE literal byte-identical in `miss-roster-gate` and `miss-roster-plan`** (sha `8f03ce05`, 2714 B); rows exactly the plan's W2 table incl. the two-pair `crm_master_product_attachments_list` |
+| 7 | captain lock — members ORDERS-ONLY | PASS | `members:true` on exactly `crm_order_management_orders_list` + `crm_order_management_orders_by_product_list`; `false` on the other **9** rows (incl. all 5 new) |
+| 8 | captain fidelity — promotions team is `marketing_promotion` | PASS | LANE pair `['marketing_promotion','general_enquiries']`; `disallowed-entity-gate.company_team` → `'marketing_promotion'`; `promo-picker._escTeam` default → `'marketing_promotion'`; **live HI sub-exec `12946155` payload carries `team:"marketing_promotion"`** (no brand suffix). Residual `marketing_promotion_*` strings in the payload: 2, both inside COMMENTS of `disallowed-entity-gate`; the parser payload's 3 are a defensive downgrade regex `/^marketing_promotion_(sorento\|cabana\|mocha)$/` + comments. **Zero producers emit a suffixed team** |
+| 9 | captain fidelity — uuid line clean | PASS | R1 exec `12945979` rendered text (evidence + independent REST re-read): `…*Sorento:* no promotions records for MUB6201.` — 0 uuid tokens. `_codes` predicate keeps a code only when `c && c !== u && !uuidShaped`; failure mode is `[]` ⇒ the already-shipped no-clause sentence, so the hunk can only ever **shorten** a rendered sentence |
+| 10 | F-R4-3 collapse hunks == documented, nothing else | PASS | live PRE → payload diff: `disallowed-entity-gate` = 11 comment lines + ONE changed expression (13 diff lines); `promo-picker` = 3 comment lines + ONE changed literal (5 diff lines). No other region of either body touched |
+| 11 | **coder's reversal claim: `disallowed-entity-gate`/`promo-picker` live == clone PRE** | **PASS — claim CONFIRMED** | live ACTIVE `7aba1447` vs clone PRE `061e46c9`: `disallowed-entity-gate` both `ca13af1c`, **byte-equal, 26753 B both**; `promo-picker` both `5d48c524`, **byte-equal, 35080 B both**. The earlier divergence assumption was wrong; the payload bodies (`069b3691`/`05a96e3a`) are simultaneously the tested clone bodies AND live+hunk. Payload == the deployed clone bodies byte-for-byte |
+| 12 | **spine payload sweep vs `PRE-…-7aba1447`** | PASS — exactly as briefed | 127→**137** nodes; **6 param-changed** (`escalation-context` `cca7a245`, `build-cs-member-offer` `63c1c46e`, `escalate-catalog` `5ec7d6a7`, `compile-current-state` **`c864f204`**, `disallowed-entity-gate` **`069b3691`**, `promo-picker` **`05a96e3a`**); **10 new**, 0 dropped, **0 non-param field diffs**; connections 117→126 = **12 delta keys** (9 new + 3 changed: `central-exchange`, `escalation-context`, `If-ideate`); top keys `{name,nodes,connections,settings}`, name == live |
+| 13 | 10 new nodes == the deployed clone, byte-for-byte | PASS | `miss-roster-gate` LV `e4575d3e` · `miss-roster-plan` `95d6c814` · `miss-members-gate` LV `14576e69` · `build-miss-member-offer` `fab11982` · `clarify-company-gate` LV `63e30a3d` · `clarify-company-reply` == `offer-hold-reply` `377c2df4` · `get-cs-members-miss` `5efc69f3` · `offer-hold-gate` LV `8f14a430` · `tag-offer-hold` `1bb4789d` — each equal to clone `3e7fa66d`; all 10 node ids collision-free vs live's 127 |
+| 14 | **ccs `c864f204` forensics against the CURRENT clone** | PASS | payload node == `PAYLOAD-node-compile-current-state.js` `c864f204`; live→payload diff = **EXACTLY two hunks** (`@@ -72,18 +72,40 @@` merge-arm, `@@ -680,5 +702,96 @@` miss/clarify insert); payload lines 705–797 **byte-identical to clone `8deebd5e` lines 1142–1234** (the tier rebase did NOT move the miss block); lane-marker leakage `N-1a`/`N-2`/`spec-search`/`spec_search` = **0** in the payload (clone 1/5/1/9), `tier` count 12 == live 12 (clone 16 ⇒ the 4 tier-lane occurrences did NOT leak); exactly one final `return output;` |
+| 15 | payload wiring shapes | PASS | `central-exchange`→`miss-roster-gate`; mrg {T→`miss-roster-plan`, F→`dym-transform-partial`}; `miss-roster-plan`→`miss-members-gate` {T→`get-cs-members-miss`→bmmo, F→bmmo}; `escalation-context`→`clarify-company-gate` {T→`clarify-company-reply`, F→HI}; **`If-ideate[0]`→`ideate-turn-http`** (clone's test-only `ideate-egress-gate` NOT carried), `[1]`→`offer-hold-gate`→{`offer-hold-reply`→`tag-offer-hold`→`escalate-catalog`, `If10`} |
+| 16 | no test scaffolding / fork ids in either payload | PASS | 0 hits for any fork/clone id, `n8n_test`, `Dnnofg8Xb27VQOhI`, `test_mode`, `test-guard`, `main-message-list-test`, `zz-canary`, `sorento-respond-message-TEST`. Payload `executeWorkflow` targets **identical to live PRE** (`aoydkG1…`×9, `Fss`×5, `rys`×3, `rrYXz…`, `XTODTw`, `tWP33…`, `UrETd…`). The 3 flagged tokens are benign: `is_test` ×2 in comments of the two new Code nodes, `prototype` ×2 inside pre-existing live **Code** nodes (LESSONS #45 governs non-Code params — 0 there), `$('x')` ×2 pre-existing in `dym-transform*` |
+| 17 | `escalate-catalog` `_ct` arm survives the collapse | PASS | payload `escalate-catalog` `5ec7d6a7` == `PAYLOAD-node-escalate-catalog.js`; `_ct` arm (live-only, lines 66–67) byte-identical to live PRE. After the collapse `_ct === 'marketing_promotion' === parser.routing.suggested_team`, so both sides of the `\|\|` agree — unit-asserted (round4 suite) |
+| 18 | **parser payload rebase onto live `b9ac64a2`** | PASS | `PRE-XTODTw…-b9ac64a2.json` **== live now** (whole `nodes` compare). Payload-vs-live delta = **exactly 2 nodes**: `AI Agent.options.systemMessage` `a4aa5ec0`→**`f0a825a9`**, `output_exchange` `3ee5b658`→**`a68c5992`**. 7 nodes both sides, 0 new/dropped, connections + settings byte-equal, 0 non-param field diffs |
+| 19 | **parser 3-way rebase identity** | PASS | fork `138008c2` → payload `f0a825a9` = **exactly ONE added line** (`- "videos","actual video"  → attachment_type "video"`). Independently: old-live `583bcfb0` → live-now `a4aa5ec0` = that **same single line**; old-live → fork = 27 changed lines in 2 hunks; live-now → payload = **the identical 27 lines in the same 2 hunks with identical context anchors** (diff-of-diffs empty after stripping `@@` offsets). ⇒ nothing of theirs lost, nothing of ours dropped, same semantic anchor. `output_exchange` payload **byte-identical to the fork** (`a68c5992`, 104606 B) |
+| 20 | parser payload carries no fork-only drift | PASS | `suggest-follow-up` payload == live `338ea668`; the fork's older `5e659811` correctly NOT carried. `mock-reformulator-output` identical on all three (pre-existing live node) |
+| 21 | **sub payloads == own live PRE + exactly the two `_codes` hunks** | PASS | `rys` PRE **`3b1995d4`** → PAYLOAD **`698f89f1`**; `Fss` PRE **`25a2eed9`** → PAYLOAD **`d6d3f1fd`**. Each diff = ONLY the 9-line comment block + the 4-line predicate swap, at each body's own anchor (rys @343, Fss @330). Both PRE files re-verified **== live now** (whole `nodes` compare) |
+| 22 | `rys` payload == the tested fork POST | PASS | `698f89f1` == fork `t4QvrtrPnTwRU6br` @ `9ee992e9` `output-structurer` == `diffs/…/getresults-output-structurer.js`, byte-for-byte (24835 B) |
+| 23 | **`Fss` keeps its OWN older timeline block** | PASS | `rys`↔`Fss` delta is **IDENTICAL pre and post** — same 2 hunk headers (`@@ -167,28 +167,16 @@`, `@@ -197,14 +185,13 @@`), same 41 changed lines. `Fss` is provably not a copy of `rys`; the unrelated "sort dates in place" rewrite was NOT smuggled in |
+| 24 | `_codes` predicate semantically identical in all 3 copies | PASS | the block from `// ROUND 4 (A).` through `} catch (err) { _codes = []; }` is **byte-identical** in fork `t4Qv`, `rys` payload and `Fss` payload (1449 B, sha `69ea709f`) — string compare, not eyeball |
+| 25 | no other node of `rys`/`Fss` is touched | PASS | both promote artifacts are single-node `.js` bodies applied via `setNodeParameter /jsCode`; `entity-ids-transformer` (`a791e867`/`6c46837e`) and `output_exchange` (`b0ceda30` both) stay as-is by construction |
+| 26 | offline units re-run by the reviewer on the repo bodies | PASS | round4 **101/101** · round3 **85/85** · rev4.spine **33/33** · rev4.output_exchange **48/48** · delta1/delta2/delta3 GREEN |
+| 27 | LESSONS #45 sandbox scan | PASS | 0 hits of `prototype\|constructor\|__proto__` in any **non-Code** node's parameters on the clone AND in the spine payload; the gate uses `Object.keys(LANE).includes(tool)`, not `hasOwnProperty` |
+| 28 | fail-closed on every new leg | PASS | gate: outer `try → return false`; `if (!lane) return false`; strict `domain_hint === lane.domain`; `lane.pairs.some(...)` exact pair match; `_xdBlock.any` yield; `!lc.length`/`!ans.length` ⇒ false; `miss-members-gate` `={{ $json.members === true }}` (strict `===`); `miss-roster-plan` unreadable routing ⇒ `team:null, members:false` ⇒ plain path. Both new precedence legs are inside the same `try` ⇒ a throwing `promo-picker` ⇒ no offer |
+| 29 | **one-offer-per-turn precedence completeness** | PASS with one gap → **F-R13-1** | Leg (a) generic frozen-phrase test covers `_promo_notfound` (line 553/558/559) and `_promo_unmatched` (571–573) **structurally**, because both write the phrase into `env.response`. Leg (b) suppresses all 5 named markers. I audited **every** `env.response` write in the deployed `promo-picker`: L84 `_brand_gate_closed`, L99 `_promo_picker_shape`, L307/L374/L403 `_promo_pick`, L415 notice-rewrap (preserves the miss line), L559 `_promo_notfound`, L573 `_promo_unmatched` — all covered. `_promo_broadened`/`_promo_disjoint` are only ever set **inside** the `_promo_unmatched`/`_promo_notfound` branches, so they can never appear alone. **The single uncovered rebuild is L465–469 with `rebuilt:true`** — see F-R13-1. Offline-only markers (`_promo_notfound`, `_brand_gate_closed`, `_promo_picker_shape`) are each individually unit-asserted on the deployed gate body, plus two negative controls (`_brand_gate_closed:false` and `_promo_unmatched:undefined` ⇒ leg inert) |
+| 30 | byte-identical behaviour for untouched domains | PASS | round-2/3 LANE rows unchanged in the new `pairs` shape (same tools, teams, agents, members flags); tester R12 a–e replays orders/attachments/stock/crossdomain/tier byte-identical modulo the freshness stamp; `compile-current-state`, `escalate-catalog`, `build-miss-member-offer`, `cs-offer-gate`, `miss-members-gate`, `offer-hold-gate`, `clarify-company-gate` all re-asserted unchanged on the clone; `not-found-error-message` untouched (W4 total-not-found path already offers on every domain) |
+| 31 | **zero-egress re-confirmation (independent of the tester)** | PASS | 17 round-4 evidence JSONs: **124 egress records, kind set == exactly {`would_send` 51, `would_write` 39, `would_log` 34}** — no other kind exists anywhere. Every `crm_*` token across the set is a `_list` READ; **`crm_it_support_ticket_create` absent** (S4). My own REST re-reads of execs `12945979`/`12946147`/`12948208`: **0 orphaned egress nodes executed**, `api.respond.io` appears **only in `workflowData` node definitions, 0 in `runData`**, sub-exec targets are forks only (`wI5RkNGW3EOJfBdo`, `vUfFUDjLAuMaeQE6`, `aQUmwMVplmNcyUVc`, `tWm5DYLxfypmVC1T`). HI sub-exec `12946155` executed exactly `['When Executed by Another Workflow','chat?','test-guard','test-guard-record']` — **0 `next-assignee`, 0 `team-members`, 0 SLA, 0 comment, `is_test:true`**. Clone guards re-verified on `3e7fa66d`: the 5 egress nodes all **0 inbound**, `executeWorkflow` targets all forks (`t4Qv`×8, `aQUm`×9, `wI5R`, `vUfF`, `tWm5`, `tWP33`), 14 nodes carry `is_test` |
+| 32 | D2 helper restored (read-only claim) | PASS | `zz-roster-probe ZS0KErse7GDh9mJK`: `probe-params` **`ad5b8b07`** (== the tester's claim), workflow `active:false`, `activeVersionId:null` (unpublished), sole HTTP node is `team-members-GET`; **no `next-assignee` node exists in it** |
+| 33 | scope/tier | PASS | plan scope `deterministic`; parser fork untouched; the 2 parser-tier turns (CAP-t2/t3) exercise UNCHANGED fork arms as regression proofs, matching the plan's own declaration |
+| 34 | replay-norm impact | **CONFIRMED — no norm rule; ONE new true-positive diff source** | See §R13 replay note below |
+
+### Replay-norm note (the one place round 4 differs from R4/R12's conclusion)
+
+- **`output-structurer` (`_codes`) has ZERO replay impact.** `Call 'sub-get-results'` is fixture-replaced in
+  replay (`regression/orchestrator-notes.md` L214: it "ran in capture but **NOT** replay"), so the sub's
+  internals never execute against the golden base. No norm rule, no base invalidation.
+- **`miss-roster-gate`/`-plan`/`miss-members-gate` stay inert corpus-wide** — golden envelopes predate
+  `lookup_companies` stamping, so the gate's shape legs are FALSE on every corpus turn regardless of the
+  widened LANE. Unchanged from R4/R12.
+- **NEW: `disallowed-entity-gate` DOES run in replay**, and `company_team` now emits `marketing_promotion`
+  instead of `marketing_promotion_<brand>` on every single-brand promotion turn in the corpus. **That is a
+  deliberate behaviour change and its replay diff is a TRUE POSITIVE — do NOT add a `norm()` rule for it**
+  (LESSONS #21: normalization over-stripping is the silent killer). Expect `disallowed-entity-gate.company_team`
+  and any downstream `escalate-catalog` `_ct` text to diff on those turns; re-baseline rather than normalize.
+  `promo-picker._escTeam`'s default is reachable only when `company_team` is null AND the parser emitted no
+  team, so it will rarely surface.
+
+### §0 safety verdict
+
+S1 zero real sends · S2 zero assignment/SLA/PIC writes · S3 zero CRM/contact writes · S4 read-tool allowlist
+only · S5 prod redis list never grew · S6 `n8n_test` isolation — **all PASS**, re-confirmed independently
+(check 31) rather than taken from the tester's rollup. **The change cannot cause real egress:** every egress
+node on the clone is 0-inbound, every shared-sub call goes to a guarded fork, and the promoted delta adds no
+new HTTP/egress node — the only new outbound node in the payload, `get-cs-members-miss`, is a CRM
+`team-members` **GET** (read) that round 4 makes *less* reachable, not more (9 of 11 LANE rows are
+`members:false` ⇒ no roster call at all).
+
+### Findings
+
+- **F-R13-1 (NEW, non-blocking, follow-up round).** `promo-picker`'s reorder arm (deployed body L463–469) sets
+  the marker `_promo_picker` — which is **not** in `miss-roster-gate`'s suppression set — and when
+  `rebuilt === true` it REBUILDS `env.response` from `[_listIntro, renderBlocks(answers), _tail]`, where
+  `_tail` carries only the `_Data last updated:…_` line. The mc-label miss line lives in the **response string**
+  (`output-structurer` L373 appends `*Co:* no <noun> records…` into `msg` → `response`; `response_intro` never
+  carries it), so a reordered promotions turn **drops the miss line while the gate still fires TRUE** and
+  appends the offer ⇒ *"I found 2 promotions … Would you like me to escalate to \*Sorento\* marketing_promotion
+  team?"* with no stated reason. Reachable when ≥2 promotions + CRM order ≠ end-date-desc order + a per-company
+  miss. **Not a safety or routing defect** (the company/team named are correct and the "yes" flow works) — it is
+  the exact copy-coherence failure W3 anticipated for `_promo_pick`, one arm short. R1 exec `12945979` shows
+  `rebuilt:false`, so it did not surface live this pass. **Preferred fix (next round, one line):** carry the
+  miss line across the rebuild the way `_tail` is carried (keeps offer *and* reason). **Cheaper fix:** add
+  `(p._promo_picker && p._promo_picker.rebuilt === true)` to leg (b) — suppresses the offer instead.
+- **F-R13-2 (BLOCKED-BY-CONFIG — captain action, NOT code, pre-existing but WIDENED by round 4).** P3 measured
+  `next-assignee`/`team-members` 404 for company **Mocha `38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2` × team
+  `purchasing_certification`** (11/12 pairs OK). I traced the live HI sub `rrYXzE61gCNUck_zmXe-G` @ `9249e00e`:
+  `…respond-routed-to-pic2` → **`get-round-robin-assignee`** (`…/external/next-assignee`) →
+  `if-conversation-unassigned`. That HTTP node has **no `onError`/`continueOnFail`/error output** — a 404 throws
+  and fails the sub-execution **after** the customer has already been told they were routed ⇒ *"you've been
+  routed"* + no assignment = silent drop. Round 4 does not create the gap (a Mocha certificates **total**
+  not-found already offers and already routes there), but it adds the per-company-miss path as a second route.
+  **Configure Mocha's `purchasing_certification` team set before promoting, or accept the drop knowingly.**
+- **F-R13-3 (D8 — repo artifact drift; non-blocking, fix-forward).** `diffs/miss-company-routing/spine-compile-current-state.js`
+  is `6bff997d` while the clone runs `8deebd5e` and the payload ships `c864f204`; two suites
+  (`rev4.spine`, `round3.gates`) execute the stale body. **Materiality bounded by measurement:** the miss/clarify
+  block is **byte-identical across all three** (8436 B), and the repo↔clone delta is 64 lines in 4 hunks whose
+  tokens are exclusively `tier`(15) / `picker`(12) / `last_result_set`(8) / `_promo`(8) / `access_level`(1) —
+  i.e. the tier/promo precedence arms, none of which the promoted delta touches and none of which those suites
+  assert. Refresh the artifact next round so units run the deployed bytes.
+- **F-R13-4 (deviations D3/D5/D6 — offline-only coverage, accepted with a watch-list entry).** Three LANE rows
+  have no live fixture and are structurally hard to induce: `crm_master_products_list` (R6 — every company
+  answered on 5 probes), `crm_marketing_promotion_products_list` (R9 — not reachable through the RAG registry),
+  and the two-company DO-number `_codes` case (R13). Each is covered by units on the **byte-verified deployed
+  bodies**, which is the same standard R12 accepted for Q4a/Q5-t1. Carried to the post-PUT watch list.
+- **F-R13-5 (deviation D4 — copy nuance, captain-confirm).** Certificate asks resolve to
+  `crm_master_product_attachments_list`, never `crm_certificates_list` (`sub-get-rag` returned exactly one tool
+  candidate on all 32 execs — the tool cannot be steered from message text). The **two-pair design worked as
+  intended**: the gate fired TRUE on the attachments row's second pair and the offer correctly named
+  `purchasing_certification`. Consequence: the miss noun reads *"product attachments"*, not *"certificates"*.
+  The `crm_certificates_list` row is harmless dead weight today (and correct if the RAG registry ever exposes it).
+- **F-R13-6 (deviation D7 — pre-existing, non-blocking).** On a MULTI-VARIANT product, a certificates total
+  not-found (exec `12947013`) sets `is_escalate_offer:true` but renders the DYM variant chooser
+  (`manualResponse:false`), so the visible reply carries no offer. Re-run with a single unresolvable code
+  (`12947150`) gives the expected offer. Predates round 4; the DYM chooser is a question, not a dead end.
+- **F-R13-7 (residuals carried forward, unchanged):** F-R12-2(a) junk-on-a-plain-offer closes the offer;
+  F-R3-3 `_mcTeamP` `'customer_service'` fallback literal is unreachable under the gate's lockstep; F-R12-4
+  `zz-canary-read` is unpublished with a hardcoded stale run id.
+- **D1 (live parser drift) — CLOSED.** Verified as a clean 3-way rebase, check 19. Not caused by this round.
+- **D2 (helper edit/restore) — CLOSED.** Verified, check 32.
+
+### Promote-blocking assessment
+
+| item | promote-blocking? |
+|---|---|
+| F-R13-1 `_promo_picker` rebuilt drops the miss line | **NO** — copy coherence on a narrow promotions sub-case; correct company/team; no safety, no mis-routing |
+| F-R13-2 Mocha × `purchasing_certification` 404 | **NO for the code — YES as a captain pre-condition.** Fix the CRM team set or accept a silent-drop escalation on that one pair |
+| F-R13-3 / D8 stale ccs artifact | **NO** — measured non-material; repo hygiene |
+| D3 / D5 / D6 offline-only rows | **NO** — deployed-body units + R12 precedent |
+| D4 certificates→attachments tool | **NO** — design worked; copy nuance only |
+| D7 multi-variant DYM chooser | **NO** — pre-existing |
+| settings extras (`availableInMCP`/`callerPolicy`/`binaryMode`) absent from the payload's `settings` | **NO** — the public API rejects those keys (400 "must NOT have additional properties") and they survive server-side; keep the post-PUT check |
+
+### Judged items (my view; captain owns the decision)
+
+- **D2' is now REVERSED by captain order** — promotions ×2 / master products / product attachments /
+  certificates are IN the LANE, all `members:false`. LANE == the 11-function `stamp_lookup_companies` set
+  exactly, so the allowlist is closed by construction; a new CRM stamping function is the only thing that can
+  make it incomplete. **Confirm at the gate that the 11-row LANE is what you ordered.**
+- **W4 captain-confirm C1 stands: LEAVE all four `is_clarification` arms** (`missingAttachmentType`,
+  `needsScope`, `vagueUnresolved`, `require_specific`) suppressing the offer — each asks a question rather than
+  dead-ending. Flipping any would ask and offer in the same breath.
+- **F-R4-3 scope:** the `promo-picker._escTeam` default collapse is the one item beyond the literal instruction.
+  I judge it correct (same defect, same migration, same pool) and it is called out in the hunk doc so it can be
+  reverted cleanly if unwanted.
+
+### Verdict — **APPROVE** (round 4 + the final combined rounds-2+3+4 payload)
+
+Round 4 is verified byte-exact on the published clone `3e7fa66d` and fork `9ee992e9` (5 bodies, exactly 4+1
+changed nodes, connections untouched on both), the captain's three orders are implemented with measured
+fidelity (all 11 stamping domains offer; members true on the two orders tools only; promotions team is the
+collapsed `marketing_promotion` end-to-end into the HI payload; the uuid line is clean on his own MUB6201
+turn), every new leg fails closed, one-offer-per-turn is complete except the documented F-R13-1 arm, untouched
+domains are byte-identical, and zero egress is re-confirmed independently on 124 egress records + 4 direct
+execution re-reads.
+
+The re-staged payload is exactly live + the reviewed business-logic delta, and the three things I was asked to
+audit rather than assume all hold: the coder's reversal claim is **true** (`disallowed-entity-gate`/`promo-picker`
+live bodies are byte-identical to the clone PRE, so `069b3691`/`05a96e3a` are legitimately both the tested and
+the live-anchored bodies); ccs `c864f204` is still live-body + exactly the two anchored hunks with the clone's
+**current** miss block and **zero** tier/promo/spec leakage; and the parser rebase onto `b9ac64a2` is a clean
+3-way — their one `video` line kept, our 27 lines re-applied at the identical anchors, `output_exchange`
+byte-identical to the fork. Both sub payloads are their **own** live PRE plus the identical `_codes` hunk, and
+`Fss` provably keeps its older timeline block.
+
+**APPROVE-TO-APPLY.** Promotion remains captain-gated. **One captain pre-condition (F-R13-2) and one
+confirm line (LANE = 11 rows) before the PUT.**
+
+### FINAL PROMOTE CHECKLIST (supersedes R7/R10/R11/R12 where they conflict; captain-gated — the reviewer authorizes, does NOT execute)
+
+**Order: subs → parser → spine** (LESSONS #37: a parent resolves only a sub's *published* version).
+Method: MCP `setNodeParameter /jsCode` (or `/options/systemMessage`) from a file, **never re-typed**
+(LESSONS #25); the spine may go by REST PUT with `{name,nodes,connections,settings}` and `settings` stripped
+to `{executionOrder:"v1"}`. **PUT auto-activates on this instance** — verify `activeVersionId`, do not assume a
+draft. Back up each PRE body before its write.
+
+**Pre-flight (all must hold at the moment of the PUT — any mismatch ⇒ STOP and re-diff):**
+
+1. `9qVyfUxmRQqrpGRMDLRuz` active **`7aba1447`**, draft `cfd0e776` still content-identical to
+   `PRE-9qVy…-7aba1447.json`; `XTODTw-dJcV0uRdC056hG` **`b9ac64a2`**; `rysSPgUssLDf6xJc` **`cacd7c95`**;
+   `Fss5aAaXthJSWpZCgKiKR` **`f214cb7e`**; `rrYXzE61gCNUck_zmXe-G` `9249e00e` and `aoydkG1dbItXR5jXFEQsP`
+   `91171ac3` **untouched** (neither is promoted this round).
+2. **F-R13-2 captain decision recorded:** Mocha × `purchasing_certification` team configured in the CRM, **or**
+   an explicit accept-the-risk. `get-round-robin-assignee` has no error branch — a 404 fails the escalation
+   after the "routed to PIC" message has already gone out.
+3. **LANE confirm:** the promoted `miss-roster-gate`/`miss-roster-plan` carry **11 rows**, `members:true` on the
+   two orders tools ONLY. Any other flag distribution ⇒ STOP.
+
+**Step 1 — subs (`setNodeParameter /jsCode` on `output-structurer` only; no other node of either sub):**
+
+| target | id | sha-gate BEFORE | body to write | expected AFTER |
+|---|---|---|---|---|
+| get-results (LIVE answer path: `Call 'sub-get-results'`, `probe-incoming`, `tier-probe`) | `rysSPgUssLDf6xJc` | **`3b1995d4`** | `subs/PAYLOAD-rysSPgUssLDf6xJc-output-structurer.js` | **`698f89f1`** (== the tested fork body) |
+| get-results (LIVE probe path: `sibling-probe`, `crossdomain-probe`, `dym-probe`, `dym-probe-partial`, `promo-dym-probe`) | `Fss5aAaXthJSWpZCgKiKR` | **`25a2eed9`** | `subs/PAYLOAD-Fss5aAaXthJSWpZCgKiKR-output-structurer.js` | **`d6d3f1fd`** |
+
+⚠️ **Never copy the `rys` body into `Fss`** — `Fss` carries the older timeline block; the two legitimately
+differ by 41 lines in 2 hunks, pre and post. Post-write, re-assert that delta is still exactly 41 lines.
+**Publish each sub** and verify `versionId == activeVersionId` before touching the spine.
+
+**Step 2 — parser `XTODTw-dJcV0uRdC056hG`** (sha-gate `a4aa5ec0` / `3ee5b658`):
+- `AI Agent` `/options/systemMessage` := `PAYLOAD-node-parser-systemMessage.txt` ⇒ **`f0a825a9`**
+- `output_exchange` `/jsCode` := the fork body ⇒ **`a68c5992`**
+- Do NOT touch `suggest-follow-up` (stays live `338ea668`) or `mock-reformulator-output`. Publish; verify
+  `activeVersionId`.
+
+**Step 3 — spine `9qVyfUxmRQqrpGRMDLRuz`** from `PAYLOAD-9qVyfUxmRQqrpGRMDLRuz.json`.
+Per-node sha gates (BEFORE → AFTER):
+
+| node | before | after |
+|---|---|---|
+| `escalation-context` | `8c12563c` | **`cca7a245`** |
+| `build-cs-member-offer` | `37a1b023` | **`63c1c46e`** |
+| `escalate-catalog` | `8b4ae985` | **`5ec7d6a7`** |
+| `compile-current-state` | `0b0912f1` | **`c864f204`** |
+| `disallowed-entity-gate` | **`ca13af1c`** | **`069b3691`** |
+| `promo-picker` | **`5d48c524`** | **`05a96e3a`** |
+| NEW `miss-roster-gate` (leftValue) | – | **`e4575d3e`** |
+| NEW `miss-roster-plan` | – | **`95d6c814`** |
+| NEW `miss-members-gate` (leftValue) | – | `14576e69` |
+| NEW `build-miss-member-offer` | – | `fab11982` |
+| NEW `clarify-company-gate` (leftValue) | – | `63e30a3d` |
+| NEW `clarify-company-reply` / `offer-hold-reply` | – | `377c2df4` (both) |
+| NEW `offer-hold-gate` (leftValue) | – | `8f14a430` |
+| NEW `get-cs-members-miss` / `tag-offer-hold` | – | `5efc69f3` / `1bb4789d` |
+
+**`cs-offer-gate` is NOT promoted** (R12 item 1 stands) — its conditions must still read live `ce99a16c`.
+Any payload showing `391a31c8`/`cfa8c18e` is the superseded rev-2 staging ⇒ STOP.
+
+**Post-PUT sweep (must match exactly):** vs `PRE-9qVy…-7aba1447.json` — **6 changed + 10 new + 12 connection
+keys @ 137 nodes**, 0 dropped, 0 non-param field diffs. Wiring: `central-exchange`→`miss-roster-gate`;
+`miss-roster-plan`→`miss-members-gate` {T→`get-cs-members-miss`, F→`build-miss-member-offer`};
+`escalation-context`→`clarify-company-gate`; **`If-ideate[0]` still → `ideate-turn-http`**. Settings extras
+(`availableInMCP`, `callerPolicy`, `binaryMode`) survive server-side — re-read and confirm.
+`executeWorkflow` targets unchanged (`aoydkG1…`×9, `Fss`×5, `rys`×3, `rrYXz…`, `XTODTw`, `tWP33…`, `UrETd…`).
+
+**Post-PUT smoke set (in this order; live traffic, so keep it small and watch each):**
+
+1. **Promotions per-company miss** — the captain's `promotion for MUB6201`: line reads
+   `*Sorento:* no promotions records for MUB6201.` (**0 uuids**), offer reads
+   `Would you like me to escalate to *Sorento* marketing_promotion team?`, **exactly one offer**,
+   **zero `team-members` GET** on the execution.
+2. **"yes"** on that offer → HI with `team: marketing_promotion`, `company_id` Sorento, a resolved assignee
+   (P3: Kia Yee / Am / Aqi).
+3. **Orders partial-miss** (the only `members:true` lane) — picker still rendered, `get-cs-members-miss`
+   executes, text byte-identical to pre-promote modulo the freshness stamp.
+4. **Attachments / certificates miss** — offer names `marketing_product` (photo ask) or
+   `purchasing_certification` (cert ask); confirm the offer is the **last line of the TEXT message and precedes
+   the file sends**.
+5. **`_promo_unmatched` two-product promotions turn** — exactly ONE offer (leg (a) proof on live).
+6. **Tier-ask turn** — no offer of any kind (`miss-roster-gate` not in the run).
+7. **Incoming / stock plain-miss + a CS not-found** — round-2/3 regression, unchanged copy.
+
+**Watch list (first 48 h):**
+- `next-assignee` **404 "No team found"** on any of `marketing_promotion` / `purchasing_product` /
+  `marketing_product` / `purchasing_certification` / `warehouse` / `general_enquiries` ⇒ **revert trigger**.
+  Mocha × `purchasing_certification` is the known gap (F-R13-2).
+- **Two offers on one turn** on any promotions turn ⇒ leg (a)/(b) escape ⇒ revert.
+- A promotions reply carrying an offer with **no miss line** ⇒ F-R13-1 surfacing (not a revert; log it and
+  ship the follow-up hunk).
+- The three offline-only LANE rows (`crm_master_products_list`, `crm_marketing_promotion_products_list`,
+  the two-company DO-number `_codes` case) — first live occurrences deserve a manual read.
+- Any `no <noun> records.` sentence that reads oddly with the ` for …` clause dropped (the `_codes = []` path).
+
+**Rollback:** PUT/`setNodeParameter` the PRE body back per node, sub-first order reversed (spine → parser →
+subs), from `LIVE-PROMOTE-STAGED-20260818/PRE-*` and `ROUND4/PRE-*`. Live must **never** be edited mid-cycle.
+
+**Captain items outside code:**
+1. **Configure Mocha `38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2` × `purchasing_certification`** (or accept a silent
+   escalation drop on that pair) — F-R13-2.
+2. **Confirm the 11-row LANE** and the orders-only `members` lock.
+3. **Confirm C1**: the four `is_clarification` arms keep suppressing the offer.
+4. **Confirm F-R4-3 scope** includes the `promo-picker._escTeam` default collapse.
+5. Decide F-R13-1's fix shape for the next round (carry the miss line across the rebuild ← preferred, vs
+   suppress the offer).
