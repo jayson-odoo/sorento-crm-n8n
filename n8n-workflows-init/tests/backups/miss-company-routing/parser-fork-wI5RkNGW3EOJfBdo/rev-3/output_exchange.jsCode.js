@@ -85,11 +85,6 @@ if ($json.output && typeof $json.output === 'object') {
 const _parser_raw_snapshot = (() => {
   try { return JSON.parse(JSON.stringify(output.output ?? null)); } catch (e) { return null; }
 })();
-// miss-company-routing rev-3: the LLM may now emit escalation.company_pick (semantic fallback). It is
-// read ONLY from the frozen snapshot inside the Δ3 member-offer arm, where it is validated against the
-// persisted company pool; strip the raw key here so an unvalidated / null value never rides the live
-// escalation object (and never diffs golden turns — Lesson 40).
-try { if (output.output && output.output.escalation && typeof output.output.escalation === 'object' && 'company_pick' in output.output.escalation) delete output.output.escalation.company_pick; } catch (e) {}
 // ── B2' (carried-certificate-dump) — CARRIED-ENTITY PROVENANCE (plan §3.6 part 3) ─────────────
 // "Carried" is derived from PROVENANCE, never from `current_message`. That flag is a proven-corrupted
 // signal: applyDymPick re-maps EVERY prior entity to `current_message: true` before the executor runs,
@@ -1268,16 +1263,10 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
   // new query. Emitted as escalation.company_pick (NO preferred_assignee_id): the spine's
   // escalation-context resolves it against the same persisted plan. A member match still wins:
   // _forcePick/_pos/_pm all outrank this (Tier 2 consumes them first), and inside the _pm arm the
-  // company pick is only read where every member tier yielded nothing. The word bound on the RAW
-  // reply (rev-3: ≤4 words, was ≤3 — admits "yes mocha team please") plays the role
-  // _replyMatchesMember's bound plays, so a longer message that merely CONTAINS a company name ("any
-  // mocha promotions this month") still abandons the offer as a new query (LESSON 39 discipline).
+  // company pick is only read where every member tier yielded nothing. The ≤3-word bound mirrors
+  // _replyMatchesMember, so a longer message that merely CONTAINS a company name ("any mocha
+  // promotions this month") still abandons the offer as a new query (LESSON 39 discipline).
   // >1 company matched ⇒ ambiguous ⇒ no pick (the reprompt/clarify arms handle it).
-  // rev-3 (captain repro "yes" → clarify ✓, "yes mocha" → clarify AGAIN ✗): confirmation / filler
-  // tokens are stripped word-level (case-insensitive, punctuation-insensitive) BEFORE matching, so
-  // "yes mocha" / "mocha please" / "ok the mocha one" all reduce to "mocha". A reply that strips to
-  // NOTHING ("yes", "ok pls") is a plain confirmation — no company pick (bare-yes path unchanged).
-  const _coFillers = new Set(['yes','ya','yeah','yep','yup','ok','okay','sure','please','pls','plz','team','the','to','route','assign','escalate','one','lah','la','go','with','it','that','this']);
   const _coPool = (() => {
     const st = parent_input.previous_conversation_state || {};
     const m = new Map();
@@ -1287,41 +1276,20 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
     }
     return m;
   })();
-  const _coHits = (texts) => {   // exactly-one company, word-boundary, across the given lower-cased texts
-    const hits = new Set();
-    for (const [k, orig] of _coPool) {
-      const re = new RegExp('(^|[^a-z0-9])' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)');
-      if (texts.some(t => re.test(t))) hits.add(orig);
-    }
-    return hits.size === 1 ? [...hits][0] : null;
-  };
-  const _coKept = _replyWords.filter(w => !_coFillers.has(w.toLowerCase().replace(/[^a-z0-9]/g, '')));   // reply minus fillers (any length)
   const _coPick = (() => {
     if (!_coPool.size) return null;
     const _texts = [];
-    if (_replyWords.length > 0 && _replyWords.length <= 4 && _coKept.length) _texts.push(_coKept.join(' ').toLowerCase());
+    if (_replyWords.length > 0 && _replyWords.length <= 3) _texts.push(_rawReply.toLowerCase());
     const _pmRaw = (typeof _o.person_mention === 'string' && _o.person_mention.trim()) ? _o.person_mention.trim().toLowerCase() : '';
     if (_pmRaw) _texts.push(_pmRaw);
     if (!_texts.length) return null;
-    return _coHits(_texts);
+    const hits = new Set();
+    for (const [k, orig] of _coPool) {
+      const re = new RegExp('(^|[^a-z0-9])' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)');
+      if (_texts.some(t => re.test(t))) hits.add(orig);
+    }
+    return hits.size === 1 ? [...hits][0] : null;
   })();
-  // rev-3 semantic fallback: the LLM may name the picked company (escalation.company_pick, read from the
-  // frozen raw snapshot — the live key was stripped at the top). ACCEPTED only after validation: exactly
-  // one persisted company matches it (case-insensitive exact name, else word-boundary exactly-one) AND
-  // the reply is not a bare confirmation (strips to nothing ⇒ a hallucinated pick on "yes" is refused —
-  // bare yes stays the plain confirmation); anything else is discarded silently. The deterministic tier
-  // wins whenever it fired.
-  const _coPickLlm = (() => {
-    try {
-      if (!_coPool.size || !_coKept.length) return null;
-      const raw = _parser_raw_snapshot && _parser_raw_snapshot.escalation ? _parser_raw_snapshot.escalation.company_pick : null;
-      if (typeof raw !== 'string' || !raw.trim()) return null;
-      const k = raw.toLowerCase().trim();
-      if (_coPool.has(k)) return _coPool.get(k);
-      return _coHits([k]);
-    } catch (e) { return null; }
-  })();
-  const _coPickAny = _coPick || _coPickLlm;
 
   // ── entry-gate precedence: 1 retarget → 2 pick → 3 new-query abandon → 4 junk reprompt ──
   const _priorTeam = norm(priorRouting.suggested_team) || 'customer_service';
@@ -1374,22 +1342,17 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
       } else if (_m.length > 1) {
         output.output.escalation = { is_escalation_confirmation: false, member_reprompt: 'multi' };
         output.output.correction = true;   // ambiguity gate: reprompt, NEVER auto-pick
-      } else if (_coPickAny) {
+      } else if (_coPick) {
         // miss-company-routing: the person-extractor surfaced a company name; no member matched →
         // it is the company pick, not an unknown person.
-        output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPickAny };
+        output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPick };
         output.output.entities = [];
       } else {
         output.output.escalation = { is_escalation_confirmation: false, member_reprompt: 'out_of_range' };
         output.output.correction = true;   // 0 match -> reprompt the member list
       }
     } else if (_o.is_affirmative === true) {
-      // rev-3: "yes mocha" — the LLM reads it as an affirmative, which used to land here as a bare
-      // confirmation (⇒ re-clarify on a multi-company pool). No member resolved on this arm, so a
-      // validated company pick rides the confirmation; without one it is the plain round-robin yes.
-      output.output.escalation = _coPickAny
-        ? { is_escalation_confirmation: true, company_pick: _coPickAny }
-        : { is_escalation_confirmation: true };   // no preferred -> round-robin
+      output.output.escalation = { is_escalation_confirmation: true };   // no preferred -> round-robin
     } else if (_o.is_affirmative === false) {
       // §10 Part 2 — plain decline (no position/person_mention pick, no named-team retarget;
       // Tier 1 already consumed request_for_help + team != prior). Emit a DETERMINISTIC decline
@@ -1399,11 +1362,10 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
       output.output.message_type = 'casual';
     }
     output.output.member_pick_context = true;
-  } else if (_coPickAny) {
+  } else if (_coPick) {
     // Tier 2.5 — COMPANY PICK (miss-company-routing): no member/number/yes-no signal, but the
-    // short reply (deterministic, filler-stripped) or the validated LLM company_pick names exactly
-    // one persisted company → confirm the escalation scoped to it.
-    output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPickAny };
+    // short reply names exactly one persisted company → confirm the escalation scoped to it.
+    output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPick };
     output.output.entities = [];
     output.output.member_pick_context = true;
   } else if (_isNewQuery) {

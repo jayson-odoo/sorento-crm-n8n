@@ -72,40 +72,18 @@ if (_ideate) {
     for (const _id of _ids) _memCos.add(_id || null);
   }
   const _multiCo = !!_mem.cs_multi_note;
-  // miss-company-routing rev-3 (captain copy decisions): mirror build-cs-member-offer's rendering —
-  // multi ⇒ members grouped under bold `*Company:*` headers (plan order, membership by company_ids, a
-  // shared member keeps ONE number under each group), plain `n. Name` lines (no per-member suffix), the
-  // exported bold note, and the exported closing sentence (cs_multi_close) so the wording cannot drift.
-  // Single ⇒ flat plain lines + the original "Or just reply 'yes'" close, unchanged.
-  const _lines = [];
+  const _lines = _rows.map(m => {
+    const _lbl = (Array.isArray(m.companies) && m.companies.length) ? m.companies : (m.company_name ? [m.company_name] : []);
+    return (_multiCo && _lbl.length) ? `${m.idx}. ${m.label} (${_lbl.join(' / ')})` : `${m.idx}. ${m.label}`;
+  });
   if (_multiCo) {
-    const _plan = Array.isArray(_mem.routing_companies) ? _mem.routing_companies : [];
-    const _inCo = (m, p) => ((m && Array.isArray(m.company_ids) && m.company_ids.length) ? m.company_ids : [(m && m.company_id) || null]).some(id => (id || null) === ((p && p.company_id) || null));
-    let _placed = 0;
-    for (const p of _plan) {
-      const _group = _rows.filter(m => _inCo(m, p));
-      if (!_group.length) continue;
-      _lines.push(`*${(p && p.company_name) || 'Other'}:*`);
-      for (const m of _group) { _lines.push(`${m.idx}. ${m.label}`); _placed++; }
-    }
-    if (!_placed) for (const m of _rows) _lines.push(`${m.idx}. ${m.label}`);   // no plan rows to group by ⇒ flat list, still plain
-    for (const p of _plan) {
+    for (const p of (Array.isArray(_mem.routing_companies) ? _mem.routing_companies : [])) {
       if (p && p.company_name && !_memCos.has(p.company_id || null)) _lines.push(`[ ${p.company_name}: no customer-service members are configured — omitted. ]`);
     }
-  } else {
-    for (const m of _rows) _lines.push(`${m.idx}. ${m.label}`);
   }
   const _picker = _lines.join('\n');
   const _note = _multiCo ? `${_mem.cs_multi_note}\n\n` : '';
-  const _close = (_multiCo && typeof _mem.cs_multi_close === 'string' && _mem.cs_multi_close)
-    ? _mem.cs_multi_close
-    : `Or just reply 'yes' and we'll assign automatically.`;
-  // rev-3: single-company ⇒ the escalate phrase inside the date-suggest text names the company, the SAME
-  // rewrite build-cs-member-offer applies to its own phrase (cs_offer_company; null ⇒ no-op).
-  const _sugText = (typeof _mem.cs_offer_company === 'string' && _mem.cs_offer_company && typeof _sug.suggest_response === 'string')
-    ? _sug.suggest_response.replace(/(would you like me to escalate to )(\S+ team\?)/i, (s, a, b) => `${a}*${_mem.cs_offer_company}* ${b}`)
-    : _sug.suggest_response;
-  response = `${_sugText}\n\n${_note}To escalate, choose who to route to — reply the number or name:\n${_picker}\n\n${_close}`;
+  response = `${_sug.suggest_response}\n\n${_note}To escalate, choose who to route to — reply the number or name:\n${_picker}\n\nOr just reply 'yes' and we'll assign automatically.`;
   manualResponse  = true;
   includeResponse = true;
   isEscalateBranch = true;
@@ -1114,19 +1092,14 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
       && typeof output.user_response === 'string' && output.user_response.trim().length
       && typeof _mcMem.miss_offer_text === 'string' && _mcMem.miss_offer_text.trim().length) {
     const _mcTeam = (qf.routing && qf.routing.suggested_team) || 'customer_service';
-    const _mcPlan = (Array.isArray(_mcMem.miss_roster_plan) ? _mcMem.miss_roster_plan : [])
-      .map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }));
-    // rev-3 (captain copy decision): ONE miss company ⇒ the phrase names it, bold, after "to" —
-    // `Would you like me to escalate to *Sorento* customer_service team?`. The parser contract is the
-    // PREFIX regex /would you like me to escalate/i, so the prefix wording stays byte-exact and the same
-    // string goes to BOTH the visible reply and persisted variables.response. Multi ⇒ plain phrase.
-    const _mcCo = (_mcPlan.length === 1 && _mcPlan[0].company_name) ? `*${_mcPlan[0].company_name}* ` : '';
-    const _mcPhrase = `Would you like me to escalate to ${_mcCo}${_mcTeam} team?`;   // FROZEN prefix wording — do not reword
+    const _mcPhrase = `Would you like me to escalate to ${_mcTeam} team?`;   // FROZEN wording — do not reword
     output.user_response += `\n\n${_mcPhrase}\n\n${_mcMem.miss_offer_text}`;
     output.variables.response = `${typeof output.variables.response === 'string' ? output.variables.response : ''}\n\n${_mcPhrase}`.trim();
     const _mcBase = Array.isArray(output.variables.last_result_set) ? output.variables.last_result_set : [];
     output.variables.last_result_set = _mcBase.concat(_mcRows);
     output.variables.selection_context = 'member_offer';   // the parser's Δ3 arm resolves number/name/company replies
+    const _mcPlan = (Array.isArray(_mcMem.miss_roster_plan) ? _mcMem.miss_roster_plan : [])
+      .map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }));
     if (_mcPlan.length) {
       output.variables.routing_roster_plan = _mcPlan;   // MISS pool identity overrides the axes block above
       output.variables.routing_company = _mcPlan.length === 1 ? (_mcPlan[0].company_id || null) : null;

@@ -430,14 +430,6 @@ which company to route to, the user may reply with just a company name (e.g. "mo
 "the mocha one"). Treat that bare company-name reply as engaging the pending offer, NOT as a new business
 query: do not invent a domain_hint or entities from the company name alone. Deterministic code resolves
 which company was picked; extraction/classification is all you do here.
-Companies named in the pending offer (from state; "(none)" when no offer is pending): {{ (Array.isArray($('When Executed by Another Workflow').first().json.previous_conversation_state?.routing_roster_plan) ? $('When Executed by Another Workflow').first().json.previous_conversation_state.routing_roster_plan : []).concat(Array.isArray($('When Executed by Another Workflow').first().json.previous_conversation_state?.routing_companies) ? $('When Executed by Another Workflow').first().json.previous_conversation_state.routing_companies : []).map(c => (c && typeof c.company_name === 'string') ? c.company_name : '').filter((n, i, a) => n && a.indexOf(n) === i).join(' / ') || '(none)' }}
-  - If that list is NOT "(none)" AND the current message names EXACTLY ONE of those companies — bare or with
-    confirmation/filler words around it ("yes mocha", "mocha please", "ok go with sorento", "the mocha one",
-    "route to mocha team") — set "escalation": { "is_escalation_confirmation": true, "company_pick": "<that
-    company name exactly as listed>" }. Keep is_affirmative as the AFFIRMATION rule says (a leading "yes"
-    still sets it true). Do NOT set person_mention for a company name.
-  - Otherwise "company_pick" is null: no company named, a company NOT in the list, or more than one named.
-    Never guess or resolve — code validates the pick against the persisted pool and discards it if invalid.
 
 == ORDER_STATUS FILTER ==
 order_status filters ORDER records by delivery progress. Set it ONLY from the CURRENT
@@ -493,6 +485,6 @@ Only a status word sets this. A plain "show me Sorento promotions" → null, NOT
     "suggested_team": "purchasing|purchasing_product|purchasing_certification|customer_service|marketing_product|marketing_form|warehouse|marketing_promotion",
     "suggested_agent": "general_enquiries|order_enquiries|incoming_stock_enquiries|marketing_form"
   },
-  "escalation": { "is_escalation_confirmation": false, "company_pick": "string_or_null — ONLY per COMPANY-NAME REPLY ON AN ESCALATION OFFER, else null" }
+  "escalation": { "is_escalation_confirmation": false }
 }
 Return exactly one JSON object.

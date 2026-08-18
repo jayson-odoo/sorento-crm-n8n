@@ -191,3 +191,101 @@ along regardless".
   behind the tester run (shared canary contact).
 - Live carries the SAME null-brand behaviour on this arm (promoted `efa21057-…`); this rev promotes with
   the miss-company batch at the captain's gate.
+
+## rev-3 (captain console decisions 2026-08-18): "yes mocha" resolves + offer copy
+
+Captain console repro (both-miss MUB6201 offer): "yes" → clarify ✓; **"yes mocha" → clarify AGAIN ✗**; "mocha" → routes ✓.
+Root cause: the LLM reads "yes mocha" as an affirmative, so the Δ3 arm took the Tier-2 `is_affirmative === true` branch
+(bare confirmation, no `company_pick`) BEFORE Tier 2.5 could see the company name; and the deterministic matcher ran on
+the raw reply, where the filler "yes" is not a company. Plus copy decisions from the M1 / multi-company console test.
+Targets: spine clone `txiPzSxy3Pclsz6v` `d4ce02eb-…` → **`709461ec-632c-4dac-a38a-e98346e6f9a6`** (draft==active, 156
+nodes, node-set + connections byte-identical, exactly 3 nodes' `jsCode` changed, all other node fields identical on the
+re-fetch) and parser fork `wI5RkNGW3EOJfBdo` `d7be8443-…` → **`3a397f2b-687b-457f-bab3-42c10f77185c`** (draft==active, 8
+nodes, exactly `output_exchange.jsCode` + `AI Agent.options.systemMessage` changed). Live re-fetched read-only after: spine
+`efa21057-…`, parser `89b63c51-…`, HI `9249e00e-…` — unchanged. Mechanics as pass 1 (REST PUT assembled by script from
+the fresh REST GET + the repo body files, byte-exact; PUT auto-activates; post-PUT no-op `setNodeSettings` on
+`get-cs-members-miss` re-ran the MCP validation: **same pre-existing warning set only, no errors, versionId unchanged**).
+Pre-edit bodies + VERSION.json: `tests/backups/miss-company-routing/<workflow>/rev-3/`.
+
+### Fix 2 — "yes mocha" (parser fork `wI5RkNGW3EOJfBdo`)
+
+- `output_exchange` (Δ3 `member_offer` arm, anchored insertions only):
+  - **Filler strip (deterministic Tier 2.5 input).** `_coFillers` = `yes, ya, yeah, yep, yup, ok, okay, sure, please, pls,
+    plz, team, the, to, route, assign, escalate, one, lah, la, go, with, it, that, this` — compared word-level,
+    case-insensitive, after dropping non-alphanumerics from the token ("yes," == yes). `_coKept` = the reply minus fillers.
+    The company match runs on `_coKept.join(' ')` when the ORIGINAL reply is **≤4 words** (was ≤3; admits "yes mocha team
+    please"; the bound still makes "any mocha promotions this month" a new query — LESSON 39) and `_coKept` is non-empty.
+    A reply that strips to NOTHING ("yes", "ok pls") produces no company pick — bare-yes path unchanged. Existing rules
+    kept: word-boundary regex, exactly-ONE company hit (else null), member tiers outrank it.
+  - **Affirmative arm attaches the pick.** Tier 2 `is_affirmative === true` now emits
+    `{ is_escalation_confirmation: true, company_pick }` when a validated pick exists (no member resolved on that arm by
+    construction), else the plain confirmation as before. This is the branch "yes mocha" actually takes.
+  - **Semantic fallback.** `_coPickLlm` reads `escalation.company_pick` from the FROZEN `_parser_raw_snapshot` and accepts
+    it only if: the persisted pool (`routing_roster_plan` ∪ `routing_companies` names) is non-empty; the reply is not a
+    bare confirmation (`_coKept` non-empty — a hallucinated pick on "yes" is refused); and exactly one pool company matches
+    (case-insensitive exact name, else word-boundary exactly-one). Otherwise silently null. `_coPickAny = _coPick ||
+    _coPickLlm` — deterministic wins. Used in the `_pm` zero-match fallback, the affirmative arm, and Tier 2.5.
+  - **Raw key stripped at the top** (right after the snapshot): `delete output.output.escalation.company_pick`, so an
+    unvalidated/null LLM value never rides the live escalation object on ANY turn (no golden diff noise, Lesson 40); the
+    only writers of `company_pick` are the validated arms above.
+  - Offline unit on the deployed body (stub `$`/`$json`, both-miss state Mocha/Sorento + 2 member rows): "yes" → plain
+    confirm; "yes mocha" / "mocha please" / "mocha" / "Mocha team pls" / "yes mocha team please" / "ok go with sorento" →
+    `company_pick` Mocha/Sorento; "yes" + LLM pick Mocha → REFUSED (plain confirm); "yes" + LLM pick Cabana → refused;
+    "route to the mocha team please" (6 words) → deterministic none, LLM pick "mocha" → accepted; "yes mocha and sorento" →
+    ambiguous → plain confirm; "any mocha promotions this month" → new query (unchanged); "maryam"/"yes maryam"/"2" →
+    member picks unchanged. Pre-edit body on the same cases: "yes mocha", "Mocha team pls", "ok go with sorento" all
+    → plain confirm (the bug).
+- `AI Agent.systemMessage`: (a) the COMPANY-NAME section now renders the pool from state via an n8n expression —
+  `Companies named in the pending offer (from state; "(none)" when no offer is pending): {{ …routing_roster_plan ⊕
+  routing_companies → distinct company_name → ' / ' }}` (Array.isArray-guarded, `.concat`, no spread; smoke-evaluated in
+  node against a populated and an empty state ⇒ `Mocha / Sorento` / `(none)`) — the LLM otherwise never sees the
+  persisted companies (its `text` input is only previous response + current message); (b) instruction: when that list is
+  not "(none)" and the message names EXACTLY ONE listed company (bare or with confirmation/filler words) → `escalation:
+  { is_escalation_confirmation: true, company_pick: "<name as listed>" }`, keep `is_affirmative` per the AFFIRMATION
+  rule, no `person_mention` for a company; otherwise `company_pick: null`; never guess — code validates; (c) OUTPUT
+  schema: `"escalation": { "is_escalation_confirmation": false, "company_pick": "string_or_null — …" }`.
+  ⚠️ Deployment note: the systemMessage is an `=`-expression; if the new `{{ }}` ever throws, EVERY real-parser turn on
+  the fork fails at `AI Agent` (mock turns unaffected). Guarded defensively; the tester's parser-tier M7a/M7b run is the
+  live proof.
+- No spine change for fix 2: `escalation-context` already resolves `escalation.company_pick` (`company_pick` arm).
+- Known gap (unchanged, out of scope): the company-pick tiers live inside the Δ3 arm, i.e. require persisted
+  `selection_context === 'member_offer'`. A multi-company offer whose rosters were ALL empty (fallback, no
+  selection_context) still re-clarifies on a company-name reply.
+
+### Fix 1 + copy decisions (spine clone; wording, all WhatsApp-bold = single `*asterisks*`)
+
+| node | change |
+|---|---|
+| `build-cs-member-offer` (`build-cs-member-offer-node`) | **Multi arm**: group headers bold `*Mocha:*` / `*Sorento:*`, member lines plain `n. Name` (per-member `(Company)` suffix DROPPED; a shared rev-6 member keeps ONE number under each group; the `[ X: no customer-service members are configured — omitted. ]` line unchanged); note names bold: `Note: MUB6201 is carried by more than one company (*Mocha* and *Sorento*), so I am listing …`; closing sentence replaced by **`If you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly.`** (names in plan/offer order, ' / '-joined, N supported) — written ONCE and exported as `cs_multi_close` (single-source, like `cs_multi_note`). Phrase stays plain on multi. **Single arm**: picker lines already plain `n. Name` (verified, byte-identical), yes-sentence byte-identical; the escalate phrase inside `cat.response` is rewritten in place — first `/(would you like me to escalate to )(\S+ team\?)/i` → `…escalate to *Sorento* customer_service team?` — the SAME `out.response` is the visible reply and the persisted `variables.response` (ccs `_mem` arm uses `_mem.response` for both). Company exported as `cs_offer_company` (null on multi/unnamed) so the merge arm applies the identical rewrite. Nuance: `multi` = companies QUERIED (plan length), so a 2-company offer where one roster came back empty still gets the company-name sentence listing both (matches the note); replying with the empty company resolves via `routing_companies` to that company_id (CRM default pool). |
+| `build-miss-member-offer` (`build-miss-member-offer-node`) | Lines plain `n. Name` everywhere (was `n. Name (Sorento)`); `multi = used.length > 1` (plan items that contributed a member — the SAME signal ccs's miss arm keys on): single ⇒ flat list + unchanged yes-sentence; multi ⇒ bold `*Company:*` headers grouped by `company_ids` membership (shared member ⇒ one number under each) + `If you have no preference, reply with the company name (*A* / *B*) and we'll assign accordingly.`. Numbering base, rows, `miss_roster_plan`, passthrough/fail-closed behaviour unchanged (offline units: single ⇒ `3. Maryam Ariffin` / `4. Cyndi` + yes-sentence; multi ⇒ headers + company sentence; one roster empty ⇒ degrades to single; all empty ⇒ envelope passthrough). |
+| `compile-current-state` (`7a130a0c-…`) | **Δ4 merge arm** (`_merge`): mirrors build-cs-member-offer — multi ⇒ bold `*Company:*` headers grouped from `_mem.routing_companies` × row `company_ids` (shared member under each, one number), plain `n. Name` lines (suffix dropped), the omitted-company line kept, `_close = _mem.cs_multi_close` (fallback to the old `Or just reply 'yes' and we'll assign automatically.` if the key is absent, e.g. a pre-rev-3 body upstream); single ⇒ flat plain lines + the old close unchanged; the date-suggest text's phrase gets the same `*<Company>*` rewrite when `_mem.cs_offer_company` is set (else untouched — e.g. build-suggest-offer's `'yes' to escalate to X.` form has no `would you like…` and is left as is). Header/labels/close therefore cannot drift from the primary renderer. **Miss arm**: `_mcPlan` computed first; `_mcPhrase = Would you like me to escalate to ${_mcPlan.length===1 && name ? '*Name* ' : ''}${team} team?` — same string appended to `user_response` AND `variables.response` (prefix wording byte-exact; parser contract regex is prefix-only; no consumer parses the team out of the phrase — grepped every clone node + the fork). Multi-miss ⇒ plain phrase. Everything else in both arms unchanged. |
+
+Nothing else changed: no node added/removed, no connection changed, `escalation-context` / `clarify-company-reply` /
+`miss-roster-gate` / `miss-roster-plan` / `clarify-company-gate` / `get-cs-members-miss` byte-identical to rev-2 (the
+`clarify-company-reply` wording stays plain per the captain — it already lists the options).
+
+### rev-3 sha256 table (byte-exact; `after` re-fetched from the published workflow == repo file)
+
+| body | before (= `backups/…/rev-3/`) | after (published, = `diffs/miss-company-routing/` file) |
+|---|---|---|
+| spine `compile-current-state.jsCode` | `ddacfdfab2972b10cb8db9a3d1b186877e80528b96a54c93eefb8e4c33c5500b` | `07a31bb3db51c09fe528d616c2d200c040670cf763dfbb663505f0baf735859e` |
+| spine `build-cs-member-offer.jsCode` (file now lives here; predecessor copy in `diffs/brand-company-routing/`) | `37a1b023734d7723d9537f127f386550ec7e56febcf9f0130395ef1399b062c7` | `c7046c455d1f676bd46868fa1b2752770bfb571737b6dfceafdc6bcd1f21b433` |
+| spine `build-miss-member-offer.jsCode` | `3e3d97096b1347cea5dcfb9bc34a13ac4526aba0e4491ca1b6eebb10e6124bc2` | `68eef4c73c43167892cc994de759066e4f3a391c898623d7542eec3a81f5bc43` |
+| parser fork `output_exchange.jsCode` | `3810a9b0b90eb355c0bd64616e5c675d87ff6637bf7f419fb583519b71c83889` | `ea40047b68f07b7dfe249b774eddadc2ada2a5152382395257356fb1f1f76b17` |
+| parser fork `AI Agent.systemMessage` | `fa1700e86553083ebce518789f423ec5457aff48d21d9ba507f0a097f83d627b` | `619097f5e78c6c520cd402cae5fd706c65126225a5977b90b876f9deb006e6cb` |
+
+### rev-3 UAC / promote notes
+
+- UAC: `tests/miss-company-routing-UAC.md` — target versionIds bumped; M1 + M4a-t1 expectations re-worded (rev-3 copy);
+  new M7a ("yes mocha" resolves, parser tier), M7b ("mocha please"), M7c (bare "yes" still clarifies; LLM pick on bare
+  yes discarded), M7d (multi wording sentence / bold headers / no suffixes / plain multi phrase), M7e (single-company
+  phrase names the company; single picker + yes-sentence byte-identical). The mock-placement line at the top of the
+  mechanics paragraph now says item TOP level (template was already fixed by the reviewer).
+- Promote mapping (§7) additions: `build-cs-member-offer.jsCode` := `spine-build-cs-member-offer.js` (this body is the
+  brand-company-routing promoted body + the rev-3 hunks; live's `build-cs-member-offer` should equal the pre-edit backup
+  `37a1b023…` — verify, else re-apply the anchored hunks: header/lines in the multi group loop, `boldNames`/`multiClose`/
+  `offerCompany`/`nameCompany` block before `out.response`); ccs merge-arm + miss-arm hunks and the two
+  build-miss-member-offer hunks as anchored insertions; parser fork `output_exchange`/systemMessage as before (whole
+  bodies apply if live `89b63c51-…` hasn't moved — the fork bodies are live + pass-1 + rev-3 hunks). Guards to strip: none.
+- The reviewer's APPROVE (`tests/reviews/miss-company-routing.md`) covered rev-2 `d4ce02eb`/`d7be8443`; rev-3 needs a
+  tester pass (M1, M4a-t1 wording, M7a–e, §0) and re-review before promotion.
