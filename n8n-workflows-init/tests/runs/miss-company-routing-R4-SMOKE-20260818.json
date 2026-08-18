@@ -1,0 +1,53 @@
+{
+  "test_run_id": "SMOKE-MCR4-promo-20260818",
+  "date": "2026-08-18",
+  "author": "sorento-coder (pre-handoff smoke, NOT a UAC case)",
+  "round": "round 4 (all-domain miss offer + miss-line uuid hygiene + F-R4-3 team collapse)",
+  "purpose": "LESSONS #45 mandate: ONE real clone execution through the changed miss-roster-gate leftValue before tester handoff. Reproduces the captain's shape: 'promotion for MUB6201', tier dealer, Mocha has promotions, Sorento has none.",
+  "targets": { "clone": "txiPzSxy3Pclsz6v @ 3e7fa66d", "get_results_fork": "t4QvrtrPnTwRU6br @ 9ee992e9", "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (UNTOUCHED)" },
+  "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No) -> clone exec, waitForSubWorkflow; egress read back from test:egress:{test_run_id} in the webhook response. Item mode=uac, scope=deterministic, mock_reformulator_output at item TOP level (promotions business_query, routing marketing_promotion/general_enquiries, access_levels ['dealer']). Contact 437264483. Real resolve-entity + real get-results MCP read (uac allows CRM reads).",
+  "clone_exec": "12944851",
+  "status": "success (no ExpressionError on the changed leftValue)",
+  "assertions": {
+    "a_miss_line_clean": {
+      "expect": "*Sorento:* no promotions records for MUB6201. — zero uuids",
+      "got": "*Sorento:* no promotions records for MUB6201.",
+      "uuid_tokens_in_rendered_text": 0,
+      "before_round_4": "*Sorento:* no promotions records for 67f07a6c-…, 62a48f82-…, 0899962d-…, b0da7e8f-…, MUB6201.",
+      "root_cause_still_present_upstream": "disallowed-entity-gate.compatible_entities carries 4 promotion entries with code === uuid — confirmed in this exec; the fix is in the renderer, by design",
+      "verdict": "PASS"
+    },
+    "b_single_offer": {
+      "expect": "the miss offer renders exactly once (no double offer with promo-picker)",
+      "escalation_offer_occurrences_in_sent_text": 1,
+      "promo_picker_markers_on_its_output": "none (_promo_picker {count:2,intro_swapped:true,rebuilt:false} only) — W3(b) leg correctly did NOT suppress",
+      "phrase_in_envelope_response_before_ccs": "absent — W3(a) leg correctly did NOT suppress",
+      "verdict": "PASS"
+    },
+    "c_zero_egress": {
+      "egress_records": 5,
+      "records": ["save-message-redis would_log", "save-session-vars would_write", "send-message-files would_send ×2", "sendmsg-sub would_send"],
+      "real_egress": 0,
+      "orphaned_egress_nodes_executed": [],
+      "verdict": "PASS"
+    },
+    "d_lane_and_team": {
+      "tool_filter": "crm_marketing_promotions_list (a ROUND-4 new LANE row)",
+      "miss-roster-gate": "TRUE branch",
+      "miss-roster-plan": { "company_name": "Sorento", "company_id": "00000000-0000-0000-0000-000000000001", "brand_code": "mocha", "team": "marketing_promotion", "members": false },
+      "miss-members-gate": "FALSE branch (plain lane)",
+      "get-cs-members-miss": "NOT executed — zero CRM roster read on a round-4 lane",
+      "build-miss-member-offer": "miss_plain_offer:true, no picker keys",
+      "verdict": "PASS"
+    },
+    "e_F_R4_3_collapsed_team": {
+      "disallowed-entity-gate.company_team": "marketing_promotion (was `marketing_promotion_` + brand)",
+      "rendered_offer": "Would you like me to escalate to *Sorento* marketing_promotion team?",
+      "persisted_variables_response_tail": "Would you like me to escalate to *Sorento* marketing_promotion team?",
+      "brand_suffixed_team_in_rendered_text": false,
+      "verdict": "PASS"
+    }
+  },
+  "rendered_text": "I found 2 promotions for MUB6201. I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Promotion:* MOCHA A3 Flyer 03082026_compressed.pdf\n*Start Date:* 2026-08-01\n*End Date:* 2026-12-31\n\n2. *Company:* Mocha\n*Promotion:* 5. Water Closet.pdf\n*Start Date:* 2026-07-15\n*End Date:* 2026-10-15\n\n*Sorento:* no promotions records for MUB6201.\n\n_Data last updated: 12/08/2026 17:18:38_\n\nWould you like me to escalate to *Sorento* marketing_promotion team?",
+  "notes": "Smoke only — the full round-4 UAC (R1–R13 + S3 + S) is the tester's job. Prerequisite P3 (zz-roster-probe for the four new routing pairs) NOT run here: the round-4 lanes make no roster call, so it does not gate this smoke; it still gates a live 'yes'."
+}

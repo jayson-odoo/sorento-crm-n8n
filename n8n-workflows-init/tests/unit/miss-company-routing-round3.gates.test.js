@@ -55,8 +55,11 @@ check('(ii-b) crossdomain-render ran but emitted no _xdBlock ⇒ TRUE (any !== t
 check('(iii) rev-3: tool crm_inventory_stock_balance_list / domain inventory / warehouse routing ⇒ TRUE (stock row joined the LANE)', evalGate({ ...INCOMING_ENV, response: '*Sorento:* no stock records' }, base('crm_inventory_stock_balance_list', parser('inventory', 'warehouse', 'general_enquiries'), XD_NONE)) === true);
 check('(iii-b) stock tool with purchasing routing ⇒ FALSE (lockstep leg)', evalGate(INCOMING_ENV, base('crm_inventory_stock_balance_list', parser('inventory', 'purchasing', 'incoming_stock_enquiries'), XD_NONE)) === false);
 check('(iii-c) stock tool with domain incoming ⇒ FALSE (domain leg)', evalGate(INCOMING_ENV, base('crm_inventory_stock_balance_list', parser('incoming', 'warehouse', 'general_enquiries'), XD_NONE)) === false);
-check('(iv) promotions tool ⇒ FALSE', evalGate(INCOMING_ENV, base('crm_marketing_promotions_list', parser('promotion', 'marketing_promotion', 'general_enquiries'), XD_NONE)) === false);
-check('(iv-b) master products / product attachments / certificates tools ⇒ FALSE', ['crm_master_products_list', 'crm_master_product_attachments_list', 'crm_certificates_list'].every(t => evalGate(INCOMING_ENV, base(t, parser('master_products', 'purchasing_product', 'general_enquiries'), XD_NONE)) === false));
+// (iv)/(iv-b) SUPERSEDED BY ROUND 4 (captain reversed D2/D2'): promotions ×2, master products, product
+// attachments and certificates joined the LANE. The rows below keep the round-3 fixtures but assert the
+// round-4 truth; the full 11-tool truth table lives in miss-company-routing-round4.gates.test.js.
+check('(iv) round-4: promotions tool on its own domain+pair ⇒ TRUE (was FALSE in round 3)', evalGate(INCOMING_ENV, base('crm_marketing_promotions_list', parser('promotion', 'marketing_promotion', 'general_enquiries'), XD_NONE)) === true);
+check('(iv-b) round-4: master products on its own domain+pair ⇒ TRUE; attachments/certificates on the WRONG domain still ⇒ FALSE', evalGate(INCOMING_ENV, base('crm_master_products_list', parser('master_products', 'purchasing_product', 'general_enquiries'), XD_NONE)) === true && ['crm_master_product_attachments_list', 'crm_certificates_list'].every(t => evalGate(INCOMING_ENV, base(t, parser('master_products', 'purchasing_product', 'general_enquiries'), XD_NONE)) === false));
 check('(v) incoming tool but routing customer_service/order_enquiries ⇒ FALSE (retarget → no picker for the wrong pool)', evalGate(INCOMING_ENV, base('crm_incoming_stock_list', parser('incoming', 'customer_service', 'order_enquiries'), XD_NONE)) === false);
 check('(v-b) incoming tool, purchasing team but wrong agent ⇒ FALSE', evalGate(INCOMING_ENV, base('crm_incoming_stock_list', parser('incoming', 'purchasing', 'general_enquiries'), XD_NONE)) === false);
 check('(v-c) incoming tool but domain_hint order ⇒ FALSE (domain leg pins the lane)', evalGate(INCOMING_ENV, base('crm_incoming_stock_list', parser('order', 'purchasing', 'incoming_stock_enquiries'), XD_NONE)) === false);
@@ -145,24 +148,27 @@ const PLAN_BODY = body('spine-miss-roster-plan.js');
 const GATE_LANE = GATE.slice(GATE.indexOf('  const LANE = {'), GATE.indexOf('  };', GATE.indexOf('  const LANE = {')) + 4);
 const PLAN_LANE = PLAN_BODY.slice(PLAN_BODY.indexOf('  const LANE = {'), PLAN_BODY.indexOf('  };', PLAN_BODY.indexOf('  const LANE = {')) + 4);
 check('LANE lockstep: miss-roster-gate and miss-roster-plan carry a BYTE-IDENTICAL LANE block', GATE_LANE === PLAN_LANE && GATE_LANE.includes('crm_inventory_stock_balance_list'));
-check('LANE flags: orders rows members:true; incoming+stock rows members:false', (GATE_LANE.match(/members: true /g) || []).length === 2 && (GATE_LANE.match(/members: false /g) || []).length === 4);
+check('LANE flags (round 4): members:true on the two ORDERS rows ONLY; the other 9 rows members:false', (GATE_LANE.match(/members: true /g) || []).length === 2 && (GATE_LANE.match(/members: false /g) || []).length === 9);
 const mkPlanNodes = (nodes) => (n) => {
   if (!(n in nodes)) return { isExecuted: false, first: () => { throw new Error(`Referenced node "${n}" is unexecuted`); }, all: () => { throw new Error('unexecuted'); } };
   return { isExecuted: true, first: () => ({ json: nodes[n] }), all: () => [{ json: nodes[n] }] };
 };
-const runPlan = (env, tool, rc) => new Function('$', PLAN_BODY)(mkPlanNodes({ 'central-exchange': env, 'tool-filter': { name: tool }, ...(rc === undefined ? {} : { 'disallowed-entity-gate': { routing_companies: rc } }) })).map(i => i.json);
+// ROUND 4: miss-roster-plan stamps `team` from the PARSER's suggested_team (a LANE row may carry two
+// routing pairs), so the reformulator node must be stubbed. The gate has already proven the parser pair
+// is one of the row's pairs, so the lane team and the parser team agree on every reachable turn.
+const runPlan = (env, tool, rc, po) => new Function('$', PLAN_BODY)(mkPlanNodes({ 'central-exchange': env, 'tool-filter': { name: tool }, ...(po === undefined ? {} : { "Call 'sub-query-reformulator'": po }), ...(rc === undefined ? {} : { 'disallowed-entity-gate': { routing_companies: rc } }) })).map(i => i.json);
 const RC = [{ company_id: SORENTO.id, company_name: 'Sorento', brand_code: 'sorento', codes: ['SRT'] }];
-let pl = runPlan(ORDERS_ENV, 'crm_order_management_orders_list', RC);
+let pl = runPlan(ORDERS_ENV, 'crm_order_management_orders_list', RC, ORD);
 check('plan: orders single miss ⇒ ONE item, members:true, team customer_service, brand looked up', pl.length === 1 && pl[0].company_name === 'Sorento' && pl[0].members === true && pl[0].team === 'customer_service' && pl[0].brand_code === 'sorento', pl);
-pl = runPlan(INCOMING_ENV, 'crm_incoming_stock_list', RC);
+pl = runPlan(INCOMING_ENV, 'crm_incoming_stock_list', RC, INC);
 check('plan: incoming single miss ⇒ members:false, team purchasing', pl.length === 1 && pl[0].members === false && pl[0].team === 'purchasing', pl);
-pl = runPlan({ ...INCOMING_ENV, response: 'stock' }, 'crm_inventory_stock_balance_list', RC);
+pl = runPlan({ ...INCOMING_ENV, response: 'stock' }, 'crm_inventory_stock_balance_list', RC, parser('inventory', 'warehouse', 'general_enquiries'));
 check('plan: stock single miss ⇒ members:false, team warehouse', pl.length === 1 && pl[0].members === false && pl[0].team === 'warehouse', pl);
-pl = runPlan({ ...INCOMING_ENV, answers: [] }, 'crm_incoming_stock_by_product', RC);
+pl = runPlan({ ...INCOMING_ENV, answers: [] }, 'crm_incoming_stock_by_product', RC, INC);
 check('plan: both-miss ⇒ 2 items, every members:false, multi_company true', pl.length === 2 && pl.every(x => x.members === false && x.team === 'purchasing') && pl[0].multi_company === true, pl);
-pl = runPlan({ ...ORDERS_ENV, answers: [ans('Mocha'), ans('Sorento')] }, 'crm_order_management_orders_list', RC);
+pl = runPlan({ ...ORDERS_ENV, answers: [ans('Mocha'), ans('Sorento')] }, 'crm_order_management_orders_list', RC, ORD);
 check('plan: no miss ⇒ ONE sentinel, members:false, team:null, _miss_plan_empty', pl.length === 1 && pl[0]._miss_plan_empty === true && pl[0].members === false && pl[0].team === null, pl);
-pl = runPlan(ORDERS_ENV, 'crm_resource_attachments_list', RC);
+pl = runPlan(ORDERS_ENV, 'crm_resource_attachments_list', RC, ORD);
 check('plan: non-LANE tool (unreachable — gate gates) ⇒ members:false, team:null (fail-closed, plain path)', pl.length === 1 && pl[0].members === false && pl[0].team === null, pl);
 
 // ── rev-3: build-miss-member-offer — PLAIN arm + members-arm regression vs the PRE (rev-2/e54e114e) body ──

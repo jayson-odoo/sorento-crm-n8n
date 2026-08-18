@@ -758,3 +758,220 @@ be re-derived on the R10 F6 live-based body with the rev-3 plain arm. Connection
 +`miss-members-gate`). Sweep expectation: **4 changed + 10 new + 12 connection keys, 137 nodes, 0 dropped, 0 non-param diffs.** Parser
 payload unchanged. STAGED payload NOT yet refreshed to rev-3 (R11 delta rows 1/3/4 re-measure owed); still captain-gated, with the D2'
 captain-confirm line (promotions/master-products/attachments/certificates STAY OUT of the LANE without an explicit order).
+
+---
+
+# Round 4 — all-domain miss offer + miss-line uuid hygiene + F-R4-3 team collapse (coder, 2026-08-18)
+
+Implements `plans/miss-company-routing-plan.md` §"Round 4" (W1 predicate, W2 LANE, W3 precedence, W5 node-by-node),
+**plus** finding **F-R4-3**, folded in mid-build on an explicit captain decision (verbatim: *"fix it now, we should do
+marketing_promotion"*). Build base: clone `txiPzSxy3Pclsz6v` @ `061e46c9` + get-results fork `t4QvrtrPnTwRU6br` @
+`87df404c`. Live untouched; parser fork `wI5RkNGW3EOJfBdo` @ `c7d9cfa2` untouched; **no promotion**.
+
+**Sha convention for this whole section — ONE convention, stated per the plan's measurement note:**
+`printf '%s' "<the exact raw param string n8n stores>" | shasum -a256 | cut -c1-8`. No added trailing newline.
+⚠️ The plan quotes the fork's `output-structurer` PRE as `eac4759f`; that is the *other* convention (the body as
+extracted by `jq -r`, which appends a newline). The same bytes under this section's convention are **`3b1995d4`**.
+The repo `.expr.txt` / `.js` files under `diffs/miss-company-routing/` hold the raw param bytes verbatim, so
+`shasum -a256 < file` reproduces every POST sha in the table below.
+
+## Published versions
+
+| workflow | id | PRE versionId | POST versionId | `activeVersionId == versionId`? |
+|---|---|---|---|---|
+| get-results fork (what the clone calls) | `t4QvrtrPnTwRU6br` | `87df404c` | **`9ee992e9`** | yes (verified by re-fetch) |
+| TEST clone (spine) | `txiPzSxy3Pclsz6v` | `061e46c9` | **`3e7fa66d`** | yes (verified by re-fetch) |
+
+Applied sub-first (LESSONS #37): the fork was updated **and published** before the clone was touched, so the clone's
+`executeWorkflow` calls resolve the new `output-structurer`. Both writes went in via MCP `setNodeParameter /jsCode`
+from a file (never re-typed — LESSONS #25), not a REST PUT: the plan's warning that these subs' stored `settings`
+shape is rejected by the public API stands.
+
+⚠️ **Deviation from the plan's node-by-node, worth knowing:** `setNodeParameter` with a JSON-Pointer **array index**
+(`/conditions/conditions/0/leftValue`, as §W5 row 2 prescribes) is rejected by this MCP server —
+`Operation 0 failed: cannot descend into non-object at '/conditions/conditions'`. `miss-roster-gate` was therefore
+written with `updateNodeParameters {replace:true}` carrying the node's own PRE parameters object with **only** that
+one leaf swapped. Result verified byte-exact and the node's non-`parameters` fields verified identical. Anyone
+scripting an If-node leftValue edit on this server must use the same workaround.
+
+## Sha table
+
+| # | node | workflow | PRE | POST | artifact |
+|---|---|---|---|---|---|
+| 1 | `output-structurer` › `jsCode` | fork `t4QvrtrPnTwRU6br` | `3b1995d4` | **`698f89f1`** | `diffs/miss-company-routing/getresults-output-structurer.js` |
+| 2 | `miss-roster-gate` › `conditions.conditions[0].leftValue` | clone | `92ca1ccc` | **`e4575d3e`** | `…/spine-miss-roster-gate.expr.txt` |
+| 3 | `miss-roster-plan` › `jsCode` | clone | `c4a19b6f` | **`95d6c814`** | `…/spine-miss-roster-plan.js` |
+| 4 | `disallowed-entity-gate` › `jsCode` (**F-R4-3**) | clone | `ca13af1c` | **`069b3691`** | `…/spine-disallowed-entity-gate.js` + `…/spine-company-team-collapse.hunk.md` |
+| 5 | `promo-picker` › `jsCode` (**F-R4-3**) | clone | `5d48c524` | **`05a96e3a`** | `…/spine-promo-picker.js` + the same hunk doc |
+
+**PRE→POST sweep, clone `061e46c9` → `3e7fa66d`:** CHANGED = exactly `{miss-roster-gate, miss-roster-plan,
+disallowed-entity-gate, promo-picker}`. 171 nodes before and after, node-name set equal, **connections byte-identical**,
+and every changed node's non-`parameters` fields (id, type, typeVersion, position, credentials, notes) identical.
+**Fork sweep, `87df404c` → `9ee992e9`:** CHANGED = exactly `{output-structurer}`, 8 nodes, node set equal.
+
+**Round-3 rev-3 bodies re-asserted unchanged on the clone** (raw convention):
+`build-miss-member-offer fab11982` · `clarify-company-reply 377c2df4` · `offer-hold-reply 377c2df4` ·
+`escalation-context cca7a245` · `escalate-catalog 0168df84` · `build-cs-member-offer 63c1c46e` ·
+`miss-members-gate` leftValue `14576e69` · `offer-hold-gate` leftValue `8f14a430` ·
+`clarify-company-gate` leftValue `63e30a3d` · `cs-offer-gate` conditions (`jq -cj`) `ce99a16c` (still the reverted
+live shape).
+⚠️ **`compile-current-state` is `8deebd5e`, not the `6bff997d` the task brief quoted** — `6bff997d` was the round-3
+rev-3 body; the 2026-08-18 clone-tier-rebase (commit `251599d`, `diffs/clone-tier-rebase-20260818.md` line 42) added
+three anchored live hunks and moved it to `8deebd5e`. That is the build base and round 4 leaves it **untouched**.
+
+**Guards re-verified identical PRE vs POST:** the 5 egress nodes still have 0 inbound edges
+(`send-message-files/images/video`, `update-human-intervened`, `save-session-vars`); 10 orphans total; 14 nodes still
+carry `is_test`; `executeWorkflow` targets unchanged and still all forks
+(`t4QvrtrPnTwRU6br`, `wI5RkNGW3EOJfBdo`, `vUfFUDjLAuMaeQE6`, `aQUmwMVplmNcyUVc`, `tWm5DYLxfypmVC1T`,
+`tWP33QOFT7SxThfT`).
+
+**LESSONS #45 forbidden-token scan:** 0 hits for `prototype|constructor|__proto__` across all 5
+`diffs/miss-company-routing/*.expr.txt` files (asserted in both unit suites, not just grepped).
+
+## (W1) `_codes` uuid-placeholder predicate — fork `output-structurer`
+
+One statement in the mc-label block. `_lookupCos`, `_coOfRow`, `_shownCos`, `_canAttribute`, `_noun`, `_silent` and the
+`_codes.length ? ' for …' : ''` clause are byte-identical; the pre-existing "Codes come from…" header comment is kept
+deliberately, because the new comment *refers* to its now-false "never a uuid" invariant and corrects it in place.
+
+- Before: `.map(x => String((x && x.code) ?? '').trim()).filter(Boolean)`
+- After: keep a code only when it **is** a code — `x.c && x.c !== x.u && !_isUuid(x.c)`.
+
+Root cause (re-confirmed live in smoke exec `12944851`): `resolve-entity` expands a product into its promotions;
+the CRM fills `canonical_code` with the record's **own uuid** for types that have no code; `disallowed-entity-gate`
+copies that into `compatible_entities[].code`. That exec's `compatible_entities` still shows four
+`{entity_type:'promotion', code === uuid}` entries — the CRM convention is untouched, the fix is defensive reading
+in the renderer.
+
+**Rejected alternatives (recorded so they are not re-proposed):** `entity_type === 'product'` would delete the DO
+number on `"any order for DO M2608-1026"` (whose `canonical_code` *is* what the customer typed) — unit
+`W1(ii)` guards exactly that; uuid-regex alone misses a non-uuid placeholder; dropping the ` for …` clause throws
+away a correct code on every orders/incoming/stock turn. The combined predicate is the minimum correct in both
+directions. Failure mode is `_codes = []`, which is the already-shipped no-clause sentence — the hunk can only ever
+**shorten** a rendered sentence, never add text.
+
+## (W2) LANE — `{domain, team, agent, members}` → `{domain, pairs:[[team,agent],…], members}`
+
+11 rows == the CRM's `stamp_lookup_companies` set exactly, so "all domains" is closed by construction rather than by
+enumeration. New in round 4: promotions ×2, master products, product attachments, certificates (this **reverses
+D2/D2'** on the captain's order). `members` is **true on the two orders tools only**, for this and every future row.
+
+The shape change exists because `crm_master_product_attachments_list` legitimately rides **two** routing pairs — the
+parser's `deriveRouting` splits `product_attachment` on `isCert` (`marketing_product` for photo/drawing asks,
+`purchasing_certification` for certificate asks). Single-pair rows carry a one-element array. The routing leg becomes
+`lane.pairs.some(p => p[0] === r.suggested_team && p[1] === r.suggested_agent)`. Everything else in the expression is
+byte-identical: `has_result`, `Object.keys(LANE).includes(tool)` membership (the LESSONS #45 form — **not**
+`hasOwnProperty`), the xd yield, the company_name-labelled-answers leg, the non-empty miss set, and the outer
+`try → false`.
+
+The LANE literal is **byte-identical** in `miss-roster-gate` and `miss-roster-plan` (string-compared in both unit
+suites, not eyeballed).
+
+## (W3) precedence — a turn carries exactly ONE escalation offer
+
+Two new legs, placed after the existing `crossdomain-render` yield and before the `lookup_companies` legs:
+
+1. **generic** — `if (/would you like me to escalate/i.test(String(j.response || ''))) return false;`. Covers
+   `promo-picker`'s `_promo_unmatched` / strict-miss / brand-gate arms *and any future renderer that writes the
+   frozen phrase*, without another leg. Inert on the round-2/3 lanes: `output-structurer` never writes the phrase and
+   `crossdomain-compose` runs after `compile-current-state`.
+2. **promo-picker markers** — `_brand_gate_closed === true || _promo_notfound || _promo_unmatched || _promo_pick ||
+   _promo_picker_shape`. Read by **node reference** (`$('promo-picker')`), because `central-exchange` unwraps
+   `input.output` on the wrapped shape and would drop markers that ride on the item's top level. Verified against the
+   deployed `promo-picker` body: `env = j.output ?? j` (line 51), markers set on `j`, `return j`.
+
+Both fail closed (a throwing `promo-picker` is caught by the outer `try` ⇒ false).
+
+## (W5) `miss-roster-plan` — `team` from the parser, not from the row
+
+Because a row can now carry two pairs, a hard-coded row team would tell a **certificates** ask
+"marketing_product team". `team` is now stamped from the parser's actual `suggested_team`, which the gate has already
+proven is one of the row's pairs. Fail-closed: unreadable routing ⇒ `team: null`, and `compile-current-state`'s
+`_mcTeamP` then falls back to the parser's own `suggested_team` (same value) and finally `'customer_service'`.
+
+**`compile-current-state` needs NO change — verified, not assumed.** Line 1223: `_mcTeamP` reads
+`_mcMem.miss_roster_plan[0].team` with that fallback chain, and `build-miss-member-offer`'s plain arm (line 36)
+already carries `team` through into `miss_roster_plan`. The phrase renders
+`Would you like me to escalate to ${_mcCoP}${_mcTeamP} team?` — so a new LANE row is picked up automatically. The
+members arm (line 1192) reads the parser's routing directly and is orders-only. ccs is byte-unchanged at `8deebd5e`.
+
+**Deliberate and worth stating for the reviewer:** the ccs plain-arm guard set is
+`!_ideate && !_sug && !_mem && !_dymLastResultSet` — it does **not** include `_promo`. That omission is what makes the
+promotions miss offer reachable at all, and it is intentional. Consequence, confirmed in the smoke: a promotions turn
+keeps `selection_context = 'suggest_offer'` and its promotion roster in `last_result_set` (so a numeric reply still
+picks a promotion) *while* the frozen phrase rides in the persisted `response` (so "yes" still confirms).
+
+## F-R4-3 — the promotions team is now the collapsed `marketing_promotion`
+
+Full trace, both hunks, the consumer analysis and the live-anchor gate are in
+**`diffs/miss-company-routing/spine-company-team-collapse.hunk.md`**. Headlines:
+
+- `disallowed-entity-gate.company_team`: `` `marketing_promotion_${_brands[0]}` `` → `'marketing_promotion'`.
+  The `_brands.length === 1` guard is kept verbatim, so the field still goes `null` on a mixed company set.
+- `promo-picker._escTeam` last-resort default: `'marketing_promotion_sorento'` → `'marketing_promotion'`. Same
+  defect, same migration, same pool — fixed with the same hunk rather than left as a second source. This is the
+  one item beyond the literal scope-change instruction, and it is called out here so it can be reverted if unwanted.
+- **No consumer change was needed.** Both consumers do `company_team || parser.routing.suggested_team`, and after the
+  collapse both sides of that `||` are the same string on every promotions turn — so one turn can no longer name two
+  teams. `escalate-catalog`'s `_ct` arm exists on **live only**; the clone's `escalate-catalog` (`0168df84`) has no
+  `company_team` reference at all, so the unit suite exercises `_ct` against the **staged live payload body**
+  (`LIVE-PROMOTE-STAGED-20260818/PAYLOAD-node-escalate-catalog.js`) instead.
+- ⚠️ **Premise correction:** `disallowed-entity-gate` was expected to diverge clone-vs-live. It does **not** — clone
+  `061e46c9` and the live ACTIVE body in `PRE-9qVyfUxmRQqrpGRMDLRuz-7aba1447.json` are both `ca13af1c`, and the
+  anchored hunk applied to the live body yields the identical `069b3691`. Same for `promo-picker` (`5d48c524` both
+  sides → `05a96e3a`). Anchor occurrences: 1/1 in each body.
+
+## Units
+
+| suite | result |
+|---|---|
+| `miss-company-routing-round4.gates.test.js` (**new**) | **101 passed, 0 failed** |
+| `miss-company-routing-round3.gates.test.js` (updated for round-4 truth) | **85 passed, 0 failed** |
+| `miss-company-routing-rev4.output_exchange.test.js` | 48 passed, 0 failed |
+| `miss-company-routing-rev4.spine.test.js` | 33 passed, 0 failed |
+| `delta1-catalog` / `delta2-routing` / `delta3-member-flow` | GREEN |
+
+Round-4 coverage: the full 11-tool LANE truth table (every tool TRUE on its own domain+pair), a cross-product sweep
+proving **every LANE tool rejects every foreign routing pair**, both attachment pairs, C5 (certificates rejects
+`marketing_product`), the members flags, both precedence legs (each marker individually, plus "promo-picker executed
+with no marker ⇒ still TRUE"), the `_codes` predicate table incl. **DO number `M2608-1026` KEPT** and empty-survivor ⇒
+clause dropped, the `entities`-as-JSON-string path, LANE lockstep, and the F-R4-3 four-producer agreement check.
+
+Three round-3 rows were re-pointed at round-4 truth (promotions/master-products now TRUE; LANE flag counts 2 true /
+9 false) and `runPlan` gained a parser stub, since `miss-roster-plan` now reads the reformulator node. Marked in-file.
+
+## Smoke (LESSONS #45 mandate — pre-handoff, not a UAC case)
+
+Clone exec **`12944851`**, `uac` mode, contact 437264483, "promotion for MUB6201" with a pinned promotions parser
+mock; real `resolve-entity` + real get-results MCP read. Record: `tests/runs/miss-company-routing-R4-SMOKE-20260818.json`.
+
+- Status `success` — **no `ExpressionError`** through the changed `miss-roster-gate` leftValue.
+- Miss line: **`*Sorento:* no promotions records for MUB6201.`** — 0 uuid tokens in the rendered text
+  (before: four promotion uuids, and they were *Mocha's* promotions printed under `*Sorento:*`).
+- Exactly **one** escalation offer on the turn; `promo-picker` ran and published no suppressing marker.
+- `miss-roster-gate` TRUE → plan `{Sorento, team:"marketing_promotion", members:false}` → `miss-members-gate` FALSE →
+  `get-cs-members-miss` **not executed** (zero CRM roster read on a round-4 lane).
+- Offer text: **`Would you like me to escalate to *Sorento* marketing_promotion team?`** — collapsed team, no brand
+  suffix anywhere in the text or the persisted `variables.response`.
+- Egress: 5 records, **all `would_*`** (`save-message-redis would_log`, `save-session-vars would_write`,
+  `send-message-files would_send` ×2, `sendmsg-sub would_send`); 0 real egress; 0 orphaned egress nodes executed.
+
+## Promote implication (for the re-stage)
+
+The staged combined payload
+(`tests/backups/miss-company-routing/LIVE-PROMOTE-STAGED-20260818/PAYLOAD-9qVyfUxmRQqrpGRMDLRuz.json`) moves from
+4 changed + 10 new to **6 changed + 10 new + 12 connection keys @ 137 nodes**:
+
+- within the 10 new nodes: `miss-roster-gate` `92ca1ccc` → `e4575d3e`, `miss-roster-plan` `c4a19b6f` → `95d6c814`;
+- **+2 changed** pre-existing live nodes: `disallowed-entity-gate` `ca13af1c` → `069b3691` and `promo-picker`
+  `5d48c524` → `05a96e3a`, each sha-gated on its PRE before the write (both byte-identical clone↔live today).
+
+**NEW — the promote set now includes TWO live get-results subs**, each anchored on its **own** body:
+
+| target | id | live callers | body basis |
+|---|---|---|---|
+| #1 | `rysSPgUssLDf6xJc` (named "TEST" — it is what LIVE actually uses) | `Call 'sub-get-results'`, `probe-incoming`, `tier-probe` — the customer-visible miss line | its own body; re-confirm byte-equality with `t4Qv` at promote time, re-anchor if drifted, do **not** copy |
+| #2 | `Fss5aAaXthJSWpZCgKiKR` | `sibling-probe`, `crossdomain-probe`, `dym-probe`, `dym-probe-partial`, `promo-dym-probe` | **its own body** — it carries the OLDER timeline block; copying the `rys` body would ship an unrelated, unreviewed timeline rewrite. Assert the timeline block is unchanged pre/post. |
+
+Apply order: **subs first, then parser (unchanged this round), then spine** (LESSONS #37). Use `setNodeParameter
+/jsCode`, not a REST PUT. PRE bodies backed up in `tests/backups/miss-company-routing/ROUND4/`.

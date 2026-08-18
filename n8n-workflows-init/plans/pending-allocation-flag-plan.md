@@ -275,6 +275,22 @@ by-product equivalent, and shipment-level rows carrying both flags false. Full M
 
 ### Phase C — n8n: render the badge ✅ BUILT
 
+> ⚠️ **STALE WIRING NOTE (added 2026-08-18 by the round-4 coder — finding F-R4-2, see
+> `plans/miss-company-routing-plan.md` §W0/§W9).** This section's premise that `rysSPgUssLDf6xJc`
+> is "the clone's fork" and live `Fss5aAaXthJSWpZCgKiKR` "is never touched" is **backwards**, and
+> the rollback plan below inherits the error. Measured on live `9qVyfUxmRQqrpGRMDLRuz` and on the
+> promote backup `PRE-9qVyfUxmRQqrpGRMDLRuz-7aba1447.json` (identical in both):
+> * live `Call 'sub-get-results'` / `probe-incoming` / `tier-probe` → **`rysSPgUssLDf6xJc`** — this
+>   is the CUSTOMER-VISIBLE answer path, despite the workflow being *named* `sub-get-results TEST`;
+> * live `sibling-probe` / `crossdomain-probe` / `dym-probe` / `dym-probe-partial` / `promo-dym-probe`
+>   → **`Fss5aAaXthJSWpZCgKiKR`**;
+> * the TEST clone `txiPzSxy3Pclsz6v` points all eight callers at the fork **`t4QvrtrPnTwRU6br`**.
+>
+> So `rys` is LIVE, not a fork, and both live ids are promote targets — each anchored on its **own**
+> body (`Fss` carries an older timeline block; copying the `rys` body across would ship an unrelated
+> unreviewed rewrite). Do not act on the wiring claims below without re-measuring first.
+> `AGENTS.md`/`CLAUDE.md`'s get-results row is stale for the same reason; that edit is captain-gated.
+
 Build target: the clone's fork **`rysSPgUssLDf6xJc` (`sub-get-results TEST`)** — verified as
 the workflow all three clone callers (`Call 'sub-get-results'`, `probe-incoming`,
 `sibling-probe`) point at, so live `Fss5aAaXthJSWpZCgKiKR` is never touched during build.
