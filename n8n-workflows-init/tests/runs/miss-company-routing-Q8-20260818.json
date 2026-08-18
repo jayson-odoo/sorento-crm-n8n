@@ -1,0 +1,1175 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round-3 rev-3 (Q-series)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 7db593b0-ef2e-453b-bc98-30ff9267bf41 (draft==active before AND after the pass; 160 nodes; changed-node bodies byte-compared == repo files: miss-roster-gate 92ca1ccc, miss-roster-plan c4a19b6f, miss-members-gate 14576e69 (NEW), build-miss-member-offer fab11982, compile-current-state 6bff997d, clarify-company-reply==offer-hold-reply 377c2df4, cs-offer-gate conditions ce99a16c / g2 fafa8b77)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (output_exchange a68c5992 / systemMessage 138008c2 — unchanged before/after)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa (Postgres Chat Memory1 cred Dnnofg8Xb27VQOhI n8n_test-db)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "live_untouched": "spine 9qVy… active 7aba1447 (draft cfd0e776 pre-existing), parser XTODTw 89b63c51, sendmsg aoyd… 91171ac3 — identical before/after"
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v (7db593b0) waitForSubWorkflow, returns the test:egress list in the webhook response — the egress read is DIRECT from test:egress:{test_run_id} via the harness's own read-egress node; zz-canary-read LLIbMXAixexM9Cwc was NOT republished, its Read Egress key is hardcoded to a stale run id anyway) -> REST GET /executions/{id}?includeData=true matched by test_run_id + sub-executions via metadata.subExecution. Item mode=uac, deterministic mocks at item top level (access_levels ['dealer'] included on business-query mocks — pre-existing If4), follow-up turns state-injected at item top level as previous_conversation_state (rev-1/rev-2 precedent); parser-tier turns (Q6, Q9-t2/t3p) omit the mock (real fork wI5RkNGW3EOJfBdo @ c7d9cfa2, is_test=true). Contact 437264483. Prefix UAC-MCR3r3-. n8n_test session table untouched (uac mode; state injection replaces regress-capture per the rev-2 mechanics the UAC 'Same mechanics' line points at).",
+ "units": "miss-company-routing-round3.gates.test.js 85/85, rev4.spine 33/33, rev4.output_exchange 48/48 on repo files (byte-== deployed)",
+ "case": "not-found regression (cs-offer-gate REVERTED to live ce99a16c)",
+ "verdict": "PASS",
+ "notes": "(a) incoming not-found MWC-SC08B: cs-offer-gate FALSE [0,1]; plain \"…checked in Mocha and Sorento. Would you like me to escalate to purchasing team?\" from escalate-catalog; NO picker; cs-roster-plan/get-cs-members/build-cs-member-offer NOT executed (pre-round-3 plain shape restored — the D3=b widened-picker behaviour of rev-1/rev-2 is gone). (b) CS/order not-found SRTWC287A-RL-7405: picker STILL renders, sent text BYTE-IDENTICAL to rev-2 R-B t1 (12923736, M7e-ii shape). (c) (a) then \"yes\": multi_company_unpicked -> clarify with the rev-3 PLAIN copy (roster plan null + selection_context null => no \"a number, a name\"), then \"sorento\" company_pick mock -> HI Sorento/mocha purchasing pair, no explicit assignee",
+ "turns": {
+  "Q8a-t1": {
+   "test_run_id": "UAC-MCR3r3-Q8a-t1-20260818",
+   "clone_exec": "12933063",
+   "status": "success",
+   "gates": {
+    "offer-hold-gate": [
+     0,
+     1
+    ],
+    "cs-offer-gate": [
+     0,
+     1
+    ],
+    "If2": [
+     0,
+     1
+    ],
+    "If10": [
+     0,
+     1
+    ],
+    "If-ideate": [
+     0,
+     1
+    ],
+    "is-escalation-declined": [
+     0,
+     1
+    ],
+    "sim-inject-gate": [
+     0,
+     1
+    ]
+   },
+   "tool_filter": {
+    "name": "crm_incoming_stock_list"
+   },
+   "miss_roster_plan": null,
+   "bmmo": null,
+   "escalation_context": null,
+   "roster_calls": {},
+   "lane_nodes_executed": [
+    "escalate-catalog"
+   ],
+   "orphaned_egress_nodes_executed": [],
+   "nodes_executed": [
+    "Aggregate1",
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-suggest-offer",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-probe",
+    "crossdomain-render",
+    "crossdomain-zeroset",
+    "cs-offer-gate",
+    "disallowed-entity-gate",
+    "escalate-catalog",
+    "family-fetch",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-found-error-message",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sibling-gate",
+    "sibling-probe",
+    "sibling-transform",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-not-found",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "sent_texts": [
+    "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?"
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "incoming for MWC-SC08B"
+     },
+     "test_run_id": "UAC-MCR3r3-Q8a-t1-20260818",
+     "ts": "2026-08-18T02:43:26.406-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "access_levels": [
+         "dealer"
+        ],
+        "entities": [
+         {
+          "raw": "MWC-SC08B",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MWC-SC08B"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?",
+        "last_result_set": [],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": "mocha",
+        "routing_brand_source": "resolved",
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       },
+       "user_response": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?"
+      }
+     },
+     "test_run_id": "UAC-MCR3r3-Q8a-t1-20260818",
+     "ts": "2026-08-18T02:43:26.402-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?",
+      "message_len": 184,
+      "quick_reply": null,
+      "result_idx": []
+     },
+     "test_run_id": "UAC-MCR3r3-Q8a-t1-20260818",
+     "ts": "2026-08-18T02:43:26.343-04:00"
+    }
+   ],
+   "persisted_vars": {
+    "message_type": "business_query",
+    "intent_hint": "check_incoming",
+    "domain_hint": "incoming",
+    "access_levels": [
+     "dealer"
+    ],
+    "entities": [
+     {
+      "raw": "MWC-SC08B",
+      "hint": "product",
+      "current_message": true,
+      "canonical_code": "MWC-SC08B"
+     }
+    ],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    },
+    "response": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?",
+    "last_result_set": [],
+    "selection_context": null,
+    "dym_offer": null,
+    "dym_candidates": [],
+    "ideation": null,
+    "routing_roster_plan": null,
+    "routing_brand": "mocha",
+    "routing_brand_source": "resolved",
+    "routing_company": null,
+    "routing_companies": [
+     {
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC-SC08B"
+      ]
+     },
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "codes": [
+       "MWC-SC08B"
+      ]
+     }
+    ]
+   },
+   "subs": {}
+  },
+  "Q8b-t1": {
+   "test_run_id": "UAC-MCR3r3-Q8b-t1-20260818",
+   "clone_exec": "12933106",
+   "status": "success",
+   "gates": {
+    "offer-hold-gate": [
+     0,
+     1
+    ],
+    "cs-offer-gate": [
+     1,
+     0
+    ],
+    "If2": [
+     0,
+     1
+    ],
+    "If10": [
+     0,
+     1
+    ],
+    "If-ideate": [
+     0,
+     1
+    ],
+    "is-escalation-declined": [
+     0,
+     1
+    ],
+    "sim-inject-gate": [
+     0,
+     1
+    ]
+   },
+   "tool_filter": {
+    "name": "crm_order_management_orders_list"
+   },
+   "miss_roster_plan": null,
+   "bmmo": null,
+   "escalation_context": null,
+   "roster_calls": {
+    "get-cs-members": [
+     {
+      "status": 200,
+      "n": 6
+     }
+    ]
+   },
+   "lane_nodes_executed": [
+    "cs-roster-plan",
+    "get-cs-members",
+    "build-cs-member-offer",
+    "escalate-catalog"
+   ],
+   "orphaned_egress_nodes_executed": [],
+   "nodes_executed": [
+    "Aggregate1",
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-cs-member-offer",
+    "build-suggest-offer",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "cs-offer-gate",
+    "cs-roster-plan",
+    "disallowed-entity-gate",
+    "dym-gate",
+    "dym-transform",
+    "escalate-catalog",
+    "get-cs-members",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "not-found-error-message",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sibling-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-not-found",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "sent_texts": [
+    "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "any order for SRTWC287A-RL-7405"
+     },
+     "test_run_id": "UAC-MCR3r3-Q8b-t1-20260818",
+     "ts": "2026-08-18T02:43:47.304-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_order",
+        "domain_hint": "order",
+        "access_levels": [
+         "dealer"
+        ],
+        "entities": [
+         {
+          "raw": "SRTWC287A-RL-7405",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWC287A-RL-7405"
+         }
+        ],
+        "routing": {
+         "suggested_team": "customer_service",
+         "suggested_agent": "order_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "label": "Maryam Ariffin",
+          "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+          "respond_user_id": "1144607",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         },
+         {
+          "idx": 2,
+          "label": "Cyndi",
+          "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+          "respond_user_id": "1144556",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         },
+         {
+          "idx": 3,
+          "label": "Aisyah",
+          "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+          "respond_user_id": "1144561",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         },
+         {
+          "idx": 4,
+          "label": "Balqis",
+          "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+          "respond_user_id": "1144558",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         },
+         {
+          "idx": 5,
+          "label": "Niki",
+          "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+          "respond_user_id": "1144554",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         },
+         {
+          "idx": 6,
+          "label": "Nurain",
+          "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+          "respond_user_id": "1144604",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         }
+        ],
+        "selection_context": "member_offer",
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento"
+         }
+        ],
+        "routing_brand": "sorento",
+        "routing_brand_source": "resolved",
+        "routing_company": "00000000-0000-0000-0000-000000000001",
+        "routing_companies": [
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "codes": [
+           "SRTWC287A-RL-7405"
+          ]
+         }
+        ]
+       },
+       "user_response": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+      }
+     },
+     "test_run_id": "UAC-MCR3r3-Q8b-t1-20260818",
+     "ts": "2026-08-18T02:43:47.299-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+      "message_len": 343,
+      "quick_reply": null,
+      "result_idx": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ]
+     },
+     "test_run_id": "UAC-MCR3r3-Q8b-t1-20260818",
+     "ts": "2026-08-18T02:43:47.235-04:00"
+    }
+   ],
+   "persisted_vars": {
+    "message_type": "business_query",
+    "intent_hint": "check_order",
+    "domain_hint": "order",
+    "access_levels": [
+     "dealer"
+    ],
+    "entities": [
+     {
+      "raw": "SRTWC287A-RL-7405",
+      "hint": "product",
+      "current_message": true,
+      "canonical_code": "SRTWC287A-RL-7405"
+     }
+    ],
+    "routing": {
+     "suggested_team": "customer_service",
+     "suggested_agent": "order_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    },
+    "response": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+    "last_result_set": [
+     {
+      "idx": 1,
+      "label": "Maryam Ariffin",
+      "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+      "respond_user_id": "1144607",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 2,
+      "label": "Cyndi",
+      "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+      "respond_user_id": "1144556",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 3,
+      "label": "Aisyah",
+      "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+      "respond_user_id": "1144561",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 4,
+      "label": "Balqis",
+      "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+      "respond_user_id": "1144558",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 5,
+      "label": "Niki",
+      "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+      "respond_user_id": "1144554",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 6,
+      "label": "Nurain",
+      "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+      "respond_user_id": "1144604",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     }
+    ],
+    "selection_context": "member_offer",
+    "dym_offer": null,
+    "dym_candidates": [],
+    "ideation": null,
+    "routing_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento"
+     }
+    ],
+    "routing_brand": "sorento",
+    "routing_brand_source": "resolved",
+    "routing_company": "00000000-0000-0000-0000-000000000001",
+    "routing_companies": [
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "codes": [
+       "SRTWC287A-RL-7405"
+      ]
+     }
+    ]
+   },
+   "subs": {}
+  },
+  "Q8c-t2": {
+   "test_run_id": "UAC-MCR3r3-Q8c-t2-20260818",
+   "clone_exec": "12933137",
+   "status": "success",
+   "gates": {
+    "clarify-company-gate": [
+     1,
+     0
+    ],
+    "cs-offer-gate": [
+     0,
+     1
+    ],
+    "If2": [
+     1,
+     0
+    ],
+    "sim-inject-gate": [
+     1,
+     0
+    ]
+   },
+   "tool_filter": null,
+   "miss_roster_plan": null,
+   "bmmo": null,
+   "escalation_context": {
+    "routing_source": "multi_company_unpicked",
+    "company_id": null,
+    "brand_code": null,
+    "company_name": null,
+    "team": "purchasing"
+   },
+   "roster_calls": {},
+   "lane_nodes_executed": [
+    "clarify-company-reply",
+    "escalate-catalog"
+   ],
+   "orphaned_egress_nodes_executed": [],
+   "nodes_executed": [
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "check-access",
+    "check-access-http",
+    "clarify-company-gate",
+    "clarify-company-reply",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "cs-offer-gate",
+    "divert-suggest-yes",
+    "escalate-catalog",
+    "escalation-context",
+    "get-session-vars",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sim-inject-session",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-out-of-scope",
+    "tf-message"
+   ],
+   "sent_texts": [
+    "Both *Mocha* and *Sorento* teams are listed — reply with the company (Mocha / Sorento) and I'll assign automatically."
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "yes"
+     },
+     "test_run_id": "UAC-MCR3r3-Q8c-t2-20260818",
+     "ts": "2026-08-18T02:44:02.519-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "escalation_confirmation",
+        "entities": [],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": true
+        },
+        "response": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?",
+        "last_result_set": [],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": "mocha",
+        "routing_brand_source": "resolved",
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       },
+       "user_response": "Both *Mocha* and *Sorento* teams are listed — reply with the company (Mocha / Sorento) and I'll assign automatically."
+      }
+     },
+     "test_run_id": "UAC-MCR3r3-Q8c-t2-20260818",
+     "ts": "2026-08-18T02:44:02.515-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Both *Mocha* and *Sorento* teams are listed — reply with the company (Mocha / Sorento) and I'll assign automatically.",
+      "message_len": 117,
+      "quick_reply": null,
+      "result_idx": []
+     },
+     "test_run_id": "UAC-MCR3r3-Q8c-t2-20260818",
+     "ts": "2026-08-18T02:44:02.456-04:00"
+    }
+   ],
+   "persisted_vars": {
+    "message_type": "escalation_confirmation",
+    "entities": [],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": true
+    },
+    "response": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?",
+    "last_result_set": [],
+    "selection_context": null,
+    "dym_offer": null,
+    "dym_candidates": [],
+    "ideation": null,
+    "routing_roster_plan": null,
+    "routing_brand": "mocha",
+    "routing_brand_source": "resolved",
+    "routing_company": null,
+    "routing_companies": [
+     {
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC-SC08B"
+      ]
+     },
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "codes": [
+       "MWC-SC08B"
+      ]
+     }
+    ]
+   },
+   "subs": {}
+  },
+  "Q8c-t3": {
+   "test_run_id": "UAC-MCR3r3-Q8c-t3-20260818",
+   "clone_exec": "12933164",
+   "status": "success",
+   "gates": {
+    "clarify-company-gate": [
+     0,
+     1
+    ],
+    "cs-offer-gate": [
+     0,
+     1
+    ],
+    "If2": [
+     1,
+     0
+    ],
+    "sim-inject-gate": [
+     1,
+     0
+    ]
+   },
+   "tool_filter": null,
+   "miss_roster_plan": null,
+   "bmmo": null,
+   "escalation_context": {
+    "routing_source": "company_pick",
+    "company_id": "00000000-0000-0000-0000-000000000001",
+    "brand_code": "mocha",
+    "company_name": "Sorento",
+    "team": "purchasing"
+   },
+   "roster_calls": {},
+   "lane_nodes_executed": [
+    "escalate-catalog",
+    "Call 'sub-human-intervention'"
+   ],
+   "orphaned_egress_nodes_executed": [],
+   "nodes_executed": [
+    "Call 'sub-human-intervention'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "check-access",
+    "check-access-http",
+    "clarify-company-gate",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "cs-offer-gate",
+    "divert-suggest-yes",
+    "escalate-catalog",
+    "escalation-context",
+    "get-session-vars",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sim-inject-session",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-out-of-scope",
+    "tf-message"
+   ],
+   "sent_texts": [],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "sorento"
+     },
+     "test_run_id": "UAC-MCR3r3-Q8c-t3-20260818",
+     "ts": "2026-08-18T02:44:16.731-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "escalation_confirmation",
+        "entities": [],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": true,
+         "company_pick": "Sorento"
+        },
+        "response": "Informed the user that request is out of scope and will proceed to escalate to the purchasing team",
+        "last_result_set": [],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": "mocha",
+        "routing_brand_source": "resolved",
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       }
+      }
+     },
+     "test_run_id": "UAC-MCR3r3-Q8c-t3-20260818",
+     "ts": "2026-08-18T02:44:16.728-04:00"
+    },
+    {
+     "guard": "human-intervention-sub",
+     "kind": "would_write",
+     "target": "respondio:assign+crm:sla+respondio:comment",
+     "payload": {
+      "contact_id": "437264483",
+      "agent": "incoming_stock_enquiries",
+      "team": "purchasing",
+      "current_assignee": null,
+      "explicit_assignee_id": null,
+      "brand_code": "mocha",
+      "company_id": "00000000-0000-0000-0000-000000000001"
+     },
+     "turn_id": "12933164",
+     "test_run_id": "UAC-MCR3r3-Q8c-t3-20260818",
+     "ts": "2026-08-18T02:44:16.569-04:00"
+    }
+   ],
+   "persisted_vars": {
+    "message_type": "escalation_confirmation",
+    "entities": [],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": true,
+     "company_pick": "Sorento"
+    },
+    "response": "Informed the user that request is out of scope and will proceed to escalate to the purchasing team",
+    "last_result_set": [],
+    "selection_context": null,
+    "dym_offer": null,
+    "dym_candidates": [],
+    "ideation": null,
+    "routing_roster_plan": null,
+    "routing_brand": "mocha",
+    "routing_brand_source": "resolved",
+    "routing_company": null,
+    "routing_companies": [
+     {
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC-SC08B"
+      ]
+     },
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "codes": [
+       "MWC-SC08B"
+      ]
+     }
+    ]
+   },
+   "subs": {
+    "Call 'sub-query-reformulator'#12933169": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ],
+     "is_test": true
+    },
+    "Call 'sub-human-intervention'#12933170": {
+     "workflowId": "vUfFUDjLAuMaeQE6",
+     "status": "success",
+     "nodes": [
+      "When Executed by Another Workflow",
+      "chat?",
+      "test-guard",
+      "test-guard-record"
+     ],
+     "is_test": true
+    },
+    "sorento-sub-respond-sendmsg-respond2#12933171": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "nodes": [
+      "Code in JavaScript",
+      "If1",
+      "When Executed by Another Workflow",
+      "chat?"
+     ],
+     "is_test": true
+    },
+    "Call 'sub-respond-save-message-redis'2#12933172": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ],
+     "is_test": null
+    }
+   }
+  }
+ },
+ "S0_all_pass": true
+}
