@@ -1,0 +1,260 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing (rev-4 delta pass)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 0557b0b4-8f2d-457e-8f64-4e1d600c6ca1 (draft==active before AND after the pass, 159 nodes; rev-4 bodies sha-verified against the diff-doc table: compile-current-state 5a84dfea…, escalation-context cca7a245…, clarify-company-reply == offer-hold-reply 7ff06aa8…, escalate-catalog 0168df84…, offer-hold-gate leftValue 8f14a430…, tag-offer-hold params byte-equal; 5 orphaned egress nodes still 0-inbound; every sendmsg/HI/parser executeWorkflow call still is_test=true)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ de9ff09d-a240-46af-98fd-0d5992fdd16d (draft==active before/after — NOT the intermediate 0cedb928; output_exchange b2ac7783…, AI Agent.systemMessage 138008c2… == diff-doc rev-4 final; Postgres Chat Memory on n8n_test-db Dnnofg8Xb27VQOhI)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa-6dbd-4f1b-bf81-40cf6804c933 (draft==active; Postgres Chat Memory1 credential {id: Dnnofg8Xb27VQOhI, name: n8n_test-db}; no node in the fork carries ETJL5KoaA1UpkDip)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "efa21057-a7e0-4be3-b6af-f8ced2c3749c",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e-3dd9-4766-8c49-2f32f8f66bda",
+   "aoydkG1dbItXR5jXFEQsP": "91171ac3-ddad-4452-ace5-98da59480c48"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes the clone waitForSubWorkflow, returns the test:egress list) -> REST GET /executions/{id}?includeData=true matched by MY test_run_id (UAC-MCR-M8*-20260818; captain/planner runs interleave on the same clone) + every sub-execution fetched by metadata.subExecution. Item mode=uac with STATE INJECTED at item TOP level as previous_conversation_state (sim-inject-gate -> sim-inject-session -> get-session-vars). Seeds: state_bothmiss = M7d-t1 persisted vars (MWC-SC08B both-miss 2-company offer, 9 member rows, 2-row plan); state_m1r3 = M1r3-t1 persisted vars (MUB6201 partial miss: Sorento-only roster offered, 1-row plan, routing_companies Mocha+Sorento); state_srt = M7e-t1 persisted vars (SRTWC287A-RL-7405 single-company CS offer). Follow-up turns inject the previous turn's save-session-vars would_write payload. Parser-tier turns: NO mock (real fork gpt-5.4-mini, is_test=true); the one deterministic turn (M8reg-t2m) carries mock_reformulator_output at item TOP level. No contact.chat_id in any seed. n8n_test session table untouched (no regress-capture turns).",
+ "contact": "437264483 (two-company, FULL access; the captain's real contact — state injected, prod session not relied on)",
+ "corroboration": "planner replay on rev-4 (both-miss MUB6201 state injected, real parser): 12913160 'yes please escalate to srt team' -> company_pick Sorento -> HI; 12913172 'srt' -> same; 12913185 'please escalate to sorento team' (request_for_help) -> same; 12913195 'hmm what' -> offer_hold, clarify text, state re-persisted (member_offer, 9 rows, plan 2), no HI. Cited only; every verdict below is from my own executions.",
+ "case": "unrecognised reply on an open MULTI offer → offer-hold clarify AND state survives (t2 \"asdkjh\", real parser); t3 \"sorento\" (real parser, t2 persisted state injected) resolves; single-offer companion: \"asdkjh\" on the Sorento-only M1 seed takes the pre-rev-4 path",
+ "turns": {
+  "t2": {
+   "msg": "asdkjh",
+   "mock": null,
+   "seed": "the injected both-miss MWC-SC08B 2-company offer state (state_bothmiss)",
+   "clone_exec": "12913601",
+   "test_run_id": "UAC-MCR-M8d-t2-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12913604",
+    "sorento-sub-respond-sendmsg-respond2": "12913607",
+    "Call 'sub-respond-save-message-redis'2": "12913608"
+   },
+   "sent_text": "Both *Mocha* and *Sorento* teams are listed — reply a number, a name, or the company (Mocha / Sorento) and I'll assign automatically."
+  },
+  "t3": {
+   "msg": "sorento",
+   "mock": null,
+   "seed": "M8d-t2 persisted variables (save-session-vars would_write)",
+   "clone_exec": "12913630",
+   "test_run_id": "UAC-MCR-M8d-t3-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12913635",
+    "Call 'sub-human-intervention'": "12913638",
+    "sorento-sub-respond-sendmsg-respond2": "12913639",
+    "Call 'sub-respond-save-message-redis'2": "12913640"
+   }
+  },
+  "single-t2": {
+   "msg": "asdkjh",
+   "mock": null,
+   "seed": "state_m1r3 (Sorento-only partial-miss offer)",
+   "clone_exec": "12913669",
+   "test_run_id": "UAC-MCR-M8d-single-t2-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12913675",
+    "sorento-sub-respond-sendmsg-respond2": "12913682",
+    "Call 'sub-respond-save-message-redis'2": "12913683"
+   },
+   "sent_text": "Hello! How can I assist you today?"
+  }
+ },
+ "assertions": [
+  {
+   "id": "t2 fork: escalation.offer_hold == true + member_reprompt string, is_escalation_confirmation NOT true, correction NOT true, member_pick_context true (LLM raw casual, company_pick null)",
+   "pass": true,
+   "observed": {
+    "escalation": {
+     "is_escalation_confirmation": false,
+     "member_reprompt": "out_of_range",
+     "offer_hold": true
+    },
+    "correction": false,
+    "member_pick_context": true,
+    "llm_raw": {
+     "message_type": "casual",
+     "escalation": {
+      "is_escalation_confirmation": false,
+      "company_pick": null
+     }
+    },
+    "pool_rendered": "Mocha (code MCH) / Sorento (code SRT)"
+   }
+  },
+  {
+   "id": "t2 spine: If2 FALSE → If-ideate FALSE → offer-hold-gate TRUE → offer-hold-reply → tag-offer-hold → escalate-catalog; If10 / Basic LLM Chain / cs-roster-plan / get-cs-members / build-cs-member-offer / clarify-company-reply / HI NOT executed",
+   "pass": true,
+   "observed": {
+    "offer_hold_gate": "TRUE",
+    "new_nodes_ran": [
+     "offer-hold-gate",
+     "offer-hold-reply",
+     "tag-offer-hold"
+    ],
+    "escalate_catalog_out": {
+     "branch_kind": "offer_hold",
+     "is_escalate_offer": false,
+     "manualResponse": true,
+     "includeResponse": true
+    }
+   }
+  },
+  {
+   "id": "t2 reply sent (guarded sendmsg would_send) == the rev-4 clarify copy",
+   "pass": true,
+   "observed": "Both *Mocha* and *Sorento* teams are listed — reply a number, a name, or the company (Mocha / Sorento) and I'll assign automatically."
+  },
+  {
+   "id": "t2 persisted state survives: selection_context member_offer, last_result_set == the 9 t1 member rows, routing_roster_plan 2 rows, routing_companies 2, response still carries the frozen phrase (NOT \"Hi there!\")",
+   "pass": true,
+   "observed": {
+    "selection_context": "member_offer",
+    "plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null
+     },
+     {
+      "plan_idx": 1,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha"
+     }
+    ],
+    "rows": 9,
+    "response_head": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no order matched these — checked in Mocha and Sorento. Would you like me to escalat"
+   }
+  },
+  {
+   "id": "t3 \"sorento\" (real parser on the t2-persisted state): pool rendered from the survived state; output_exchange company_pick Sorento; escalation-context company_pick Sorento/mocha; clarify gate FALSE; HI called (short-circuit) with the Sorento pair, no explicit assignee",
+   "pass": true,
+   "observed": {
+    "pool_rendered": "Mocha (code MCH) / Sorento (code SRT)",
+    "oe_escalation": {
+     "is_escalation_confirmation": true,
+     "company_pick": "Sorento"
+    },
+    "escalation_context": {
+     "allowed": true,
+     "decision": "allow",
+     "agent_name": "Order Enquiries",
+     "attributes": null,
+     "all_attributes_allowed": null,
+     "brand_code": "mocha",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "routing_source": "company_pick",
+     "team": "customer_service"
+    },
+    "hi_egress": {
+     "contact_id": "437264483",
+     "agent": "order_enquiries",
+     "team": "customer_service",
+     "current_assignee": null,
+     "explicit_assignee_id": null,
+     "brand_code": "mocha",
+     "company_id": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  },
+  {
+   "id": "single-offer companion (Sorento-only M1 seed, \"asdkjh\"): fork emits {member_reprompt} with NO offer_hold (single pool); spine offer-hold-gate executed FALSE → If10 (pre-rev-4 path: casual → If9 → Basic LLM Chain), offer-hold-reply NOT executed, HI NOT called",
+   "pass": true,
+   "observed": {
+    "escalation": {
+     "is_escalation_confirmation": false,
+     "member_reprompt": "out_of_range"
+    },
+    "correction": true,
+    "offer_hold_gate": "FALSE",
+    "path_nodes": [
+     "Basic LLM Chain",
+     "If10",
+     "If9",
+     "is-escalation-declined",
+     "resolve-entity-clarification"
+    ],
+    "sent_text": "Hello! How can I assist you today?",
+    "persisted_selection_context": null,
+    "note": "pre-existing single-offer state loss on a casual-classified junk reply (diff doc: out of scope) — observed: reply \"Hello! How can I assist you today?\", persisted selection_context null"
+   }
+  }
+ ],
+ "safety_keys": [
+  "M8d-t2",
+  "M8d-t3",
+  "M8d-single-t2"
+ ],
+ "S0": {
+  "M8d-t2": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 0,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": true,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12913601",
+   "GATE": "PASS"
+  },
+  "M8d-t3": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 1,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": true,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12913630",
+   "GATE": "PASS"
+  },
+  "M8d-single-t2": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 0,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": true,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [
+    "OpenAI Chat Model",
+    "Basic LLM Chain"
+   ],
+   "mode": "uac",
+   "exec": "12913669",
+   "GATE": "PASS"
+  }
+ },
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

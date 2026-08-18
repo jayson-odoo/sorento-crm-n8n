@@ -174,3 +174,91 @@ parser-tier turns (real fork gpt-5.4-mini). Nine clone executions total.
    Not exercised; flag for the planner.
 3. Nothing else deviated: every wording assertion (headers, plain lines, note, multi close, single-company bold phrase,
    unchanged yes-sentence), the parser assertions and the spine routing matched the UAC rows exactly.
+
+---
+
+# rev-4 delta pass (2026-08-18, later session) — codes/aliases + any-shape picks, offer-hold, offered-pool rule, S3
+
+Evidence: `tests/runs/miss-company-routing-{M8a,M8b,M8c,M8d,M8e,M8f,M8g,M8reg,S3}-20260818.json`. Diff: `tests/diffs/miss-company-routing.md`
+§rev-4. UAC rows: M8a–M8g + S3 in `tests/miss-company-routing-UAC.md` (+ the captain's extra asks (i)–(vi)).
+
+## Targets (verified via REST before the pass AND re-fetched after — unchanged, all draft==active)
+
+- Clone `txiPzSxy3Pclsz6v` @ **`0557b0b4-8f2d-457e-8f64-4e1d600c6ca1`** (159 nodes). Rev-4 bodies sha-verified == diff-doc rev-4 table:
+  `compile-current-state` `5a84dfea…`, `escalation-context` `cca7a245…`, `clarify-company-reply` == `offer-hold-reply` `7ff06aa8…`,
+  `escalate-catalog` `0168df84…`, `offer-hold-gate` leftValue `8f14a430…`, `tag-offer-hold` params byte-equal. The 5 orphaned egress nodes
+  still 0-inbound; every sendmsg/HI/parser `executeWorkflow` call still hard-codes `is_test=true` (get-results/rag/save-msg forks take none,
+  pre-existing).
+- Parser fork `wI5RkNGW3EOJfBdo` @ **`de9ff09d-a240-46af-98fd-0d5992fdd16d`** — the FINAL rev-4 body, NOT the intermediate `0cedb928`
+  (`output_exchange` `b2ac7783…`, `AI Agent.systemMessage` `138008c2…`; and M8e-t3, the decline→"sorento" unit that separates the two
+  bodies, behaved as the final body). `Postgres Chat Memory` on `n8n_test-db`.
+- Sendmsg fork `aQUmwMVplmNcyUVc` @ **`b48e0eaa-6dbd-4f1b-bf81-40cf6804c933`**: `Postgres Chat Memory1.credentials.postgres ==
+  {Dnnofg8Xb27VQOhI, n8n_test-db}`; no node in the fork carries `ETJL5KoaA1UpkDip`. HI fork `vUfFUDjLAuMaeQE6` @ `0fdba9e5-…`.
+- Live untouched after: spine `efa21057-…`, parser `89b63c51-…`, HI `9249e00e-…`, sendmsg `aoydkG1dbItXR5jXFEQsP` `91171ac3-…` (its own
+  `Postgres Chat Memory1` still on `sorento-crm-db` = live prod behaviour, out of scope).
+
+## Mechanism (same as rev-3)
+
+`POST /webhook/zz-run-hint` → clone execution matched by **my `test_run_id`** (`UAC-MCR-M8*-20260818`; captain/planner runs interleave)
+→ REST `GET /executions/{id}?includeData=true` + every sub-execution. `mode=uac`, state injected at item TOP level as
+`previous_conversation_state`; seeds = persisted `variables` lifted from earlier `save-session-vars would_write` payloads: **state_bothmiss**
+(M7d-t1: MWC-SC08B both-miss 2-company offer, 9 member rows, 2-row plan), **state_m1r3** (M1r3-t1: MUB6201 partial miss — Sorento-only
+roster offered, 1-row plan, `routing_companies` Mocha+Sorento), **state_srt** (M7e-t1: SRTWC287A-RL-7405 single-company CS offer).
+Follow-up turns inject the previous turn's would_write. Every M8 turn ran the REAL parser (no mock) except `M8reg-t2m` (M3 confirm mock,
+item top level). No `contact.chat_id`. 15 clone executions total. Corroboration cited (planner rev-4 replay 12913160/12913172/12913185/
+12913195 — same outcomes); all verdicts below are from my own executions.
+
+## Verdicts
+
+| case | tier | clone exec | verdict | note |
+|---|---|---|---|---|
+| M8a "yes please escalate to srt team" (both-miss) | parser | 12913499 | **PASS** | pool rendered `Mocha (code MCH) / Sorento (code SRT)`; LLM raw `request_for_help`, `is_affirmative:true`, `company_pick:"Sorento"`; oe `{is_escalation_confirmation:true, company_pick:"Sorento"}`, no `preferred_assignee_id`, `member_pick_context:true`, no `current_message:true` entity; spine `company_pick` Sorento/`mocha`; clarify gate FALSE; `offer-hold-gate`/`If10`/LLM not executed; HI fork `is_test`, Sorento pair, short-circuit `test-guard-record`; egress pair, `explicit_assignee_id` null |
+| M8b "srt" | parser | 12913556 | **PASS** | LLM raw `casual`, `company_pick:"Sorento"` (LLM knows the codes now); oe `company_pick Sorento`, no `member_reprompt`/`offer_hold`; same spine/HI chain as M8a |
+| M8c "please escalate to sorento team" | parser | 12913573 | **PASS** | LLM raw `request_for_help`, `is_affirmative:null` (the captain 12910616 shape); oe `company_pick Sorento` → `company_pick` source, HI Sorento/mocha — NOT `multi_company_unpicked` |
+| M8d t2 junk "asdkjh" on the multi offer | parser | 12913601 | **PASS** | oe `{is_escalation_confirmation:false, member_reprompt:"out_of_range", offer_hold:true}`, `correction:false`, `member_pick_context:true`; spine `If2`F → `If-ideate`F → **`offer-hold-gate` TRUE → `offer-hold-reply` → `tag-offer-hold` → `escalate-catalog` (`branch_kind offer_hold`, `is_escalate_offer false`, `manualResponse true`)**; `If10`/`Basic LLM Chain`/`cs-roster-plan`/`get-cs-members`/`build-cs-member-offer`/`clarify-company-reply`/HI NOT executed; sent == rev-4 clarify copy `Both *Mocha* and *Sorento* teams are listed — reply a number, a name, or the company (Mocha / Sorento) and I'll assign automatically.`; persisted: `member_offer`, the same 9 rows (1 Ms Bay … 9 Nurain), 2-row plan, 2 companies, `response` still carries the frozen phrase |
+| M8d t3 "sorento" (t2 state injected) | parser | 12913630 | **PASS** | pool rendered from the survived state; oe `company_pick Sorento`; spine `company_pick` Sorento/mocha; HI short-circuit, egress Sorento pair |
+| M8d single-offer junk (M1 seed, "asdkjh") | parser | 12913669 | **PASS** | oe `{member_reprompt:"out_of_range"}` (NO `offer_hold`), `correction:true`; `offer-hold-gate` executed FALSE → `If10` → `If9` → `Basic LLM Chain` ("Hello! How can I assist you today?"), `offer-hold-reply` not run, HI not called — the pre-rev-4 path incl. its pre-existing single-offer state loss (`selection_context` → null), documented out of scope |
+| M8e "no" · (i) "no it's okay" | parser | 12913705 · 12913720 | **PASS** | both: LLM `is_affirmative:false`; oe `{is_escalation_confirmation:false, escalation_declined:true}`, no `offer_hold`/`company_pick`; `offer-hold-gate` FALSE → `If10` → `is-escalation-declined` TRUE → `tag-escalation-declined`; sent `Escalation declined.`; HI NOT called; persisted `selection_context null`, `response "Escalation declined."`, `last_result_set []` (offer cleared; `routing_roster_plan` 2 rows still carried by the axes block — expected, see diff doc) |
+| M8e t3 "sorento" after the decline | parser | 12913748 | **PASS** | oe `{is_escalation_confirmation:false}` — NO `company_pick`, `member_pick_context` null; `escalation-context` not executed, HI not called; casual → `Basic LLM Chain` small-talk (`Hi! Could you please share the company name you want to respond with?`) |
+| M8f "any mocha promotions this month" | parser | 12913787 | **PASS** | oe `business_query`/`promotion`, entity `Mocha` (brand, current), NO `company_pick`/`offer_hold`, `member_pick_context` null; `offer-hold-gate` FALSE → normal promotion path (access-level-choice quick replies for this contact); no escalation-context/HI; persisted `selection_context null`, plan cleared |
+| (ii) M8-newquery "stock for MWB7629" | parser | 12913802 | **PASS** | oe `business_query`/`inventory`, entity `MWB7629` current, no pick/hold; `offer-hold-gate` FALSE; real lookup (`resolve-entity` + get-results `crm_inventory_stock_balance_list`, probe `crm_incoming_stock_list` — reads) → not-found → dym suggest offer (`No stock for MWB7629. Try: MWB7620, MWB7621, MWB7624 …`); persisted `selection_context suggest_offer`, plan cleared — the offer was replaced, not hijacked |
+| M8g (iii) "yes mocha" on the Sorento-only partial-miss seed | parser | 12913844 | **PASS** | pool rendered **`Sorento (code SRT)` only**; LLM raw `is_affirmative:true`, `company_pick:null`; oe `{is_escalation_confirmation:true}` (no `company_pick`), `member_pick_context:true`; spine **`prior_state` → Sorento/`mocha`**; HI fork inputs `company_id` Sorento (never Mocha), short-circuit; egress Sorento pair, no explicit assignee |
+| M8g companion "srt" (same seed) | parser | 12913866 | **PASS** | oe `company_pick Sorento` → `company_pick` source Sorento/mocha, HI short-circuit |
+| (vi) M8reg single-company CS offer + "yes" | det (t2m) + parser (t2p) | 12913916 · 12913930 | **PASS** | t2m: fork ran only mock/bypass (AI Agent not executed); t2p: pool `Sorento (code SRT)`, oe `{is_escalation_confirmation:true}`; both: `prior_state` Sorento/`sorento`, clarify FALSE, HI short-circuit, egress pair, no explicit assignee — unchanged behaviour |
+| S3 (iv) sendmsg fork chat memory | – | all 15 sendmsg sub-execs | **PASS** | every sendmsg sub-execution's `workflowData` has `Postgres Chat Memory1` on `{Dnnofg8Xb27VQOhI, n8n_test-db}`, no node with `ETJL5KoaA1UpkDip`; `Chat Memory Manager` (insert) ran `{success:true}` on the 7 text-reply turns (12913607, 12913682, 12913711, 12913728, 12913764, 12913795, 12913817) → `n8n_test`; never `Send a Message`/HTTP |
+| **§0 zero-egress (v)** | all 15 execs | **PASS — gate held** | see below |
+
+## §0 safety gate (S1–S6) — PASS on all 15 clone executions (per-case `S0` block in each JSON)
+
+- **S1** no `send-message-files/images/video` in any runData; every sendmsg sub-exec `is_test=true`, executed only `Code in JavaScript /
+  If1 / chat? / Loop Over Items / Chat Memory Manager / guard-text|guard-qr / guard-record-* / is-last-quickreply` — never `Send a Message` /
+  `HTTP Request` / `Send Template`; egress lists contain only `would_log` / `would_write` / `would_send`.
+- **S2** every HI invocation (M8a, M8b, M8c, M8d-t3, M8g, M8g-srt, M8reg ×2 = 8) hit fork `vUfFUDjLAuMaeQE6` with `is_test=true` and ran only
+  `trigger, chat?, test-guard, test-guard-record`; `get-round-robin-assignee`/assign/SLA/comment never executed. M8d-t2, M8d-single, M8e ×3,
+  M8f, M8newq: HI not invoked at all.
+- **S3** orphaned `save-session-vars` (prod PUT) and `update-human-intervened` absent from every runData; `mode=uac` ⇒ `pg-upsert-session`
+  did not run; **the rev-3 caveat is CLOSED** — the sendmsg fork's `Chat Memory Manager` now inserts under `n8n_test-db` (see S3 row).
+- **S4** get-results fork `t4QvrtrPnTwRU6br` ran only on M8newq: resolved tools `crm_inventory_stock_balance_list` (trailing space,
+  pre-existing) and `crm_incoming_stock_list` (crossdomain-probe) — both `_list` READS per the MCP catalog (`sorento_crm_mcp/catalog.py`:
+  the only write-shaped tools are `crm_it_support_ticket_create`, `crm_complaint_close`, `crm_order_cancel`, `crm_purchase_request_approve/reject`);
+  never `crm_it_support_ticket_create`. Agent path not executed (`MCP Client1` + structurer only — orphaned-agent observation stands).
+  Other externals: `resolve-entity-http`, `check-access-http`, `get-rag` (reads).
+- **S5** trigger `test_mode=true` on all 15; parser fork / sendmsg / HI subs `is_test=true` on every invocation.
+- **S6** parser tier by design: 14 real fork LLM runs (gpt-5.4-mini) — one per parser-tier turn; the mock turn ran only
+  `mock-reformulator-output` + `test-reformulator-bypass`. Clone LLM (`Basic LLM Chain`, gpt-4.1-mini) executed on exactly TWO turns, both the
+  pre-existing casual/small-talk lane (M8d-single 12913669, M8e-t3 12913748) — not a new sink; the offer-hold path (M8d-t2) is LLM-free as
+  designed. No reformulator/clarify LLM added.
+
+## Observed-vs-expected deviations (verbatim)
+
+1. **None on the UAC-asserted routing/state/wording.** Every M8a–M8g row, the captain's (i)–(vi) asks and S3 matched the expected values
+   exactly (tables above).
+2. **Persisted `entities` after a held/junk turn = `[]`.** On M8d-t2 (junk on the multi offer) `output_exchange.entities == []` (the reprompt
+   arm does not carry the prior MWC-SC08B forward) and arm B does not re-persist `entities`, so the survived state has `entities: []`
+   (the M7c/M8a pick turns instead carried `{MWC-SC08B, current_message:false}`; M8b/M8c also emitted `[]`). Routing was unaffected
+   (M8d-t3 resolved on that state); flagging only because the offer state now loses its product context across a held turn — reviewer/planner
+   to decide whether arm B should also restore `entities`.
+3. **`routing_roster_plan` (2 rows) is still carried after a decline** (M8e: axes block, same team) — expected per the diff doc's second
+   parser publish (offer-open = frozen phrase only), and M8e-t3 proved a later "sorento" does not re-open it.
+4. Single-offer junk still loses state via the casual/LLM lane (M8d-single: `selection_context` → null, "Hello! How can I assist you today?")
+   — the diff doc's declared out-of-scope pre-existing gap; recorded, not a rev-4 FAIL.
