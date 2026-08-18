@@ -91,3 +91,86 @@ Across all 20 clone executions (15 M-runs + 1 discarded first M1 attempt + 4 rev
    to empty after the final run.
 7. get-results LLM liveness: the fork's agent path did NOT run on any turn (`MCP Client1` + structurer only) — consistent
    with the B-series observation that the get-results agent is orphaned in the fork.
+
+---
+
+# rev-3 delta pass (2026-08-18, later session) — "yes mocha" resolves + offer copy
+
+Evidence: `tests/runs/miss-company-routing-{M7a,M7b,M7c,M7d,M7e,M1r3,M4r3}-20260818.json`. Diff: `tests/diffs/miss-company-routing.md`
+§rev-3. UAC rows: M7a–M7e + the re-worded M1 / M4a-t1 rows in `tests/miss-company-routing-UAC.md`.
+
+## Targets (verified before AND re-fetched after the pass — unchanged)
+
+- Clone `txiPzSxy3Pclsz6v` @ **`709461ec-632c-4dac-a38a-e98346e6f9a6`** (draft==active, 156 nodes). Rev-3 bodies sha-verified
+  against the published workflow == diff-doc rev-3 table: `compile-current-state` `07a31bb3…`, `build-cs-member-offer` `c7046c45…`,
+  `build-miss-member-offer` `68eef4c7…`.
+- Parser fork `wI5RkNGW3EOJfBdo` @ **`3a397f2b-687b-457f-bab3-42c10f77185c`** (draft==active): `output_exchange` `ea40047b…`,
+  `AI Agent.systemMessage` `619097f5…`.
+- HI fork `vUfFUDjLAuMaeQE6` @ `0fdba9e5-…`; sendmsg fork `aQUmwMVplmNcyUVc` @ `51fed3d1-…`.
+- Live untouched after: spine `efa21057-…`, parser `89b63c51-…`, HI `9249e00e-…` (draft==active).
+
+## Mechanism (differs from the rev-1 pass — read this before re-running)
+
+`POST /webhook/zz-run-hint` → clone execution matched by **my `test_run_id`** (`UAC-MCR-<case>-20260818`; the captain's
+`chatui-*` runs were interleaved on the same clone, so "latest execution" is NOT reliable) → REST `GET /executions/{id}?
+includeData=true` + every sub-execution. Items ran `mode=uac` with **state injected at item TOP level as
+`previous_conversation_state`** (`sim-inject-gate` → `sim-inject-session` → `get-session-vars`; the injected object is the
+prior turn's persisted `variables` lifted from its `save-session-vars would_write` payload). No `n8n_test` session
+round-trip, no `contact.chat_id` (HI fork stops at `test-guard`), mock at item TOP level on deterministic turns, NO mock on
+parser-tier turns (real fork gpt-5.4-mini). Nine clone executions total.
+
+## Verdicts
+
+| case | tier | clone exec(s) | verdict | note |
+|---|---|---|---|---|
+| M7d multi wording (both-miss MWC-SC08B offer) | det | 12910840 | **PASS** | sent == ccs.user_response == persisted `variables.response`; close EXACTLY `If you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly.`; no `just reply 'yes'`; headers `*Mocha:*`/`*Sorento:*`; lines plain (`1. Ms Bay` … `9. Nurain`, no suffix); note `(*Mocha* and *Sorento*)`; phrase plain `…escalate to customer_service team?`; `cs_multi_close` exported, `cs_offer_company` null. Miss-lane multi arm covered by an offline unit on the DEPLOYED `build-miss-member-offer` (jq'd from 709461ec): 2 rows ⇒ headers + company sentence, shared member one number under each; 1 row ⇒ flat + yes-sentence; one empty ⇒ single; all empty ⇒ passthrough |
+| M4r3 (M4a-t1 wording re-assert) | det | 12910840 (same exec) | **PASS** | as M7d + persisted: `member_offer`, 9 rows idx 1..9, 2-row plan, `routing_company` null, `routing_companies` 2 |
+| M7c bare "yes" still clarifies on multi | **parser** (t2p) + det (t2m) | 12910902 · 12911184 | **PASS** | t2p: fork `AI Agent` RAN and the systemMessage expression rendered `Companies named in the pending offer …: Mocha / Sorento` from the injected state (read from `OpenAI Chat Model.inputOverride`); LLM raw `escalation {is_escalation_confirmation:true, company_pick:null}`, `is_affirmative:true`; `output_exchange` → `{is_escalation_confirmation:true}` (no `company_pick` key — raw key stripped); spine `multi_company_unpicked` → clarify TRUE → **HI NOT called, no HI egress**; clarify text byte-equal to plan; state re-persisted (phrase, 9 rows, member_offer, 2-row plan). t2m (mock) identical spine outcome |
+| M7a "yes mocha" | **parser** | 12910944 | **PASS** | pool rendered `Mocha / Sorento`; LLM raw `is_affirmative:true` + `company_pick:"Mocha"` (Tier-2 affirmative arm — the exact branch that used to lose the pick); `output_exchange.escalation == {is_escalation_confirmation:true, company_pick:"Mocha"}`, no `preferred_assignee_id`, `member_pick_context:true`; spine `escalation-context` `company_pick` / Mocha / brand null; clarify gate FALSE (`clarify-company-reply` not run); HI fork is_test=true, `company_id` Mocha, short-circuit at `test-guard-record`; egress `human-intervention-sub` payload Mocha, `explicit_assignee_id` null. Corroborates the planner's exec 12910397 |
+| M7b "mocha please" | **parser** | 12910996 | **PASS** | identical chain to M7a (`company_pick:"Mocha"`, HI short-circuit with the Mocha pair) |
+| M7e single-company wording (CS arm) + bare yes | det | 12911046 · 12911085 | **PASS** | t1 SRTWC287A-RL-7405 not-found → `…escalate to *Sorento* customer_service team?`; picker `1. Maryam Ariffin` … `6. Nurain` plain, no headers; yes-sentence byte-identical; `build-cs-member-offer.response == sent == persisted variables.response`; `cs_offer_company "Sorento"`, `cs_multi_close` null; 1-row plan {Sorento, brand `sorento`}. t2 "yes" (M3 mock, injected t1 state) → `prior_state` Sorento/`sorento`, gate FALSE, HI short-circuit, egress pair matches, no explicit assignee |
+| M1r3 partial miss (MUB6201) + REAL-parser bare yes | det (t1) + **parser** (t2p) | 12911114 · 12911145 | **PASS** | t1: gate TRUE, plan 1 {Sorento, mocha}, `get-cs-members-miss` once (200, 6), `get-cs-members` not run; reply = 2 Mocha order blocks + `*Sorento:* no orders records for MUB6201.` + `Would you like me to escalate to *Sorento* customer_service team?` + `Please choose…` + `3. Maryam Ariffin` … `8. Nurain` (plain, numbering continues after the 2 order blocks) + unchanged yes-sentence; persisted `variables.response` ends with the same bold phrase, lrs 8 rows idx 1..8 full shape, member_offer, 1-row plan, `routing_company` Sorento / `routing_brand` mocha. t2p (real parser "yes"): pool rendered `Sorento / Mocha` (plan ∪ `routing_companies` — MUB6201 resolves in both), raw `company_pick:null`, oe `{is_escalation_confirmation:true}` → spine `prior_state` Sorento/mocha, HI short-circuit, egress pair matches |
+| **§0 zero-egress** | all 9 execs | **PASS — gate held** | see below + the S3 caveat |
+
+## §0 safety gate (S1–S6) — PASS on all 9 clone executions (per-case `S0` block in each JSON)
+
+- **S1** no `send-message-files/images/video` in any runData; every sendmsg sub-exec (`aQUmwMVplmNcyUVc`) had `is_test=true`
+  and executed only `Code in JavaScript / If1 / Loop Over Items / chat? / guard-text / guard-record-text / is-last-quickreply`
+  (+ `Chat Memory Manager`, see caveat) — never `Send a Message` / `HTTP Request` / `Send Template`; egress lists contain only
+  `would_log` / `would_write` / `would_send`.
+- **S2** every HI invocation (M7a, M7b, M7e-t2, M1r3-t2p) hit fork `vUfFUDjLAuMaeQE6` with `is_test=true` and ran only
+  `trigger, chat?, test-guard, test-guard-record`; `get-round-robin-assignee`/assign/SLA/comment never executed. M7c: HI not
+  invoked at all.
+- **S3** orphaned `save-session-vars` (prod PUT) and `update-human-intervened` absent from every runData; `mode=uac` ⇒
+  `session-save-gate` FALSE, `pg-upsert-session` did not run either (n8n_test untouched). **Caveat (pre-existing, NOT rev-3):**
+  the sendmsg fork's `Loop Over Items` done-branch runs `Chat Memory Manager` (mode `insert`) backed by `Postgres Chat Memory1`
+  whose credential is **`sorento-crm-db` (`ETJL5KoaA1UpkDip`)**, session key = `contact_identifer` (437264483) — it executed
+  (`{success:true}`) on every text-reply turn (M7d-t1, M7e-t1, M1r3-t1, M7c-t2p/t2m) BEFORE `guard-text`. It is byte-identical
+  wiring to the live sendmsg sub `aoydkG1dbItXR5jXFEQsP` and it also ran on every prior pass (e.g. rev-1 M4a-t1 sendmsg exec
+  12906739), so it is not new and reaches no contact/session/assignment — but it IS an insert into an n8n chat-memory table
+  in the prod CRM database under the captain's real contact id. Flagging for the reviewer/captain: if "zero CRM writes" is
+  meant literally, the fork's memory node should be re-pointed to `n8n_test-db` (the parser fork already uses `n8n_test-db`
+  for its `Postgres Chat Memory`) or moved behind the guard. Not treated as a rev-3 FAIL.
+- **S4** get-results fork `t4QvrtrPnTwRU6br` ran only on the 3 order turns; resolved `tool` = `crm_order_management_orders_list`
+  (note: the value carries a trailing space, pre-existing) — READ; agent path not executed (`MCP Client1` + structurer only,
+  consistent with the orphaned-agent observation). Only other external call: `get-cs-members-miss`/`get-cs-members` GET
+  team-members (CRM read).
+- **S5** trigger `test_mode=true` on all 9; parser fork / sendmsg / HI subs `is_test=true` on every invocation.
+- **S6** deterministic turns: fork ran only `mock-reformulator-output` + `test-reformulator-bypass` (AI Agent NOT executed);
+  clone LLM nodes: none on any turn. Exactly FOUR real LLM executions, all by design (parser tier): M7c-t2p, M7a-t3, M7b-t3,
+  M1r3-t2p. No new token sink observed (no reformulator/clarify LLM on the clone).
+
+## Observed-vs-expected deviations (verbatim)
+
+1. **`entities` on the parser-tier company-pick turns is NOT `[]`.** UAC M7a/M7b say `entities == []`; observed
+   `output_exchange.entities == [{"raw":"MWC-SC08B","hint":"product","current_message":false,"canonical_code":"MWC-SC08B"}]`
+   (LLM `entity_op:"reuse"`, prior entity carried with `current_message:false`). Same on M7c/M1r3-t2p (real "yes") and on the
+   planner's exec 12910397 (`MUB6201`, `current_message:false`). Rev-1 M4b saw `[]` only because its t2 was a MOCK turn whose
+   persisted state had `entities: []`. Not a regression — no `current_message:true` entity, no query re-fires, downstream
+   identical (company_pick → HI). Suggest re-wording the UAC to "no `current_message:true` entity".
+2. **Pool rendering on the M1 (partial-miss) state = `Sorento / Mocha`**, not just `Sorento` — by design (plan ⊕
+   `routing_companies`; MUB6201 resolves in both). Consequence worth knowing: on that state "yes mocha" would be a valid
+   `company_pick` → Mocha (its `routing_companies` row carries the Mocha company_id), even though only Sorento was offered.
+   Not exercised; flag for the planner.
+3. Nothing else deviated: every wording assertion (headers, plain lines, note, multi close, single-company bold phrase,
+   unchanged yes-sentence), the parser assertions and the spine routing matched the UAC rows exactly.

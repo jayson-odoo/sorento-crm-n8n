@@ -1,0 +1,200 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing (rev-3 delta pass)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 709461ec-632c-4dac-a38a-e98346e6f9a6 (draft==active before AND after the pass; changed bodies sha-verified: compile-current-state 07a31bb3…, build-cs-member-offer c7046c45…, build-miss-member-offer 68eef4c7… == diff doc rev-3 table)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 3a397f2b-687b-457f-bab3-42c10f77185c (draft==active before/after; output_exchange ea40047b…, AI Agent.systemMessage 619097f5… == diff doc rev-3 table)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ 51fed3d1-9a92-469a-9b7a-d77e56f8d302",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "efa21057-a7e0-4be3-b6af-f8ced2c3749c",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e-3dd9-4766-8c49-2f32f8f66bda"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds item on test:q:437264483, executes clone waitForSubWorkflow, returns test:egress list) -> REST GET /executions/{id}?includeData=true matched by test_run_id (NOT recency — captain's chatui-* runs were concurrent) + each sub-execution fetched by metadata.subExecution. Item mode=uac (session read = prod CRM get-session-vars-http, save guarded/orphaned) with STATE INJECTED via item TOP-LEVEL previous_conversation_state (sim-inject-gate -> sim-inject-session -> get-session-vars): the injected state for every follow-up turn is the previous turn's persisted variables taken from the save-session-vars would_write payload. Deterministic turns: mock_reformulator_output at item TOP level; parser-tier turns: no mock (real fork gpt-5.4-mini, is_test=true). No contact.chat_id in any seed (HI fork short-circuits at test-guard). n8n_test DB untouched (no regress-capture turns).",
+ "contact": "437264483 (two-company, FULL access; the captain's real contact — state injected, prod session not relied on)",
+ "case": "M4a-t1 wording re-asserted on rev-3 (same execution as M7d-t1): both-miss MWC-SC08B → 2-company member offer, rev-3 copy",
+ "turns": {
+  "t1": {
+   "msg": "any order for MWC-SC08B",
+   "mock": "order mock (MWC-SC08B)",
+   "clone_exec": "12910840",
+   "test_run_id": "UAC-MCR-M7d-t1-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12910846",
+    "Execute 'sub-get-rag'": "12910848",
+    "Call 'sub-get-results'": "12910849",
+    "sorento-sub-respond-sendmsg-respond2": "12910851",
+    "Call 'sub-respond-save-message-redis'2": "12910852"
+   },
+   "sent_text": "Here's what you want:\n• product: MWC-SC08B (Mocha), MWC-SC08B (Sorento)\n\nBut no order matched these — checked in Mocha and Sorento. Would you like me to escalate to customer_service team?\n\nNote: MWC-SC08B is carried by more than one company (*Mocha* and *Sorento*), so I am listing the customer-service team members from each of them — that is why there are more names than usual. Please choose who to route to (reply with the number):\n*Mocha:*\n1. Ms Bay\n2. Nicky\n3. Kah Xin\n*Sorento:*\n4. Maryam Ariffin\n5. Cyndi\n6. Aisyah\n7. Balqis\n8. Niki\n9. Nurain\n\nIf you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly."
+  }
+ },
+ "assertions": [
+  {
+   "id": "sent text == crossdomain-compose.user_response == persisted variables.response",
+   "pass": true,
+   "observed": {
+    "len": 658
+   }
+  },
+  {
+   "id": "closing sentence EXACTLY the company-name sentence",
+   "pass": true,
+   "observed": "If you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly."
+  },
+  {
+   "id": "NO occurrence of \"just reply 'yes'\"",
+   "pass": true,
+   "observed": null
+  },
+  {
+   "id": "headers *Mocha:* and *Sorento:* present",
+   "pass": true,
+   "observed": [
+    "*Mocha:*",
+    "*Sorento:*"
+   ]
+  },
+  {
+   "id": "NO line matching /^\\d+\\. .* \\((Mocha|Sorento)/m (no member suffix)",
+   "pass": true,
+   "observed": [
+    "1. Ms Bay",
+    "2. Nicky",
+    "3. Kah Xin",
+    "4. Maryam Ariffin",
+    "5. Cyndi",
+    "6. Aisyah",
+    "7. Balqis",
+    "8. Niki",
+    "9. Nurain"
+   ]
+  },
+  {
+   "id": "note contains (*Mocha* and *Sorento*)",
+   "pass": true,
+   "observed": "Note: MWC-SC08B is carried by more than one company (*Mocha* and *Sorento*), so I am listing the customer-service team members from each of them — that is why there are more names than usual. Please choose who to route to (reply with the number):"
+  },
+  {
+   "id": "phrase PLAIN on multi: \"Would you like me to escalate to customer_service team?\" (no company named)",
+   "pass": true,
+   "observed": "Would you like me to escalate to customer_service team?"
+  },
+  {
+   "id": "build-cs-member-offer exports cs_multi_close (== the sentence) and cs_offer_company null on multi",
+   "pass": true,
+   "observed": {
+    "cs_multi_close": "If you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly.",
+    "cs_offer_company": null
+   }
+  },
+  {
+   "id": "miss lane inert on this not-found turn (miss-roster-gate not reached; get-cs-members-miss 0 runs; get-cs-members 1 run)",
+   "pass": true,
+   "observed": {
+    "get_cs_members_miss": 0,
+    "get_cs_members": 1
+   }
+  },
+  {
+   "id": "persisted: selection_context member_offer, 9 member rows idx 1..9 (3 Mocha + 6 Sorento), 2-row routing_roster_plan, routing_company null, routing_companies 2",
+   "pass": true,
+   "observed": {
+    "plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null
+     },
+     {
+      "plan_idx": 1,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha"
+     }
+    ],
+    "rows": [
+     [
+      1,
+      "Ms Bay",
+      "Mocha"
+     ],
+     [
+      2,
+      "Nicky",
+      "Mocha"
+     ],
+     [
+      3,
+      "Kah Xin",
+      "Mocha"
+     ],
+     [
+      4,
+      "Maryam Ariffin",
+      "Sorento"
+     ],
+     [
+      5,
+      "Cyndi",
+      "Sorento"
+     ],
+     [
+      6,
+      "Aisyah",
+      "Sorento"
+     ],
+     [
+      7,
+      "Balqis",
+      "Sorento"
+     ],
+     [
+      8,
+      "Niki",
+      "Sorento"
+     ],
+     [
+      9,
+      "Nurain",
+      "Sorento"
+     ]
+    ]
+   }
+  }
+ ],
+ "safety_keys": [
+  "M7d-t1"
+ ],
+ "S0": {
+  "M7d-t1": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 0,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [
+    "crm_order_management_orders_list "
+   ],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": false,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12910840",
+   "GATE": "PASS"
+  }
+ },
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

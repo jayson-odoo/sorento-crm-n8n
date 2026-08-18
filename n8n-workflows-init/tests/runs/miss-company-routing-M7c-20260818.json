@@ -1,0 +1,177 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing (rev-3 delta pass)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 709461ec-632c-4dac-a38a-e98346e6f9a6 (draft==active before AND after the pass; changed bodies sha-verified: compile-current-state 07a31bb3…, build-cs-member-offer c7046c45…, build-miss-member-offer 68eef4c7… == diff doc rev-3 table)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 3a397f2b-687b-457f-bab3-42c10f77185c (draft==active before/after; output_exchange ea40047b…, AI Agent.systemMessage 619097f5… == diff doc rev-3 table)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ 51fed3d1-9a92-469a-9b7a-d77e56f8d302",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "efa21057-a7e0-4be3-b6af-f8ced2c3749c",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e-3dd9-4766-8c49-2f32f8f66bda"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds item on test:q:437264483, executes clone waitForSubWorkflow, returns test:egress list) -> REST GET /executions/{id}?includeData=true matched by test_run_id (NOT recency — captain's chatui-* runs were concurrent) + each sub-execution fetched by metadata.subExecution. Item mode=uac (session read = prod CRM get-session-vars-http, save guarded/orphaned) with STATE INJECTED via item TOP-LEVEL previous_conversation_state (sim-inject-gate -> sim-inject-session -> get-session-vars): the injected state for every follow-up turn is the previous turn's persisted variables taken from the save-session-vars would_write payload. Deterministic turns: mock_reformulator_output at item TOP level; parser-tier turns: no mock (real fork gpt-5.4-mini, is_test=true). No contact.chat_id in any seed (HI fork short-circuits at test-guard). n8n_test DB untouched (no regress-capture turns).",
+ "contact": "437264483 (two-company, FULL access; the captain's real contact — state injected, prod session not relied on)",
+ "case": "bare \"yes\" STILL clarifies on a multi-company pool (rev-3): both-miss state injected (from M7d-t1 persisted vars) → raw \"yes\" (t2p REAL parser, fork 3a397f2b) and \"yes\" with the M3 confirm mock (t2m)",
+ "turns": {
+  "t2p": {
+   "msg": "yes",
+   "mock": null,
+   "clone_exec": "12910902",
+   "test_run_id": "UAC-MCR-M7c-t2p-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12910905",
+    "sorento-sub-respond-sendmsg-respond2": "12910910",
+    "Call 'sub-respond-save-message-redis'2": "12910911"
+   },
+   "sent_text": "Both Mocha and Sorento teams are listed — reply a number, a name, or just the company (Mocha / Sorento) and I'll assign automatically."
+  },
+  "t2m": {
+   "msg": "yes",
+   "mock": "M3 confirm mock",
+   "clone_exec": "12911184",
+   "test_run_id": "UAC-MCR-M7c-t2m-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12911187",
+    "sorento-sub-respond-sendmsg-respond2": "12911188",
+    "Call 'sub-respond-save-message-redis'2": "12911189"
+   },
+   "sent_text": "Both Mocha and Sorento teams are listed — reply a number, a name, or just the company (Mocha / Sorento) and I'll assign automatically."
+  }
+ },
+ "assertions": [
+  {
+   "id": "t2p: fork AI Agent RAN (systemMessage n8n expression evaluated on a real turn) and rendered the pool from injected state",
+   "pass": true,
+   "observed": {
+    "pool_rendered": "Mocha / Sorento",
+    "parser_exec": "12910905"
+   }
+  },
+  {
+   "id": "t2p: LLM raw escalation = {is_escalation_confirmation:true, company_pick:null}; is_affirmative true",
+   "pass": true,
+   "observed": {
+    "is_escalation_confirmation": true,
+    "company_pick": null
+   }
+  },
+  {
+   "id": "t2p: output_exchange escalation == {is_escalation_confirmation:true} with NO company_pick key (raw key stripped; bare confirmation)",
+   "pass": true,
+   "observed": {
+    "is_escalation_confirmation": true
+   }
+  },
+  {
+   "id": "t2p: spine routing_source multi_company_unpicked → clarify gate TRUE → HI NOT called, no HI egress",
+   "pass": true,
+   "observed": {
+    "allowed": true,
+    "decision": "allow",
+    "agent_name": "Order Enquiries",
+    "attributes": null,
+    "all_attributes_allowed": null,
+    "brand_code": null,
+    "company_id": null,
+    "company_name": null,
+    "routing_source": "multi_company_unpicked",
+    "team": "customer_service"
+   }
+  },
+  {
+   "id": "t2p: clarify text unchanged (sent via guarded sendmsg would_send)",
+   "pass": true,
+   "observed": "Both Mocha and Sorento teams are listed — reply a number, a name, or just the company (Mocha / Sorento) and I'll assign automatically."
+  },
+  {
+   "id": "t2m (mock): same spine outcome — multi_company_unpicked, clarify TRUE, HI not called, same text",
+   "pass": true,
+   "observed": {
+    "allowed": true,
+    "decision": "allow",
+    "agent_name": "Order Enquiries",
+    "attributes": null,
+    "all_attributes_allowed": null,
+    "brand_code": null,
+    "company_id": null,
+    "company_name": null,
+    "routing_source": "multi_company_unpicked",
+    "team": "customer_service"
+   }
+  },
+  {
+   "id": "t2p: state re-persisted after the divert (phrase, member rows, member_offer, 2-row plan)",
+   "pass": true,
+   "observed": {
+    "plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null
+     },
+     {
+      "plan_idx": 1,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha"
+     }
+    ]
+   }
+  }
+ ],
+ "safety_keys": [
+  "M7c-t2p",
+  "M7c-t2m"
+ ],
+ "S0": {
+  "M7c-t2p": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 0,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": true,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12910902",
+   "GATE": "PASS"
+  },
+  "M7c-t2m": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 0,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": false,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12911184",
+   "GATE": "PASS"
+  }
+ },
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}
