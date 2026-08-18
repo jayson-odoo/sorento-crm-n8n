@@ -1,13 +1,8 @@
-// ── build-miss-member-offer (miss-company-routing, rev-3) ───────────────────
-// TWO arms on an ANSWERED turn that missed a company (captain case A: keep the found results +
-// the presenter's miss line, then offer escalation). MEMBERS arm (orders lane, members:true —
-// reached via miss-members-gate TRUE → get-cs-members-miss): renders the miss company's member
-// picker; input is one fullResponse item per miss-roster-plan item (index-aligned, onError
-// degrades to an error item = empty roster). PLAIN arm (rev-3; incoming + stock lanes,
-// members:false — reached DIRECTLY from miss-members-gate FALSE, no roster was fetched): no
-// picker, no rows — just the envelope + miss_plain_offer + the plan identity, and
-// compile-current-state appends the frozen phrase. (The old "order turn" header was stale —
-// F-R3-2.) Mirrors build-cs-member-offer's roster parsing / dedupe / row shape
+// ── build-miss-member-offer (miss-company-routing) ──────────────────────────
+// Renders the MISS company's member picker on an ANSWERED order turn (captain case A: keep the
+// found results + the presenter's miss line, then go straight to the miss company's picker).
+// Input: one fullResponse item per miss-roster-plan item (index-aligned, onError degrades to an
+// error item = empty roster). Mirrors build-cs-member-offer's roster parsing / dedupe / row shape
 // (cs_last_result_set-shaped rows incl. company_id/company_name/brand_code/company_ids/companies)
 // so the parser's Δ3 pick arm and escalation-context treat these rows identically to an ordinary
 // member offer. Numbering CONTINUES after the reply's existing numbered blocks (the envelope
@@ -24,18 +19,6 @@ const env = $('central-exchange').first().json;
 const pass = [{ json: { ...env } }];
 try {
   const plan = (() => { try { return $('miss-roster-plan').all().map(i => i.json); } catch (e) { return []; } })();
-  // rev-3 PLAIN arm (§V2/§V4) — every non-sentinel plan item says members === false (incoming/
-  // stock): emit the envelope + miss_plain_offer:true + miss_roster_plan (plan identity incl. the
-  // lane team for ccs's frozen phrase). NO miss_member_offer, NO miss_member_rows, NO
-  // miss_offer_text — pool = ALL miss companies (no roster was shown, so no intersection rule).
-  // A plan item MISSING the flag falls through to the roster parse below, which yields [] members
-  // on plan-item input ⇒ envelope passthrough (fail-closed: never a broken turn, never a surprise
-  // picker). Zero non-sentinel items (the _miss_plan_empty sentinel) ⇒ same passthrough.
-  const real = plan.filter(p => p && p._miss_plan_empty !== true && (p.company_id || p.company_name));
-  if (real.length && real.every(p => p.members === false)) {
-    const planOut = real.map((p, i) => ({ plan_idx: (p.plan_idx != null) ? p.plan_idx : i, company_id: p.company_id || null, company_name: p.company_name || null, brand_code: p.brand_code || null, team: (typeof p.team === 'string' && p.team) ? p.team : null }));
-    return [{ json: { ...env, miss_plain_offer: true, miss_roster_plan: planOut } }];
-  }
   const resp = $input.all().map(i => i.json);
   const rosterAt = (i) => {
     const r = resp[i];

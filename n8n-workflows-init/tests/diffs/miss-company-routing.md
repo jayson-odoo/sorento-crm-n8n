@@ -679,3 +679,82 @@ Staged live payload `tests/backups/miss-company-routing/LIVE-PROMOTE-STAGED-2026
 working tree already carrying the round-3 bodies — gate `031dda83`, widened `cs-offer-gate` — uncommitted): patched to the rev-2 bodies
 (`miss-roster-gate` `d24dd81b`, `build-cs-member-offer` `63c1c46e`; nothing else changed) so the broken expression can never be promoted.
 Still NOT applied — captain-gated; R7 3e / R10 4a+4d re-measure per §R3.7 still owed before any live PUT.
+
+## round-3 rev-3 (coder, 2026-08-18; plan §"Round 3 rev-3" V1–V7): plain offer for incoming+stock, members orders-only, cs-offer-gate revert
+
+Clone `txiPzSxy3Pclsz6v` `e54e114e-…` → **`7db593b0-ef2e-453b-bc98-30ff9267bf41`** (REST PUT of `{name,nodes,connections,settings:{executionOrder}}`,
+`activeVersionId == versionId` immediately — auto-activated as before). PRE backups: `tests/backups/miss-company-routing/clone-round3rev3-PRE-e54e114e.json`
+(full dump) + `…/spine-txiPzSxy3Pclsz6v/round-3-rev3/{VERSION.json, miss-roster-gate.leftValue.expr.txt, miss-roster-plan.jsCode.js,
+build-miss-member-offer.jsCode.js, compile-current-state.jsCode.js, clarify-company-reply.jsCode.js, cs-offer-gate.parameters.json,
+connections-before.json}`. Live `9qVyfUxmRQqrpGRMDLRuz` and parser fork `wI5RkNGW3EOJfBdo` (`c7d9cfa2`) untouched.
+
+**Post-PUT full sweep (PRE dump vs POST re-fetch): 159 → 160 nodes (+`miss-members-gate`, 0 dropped); per-node `parameters` changed on exactly
+SEVEN nodes** (`miss-roster-gate`, `miss-roster-plan`, `build-miss-member-offer`, `compile-current-state`, `clarify-company-reply`,
+`offer-hold-reply`, `cs-offer-gate`); **0 non-param field diffs**; connections 143 → 144 keys (+`miss-members-gate` key; ONE existing key changed:
+`miss-roster-plan` now → `miss-members-gate` instead of `get-cs-members-miss`); settings preserved server-side. Every deployed body re-fetched
+and compared `==` byte-exact to the repo file.
+
+| node › field | change |
+|---|---|
+| `miss-roster-gate` (If 2.3) › `conditions[0].leftValue` | §V1: LANE gains the ONE stock row (`crm_inventory_stock_balance_list` → inventory / warehouse / general_enquiries) and a `members` field on every row (orders `true`, incoming+stock `false`; the gate IGNORES the flag — offer/no-offer only). Header comment updated (stock is now in the allowlist; qty-0 rows remain answers). LANE block MIRRORED BYTE-IDENTICAL into `miss-roster-plan` (unit-asserted). Every logic leg from `const tool =` down byte-identical to rev-2 (`d24dd81b`), Object.keys membership form kept (LESSONS #45). |
+| `miss-roster-plan` (Code) › `jsCode` | §V3: mirrors the rev-3 LANE (lockstep comment) + tool/lane lookup; stamps `team: lane.team` and `members: lane.members === true` on every real plan item (fail-closed: unknown lane ⇒ `members:false`, `team:null`); the `_miss_plan_empty` sentinel gains `team:null, members:false` (a sentinel must never fetch a roster). Stale "order turn" header fixed (F-R3-2). Derivation otherwise byte-identical. |
+| `miss-members-gate` (**NEW** If 2.3, id `miss-members-gate-node`, pos [9472,2704]) | §V2 option (a): single condition `={{ $json.members === true }}` (boolean/true, loose, v2 — no forbidden sandbox token). TRUE → `get-cs-members-miss` (orders chain unchanged); FALSE → `build-miss-member-offer` directly (plain lanes + sentinel — the sentinel's stray roster read is gone). A plan item MISSING the flag routes FALSE (fail-closed). |
+| `get-cs-members-miss` | **byte-identical** (now reached only via `miss-members-gate` TRUE = orders). |
+| `build-miss-member-offer` (Code) › `jsCode` | §V3: NEW plain arm ABOVE the roster parsing — every non-sentinel plan item `members === false` ⇒ `[{ json: { ...env, miss_plain_offer: true, miss_roster_plan: [{plan_idx, company_id, company_name, brand_code, team}] } }]`, NO `miss_member_offer`/`miss_member_rows`/`miss_offer_text` (pool = ALL miss companies; no intersection — no roster shown). Zero non-sentinel items or a MISSING flag ⇒ existing roster parse yields [] ⇒ envelope passthrough (fail-closed). Members-arm CODE untouched; its only output delta is the stamped `team`/`members` keys riding inside the transient `miss_roster_plan` envelope key (ccs's mapping strips them before persisting — unit-proven identical persisted plan + identical picker text vs the PRE body). Stale header fixed (F-R3-2). |
+| `compile-current-state` (Code) › `jsCode` | §V3: `_mcPlainPlan` const + THIRD arm after the rows arm (`else if (_mcPlainPlan.length && !_ideate && !_sug && !_mem && !_dymLastResultSet && non-empty user_response)`): appends the FROZEN phrase ONLY (`Would you like me to escalate to *<Co>* <team> team?` on single-miss; plain phrase on multi; team from the plan/lane with qf fallback — gate-enforced lockstep) to `user_response` AND persisted `variables.response` (parser prefix-regex contract); persists `routing_roster_plan` (mapped w/o team — same shape as the rows arm) + `routing_company`/`routing_brand` (single pair on 1 miss, nulls on >1). **NO `last_result_set` extension, NO `selection_context` change** (Δ3 stays closed). Rows (members) arm byte-identical to rev-2. |
+| `clarify-company-reply` + `offer-hold-reply` (ONE body, BOTH nodes) › `jsCode` | §V3 / F-R3-1 option (c): copy branch on `prev.selection_context` — `'member_offer'` ⇒ rev-4 copy byte-identical (`… — reply a number, a name, or the company (X / Y) and I'll assign automatically.`); ELSE (no picker shown: plain-offer both-miss, not-found both-miss) ⇒ `${lead} — reply with the company (${list}) and I'll assign automatically.`. `offer-hold-gate` only fires with `selection_context === 'member_offer'` ⇒ `offer-hold-reply` always takes the member branch (no behaviour change there). |
+| `cs-offer-gate` (If 2.3) › `conditions` | **REVERTED to the round-2/live 3-condition shape** — byte-exact copy of `PRE-9qVyfUxmRQqrpGRMDLRuz-7aba1447.json`'s node params (g1 boolean `is_escalate_offer` · g2 `suggested_team == 'customer_service'` · g3 `suggested_agent == 'order_enquiries'`). D3=b undone: incoming/stock NOT-FOUND turns return to the pre-round-3 plain phrase (no picker); CS/order keeps its picker. Conditions json `391a31c8` → **`ce99a16c`** (== live active/draft). |
+| everything else | byte-identical: `build-cs-member-offer` `63c1c46e` KEPT (F-R3-5 team note; purchasing note now unreachable, orders output proven identical), `escalation-context` `cca7a245`, `clarify-company-gate` `63e30a3d`, `offer-hold-gate` `8f14a430`, `escalate-catalog` `0168df84`, `tag-offer-hold`, HI, sendmsg, parser fork `c7d9cfa2` (`a68c5992`/`138008c2`). |
+
+### round-3 rev-3 sha256 table (byte-exact; every `after` re-fetched from the published clone `7db593b0` and compared `==` to the repo file)
+
+| body | before (`e54e114e`) | after (rev-3, `7db593b0`) | repo file |
+|---|---|---|---|
+| `miss-roster-gate.conditions[0].leftValue` | `d24dd81b…` | **`92ca1ccc…`** | `spine-miss-roster-gate.expr.txt` |
+| `miss-roster-plan.jsCode` | `0b7907d6…` | **`c4a19b6f…`** | `spine-miss-roster-plan.js` |
+| `miss-members-gate.conditions[0].leftValue` | — (node NEW) | **`14576e69…`** | `spine-miss-members-gate.expr.txt` (NEW) |
+| `build-miss-member-offer.jsCode` | `68eef4c7…` | **`fab11982…`** | `spine-build-miss-member-offer.js` |
+| `compile-current-state.jsCode` | `5a84dfea…` | **`6bff997d…`** | `spine-compile-current-state.js` |
+| `clarify-company-reply.jsCode` == `offer-hold-reply.jsCode` | `7ff06aa8…` | **`377c2df4…`** | `spine-clarify-company-reply.js` (ONE file, both nodes byte-equal on the POST fetch) |
+| `cs-offer-gate.conditions[1].leftValue` (g2) | `cfa8c18e…` (IIFE) | **`fafa8b77…`** (reverted plain member expr) | `spine-cs-offer-gate.expr.txt` |
+| `cs-offer-gate.conditions` (jq -cj json) | `391a31c8…` | **`ce99a16c…`** (== live active `7aba1447` == clone `0557b0b4` PRE) | — |
+| parser fork `output_exchange` / systemMessage | `a68c5992…` / `138008c2…` | **unchanged** (fork not edited) | parser-fork-* |
+
+Forbidden-token grep (`prototype|constructor|__proto__`) over `diffs/miss-company-routing/*.expr.txt` (now FIVE files incl.
+`spine-miss-members-gate.expr.txt` and the reverted `spine-cs-offer-gate.expr.txt`): **0 hits**. Clone-wide POST sweep: NO non-Code
+node's parameters contain the tokens.
+
+### Units
+
+`tests/unit/miss-company-routing-round3.gates.test.js` — **85 passed, 0 failed**: gate (i)–(viii) re-based on the rev-3 LANE ((iii) flipped:
+stock ⇒ TRUE, + lockstep/domain negatives (iii-b/c)); cs-offer-gate section REWRITTEN for the revert (repo file == live g2 `fafa8b77`;
+3-condition truth table: CS/order TRUE, purchasing/incoming FALSE, warehouse FALSE, cross-pair FALSE, g1 ANDed); NEW: `miss-members-gate`
+expr (true/false/missing/'true'-string/sentinel ⇒ fail-closed), LANE lockstep byte-equality + flag census (2×true/4×false),
+`miss-roster-plan` runs (orders/incoming/stock/both-miss/sentinel/non-LANE ⇒ members+team stamping, fail-closed), bmmo plain arm
+(single/multi/sentinel-passthrough/missing-flag-passthrough) + members-arm regression vs the PRE body (identical modulo stamped plan keys;
+ccs-persisted plan identical), ccs plain arm (single bold + lane team, multi plain + nulled pair, warehouse phrase, team fallback,
+empty-response silent, passthrough turn byte-identical NEW vs PRE, MEMBERS mode byte-identical NEW vs PRE), clarify copy branches
+(member byte-identical / plain company-only / non-member context / routing_companies fallback). Other suites unchanged and green:
+`miss-company-routing-rev4.spine.test.js` **33/33**, `miss-company-routing-rev4.output_exchange.test.js` **48/48**, delta1/2/3 GREEN.
+
+### Smoke (coder, ONE clone exec — LESSONS #45; the tester owns the full Q1–Q9/S set)
+
+`zz-canary-run` 12930297 → clone **12930298** `success` on `7db593b0`, item = the R-M1 shape (`any order for MUB6201`, uac mode, order/CS
+mock, real CRM read): `tool-filter` `crm_order_management_orders_list`; **`miss-roster-gate` TRUE (1 item, no error — new leftValue evaluates
+in the real sandbox)**; **`miss-members-gate` (NEW If) success, TRUE 1/FALSE 0**; `miss-roster-plan` item `{Sorento, brand mocha,
+team customer_service, members:true}`; `get-cs-members-miss` + `build-miss-member-offer` ran (members arm, 6 rows, NO `miss_plain_offer`);
+sent text == the M1r3 picker byte-shape (phrase `…*Sorento* customer_service team?`, members 3–8, yes-sentence); persisted
+`selection_context member_offer`, 1-row plan, Sorento/mocha pair, 8-row `last_result_set`. Egress: sendmsg fork sub-exec 12930309 took the
+GUARD path only (`would_send` 437264483); no orphaned egress node executed, HI not called, prod redis lists LLEN 0, prod sink empty.
+Evidence: `tests/runs/miss-company-routing-round3rev3-SMOKE-20260818.json`. (NOTE for the tester: `zz-canary-read LLIbMXAixexM9Cwc` has NO
+published version — production execute refused; republish it or read `test:egress:{id}` directly.)
+
+### Promote implication (§V7 refresh)
+
+Vs the staged R10/R11 payload: `cs-offer-gate` **DROPS from the payload** (reverted == live `ce99a16c`) ⇒ changed 5 → **4**; new nodes
+9 → **10** (+`miss-members-gate`), with NEW shas inside them for `miss-roster-gate` (`92ca1ccc`), `miss-roster-plan` (`c4a19b6f`),
+`build-miss-member-offer` (`fab11982`), `clarify-company-reply`/`offer-hold-reply` (`377c2df4`); `compile-current-state`'s payload body must
+be re-derived on the R10 F6 live-based body with the rev-3 plain arm. Connection keys 11 → **12** (`miss-roster-plan` retargets;
++`miss-members-gate`). Sweep expectation: **4 changed + 10 new + 12 connection keys, 137 nodes, 0 dropped, 0 non-param diffs.** Parser
+payload unchanged. STAGED payload NOT yet refreshed to rev-3 (R11 delta rows 1/3/4 re-measure owed); still captain-gated, with the D2'
+captain-confirm line (promotions/master-products/attachments/certificates STAY OUT of the LANE without an explicit order).

@@ -1,0 +1,35 @@
+{
+  "date": "2026-08-18",
+  "role": "sorento-coder (smoke, not the tester pass)",
+  "change": "miss-company-routing round-3 rev-3 — plan §'Round 3 rev-3' V1–V7: LANE +stock row +members flags, NEW miss-members-gate If, bmmo/ccs plain arms, clarify copy branch, cs-offer-gate REVERT to ce99a16c",
+  "targets": {
+    "spine_clone": "txiPzSxy3Pclsz6v @ 7db593b0-ef2e-453b-bc98-30ff9267bf41 (versionId==activeVersionId; 160 nodes)"
+  },
+  "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No via MCP execute_workflow (curl JSON-RPC; webhook body {test_run_id UAC-MCR-R3REV3-SMOKE-20260818, contact 437264483, item}); item mode=uac scope=deterministic + top-level mock_reformulator_output (order/CS pair, entity MUB6201); real CRM READ for orders; execution data via REST GET /executions/{id}?includeData=true",
+  "case": "SMOKE = R-M1 shape (orders partial miss 'any order for MUB6201') — LESSONS #45: ONE real clone exec through the NEW miss-members-gate If expression and the CHANGED miss-roster-gate leftValue (offline units cannot see sandbox rejects)",
+  "exec_ids": { "zz-canary-run": "12930297", "clone": "12930298", "sendmsg_fork_sub": "12930309", "egress_read_zz-canary-read_manual": "12930432" },
+  "clone_status": "success",
+  "miss-roster-gate": { "executionStatus": "success", "true_items": 1, "false_items": 0, "note": "new rev-3 leftValue (92ca1ccc) evaluates in the REAL expression sandbox, no ExpressionError" },
+  "miss-members-gate": { "executionStatus": "success", "true_items": 1, "false_items": 0, "note": "NEW If (={{ $json.members === true }}) evaluates clean; orders lane routes TRUE -> get-cs-members-miss" },
+  "miss-roster-plan_item": { "company_name": "Sorento", "brand_code": "mocha", "team": "customer_service", "members": true },
+  "tool-filter.name": "crm_order_management_orders_list",
+  "build-miss-member-offer_ran": true,
+  "build-miss-member-offer_output": { "miss_member_offer": true, "miss_plain_offer_absent": true, "rows": 6 },
+  "persisted_state": { "selection_context": "member_offer", "routing_roster_plan_len": 1, "routing_company": "00000000-0000-0000-0000-000000000001", "routing_brand": "mocha", "last_result_set_len": 8, "variables.response_tail": "Would you like me to escalate to *Sorento* customer_service team?" },
+  "sent_text_tail": "…*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 18/08/2026 12:09:40_\n\nWould you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin\n4. Cyndi\n5. Aisyah\n6. Balqis\n7. Niki\n8. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically. (== M1r3 / rev-2 smoke 12922393 shape, members 3-8 identical)",
+  "egress": [
+    { "guard": "sendmsg-sub (fork aQUmwMVplmNcyUVc sub-exec 12930309)", "kind": "would_send", "target": "437264483", "evidence": "fork runData = guard path only (guard-text -> guard-record-text, full M1r3 text); no real send node executed" },
+    { "guard": "save-message-redis (TEST fork tWm5DYLxfypmVC1T)", "kind": "would_log", "target": "sorento-respond-message-TEST" }
+  ],
+  "S0": {
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "orphaned_egress_nodes_executed": [],
+    "hi_sub_not_executed": true,
+    "prod_redis_LLEN": { "sorento-respond-message": 0, "main-message-list": 0 },
+    "prod_sink": []
+  },
+  "notes": "zz-canary-read LLIbMXAixexM9Cwc has NO published version (production execute refused); a manual-mode draft run (12930432) executed but its Read Egress returned a stale July record (draft ignores the webhook test_run_id) — egress evidence above taken from the clone + sendmsg-fork runData and the prod-list LLENs instead. Tester: republish zz-canary-read or read test:egress:{id} directly.",
+  "verdict": "PASS (smoke) — both new/changed If expressions evaluate in the real sandbox; orders lane byte-identical M1r3; zero egress"
+}

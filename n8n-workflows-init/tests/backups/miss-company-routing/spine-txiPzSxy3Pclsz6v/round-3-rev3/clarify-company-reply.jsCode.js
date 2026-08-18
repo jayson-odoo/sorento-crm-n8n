@@ -14,14 +14,8 @@
 // state (frozen phrase + rows + roster plan + companies + selection_context) so the next reply — a
 // number, a member name, or a company name/code (parser company_pick) — still resolves against
 // the same offer. Only an explicit decline or a brand-new business query clears the offer.
-// Copy (rev-4 captain decision + rev-3 plain branch): company names bold in the lead (WhatsApp
-// single *asterisks*); codes (SRT / MCH / CBN) are accepted silently either way. When the open
-// offer showed a MEMBER PICKER (prev.selection_context === 'member_offer') the ask keeps "a
-// number, a name, or the company (X / Y)" byte-identical; when NO picker was shown (plain-offer
-// both-miss, not-found both-miss — selection_context never armed) there are no numbers or names
-// to reply with, so the ask is company-only (F-R3-1 closed by copy, option (c)). offer-hold-gate
-// only fires with selection_context === 'member_offer', so offer-hold-reply always takes the
-// member branch — no behaviour change on that node.
+// Copy (rev-4 captain decision): company names bold in the lead (WhatsApp single *asterisks*),
+// "reply a number, a name, or the company (X / Y)"; codes (SRT / MCH / CBN) are accepted silently.
 const prev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
 const pools = (Array.isArray(prev.routing_roster_plan) && prev.routing_roster_plan.length)
   ? prev.routing_roster_plan
@@ -33,7 +27,5 @@ const bold = names.map(n => `*${n}*`);
 const joinedBold = bold.length > 1 ? `${bold.slice(0, -1).join(', ')} and ${bold[bold.length - 1]}` : (bold[0] || '');
 const lead = names.length === 2 ? `Both ${joinedBold} teams are listed`
   : (joinedBold ? `${joinedBold} teams are listed` : `More than one team is listed`);
-const clarify_text = prev.selection_context === 'member_offer'
-  ? `${lead} — reply a number, a name, or the company (${list}) and I'll assign automatically.`
-  : `${lead} — reply with the company (${list}) and I'll assign automatically.`;
+const clarify_text = `${lead} — reply a number, a name, or the company (${list}) and I'll assign automatically.`;
 return [{ json: { ...$input.first().json, clarify_company: true, clarify_text } }];
