@@ -735,6 +735,10 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   })();
   const _mcMem  = (() => { try { const n = $('build-miss-member-offer'); return n.isExecuted ? n.first().json : null; } catch (e) { return null; } })();
   const _mcRows = (_mcMem && _mcMem.miss_member_offer === true && Array.isArray(_mcMem.miss_member_rows)) ? _mcMem.miss_member_rows : [];
+  // rev-3 (§V3): plain-offer plan (incoming/stock miss — members:false lanes; NO picker was shown).
+  const _mcPlainPlan = (_mcMem && _mcMem.miss_plain_offer === true && Array.isArray(_mcMem.miss_roster_plan))
+    ? _mcMem.miss_roster_plan.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))
+    : [];
   if (_mcClar && typeof _mcClar.clarify_text === 'string' && _mcClar.clarify_text.trim()) {
     output.user_response = _mcClar.clarify_text;
     if (typeof _mcPrev.response === 'string' && _mcPrev.response) output.variables.response = _mcPrev.response;
@@ -767,6 +771,26 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
       output.variables.routing_company = _mcPlan.length === 1 ? (_mcPlan[0].company_id || null) : null;
       output.variables.routing_brand   = _mcPlan.length === 1 ? (_mcPlan[0].brand_code || null) : null;
     }
+  } else if (_mcPlainPlan.length
+      && !_ideate && !_sug && !_mem && !_dymLastResultSet
+      && typeof output.user_response === 'string' && output.user_response.trim().length) {
+    // rev-3 PLAIN arm (§V3, captain corrections 1+2): incoming/stock miss — the FROZEN phrase ONLY
+    // (single miss names the company bold; the phrase names the team HI will route to — from the
+    // plan/lane, == the parser's suggested_team, gate-enforced lockstep; parser prefix-regex
+    // contract /would you like me to escalate/i in BOTH the visible reply and persisted
+    // variables.response). NO picker text, NO last_result_set extension, NO selection_context
+    // change (stays null — the Δ3 member arm must NOT open: a later "yes" rides the confirmation
+    // arm off the persisted phrase; a company-name reply rides the parser's rev-4 open-offer
+    // company_pick arm). Persist the MISS pool identity: the roster plan + the single pair on
+    // single-miss, nulls on multi (both-miss → multi_company_unpicked → company clarify).
+    const _mcTeamP = (() => { const t = (_mcMem.miss_roster_plan[0] || {}).team; return (typeof t === 'string' && t.trim()) ? t.trim() : ((qf.routing && qf.routing.suggested_team) || 'customer_service'); })();
+    const _mcCoP = (_mcPlainPlan.length === 1 && _mcPlainPlan[0].company_name) ? `*${_mcPlainPlan[0].company_name}* ` : '';
+    const _mcPhraseP = `Would you like me to escalate to ${_mcCoP}${_mcTeamP} team?`;   // FROZEN prefix wording — do not reword
+    output.user_response += `\n\n${_mcPhraseP}`;
+    output.variables.response = `${typeof output.variables.response === 'string' ? output.variables.response : ''}\n\n${_mcPhraseP}`.trim();
+    output.variables.routing_roster_plan = _mcPlainPlan;   // MISS pool identity overrides the axes block above
+    output.variables.routing_company = _mcPlainPlan.length === 1 ? (_mcPlainPlan[0].company_id || null) : null;
+    output.variables.routing_brand   = _mcPlainPlan.length === 1 ? (_mcPlainPlan[0].brand_code || null) : null;
   }
 }
 return output;
