@@ -138,10 +138,10 @@ added or changed by this pass. Parser fork PUT: HTTP 200, 8 nodes, no validation
 |---|---|---|
 | spine `compile-current-state.jsCode` | `de896ddd3b0fd3c4a43bbfafc55d15117a61a8706ad6ea145431f18c97287f99` | `ddacfdfab2972b10cb8db9a3d1b186877e80528b96a54c93eefb8e4c33c5500b` |
 | spine `escalation-context.jsCode` | `8c12563c4f64916a6b0dc7fd21965ba3a5bed4eb7e43d1442e28a5ebe096ac4f` | `4d7bbe2996cad609198b718f39013cad3c753152d77566ac4e4eb40a60b63de8` |
-| spine `miss-roster-gate` leftValue (new) | — | `e385a5987012942e819c92609e49d96a60e9b42224cd4084938d5ef209585368` |
+| spine `miss-roster-gate` leftValue (new) | — | `024d91e31eaa95f484332a9bd41d31f111059d9fcc97ba0774627ebf353efea2` (reviewer-corrected 2026-08-18: the originally recorded `e385a598…` was the file+trailing-LF; deployed leftValue == file bytes == this value) |
 | spine `miss-roster-plan.jsCode` (new) | — | `0b7907d6cff7dbd00d197700c6ea9164485d1dd7b1293fea64dc0bacd1f8bbcf` |
 | spine `build-miss-member-offer.jsCode` (new) | — | `3e3d97096b1347cea5dcfb9bc34a13ac4526aba0e4491ca1b6eebb10e6124bc2` |
-| spine `clarify-company-gate` leftValue (new) | — | `f423f11f0e741023c31a847a7a41d277a7d2e8ceeed497f127365bb6b73012dd` |
+| spine `clarify-company-gate` leftValue (new) | — | `63e30a3db1f6aa693dcadc25e5b0669ed271ccb7aa2f5c17a7311b91d41709fe` (reviewer-corrected 2026-08-18: originally recorded `f423f11f…` = file+trailing-LF) |
 | spine `clarify-company-reply.jsCode` (new) | — | `2ee509aa81a4c5602db0c892660986826564c7c2c0791fe9934b5eca2e92100e` |
 | spine `get-cs-members-miss` params/credentials | — | verified `==` to `get-cs-members` (deep-equal on the re-fetch), `onError: continueRegularOutput` |
 | parser fork `output_exchange.jsCode` | `3ee5b658c1fca330f3845474328561d2d2ad968cac41294613bd59951e327eed` | `3810a9b0b90eb355c0bd64616e5c675d87ff6637bf7f419fb583519b71c83889` |

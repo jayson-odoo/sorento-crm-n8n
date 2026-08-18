@@ -14,14 +14,17 @@ Mechanics (same as brand-company-routing): seed via `zz-canary-run VtIV3TF3aw2Fx
 inside a sequence. `test_run_id`/`conversation_id` prefix `UAC-MCR-` (Lesson 41). Deterministic turns inject
 `item.message.mock_reformulator_output` (Lesson 28). `contact.chat_id` NOT required. Never call `next-assignee` from a test.
 
-Item template (deep `message.message.message.text` nesting per Lesson 12):
+Item template (deep `message.message.message.text` nesting per Lesson 12). ⚠️ `mock_reformulator_output` sits at the
+item TOP level, NOT inside `item.message` — the redis pop wraps the seeded item under `message`, and the clone reads
+`$('redis-pop-main-message-list').json.message.mock_reformulator_output` (tester finding 2026-08-18; a mock placed
+inside `item.message` is silently ignored and the real fork LLM runs):
 
 ```json
 { "test_run_id": "UAC-MCR-<case>-<turn>-<date>", "contact": "437264483",
   "item": {
     "message": { "message": { "message": { "text": "<msg>", "type": "text", "attachment": { "type": "text", "description": "" } } },
-                 "replyTo": {},
-                 "mock_reformulator_output": { "…": "omit for parser-tier turns" } },
+                 "replyTo": {} },
+    "mock_reformulator_output": { "…": "omit for parser-tier turns" },
     "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary",
                  "custom_fields": [ { "name": "is_human_intervened", "value": "false" }, { "name": "is_allowed_stock", "value": "true" } ],
                  "assignee": { "id": null } },
