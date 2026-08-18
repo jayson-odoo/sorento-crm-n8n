@@ -1149,3 +1149,168 @@ subs), from `LIVE-PROMOTE-STAGED-20260818/PRE-*` and `ROUND4/PRE-*`. Live must *
 4. **Confirm F-R4-3 scope** includes the `promo-picker._escTeam` default collapse.
 5. Decide F-R13-1's fix shape for the next round (carry the miss line across the rebuild ← preferred, vs
    suppress the offer).
+
+---
+
+## R14. Pre-promote hardening audit (type-safety / outage class)
+
+**Trigger.** Captain-cited real outage: a `contact_id` passed as a NUMBER made `.trim()` inside the
+get-results sub's `entity-ids-transformer` throw — that node is on the main answer path, so every turn
+died for ~5 min. This section audits **exactly the bodies staged for the live write**
+(`tests/backups/miss-company-routing/LIVE-PROMOTE-STAGED-20260818/`) for that failure class and for
+anything else that can take the spine down. Read-only: no workflow was touched.
+
+**Audited artefacts (sha256/8 of the exact bytes to be written):**
+
+| target | body | sha |
+|---|---|---|
+| get-results LIVE answer path `rysSPgUssLDf6xJc` | `output-structurer` | `698f89f1` |
+| get-results LIVE probe path `Fss5aAaXthJSWpZCgKiKR` | `output-structurer` | `d6d3f1fd` |
+| parser `XTODTw-dJcV0uRdC056hG` | `AI Agent.options.systemMessage` | `f0a825a9` |
+| parser `XTODTw-dJcV0uRdC056hG` | `output_exchange.jsCode` | `a68c5992` |
+| spine `9qVyfUxmRQqrpGRMDLRuz` | 6 changed + 10 new (see R13 promote map) | as R13 |
+
+Payload re-swept independently for this audit: **137 nodes, 6 param-changed, 10 new, 0 dropped,
+0 non-`parameters` field diffs, 12 connection delta keys** — matches R13 item 12 exactly. Every
+`$('…')` node reference in all 16 spine nodes and in both parser nodes **resolves to a node that
+exists in the same payload** (a typo'd reference is itself an outage vector; there are none).
+
+### R14.1 Findings (ranked by BLAST RADIUS, not by likelihood)
+
+| id | file · line | expression | trigger input | blast radius | guarded? / patch |
+|---|---|---|---|---|---|
+| **F14-A** | `miss-roster-gate` `leftValue` (`e4575d3e`) — **new node on the unconditional main answer path** (`central-exchange` → `miss-roster-gate` → {T `miss-roster-plan`, F `dym-transform-partial`}) | whole gate IIFE | any expression-sandbox reject (LESSONS #45: an expression throw **ERRORS the If node**, it does **not** return false, and the inner `try/catch` cannot catch a parse-time reject) | **MAXIMUM — every answered turn dies** (identical to the cited outage) | **GUARDED.** 0 occurrences of `.prototype` / `.constructor` / `__proto__`; membership deliberately via `Object.keys(LANE).includes(tool)`; all 4 node refs (`tool-filter`, `Call 'sub-query-reformulator'`, `crossdomain-render`, `promo-picker`) exist, the latter two behind `.isExecuted`; every return path is a boolean literal or `.some()` ⇒ `typeValidation:strict` safe. Real-sandbox evidence: `runs/miss-company-routing-round3rev3-SMOKE-20260818.json` + R1/R5/R8/R10/Q1–Q8. No patch. |
+| **F14-B** | `offer-hold-gate` `leftValue` (`8f14a430`) — **new node on the main path** (`If-ideate`[false] → `offer-hold-gate` → {T `offer-hold-reply`, F `If10`}) | whole gate IIFE | same class as F14-A | **HIGH — every turn reaching `If-ideate` false dies** | **GUARDED.** Same three-token grep clean; refs `Call 'sub-query-reformulator'` + `get-session-vars` exist; `typeof e.member_reprompt !== 'string'` before any string use; session read `(s && s.session_vars && s.session_vars.variables) \|\| (s && s.variables) \|\| {}` survives a first-ever contact; boolean-only returns. Real exec 12913601 (M8d). No patch. |
+| **F14-C** | `subs/PAYLOAD-*-output-structurer.js` `_codes` block (rys @355–364, Fss @342–351) | `.map(x => ({ c: String((x && x.code) ?? '').trim(), u: String((x && x.uuid) ?? '').trim() }))` | `entities` as **array**, as **JSON string**, as garbage, elements as strings/numbers/null; `code` as number/array/object | **MAXIMUM — this sub is on every answered turn** (same blast radius as the outage node) | **GUARDED, and guarded correctly for both `entities` shapes.** `typeof _ents0 === 'string' ? safe(_ents0) : _ents0` (`safe` = try/JSON.parse/`null`) `\|\| []` → `Array.isArray(_ents) ? _ents : []`; every method call sits on a `String(… ?? '')` result; `_isUuid` receives only that string; the whole block is inside `try { } catch (err) { _codes = []; }` (Code-node sandbox — a real catch, unlike an expression). `_isUuid` is declared once per file (no `const` redeclaration ⇒ no SyntaxError), block-scoped inside `if (_lookupCos.length > 1)`. Regex is anchored + fixed-length (no ReDoS). No patch. |
+| **F14-D** | parser `AI Agent.options.systemMessage` line 436 — the inline `={{ }}` "Companies OFFERED" IIFE | `st.routing_roster_plan` / `st.routing_companies` / `c.company_name` | `previous_conversation_state` **absent / null / a JSON string / a number / an array**; pool rows non-objects; `company_name` non-string | **MAXIMUM — the parser runs on every turn; a systemMessage expression throw errors the AI Agent node** (`retryOnFail:true`, `onError` unset) ⇒ the parser sub fails ⇒ the spine's `Call 'sub-query-reformulator'` error branch | **GUARDED — no throwable operation exists in it.** `… \|\| {}` absorbs null; a string/number `st` yields `undefined` members ⇒ `Array.isArray` false ⇒ `src = []` ⇒ `''` ⇒ `'(none)'`. The only string method (`n.toLowerCase()`) is reached **only** through `(c && typeof c.company_name === 'string') ? c.company_name : ''` + `.filter(n => …)`. 0 forbidden sandbox tokens. Trigger node ref exists. No patch. |
+| **F14-E** | `escalation-context` L43 `for (const a of (_CO_ALIASES[nk] \|\| [])) ks.add(a);` | prototype-key lookup on an object literal | persisted `company_name` whose lowercase is `constructor` or `__proto__` → `_CO_ALIASES[nk]` returns the Object constructor / `Object.prototype` (truthy, **not iterable**) → `TypeError` | MEDIUM — Code node, `onError` unset ⇒ **the escalation turn dies** | **UNGUARDED (theoretical).** Not customer-controllable — `company_name` originates from CRM `resolve-entity` → `disallowed-entity-gate.routing_companies` → session vars. **Patch P1 below** (1 line, behaviour-identical). |
+| **F14-F** | parser `output_exchange` L1286 `for (const a of (_CO_ALIASES[nk] \|\| [])) ent.keys.add(a);` | same | same | MEDIUM — parser Code node, `onError` unset ⇒ the parser sub fails on a member-offer reply turn | **UNGUARDED (theoretical).** **Patch P2 below** (1 line, behaviour-identical). |
+| **F14-G** | `build-miss-member-offer` L72 `label: m.name` → persisted into `last_result_set` → read by the **untouched** parser arm `output_exchange` L846–855 `row.label.indexOf(': ')` / `.slice()` / `.trim()` (guarded only by `!row.label`) | a roster member whose `name` is a **non-string truthy** (number/object) from CRM `team-members` | HIGH — parser Code node throws on the NEXT turn of that conversation | **INHERITED, NOT INTRODUCED.** Live `build-cs-member-offer` L100 already writes `label: m.name` into `cs_last_result_set` on every ordinary CS offer, so the exposure predates this round; our change only adds more occasions. `null`/`undefined` names fall through the existing `!row.label` guard safely. **Do NOT patch in this promotion** (a one-sided coercion in the miss lane leaves the live exposure standing and adds an untested delta); schedule a standalone hardening round that fixes the READER at `output_exchange` L846. |
+| **F14-H** | `disallowed-entity-gate` `out.company_team` and `promo-picker` `_escTeam` default (F-R4-3 collapse) | `'marketing_promotion_' + brand` → `'marketing_promotion'` | — | LOW | **SAFE — type unchanged** (`string \| null` before and after). Sole untouched consumer `build-suggest-offer` L29 `(gate && gate.company_team) \|\| q?.routing?.suggested_team \|\| 'customer_service'` calls no method on it. No patch. |
+
+### R14.2 The specific outage vector — `contact_id` and every other id
+
+- **`contact_id` appears in ZERO of the promoted Code bodies.** Its only occurrence in the whole
+  payload delta is the URL expression of the new `get-cs-members-miss`, and that URL is
+  **byte-identical to live `get-cs-members`** (verified string-equal), including `authentication`,
+  `genericAuthType`, `sendHeaders`, `options.response.fullResponse`, the credential
+  (`mNsZWyU82NYV58k2`) and `onError: continueRegularOutput`. It is **template-interpolated**
+  (`contact_id={{ …json.id }}`) with no string method applied, so a numeric id renders `123` and a
+  missing id renders `undefined` — exactly today's live behaviour, no better and no worse.
+- Other ids we handle (`company_id`, `user_id`, `respond_user_id`, `uuid`, `brand_code`): every
+  place our code applies a method it first coerces or type-checks —
+  `String(c.company_id).toLowerCase()` behind `if (c.company_id)`,
+  `String(c.company_name).toLowerCase().trim()` behind a truthiness ternary,
+  `typeof ck === 'string' && ck.trim()` for `company_code`/`code`,
+  `encodeURIComponent($json.brand_code)` behind `$json.brand_code ?`. Ids that are only compared
+  (`===`), stored, or template-interpolated are type-agnostic.
+  **Our changes neither introduce nor depend on the string assumption that caused the outage.**
+
+### R14.3 `onError` posture
+
+- Census of the payload: **all 41 spine Code nodes have `onError` unset** — a throw in any of them
+  hard-fails the execution. That is the house posture; our 8 new/changed Code nodes match their
+  neighbours exactly and none is weaker than what sits beside it.
+- `get-cs-members-miss` (`continueRegularOutput`) == live `get-cs-members` (`continueRegularOutput`).
+  A 404 / empty body / HTML error page becomes an `{error:…}` or non-array `body` item, and
+  `build-miss-member-offer.rosterAt()` maps both to `[]` → `if (!members.length) return pass;` →
+  envelope passthrough, turn byte-identical. Same three-line parse as live `build-cs-member-offer`.
+- **`build-miss-member-offer` is the best-defended new node**: its entire body is inside
+  `try { … } catch (e) { return pass; }` with `pass` computed first — any surprise leaves the turn
+  untouched rather than killing it.
+- **No new node on the main answer path is error-tolerant** — F14-A and F14-B are If nodes and
+  cannot be. Their safety is structural (fail-closed IIFE) plus the LESSONS #45 grep plus real
+  clone executions, not `onError`.
+
+### R14.4 Empty / degenerate inputs
+
+| input | handling | verdict |
+|---|---|---|
+| zero entities / `entities` as JSON string / unparseable | `_codes` both-path guard (F14-C) | `_codes = []` ⇒ the ` for …` clause drops, sentence stays truthful |
+| zero answers | `miss-roster-gate` `if (!ans.length) return false` | no offer |
+| `lookup_companies` present but **empty** | `if (!lc.length) return false` | no offer |
+| `fields` missing on an answer | `Array.isArray(a.fields)` → `f === null` → `if (!f) return false` | conservative no-offer |
+| `company_name` null / falsy `value` | field predicate requires `x.value` truthy before `String(f.value)` | no crash, no offer |
+| roster 404 / empty body / HTML error page | `continueRegularOutput` + `r.error` / `Array.isArray(r.body)` | `[]` → envelope passthrough |
+| gate/plan divergence (plan would be empty) | `_miss_plan_empty` sentinel item, `members:false` | no roster fetch, passthrough |
+| session vars absent (first-ever contact) | `(s && s.session_vars && s.session_vars.variables) \|\| (s && s.variables) \|\| {}` in `offer-hold-gate`, `clarify/offer-hold-reply`, `compile-current-state` | `{}` ⇒ all arms fail closed |
+| `output.variables` at the ccs insert point | assigned unconditionally at ccs L619, insert is at L705 | no undefined deref |
+| `_sug` in the ccs merge arm | arm entry is `else if (_merge)`, `_merge = !!(_sug && _mem)` | `_sug` non-null |
+
+### R14.5 Values we write that untouched live nodes read
+
+Swept the whole payload for consumers of `miss_roster_plan`, `routing_roster_plan`, `routing_company`,
+`routing_brand`, `team`, `members`, `miss_member_rows`, `clarify_text`, `miss_plain_offer`,
+`company_team` outside the 16 audited nodes. **Exactly two untouched consumers exist:**
+
+- `cs-roster-plan` — reads `routing_companies` / `routing_brand` behind `Array.isArray(...) && .length`
+  with a null-filled fallback row. No method call on our values. **Safe.**
+- `build-suggest-offer` — `company_team` via `||` chain, no method call. **Safe.** (F14-H)
+
+`clarify_text`, `miss_roster_plan`, `miss_member_rows`, `miss_plain_offer` have **no consumer outside
+the changed set** — they are read only by `compile-current-state`, and there behind
+`typeof … === 'string'` / `Array.isArray(…)`. The one cross-boundary write is `last_result_set`
+(`_mcBase.concat(_mcRows)`), whose rows are shape-identical to live `build-cs-member-offer` rows —
+covered by F14-G.
+
+### R14.6 Per-body verdict
+
+| body | verdict |
+|---|---|
+| `subs/PAYLOAD-rysSPgUssLDf6xJc-output-structurer.js` (`698f89f1`) | **SAFE TO PROMOTE AS IS** |
+| `subs/PAYLOAD-Fss5aAaXthJSWpZCgKiKR-output-structurer.js` (`d6d3f1fd`) | **SAFE TO PROMOTE AS IS** |
+| `PAYLOAD-node-parser-systemMessage.txt` (`f0a825a9`) | **SAFE TO PROMOTE AS IS** |
+| parser `output_exchange` (`a68c5992`) | **SAFE TO PROMOTE AS IS** — optional Patch P2 (F14-F, theoretical) |
+| `escalation-context` (`cca7a245`) | **SAFE TO PROMOTE AS IS** — optional Patch P1 (F14-E, theoretical) |
+| `miss-roster-gate` / `offer-hold-gate` / `miss-members-gate` / `clarify-company-gate` | **SAFE TO PROMOTE AS IS** (highest blast radius; verified clean per F14-A/B) |
+| `miss-roster-plan`, `build-miss-member-offer`, `clarify-company-reply`, `offer-hold-reply`, `tag-offer-hold`, `get-cs-members-miss` | **SAFE TO PROMOTE AS IS** |
+| `compile-current-state` (`c864f204`), `escalate-catalog` (`5ec7d6a7`), `build-cs-member-offer` (`63c1c46e`), `disallowed-entity-gate` (`069b3691`), `promo-picker` (`05a96e3a`) | **SAFE TO PROMOTE AS IS** |
+
+### R14.7 Optional hardening patches (NOT applied — reviewer does not edit)
+
+**P1 — `escalation-context` (spine `9qVyfUxmRQqrpGRMDLRuz`), line 43.** Replace exactly:
+
+```
+    for (const a of (_CO_ALIASES[nk] || [])) ks.add(a);
+```
+with
+```
+    for (const a of (Array.isArray(_CO_ALIASES[nk]) ? _CO_ALIASES[nk] : [])) ks.add(a);
+```
+
+**P2 — parser `output_exchange` (`XTODTw-dJcV0uRdC056hG`), line 1286.** Replace exactly:
+
+```
+    for (const a of (_CO_ALIASES[nk] || [])) ent.keys.add(a);                                                              // (B) alias stopgap
+```
+with
+```
+    for (const a of (Array.isArray(_CO_ALIASES[nk]) ? _CO_ALIASES[nk] : [])) ent.keys.add(a);                              // (B) alias stopgap
+```
+
+Both are behaviour-identical for every non-prototype key. **If either is applied, the affected body's
+sha changes and R13's sha-gated promote map must be regenerated and re-verified before the PUT** — so
+applying them is only worth it if the captain wants them, and both must be re-sha'd, not hand-typed.
+
+### R14.8 Recommendation — **GO**
+
+No must-fix. The staged payload is **materially better** on the audited failure class than the code it
+replaces: the `_codes` change (F14-C) *adds* type guards to a body on every answered turn, and every
+new string operation in this round sits behind `String(… ?? '')`, `typeof … === 'string'`,
+`Array.isArray(…)`, or a Code-node `try/catch` that genuinely catches.
+
+Residual risks the captain should accept **knowingly**:
+
+1. **Two new If gates now sit mid-main-path** (`miss-roster-gate` on every answered turn;
+   `offer-hold-gate` on every non-ideate turn). Their expressions cannot be made error-tolerant by
+   `onError`; a sandbox reject would be a full outage. Verified clean three ways (token grep, node-ref
+   resolution, real clone executions) — but they are the **#1 revert trigger** in the first minutes
+   after the PUT. Watch the first live answered turn end-to-end before walking away.
+2. **F14-G** — `label: m.name` flowing into the parser's unguarded `row.label.indexOf(': ')`. Inherited
+   from live, widened by this round. Fix the reader in a follow-up round, not in this PUT.
+3. **F14-E / F14-F** — the `_CO_ALIASES` prototype-key throw. Requires a CRM company literally named
+   `constructor` or `__proto__`. Accept, or take P1+P2 with a re-sha.
+4. **`_codes = []` copy** — when nothing survives the uuid filter the sentence drops its ` for …`
+   clause (`*Sorento:* no promotions records.`). Intended, already on R13's watch list.
+
+**Verdict: GO for the rounds-2+3+4 promotion, unchanged, under R13's PROMOTE CHECKLIST and smoke set.**
