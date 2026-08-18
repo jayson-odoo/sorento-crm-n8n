@@ -238,7 +238,8 @@ change needed. Promotion is captain-gated on the checklist above; F2's harness f
 
 Verdict: **APPROVE** for the rev-3 + rev-4 code as published (clone `0557b0b4`, parser fork `de9ff09d`, sendmsg fork
 `b48e0eaa`), **with promotion gated** on (a) the rev-4 tester evidence (M8a–M8g + M8reg + S3) being green — it LANDED while
-this review was closing and is green on all 15 executions (R6) — and (b) the captain's disposition of F5. Findings F5–F9 below;
+this review was closing and is green on all 15 executions (R6) — and (b) the captain's disposition of F5. **Superseded by pass 3: F5 is CLOSED by rev-5 (R8); the final
+verdict for the whole round is R9.** Findings F5–F9 below;
 none is a code defect that blocks the round on its own.
 
 Inputs: commits 7c73a44 (rev-3 coder), 3e5b75e (rev-3 tester), 98420ec (rev-4 coder), 4370429 (planner R4verify);
@@ -473,12 +474,11 @@ Order (sub before parent, Lesson 37; backup-first; byte/param-gate draft → pub
    below; run the draft-vs-active differing-nodes check (empty). Record live versionIds.
 2. **Live parser `XTODTw-dJcV0uRdC056hG`** — gate: `output_exchange.jsCode` sha == `3ee5b658…` AND `AI Agent`
    `options.systemMessage` sha == `583bcfb0…` (measured true on `89b63c51`). Then `setNodeParameter` `/jsCode` :=
-   `parser-fork-output_exchange.js` (`b2ac7783…`, the FINAL rev-4 body) and `/options/systemMessage` :=
-   `parser-fork-AI-Agent.systemMessage.txt` (`138008c2…`). Fork bodies = live + pass-1 + rev-3 + rev-4 hunks, so they
-   apply as-is ONLY under that gate. The systemMessage expression references `$('When Executed by Another Workflow')` —
+   `parser-fork-output_exchange.js` (**`a68c5992acac…`, the rev-5 body — supersedes the rev-4 `b2ac7783…`; fork
+   `c7d9cfa2`**) and `/options/systemMessage` := `parser-fork-AI-Agent.systemMessage.txt` (`138008c2…`, unchanged by
+   rev-5). Fork bodies = live + pass-1 + rev-3 + rev-4 + rev-5 hunks, so they apply as-is ONLY under that gate. The systemMessage expression references `$('When Executed by Another Workflow')` —
    live's trigger has that name and carries `previous_conversation_state` (verified). Publish; re-gate active.
-   (Whether F5's tightening ships in this body is the captain's call — if yes, promote the rev-5 body instead, after its
-   own tester pass.)
+   (F5 is closed by rev-5 — the `a68c5992…` body IS the F5-tightened body; see R8.)
 3. **Live spine `9qVyfUxmRQqrpGRMDLRuz`** — this round touches: `compile-current-state`, `escalation-context`,
    `build-cs-member-offer`, `escalate-catalog`; NEW `miss-roster-gate`, `miss-roster-plan`, `get-cs-members-miss`,
    `build-miss-member-offer`, `clarify-company-gate`, `clarify-company-reply`, `offer-hold-gate`, `offer-hold-reply`,
@@ -541,3 +541,59 @@ execs incl. this review's own re-checks); no replay-norm change. **Promotion gat
 LANDED and green with §0 held on all 15 executions (R6; F9 closed — the tester's rollup section/commit is still to
 follow), (b) captain disposition of F5 (accept the ≤4-word short-path bound, or ship the rev-5
 tightening after a tester pass), (c) apply the promote map above as sha-gated node hunks on live-at-promote-time (F6).
+
+---
+
+# Rev-5 (F5 guard) — reviewer pass 3, 2026-08-18
+
+## R8. Rev-5 verification — PASS, F5 CLOSED
+
+- **Published state (re-fetched from MCP):** parser fork `wI5RkNGW3EOJfBdo` `versionId == activeVersionId ==
+  c7d9cfa2-b46e-43b4-a227-8104616401e4` (updatedAt 03:32:31Z), 8 nodes, 0 draft/active differing nodes. Diffed the whole
+  fetched workflow against my earlier `de9ff09d` fetch: **exactly ONE node's parameters changed (`output_exchange`)**; every
+  other node's parameters + meta, all connections and `settings` byte-identical; systemMessage still `138008c2…`. Deployed
+  `output_exchange.jsCode` sha `a68c5992acac…` `==` repo `parser-fork-output_exchange.js`. Spine clone `0557b0b4`, sendmsg
+  fork `b48e0eaa`, live parser `89b63c51` untouched (diff doc rev-5; consistent with the tester's live re-check).
+- **The hunk (git diff 98420ec..9e52afc on the body):** comments + ONE expression:
+  `const shortOk = words.length > 0 && words.length <= 4 && (kept.length < 2 || (!curEnt && !domainQ));` — exactly the F5
+  suggestion. Tier order unchanged (Tier 2.5 before Tier 3); the coder's reasoning is accepted: moving Tier 2.5 after
+  `_isNewQuery` would drop the single-token picks whenever the real parser speculatively domain-classifies a bare company/code
+  token (the LESSON-39 shape), which is behaviour-changing on the evidenced class; the guard alone reaches the F5 target set
+  (`pickLlm` already required `!domainQ`; the no-context arm shares the resolver so a `business_query`-without-domain
+  "mocha promotions" is refused there too).
+- **Units re-run by this review on the deployed body:** 48/48 green (the 16 new rev-5/F5 cases incl. the four probes, the
+  "single token speculatively domain-classified" case, and the no-context-arm cases).
+- **Real-parser proof (planner, `R4verify.md` rev-5 section, fork `c7d9cfa2`/clone `0557b0b4`):** "mocha promotions"
+  12914974 → promotion query (no pick/HI/hold; was `company_pick Mocha` on rev-4); "show sorento orders" 12914987 → order
+  lookup ran, no HI; "srt" 12915006 → Sorento pick, HI guarded; "yes mocha" 12915016 → Mocha pick, HI guarded; egress =
+  guard records only.
+- **(3) Could `!domainQ` refuse a legit pick like "sorento team" on a speculative `domain_hint`?** No: `team` is a filler,
+  so `kept == ["sorento"]` (`kept.length < 2`) and the short path stays unguarded — probed on the deployed body with
+  business_query/order, clarification and casual stubs: all three ⇒ `company_pick Sorento`. Same for "the sorento one",
+  "mocha side pls", "Mocha team pls" (+ current-message brand entity), bare "sorento" with a speculative domain + entity.
+  The units cover this class explicitly ("rev-5 pick 'Mocha team pls' … single token", "rev-5 pick bare 'sorento'
+  speculatively domain-classified"). **Residual (documented, accepted, non-blocking):** a pick phrase with ≥2 NON-filler
+  tokens — probed "sorento cs team", "sorento customer service", "sorento branch" — is refused ONLY IF the LLM also
+  speculatively marks it business_query/domain (casual/request_for_help ⇒ still a pick); the refusal falls to Tier 3 = safe
+  new-query abandon (never a wrong assign — the LESSON-39 direction, UAC "resolve OR safe abandon = PASS"). If this shows up
+  in console use, the cheap follow-up is adding `cs`, `customer`, `service`, `branch`, `office` to `_coFillers` (parser
+  fork only) — not required for this round.
+
+## R9. FINAL VERDICT — whole round (rev-1 … rev-5)
+
+**APPROVE.** Published targets for promotion: spine clone `txiPzSxy3Pclsz6v` @ `0557b0b4-8f2d-457e-8f64-4e1d600c6ca1`,
+parser fork `wI5RkNGW3EOJfBdo` @ `c7d9cfa2-b46e-43b4-a227-8104616401e4` (`output_exchange` `a68c5992…`, systemMessage
+`138008c2…`), sendmsg fork `aQUmwMVplmNcyUVc` @ `b48e0eaa` (TEST-only S3 guard — NOT promoted). Node-diffs verified
+byte-exact against the published bodies for every revision; frozen-prefix parser contract intact in all render arms; the
+offer-hold lane is LLM-free/read-free/arm-gated and re-persists the full offer; plan-first pool in all four places; alias
+stopgap mirrored (F7 carry-forward); parser body phrase-gated; F5 short-path hijack closed by rev-5 with real-parser proof;
+zero egress re-confirmed on every execution of the round (rev-1/2: 20, rev-3: 9, rev-4: 15 + R4verify 4, rev-5: 4 — all
+`would_*` guard records only, HI always short-circuited, no orphaned egress node ever ran, get-results tools read-only,
+S3 chat-memory insert now on `n8n_test-db`); no replay-norm change needed. Open items are all non-blocking: F6 (promote-map
+corrections — live diverges on `escalate-catalog` and the ccs merge-arm sentence; the R7 map already encodes them), F7
+(alias stopgap), F8 (arm B `entities` re-persist, planner note), the R8 residual (extra-token pick phrases under a
+speculative domain — safe-abandon direction), and F2 (captain-accepted chat-console exception, closed).
+
+**Promotion is captain-gated on the R7 checklist**, applied as sha-gated node hunks against LIVE at promote time (a hotfix
+worker is editing the live spine concurrently — re-measure every gate; live was `efa21057` / parser `89b63c51` at this
+review's fetches), with step 2's parser body = **`a68c5992…` (rev-5)**. Reviewer authorizes; does not execute.
