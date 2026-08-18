@@ -201,3 +201,77 @@ plan ⇒ `miss_plain_offer:true` + no rows/text, sentinel-only ⇒ passthrough, 
 rev-2 outputs; ccs plain arm — phrase-only append (single-named / multi-plain), axes persisted, `selection_context`
 untouched, guard set (`_sug` etc.) refuses; clarify copy — member branch byte-identical, plain branch exact rev-3
 string; grep every new/changed `.expr.txt` for `prototype|constructor|__proto__` (0 hits).
+
+## Round 4 — all-domain miss offer + miss-line code hygiene (plan §"Round 4", 2026-08-18)
+
+Targets: clone `txiPzSxy3Pclsz6v` @ the round-4 publish (base **`061e46c9`**, post tier-lane rebase;
+changed vs it: `miss-roster-gate` leftValue — LANE `pairs` shape + 5 new rows + 2 precedence legs —
+and `miss-roster-plan` — mirrored LANE + parser-sourced `team`) + get-results fork
+**`t4QvrtrPnTwRU6br`** @ the round-4 publish (base `87df404c`, `output-structurer` `eac4759f` → the
+`_codes` predicate) + parser fork `wI5RkNGW3EOJfBdo` @ **`c7d9cfa2` UNCHANGED** + sendmsg fork
+`aQUmwMVplmNcyUVc` @ `b48e0eaa` unchanged. Verify draft==active on all four before starting; live
+spine `7aba1447`, live parser `89b63c51`, live get-results `rysSPgUssLDf6xJc` `cacd7c95` and
+`Fss5aAaXthJSWpZCgKiKR` `f214cb7e` must all be unchanged after.
+
+**scope: `deterministic`.** R2/R3/R6b/R8b/R11 confirm turns may use the deterministic confirm mock;
+the parser-tier turns listed below exercise UNCHANGED fork arms and are regression proofs only.
+Same mechanics, item template, contact `437264483`, `UAC-MCR4-` prefix, `mode=regress-capture` for
+sequences, reset `respond_contacts_test` between independent cases. Every case bound to
+`UAC.md` **§0 S1–S6**.
+
+**Prerequisite P3 (read-only, before R2/R6b/R7b/R8b):** `zz-roster-probe` for
+`marketing_promotion`/`general_enquiries`, `purchasing_product`/`general_enquiries`,
+`marketing_product`/`general_enquiries`, `purchasing_certification`/`general_enquiries` × {Sorento
+`00000000-0000-0000-0000-000000000001`, Mocha `38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2`}. Plain lanes
+make no roster call, so an empty team does not block the offer — record any empty/404 team as
+**BLOCKED-BY-CONFIG** for the captain (what a LIVE "yes" would hit at `next-assignee`). Do not drop
+a LANE row for a config gap.
+
+Mocks. Promotion (R1/R3/R4/R5 base): `{ "message_type": "business_query", "domain_hint": "promotion",
+"intent_hint": "check_promotion", "entities": [{ "raw": "MUB6201", "hint": "product",
+"current_message": true }], "routing": { "suggested_team": "marketing_promotion", "suggested_agent":
+"general_enquiries" }, "escalation": { "is_escalation_confirmation": false }, "access_levels": <as the
+M6b/N8 mock — omitting it errors pre-existing If4> }`. Master products (R6): domain `master_products`,
+routing `purchasing_product`/`general_enquiries`. Product attachment (R7): domain `product_attachment`,
+`intent_hint check_product_attachment`, entities product + `attachment_type` (`product image`),
+routing `marketing_product`/`general_enquiries`. Certificate (R8): same domain, `attachment_type`
+= a cert word (SPAN/SIRIM/certificate), routing `purchasing_certification`/`general_enquiries`.
+Confirm mocks: as M3 with the case's own routing pair.
+
+Fixtures (**volatile — re-probe read-only first**): **MUB6201 promotions** = the captain's exact
+console shape (clone spine exec `12941592` / sub exec `12941604`): 4 Mocha promotions, Sorento
+ABSENT ⇒ `*Sorento:* no promotions records for …`. **MUB6201** also carries the orders / incoming /
+stock shapes used by the regression subset. Master-products, attachment and certificate two-company
+fixtures must be probed (a per-company miss needs a product whose companies span 2 AND a record set
+that omits one); if a domain has no live miss fixture, run its t1 as a pinned `test_workflow` with
+`central-exchange` pinned to a synthetic 2-company/1-answer envelope and let the offline unit stand
+as the shape proof — record which, per the R3-rev-3 Q5 precedent.
+
+| # | case | turns | expect |
+|---|---|---|---|
+| R1 | **(A)+(B) together — the captain's exact promotions turn.** "promotion for MUB6201", promotion mock | 1 | `tool-filter.name == "crm_marketing_promotions_list"`. **(A):** the sent text contains `*Sorento:* no promotions records for MUB6201.` and matches `/no promotions records for MUB6201\./`; **hard fail** if the text matches `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/` anywhere. **(B):** `miss-roster-gate` TRUE; `miss-roster-plan` = 1 item `{plan_idx:0, company_id:<Sorento>, company_name:"Sorento", brand_code:"mocha", team:"marketing_promotion", members:false}`; `miss-members-gate` FALSE branch; **`get-cs-members-miss` NOT EXECUTED (zero `team-members` GET on the whole exec)**; `build-miss-member-offer` executed with `miss_plain_offer:true`, NO `miss_member_rows`/`miss_offer_text`; `get-cs-members`/`cs-roster-plan`/`build-cs-member-offer` NOT executed. Reply text ENDS with **`Would you like me to escalate to *Sorento* marketing_promotion team?`** and nothing after it (no `Please choose who to route to`, no numbered member line, no yes-sentence). **Ordering:** the phrase is the last line of the TEXT `would_send` (`sorento-sub-respond-sendmsg-respond2`); the Mocha promo PDFs are their OWN later `would_send` records — assert text-before-files. Persisted state (ccs output / orphaned `save-session-vars` input, Lesson 42): `variables.response` ends with the phrase; `routing_roster_plan` = 1 Sorento row; `routing_company == <Sorento>`; `routing_brand == "mocha"`; `selection_context == "suggest_offer"` and `last_result_set` == the promo roster (promo-picker's — **NOT** `member_offer`, NOT member rows). §0 |
+| R2 | R1 then **bare "yes"** (confirm mock, marketing_promotion/general_enquiries routing) | 2 | rev-4 verbatim arm, no new code: `escalation-context` `routing_source == "prior_state"`, `company_id == <Sorento>`, `brand_code == "mocha"`, `team == "marketing_promotion"`, agent `general_enquiries`; `clarify-company-gate` FALSE; HI fork called with that pair, NO explicit assignee; `get-round-robin-assignee` NOT executed; egress `human-intervention-sub would_write.payload` matches. §0 |
+| R3 | **the promo roster still works on top of the offer** — R1 then **"1"** (promo-pick mock: `reference_positions:[1]`, promotion domain) | 2 | `promo-picker` pick arm runs, exactly ONE promotion's file is sent, no HI call, no `human-intervention-sub` egress; the turn's own reply carries **no second** `would you like me to escalate` (see R4). Proves the miss offer does not break the pre-existing pick lane. §0 |
+| R4 | **negative — a promotions PICK turn gets NO miss offer.** On an open promo list (R1 state), reply "1" | 1 (t2 of R3) | `promo-picker` output carries `_promo_pick`; **`miss-roster-gate` FALSE** (round-4 precedence leg b); `miss-roster-plan`/`build-miss-member-offer` NOT executed; the rebuilt reply contains ZERO occurrences of `would you like me to escalate`. Hard fail: an offer appended to a rebuilt pick reply. §0 |
+| R5 | **negative — per-item decomposition already offers (`_promo_unmatched`).** Two-product promotion ask where one product has promotions and the other has none (promo-picker appends `No promotion found for <code>. Would you like me to escalate to <team> team?` and KEEPS answers) | 1 | `promo-picker` output carries `_promo_unmatched`; the sent text contains **EXACTLY ONE** match of `/would you like me to escalate/gi`; `miss-roster-gate` FALSE (leg a fires on the phrase already present, leg b on the marker — assert FALSE, either leg is acceptable); no lane node executed. Hard fail: two offers in one message. If no live two-product fixture exists, run as a pinned `test_workflow` / offline unit and say so. §0 |
+| R6 | **master products miss + "yes".** t1 a two-company master-products list whose filter omits one company (spec/attribute-filtered — see Fixtures); t2 "yes" (confirm mock, purchasing_product) | 2 | t1: `tool-filter.name == "crm_master_products_list"`; gate TRUE; plan 1 item `team:"purchasing_product", members:false`; no roster GET; miss line `*<Co>:* no products records for <code>.` with NO uuid; phrase `Would you like me to escalate to *<Co>* purchasing_product team?` last. t2: `routing_source == "prior_state"`, HI pair `purchasing_product`/`general_enquiries` + that company. §0 |
+| R7 | **product attachments miss + "yes" + file ordering.** t1 "product image for <2-company code>" where only one company holds the file; t2 "yes" (confirm mock, marketing_product) | 2 | t1: `tool-filter.name == "crm_master_product_attachments_list"`; gate TRUE **on the `marketing_product` pair** (the row's two-pair entry); plan `team:"marketing_product", members:false`; miss line `*<Co>:* no product attachments records for <code>.`; phrase `…escalate to *<Co>* marketing_product team?` is the **last line of the TEXT message**, and the attachment `would_send` records come AFTER it (hard assert on egress ordering). t2: HI pair `marketing_product`/`general_enquiries`. §0 |
+| R8 | **certificates miss + "yes".** t1 "SPAN certificate for <2-company code>" (only one company holds it); t2 "yes" (confirm mock, purchasing_certification) | 2 | t1: `tool-filter.name == "crm_certificates_list"`; gate TRUE on `purchasing_certification`/`general_enquiries`; miss line `*<Co>:* no certificates records for <code>.`; phrase `…escalate to *<Co>* purchasing_certification team?`. **Companion negative:** the same certificates envelope with the parser routing `marketing_product` ⇒ gate **FALSE** (single-pair row, fail-closed) — run offline if not naturally inducible. t2: HI pair `purchasing_certification`/`general_enquiries`. §0 |
+| R9 | **promotion products miss** — `crm_marketing_promotion_products_list` turn with one company absent | 1 | gate TRUE; miss line `*<Co>:* no promotion products records for <code>.`; phrase `…escalate to *<Co>* marketing_promotion team?`; no roster GET. Offline unit acceptable as the proof if no live fixture (record which). §0 |
+| R10 | **negative — tier-ask turn gets NO miss offer (D14).** A promotions turn that triggers the access-tier ask (`if-tier-ask` TRUE → `if-tier-has-any` TRUE) | 1 | Assert the NON-EXECUTION set: `Call 'sub-get-results'`, `validator`, `promo-picker`, `central-exchange`, **`miss-roster-gate`**, `miss-roster-plan`, `build-miss-member-offer` all ABSENT from runData; `access-level-choice-message` executed; `escalate-catalog` `access_choice` ⇒ `is_escalate_offer:false`; the sent ask text contains ZERO `would you like me to escalate`; persisted `selection_context == "tier_offer"`. §0 |
+| R11 | **total not-found already offers, per domain (captain sense (ii)).** (a) promotions total not-found (no promotion resolves at all, or `has_result:false`); (b) certificates total not-found; (c) master products total not-found; (d) **control** — `product_attachment` ask with NO `attachment_type` | 1 each | (a)(b)(c): `escalate-catalog` `branch_kind == "not_found"`, `is_escalate_offer == true`, the sent text ends with `Would you like me to escalate to <the domain's own team> team?` (`marketing_promotion` / `purchasing_certification` or `marketing_product` / `purchasing_product`); `cs-offer-gate` FALSE ⇒ **no picker** (orders-only, unchanged). Promotions may instead arrive via `promo-picker`'s `_promo_notfound`/`_brand_gate_closed`/`_entitlementMiss` copy — ALL acceptable, all carry the same phrase prefix; record which. (d): `is_clarification == true` ⇒ `is_escalate_offer == false`, reply asks for the attachment type, NO offer — **documented as correct (plan W4 / captain-confirm C1), not a bug.** §0 |
+| R12 | **regression subset — nothing from rounds 2/3 moved.** (a) **Q7** orders picker: re-run M1, `miss-members-gate` TRUE, `get-cs-members-miss` executed ONCE with the same URL asserts, sent text byte-identical to R-M1/M1r3 modulo data-stamp; (b) **Q1** incoming single-miss plain offer (`*Sorento* purchasing team`, zero roster GET); (c) **Q3** stock single-miss plain offer (qty-0 Mocha row = answered, `*Sorento* warehouse team`); (d) **Q4** stock all-answered ⇒ gate FALSE; (e) M3 bare "yes" on the orders picker ⇒ `prior_state`, Sorento pair | 1–2 each | as stated; each sent text byte-compared against the round-3 rev-3 evidence. **(A) cross-check:** the orders/incoming/stock miss lines still name their product code (`MUB6201`) — the `_codes` predicate must not have shortened them. §0 |
+| R13 | **(A) code-hygiene sweep across code-bearing types** — orders-by-DO-number turn ("any order M2608-1026" or the live-equivalent DO) on a two-company product where one company misses | 1 | miss line reads `*<Co>:* no orders records for <the DO number>.` — the DO number **survives** the predicate (it is a real `canonical_code`, not a uuid). Hard fail: the clause disappearing. Offline unit is an acceptable proof if no live two-company DO fixture exists. §0 |
+| S3 | **sendmsg fork prod-DB write closed** — unchanged hard gate (fork `b48e0eaa`, `Postgres Chat Memory1` on `n8n_test-db` `Dnnofg8Xb27VQOhI`, never `sorento-crm-db`). | – | hard gate |
+| S | **§0 zero-egress on EVERY case** (S1–S6): egress list contains ONLY `would_send`/`would_write`/`would_log`; the 5 orphaned egress nodes never executed; every sub-execution carries `is_test=true`; external calls observed are CRM **reads** only — and on R1–R11 **zero** `team-members` GETs (every round-4 LANE row is `members:false`; a `get-cs-members-miss` execution on any round-4 case is a FAIL). `zz-roster-probe` P3 is the only probe. **LESSONS #45 pre-handoff:** the coder proves ONE real clone execution through the changed `miss-roster-gate` leftValue with no `ExpressionError`, and greps every changed `.expr.txt` for `prototype\|constructor\|__proto__` (0 hits), before the tester starts. Live `9qVyfUxmRQqrpGRMDLRuz` / `XTODTw-dJcV0uRdC056hG` / `rysSPgUssLDf6xJc` / `Fss5aAaXthJSWpZCgKiKR` versionIds re-asserted unchanged at the end of the run. | – | hard gate |
+
+Offline units (extend `tests/unit/miss-company-routing-round3.gates.test.js` or add
+`…-round4.gates.test.js`; run on the repo body/expression files that are byte-equal to the DEPLOYED
+shas — plan §W6 lists all six groups): the `_codes` predicate (6 cases incl. the exec-12941604 entity
+array ⇒ `['MUB6201']`, the orders-DO case, the promotion-only ⇒ `[]` + no-clause sentence, and the
+`entities`-as-JSON-string path); the LANE/`pairs` gate matrix (5 new TRUE rows, the certificates
+wrong-pair FALSE, every round-2/3 case unchanged); the two precedence legs (phrase-present ⇒ FALSE,
+each promo-picker marker ⇒ FALSE, promo-picker executed with no marker ⇒ TRUE); `miss-roster-plan`
+`team`/`members` stamping incl. both attachment pairs and the unknown-tool fail-closed; a byte-compare
+asserting the LANE literal is identical in the gate expression file and the plan body file; and the
+LESSONS #45 grep.

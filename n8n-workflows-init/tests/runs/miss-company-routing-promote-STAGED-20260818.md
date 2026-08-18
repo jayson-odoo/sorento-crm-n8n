@@ -1,5 +1,25 @@
 # Promote record — miss-company-routing (round 2 + round 3 rev-3) → LIVE — **STAGED, NOT APPLIED** (2026-08-18)
 
+> **⚠️ ROUND 4 SUPERSEDES PARTS OF THIS RECORD (planner, 2026-08-18) — see `plans/miss-company-routing-plan.md`
+> §"Round 4".** Captain reversed D2': promotions ×2, master products, product attachments and certificates
+> JOIN the LANE (all `members:false` — the member picker stays orders-only, captain-locked). Delta to this
+> staged payload: **exactly two of the ten new nodes change again** — `miss-roster-gate` (leftValue `92ca1ccc`
+> → round-4 sha; LANE moves to a `{domain, pairs:[[team,agent],…], members}` shape, +5 rows, +2 precedence legs
+> for `promo-picker`) and `miss-roster-plan` (mirrored LANE + `team` sourced from the parser routing).
+> Everything else here stands: 4 changed + 10 new + 12 connection keys @ 137 nodes, `cs-offer-gate` byte-equal
+> to live `ce99a16c`, parser payload `a68c5992`/`138008c2` unchanged. Re-measure R12 promote rows 2 and 3.
+>
+> **NEW IN THE PROMOTE SET — a get-results sub, and it is TWO ids** (first promotion outside spine+parser):
+> live `Call 'sub-get-results'` / `probe-incoming` / `tier-probe` call **`rysSPgUssLDf6xJc`** (named
+> `sub-get-results TEST` — verified on the ACTIVE body in `PRE-9qVyfUxmRQqrpGRMDLRuz-7aba1447.json`), while
+> `sibling-probe` / `crossdomain-probe` / `dym-probe` / `dym-probe-partial` / `promo-dym-probe` call
+> **`Fss5aAaXthJSWpZCgKiKR`**. The clone points all eight callers at the fork **`t4QvrtrPnTwRU6br`**. Both live
+> copies carry the mc-label `_codes` block byte-identically and both must receive the round-4 (A) hunk, each
+> **anchored on its OWN body** (`Fss` = `11afa233` carries the OLDER timeline block; `rys`/`t4Qv` = `eac4759f`
+> carry the 2026-08-18 rewrite — never cross-copy a whole body). Apply order becomes **subs → parser → spine**
+> (LESSONS #37). Use `setNodeParameter /jsCode`, not REST PUT (these subs' `settings` shape is rejected by the
+> public API). Back up all three sub bodies first.
+
 > **Round-3 rev-3 re-stage (captain console corrections, 2026-08-18):** member roster/picker is ORDERS-ONLY; incoming AND
 > stock per-company misses get the PLAIN escalation offer (frozen phrase naming the miss company + its routing team —
 > purchasing / warehouse), no roster GET, no picker; a qty-0 stock row counts as an answer, only a fully absent company is
