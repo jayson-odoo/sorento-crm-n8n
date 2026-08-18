@@ -1,4 +1,4 @@
-# Promote record — miss-company-routing (rounds 2 + 3 + 4) → LIVE — **STAGED, NOT APPLIED** (2026-08-18)
+# Promote record — miss-company-routing (rounds 2 + 3 + 4) → LIVE — **APPLIED 2026-08-18** (captain-authorized in chat)
 
 > **Round-4 re-stage (captain: "all domain … if no record, then offer to escalate", + the uuid leak, 2026-08-18):**
 > the miss-offer LANE now equals the CRM's full 11-function `stamp_lookup_companies` set (orders ×2 keep the member
@@ -182,3 +182,69 @@ All other new pairs resolve for both companies. The offer still renders (plain l
 "yes" on a **Mocha certificates** miss would hit `next-assignee` with an unconfigured team. Fix is a CRM admin team-set
 entry; until then that one path can fail at assignment. (Observed side effect D4: certificate asks currently resolve to
 the *attachments* tool, so the certificates row is rarely the one that fires.)
+
+
+---
+
+# ✅ PROMOTED — 2026-08-18 (captain-authorized in chat: "okay all good, i think can promote but i need you to be extra careful")
+
+Applied in the mandated order **subs → parser → spine**, each write gated on the target's own before-sha and verified by
+re-fetch immediately after. Method: n8n public REST `PUT /workflows/{id}` with `jq --rawfile` (byte-exact; PUT
+auto-activates on this instance — `activeVersionId == versionId` asserted every time). Sub PUTs succeeded with
+`settings` stripped to `{executionOrder}` (the plan's "REST rejects these subs" note did not hold once stripped).
+
+| # | workflow | PRE versionId | POST versionId (active) | change | verified |
+|---|---|---|---|---|---|
+| 1 | `Fss5aAaXthJSWpZCgKiKR` (probe path) | `f214cb7e` | **`59df7a96`** | `output-structurer` `25a2eed9` → `d6d3f1fd` | only that node changed, connections identical |
+| 2 | `rysSPgUssLDf6xJc` (customer-visible) | `cacd7c95` | **`415cbec2`** | `output-structurer` `3b1995d4` → `698f89f1` (== the clone-tested fork body) | only that node changed |
+| 3 | `XTODTw-dJcV0uRdC056hG` (parser) | `b9ac64a2` | **`0260bb91`** | `output_exchange` → `a68c5992`; `AI Agent.systemMessage` → `f0a825a9` | both hunks + the other worker's `video` line present |
+| 4 | `9qVyfUxmRQqrpGRMDLRuz` (spine) | `067db10d` | **`c673efaa`** | 6 changed + 10 new + 12 connection keys, 127 → 137 nodes | **payload-vs-live byte-exact, zero mismatches**; all 14 node shas OK |
+
+**Rollback** (each auto-activates): PUT the corresponding PRE body back —
+`PRE-9qVyfUxmRQqrpGRMDLRuz-067db10d-FULL.json` (spine, `.activeVersion` holds the exact pre-promote graph),
+`PRE-XTODTw-dJcV0uRdC056hG-b9ac64a2.json`, `subs/PRE-{rys,Fss}*.json`. POST snapshots are alongside.
+
+## Concurrent-editor incidents handled during this promote (both caught by the pre-flight gate, neither reverted)
+
+1. **Parser drift** — live moved `89b63c51` → `b9ac64a2` at 07:17Z when another worker added
+   `- "videos","actual video" → attachment_type "video"` to the systemMessage. Our body was **rebased** onto theirs
+   (3-way verified: payload-vs-fork delta is exactly that one line; live-now→payload is our same 27 lines at identical
+   anchors). Nothing of theirs lost.
+2. **Spine drift + a live bug** — live moved to `2825a7cf` at 10:13Z with video-attachment support, in which
+   `send-message-images` (fed by `Switch` out[0] = `mimeType == image`) was posting `attachment.type: "video"`.
+   Flagged to the captain rather than silently reverted or unilaterally fixed; the captain fixed it (`067db10d`,
+   `image`/`video`/`file` all correct) and our payload was re-based onto that, carrying their nodes **verbatim**.
+   Post-promote check confirms all three send nodes still read `image`/`video`/`file`.
+
+## Post-promote verification (immediately after the spine PUT)
+
+- Payload vs live: **NONE (byte-exact)**; connections identical; 137 nodes; draft == active.
+- All 14 promoted bodies sha-verified (6 changed + the 10 new lane nodes' Code/expression leaves).
+- Preserved untouched: PR #24 hotfix leaves (`tool = $('tool-filter').first().json.name`), `cs-offer-gate` == live base,
+  the three send-message nodes, and **zero drift on every other pre-existing node**.
+- Pre-promote roster re-check (read-only, helper restored byte-exact `ad5b8b07`): `purchasing_certification` now
+  resolves for **both** companies (Mocha → Lucas, Sorento → Josephine Ng) after the captain's data fix — the
+  BLOCKED-BY-CONFIG item from round 4 is **closed**.
+- Hardening audit R14 (the captain's "extra careful" ask, prompted by a recent 5-minute outage where a numeric
+  `contact_id` hit `.trim()`): **GO, no must-fix**. `contact_id` appears in zero promoted Code bodies; the `_codes`
+  change *adds* `String(… ?? '')` coercion and handles `entities` as array **or** JSON string inside a catching
+  `try/catch`.
+
+## Watch list (live now)
+
+1. First answered turns through the two new mid-path If gates (`miss-roster-gate`, `offer-hold-gate`) — an expression
+   throw errors the node (LESSONS #45), so this is the primary revert trigger. Watch running.
+2. Miss offers: orders → picker; incoming/stock/promotions/attachments/certificates → plain offer naming their own team.
+3. `next-assignee` / `team-members` 404 "No team found … in company" → revert trigger (admin config).
+4. Replay: **re-baseline** — `disallowed-entity-gate` now emits `marketing_promotion` (not `marketing_promotion_<brand>`)
+   on single-brand promotion turns. Do NOT add a `norm()` rule (LESSONS #21).
+
+## Known follow-ups (not blocking, carried out of this promote)
+
+- **F-R13-1** — a *reordered* promotions turn rebuilds `env.response` in `promo-picker` and drops the mc-label miss line
+  while the gate still appends the offer (offer with no stated reason). Fix: carry the miss line across the rebuild.
+- **F14-G** — `last_result_set.label` is read by the parser as `row.label.indexOf(': ')` guarded only by `!row.label`;
+  a non-string truthy `name` throws. Pre-existing (live `build-cs-member-offer` already does this); fix the *reader*.
+- **F14-E/F** — `_CO_ALIASES[nk]` prototype-key edge case (a company literally named `constructor`); patches drafted in R14.7.
+- **D4** — certificate asks resolve to the *attachments* tool, so the miss noun reads "product attachments".
+- `CLAUDE.md`'s "sub: get-results = `Fss5aAaXthJSWpZCgKiKR`" row is stale: live's customer-visible path is `rys`.
