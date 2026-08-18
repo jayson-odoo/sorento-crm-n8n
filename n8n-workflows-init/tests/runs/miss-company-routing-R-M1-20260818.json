@@ -1,0 +1,129 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing round-3 (incoming-stock miss offer + cs-offer-gate parity) — clone 05a83eef",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 05a83eef-0f4f-4576-875a-fb1a26ca271c (draft==active before/after; miss-roster-gate leftValue sha 031dda83… == diffs/miss-company-routing/spine-miss-roster-gate.expr.txt; cs-offer-gate g2 leftValue sha cfa8c18e… == spine-cs-offer-gate.expr.txt)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2-b46e-43b4-a227-8104616401e4 (unchanged)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa-6dbd-4f1b-bf81-40cf6804c933",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "active 7aba1447-61f6-490d-89b4-22d1a196716d (draft cfd0e776-… pre-existing content-empty draft per coder diff-doc; NOT touched by this pass)",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "aoydkG1dbItXR5jXFEQsP": "91171ac3-ddad-4452-ace5-98da59480c48"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item on test:q:437264483, executes the clone waitForSubWorkflow, returns the test:egress list) -> REST GET /executions/{id}?includeData=true matched by MY test_run_id (UAC-MCR3-*-20260818) + every sub-execution fetched by metadata.subExecution. Item mode=uac (session read = prod CRM get-session-vars-http, save guarded/orphaned; save-session-vars would_write payload = the persisted variables) with follow-up turns STATE-INJECTED at item TOP level as previous_conversation_state (sim-inject-gate -> sim-inject-session -> get-session-vars) = the previous turn's would_write variables. Deterministic turns: mock_reformulator_output at item TOP level (fork bypass, 0 LLM token). No contact.chat_id in any seed. n8n_test session table untouched.",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "R regression: M1 orders partial miss (MUB6201) on the round-3 clone — expected the rev-3/rev-4 miss picker naming *Sorento* customer_service team (M1r3 exec 12911114 shape)",
+ "turns": {
+  "t1": {
+   "msg": "any order for MUB6201",
+   "mock": "order mock (M1 base, MUB6201)",
+   "seed": null,
+   "clone_exec": "12921439",
+   "status": "error",
+   "test_run_id": "UAC-MCR3-R-M1-t1-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12921442",
+    "Execute 'sub-get-rag'": "12921444",
+    "Call 'sub-get-results'": "12921445"
+   },
+   "nodes_executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Execute 'sub-get-rag'",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "When Executed by Another Workflow",
+    "central-exchange",
+    "check-access",
+    "check-access-http",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "get-session-vars",
+    "get-session-vars-http",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "egress": [],
+   "S0": {
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "S4_get_results_read_only_tool": "crm_order_management_orders_list",
+    "S5_test_mode": {
+     "Call 'sub-query-reformulator'": true,
+     "Execute 'sub-get-rag'": null,
+     "Call 'sub-get-results'": null
+    },
+    "S6_token_sinks": "reformulator fork bypassed by mock (lastNode mock-reformulator-output) on every turn; no LLM node in the spine ran",
+    "egress_kinds": [],
+    "orphaned_egress_nodes_executed": []
+   },
+   "error": {
+    "node": "miss-roster-gate",
+    "message": "Cannot access \"prototype\" due to security concerns",
+    "name": "ExpressionError",
+    "lastNodeExecuted": "miss-roster-gate"
+   },
+   "key_nodes": {
+    "tool-filter.name": "crm_order_management_orders_list",
+    "central-exchange": {
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "miss_line": [
+      "*Sorento:* no orders records for MUB6201."
+     ]
+    },
+    "miss-roster-gate": {
+     "executionStatus": "error",
+     "error": "Cannot access \"prototype\" due to security concerns"
+    }
+   }
+  }
+ },
+ "assertions": {
+  "tool_filter": "crm_order_management_orders_list (allowlisted) — OK",
+  "gate_TRUE": "FAIL — same sandbox ExpressionError at miss-roster-gate; execution error; no reply/state/egress. REGRESSION vs round-2 clone 0557b0b4 (M1r3 exec 12911114 rendered the picker).",
+  "S0_gate": "holds (zero egress)"
+ },
+ "verdict": "FAIL",
+ "defect": "BLOCKER F-R3-4 — the round-2 orders lane is broken by the round-3 body"
+}
