@@ -1,0 +1,31 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "clone-tier-rebase (tier-ask + promotion-picker lanes backported from live 7aba1447)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 061e46c9-c22e-43da-a62c-537612f3a80d (versionId==activeVersionId verified BEFORE and AFTER the pass; 171 nodes; the tier-rebase version per tests/diffs/clone-tier-rebase-20260818.md)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (draft==active; carries tier_offer/_promo pick reconciliation in output_exchange)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc (short-circuit at guard-text/guard-record-text on every call)",
+  "savemsg_fork": "tWm5DYLxfypmVC1T (Redis push to sorento-respond-message-TEST only; sink llen +1 per run, prod list untouched)",
+  "get_results_fork": "t4QvrtrPnTwRU6br (MCP Client1 + entity-ids-transformer + output-structurer only — agent NOT live on the fork, 0 LLM in 13 invocations)",
+  "get_rag_shared": "tWP33QOFT7SxThfT (live-shared read: pgvector SQL + OpenAI embeddings HTTP — pre-existing token sink)",
+  "live_untouched": "9qVyfUxmRQqrpGRMDLRuz activeVersionId 7aba1447 / draft cfd0e776 — identical before and after the pass; never executed"
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v waitForSubWorkflow, returns the test:egress list) -> REST GET /executions/{id}?includeData=true, clone exec matched by MY test_run_id (prefix UAC-TIERREB-), every sub-execution fetched (46 swept) plus the 6 tier-probe execs located by workflowId+timestamp on t4QvrtrPnTwRU6br (tier-probe runs carry no subExecution metadata). Item mode=uac; deterministic turns carry mock_reformulator_output at item top level; parser turns (T2, T5) omit the mock (real fork gpt, is_test=true); follow-up turns inject the previous turn's save-session-vars would_write variables at item top level as previous_conversation_state (sim-inject-gate TRUE observed). Contacts: 487555417 (multi-tier Mr-Loo shape, tier/promo cases, convention from clone-tier-rebase-SMOKE-20260818.json — the task-referenced tests/runs/promotion-hotfix-20260818.md does not exist in this worktree); 437264483 (T6 regression subset, byte-reuse of the original Q-series seeds recovered from execs 12931343/12931546/12932893/12933018). n8n_test session table untouched (uac mode). NOTE: zz-canary-run's Run Target hardcodes workflowInputs.scope='deterministic'; actual tier control rides in the redis item (LESSONS #1) — S6 judged from which LLM nodes actually executed.",
+ "case": "T7 — regress-replay bypasses the tier lane (structural assert from the deployed 061e46c9 graph + observed branch behavior)",
+ "verdict": "PASS",
+ "evidence": [
+  "replay-get-results is an If on $('redis-pop-main-message-list').first().json.message.mode == 'regress-replay'; TRUE[0] -> fixture-get-results -> validator (fully pinned path), FALSE[1] -> if-tier-ask (live path).",
+  "Exhaustive inbound-edge enumeration over 061e46c9 connections: the ONLY inbound edges to if-tier-ask / tier-probe-plan / tier-probe / tier-probe-collect / if-tier-has-any are replay-get-results[1] -> if-tier-ask -> (chain). In replay mode the tier lane (and its 3 CRM probes) is unreachable.",
+  "Observed corroboration: all 10 uac execs took replay-get-results [0,1] (FALSE) and entered the lane; the TRUE branch routes around it by construction.",
+  "No replay-mode execution was run (building a fully-pinned golden item is not cheap); the task allows the structural assert."
+ ],
+ "observations_for_reviewer": [
+  "get-presigned-url (grafted) sits on Loop Over Items1[1], shared by ALL modes: a replay turn whose golden output carries attachments will now make a REAL (read-only, stateless) CRM presign POST — replay is no longer strictly 0-external-call for attachment turns. Downstream sends remain orphaned; safety unaffected; determinism claim needs this footnote.",
+  "promo-dym-probe (grafted) is not behind a replay gate — but neither was the pre-existing dym-probe it parallels; replay exposure unchanged (both target fork t4QvrtrPnTwRU6br).",
+  "promo-picker runs in replay off validator[0] but is a pure code node over pinned data — 0 external calls."
+ ],
+ "S0": {
+  "note": "no execution performed for T7; §0 not applicable beyond the structural zero-egress proof above"
+ }
+}

@@ -1,0 +1,75 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "clone-tier-rebase (tier-ask + promotion-picker lanes backported from live 7aba1447)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 061e46c9-c22e-43da-a62c-537612f3a80d (versionId==activeVersionId verified BEFORE and AFTER the pass; 171 nodes; the tier-rebase version per tests/diffs/clone-tier-rebase-20260818.md)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (draft==active; carries tier_offer/_promo pick reconciliation in output_exchange)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc (short-circuit at guard-text/guard-record-text on every call)",
+  "savemsg_fork": "tWm5DYLxfypmVC1T (Redis push to sorento-respond-message-TEST only; sink llen +1 per run, prod list untouched)",
+  "get_results_fork": "t4QvrtrPnTwRU6br (MCP Client1 + entity-ids-transformer + output-structurer only — agent NOT live on the fork, 0 LLM in 13 invocations)",
+  "get_rag_shared": "tWP33QOFT7SxThfT (live-shared read: pgvector SQL + OpenAI embeddings HTTP — pre-existing token sink)",
+  "live_untouched": "9qVyfUxmRQqrpGRMDLRuz activeVersionId 7aba1447 / draft cfd0e776 — identical before and after the pass; never executed"
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v waitForSubWorkflow, returns the test:egress list) -> REST GET /executions/{id}?includeData=true, clone exec matched by MY test_run_id (prefix UAC-TIERREB-), every sub-execution fetched (46 swept) plus the 6 tier-probe execs located by workflowId+timestamp on t4QvrtrPnTwRU6br (tier-probe runs carry no subExecution metadata). Item mode=uac; deterministic turns carry mock_reformulator_output at item top level; parser turns (T2, T5) omit the mock (real fork gpt, is_test=true); follow-up turns inject the previous turn's save-session-vars would_write variables at item top level as previous_conversation_state (sim-inject-gate TRUE observed). Contacts: 487555417 (multi-tier Mr-Loo shape, tier/promo cases, convention from clone-tier-rebase-SMOKE-20260818.json — the task-referenced tests/runs/promotion-hotfix-20260818.md does not exist in this worktree); 437264483 (T6 regression subset, byte-reuse of the original Q-series seeds recovered from execs 12931343/12931546/12932893/12933018). n8n_test session table untouched (uac mode). NOTE: zz-canary-run's Run Target hardcodes workflowInputs.scope='deterministic'; actual tier control rides in the redis item (LESSONS #1) — S6 judged from which LLM nodes actually executed.",
+ "case": "T6 — round-3 rev-3 regression subset on the rebased clone (byte-reuse of the original Q-series seeds, contact 437264483, deterministic)",
+ "verdict": "PASS",
+ "turns": {
+  "T6-Q1": {
+   "test_run_id": "UAC-TIERREB-T6Q1-20260818",
+   "clone_exec": "12939801",
+   "baseline_exec": "12931343",
+   "status": "success"
+  },
+  "T6-Q3t1": {
+   "test_run_id": "UAC-TIERREB-T6Q3-20260818",
+   "clone_exec": "12939837",
+   "baseline_exec": "12931546",
+   "status": "success"
+  },
+  "T6-Q7t1": {
+   "test_run_id": "UAC-TIERREB-T6Q7-20260818",
+   "clone_exec": "12939877",
+   "baseline_exec": "12932893",
+   "status": "success"
+  },
+  "T6-Q7oh-t2": {
+   "test_run_id": "UAC-TIERREB-T6Q7oh2-20260818",
+   "clone_exec": "12939902",
+   "baseline_exec": "12933018",
+   "status": "success"
+  }
+ },
+ "assertions": [
+  {
+   "id": "Q1 (incoming plain miss): user_response BYTE-IDENTICAL to baseline modulo the _Data last updated_ stamp (exact phrase 'Would you like me to escalate to *Sorento* purchasing team?' and nothing after); NO roster GET (get-cs-members-miss not executed); gates miss-roster [1,0] / miss-members [0,1] == baseline; persisted vars identical (selection_context null, lrs 1, routing Sorento/mocha)",
+   "pass": true
+  },
+  {
+   "id": "Q3-t1 (stock qty-0 shape): byte-identical mod ts; offer for Sorento only ('...*Sorento* warehouse team?'); tool crm_inventory_stock_balance_list; persisted identical (lrs 2)",
+   "pass": true
+  },
+  {
+   "id": "Q7-t1 (orders picker): byte-identical to baseline 12932893 mod ts (picker 3..8 + yes-sentence); miss-members-gate TRUE, get-cs-members-miss ran ONCE; persisted identical (member_offer, lrs 8)",
+   "pass": true
+  },
+  {
+   "id": "Q7oh-t2 (offer-hold): offer-hold-gate TRUE [1,0]; reply byte-identical ('Both *Mocha* and *Sorento* teams are listed — reply a number, a name, or the company ...'); state survives (member_offer, lrs 9); HI/LLM not executed",
+   "pass": true
+  },
+  {
+   "id": "grafted nodes inert on non-promotion turns: tier-gate/promo-picker executed as pure passthroughs, no probe, no behavior delta (byte-identity proves it)",
+   "pass": true
+  }
+ ],
+ "S0": {
+  "S1_zero_real_sends": "PASS — every send is a would_send egress record; sendmsg fork short-circuited on all calls (no api.respond.io POST anywhere in 46 swept sub-execs); driver llen sorento-respond-message after=0 on every run",
+  "S2_zero_assign_escalation": "PASS — HI fork never invoked; no Assign/sla/add-comment/assignee-queue/round-robin node in any execution",
+  "S3_zero_crm_writes": "PASS — save-session-vars + update-human-intervened 0-inbound (never executed); every write is a would_write egress record",
+  "S4_get_results_read_only": "PASS — all t4QvrtrPnTwRU6br invocations used a read tool (crm_marketing_promotions_list / crm_incoming_stock_list / crm_inventory_stock_balance_list / crm_order_management_orders_list), never crm_it_support_ticket_create; contact_id trimmed",
+  "S5_test_mode_present": "PASS — trigger test_mode===true on every clone exec; parser/sendmsg/HI-relevant sub calls is_test=true (parser+sendmsg verified per exec)",
+  "S6_token_sinks": "PASS — 0 LLM on all four",
+  "egress": "Q1: 4 records (attachment would_send own record, as baseline); Q3/Q7/Q7oh2: 3 each. prod llen 0->0 (Q7 run saw transient LIVE traffic drain 2->0 — see rollup deviation D4), sink +1 each",
+  "execs": "12939801/12939837/12939877/12939902 + subs"
+ }
+}
