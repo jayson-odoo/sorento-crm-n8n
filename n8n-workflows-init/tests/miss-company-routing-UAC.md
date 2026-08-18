@@ -1,0 +1,65 @@
+# UAC — miss-company-routing (n8n half)
+
+Plan: `plans/miss-company-routing-plan.md` §5. Diff: `tests/diffs/miss-company-routing.md`. Targets: clone `txiPzSxy3Pclsz6v`
+@ `a1969f5c-884e-4bee-85fb-bd96c18c6d89` + parser fork `wI5RkNGW3EOJfBdo` @ `d7be8443-827e-4a85-9638-aa243fea6c2d` (verify both
+draft==active before starting; live spine `efa21057-…` / live parser `89b63c51-…` must be unchanged after).
+**scope: `deterministic`** except M4b (one `parser`-tier turn — the company_pick arm lives INSIDE `output_exchange`, invisible
+to the mock bypass, Lesson 28). Contact `437264483` (two-company, FULL access). Every case is bound to `UAC.md` **§0 S1–S6**
+(zero egress) — a §0 failure is a hard FAIL and halts.
+
+Mechanics (same as brand-company-routing): seed via `zz-canary-run VtIV3TF3aw2Fx8No` (`execute_workflow` webhook body
+`{test_run_id, contact, item}`) → `get_execution(includeData:true, nodeNames:[…])` → read `test:egress:{test_run_id}`
+(`zz-canary-read LLIbMXAixexM9Cwc`). Multi-turn cases run `mode=regress-capture` (session round-trips through
+`n8n_test.respond_contacts_test`, Lesson 31); reset the contact row to `{"variables":{}}` between INDEPENDENT cases, never
+inside a sequence. `test_run_id`/`conversation_id` prefix `UAC-MCR-` (Lesson 41). Deterministic turns inject
+`item.message.mock_reformulator_output` (Lesson 28). `contact.chat_id` NOT required. Never call `next-assignee` from a test.
+
+Item template (deep `message.message.message.text` nesting per Lesson 12):
+
+```json
+{ "test_run_id": "UAC-MCR-<case>-<turn>-<date>", "contact": "437264483",
+  "item": {
+    "message": { "message": { "message": { "text": "<msg>", "type": "text", "attachment": { "type": "text", "description": "" } } },
+                 "replyTo": {},
+                 "mock_reformulator_output": { "…": "omit for parser-tier turns" } },
+    "contact": { "id": "437264483", "phone": "60100000000", "firstName": "Jayson", "lastName": "Canary",
+                 "custom_fields": [ { "name": "is_human_intervened", "value": "false" }, { "name": "is_allowed_stock", "value": "true" } ],
+                 "assignee": { "id": null } },
+    "messageId": "UAC-MCR-<case>-<turn>-<date>", "replyTo": null,
+    "test_run_id": "UAC-MCR-<case>-<turn>-<date>", "scope": "deterministic", "mode": "regress-capture" } }
+```
+
+Known-good fixtures (grounded on live exec 12901422 / clone dump): **MUB6201** = partial miss (order `M2608-1026` exists in
+Mocha; "*Sorento:* no orders records for MUB6201"), resolves in BOTH companies; its miss company is Sorento
+(`00000000-0000-0000-0000-000000000001`) whose `routing_companies` entry carries `brand_code:"mocha"`. **MWC-SC08B** =
+two-company product with NO order records in either (both-miss → the existing brand-company-routing multi-company offer).
+Mocha company id `38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2`. If CRM data has moved, re-probe with `zz-roster-probe`/a read query
+and substitute codes with the same shape.
+
+Order-enquiry mock (M1/M5/M6 base): `{ "message_type": "business_query", "domain_hint": "order", "intent_hint": "check_order",
+"entities": [{ "raw": "MUB6201", "hint": "product", "current_message": true }], "routing": { "suggested_team":
+"customer_service", "suggested_agent": "order_enquiries" }, "escalation": { "is_escalation_confirmation": false } }`.
+
+## Cases
+
+| # | case | turns | expect |
+|---|---|---|---|
+| M1 | **partial miss → miss picker.** "any order for MUB6201", order mock above | 1 | `miss-roster-gate` TRUE branch; `miss-roster-plan` = 1 item `{plan_idx:0, company_id:<Sorento>, company_name:"Sorento", brand_code:"mocha"}`; `get-cs-members-miss` executed ONCE, request URL contains `&brand_code=mocha&company_id=00000000-0000-0000-0000-000000000001` (and the same `agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483` prefix as `get-cs-members`); `get-cs-members` (the escalate-lane node) NOT executed. Reply (`crossdomain-compose.user_response` / sendmsg `would_send`) = the found Mocha order block + the presenter's "*Sorento:* no orders records for MUB6201." line, THEN the frozen phrase `Would you like me to escalate to customer_service team?`, THEN `Please choose who to route to (reply with the number):` + the Sorento CS members (6 at last B7 probe, after the `respond_user_id` filter) numbered **2..N+1** (order block is `1.`; numbering continuous), each line `n. Name (Sorento)`, then the `just reply 'yes'` sentence. Persisted state (ccs output / orphaned `save-session-vars` input, Lesson 42): `variables.response` ends with the frozen phrase (regex `/would you like me to escalate/i` matches); `variables.last_result_set` = 1 order row (idx 1) + the member rows (idx 2..) each `{idx,label,uuid,respond_user_id,company_id:<Sorento>,company_name:"Sorento",brand_code:"mocha",company_ids,companies}`; `variables.selection_context == "member_offer"`; `variables.routing_roster_plan` = exactly 1 Sorento row; `variables.routing_company == <Sorento>`; `variables.routing_brand == "mocha"`. §0 |
+| M2 | M1 then **number pick** (same session, regress-capture pair). Turn 2 msg "2" · mock `{ "message_type": "escalation_confirmation", "escalation": { "is_escalation_confirmation": true, "preferred_assignee_id": "<uuid of persisted row idx 2>" }, "routing": { "suggested_team": "customer_service", "suggested_agent": "order_enquiries" }, "suggest_pick_context": false }` (B3 precedent) | 2 | `escalation-context`: `company_id == <Sorento>`, `brand_code == "mocha"` (row's own pair verbatim), `routing_source == "picked_member"`; `clarify-company-gate` FALSE branch (`clarify-company-reply` NOT executed); `Call 'sub-human-intervention'` executed, inputs carry `brand_code:"mocha"`, `company_id:<Sorento>`; egress `human-intervention-sub would_write.payload` matches; `get-round-robin-assignee` NOT executed (explicit assignee). §0 |
+| M3 | M1 then **bare "yes"** (regress-capture pair) · mock `{ "message_type": "escalation_confirmation", "escalation": { "is_escalation_confirmation": true }, "routing": CS/order, "suggest_pick_context": false }` | 2 | The rev-4 verbatim arm, NO new code in play — assert it: `escalation-context` reads the persisted single-row plan → `company_id == <Sorento>`, `brand_code == "mocha"`, `routing_source == "prior_state"`; gate FALSE branch; HI called with that pair; egress payload matches. §0 |
+| M4a | **both-miss → clarify → mocked company pick** (3 turns, regress-capture, deterministic). t1 "any order for MWC-SC08B" (order mock, MWC-SC08B) → existing 2-company member offer (B2 shape; miss lane inert — `has_result` false fails the gate even if the turn touches `central-exchange`). t2 "yes" (M3's confirm mock) → t3 "mocha" · mock `{ "message_type": "escalation_confirmation", "escalation": { "is_escalation_confirmation": true, "company_pick": "Mocha" }, "routing": CS/order, "suggest_pick_context": false }` | 3 | t2: `escalation-context.routing_source == "multi_company_unpicked"`; `clarify-company-gate` TRUE; **`Call 'sub-human-intervention'` NOT executed, NO `human-intervention-sub` egress record**; reply sent (sendmsg-respond2 `would_send`) == `Both Mocha and Sorento teams are listed — reply a number, a name, or just the company (Mocha / Sorento) and I'll assign automatically.`; persisted state after t2 STILL carries the frozen phrase in `variables.response`, the member rows in `last_result_set`, `selection_context member_offer`, and the 2-row `routing_roster_plan` (re-persisted). t3: `escalation-context`: `company_id == <Mocha>`, `brand_code ==` the persisted Mocha row's brand (null per B2 shape), `routing_source == "company_pick"`; gate FALSE; HI called with that pair; `get-round-robin-assignee` NOT executed on the clone (guarded), egress payload carries the pair with NO explicit assignee. §0 |
+| M4b | **parser tier** — M4a's t3 with NO mock (real fork run, `is_test=true`): after re-seeding M4a t1+t2 state, send raw "mocha" | 1 | Fork `output_exchange` emits `output.escalation == { is_escalation_confirmation: true, company_pick: "Mocha" }` (via Tier 2.5 or the `_pm` fallback — either path PASSES), NO `preferred_assignee_id`, `entities == []`; downstream identical to M4a t3. Per Lesson 39-style tolerance: a run where the LLM's output makes the reply resolve to a MEMBER instead is a hard FAIL (no member is named "mocha"); a `member_reprompt` outcome is a soft FAIL (report — means the word-boundary matcher missed). Live `XTODTw` versionId unchanged after. §0 |
+| M5 | **qty-0 stock is NOT a miss** (captain decision 2). "stock of MUB6201" · mock `{ "message_type": "business_query", "domain_hint": "inventory", "intent_hint": "check_stock", "entities": [MUB6201], "routing": { "suggested_team": "warehouse", "suggested_agent": "general_enquiries" } }` (screenshot shape: a 0-on-hand row is an answer) | 1 | `miss-roster-gate` FALSE branch (fails domain+routing legs even if a company row is absent); `miss-roster-plan`/`get-cs-members-miss`/`build-miss-member-offer` NOT executed; reply carries NO frozen phrase and NO picker; persisted `selection_context` NOT member_offer; state byte-equal to the pre-change stock shape. §0 |
+| M6 | **regression guard.** (a) single-company answered order turn (B3rev2-shape: order for a Sorento-only product, found — no miss company): gate FALSE (miss set empty), reply + persisted state byte-identical to pre-change; (b) a non-order answered domain (e.g. promotion query): gate FALSE (domain leg); (c) M1's turn with the roster read degraded (404/empty — if hard to induce, verify via the `onError:continueRegularOutput` + zero-member path in a pinned `test_workflow` run instead): `build-miss-member-offer` emits the bare envelope passthrough, NO phrase/picker appended, `routing_roster_plan` stays the axes-block value — turn identical to pre-change | 1 each | as stated; §0 |
+| S | **§0 zero-egress checklist on EVERY case** (S1–S6): egress list contains ONLY `would_send`/`would_write`/`would_log` records; the 5 orphaned egress nodes not executed; every sub-execution carries `is_test=true`; the ONLY new external call ever observed is `get-cs-members-miss` (GET `…/external/team-members?…` — CRM read); on M4a-t2 additionally: no respond.io assign, no SLA POST, no PIC comment (HI sub not invoked at all). | – | hard gate |
+
+Notes for the tester
+- M1/M2/M3 and M4a t1..t3 are SEQUENCES — do not reset `respond_contacts_test` mid-sequence; reset between M-cases.
+- The mock bypass skips `output_exchange`, so M2/M3/M4a inject the PARSER-OUTPUT-shaped mock directly (escalation object
+  included) — that is the established B3/B4/B5 pattern and tests the SPINE arms; only M4b proves the fork arm.
+- To read persisted state without a write, use the orphaned `save-session-vars` INPUT / `compile-current-state` output in
+  runData (Lesson 42) — in regress-capture mode also cross-check the `respond_contacts_test` row.
+- Expected new-node execution set on a MISS turn: `miss-roster-gate → miss-roster-plan → get-cs-members-miss →
+  build-miss-member-offer`; on every non-miss happy turn: `miss-roster-gate` only (FALSE branch).
+- Evidence: per-case JSON `tests/runs/miss-company-routing-<case>-<date>.json` + rollup
+  `tests/runs/miss-company-routing-rollup-<date>.md` (B-series conventions).
