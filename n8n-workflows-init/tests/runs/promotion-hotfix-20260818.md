@@ -64,3 +64,11 @@ Zero egress held on every run: `sub-sendmsg-CHAT` execs ran only `[When Executed
 ## Promotion payload (captain-gated — NOT applied)
 
 On live `9qVyfUxmRQqrpGRMDLRuz`, one `update_workflow` with 3 `setNodeParameter` ops (see `tests/diffs/promotion-hotfix-tier-tool.md`), then publish + sha-verify the two nodes; targets (`rysSPgUssLDf6xJc`) unchanged. Rollback = republish `efa21057` (backup in `tests/backups/promotion-hotfix-20260818/LIVE-9qVyfUxmRQqrpGRMDLRuz-efa21057-PRE.json`).
+
+## PROMOTED (captain-authorized in chat, 2026-08-18 ~03:49Z)
+
+- Pre-promote gate: live had moved to active `c662aa58` (+ draft `43818da7`, UI save at 03:26:58Z). Exec-embedded `workflowData` of an execution on `c662aa58` vs one on `efa21057`: nodes + connections identical → `c662aa58` ≡ `efa21057`. Draft `43818da7` = active + one accidental UI artifact on `if-tier-ask` (`typeValidation loose→strict`, `version 2→1`); backed up as `LIVE-draft43818da7-active-c662aa58-PRE-PROMOTE.json`.
+- Applied ONE `update_workflow` (5 setNodeParameter): the 3 hotfix leaves + `if-tier-ask` options restored to `loose`/`2` (so the draft = known-good active + exactly the hotfix; nothing untested shipped).
+- Verified draft `7aba1447` vs `efa21057` backup: only `Call 'sub-get-results'` (`tool`, `contact_id`) and `tier-probe` (`contact_id`) differ, exactly the 3 leaves; connections/settings identical.
+- `publish_workflow 7aba1447` → `activeVersionId == versionId == 7aba1447-61f6-490d-89b4-22d1a196716d`, active:true. Post-publish REST read shows the 3 leaves; targets unchanged (`rysSPgUssLDf6xJc`). Backup `LIVE-9qVyfUxmRQqrpGRMDLRuz-7aba1447-POST.json`.
+- Rollback: `publish_workflow` versionId `c662aa58-7fa2-4fca-adb5-6008e1c2b571` (or `efa21057-…`).
