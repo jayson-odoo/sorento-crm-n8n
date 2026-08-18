@@ -625,3 +625,57 @@ warehouse fail, purchasing/general fail, cross-pair fail, routing null fail, par
   `024d91e3` → `031dda83`) and **`cs-offer-gate` (existing live node `18e0a370-…`, `conditions` `ce99a16c` → `391a31c8`; live active
   == live draft == clone PRE on that node, so the hunk applies cleanly)**. R7 3e / R10 4a+4d rows must be re-measured for both. Guards to
   strip: none (neither expression reads a test flag).
+
+## round-3 rev-2 (coder, 2026-08-18): F-R3-4 sandbox-safe `miss-roster-gate` + F-R3-5 `cs_multi_note` team label
+
+Clone `txiPzSxy3Pclsz6v` `05a83eef-…` → **`e54e114e-86e6-4023-8926-3fec6fc1ef51`** (REST PUT, `activeVersionId == versionId`
+immediately — auto-activated as before). PRE backup: `tests/backups/miss-company-routing/clone-round3rev2-PRE-05a83eef.json` +
+`…/spine-txiPzSxy3Pclsz6v/round-3-rev2/{VERSION.json, miss-roster-gate.leftValue.expr.txt, build-cs-member-offer.jsCode.js}`.
+Post-PUT full sweep (PRE dump vs POST re-fetch): node-name set equal (159), per-node `parameters` changed on exactly TWO nodes
+(`miss-roster-gate`, `build-cs-member-offer`), connections byte-identical, settings unchanged. Live `9qVyfUxmRQqrpGRMDLRuz` untouched.
+
+| node › field | before (round-3, `05a83eef`) | after (rev-2, `e54e114e`) |
+|---|---|---|
+| `miss-roster-gate` (If 2.3) › `conditions.conditions[0].leftValue` | R3.2 expression with `const lane = Object.prototype.hasOwnProperty.call(LANE, tool) ? LANE[tool] : null;` — **throws `ExpressionError: Cannot access "prototype" due to security concerns` in the n8n expression sandbox** on EVERY evaluation (parse/access-time reject, the IIFE's try/catch never runs) ⇒ every `has_result:true` turn died (tester F-R3-4, execs 12921439/12921451/…). sha `031dda83` | Same expression, ONE statement replaced: `const lane = (tool && Object.keys(LANE).includes(tool)) ? LANE[tool] : null;` (+ a 2-line comment pointing at LESSONS #45; the comment itself contains none of the forbidden tokens). Truth table unchanged (units (i)–(viii) re-pass, incl. `toString`/`hasOwnProperty` tool names ⇒ FALSE). sha **`d24dd81b`** (= `diffs/miss-company-routing/spine-miss-roster-gate.expr.txt`). Everything else on the node byte-identical. |
+| `cs-offer-gate` | `cfa8c18e` (g2 leftValue) / `391a31c8` (conditions json) | **unchanged** (re-asserted byte-equal on the POST fetch; contains no forbidden token) |
+| `build-cs-member-offer` (Code) › `jsCode` — F-R3-5 (tester, cosmetic) | `cs_multi_note` literal `…so I am listing the customer-service team members from each of them…` on EVERY multi-company picker, including the purchasing (incoming) picker cs-offer-gate now opens. sha `c7046c45` | New `teamLabel` = `$('Call 'sub-query-reformulator'').first().json.output.routing.suggested_team` humanised `_`→`-` (try/catch + non-string/blank ⇒ `'customer-service'`); the note interpolates `${teamLabel} team members`. **Orders (customer_service) and every SINGLE-company item are byte-identical to the PRE body** (offline units compare old vs new body output on the same fixtures: orders multi item ==, single orders ==, single incoming ==; incoming multi differs ONLY in the note wording ⇒ `purchasing team members`). Not touched (same F-R3-3 family, left for the next body change): the fallback literal `'Would you like me to escalate to customer_service team?'` (only when `escalate-catalog.response` is empty) and the `[ X: no customer-service members are configured — omitted. ]` line (mirrored literally by compile-current-state's Δ4 merge arm — changing one without the other would drift). sha **`63c1c46e`** (= `diffs/miss-company-routing/spine-build-cs-member-offer.js`). |
+
+### round-3 rev-2 sha256 table (byte-exact; every `after` re-fetched from the published clone and compared `==` to the repo file)
+
+| body | before | after |
+|---|---|---|
+| `miss-roster-gate.conditions[0].leftValue` | `031dda834654b230abb84eba9e3835c475b89025e6c4c6599595964558d137b6` | **`d24dd81b…`** |
+| `cs-offer-gate.conditions[1].leftValue` (g2) | `cfa8c18e…` | unchanged |
+| `build-cs-member-offer.jsCode` | `c7046c455d1f676bd46868fa1b2752770bfb571737b6dfceafdc6bcd1f21b433` | **`63c1c46e…`** |
+
+Forbidden-token grep (`prototype|constructor|__proto__`) over `diffs/miss-company-routing/*.expr.txt`: **0 hits** (all four expression
+files: miss-roster-gate, cs-offer-gate, clarify-company-gate, offer-hold-gate). Clone-wide: no non-Code node's parameters contain the tokens
+after the PUT (before: exactly `miss-roster-gate`). The one Code-node hit (`compile-current-state` `Object.prototype.hasOwnProperty.call(_sp,_k)`)
+is jsCode — a different sandbox, pre-existing, runs fine, left alone.
+
+### Units
+
+`tests/unit/miss-company-routing-round3.gates.test.js` — **52 passed, 0 failed** (38 round-3 + 5 sandbox: per-`.expr.txt` forbidden-token
+scan + "membership test is `Object.keys(...).includes`" + 9 F-R3-5: orders-multi note/item == PRE body, incoming-multi note = "purchasing team
+members" and ONLY the note differs, single orders/incoming == PRE body, parser unexecuted / routing null / blank team ⇒ "customer-service",
+`marketing_promotion` ⇒ "marketing-promotion"). Round-2 harnesses unchanged: `miss-company-routing-rev4.spine.test.js` 33/33,
+`miss-company-routing-rev4.output_exchange.test.js` 48/48.
+
+### Smoke (coder, ONE clone exec — the tester owns the full N1–N10/R/S set)
+
+`zz-canary-run` 12922392 → clone **12922393** `success` on `e54e114e`, item = the R-M1 shape (`any order for MUB6201`, uac mode, order/CS mock,
+real CRM read): `tool-filter` `crm_order_management_orders_list`, **`miss-roster-gate` TRUE (1 item, no error)**, `miss-roster-plan` +
+`build-miss-member-offer` ran, sent text = the M1r3 picker (`Would you like me to escalate to *Sorento* customer_service team?` + members 3–8);
+egress = `save-message-redis would_log` · `save-session-vars would_write` · `sendmsg-sub would_send` only; no `send-message-*`,
+`update-human-intervened`, HI or prod PUT in runData. Evidence: `tests/runs/miss-company-routing-round3rev2-SMOKE-20260818.json`.
+LESSONS #45 added (expression sandbox forbids prototype/constructor/__proto__; offline units can't see it — smoke one real exec per new expression).
+
+### Promote implication (rev-2 delta over §R3.7)
+
+The staged payload's `miss-roster-gate` leftValue is now `d24dd81b` (NOT `031dda83` — that one cannot run on ANY n8n instance), and
+`build-cs-member-offer` moves to `63c1c46e` (was `c7046c45`; the LIVE-PROMOTE-STAGED payload must carry the new body — orders output proven
+byte-identical, so the R7/R10 rows for that node do not need re-measuring beyond a sha update). `cs-offer-gate` `391a31c8` unchanged.
+Staged live payload `tests/backups/miss-company-routing/LIVE-PROMOTE-STAGED-20260818/PAYLOAD-9qVyfUxmRQqrpGRMDLRuz.json` (found in the
+working tree already carrying the round-3 bodies — gate `031dda83`, widened `cs-offer-gate` — uncommitted): patched to the rev-2 bodies
+(`miss-roster-gate` `d24dd81b`, `build-cs-member-offer` `63c1c46e`; nothing else changed) so the broken expression can never be promoted.
+Still NOT applied — captain-gated; R7 3e / R10 4a+4d re-measure per §R3.7 still owed before any live PUT.

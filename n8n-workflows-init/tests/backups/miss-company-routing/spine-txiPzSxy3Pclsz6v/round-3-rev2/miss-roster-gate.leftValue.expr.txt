@@ -18,9 +18,7 @@
     'crm_incoming_stock_shipments':                { domain: 'incoming', team: 'purchasing',       agent: 'incoming_stock_enquiries' },
   };
   const tool = String((($('tool-filter').first().json) || {}).name || '').trim();
-  // round-3 rev-2 (F-R3-4): membership test via Object.keys — the n8n expression sandbox rejects the hasOwnProperty
-  // form (Object.<forbidden-member>.hasOwnProperty.call, LESSONS #45) at parse time; NOT catchable by this try/catch.
-  const lane = (tool && Object.keys(LANE).includes(tool)) ? LANE[tool] : null;
+  const lane = Object.prototype.hasOwnProperty.call(LANE, tool) ? LANE[tool] : null;
   if (!lane) return false;
   const o = $('Call \'sub-query-reformulator\'').first().json.output || {};
   if (o.domain_hint !== lane.domain) return false;

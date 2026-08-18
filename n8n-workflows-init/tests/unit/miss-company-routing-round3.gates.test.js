@@ -88,5 +88,46 @@ const nodeAnd = (isOffer, team, agent) => (isOffer === true) && csg(team, agent)
 check('cs-offer-gate node: is_escalate_offer false + incoming pair ⇒ FALSE', nodeAnd(false, 'purchasing', 'incoming_stock_enquiries') === false);
 check('cs-offer-gate node: is_escalate_offer true + incoming pair ⇒ TRUE', nodeAnd(true, 'purchasing', 'incoming_stock_enquiries') === true);
 
+// ── round-3 rev-2 (F-R3-4): the n8n EXPRESSION sandbox forbids prototype / constructor / __proto__ member access and the
+// error is NOT catchable inside the expression (LESSONS #45). Offline `new Function` cannot see it — grep every deployed
+// expression file for the tokens so the 031dda83 regression cannot recur. (Code-node jsCode is a different sandbox — not scanned.)
+const FORBIDDEN = /prototype|constructor|__proto__/;
+for (const f of fs.readdirSync(DIR).filter(n => n.endsWith('.expr.txt')).sort()) {
+  const bad = fs.readFileSync(path.join(DIR, f), 'utf8').split('\n').map((l, i) => [i + 1, l]).filter(([, l]) => FORBIDDEN.test(l));
+  check(`sandbox: ${f} has no prototype/constructor/__proto__ token`, bad.length === 0, bad);
+}
+check('sandbox: miss-roster-gate membership test is Object.keys(...).includes (rev-2 form)', /Object\.keys\(LANE\)\.includes\(tool\)/.test(GATE));
+
+// ── round-3 rev-2 (F-R3-5): build-cs-member-offer cs_multi_note names the ROUTING team; orders/single output byte-identical
+// to the PRE body (backups/…/round-3-rev2/build-cs-member-offer.jsCode.js = clone 05a83eef).
+const BCMO_NEW = fs.readFileSync(path.join(DIR, 'spine-build-cs-member-offer.js'), 'utf8');
+const BCMO_OLD = fs.readFileSync(path.join(__dirname, '..', 'backups', 'miss-company-routing', 'spine-txiPzSxy3Pclsz6v', 'round-3-rev2', 'build-cs-member-offer.jsCode.js'), 'utf8');
+const mkAll = (nodes) => (n) => {
+  if (!(n in nodes)) throw new Error(`Referenced node "${n}" is unexecuted`);
+  const v = nodes[n]; const arr = Array.isArray(v) ? v : [v];
+  return { all: () => arr.map(json => ({ json })), first: () => ({ json: arr[0] }) };
+};
+const runBcmo = (body, nodes) => new Function('$', body)(mkAll(nodes));
+const CAT_ORD = { response: 'Could not find orders for MUB6201. Would you like me to escalate to customer_service team?', is_escalate_offer: true };
+const CAT_INC = { response: 'Could not find incoming stock for MWC-SC08B. Would you like me to escalate to purchasing team?', is_escalate_offer: true };
+const planOf = (names, codes) => names.map((n, i) => ({ plan_idx: i, company_id: `co-${n.toLowerCase()}`, company_name: n, brand_code: n.toLowerCase(), codes, multi_company: names.length > 1, companies: names }));
+const roster = (...ms) => ({ body: ms.map(([id, name]) => ({ user_id: id, respond_user_id: `r-${id}`, name })) });
+const nodesFor = (cat, plan, rosters, parserOut) => ({ 'escalate-catalog': cat, 'cs-roster-plan': plan, 'get-cs-members': rosters, ...(parserOut === undefined ? {} : { "Call 'sub-query-reformulator'": parserOut }) });
+const multiOrd = nodesFor(CAT_ORD, planOf(['Mocha', 'Sorento'], ['MUB6201']), [roster(['u1', 'Aisyah']), roster(['u2', 'Jereen Tee'])], ORD);
+const multiInc = nodesFor(CAT_INC, planOf(['Mocha', 'Sorento'], ['MWC-SC08B']), [roster(['u1', 'Lucas']), roster(['u2', 'Jereen Tee'])], INC);
+const singleOrd = nodesFor(CAT_ORD, planOf(['Sorento'], ['MUB6201']), [roster(['u2', 'Jereen Tee'], ['u3', 'Cyndi'])], ORD);
+const singleInc = nodesFor(CAT_INC, planOf(['Sorento'], ['MWC-SC08B']), [roster(['u2', 'Jereen Tee'])], INC);
+const oOrd = runBcmo(BCMO_NEW, multiOrd), oOrdOld = runBcmo(BCMO_OLD, multiOrd);
+check('F-R3-5: orders multi note still says "customer-service team members" (byte-identical to PRE body)', oOrd.cs_multi_note === oOrdOld.cs_multi_note && /listing the customer-service team members/.test(oOrd.cs_multi_note), oOrd.cs_multi_note);
+check('F-R3-5: orders multi full item identical to PRE body', JSON.stringify(oOrd) === JSON.stringify(oOrdOld));
+const oInc = runBcmo(BCMO_NEW, multiInc), oIncOld = runBcmo(BCMO_OLD, multiInc);
+check('F-R3-5: incoming multi note says "purchasing team members"', /listing the purchasing team members/.test(oInc.cs_multi_note), oInc.cs_multi_note);
+check('F-R3-5: incoming multi — ONLY the note wording differs vs PRE body', oIncOld.cs_multi_note.replace('customer-service team members', 'purchasing team members') === oInc.cs_multi_note && JSON.stringify({ ...oInc, cs_multi_note: 0, response: 0 }) === JSON.stringify({ ...oIncOld, cs_multi_note: 0, response: 0 }) && oInc.response === oIncOld.response.replace('customer-service team members', 'purchasing team members'));
+check('F-R3-5: single-company orders item identical to PRE body', JSON.stringify(runBcmo(BCMO_NEW, singleOrd)) === JSON.stringify(runBcmo(BCMO_OLD, singleOrd)));
+check('F-R3-5: single-company incoming item identical to PRE body (no note on single)', JSON.stringify(runBcmo(BCMO_NEW, singleInc)) === JSON.stringify(runBcmo(BCMO_OLD, singleInc)));
+check('F-R3-5: parser node unexecuted ⇒ falls back to "customer-service" (never throws)', /listing the customer-service team members/.test(runBcmo(BCMO_NEW, nodesFor(CAT_ORD, planOf(['Mocha', 'Sorento'], ['MUB6201']), [roster(['u1', 'A']), roster(['u2', 'B'])])).cs_multi_note));
+check('F-R3-5: routing null / empty team ⇒ "customer-service"', [{ output: { routing: null } }, { output: { routing: { suggested_team: '  ' } } }, { output: {} }].every(po => /listing the customer-service team members/.test(runBcmo(BCMO_NEW, nodesFor(CAT_ORD, planOf(['Mocha', 'Sorento'], ['MUB6201']), [roster(['u1', 'A']), roster(['u2', 'B'])], po)).cs_multi_note)));
+check('F-R3-5: other team humanised (marketing_promotion ⇒ marketing-promotion)', /listing the marketing-promotion team members/.test(runBcmo(BCMO_NEW, nodesFor(CAT_ORD, planOf(['Mocha', 'Sorento'], ['X']), [roster(['u1', 'A']), roster(['u2', 'B'])], parser('promotion', 'marketing_promotion', 'general_enquiries'))).cs_multi_note));
+
 console.log(`\n${passes} passed, ${fails} failed`);
 process.exit(fails ? 1 : 0);

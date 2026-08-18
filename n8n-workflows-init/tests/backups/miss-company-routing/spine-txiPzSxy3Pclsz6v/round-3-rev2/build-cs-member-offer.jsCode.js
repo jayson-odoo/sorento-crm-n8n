@@ -88,12 +88,8 @@ const joinNames = boldNames.length > 1 ? `${boldNames.slice(0, -1).join(', ')} a
 const subject = codes.length ? codes.join(', ') : (cat.subject || cat.entity_label || 'This item');
 // The multi-company explanation is written ONCE here and exported on the item: compile-current-state's
 // Δ4 merge arm rebuilds its own picker and must say the same thing rather than a second wording.
-// miss-company-routing round-3 rev-2 (F-R3-5): the note names the ROUTING team (cs-offer-gate now also opens the
-// picker for purchasing/incoming), humanised `_`→`-`: customer_service ⇒ "customer-service" (orders text byte-identical),
-// purchasing ⇒ "purchasing". Fail-closed to the old literal when the parser output is unreadable.
-const teamLabel = (() => { try { const t = $('Call \'sub-query-reformulator\'').first().json.output.routing.suggested_team; return (typeof t === 'string' && t.trim()) ? t.trim().replace(/_/g, '-') : 'customer-service'; } catch (e) { return 'customer-service'; } })();
 const multiNote = multi
-  ? `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the ${teamLabel} team members from each of them — that is why there are more names than usual.`
+  ? `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the customer-service team members from each of them — that is why there are more names than usual.`
   : null;
 out.cs_multi_note = multiNote;
 // miss-company-routing rev-3: on a MULTI-company offer a bare "yes" cannot assign (escalation-context
