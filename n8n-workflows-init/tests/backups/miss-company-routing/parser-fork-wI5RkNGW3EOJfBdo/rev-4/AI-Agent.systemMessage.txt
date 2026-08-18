@@ -426,28 +426,18 @@ message was — whether it gets used is the downstream code's decision, not your
 
 == COMPANY-NAME REPLY ON AN ESCALATION OFFER ==
 When the previous assistant message offered an escalation ("Would you like me to escalate ...") or asked
-which company to route to, the user may reply with a company name OR its short company code (e.g. "mocha",
-"Sorento team", "the mocha one", "srt", "route to mch", "yes please escalate to srt team", "please escalate
-to sorento team"). Treat such a reply as engaging the pending offer, NOT as a new business query: do not
-invent a domain_hint or entities from the company name/code alone. Deterministic code resolves which
-company was picked; extraction/classification is all you do here.
-Company codes: Sorento = SRT, Mocha = MCH, Cabana = CBN (case-insensitive; "srt team" = Sorento).
-Companies OFFERED in the pending offer (from state; "(none)" when no offer is pending): {{ (() => { const st = $('When Executed by Another Workflow').first().json.previous_conversation_state || {}; const rp = Array.isArray(st.routing_roster_plan) ? st.routing_roster_plan : []; const src = rp.length ? rp : (Array.isArray(st.routing_companies) ? st.routing_companies : []); return src.map(c => (c && typeof c.company_name === 'string') ? c.company_name : '').filter((n, i, a) => n && a.indexOf(n) === i).map(n => { const k = n.toLowerCase(); const code = k === 'sorento' ? 'SRT' : (k === 'mocha' ? 'MCH' : (k === 'cabana' ? 'CBN' : '')); return code ? (n + ' (code ' + code + ')') : n; }).join(' / ') || '(none)'; })() }}
-  - If that list is NOT "(none)" AND the current message names EXACTLY ONE of those companies — by name OR
-    code, bare or with confirmation/filler/request words around it ("yes mocha", "mocha please", "ok go with
-    sorento", "the mocha one", "route to mocha team", "srt", "yes please escalate to srt team", "please
-    escalate to sorento team") — set "escalation": { "is_escalation_confirmation": true, "company_pick":
-    "<the CANONICAL company name exactly as listed, e.g. Sorento — never the code>" }. This applies whatever
-    the message_type you assign (request_for_help, confirmation, casual): naming an offered company while the
-    offer is pending IS the pick. Keep is_affirmative as the AFFIRMATION rule says (a leading "yes" still
-    sets it true). Do NOT set person_mention for a company name.
-  - Otherwise "company_pick" is null: no company named, a company NOT in the offered list (e.g. "yes mocha"
-    when only Sorento is listed → company_pick null; the "yes" still counts as the affirmation), more than
-    one named, or a negated company ("not sorento"). Never guess or resolve — code validates the pick
-    against the persisted pool and discards it if invalid.
-  - A reply during a pending offer that names no company, no listed member and is not a yes/no (a short
-    fragment, a code the list does not carry, small talk) is NOT a new business query and NOT a decline:
-    classify it casual/unknown with company_pick null and is_affirmative null, and leave domain_hint null.
+which company to route to, the user may reply with just a company name (e.g. "mocha", "Sorento team",
+"the mocha one"). Treat that bare company-name reply as engaging the pending offer, NOT as a new business
+query: do not invent a domain_hint or entities from the company name alone. Deterministic code resolves
+which company was picked; extraction/classification is all you do here.
+Companies named in the pending offer (from state; "(none)" when no offer is pending): {{ (Array.isArray($('When Executed by Another Workflow').first().json.previous_conversation_state?.routing_roster_plan) ? $('When Executed by Another Workflow').first().json.previous_conversation_state.routing_roster_plan : []).concat(Array.isArray($('When Executed by Another Workflow').first().json.previous_conversation_state?.routing_companies) ? $('When Executed by Another Workflow').first().json.previous_conversation_state.routing_companies : []).map(c => (c && typeof c.company_name === 'string') ? c.company_name : '').filter((n, i, a) => n && a.indexOf(n) === i).join(' / ') || '(none)' }}
+  - If that list is NOT "(none)" AND the current message names EXACTLY ONE of those companies — bare or with
+    confirmation/filler words around it ("yes mocha", "mocha please", "ok go with sorento", "the mocha one",
+    "route to mocha team") — set "escalation": { "is_escalation_confirmation": true, "company_pick": "<that
+    company name exactly as listed>" }. Keep is_affirmative as the AFFIRMATION rule says (a leading "yes"
+    still sets it true). Do NOT set person_mention for a company name.
+  - Otherwise "company_pick" is null: no company named, a company NOT in the list, or more than one named.
+    Never guess or resolve — code validates the pick against the persisted pool and discards it if invalid.
 
 == ORDER_STATUS FILTER ==
 order_status filters ORDER records by delivery progress. Set it ONLY from the CURRENT

@@ -1093,23 +1093,11 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
 // multi_company_unpicked — no assignment happened) — replace the parser's confirmation text with
 // the clarify ask on the same send path and RE-persist the prior offer state so the next reply
 // (number / member name / company name) still resolves.
-// rev-4 (captain console, exec 12910575: "srt" → parser out_of_range on a multi pool → casual →
-// clarification LLM → "Hi there!" persisted, selection_context/last_result_set LOST): the SAME arm
-// now also fires when `offer-hold-reply` ran (offer-hold-gate: parser stayed in the offer but
-// resolved nothing on a MULTI pool) — same clarify text, same re-persist. Every unresolved path out
-// of an open multi-company offer therefore keeps selection_context, last_result_set, the roster plan,
-// routing_companies and the frozen phrase; only an explicit decline (escalation_declined) or a
-// brand-new business query (parser Tier 3, no member_pick_context) clears them.
 // Both arms fail closed: any missing signal leaves the turn byte-identical. The two cannot
-// co-occur (the miss lane rides the happy path, the clarify rides the escalation divert / hold).
+// co-occur (the miss lane rides the happy path, the clarify rides the escalation divert).
 {
   const _mcPrev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
-  const _mcClar = (() => {
-    for (const _n of ['clarify-company-reply', 'offer-hold-reply']) {
-      try { const n = $(_n); if (n.isExecuted) { const j = n.first().json; if (j && typeof j.clarify_text === 'string' && j.clarify_text.trim()) return j; } } catch (e) {}
-    }
-    return null;
-  })();
+  const _mcClar = (() => { try { const n = $('clarify-company-reply'); return n.isExecuted ? n.first().json : null; } catch (e) { return null; } })();
   const _mcMem  = (() => { try { const n = $('build-miss-member-offer'); return n.isExecuted ? n.first().json : null; } catch (e) { return null; } })();
   const _mcRows = (_mcMem && _mcMem.miss_member_offer === true && Array.isArray(_mcMem.miss_member_rows)) ? _mcMem.miss_member_rows : [];
   if (_mcClar && typeof _mcClar.clarify_text === 'string' && _mcClar.clarify_text.trim()) {

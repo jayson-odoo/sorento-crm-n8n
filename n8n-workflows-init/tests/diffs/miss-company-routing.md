@@ -289,3 +289,174 @@ Nothing else changed: no node added/removed, no connection changed, `escalation-
   bodies apply if live `89b63c51-…` hasn't moved — the fork bodies are live + pass-1 + rev-3 hunks). Guards to strip: none.
 - The reviewer's APPROVE (`tests/reviews/miss-company-routing.md`) covered rev-2 `d4ce02eb`/`d7be8443`; rev-3 needs a
   tester pass (M1, M4a-t1 wording, M7a–e, §0) and re-review before promotion.
+
+## rev-4 (captain console defects 2026-08-18 + tester rollup rev-3 items A/B): codes + aliases resolve, picks on any reply shape, clarify never destroys the offer, offered-pool rule, S3 sendmsg-fork DB write
+
+Published (REST `PUT /workflows/{id}` assembled by script from a FRESH GET + the repo body files, byte-exact; PUT
+auto-activates; `settings` limited to the public-API schema keys `executionOrder`/`availableInMCP` — the server keeps
+`callerPolicy`/`binaryMode`/`timeSavedMode` untouched, verified on the re-fetch):
+
+| workflow | before (= `backups/…/rev-4/VERSION.json`) | after (draft==active) | publish time (UTC) |
+|---|---|---|---|
+| parser fork `wI5RkNGW3EOJfBdo` | `3a397f2b-687b-457f-bab3-42c10f77185c` | `0cedb928-b61f-4dd5-9b88-1b3f6137d92c` → **`de9ff09d-a240-46af-98fd-0d5992fdd16d`** | 03:09:47Z, then **03:13:06Z** (see "two publishes" below) |
+| spine clone `txiPzSxy3Pclsz6v` | `709461ec-632c-4dac-a38a-e98346e6f9a6` | **`0557b0b4-8f2d-457e-8f64-4e1d600c6ca1`** (156 → 159 nodes) | **03:10:02Z** |
+| sendmsg fork `aQUmwMVplmNcyUVc` (S3) | `51fed3d1-9a92-469a-9b7a-d77e56f8d302` | **`b48e0eaa-6dbd-4f1b-bf81-40cf6804c933`** | **03:10:03Z** |
+
+Live re-fetched read-only after: spine `efa21057-…`, parser `89b63c51-…`, HI `9249e00e-…`, sendmsg `aoydkG1dbItXR5jXFEQsP`
+`91171ac3-…` — unchanged. Only the clone calls `aQUmwMVplmNcyUVc` (checked every workflow's executeWorkflow targets).
+Post-PUT no-op `setNodeSettings` on `get-cs-members-miss` re-ran the MCP validation on the spine: **the pre-existing
+LESSONS #13 warning set only, no errors, versionId/nodes/connections unchanged**. Offline units on the DEPLOYED bodies
+(harness runs the byte-exact repo files with n8n globals stubbed): `tests/unit/miss-company-routing-rev4.output_exchange.test.js`
+(32 cases) and `tests/unit/miss-company-routing-rev4.spine.test.js` (33 cases) — all green on the published bodies; the pre-edit
+parser body fails 17 of them (the new behaviours + the pre-existing "product code + company word" hole + the pool-union bug).
+Tester note: the tester's M7 run was in flight on `709461ec`/`3a397f2b`; edits landed as ONE publish per workflow at the times
+above (parser: two — see below); a tester exec that started before 03:10Z ran the rev-3 bodies.
+
+**Two publishes on the parser fork (deviation from "one publish"):** the first rev-4 body (`0cedb928-…`, 03:09:47Z) let the new
+no-member-context arm treat a persisted `routing_roster_plan.length > 1` as "offer open". The spine's axes block carries that
+plan forward across same-team turns — including a decline ("Escalation declined.") — so a later "sorento" would have re-opened a
+closed offer and escalated. Caught by adding the decline→"sorento" unit; fixed 3 minutes later (`de9ff09d-…`, 03:13:06Z): "open"
+= the FROZEN phrase in the persisted `response` only. Nothing else differs between the two bodies (sha table = the final body).
+
+### Root causes (captain transcript, both-miss MUB6201 offer; prior state per `get-session-vars` on each exec)
+
+- **12910551 "yes please escalate to srt team" → clarify.** Parser: `request_for_help`, `is_affirmative:true`, LLM
+  `company_pick:null` (its pool render listed names only — SRT is the CRM company CODE; the offer state carries names);
+  deterministic tier: the reply is 6 words (> the rev-3 ≤4-word bound) ⇒ no match ⇒ Tier-2 affirmative arm ⇒ plain
+  confirmation ⇒ `escalation-context` `multi_company_unpicked` ⇒ clarify (state re-persisted correctly by arm B).
+- **12910575 "srt" → "Hi there! How can I assist you today?" + state LOST.** Parser Δ3 arm: no member/number/company hit ⇒ Tier 4
+  `{member_reprompt:'out_of_range'}` + `correction:true`, LLM `message_type:'casual'`. Spine: `If2` false → `If-ideate` false →
+  `If10` (`correction && message_type !== 'casual' && !== 'business_query'`) **false because casual** → `is-escalation-declined`
+  false → `If9` (casual) → `resolve-entity-clarification` → `Basic LLM Chain` ("Hi there!") → `central-exchange` → ccs, which
+  persisted the casual turn: `selection_context:null`, `last_result_set:[]`, `response:"Hi there!…"` (the axes block still
+  carried `routing_roster_plan`/`routing_companies` forward — which is why the LATER turns could still clarify but never resolve).
+  Same failure shape for any casual-classified unresolved reply on an offer (pre-existing; single-company offers included).
+- **12910616 / 12910642 "please escalate to sorento team" → clarify forever.** Prior state now had no offer context (no
+  `selection_context`, no phrase) ⇒ the Δ3 arm never ran ⇒ raw LLM `{is_escalation_confirmation:false, company_pick:null}` (pool
+  rendered "(none)") ⇒ `If2` TRUE on `request_for_help` ⇒ `escalation-context` sameTeam + carried 2-row plan ⇒
+  `multi_company_unpicked` ⇒ clarify (arm B re-persisted the plan but had no rows/selection_context to restore).
+
+### Fix A — company CODES + aliases (parser fork `output_exchange` + systemMessage; spine `escalation-context`)
+
+- No upstream code source exists on the offer turn: `resolve-entity` matches carry `{company_id, company_name}` only, get-results'
+  `lookup_companies` is `{id,name}`, `next-assignee` echoes a code only after the fact. **Stopgap:** static alias map, byte-identical
+  in BOTH tiers — `_CO_ALIASES = { sorento: ['sorento','srt'], mocha: ['mocha','mch'], cabana: ['cabana','cbn'] }` (keyed by the
+  lower-cased persisted `company_name`). Both resolvers ALSO honour a `company_code`/`code` key on a pool row if a source ever
+  carries one — the real fix is the CRM `companies.code` column threaded `resolve-entity` match → `disallowed-entity-gate`
+  `routing_companies[].company_code` (its `_byCo` group at the `out.routing_companies = …` line) → `cs-roster-plan` /
+  `miss-roster-plan` items → the ccs-persisted plan rows (`plan_idx/company_id/company_name/brand_code` + `company_code`); no
+  null `company_code` key was added anywhere now (it would be null on every persisted row and diff every golden turn, Lesson 40).
+- Match order per company: name → code → alias, all case-insensitive, word-boundary (`(^|[^a-z0-9])key([^a-z0-9]|$)`), exactly ONE
+  company may hit across all its keys (else null). "SRTKT72SS" cannot hit `srt` (word boundary + product-token refuse).
+- `output_exchange`: the whole company-pick helper is now ONE function `_coCompanyPick(o)` hoisted ABOVE the Δ3 arm (used by the arm
+  and by the new no-context arm); returns `{ pool, pick, pickLlm, any, multi, hasNeg, kept, words }`. Aliases/codes apply to the
+  deterministic tier, the LLM validator (`escalation.company_pick` from the frozen snapshot: an LLM "SRT" canonicalises to
+  `Sorento`; anything not resolving to exactly one offered company is discarded) and — defensively, the parser already emits the
+  canonical name — to `escalation-context`'s `cpickRow` (name → id → code → alias, exactly one row).
+- systemMessage: `Company codes: Sorento = SRT, Mocha = MCH, Cabana = CBN`; the pool render now prints `Mocha (code MCH) / Sorento
+  (code SRT)` (IIFE expression, evaluated offline against populated / single / empty / null states ⇒ as expected / `(none)`); the
+  instruction says `company_pick` = the CANONICAL name as listed, never the code, and applies whatever `message_type` is assigned.
+
+### Fix B — picks on ANY reply shape while an offer is open (parser fork)
+
+- Bound (documented; `_coCompanyPick` (C)): the deterministic tier runs on **(i)** a reply of ≤4 words (rev-3 rule, unchanged), or
+  **(ii)** a LONGER reply whose filler-stripped remainder is **≤6 words AND** the reply has **no product-code-like token**
+  (`/^[a-z]{2,}[a-z0-9-]*\d/i` per word — MUB6201, SRTKT72SS, MWCX7608-SH-S10), **no `current_message:true` entity**, and the LLM
+  did **not** classify it as a domain query (`(domain_hint || business_query || clarification) && is_affirmative !== true`, the
+  arm's own `_isNewQuery`, kept in lockstep). Product-code-like tokens refuse the pick on BOTH paths (closes the pre-existing
+  "MUB6201 sorento" 2-word hole). Filler set extended (kindly/can/could/you/me/us/pass/send/forward/transfer/connect/pick/choose/
+  select/prefer/handle/help/escalation/for/of/on/at/in/a/an/then/want/would/like/need/company/side/instead/guys/ppl/people/staff/
+  department/dept/group/thanks/thank/ty/tq/okie/oki/k/pl/leh/lor/ah + rev-3's). Negators (`no not nope nah never dont neither nor
+  none without except cancel stop`, punctuation-stripped so "don't"→dont) anywhere in the reply refuse BOTH tiers — never assign
+  against a stated negative ("no not sorento" → the decline arm). The LLM validator additionally requires `!domainQ`.
+- Tier order unchanged: retarget → member/number/name → affirmative → **decline** → Tier 2.5 company → new query → junk. Rev-4:
+  the Tier-2 `is_affirmative === false` arm takes a validated company pick first (`{is_escalation_confirmation:true, company_pick}`)
+  and only then the deterministic decline (a bare "no"/"nah" carries a negator, so a plain decline can never carry a pick).
+  `request_for_help` "please escalate to sorento team" (LLM team null ⇒ no retarget; `is_affirmative null` ⇒ no Tier-2 signal) now
+  lands in Tier 2.5 with the pick — the exact 12910616 shape. A genuine retarget (LLM names a DIFFERENT team) still wins.
+- **Unresolved reply on a MULTI-company pool** (`_coCompanyPick(...).multi` = persisted `routing_roster_plan.length > 1`, the same
+  criterion `escalation-context` uses for `multi_company_unpicked`): every reprompt site (`_pos` multi / out-of-range, `_pm`
+  ambiguous / zero-match, Tier 4 junk) goes through `_coReprompt(kind)`: multi ⇒ `{ is_escalation_confirmation:false,
+  member_reprompt:kind, offer_hold:true }` + `correction:false` (explicitly NOT the If10 fallback re-offer); single ⇒ the
+  pre-rev-4 `{member_reprompt}` + `correction:true`. `member_pick_context` stays true on both (the offer is NOT abandoned).
+- **New arm after Δ3 (no member-pick context):** when `selection_context !== 'member_offer'` but the frozen phrase is in the
+  persisted `response` (offer open: e.g. a multi-company offer whose rosters all came back empty — the rev-3 known gap), and the
+  reply carries no concrete `domain_hint`, a company pick (same resolver, same bounds) emits `{is_escalation_confirmation:true,
+  company_pick}` + `member_pick_context:true`; a retarget still wins; nothing else touched.
+- Δ4/dym/suggest tiers untouched; `_pending_pick` (D11) sees `member_pick_context` as before.
+
+### Fix C — clarify never destroys the offer (spine)
+
+| node | change |
+|---|---|
+| `offer-hold-gate` (NEW, if 2.3, id `offer-hold-gate-node`, pos [3328,3296]) | Inserted on the `If-ideate[false] → If10` edge (the single edge every non-escalation, non-ideate parser turn crosses; sits BEFORE `If10`, so neither the fallback member re-offer nor the clarification LLM can run on a held turn). ONE fail-closed boolean IIFE (`spine-offer-hold-gate.expr.txt`, block comments — the `miss-roster-gate` house style): TRUE only when parser `member_pick_context === true` AND (`escalation.offer_hold === true` OR `member_reprompt` is a string) AND NOT (`is_escalation_confirmation === true` / `escalation_declined === true` / `retarget_team === true`) AND persisted `selection_context === 'member_offer'` AND persisted `routing_roster_plan.length > 1`; any throw ⇒ false. TRUE → `offer-hold-reply`; FALSE → `If10` (the original edge, byte-identical). Single-company offers therefore keep today's paths (If10 re-offer / casual → LLM — the pre-existing state-loss on a casual-classified junk reply on a SINGLE offer is out of scope and noted). |
+| `offer-hold-reply` (NEW, code v2, id `offer-hold-reply-node`, pos [3552,3440]) | **Byte-identical body to `clarify-company-reply`** (ONE repo file `spine-clarify-company-reply.js` deployed to BOTH nodes; header comment documents both entry points). Composes `clarify_text` from the OFFERED pool (plan first, else companies) and emits `{...$json, clarify_company:true, clarify_text}`. |
+| `tag-offer-hold` (NEW, set 3.4, id `tag-offer-hold-node`, pos [3776,3440]) | `branch_kind = 'offer_hold'` (house style of `tag-escalation-declined`) → `escalate-catalog`. Linear chain, so no branch-ordering assumption is needed (unlike case B, which relies on the measured order). |
+| `escalate-catalog` (`escalate-catalog-node`) | New `case 'offer_hold'`: `response` = `$('offer-hold-reply').first().json.clarify_text` (by reference, guarded ⇒ '' if absent), `manualResponse:true`, `includeResponse:true`, `is_escalate_offer:false` ⇒ `cs-offer-gate` FALSE ⇒ ccs directly (no roster refetch, no LLM). Every other case byte-identical. |
+| `compile-current-state` (`7a130a0c-…`) | Arm B's `_mcClar` now reads `clarify-company-reply` OR `offer-hold-reply` (first executed node with a non-empty `clarify_text`); the arm body is unchanged: `user_response = clarify_text` and RE-persist prev `response` (frozen phrase), `last_result_set`, `selection_context`, `routing_roster_plan`, `routing_company`, `routing_brand`, `routing_companies`. Every unresolved path out of an open multi-company offer (junk / out-of-range / ambiguous / casual / bare "yes" / request_for_help without a pick) now ends in this arm; only an explicit decline (`escalation_declined` → `is-escalation-declined`) or a brand-new business query (parser Tier 3, no `member_pick_context`) clears the offer. |
+| `clarify-company-reply` (`clarify-company-reply-node`) | Copy (captain): `Both *Mocha* and *Sorento* teams are listed — reply a number, a name, or the company (Mocha / Sorento) and I'll assign automatically.` (bold names in the lead; "or the company"; >2 generalises `*A*, *B* and *C* teams are listed`; no names ⇒ `More than one team is listed`). Codes (SRT/MCH/CBN) are ACCEPTED but not advertised in the sentence — the alias map is a stopgap; advertise codes once a real code source lands. |
+| `escalation-context` (`f014f4d5-…`) | (A) + Fix A resolver, see below. |
+
+Where the state was nulled on 12910575: NOT in any ccs arm — the turn simply never reached one; the casual/LLM lane's normal
+ccs output (`selection_context` from `_merge/_sug/_mem/_isDisambig` ⇒ null, `last_result_set` from the (empty) result object)
+overwrote it. The fix is upstream (the offer-hold-gate diverts the turn) plus arm B's re-persist; ccs's default computation is
+untouched.
+
+### (A) Offered pool, not the union (tester rollup rev-3) — parser tiers, systemMessage render, `escalation-context`
+
+Pool = `routing_roster_plan` companies when the plan is non-empty (the rosters actually shown); `routing_companies` ONLY when no
+plan exists (no roster offered — photo/marketing). Applied identically in `_coCompanyPick` (deterministic + LLM validator), the
+systemMessage pool render, and `escalation-context.cpickRow`. Behaviour chosen for "yes mocha" on a Sorento-only partial-miss
+offer: NO Mocha pick (Mocha was never offered — the systemMessage lists `Sorento (code SRT)` only and the validator refuses an LLM
+Mocha); the "yes" stays the plain confirmation ⇒ `escalation-context` `prior_state` ⇒ routes to the single offered pool
+(Sorento) — i.e. exactly what the offer text says 'yes' does; the un-offered company word is ignored. A bare "mocha" on that offer
+resolves nothing ⇒ single-pool reprompt (`correction:true`, no `offer_hold`) as before. `clarify-company-reply` already used the
+plan-first rule.
+
+### (B) S3 — sendmsg fork `aQUmwMVplmNcyUVc` wrote chat memory into the PROD CRM DB
+
+`Chat Memory Manager` (insert) ← `Postgres Chat Memory1` ran on credential `sorento-crm-db` (`ETJL5KoaA1UpkDip`), session key =
+contact id, on the `Loop Over Items` done-branch of every clone text reply. Fix (fork only): `Postgres Chat Memory1.credentials.postgres`
+:= `n8n_test-db` (`Dnnofg8Xb27VQOhI`) — mirrors the parser fork's `Postgres Chat Memory` (same node type/version on the same
+credential, running on every real-parser turn — the table `n8n_chat_histories` auto-creates on first insert; host psql to
+`n8n_test` is unavailable per Lesson 31, so the parser-fork precedent + the tester's S3 assertion on the sub-execution are the
+proof). Node otherwise byte-identical (parameters/position/id verified on the re-fetch); no other node/connection changed.
+Live sendmsg `aoydkG1dbItXR5jXFEQsP` untouched (its own memory node is prod behaviour, out of scope). Backup:
+`tests/backups/miss-company-routing/sendmsg-fork-aQUmwMVplmNcyUVc/rev-4/VERSION.json` (pre-edit node + versionId).
+
+### rev-4 sha256 table (byte-exact; every `after` re-fetched from the published workflow and compared `==` to the repo file)
+
+| body | before (= `backups/…/rev-4/`) | after (published, = `diffs/miss-company-routing/` file) |
+|---|---|---|
+| spine `compile-current-state.jsCode` | `07a31bb3db51c09fe528d616c2d200c040670cf763dfbb663505f0baf735859e` | `5a84dfead0a928ea08a6f83ff89a45ec56ca7da57ad5eff6520ec912d2b6c827` |
+| spine `escalation-context.jsCode` | `c14da5d74a6efdbe763312fc89b8c52a39ee62535b0fe55cfce04186755c4112` | `cca7a2458eb9a92159f9139d4626f44a2912ac8a79024ac0d973d03dee980393` |
+| spine `clarify-company-reply.jsCode` | `2ee509aa81a4c5602db0c892660986826564c7c2c0791fe9934b5eca2e92100e` | `7ff06aa81f1572f194a03a1dc5d3987591ae33380df0e761db4f6954f23b5c3f` |
+| spine `offer-hold-reply.jsCode` (new; = `spine-clarify-company-reply.js`) | — | `7ff06aa81f1572f194a03a1dc5d3987591ae33380df0e761db4f6954f23b5c3f` |
+| spine `escalate-catalog.jsCode` (file now lives here: `spine-escalate-catalog.js`) | `5e7d80666740381b5ab031f054fe859df8b014b7f8ddda0b0364452ee4642289` | `0168df843a2ec58a39a6634b1d478964ecf5a0968ed015d509834d491acaea7f` |
+| spine `offer-hold-gate` leftValue (new; `spine-offer-hold-gate.expr.txt`, no trailing LF) | — | `8f14a430cf7fc74eeb36d59e8406de706f2519caff9e75d8c03bae2078f05a4b` |
+| spine `tag-offer-hold` params | — | `{"assignments":{"assignments":[{"id":"tag-offer-hold-a1","name":"branch_kind","value":"offer_hold","type":"string"}]},"options":{}}` |
+| parser fork `output_exchange.jsCode` | `ea40047b68f07b7dfe249b774eddadc2ada2a5152382395257356fb1f1f76b17` | first publish `69f0ab6c3b2074b3fb39f58d9406dbd9de867da57f54ec9ef9e859158189d9cf` → **`b2ac7783daf6b92da226a4752191900b92d8c1bbdd81beab03d43efc3a013c43`** (final, `de9ff09d-…`) |
+| parser fork `AI Agent.systemMessage` | `619097f5e78c6c520cd402cae5fd706c65126225a5977b90b876f9deb006e6cb` | `138008c23eabfead0c780bf281005589156f46e3d8683a7bae26f3f4b8d46aa2` |
+| sendmsg fork `Postgres Chat Memory1.credentials.postgres` | `{"id":"ETJL5KoaA1UpkDip","name":"sorento-crm-db"}` | `{"id":"Dnnofg8Xb27VQOhI","name":"n8n_test-db"}` (node otherwise byte-identical) |
+
+Node-set diff on the spine vs `709461ec`: added `offer-hold-gate, offer-hold-reply, tag-offer-hold`; param-changed
+`compile-current-state, escalate-catalog, escalation-context, clarify-company-reply`; removed none; connections changed
+`If-ideate` (+ the 3 new entries). Zero-egress wiring untouched (same DISCONNECTED_NODE set; no executeWorkflow node changed;
+no new external call — the offer-hold path is LLM-free and read-free).
+
+### rev-4 UAC / promote notes
+
+- UAC: `tests/miss-company-routing-UAC.md` — target versionIds bumped (all three), M4a-t2/M7c clarify copy re-worded, "entities []"
+  expectations re-worded to "no `current_message:true` entity", new **M8a** ("yes please escalate to srt team" → Sorento), **M8b**
+  ("srt"), **M8c** ("please escalate to sorento team", request_for_help shape), **M8d** (junk on a multi offer → clarify AND state
+  survives; next "sorento" resolves; single-offer junk still takes the old path), **M8e** ("no" declines + clears; a later "sorento"
+  does not pick), **M8f** (new business query clears; product-code companions offline), **M8g** ((A) "yes mocha" on a Sorento-only
+  offer → single offered pool, never Mocha), **S3** (sendmsg fork credential + memory insert lands in `n8n_test`).
+- Promote mapping additions (captain-gated, NOT executed): parser fork `output_exchange`/systemMessage whole bodies (live
+  `89b63c51-…` unchanged ⇒ apply as-is; the fork bodies = live + pass-1 + rev-3 + rev-4 hunks); spine: add the 3 nodes with the
+  same params, rewire live `If-ideate[1]` (currently → `If10`) → `offer-hold-gate` (enumerate the live edge first), `escalate-catalog`
+  `offer_hold` case (anchored after `escalation_declined`), ccs `_mcClar` loop (anchored on the arm-B `_mcClar` const),
+  `escalation-context` `_CO_ALIASES` + `cpickRow` IIFE (replaces the rev-1 `cpickRow` const), `clarify-company-reply` whole body
+  (also deployed to the new `offer-hold-reply`). Guards to strip: none. The S3 credential re-point is fork-only — do NOT promote.
+- The alias map is a stopgap: when the CRM exposes `companies.code` on resolve-entity matches, thread it through
+  `disallowed-entity-gate` → plan rows and drop `_CO_ALIASES` from both tiers (the `company_code`/`code` key path is already live).
