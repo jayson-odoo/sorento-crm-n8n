@@ -462,8 +462,9 @@ Order (sub before parent, Lesson 37; backup-first; byte/param-gate draft → pub
       live's `case 'escalation_declined': … break;` block; gate: live body contains exactly one `case 'escalation_declined'`
       and no `offer_hold`; live sha `8b4ae985…` (NOT the clone's base — live carries the `#9 _ct` hunk; keep it).
    d. **`compile-current-state`** — anchored insertions on the LIVE body (`0b0912f1…` measured; diverges from every clone
-      base): (1) the miss/clarify block (rev-4 body lines 1082–1155, i.e. from the `// miss-company-routing (n8n half)`
-      comment through the closing `}` of the block, incl. the `_mcClar` two-node loop and the `_mcPlan`/`_mcCo` phrase)
+      base): (1) the miss/clarify block (rev-4 body `spine-compile-current-state.js` lines 1082–1148: from the `// ── miss-company-routing:
+      result-aware escalation scoping` comment header through the block's closing `}` at 1148, incl. the `_mcClar`
+      two-node loop and the `_mcPlan`/`_mcCo` phrase; the file's `return output;` is line 1149)
       immediately before live's UNIQUE final `return output;` — verify the deps `_ideate`,`_sug`,`_mem`,`_dymLastResultSet`,
       `qf` exist (measured true); (2) the Δ4 merge-arm rev-3 hunk (`_lines` grouping block replacing the old
       `_lines = _rows.map(...)` + `if (_multiCo) {...}`; `_close`; `_sugText`; `response = \`${_sugText}…${_close}\``) —
