@@ -12,3 +12,15 @@ Clone `txiPzSxy3Pclsz6v` @ `0557b0b4`, parser fork `de9ff09d`. Both-miss MUB6201
 
 Pre-rev-4 (captain's console, execs 12910551/575/616/642) the same replies re-clarified forever and the offer state was
 lost after "srt". Egress on all four: only would_log/would_write/would_send guard records.
+
+## rev-5 verification (F5 short-path guard) — planner, parser fork `c7d9cfa2`, clone `0557b0b4`
+
+Same both-miss MUB6201 offer state injected, real parser:
+
+| reply | exec | parser | outcome |
+|---|---|---|---|
+| "mocha promotions" | 12914974 | business_query / promotion, no pick | answered as a promotion query (no HI, no hold) — on rev-4 this became company_pick Mocha |
+| "show sorento orders" | 12914987 | business_query / order, no pick | order lookup ran (get-results), no HI |
+| "srt" | 12915006 | company_pick Sorento | HI (guarded) — single-token pick unaffected |
+| "yes mocha" | 12915016 | company_pick Mocha | HI (guarded) — evidenced pick unaffected |
+Egress: guard records only on all four.
