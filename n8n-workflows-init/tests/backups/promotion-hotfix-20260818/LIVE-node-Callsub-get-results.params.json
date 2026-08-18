@@ -1,0 +1,74 @@
+{
+  "workflowId": {
+    "__rl": true,
+    "value": "rysSPgUssLDf6xJc",
+    "mode": "list",
+    "cachedResultUrl": "/workflow/rysSPgUssLDf6xJc",
+    "cachedResultName": "sub-get-results TEST"
+  },
+  "workflowInputs": {
+    "mappingMode": "defineBelow",
+    "value": {
+      "user_prompt": "=message_type: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.message_type }}  \nintent_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.intent_hint }}  \ndomain_hint: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.domain_hint }}  \nuser_goal: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.user_goal }}  \nentities: {{ JSON.stringify($('disallowed-entity-gate').first().json.compatible_entities) }} \naccess level: {{ ($('tier-gate').isExecuted ? JSON.stringify($('tier-gate').first().json.access_levels_recomposed) : JSON.stringify($('Call \\'sub-query-reformulator\\'').item.json.output.access_levels || [])) }} \ncontact_id: {{ $('sorento-sub-respond-findcontact-respond').first().json.id }} \nspace_id: 364817\ndate_mode: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_mode }} \ndate_filter_start: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_start }}  \ndate_filter_end: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.date_filter_end }}  \nis_active: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.is_active }}  \norder_status: {{ $('Call \\'sub-query-reformulator\\'').first().json.output.order_status }}  ",
+      "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }} ",
+      "tool": "={{ $json.name }} ",
+      "entities": "={{ $('disallowed-entity-gate').first().json.compatible_entities }}",
+      "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  // access-tier-ask-plan §3/§4: the tier×brand→compound recomposition is computed ONCE, in\n  // tier-gate (byte-embedded mapper: chosen/stated tiers × query brand ∩ entitlement, with\n  // brand_gate_empty FAIL-CLOSED and the Q23 unheld-tier fallback). This lane just reads it —\n  // the S2b entitlement-union expression is replaced. tier-gate executes exactly when\n  // Aggregate does (same promotion lane); off that lane the parser's own access_levels pass\n  // through untouched (legacy behaviour — usually []).\n  const _tgOk = $('tier-gate').isExecuted;\n  const accessLevels = _tgOk\n    ? $('tier-gate').first().json.access_levels_recomposed\n    : (Array.isArray(parser.access_levels) ? parser.access_levels : []);\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     accessLevels,\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: parser.requested_attributes ?? [],\n  };\n})() }}"
+    },
+    "matchingColumns": [],
+    "schema": [
+      {
+        "id": "tool",
+        "displayName": "tool",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "string",
+        "removed": false
+      },
+      {
+        "id": "contact_id",
+        "displayName": "contact_id",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "removed": false
+      },
+      {
+        "id": "user_prompt",
+        "displayName": "user_prompt",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "string",
+        "removed": false
+      },
+      {
+        "id": "entities",
+        "displayName": "entities",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "array",
+        "removed": false
+      },
+      {
+        "id": "semantic_input",
+        "displayName": "semantic_input",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "object",
+        "removed": false
+      }
+    ],
+    "attemptToConvertTypes": false,
+    "convertFieldsToString": true
+  },
+  "options": {}
+}

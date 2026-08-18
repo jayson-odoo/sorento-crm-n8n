@@ -1,0 +1,74 @@
+{
+  "workflowId": {
+    "__rl": true,
+    "value": "t4QvrtrPnTwRU6br",
+    "mode": "list",
+    "cachedResultName": "sub-get-results CS-BUILD",
+    "cachedResultUrl": "/workflow/t4QvrtrPnTwRU6br"
+  },
+  "mode": "each",
+  "workflowInputs": {
+    "mappingMode": "defineBelow",
+    "matchingColumns": [],
+    "schema": [
+      {
+        "id": "tool",
+        "displayName": "tool",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "string",
+        "removed": false
+      },
+      {
+        "id": "contact_id",
+        "displayName": "contact_id",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "removed": false
+      },
+      {
+        "id": "user_prompt",
+        "displayName": "user_prompt",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "string",
+        "removed": false
+      },
+      {
+        "id": "entities",
+        "displayName": "entities",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "array",
+        "removed": false
+      },
+      {
+        "id": "semantic_input",
+        "displayName": "semantic_input",
+        "required": false,
+        "defaultMatch": false,
+        "display": true,
+        "canBeUsedToMatch": true,
+        "type": "object",
+        "removed": false
+      }
+    ],
+    "attemptToConvertTypes": false,
+    "convertFieldsToString": true,
+    "value": {
+      "tool": "={{ $('tool-filter').first().json.name }}",
+      "entities": "={{ $('disallowed-entity-gate').first().json.compatible_entities }}",
+      "contact_id": "={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+      "user_prompt": "=tier availability probe",
+      "semantic_input": "={{ (() => {\n  const parser = $(\"Call 'sub-query-reformulator'\").first().json.output;\n  return {\n    message_type:      parser.message_type      ?? null,\n    intent_hint:       parser.intent_hint       ?? null,\n    domain_hint:       parser.domain_hint       ?? null,\n    user_goal:         parser.user_goal         ?? null,\n    access_levels:     $json.probe_access_levels || [],\n    contact_id:        $(\"sorento-sub-respond-findcontact-respond\").first().json.id.toString() ?? null,\n    space_id:          \"364817\",\n    date_mode:         parser.date_mode         ?? null,\n    date_filter_start: parser.date_filter_start ?? null,\n    date_filter_end:   parser.date_filter_end   ?? null,\n    is_active:         parser.is_active         ?? null,\n    order_status:      parser.order_status      ?? null,\n    requested_attributes: [],\n  };\n})() }}"
+    }
+  }
+}

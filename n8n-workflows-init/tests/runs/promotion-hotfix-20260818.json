@@ -1,0 +1,109 @@
+{
+  "change": "promotion-hotfix-tier-tool",
+  "date": "2026-08-18",
+  "target": "FORK RnpxEnAV3g20MmKj 2063daa8 → 8d13d386 (published); LIVE 9qVyfUxmRQqrpGRMDLRuz NEVER driven/edited",
+  "driver": "POST /webhook/zz-run-promo-picker (zz-canary-run PROMO-PICKER M5m6EYDLdSc0ofto), mode uac, previous_conversation_state supplied ({} fresh; pick turn = prior turn persisted variables from the save-session-vars egress record), contact 487555417 (repro contact; sendmsg guarded)",
+  "live_repro": {
+    "spine": "12907178",
+    "probes": [
+      "12907187",
+      "12907188",
+      "12907189"
+    ],
+    "fallback_wrong_tool": "12907191"
+  },
+  "crm_direct_probes": {
+    "note": "correct tool, product_ids SRTWC8066-SH-{MK,MW,MG}: 0 rows in every variant",
+    "execs": [
+      "12914009 dealer",
+      "12914111 no-access-filter",
+      "12914246 control-contact-477071889",
+      "12914286 no-contact-scope",
+      "12914505 promotion_products_list",
+      "12914763 browse-100-promos-visible-to-487555417"
+    ]
+  },
+  "fork_pre_fix": {
+    "exec": "12915145",
+    "probes": [
+      "12915164",
+      "12915166",
+      "12915167"
+    ],
+    "fallback": "12915168 tool=access-level array → Unknown tool",
+    "reply": "Here's what you want:\n• product: SRTWC8066-SH-MK (+2 more)\n\nBut no promotion matched these. Would you like me to escalate to marketing_promotion_sorento team?"
+  },
+  "fork_post_fix": {
+    "repro": {
+      "exec": "12915340",
+      "probes": [
+        "12915356",
+        "12915357",
+        "12915358"
+      ],
+      "fallback": "12915360 tool=crm_marketing_promotions_list contact_id=487555417 (clean) → has_result:false (CRM has no promo lines for these uuids)",
+      "reply": "Here's what you want:\n• product: SRTWC8066-SH-MK (+2 more)\n\nBut no promotion matched these. Would you like me to escalate to marketing_promotion_sorento team?"
+    },
+    "ask_fires_SRTBF11710": {
+      "exec": "12915382",
+      "tier_availability": {
+        "dealer": true,
+        "office": true,
+        "end_user": true
+      },
+      "get_results_ran": false,
+      "reply": "Which access level do you need for SRTBF11710?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\"."
+    },
+    "ask_fires_CWC7606_SH": {
+      "exec": "12915402",
+      "tier_availability": {
+        "dealer": true,
+        "office": true,
+        "end_user": false
+      },
+      "get_results_ran": false,
+      "reply": "Which access level do you need for CWC7606-SH?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - no promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\"."
+    },
+    "pick_2_dealer": {
+      "exec": "12915440",
+      "tier_stated": [
+        "dealer"
+      ],
+      "access_levels_recomposed": [
+        "Sorento Dealer",
+        "Mocha Dealer",
+        "Cabana Dealer"
+      ],
+      "sub_call": {
+        "tool": "crm_marketing_promotions_list",
+        "contact_id": "487555417"
+      },
+      "has_result": true,
+      "attachments": 1,
+      "reply": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA COMBINE PROMO DEALER_08072026.pdf\n\n_Data last updated: 08/07/2026 17:54:55_",
+      "egress": [
+        {
+          "guard": "save-message-redis",
+          "kind": "would_log",
+          "target": "redis:sorento-respond-message->mongo"
+        },
+        {
+          "guard": "save-session-vars",
+          "kind": "would_write",
+          "target": "crm:conversation-variables:PUT"
+        },
+        {
+          "guard": "send-message-files",
+          "kind": "would_send",
+          "target": "respondio:contact:message"
+        },
+        {
+          "guard": "sendmsg-sub",
+          "kind": "would_send",
+          "target": "487555417"
+        }
+      ]
+    }
+  },
+  "zero_egress": "sub-sendmsg-CHAT ublq9nSlrpz63xan execs 12915172/361/399/421/456 ran only [When Executed by Another Workflow, chat?, test-guard, test-guard-record]; HI fork not invoked by these runs; send-message-files/save-session-vars appear only as would_send/would_write in the egress log; live spine untouched."
+}
