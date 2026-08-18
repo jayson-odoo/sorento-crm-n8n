@@ -1,0 +1,26 @@
+={{ (() => { try {
+  /* miss-company-routing gate (plan §0/§1) — fail-closed: ANY missing signal returns false.
+     Fires only on an ANSWERED order turn whose envelope shows a queried company with no answer:
+     has_result true, domain 'order' AND routing customer_service/order_enquiries, every answer
+     carries a company_name key field (else the per-company presenter shape is not in play —
+     conservative no-offer), and lookup_companies minus answered companies is non-empty.
+     Stock turns (qty 0 rows are answers, and route to a different team) stay false — captain
+     decision 2. Derivation is kept in LOCKSTEP with miss-roster-plan. */
+  const j = $json;
+  if (j.has_result !== true) return false;
+  const o = $('Call \'sub-query-reformulator\'').first().json.output || {};
+  if (o.domain_hint !== 'order') return false;
+  const r = o.routing || {};
+  if (r.suggested_team !== 'customer_service' || r.suggested_agent !== 'order_enquiries') return false;
+  const lc = Array.isArray(j.lookup_companies) ? j.lookup_companies : [];
+  if (!lc.length) return false;
+  const ans = Array.isArray(j.answers) ? j.answers : [];
+  if (!ans.length) return false;
+  const hit = [];
+  for (const a of ans) {
+    const f = (a && Array.isArray(a.fields)) ? a.fields.find(x => x && x.key === 'company_name' && x.value) : null;
+    if (!f) return false;
+    hit.push(String(f.value).toLowerCase().trim());
+  }
+  return lc.some(c => c && c.name && !hit.includes(String(c.name).toLowerCase().trim()));
+} catch (e) { return false; } })() }}

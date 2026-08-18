@@ -1,0 +1,441 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ a1969f5c-884e-4bee-85fb-bd96c18c6d89 during ALL M-case executions (last M-run started 02:12:08Z; rev-2 d4ce02eb-e337-447c-bf05-9a13f504dd53 published 02:13:03Z, escalation-context no-plan arm only, spot-checked separately — see R2spot file); versionId==activeVersionId throughout; all 9 changed/new node bodies sha-verified == tests/diffs/miss-company-routing/* before running",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ d7be8443-827e-4a85-9638-aa243fea6c2d (unchanged after the pass)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "efa21057-a7e0-4be3-b6af-f8ced2c3749c",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e-3dd9-4766-8c49-2f32f8f66bda"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds item, executes clone waitForSubWorkflow, returns test:egress list) -> REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with mock at item TOP-LEVEL mock_reformulator_output (NOT item.message.* as the UAC template shows — the clone maps $('redis-pop-main-message-list').json.message.mock_reformulator_output and redis pop wraps the seeded item under 'message'); session row reset to {\"variables\":{},\"referenced_result_set\":[]} between independent cases via host psql to n8n_test",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "M6 regression guard: (a) answered single-company order turn, (b) non-order domain, (c) degraded/zero-member roster (offline units on byte-exact deployed bodies)",
+ "turns": {
+  "a": {
+   "msg": "any update on order M2608-1026",
+   "mock": "business_query/order mock, entity hint 'order'",
+   "run": "12906987",
+   "clone": "12906988",
+   "subs": {
+    "Call 'sub-get-results'": [
+     {
+      "executionId": "12906997",
+      "workflowId": "t4QvrtrPnTwRU6br"
+     }
+    ],
+    "Call 'sub-query-reformulator'": [
+     {
+      "executionId": "12906994",
+      "workflowId": "wI5RkNGW3EOJfBdo"
+     }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+     {
+      "executionId": "12906999",
+      "workflowId": "tWm5DYLxfypmVC1T"
+     }
+    ],
+    "Execute 'sub-get-rag'": [
+     {
+      "executionId": "12906995",
+      "workflowId": "tWP33QOFT7SxThfT"
+     }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+     {
+      "executionId": "12906998",
+      "workflowId": "aQUmwMVplmNcyUVc"
+     }
+    ]
+   },
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "any update on order M2608-1026"
+     },
+     "test_run_id": "UAC-MCR-M6a-t1-20260818",
+     "ts": "2026-08-17T22:10:57.980-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_order",
+        "domain_hint": "order",
+        "user_goal": "checking order M2608-1026",
+        "access_levels": [
+         "dealer"
+        ],
+        "entities": [
+         {
+          "raw": "M2608-1026",
+          "hint": "customer_order",
+          "canonical_code": "M2608-1026",
+          "current_message": true,
+          "confident": true
+         }
+        ],
+        "routing": {
+         "suggested_team": "customer_service",
+         "suggested_agent": "order_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (order): returned 1 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "M2608-1026",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "date_filter_start": null,
+        "date_filter_end": null,
+        "date_mode": null,
+        "match_mode": "and",
+        "contains_flyer": false,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "M2608-1026"
+          ]
+         }
+        ]
+       },
+       "user_response": "Here are the orders I found.\n\n1. *Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n*Order Date:* 17/08/2026\n\n_Data last updated: 17/08/2026 17:25:54_"
+      }
+     },
+     "test_run_id": "UAC-MCR-M6a-t1-20260818",
+     "ts": "2026-08-17T22:10:57.977-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Here are the orders I found.\n\n1. *Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n*Order Date:* 17/08/2026\n\n_Data last updated: 17/08/2026 17:25:54_",
+      "message_len": 236,
+      "quick_reply": null,
+      "result_idx": [
+       1
+      ]
+     },
+     "test_run_id": "UAC-MCR-M6a-t1-20260818",
+     "ts": "2026-08-17T22:10:57.876-04:00"
+    }
+   ],
+   "safety_S1_S6": {
+    "S1": "PASS — sendmsg subs ['12906998'] is_test=[True]; orphaned egress nodes executed=[]; no respond.io message HTTP in any sub runData",
+    "S2": "PASS — Call 'sub-human-intervention' not executed this turn",
+    "S3": "PASS — save-session-vars (prod PUT) ran=False, update-human-intervened ran=False (both orphaned); session persisted only via ['pg-upsert-session'] (n8n_test-db cred)",
+    "S4": "PASS — get-results fork tool(s) ['crm_order_management_orders_list '] (read allowlist; never crm_it_support_ticket_create)",
+    "S5": "PASS — trigger test_mode=true; item test_run_id/scope/mode present; parser fork is_test=[True]; sendmsg/HI subs is_test=true. NOTE (pre-existing): get-results fork t4QvrtrPnTwRU6br takes no is_test input; read-only tool verified under S4",
+    "S6": "PASS — parser fork nodes=[['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass']], agent_ran=[False]; clone LLM nodes executed=[]"
+   }
+  },
+  "b_t1": {
+   "msg": "any promotions this month",
+   "mock": "business_query/promotion mock, routing marketing_promotion/general_enquiries",
+   "run": "12907044",
+   "clone": "12907045",
+   "subs": {
+    "Call 'sub-query-reformulator'": [
+     {
+      "executionId": "12907052",
+      "workflowId": "wI5RkNGW3EOJfBdo"
+     }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+     {
+      "executionId": "12907054",
+      "workflowId": "tWm5DYLxfypmVC1T"
+     }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+     {
+      "executionId": "12907053",
+      "workflowId": "aQUmwMVplmNcyUVc"
+     }
+    ]
+   },
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "any promotions this month"
+     },
+     "test_run_id": "UAC-MCR-M6b-t1-20260818",
+     "ts": "2026-08-17T22:11:31.697-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_promotion",
+        "domain_hint": "promotion",
+        "user_goal": "checking promotions this month",
+        "access_levels": [
+         "dealer"
+        ],
+        "entities": [],
+        "routing": {
+         "suggested_team": "marketing_promotion",
+         "suggested_agent": "general_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Please specify which access level you'd like to use for promotions:",
+        "last_result_set": [],
+        "selection_context": null,
+        "date_filter_start": null,
+        "date_filter_end": null,
+        "date_mode": "current_month",
+        "match_mode": "and",
+        "contains_flyer": false,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": null
+       },
+       "user_response": "Please specify which access level you'd like to use for promotions:",
+       "quick_reply": "Cabana Dealer,Cabana Office,End User,Mocha Dealer,Mocha Office,Sorento Dealer,Sorento Office"
+      }
+     },
+     "test_run_id": "UAC-MCR-M6b-t1-20260818",
+     "ts": "2026-08-17T22:11:31.693-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "quick_reply",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Please specify which access level you'd like to use for promotions:",
+      "message_len": 67,
+      "quick_reply": "Cabana Dealer,Cabana Office,End User,Mocha Dealer,Mocha Office,Sorento Dealer,Sorento Office",
+      "result_idx": []
+     },
+     "test_run_id": "UAC-MCR-M6b-t1-20260818",
+     "ts": "2026-08-17T22:11:31.580-04:00"
+    }
+   ],
+   "safety_S1_S6": {
+    "S1": "PASS — sendmsg subs ['12907053'] is_test=[True]; orphaned egress nodes executed=[]; no respond.io message HTTP in any sub runData",
+    "S2": "PASS — Call 'sub-human-intervention' not executed this turn",
+    "S3": "PASS — save-session-vars (prod PUT) ran=False, update-human-intervened ran=False (both orphaned); session persisted only via ['pg-upsert-session'] (n8n_test-db cred)",
+    "S4": "PASS (trivial) — Call 'sub-get-results' not executed",
+    "S5": "PASS — trigger test_mode=true; item test_run_id/scope/mode present; parser fork is_test=[True]; sendmsg/HI subs is_test=true. NOTE (pre-existing): get-results fork t4QvrtrPnTwRU6br takes no is_test input; read-only tool verified under S4",
+    "S6": "PASS — parser fork nodes=[['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass']], agent_ran=[False]; clone LLM nodes executed=[]"
+   }
+  },
+  "b_t2": {
+   "msg": "dealer",
+   "mock": "same promotion mock, access_levels ['dealer']",
+   "run": "12907107",
+   "clone": "12907109",
+   "subs": {
+    "Call 'sub-query-reformulator'": [
+     {
+      "executionId": "12907114",
+      "workflowId": "wI5RkNGW3EOJfBdo"
+     }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+     {
+      "executionId": "12907116",
+      "workflowId": "tWm5DYLxfypmVC1T"
+     }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+     {
+      "executionId": "12907115",
+      "workflowId": "aQUmwMVplmNcyUVc"
+     }
+    ]
+   },
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "dealer"
+     },
+     "test_run_id": "UAC-MCR-M6b-t2-20260818",
+     "ts": "2026-08-17T22:12:10.719-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_promotion",
+        "domain_hint": "promotion",
+        "user_goal": "checking dealer promotions this month",
+        "access_levels": [
+         "dealer"
+        ],
+        "entities": [],
+        "routing": {
+         "suggested_team": "marketing_promotion",
+         "suggested_agent": "general_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Please specify which access level you'd like to use for promotions:",
+        "last_result_set": [],
+        "selection_context": null,
+        "date_filter_start": null,
+        "date_filter_end": null,
+        "date_mode": "current_month",
+        "match_mode": "and",
+        "contains_flyer": false,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": null
+       },
+       "user_response": "Please specify which access level you'd like to use for promotions:",
+       "quick_reply": "Cabana Dealer,Cabana Office,End User,Mocha Dealer,Mocha Office,Sorento Dealer,Sorento Office"
+      }
+     },
+     "test_run_id": "UAC-MCR-M6b-t2-20260818",
+     "ts": "2026-08-17T22:12:10.715-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "quick_reply",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "Please specify which access level you'd like to use for promotions:",
+      "message_len": 67,
+      "quick_reply": "Cabana Dealer,Cabana Office,End User,Mocha Dealer,Mocha Office,Sorento Dealer,Sorento Office",
+      "result_idx": []
+     },
+     "test_run_id": "UAC-MCR-M6b-t2-20260818",
+     "ts": "2026-08-17T22:12:10.593-04:00"
+    }
+   ],
+   "safety_S1_S6": {
+    "S1": "PASS — sendmsg subs ['12907115'] is_test=[True]; orphaned egress nodes executed=[]; no respond.io message HTTP in any sub runData",
+    "S2": "PASS — Call 'sub-human-intervention' not executed this turn",
+    "S3": "PASS — save-session-vars (prod PUT) ran=False, update-human-intervened ran=False (both orphaned); session persisted only via ['pg-upsert-session'] (n8n_test-db cred)",
+    "S4": "PASS (trivial) — Call 'sub-get-results' not executed",
+    "S5": "PASS — trigger test_mode=true; item test_run_id/scope/mode present; parser fork is_test=[True]; sendmsg/HI subs is_test=true. NOTE (pre-existing): get-results fork t4QvrtrPnTwRU6br takes no is_test input; read-only tool verified under S4",
+    "S6": "PASS — parser fork nodes=[['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass']], agent_ran=[False]; clone LLM nodes executed=[]"
+   }
+  }
+ },
+ "assertions": [
+  {
+   "id": "a: gate executed FALSE on a FOUND order turn; miss lane inert; no phrase/picker; state pre-change (routing_company Mocha comes from the pre-existing brand-company-routing axes block, not the miss arm; routing_roster_plan null)",
+   "pass": true,
+   "observed": {
+    "branches": [
+     0,
+     1
+    ],
+    "has_result": true,
+    "lookup_companies": null,
+    "answer_company_fields": "none (order-number envelope carries no company_name key)",
+    "note": "envelope shape differs from the UAC's assumed 'miss set empty' leg: an order-NUMBER lookup returns lookup_companies=null and unlabelled answers, so the gate failed closed on those legs instead — the same no-offer outcome; the literal miss-set-empty leg is proven by offline unit (d) below on the deployed expression",
+    "miss_lane": {
+     "miss-roster-plan": false,
+     "get-cs-members-miss": false,
+     "build-miss-member-offer": false
+    },
+    "selection_context": null,
+    "routing_roster_plan": null,
+    "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+    "routing_brand": null
+   }
+  },
+  {
+   "id": "b: non-order domain unchanged — promotion turn rides the access-level-choice path; central-exchange/get-results/miss-gate never reached, no new node executed, reply/state pre-change shape",
+   "pass": true,
+   "observed": {
+    "t1_reply": "Please specify which access level you'd like to use for promotions:",
+    "t1_gate_executed": false,
+    "t2_gate_executed": false,
+    "deviation": "could not produce an ANSWERED promotion envelope for this contact under the deterministic mock (the access-choice reprompt repeats after a 'dealer' reply — pre-existing promotion-flow mechanics unrelated to this change). The 'answered non-order envelope -> gate executed FALSE on the domain/routing legs' evidence is M5 (inventory)."
+   }
+  },
+  {
+   "id": "c: offline units on the byte-exact deployed bodies (sha-verified == published a1969f5c bodies): degraded roster (onError item) => envelope passthrough EXACTLY (no miss_* keys); 200-but-zero-eligible-members => passthrough; control roster => offer built idx base 3; gate expr => false on all-answered/wrong-domain/no-lookup_companies/unlabelled-answer, true on the real M1 partial-miss envelope",
+   "pass": true,
+   "observed": {
+    "a_degraded_passthrough": true,
+    "b_zero_member_passthrough": true,
+    "c_control_offer": true,
+    "d_gate_all_answered": false,
+    "e_gate_M1_env": true,
+    "f_gate_inventory": false,
+    "g_gate_no_lookup": false,
+    "h_gate_unlabelled": false
+   }
+  }
+ ],
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

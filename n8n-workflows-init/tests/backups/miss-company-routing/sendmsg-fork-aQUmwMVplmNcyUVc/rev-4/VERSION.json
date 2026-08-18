@@ -1,0 +1,28 @@
+{
+ "versionId": "51fed3d1-9a92-469a-9b7a-d77e56f8d302",
+ "activeVersionId": "51fed3d1-9a92-469a-9b7a-d77e56f8d302",
+ "nodes": 24,
+ "changed": [
+  "Postgres Chat Memory1.credentials.postgres"
+ ],
+ "node_before": {
+  "parameters": {
+   "sessionIdType": "customKey",
+   "sessionKey": "={{ $('When Executed by Another Workflow').first().json.contact_identifer }}"
+  },
+  "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+  "typeVersion": 1.3,
+  "position": [
+   1232,
+   208
+  ],
+  "id": "a5060e31-46e8-4491-ac82-cbc945153a0a",
+  "name": "Postgres Chat Memory1",
+  "credentials": {
+   "postgres": {
+    "id": "ETJL5KoaA1UpkDip",
+    "name": "sorento-crm-db"
+   }
+  }
+ }
+}

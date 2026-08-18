@@ -1,0 +1,33 @@
+{
+  "date": "2026-08-18",
+  "role": "sorento-coder (smoke, not the tester pass)",
+  "change": "clone-tier-rebase — backport live 7aba1447 tier-ask + promotion-picker lanes onto TEST clone",
+  "targets": {
+    "spine_clone": "txiPzSxy3Pclsz6v @ 061e46c9-c22e-43da-a62c-537612f3a80d (versionId==activeVersionId, 171 nodes; PRE 7db593b0)",
+    "live_untouched": "9qVyfUxmRQqrpGRMDLRuz (activeVersionId 7aba1447; draft cfd0e776 — read-only GET only)",
+    "parser_fork_untouched": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (read-only)"
+  },
+  "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No via MCP execute_workflow (webhook body {test_run_id, contact 487555417, item}); item mode=uac scope=deterministic + top-level mock_reformulator_output (check_promotion/promotion, entity SRTBF11710, access_levels [], query_brands []); real CRM reads (resolve-entity, check-access, get-access-types, get-rag, tier probes via fork t4QvrtrPnTwRU6br); execution data via REST GET /executions/{id}?includeData=true",
+  "case": "SRTBF11710 promotion on multi-tier contact 487555417 (Mr Loo shape from tests hotfix run: dealer/office/end_user all have rows) — LESSONS #45: ONE real clone exec through every NEW If expression (If4 new leftValue, if-tier-ask, if-tier-has-any)",
+  "exec_ids": {
+    "attempt1_seed_shape_error": {
+      "zz-canary-run": "12938450", "clone": "12938451",
+      "note": "clone status=error INSIDE save-msg fork tWm5DYLxfypmVC1T Redis node ('Invalid argument type') — seed used message.message.text instead of the LESSONS #12 deep nesting message.message.message.text, so the logger's text resolved undefined. NOT a graft defect: the whole tier lane ran clean on this exec too (ask rendered, would_send/would_write/would_log only, llen prod 0->0). Re-run with corrected envelope below."
+    },
+    "smoke": { "zz-canary-run": "12938675", "clone": "12938676" }
+  },
+  "clone_status": "success (12938676; zero node errors)",
+  "assertions": [
+    {"id": "tier-gate: tier_ask true, tier_stated [], entitled_tiers [dealer,office,end_user], pending_pick false, recomposed 7 levels", "pass": true},
+    {"id": "If4 NEW expression ($json.name.length>0) evaluates in the real sandbox, TRUE 1 item", "pass": true},
+    {"id": "if-tier-ask NEW expression TRUE -> tier-probe-plan (3 items dealer/office/end_user)", "pass": true},
+    {"id": "tier-probe (fork t4QvrtrPnTwRU6br, mode each) 3 probe calls, hotfix leaves (tool from $('tool-filter'), trimmed contact_id)", "pass": true},
+    {"id": "if-tier-has-any NEW expression TRUE -> access-level-choice-message; Call 'sub-get-results' NOT run (D14: ask suppresses fetch)", "pass": true},
+    {"id": "access-level-choice-message renders live 3-tier ask: 'Which access level do you need for SRTBF11710? 1. Office - has promotion 2. Dealer - has promotion 3. End user - has promotion ...'", "pass": true},
+    {"id": "compile-current-state (new body 8deebd5e): selection_context tier_offer, last_result_set = 3 access_tier rows (Office/Dealer/End user), query_brands persisted", "pass": true},
+    {"id": "S-zero-egress: egress log exactly [save-message-redis would_log, save-session-vars would_write, sendmsg-sub would_send]; llen sorento-respond-message 0->0; sendmsg via guarded fork aQUmwMVplmNcyUVc only", "pass": true}
+  ],
+  "sent_text": "Which access level do you need for SRTBF11710?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+  "not_smoked": "if-promo-dym / promo-picker / get-presigned-url did not execute on this branch (ask short-circuits before validator/dym/send-attachment paths) — tester to cover promo-picker + promo-dym + pick-turn (tier '2') cases",
+  "diff_doc": "tests/diffs/clone-tier-rebase-20260818.md"
+}

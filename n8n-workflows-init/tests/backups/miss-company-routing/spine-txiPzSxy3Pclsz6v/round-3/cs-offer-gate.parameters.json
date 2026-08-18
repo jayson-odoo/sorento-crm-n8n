@@ -1,0 +1,42 @@
+{
+  "conditions": {
+    "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose",
+      "version": 2
+    },
+    "combinator": "and",
+    "conditions": [
+      {
+        "id": "g1",
+        "leftValue": "={{ $('escalate-catalog').first().json.is_escalate_offer }}",
+        "rightValue": true,
+        "operator": {
+          "type": "boolean",
+          "operation": "true",
+          "singleValue": true
+        }
+      },
+      {
+        "id": "g2",
+        "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}",
+        "rightValue": "customer_service",
+        "operator": {
+          "type": "string",
+          "operation": "equals"
+        }
+      },
+      {
+        "id": "g3",
+        "leftValue": "={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}",
+        "rightValue": "order_enquiries",
+        "operator": {
+          "type": "string",
+          "operation": "equals"
+        }
+      }
+    ]
+  },
+  "options": {}
+}

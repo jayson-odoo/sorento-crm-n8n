@@ -1,0 +1,173 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing (rev-3 delta pass)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 709461ec-632c-4dac-a38a-e98346e6f9a6 (draft==active before AND after the pass; changed bodies sha-verified: compile-current-state 07a31bb3…, build-cs-member-offer c7046c45…, build-miss-member-offer 68eef4c7… == diff doc rev-3 table)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 3a397f2b-687b-457f-bab3-42c10f77185c (draft==active before/after; output_exchange ea40047b…, AI Agent.systemMessage 619097f5… == diff doc rev-3 table)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ 51fed3d1-9a92-469a-9b7a-d77e56f8d302",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "efa21057-a7e0-4be3-b6af-f8ced2c3749c",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e-3dd9-4766-8c49-2f32f8f66bda"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds item on test:q:437264483, executes clone waitForSubWorkflow, returns test:egress list) -> REST GET /executions/{id}?includeData=true matched by test_run_id (NOT recency — captain's chatui-* runs were concurrent) + each sub-execution fetched by metadata.subExecution. Item mode=uac (session read = prod CRM get-session-vars-http, save guarded/orphaned) with STATE INJECTED via item TOP-LEVEL previous_conversation_state (sim-inject-gate -> sim-inject-session -> get-session-vars): the injected state for every follow-up turn is the previous turn's persisted variables taken from the save-session-vars would_write payload. Deterministic turns: mock_reformulator_output at item TOP level; parser-tier turns: no mock (real fork gpt-5.4-mini, is_test=true). No contact.chat_id in any seed (HI fork short-circuits at test-guard). n8n_test DB untouched (no regress-capture turns).",
+ "contact": "437264483 (two-company, FULL access; the captain's real contact — state injected, prod session not relied on)",
+ "case": "single-company wording — (ii) CS single-company escalate offer (B1/B3rev2 shape: not-found order for Sorento-only SRTWC287A-RL-7405 → build-cs-member-offer single arm) then bare \"yes\" (M3 mock, state injected) still routes prior_state; (i) the M1 miss offer is asserted in the M1r3 file",
+ "turns": {
+  "t1": {
+   "msg": "any order for SRTWC287A-RL-7405",
+   "mock": "order mock (SRTWC287A-RL-7405)",
+   "clone_exec": "12911046",
+   "test_run_id": "UAC-MCR-M7e-t1-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12911052",
+    "Execute 'sub-get-rag'": "12911053",
+    "Call 'sub-get-results'": "12911055",
+    "sorento-sub-respond-sendmsg-respond2": "12911056",
+    "Call 'sub-respond-save-message-redis'2": "12911058"
+   },
+   "sent_text": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+  },
+  "t2": {
+   "msg": "yes",
+   "mock": "M3 confirm mock",
+   "clone_exec": "12911085",
+   "test_run_id": "UAC-MCR-M7e-t2-20260818",
+   "subs": {
+    "Call 'sub-query-reformulator'": "12911088",
+    "Call 'sub-human-intervention'": "12911090",
+    "sorento-sub-respond-sendmsg-respond2": "12911091",
+    "Call 'sub-respond-save-message-redis'2": "12911092"
+   }
+  }
+ },
+ "assertions": [
+  {
+   "id": "t1 phrase rewritten in place: \"Would you like me to escalate to *Sorento* customer_service team?\"",
+   "pass": true,
+   "observed": "Would you like me to escalate to *Sorento* customer_service team?"
+  },
+  {
+   "id": "t1 picker lines plain \"n. Name\" (6 Sorento CS members, 1..6, no suffix, no headers)",
+   "pass": true,
+   "observed": [
+    "1. Maryam Ariffin",
+    "2. Cyndi",
+    "3. Aisyah",
+    "4. Balqis",
+    "5. Niki",
+    "6. Nurain"
+   ]
+  },
+  {
+   "id": "t1 yes-sentence byte-identical (unchanged single-company close), no company-name sentence",
+   "pass": true,
+   "observed": "If you have no preference, just reply 'yes' and we'll assign automatically."
+  },
+  {
+   "id": "t1 build-cs-member-offer.response == sent text == persisted variables.response; cs_offer_company \"Sorento\"; cs_multi_close null",
+   "pass": true,
+   "observed": {
+    "cs_offer_company": "Sorento",
+    "cs_multi_close": null
+   }
+  },
+  {
+   "id": "t1 persisted: 1-row plan {Sorento, brand sorento}, routing_company Sorento, selection_context member_offer, 6 rows",
+   "pass": true,
+   "observed": {
+    "plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento"
+     }
+    ],
+    "routing_brand": "sorento"
+   }
+  },
+  {
+   "id": "t2 bare \"yes\": escalation-context prior_state → Sorento pair verbatim from the plan row (brand sorento); clarify gate FALSE; HI called (short-circuit), egress payload matches, no explicit assignee",
+   "pass": true,
+   "observed": {
+    "escalation_context": {
+     "allowed": true,
+     "decision": "allow",
+     "agent_name": "Order Enquiries",
+     "attributes": null,
+     "all_attributes_allowed": null,
+     "brand_code": "sorento",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "routing_source": "prior_state",
+     "team": "customer_service"
+    },
+    "hi_egress": {
+     "contact_id": "437264483",
+     "agent": "order_enquiries",
+     "team": "customer_service",
+     "current_assignee": null,
+     "explicit_assignee_id": null,
+     "brand_code": "sorento",
+     "company_id": "00000000-0000-0000-0000-000000000001"
+    }
+   }
+  }
+ ],
+ "safety_keys": [
+  "M7e-t1",
+  "M7e-t2"
+ ],
+ "S0": {
+  "M7e-t1": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 0,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [
+    "crm_order_management_orders_list "
+   ],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": false,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12911046",
+   "GATE": "PASS"
+  },
+  "M7e-t2": {
+   "S1_no_send_nodes": true,
+   "S1_egress_kinds_only_would": true,
+   "S1_sendmsg_is_test": true,
+   "S1_sendmsg_no_http": true,
+   "S2_hi_shortcircuit": true,
+   "S2_hi_invoked": 1,
+   "S2_no_assign_nodes": true,
+   "S3_no_prod_session_write": true,
+   "S3_pg_upsert_ran": false,
+   "S4_tools": [],
+   "S4_read_only": true,
+   "S5_trigger_test_mode": true,
+   "S5_parser_is_test": true,
+   "S6_parser_agent_ran": false,
+   "S6_deterministic_expect_no_llm": true,
+   "S6_clone_llm_nodes": [],
+   "mode": "uac",
+   "exec": "12911085",
+   "GATE": "PASS"
+  }
+ },
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

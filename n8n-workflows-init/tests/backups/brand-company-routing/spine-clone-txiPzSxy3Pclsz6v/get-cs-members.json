@@ -1,0 +1,20 @@
+{
+  "parameters": {
+    "url": "=https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_agent }}&team_code={{ $('Call \\'sub-query-reformulator\\'').first().json.output.routing.suggested_team }}&tier=1&contact_id={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}",
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpHeaderAuth",
+    "sendHeaders": true,
+    "headerParameters": {
+      "parameters": []
+    },
+    "options": {}
+  },
+  "name": "get-cs-members",
+  "type": "n8n-nodes-base.httpRequest",
+  "typeVersion": 4.3,
+  "position": [
+    11632,
+    1984
+  ],
+  "id": "get-cs-members-node"
+}

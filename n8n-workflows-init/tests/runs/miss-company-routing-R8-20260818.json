@@ -1,0 +1,616 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round 4 (all-domain miss offer + miss-line uuid hygiene + F-R4-3 team collapse)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 3e7fa66d (versionId==activeVersionId BEFORE and AFTER; 171 nodes; miss-roster-gate leftValue e4575d3e, miss-roster-plan 95d6c814, disallowed-entity-gate 069b3691, promo-picker 05a96e3a, compile-current-state 8deebd5e, escalate-catalog 0168df84, build-miss-member-offer fab11982 \u2014 all byte-verified vs tests/diffs/miss-company-routing/* before and after)",
+  "get_results_fork": "t4QvrtrPnTwRU6br @ 9ee992e9 (output-structurer 698f89f1)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (output_exchange a68c5992 / systemMessage 138008c2 \u2014 unchanged)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "savemsg_fork": "tWm5DYLxfypmVC1T @ ce78408e",
+  "live_untouched_before_and_after": {
+   "9qVyfUxmRQqrpGRMDLRuz": "active 7aba1447 / draft cfd0e776",
+   "XTODTw-dJcV0uRdC056hG": "b9ac64a2 (SEE DEVIATION D1 \u2014 the UAC quotes 89b63c51; live parser had already moved to b9ac64a2 at 2026-08-18T07:17:57Z, BEFORE this pass, and is identical before/after it)",
+   "rysSPgUssLDf6xJc": "cacd7c95",
+   "Fss5aAaXthJSWpZCgKiKR": "f214cb7e",
+   "aoydkG1dbItXR5jXFEQsP": "91171ac3",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v waitForSubWorkflow, returns the test:egress list in the webhook response) -> REST GET /executions/{id}?includeData=true, clone exec matched by MY test_run_id (prefix UAC-MCR4-), every sub-execution fetched (137 swept). Item mode=uac, scope=deterministic with mock_reformulator_output at item TOP level (access_levels ['dealer'] on business-query mocks \u2014 pre-existing If4); follow-up turns inject the previous turn's save-session-vars would_write variables at item top level as previous_conversation_state (sim-inject-gate TRUE observed). Parser-tier turns (CAP-t2, CAP-t3) OMIT the mock (real fork wI5RkNGW3EOJfBdo, is_test=true). Contacts 437264483 (all cases) and 487555417 (T1 tier-rebase regression). n8n_test session table untouched (uac mode + state injection).",
+ "case": "R8 \u2014 certificates per-company miss + 'yes' ('SPAN certificate for MUB6201', purchasing_certification pair)",
+ "verdict": "PASS with deviation D4",
+ "notes": "LIVE fixture. DEVIATION D4: the UAC expects tool-filter.name == 'crm_certificates_list'; the clone actually resolves EVERY certificate ask through 'crm_master_product_attachments_list' (the sub-get-rag tool registry returned exactly ONE candidate on all 30 execs \u2014 _tool_pick.count==1, rejected==[] \u2014 and no phrasing tried ('SPAN certificate for X', 'list of certificates for X') reached crm_certificates_list). This is NOT a round-4 regression: the gate fired TRUE on the ATTACHMENTS row's SECOND routing pair (purchasing_certification/general_enquiries), which is exactly the two-pair design W2 introduced, and the team named is correct. Asserted: miss-roster-gate TRUE [1,0]; plan 1 item {Sorento, brand mocha, team 'purchasing_certification', members:false}; miss-members-gate FALSE; get-cs-members-miss NOT executed; miss line '*Sorento:* no product attachments records for MUB6201, Certification.' (noun is 'product attachments', not 'certificates', because the attachments tool served it) with ZERO uuids; phrase 'Would you like me to escalate to *Sorento* purchasing_certification team?' last; text would_send (05:09:41.558) precedes both cert-PDF would_send records (05:09:45.548, 05:09:49.480). A second live probe with the word 'certificate' (exec 12946775) and one with 'SIRIM certificate' (12947106) reproduce the identical shape. COMPANION NEGATIVE (crm_certificates_list under marketing_product routing => gate FALSE, single-pair fail-closed) is NOT live-inducible and is proven offline on the DEPLOYED gate body: round4.gates.test.js 'W2/C5: crm_certificates_list under marketing_product routing => FALSE (incoherent => fail-closed)'. t2 'yes' (R8yes, exec 12948185): escalation-context routing_source 'prior_state', team purchasing_certification, agent general_enquiries, company Sorento, brand mocha; HI fork short-circuited.",
+ "turns": {
+  "UAC-MCR4-R8probe-20260818": {
+   "exec": "12946443",
+   "status": "success",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "ts": "2026-08-18T05:09:49.502-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:09:49.489-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:09:49.480-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:09:45.548-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:09:41.558-04:00"
+    }
+   ],
+   "sent": [
+    "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* IKRAM  - IKRAM 01024FC - EXP 28 FEB 2027.pdf\n*Certificate Number:* 01024FC\n*Valid Until:* 2027-02-28\n*Validity:* Valid\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* WCM - WCM PC 000373 Cold Tap - EXP 13 SEP 2026.pdf\n*Certificate Number:* 000373\n*Valid Until:* 2026-09-13\n*Validity:* Expiring soon\n\n*Sorento:* no product attachments records for MUB6201, Certification.\n\n_Data last updated: 18/08/2026 08:46:29_\n\nWould you like me to escalate to *Sorento* purchasing_certification team?"
+   ],
+   "subs": [
+    [
+     "Call 'sub-query-reformulator'",
+     "12946451",
+     "wI5RkNGW3EOJfBdo"
+    ],
+    [
+     "Execute 'sub-get-rag'",
+     "12946455",
+     "tWP33QOFT7SxThfT"
+    ],
+    [
+     "Call 'sub-get-results'",
+     "12946456",
+     "t4QvrtrPnTwRU6br"
+    ],
+    [
+     "sorento-sub-respond-sendmsg-respond2",
+     "12946458",
+     "aQUmwMVplmNcyUVc"
+    ],
+    [
+     "Call 'sub-respond-save-message-redis'2",
+     "12946469",
+     "tWm5DYLxfypmVC1T"
+    ]
+   ],
+   "branches": {
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "if-tier-ask": [
+     [
+      0,
+      1
+     ]
+    ],
+    "miss-roster-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "miss-members-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-miss-member-offer",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-presigned-url",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-tier-ask",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-members-gate",
+    "miss-roster-gate",
+    "miss-roster-plan",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "promo-picker",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "UAC-MCR4-R8cert-20260818": {
+   "exec": "12946775",
+   "status": "success",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "ts": "2026-08-18T05:12:54.698-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:12:54.688-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:12:54.679-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:12:50.580-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:12:46.756-04:00"
+    }
+   ],
+   "sent": [
+    "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* IKRAM  - IKRAM 01024FC - EXP 28 FEB 2027.pdf\n*Certificate Number:* 01024FC\n*Valid Until:* 2027-02-28\n*Validity:* Valid\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* WCM - WCM PC 000373 Cold Tap - EXP 13 SEP 2026.pdf\n*Certificate Number:* 000373\n*Valid Until:* 2026-09-13\n*Validity:* Expiring soon\n\n*Sorento:* no product attachments records for MUB6201, Certification.\n\n_Data last updated: 18/08/2026 08:46:29_\n\nWould you like me to escalate to *Sorento* purchasing_certification team?"
+   ],
+   "subs": [
+    [
+     "Call 'sub-query-reformulator'",
+     "12946783",
+     "wI5RkNGW3EOJfBdo"
+    ],
+    [
+     "Execute 'sub-get-rag'",
+     "12946784",
+     "tWP33QOFT7SxThfT"
+    ],
+    [
+     "Call 'sub-get-results'",
+     "12946786",
+     "t4QvrtrPnTwRU6br"
+    ],
+    [
+     "sorento-sub-respond-sendmsg-respond2",
+     "12946787",
+     "aQUmwMVplmNcyUVc"
+    ],
+    [
+     "Call 'sub-respond-save-message-redis'2",
+     "12946798",
+     "tWm5DYLxfypmVC1T"
+    ]
+   ],
+   "branches": {
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "if-tier-ask": [
+     [
+      0,
+      1
+     ]
+    ],
+    "miss-roster-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "miss-members-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-miss-member-offer",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-presigned-url",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-tier-ask",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-members-gate",
+    "miss-roster-gate",
+    "miss-roster-plan",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "promo-picker",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "UAC-MCR4-R11b2-20260818": {
+   "exec": "12947106",
+   "status": "success",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "ts": "2026-08-18T05:16:05.647-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:16:05.632-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:16:05.621-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:16:01.717-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:15:57.790-04:00"
+    }
+   ],
+   "sent": [
+    "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* IKRAM  - IKRAM 01024FC - EXP 28 FEB 2027.pdf\n*Certificate Number:* 01024FC\n*Valid Until:* 2027-02-28\n*Validity:* Valid\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* WCM - WCM PC 000373 Cold Tap - EXP 13 SEP 2026.pdf\n*Certificate Number:* 000373\n*Valid Until:* 2026-09-13\n*Validity:* Expiring soon\n\n*Sorento:* no product attachments records for MUB6201, Certification.\n\n_Data last updated: 18/08/2026 08:46:29_\n\nWould you like me to escalate to *Sorento* purchasing_certification team?"
+   ],
+   "subs": [
+    [
+     "Call 'sub-query-reformulator'",
+     "12947115",
+     "wI5RkNGW3EOJfBdo"
+    ],
+    [
+     "Execute 'sub-get-rag'",
+     "12947116",
+     "tWP33QOFT7SxThfT"
+    ],
+    [
+     "Call 'sub-get-results'",
+     "12947118",
+     "t4QvrtrPnTwRU6br"
+    ],
+    [
+     "sorento-sub-respond-sendmsg-respond2",
+     "12947119",
+     "aQUmwMVplmNcyUVc"
+    ],
+    [
+     "Call 'sub-respond-save-message-redis'2",
+     "12947133",
+     "tWm5DYLxfypmVC1T"
+    ]
+   ],
+   "branches": {
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "if-tier-ask": [
+     [
+      0,
+      1
+     ]
+    ],
+    "miss-roster-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "miss-members-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-miss-member-offer",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-presigned-url",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-tier-ask",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-members-gate",
+    "miss-roster-gate",
+    "miss-roster-plan",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "promo-picker",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "R8yes": {
+   "exec": "12948185",
+   "status": "success",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "ts": "2026-08-18T05:27:36.258-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:27:36.255-04:00"
+    },
+    {
+     "guard": "human-intervention-sub",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:27:36.091-04:00"
+    }
+   ],
+   "sent": [],
+   "subs": [
+    [
+     "Call 'sub-query-reformulator'",
+     "12948192",
+     "wI5RkNGW3EOJfBdo"
+    ],
+    [
+     "Call 'sub-human-intervention'",
+     "12948194",
+     "vUfFUDjLAuMaeQE6"
+    ],
+    [
+     "sorento-sub-respond-sendmsg-respond2",
+     "12948195",
+     "aQUmwMVplmNcyUVc"
+    ],
+    [
+     "Call 'sub-respond-save-message-redis'2",
+     "12948196",
+     "tWm5DYLxfypmVC1T"
+    ]
+   ],
+   "branches": {
+    "sim-inject-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "clarify-company-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "cs-offer-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "executed": [
+    "Call 'sub-human-intervention'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "check-access",
+    "check-access-http",
+    "clarify-company-gate",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "cs-offer-gate",
+    "divert-suggest-yes",
+    "escalate-catalog",
+    "escalation-context",
+    "get-session-vars",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sim-inject-session",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-out-of-scope",
+    "tf-message"
+   ]
+  }
+ },
+ "rendered_text": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* IKRAM  - IKRAM 01024FC - EXP 28 FEB 2027.pdf\n*Certificate Number:* 01024FC\n*Valid Until:* 2027-02-28\n*Validity:* Valid\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Attachment Type:* Certification\n*File Name:* WCM - WCM PC 000373 Cold Tap - EXP 13 SEP 2026.pdf\n*Certificate Number:* 000373\n*Valid Until:* 2026-09-13\n*Validity:* Expiring soon\n\n*Sorento:* no product attachments records for MUB6201, Certification.\n\n_Data last updated: 18/08/2026 08:46:29_\n\nWould you like me to escalate to *Sorento* purchasing_certification team?"
+}

@@ -1,0 +1,45 @@
+={{ (() => { try {
+  /* miss-company-routing gate (plan §0/§1, round 3 §R3.2, rev-3 §V1) — fail-closed: ANY missing signal returns false.
+     Fires only on an ANSWERED turn whose envelope shows a queried company with no answer:
+     has_result true, the get-results tool is on the rev-3 allowlist (LANE) AND the parser domain + routing
+     pair match that lane (keeps the offer text, the roster URL and HI's team in lockstep), no crossdomain
+     block on the turn (crossdomain-compose appends its OWN offer — one offer per turn), every answer
+     carries a company_name key field (else the per-company presenter shape is not in play —
+     conservative no-offer), and lookup_companies minus answered companies is non-empty.
+     A qty-0 stock ROW is an answer (its company_name field marks the company answered) — only a company
+     with ZERO rows is a miss (captain decision 2 + rev-3 captain correction: stock joins the allowlist).
+     The lane's `members` flag is IGNORED here — this gate decides offer/no-offer only; miss-members-gate
+     reads the flag off the plan items. Derivation is kept in LOCKSTEP with miss-roster-plan. */
+  const j = $json;
+  if (j.has_result !== true) return false;
+  const LANE = {  // rev-3 allowlist (§V1) — tool ⇒ parser domain + routing pair (offer phrase, roster URL, HI team in lockstep) + members (true = orders-only member picker; false = plain offer, NO roster fetch). MIRRORED BYTE-IDENTICAL in miss-roster-gate and miss-roster-plan — edit both together.
+    'crm_order_management_orders_list':            { domain: 'order',     team: 'customer_service', agent: 'order_enquiries',          members: true },
+    'crm_order_management_orders_by_product_list': { domain: 'order',     team: 'customer_service', agent: 'order_enquiries',          members: true },
+    'crm_incoming_stock_list':                     { domain: 'incoming',  team: 'purchasing',       agent: 'incoming_stock_enquiries', members: false },
+    'crm_incoming_stock_by_product':               { domain: 'incoming',  team: 'purchasing',       agent: 'incoming_stock_enquiries', members: false },
+    'crm_incoming_stock_shipments':                { domain: 'incoming',  team: 'purchasing',       agent: 'incoming_stock_enquiries', members: false },
+    'crm_inventory_stock_balance_list':            { domain: 'inventory', team: 'warehouse',        agent: 'general_enquiries',        members: false },
+  };
+  const tool = String((($('tool-filter').first().json) || {}).name || '').trim();
+  // round-3 rev-2 (F-R3-4): membership test via Object.keys — the n8n expression sandbox rejects the hasOwnProperty
+  // form (Object.<forbidden-member>.hasOwnProperty.call, LESSONS #45) at parse time; NOT catchable by this try/catch.
+  const lane = (tool && Object.keys(LANE).includes(tool)) ? LANE[tool] : null;
+  if (!lane) return false;
+  const o = $('Call \'sub-query-reformulator\'').first().json.output || {};
+  if (o.domain_hint !== lane.domain) return false;
+  const r = o.routing || {};
+  if (r.suggested_team !== lane.team || r.suggested_agent !== lane.agent) return false;
+  // one offer per turn: crossdomain-compose appends its OWN frozen phrase when crossdomain-render produced a block — yield to it
+  { const xr = $('crossdomain-render'); if (xr.isExecuted && ((((xr.first().json) || {})._xdBlock) || {}).any === true) return false; }
+  const lc = Array.isArray(j.lookup_companies) ? j.lookup_companies : [];
+  if (!lc.length) return false;
+  const ans = Array.isArray(j.answers) ? j.answers : [];
+  if (!ans.length) return false;
+  const hit = [];
+  for (const a of ans) {
+    const f = (a && Array.isArray(a.fields)) ? a.fields.find(x => x && x.key === 'company_name' && x.value) : null;
+    if (!f) return false;
+    hit.push(String(f.value).toLowerCase().trim());
+  }
+  return lc.some(c => c && c.name && !hit.includes(String(c.name).toLowerCase().trim()));
+} catch (e) { return false; } })() }}

@@ -1,0 +1,373 @@
+{
+ "date": "2026-08-17",
+ "tester": "sorento-tester",
+ "change": "brand-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ ac51a12e-1493-4bc8-82a1-8beef6065dd8 (versionId==activeVersionId)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ d2b82e80-8f22-437d-bf33-3781c505cd5f",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 7b4baaa8-5cb5-460e-b2f4-94a562dcc54f",
+  "live_untouched": {
+   "9qVyfUxmRQqrpGRMDLRuz": "d6f6b90c-3d8a-4704-a103-d1d0f99b78db",
+   "XTODTw-dJcV0uRdC056hG": "9df39ff6-3604-421b-b727-b45f65545200",
+   "rrYXzE61gCNUck_zmXe-G": "5018a189-22df-4cb9-aa89-fa509377abe9"
+  }
+ },
+ "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No (execute_workflow webhook body {test_run_id,contact,item}) seeds test:q:437264483 + fires clone (waitForSubWorkflow) + reads test:egress:{test_run_id}; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with message.mock_reformulator_output (consumed by parser fork test-reformulator-bypass, is_test=true); execution data read via n8n REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; session row reset to {\"variables\":{}} between independent cases via host psql to n8n_test (guarded current_database()=n8n_test; never a prod DB)",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "B1 single-company order enquiry, not found",
+ "message": "any order for SRTWC287A-RL-7405",
+ "mock_reformulator_output": {
+  "message_type": "business_query",
+  "intent_hint": "check_order",
+  "domain_hint": "order",
+  "scope_intent": "specific",
+  "is_affirmative": null,
+  "user_goal": "checking any order for SRTWC287A-RL-7405",
+  "access_levels": [
+   "dealer"
+  ],
+  "date_mode": null,
+  "date_filter_start": null,
+  "date_filter_end": null,
+  "match_mode": "and",
+  "demand_qty": null,
+  "entities": [
+   {
+    "raw": "SRTWC287A-RL-7405",
+    "hint": "product",
+    "canonical_code": null,
+    "current_message": true,
+    "confident": true
+   }
+  ],
+  "entity_op": "replace_combine",
+  "scope_exclusive": false,
+  "requested_attributes": [
+   "__all__"
+  ],
+  "contains_flyer": false,
+  "reference_positions": [],
+  "reference_target": null,
+  "person_mention": null,
+  "is_active": null,
+  "order_status": null,
+  "correction": false,
+  "routing": {
+   "suggested_team": "customer_service",
+   "suggested_agent": "order_enquiries"
+  },
+  "escalation": {
+   "is_escalation_confirmation": false
+  },
+  "suggest_pick_context": false
+ },
+ "exec_ids": {
+  "zz-canary-run": "12833867",
+  "clone": "12833868",
+  "subs": {
+   "Call 'sub-query-reformulator'": [
+    {
+     "executionId": "12833873",
+     "workflowId": "wI5RkNGW3EOJfBdo"
+    }
+   ],
+   "Execute 'sub-get-rag'": [
+    {
+     "executionId": "12833875",
+     "workflowId": "tWP33QOFT7SxThfT"
+    }
+   ],
+   "Call 'sub-get-results'": [
+    {
+     "executionId": "12833878",
+     "workflowId": "t4QvrtrPnTwRU6br"
+    }
+   ],
+   "sorento-sub-respond-sendmsg-respond2": [
+    {
+     "executionId": "12833884",
+     "workflowId": "aQUmwMVplmNcyUVc"
+    }
+   ],
+   "Call 'sub-respond-save-message-redis'2": [
+    {
+     "executionId": "12833885",
+     "workflowId": "tWm5DYLxfypmVC1T"
+    }
+   ]
+  }
+ },
+ "branch": "If2 F → If10 F → If9 F → If1 F → not-supported-domain F → If → check-access/get-access-types → resolve-entity(real) → disallowed-entity-gate → If3 → get-rag → tool-filter(crm_order_management_orders_list) → get-results(real READ, has_result=false) → not-found-error-message → sibling/dym → build-suggest-offer → tag-not-found → escalate-catalog(is_escalate_offer) → cs-offer-gate T → cs-roster-plan → get-cs-members → build-cs-member-offer → compile-current-state → sendmsg(guarded)",
+ "assertions": [
+  {
+   "id": "deg.routing_companies.length==1 & Sorento",
+   "pass": true,
+   "observed": [
+    {
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento",
+     "codes": [
+      "SRTWC287A-RL-7405"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "deg.routing_company==Sorento",
+   "pass": true,
+   "observed": "00000000-0000-0000-0000-000000000001"
+  },
+  {
+   "id": "deg.routing_brand = row brand or null",
+   "pass": true,
+   "observed": {
+    "routing_brand": "sorento",
+    "source": "resolved"
+   }
+  },
+  {
+   "id": "cs-roster-plan 1 item",
+   "pass": true,
+   "observed": [
+    {
+     "plan_idx": 0,
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento",
+     "codes": [
+      "SRTWC287A-RL-7405"
+     ],
+     "multi_company": false,
+     "companies": [
+      "Sorento"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "get-cs-members executed once, 1 input item, URL carries company_id=<Sorento> (+brand_code=sorento)",
+   "pass": true,
+   "observed": {
+    "runs": 1,
+    "items": 1,
+    "statusCode": 200,
+    "roster_ids": [
+     "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "c483d959-f8b5-488a-bb9d-168fa0292d75"
+    ],
+    "url_reconstructed_from_input_item_and_node_url_expression": "…/team-members?agent_code=order_enquiries&team_code=customer_service&tier=1&contact_id=437264483&brand_code=sorento&company_id=00000000-0000-0000-0000-000000000001",
+    "note": "n8n runData does not store the resolved httpRequest URL; reconstructed from cs-roster-plan item + node URL expression; corroborated by B7 probe (identical roster for the same params)"
+   }
+  },
+  {
+   "id": "bcmo.response today's shape (no 'Note:', no '(Sorento)' labels)",
+   "pass": true,
+   "observed": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+  },
+  {
+   "id": "cs_last_result_set[].company_id all Sorento",
+   "pass": true,
+   "observed": [
+    {
+     "idx": 1,
+     "label": "Maryam Ariffin",
+     "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento"
+    },
+    {
+     "idx": 2,
+     "label": "Cyndi",
+     "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento"
+    },
+    {
+     "idx": 3,
+     "label": "Aisyah",
+     "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento"
+    },
+    {
+     "idx": 4,
+     "label": "Balqis",
+     "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento"
+    },
+    {
+     "idx": 5,
+     "label": "Niki",
+     "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento"
+    },
+    {
+     "idx": 6,
+     "label": "Nurain",
+     "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento"
+    }
+   ]
+  },
+  {
+   "id": "ccs.variables.routing_company/companies persisted",
+   "pass": true,
+   "observed": {
+    "routing_brand": "sorento",
+    "routing_brand_source": "resolved",
+    "routing_company": "00000000-0000-0000-0000-000000000001",
+    "routing_companies": [
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "codes": [
+       "SRTWC287A-RL-7405"
+      ]
+     }
+    ],
+    "selection_context": "member_offer"
+   }
+  },
+  {
+   "id": "egress: only would_log + would_write(session) + would_send",
+   "pass": true,
+   "observed": [
+    "save-message-redis",
+    "save-session-vars",
+    "sendmsg-sub"
+   ]
+  }
+ ],
+ "egress": [
+  {
+   "guard": "save-message-redis",
+   "kind": "would_log",
+   "target": "redis:sorento-respond-message->mongo",
+   "test_run_id": "UAC-BCR-B1-20260817"
+  },
+  {
+   "guard": "save-session-vars",
+   "kind": "would_write",
+   "target": "crm:conversation-variables:PUT",
+   "test_run_id": "UAC-BCR-B1-20260817",
+   "payload": {
+    "routing_brand": "sorento",
+    "routing_brand_source": "resolved",
+    "routing_company": "00000000-0000-0000-0000-000000000001",
+    "routing_companies": [
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "codes": [
+       "SRTWC287A-RL-7405"
+      ]
+     }
+    ],
+    "selection_context": "member_offer",
+    "last_result_set_len": 6
+   }
+  },
+  {
+   "guard": "sendmsg-sub",
+   "kind": "would_send",
+   "target": "437264483",
+   "test_run_id": "UAC-BCR-B1-20260817",
+   "payload": {
+    "channel": "text",
+    "message_len": 333,
+    "message_head": "Here's what you want:\n• product: SRTWC287A-RL-7405\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to ro"
+   }
+  }
+ ],
+ "safety_S1_S6": {
+  "S1": "PASS — sendmsg sub(s) ['12833884'] on ['aQUmwMVplmNcyUVc'] received is_test=true; nodes=['Chat Memory Manager', 'Code in JavaScript', 'If1', 'Loop Over Items', 'When Executed by Another Workflow', 'chat?', 'guard-record-text', 'guard-text', 'is-last-quickreply']; no respond.io message node/HTTP executed; send-message-files/images/video absent from clone runData",
+  "S2": "PASS — Call 'sub-human-intervention' not executed this turn (no assignment path reached)",
+  "S3": "PASS — save-session-vars (prod PUT) + update-human-intervened absent from runData (orphaned); guard-d-record would_write only; session persisted to n8n_test.respond_contacts_test via pg-upsert-session (cred n8n_test-db)",
+  "S4": "PASS — get-results sub ['12833878'] (t4QvrtrPnTwRU6br) invoked read tool ['crm_order_management_orders_list '] via MCP Client1; never crm_it_support_ticket_create",
+  "S5": "PASS — trigger test_mode=true; redis item test_run_id/scope/mode present; reformulator fork wI5RkNGW3EOJfBdo called with is_test=true (bypass fired) ; sendmsg/HI subs is_test=true. NOTE get-results TEST fork t4QvrtrPnTwRU6br takes no is_test input (pre-existing; read-only tool verified under S4)",
+  "S6": "PASS — deterministic: reformulator fork nodes=['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass'] (AI Agent NOT executed, 0 token); clone LLM nodes executed=[]; get-results sub nodes=[['MCP Client1', 'When Executed by Another Workflow', 'entity-ids-transformer', 'output-structurer']] (MCP Client1 only, no agent LLM)"
+ },
+ "nodes_executed": [
+  "Aggregate1",
+  "Call 'sub-get-results'",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If5",
+  "If6",
+  "If7",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "build-cs-member-offer",
+  "build-suggest-offer",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "cs-offer-gate",
+  "cs-roster-plan",
+  "disallowed-entity-gate",
+  "dym-gate",
+  "dym-transform",
+  "escalate-catalog",
+  "get-cs-members",
+  "get-session-vars",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-in",
+  "if-got-attachments",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-found-error-message",
+  "not-supported-domain",
+  "pg-get-session",
+  "pg-upsert-session",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "resolve-entity-http",
+  "session-get-gate",
+  "session-save-gate",
+  "sibling-gate",
+  "sim-inject-gate",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-not-found",
+  "tf-message",
+  "tool-filter",
+  "validator"
+ ],
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

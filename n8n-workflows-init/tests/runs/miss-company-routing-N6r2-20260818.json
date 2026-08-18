@@ -1,0 +1,1683 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round-3 rev-2 (F-R3-4 sandbox-safe miss-roster-gate d24dd81b, cs-offer-gate g2 cfa8c18e, build-cs-member-offer 63c1c46e)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ e54e114e-86e6-4023-8926-3fec6fc1ef51 (public-API versionId, unchanged before/after the pass; all 9 lane bodies sha-verified == tests/diffs/miss-company-routing/*: miss-roster-gate d24dd81b, cs-offer-gate g2 cfa8c18e, build-cs-member-offer 63c1c46e, build-miss-member-offer 68eef4c7, escalation-context cca7a245, compile-current-state 5a84dfea, escalate-catalog 0168df84, clarify-company-reply 7ff06aa8, miss-roster-plan 0b7907d6)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (unchanged)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa (Postgres Chat Memory1 cred Dnnofg8Xb27VQOhI n8n_test-db)",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": {
+    "versionId": "cfd0e776-f310-4066-bc1b-ce4c40cfd955",
+    "updatedAt": "2026-08-18T04:28:14.679Z",
+    "same_as_PRE": true
+   },
+   "XTODTw-dJcV0uRdC056hG": {
+    "versionId": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+    "updatedAt": "2026-08-18T00:03:06.965Z",
+    "same_as_PRE": true
+   },
+   "aoydkG1dbItXR5jXFEQsP": {
+    "versionId": "91171ac3-ddad-4452-ace5-98da59480c48",
+    "updatedAt": "2026-08-11T09:00:35.893Z",
+    "same_as_PRE": true
+   },
+   "rrYXzE61gCNUck_zmXe-G": {
+    "versionId": "9249e00e-3dd9-4766-8c49-2f32f8f66bda",
+    "updatedAt": "2026-08-18T00:04:13.380Z",
+    "same_as_PRE": "n/a(no PRE)"
+   }
+  },
+  "clone_and_forks_after_pass": {
+   "txiPzSxy3Pclsz6v": {
+    "versionId": "e54e114e-86e6-4023-8926-3fec6fc1ef51",
+    "updatedAt": "2026-08-18T04:48:12.628Z",
+    "same_as_PRE": true
+   },
+   "wI5RkNGW3EOJfBdo": {
+    "versionId": "c7d9cfa2-b46e-43b4-a227-8104616401e4",
+    "updatedAt": "2026-08-18T03:32:31.780Z",
+    "same_as_PRE": true
+   },
+   "vUfFUDjLAuMaeQE6": {
+    "versionId": "0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+    "updatedAt": "2026-08-17T23:51:13.991Z",
+    "same_as_PRE": true
+   },
+   "aQUmwMVplmNcyUVc": {
+    "versionId": "b48e0eaa-6dbd-4f1b-bf81-40cf6804c933",
+    "updatedAt": "2026-08-18T03:10:03.002Z",
+    "same_as_PRE": true
+   }
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes the clone waitForSubWorkflow, returns the test:egress list) -> REST GET /executions/{id}?includeData=true matched by test_run_id (UAC-MCR3-r2-*-20260818) + every sub-execution via metadata.subExecution. Item mode=uac (session read = prod CRM get-session-vars-http, save guarded/orphaned; save-session-vars would_write payload = the persisted variables), follow-up turns STATE-INJECTED at item top level as previous_conversation_state (= previous turn's would_write variables). Deterministic turns: mock_reformulator_output at item top level (fork bypass, 0 LLM token); parser-tier turn (N4b) omits the mock (real fork, is_test=true). Contact 437264483. No contact.chat_id. n8n_test session table untouched.",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "N6 cross-domain block wins (one offer per turn): real multi-product incoming turn exercising the xd probe + offline unit (ii) on the deployed gate",
+ "turns": {
+  "t1": {
+   "msg": "incoming for MUB6201 and MWC-SC08B",
+   "mock": "incoming mock 2 entities",
+   "state_injected_from": null,
+   "test_run_id": "UAC-MCR3-r2-N6-t1-20260818",
+   "clone_exec": "12923507",
+   "status": "success",
+   "error": null,
+   "subs": {
+    "Call 'sub-query-reformulator'#12923510": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ]
+    },
+    "Execute 'sub-get-rag'#12923513": {
+     "workflowId": "tWP33QOFT7SxThfT",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Code in JavaScript",
+      "Code in JavaScript1",
+      "Execute a SQL query",
+      "HTTP Request",
+      "When Executed by Another Workflow"
+     ]
+    },
+    "Call 'sub-get-results'#12923517": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "crossdomain-probe#12923518": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "sorento-sub-respond-sendmsg-respond2#12923520": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "Chat Memory Manager",
+      "Code in JavaScript",
+      "If1",
+      "Loop Over Items",
+      "When Executed by Another Workflow",
+      "chat?",
+      "guard-record-text",
+      "guard-text",
+      "is-last-quickreply"
+     ]
+    },
+    "Call 'sub-respond-save-message-redis'2#12923523": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ]
+    }
+   },
+   "nodes_executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-miss-member-offer",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-probe",
+    "crossdomain-render",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-cs-members-miss",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "miss-roster-plan",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "gates": {
+    "miss-roster-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "cs-offer-gate": null,
+    "clarify-company-gate": null,
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If2": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If10": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If-ideate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "is-escalation-declined": [
+     [
+      0,
+      1
+     ]
+    ],
+    "crossdomain-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "lane_nodes_executed": [
+    "miss-roster-plan",
+    "get-cs-members-miss",
+    "build-miss-member-offer"
+   ],
+   "tool_filter": {
+    "name": "crm_incoming_stock_list",
+    "similarity": 0.2714855577456964,
+    "_tool_pick": {
+     "chosen": "crm_incoming_stock_list",
+     "rejected": [],
+     "count": 1,
+     "has_product": true
+    }
+   },
+   "miss_roster_plan": [
+    {
+     "plan_idx": 0,
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "mocha",
+     "codes": [
+      "MUB6201",
+      "MWC-SC08B"
+     ],
+     "multi_company": false,
+     "companies": [
+      "Sorento"
+     ]
+    }
+   ],
+   "cs_roster_plan": [],
+   "roster_calls": {
+    "get-cs-members-miss": [
+     {
+      "status": 200,
+      "members": [
+       [
+        "Jereen Tee",
+        "1037238"
+       ]
+      ]
+     }
+    ]
+   },
+   "escalation_context": null,
+   "reformulator_output": {
+    "message_type": "business_query",
+    "domain_hint": "incoming",
+    "intent_hint": "check_incoming",
+    "requested_attributes": [
+     "__all__"
+    ],
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "inbound_shipment",
+      "current_message": true
+     },
+     {
+      "raw": "MWC-SC08B",
+      "hint": "inbound_shipment",
+      "current_message": true
+     }
+    ],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    }
+   },
+   "would_send": [
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/528f120b-b88b-4e3d-8ad5-555c293a0c12/TXGU8711127 - WH.xlsx",
+     "filename": "TXGU8711127 - WH.xlsx"
+    },
+    {
+     "part": 1,
+     "total_parts": 1,
+     "message": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*\n\n*Sorento:* no incoming stock records for MUB6201, MWC-SC08B.\n\nNo incoming records found for: MWC-SC08B.\n\nWould you like me to escalate to *Sorento* purchasing team?\n\nPlease choose who to route to (reply with the number):\n2. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+     "message_len": 486,
+     "quick_reply": null,
+     "result_idx": [
+      1,
+      2
+     ]
+    }
+   ],
+   "would_write": [
+    {
+     "guard": "save-session-vars",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MUB6201",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MUB6201"
+         },
+         {
+          "raw": "MWC-SC08B",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MWC-SC08B"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 1 records\n\nWould you like me to escalate to *Sorento* purchasing team?",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "MUB6201",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "label": "Jereen Tee",
+          "uuid": "3760012d-7f5a-4b44-bf1a-e3349f7b398d",
+          "respond_user_id": "1037238",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         }
+        ],
+        "selection_context": "member_offer",
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha"
+         }
+        ],
+        "routing_brand": "mocha",
+        "routing_brand_source": "resolved",
+        "routing_company": "00000000-0000-0000-0000-000000000001",
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MUB6201",
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MUB6201",
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*\n\n*Sorento:* no incoming stock records for MUB6201, MWC-SC08B.\n\nNo incoming records found for: MWC-SC08B.\n\nWould you like me to escalate to *Sorento* purchasing team?\n\nPlease choose who to route to (reply with the number):\n2. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+      }
+     }
+    }
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "incoming for MUB6201 and MWC-SC08B"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1-20260818",
+     "ts": "2026-08-18T01:00:18.364-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MUB6201",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MUB6201"
+         },
+         {
+          "raw": "MWC-SC08B",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MWC-SC08B"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 1 records\n\nWould you like me to escalate to *Sorento* purchasing team?",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "MUB6201",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "label": "Jereen Tee",
+          "uuid": "3760012d-7f5a-4b44-bf1a-e3349f7b398d",
+          "respond_user_id": "1037238",
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "company_ids": [
+           "00000000-0000-0000-0000-000000000001"
+          ],
+          "companies": [
+           "Sorento"
+          ]
+         }
+        ],
+        "selection_context": "member_offer",
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha"
+         }
+        ],
+        "routing_brand": "mocha",
+        "routing_brand_source": "resolved",
+        "routing_company": "00000000-0000-0000-0000-000000000001",
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MUB6201",
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MUB6201",
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*\n\n*Sorento:* no incoming stock records for MUB6201, MWC-SC08B.\n\nNo incoming records found for: MWC-SC08B.\n\nWould you like me to escalate to *Sorento* purchasing team?\n\nPlease choose who to route to (reply with the number):\n2. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+      }
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1-20260818",
+     "ts": "2026-08-18T01:00:18.355-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/528f120b-b88b-4e3d-8ad5-555c293a0c12/TXGU8711127 - WH.xlsx",
+      "filename": "TXGU8711127 - WH.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1-20260818",
+     "ts": "2026-08-18T01:00:18.343-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "I have attached the file(s) below.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*\n\n*Sorento:* no incoming stock records for MUB6201, MWC-SC08B.\n\nNo incoming records found for: MWC-SC08B.\n\nWould you like me to escalate to *Sorento* purchasing team?\n\nPlease choose who to route to (reply with the number):\n2. Jereen Tee\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+      "message_len": 486,
+      "quick_reply": null,
+      "result_idx": [
+       1,
+       2
+      ]
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1-20260818",
+     "ts": "2026-08-18T01:00:16.352-04:00"
+    }
+   ],
+   "S0": {
+    "S1_no_send_http": true,
+    "S2_hi_shortcircuit": true,
+    "S3_orphans_not_executed": true,
+    "S4_read_tool": "crm_incoming_stock_list",
+    "S5_is_test": {
+     "Call 'sub-query-reformulator'#12923510": true,
+     "Execute 'sub-get-rag'#12923513": null,
+     "Call 'sub-get-results'#12923517": null,
+     "crossdomain-probe#12923518": null,
+     "sorento-sub-respond-sendmsg-respond2#12923520": true,
+     "Call 'sub-respond-save-message-redis'2#12923523": null
+    },
+    "S6_llm_nodes_in_parser_fork": [],
+    "egress_kinds": [
+     [
+      "would_log",
+      "save-message-redis"
+     ],
+     [
+      "would_send",
+      "send-message-files"
+     ],
+     [
+      "would_send",
+      "sendmsg-sub"
+     ],
+     [
+      "would_write",
+      "save-session-vars"
+     ]
+    ]
+   }
+  },
+  "t1b": {
+   "msg": "incoming for MUB6201 and SRTWB890",
+   "mock": "incoming mock 2 entities (fixture attempt)",
+   "state_injected_from": null,
+   "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+   "clone_exec": "12923559",
+   "status": "success",
+   "error": null,
+   "subs": {
+    "Call 'sub-query-reformulator'#12923562": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ]
+    },
+    "Execute 'sub-get-rag'#12923567": {
+     "workflowId": "tWP33QOFT7SxThfT",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Code in JavaScript",
+      "Code in JavaScript1",
+      "Execute a SQL query",
+      "HTTP Request",
+      "When Executed by Another Workflow"
+     ]
+    },
+    "Call 'sub-get-results'#12923569": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "sorento-sub-respond-sendmsg-respond2#12923570": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "Chat Memory Manager",
+      "Code in JavaScript",
+      "If1",
+      "Loop Over Items",
+      "When Executed by Another Workflow",
+      "chat?",
+      "guard-record-text",
+      "guard-text",
+      "is-last-quickreply"
+     ]
+    },
+    "Call 'sub-respond-save-message-redis'2#12923579": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ]
+    }
+   },
+   "nodes_executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "gates": {
+    "miss-roster-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "cs-offer-gate": null,
+    "clarify-company-gate": null,
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If2": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If10": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If-ideate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "is-escalation-declined": [
+     [
+      0,
+      1
+     ]
+    ],
+    "crossdomain-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "lane_nodes_executed": [],
+   "tool_filter": {
+    "name": "crm_incoming_stock_list",
+    "similarity": 0.2714855577456964,
+    "_tool_pick": {
+     "chosen": "crm_incoming_stock_list",
+     "rejected": [],
+     "count": 1,
+     "has_product": true
+    }
+   },
+   "miss_roster_plan": [],
+   "cs_roster_plan": [],
+   "roster_calls": {},
+   "escalation_context": null,
+   "reformulator_output": {
+    "message_type": "business_query",
+    "domain_hint": "incoming",
+    "intent_hint": "check_incoming",
+    "requested_attributes": [
+     "__all__"
+    ],
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "inbound_shipment",
+      "current_message": true
+     },
+     {
+      "raw": "SRTWB890",
+      "hint": "inbound_shipment",
+      "current_message": true
+     }
+    ],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    }
+   },
+   "would_send": [
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/528f120b-b88b-4e3d-8ad5-555c293a0c12/TXGU8711127 - WH.xlsx",
+     "filename": "TXGU8711127 - WH.xlsx"
+    },
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/917f7ebc-26a1-41d0-82c9-38684431b834/SEGU6215113.xlsx",
+     "filename": "SEGU6215113.xlsx"
+    },
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/8f77087d-b83b-416b-b404-f220c857d5a5/TCKU6245254.xlsx",
+     "filename": "TCKU6245254.xlsx"
+    },
+    {
+     "part": 1,
+     "total_parts": 1,
+     "message": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* TCKU6245254\n*Loading:* 2026-07-16\n*ETC:* 2026-07-21\n*ETD:* 2026-07-23\n*ETA:* 2026-08-01\n*ETA Delay:* 2026-08-02\n*CIDB Inspection:* 2026-08-05\n*CIDB Approval:* 2026-08-07\n*Gatepass:* 2026-08-10\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 661\n*Warehouse Allocations:* BRW (661)\n\n2. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* SEGU6215113\n*Loading:* 2026-08-02\n*ETC:* 2026-08-05\n*ETD:* 2026-08-07\n*ETA:* 2026-08-18\n*ETA Delay:* 2026-08-19\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 257\n🚩  *(PENDING ALLOCATION)*\n\n3. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*",
+     "message_len": 942,
+     "quick_reply": null,
+     "result_idx": [
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "would_write": [
+    {
+     "guard": "save-session-vars",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MUB6201",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MUB6201"
+         },
+         {
+          "raw": "SRTWB890",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWB890"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 3 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "SRTWB890",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "uuid": null,
+          "label": "SRTWB890",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 3,
+          "uuid": null,
+          "label": "MUB6201",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MUB6201"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": null,
+          "codes": [
+           "MUB6201",
+           "SRTWB890"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* TCKU6245254\n*Loading:* 2026-07-16\n*ETC:* 2026-07-21\n*ETD:* 2026-07-23\n*ETA:* 2026-08-01\n*ETA Delay:* 2026-08-02\n*CIDB Inspection:* 2026-08-05\n*CIDB Approval:* 2026-08-07\n*Gatepass:* 2026-08-10\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 661\n*Warehouse Allocations:* BRW (661)\n\n2. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* SEGU6215113\n*Loading:* 2026-08-02\n*ETC:* 2026-08-05\n*ETD:* 2026-08-07\n*ETA:* 2026-08-18\n*ETA Delay:* 2026-08-19\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 257\n🚩  *(PENDING ALLOCATION)*\n\n3. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*"
+      }
+     }
+    }
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "incoming for MUB6201 and SRTWB890"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+     "ts": "2026-08-18T01:00:52.553-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MUB6201",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MUB6201"
+         },
+         {
+          "raw": "SRTWB890",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWB890"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 3 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "SRTWB890",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "uuid": null,
+          "label": "SRTWB890",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 3,
+          "uuid": null,
+          "label": "MUB6201",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MUB6201"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": null,
+          "codes": [
+           "MUB6201",
+           "SRTWB890"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* TCKU6245254\n*Loading:* 2026-07-16\n*ETC:* 2026-07-21\n*ETD:* 2026-07-23\n*ETA:* 2026-08-01\n*ETA Delay:* 2026-08-02\n*CIDB Inspection:* 2026-08-05\n*CIDB Approval:* 2026-08-07\n*Gatepass:* 2026-08-10\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 661\n*Warehouse Allocations:* BRW (661)\n\n2. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* SEGU6215113\n*Loading:* 2026-08-02\n*ETC:* 2026-08-05\n*ETD:* 2026-08-07\n*ETA:* 2026-08-18\n*ETA Delay:* 2026-08-19\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 257\n🚩  *(PENDING ALLOCATION)*\n\n3. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*"
+      }
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+     "ts": "2026-08-18T01:00:52.526-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/528f120b-b88b-4e3d-8ad5-555c293a0c12/TXGU8711127 - WH.xlsx",
+      "filename": "TXGU8711127 - WH.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+     "ts": "2026-08-18T01:00:52.502-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/917f7ebc-26a1-41d0-82c9-38684431b834/SEGU6215113.xlsx",
+      "filename": "SEGU6215113.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+     "ts": "2026-08-18T01:00:50.747-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/8f77087d-b83b-416b-b404-f220c857d5a5/TCKU6245254.xlsx",
+      "filename": "TCKU6245254.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+     "ts": "2026-08-18T01:00:48.713-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* TCKU6245254\n*Loading:* 2026-07-16\n*ETC:* 2026-07-21\n*ETD:* 2026-07-23\n*ETA:* 2026-08-01\n*ETA Delay:* 2026-08-02\n*CIDB Inspection:* 2026-08-05\n*CIDB Approval:* 2026-08-07\n*Gatepass:* 2026-08-10\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 661\n*Warehouse Allocations:* BRW (661)\n\n2. *Company:* Sorento\n*Product Code:* SRTWB890\n*Container:* SEGU6215113\n*Loading:* 2026-08-02\n*ETC:* 2026-08-05\n*ETD:* 2026-08-07\n*ETA:* 2026-08-18\n*ETA Delay:* 2026-08-19\n*Liner:* CMA\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 257\n🚩  *(PENDING ALLOCATION)*\n\n3. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*",
+      "message_len": 942,
+      "quick_reply": null,
+      "result_idx": [
+       1,
+       2,
+       3
+      ]
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1b-20260818",
+     "ts": "2026-08-18T01:00:46.689-04:00"
+    }
+   ],
+   "S0": {
+    "S1_no_send_http": true,
+    "S2_hi_shortcircuit": true,
+    "S3_orphans_not_executed": true,
+    "S4_read_tool": "crm_incoming_stock_list",
+    "S5_is_test": {
+     "Call 'sub-query-reformulator'#12923562": true,
+     "Execute 'sub-get-rag'#12923567": null,
+     "Call 'sub-get-results'#12923569": null,
+     "sorento-sub-respond-sendmsg-respond2#12923570": true,
+     "Call 'sub-respond-save-message-redis'2#12923579": null
+    },
+    "S6_llm_nodes_in_parser_fork": [],
+    "egress_kinds": [
+     [
+      "would_log",
+      "save-message-redis"
+     ],
+     [
+      "would_send",
+      "send-message-files"
+     ],
+     [
+      "would_send",
+      "sendmsg-sub"
+     ],
+     [
+      "would_write",
+      "save-session-vars"
+     ]
+    ]
+   }
+  },
+  "t1c": {
+   "msg": "incoming for MUB6201 and SRTWC286-SH-UF",
+   "mock": "incoming mock 2 entities (fixture attempt)",
+   "state_injected_from": null,
+   "test_run_id": "UAC-MCR3-r2-N6-t1c-20260818",
+   "clone_exec": "12923598",
+   "status": "success",
+   "error": null,
+   "subs": {
+    "Call 'sub-query-reformulator'#12923603": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "When Executed by Another Workflow",
+      "mock-reformulator-output",
+      "test-reformulator-bypass"
+     ]
+    },
+    "Execute 'sub-get-rag'#12923606": {
+     "workflowId": "tWP33QOFT7SxThfT",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Code in JavaScript",
+      "Code in JavaScript1",
+      "Execute a SQL query",
+      "HTTP Request",
+      "When Executed by Another Workflow"
+     ]
+    },
+    "Call 'sub-get-results'#12923608": {
+     "workflowId": "t4QvrtrPnTwRU6br",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "MCP Client1",
+      "When Executed by Another Workflow",
+      "entity-ids-transformer",
+      "output-structurer"
+     ]
+    },
+    "sorento-sub-respond-sendmsg-respond2#12923609": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "is_test": true,
+     "nodes": [
+      "Chat Memory Manager",
+      "Code in JavaScript",
+      "If1",
+      "Loop Over Items",
+      "When Executed by Another Workflow",
+      "chat?",
+      "guard-record-text",
+      "guard-text",
+      "is-last-quickreply"
+     ]
+    },
+    "Call 'sub-respond-save-message-redis'2#12923616": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "is_test": null,
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ]
+    }
+   },
+   "nodes_executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Edit Fields",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "Loop Over Items1",
+    "Remove Duplicates",
+    "Split Out",
+    "Switch",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "central-exchange",
+    "chat-attach?",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-g-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ],
+   "gates": {
+    "miss-roster-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "cs-offer-gate": null,
+    "clarify-company-gate": null,
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If2": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If10": [
+     [
+      0,
+      1
+     ]
+    ],
+    "If-ideate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "is-escalation-declined": [
+     [
+      0,
+      1
+     ]
+    ],
+    "crossdomain-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "lane_nodes_executed": [],
+   "tool_filter": {
+    "name": "crm_incoming_stock_list",
+    "similarity": 0.27141809572694386,
+    "_tool_pick": {
+     "chosen": "crm_incoming_stock_list",
+     "rejected": [],
+     "count": 1,
+     "has_product": true
+    }
+   },
+   "miss_roster_plan": [],
+   "cs_roster_plan": [],
+   "roster_calls": {},
+   "escalation_context": null,
+   "reformulator_output": {
+    "message_type": "business_query",
+    "domain_hint": "incoming",
+    "intent_hint": "check_incoming",
+    "requested_attributes": [
+     "__all__"
+    ],
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "inbound_shipment",
+      "current_message": true
+     },
+     {
+      "raw": "SRTWC286-SH-UF",
+      "hint": "inbound_shipment",
+      "current_message": true
+     }
+    ],
+    "routing": {
+     "suggested_team": "purchasing",
+     "suggested_agent": "incoming_stock_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": false
+    }
+   },
+   "would_send": [
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/528f120b-b88b-4e3d-8ad5-555c293a0c12/TXGU8711127 - WH.xlsx",
+     "filename": "TXGU8711127 - WH.xlsx"
+    },
+    {
+     "presigned_url": "https://cdn-sorento.com/packing_list/9e4b56fb-2ef0-4ce6-9234-ec4c745886aa/WHSU6225891.xlsx",
+     "filename": "WHSU6225891.xlsx"
+    },
+    {
+     "part": 1,
+     "total_parts": 1,
+     "message": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWC286-SH-UF\n*Container:* WHSU6225891\n*Loading:* 2026-07-25\n*ETC:* 2026-07-27\n*ETD:* 2026-07-29\n*ETA:* 2026-08-06\n*ETA Delay:* 2026-08-08\n*CIDB Inspection:* 2026-08-11\n*CIDB Approval:* 2026-08-13\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 48\n🚩  *(PENDING ALLOCATION)*\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*",
+     "message_len": 576,
+     "quick_reply": null,
+     "result_idx": [
+      1,
+      2
+     ]
+    }
+   ],
+   "would_write": [
+    {
+     "guard": "save-session-vars",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MUB6201",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MUB6201"
+         },
+         {
+          "raw": "SRTWC286-SH-UF",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWC286-SH-UF"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 2 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "SRTWC286-SH-UF",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "uuid": null,
+          "label": "MUB6201",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MUB6201"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": null,
+          "codes": [
+           "MUB6201",
+           "SRTWC286-SH-UF"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWC286-SH-UF\n*Container:* WHSU6225891\n*Loading:* 2026-07-25\n*ETC:* 2026-07-27\n*ETD:* 2026-07-29\n*ETA:* 2026-08-06\n*ETA Delay:* 2026-08-08\n*CIDB Inspection:* 2026-08-11\n*CIDB Approval:* 2026-08-13\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 48\n🚩  *(PENDING ALLOCATION)*\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*"
+      }
+     }
+    }
+   ],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "incoming for MUB6201 and SRTWC286-SH-UF"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1c-20260818",
+     "ts": "2026-08-18T01:01:12.741-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "business_query",
+        "intent_hint": "check_incoming",
+        "domain_hint": "incoming",
+        "entities": [
+         {
+          "raw": "MUB6201",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "MUB6201"
+         },
+         {
+          "raw": "SRTWC286-SH-UF",
+          "hint": "product",
+          "current_message": true,
+          "canonical_code": "SRTWC286-SH-UF"
+         }
+        ],
+        "routing": {
+         "suggested_team": "purchasing",
+         "suggested_agent": "incoming_stock_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": false
+        },
+        "response": "Previous turn (incoming): returned 2 records",
+        "last_result_set": [
+         {
+          "idx": 1,
+          "uuid": null,
+          "label": "SRTWC286-SH-UF",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         },
+         {
+          "idx": 2,
+          "uuid": null,
+          "label": "MUB6201",
+          "entity_type": null,
+          "product": null,
+          "attachment_type": null,
+          "filename": null
+         }
+        ],
+        "selection_context": null,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": null,
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MUB6201"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": null,
+          "codes": [
+           "MUB6201",
+           "SRTWC286-SH-UF"
+          ]
+         }
+        ]
+       },
+       "user_response": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWC286-SH-UF\n*Container:* WHSU6225891\n*Loading:* 2026-07-25\n*ETC:* 2026-07-27\n*ETD:* 2026-07-29\n*ETA:* 2026-08-06\n*ETA Delay:* 2026-08-08\n*CIDB Inspection:* 2026-08-11\n*CIDB Approval:* 2026-08-13\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 48\n🚩  *(PENDING ALLOCATION)*\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*"
+      }
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1c-20260818",
+     "ts": "2026-08-18T01:01:12.722-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/528f120b-b88b-4e3d-8ad5-555c293a0c12/TXGU8711127 - WH.xlsx",
+      "filename": "TXGU8711127 - WH.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1c-20260818",
+     "ts": "2026-08-18T01:01:12.698-04:00"
+    },
+    {
+     "guard": "send-message-files",
+     "kind": "would_send",
+     "target": "respondio:contact:message",
+     "payload": {
+      "presigned_url": "https://cdn-sorento.com/packing_list/9e4b56fb-2ef0-4ce6-9234-ec4c745886aa/WHSU6225891.xlsx",
+      "filename": "WHSU6225891.xlsx"
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1c-20260818",
+     "ts": "2026-08-18T01:01:10.859-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "channel": "text",
+     "target": "437264483",
+     "payload": {
+      "part": 1,
+      "total_parts": 1,
+      "message": "I have attached the file(s) below.\n\n1. *Company:* Sorento\n*Product Code:* SRTWC286-SH-UF\n*Container:* WHSU6225891\n*Loading:* 2026-07-25\n*ETC:* 2026-07-27\n*ETD:* 2026-07-29\n*ETA:* 2026-08-06\n*ETA Delay:* 2026-08-08\n*CIDB Inspection:* 2026-08-11\n*CIDB Approval:* 2026-08-13\n*Liner:* WHL\n*China Forwarder:* Haiian\n*Malaysia Forwarder:* Haiian\n*Consignee:* Sorento\n*Free Days Available:* 14\n*Incoming Quantity:* 48\n🚩  *(PENDING ALLOCATION)*\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Container:* TXGU8711127\n*ETA:* 2026-08-25\n*Incoming Quantity:* 60\n🚩  *(PENDING ALLOCATION)*",
+      "message_len": 576,
+      "quick_reply": null,
+      "result_idx": [
+       1,
+       2
+      ]
+     },
+     "test_run_id": "UAC-MCR3-r2-N6-t1c-20260818",
+     "ts": "2026-08-18T01:01:08.959-04:00"
+    }
+   ],
+   "S0": {
+    "S1_no_send_http": true,
+    "S2_hi_shortcircuit": true,
+    "S3_orphans_not_executed": true,
+    "S4_read_tool": "crm_incoming_stock_list",
+    "S5_is_test": {
+     "Call 'sub-query-reformulator'#12923603": true,
+     "Execute 'sub-get-rag'#12923606": null,
+     "Call 'sub-get-results'#12923608": null,
+     "sorento-sub-respond-sendmsg-respond2#12923609": true,
+     "Call 'sub-respond-save-message-redis'2#12923616": null
+    },
+    "S6_llm_nodes_in_parser_fork": [],
+    "egress_kinds": [
+     [
+      "would_log",
+      "save-message-redis"
+     ],
+     [
+      "would_send",
+      "send-message-files"
+     ],
+     [
+      "would_send",
+      "sendmsg-sub"
+     ],
+     [
+      "would_write",
+      "save-session-vars"
+     ]
+    ]
+   }
+  }
+ },
+ "assertions": [
+  "t1: crossdomain-gate TRUE, crossdomain-probe ran (crm_inventory_stock_balance_list read for MWC-SC08B → 0 rows) → crossdomain-render _xdBlock.any:false → miss-roster-gate TRUE (xd leg does not veto) → ONE offer: reply contains exactly one 'Would you like me to escalate' (…*Sorento* purchasing team?) + picker; miss codes [MUB6201, MWC-SC08B]",
+  "No live fixture with _xdBlock.any:true AND a per-company incoming miss found (SRTWB890 / SRTWC286-SH-UF both have incoming → gate FALSE, no offer). Per UAC the offline unit (ii) is the proof: tests/unit/miss-company-routing-round3.gates.test.js '(ii) same with _xdBlock.any:true ⇒ FALSE (crossdomain-compose owns the offer)' + '(ii-b)' PASS on the byte-exact deployed leftValue (sha d24dd81b == repo file), 52/52"
+ ],
+ "verdict": "PASS (real xd-probe path + offline unit ii)",
+ "S0_all_pass": true
+}

@@ -1,0 +1,594 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round-3 rev-3 (Q-series)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 7db593b0-ef2e-453b-bc98-30ff9267bf41 (draft==active before AND after the pass; 160 nodes; changed-node bodies byte-compared == repo files: miss-roster-gate 92ca1ccc, miss-roster-plan c4a19b6f, miss-members-gate 14576e69 (NEW), build-miss-member-offer fab11982, compile-current-state 6bff997d, clarify-company-reply==offer-hold-reply 377c2df4, cs-offer-gate conditions ce99a16c / g2 fafa8b77)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (output_exchange a68c5992 / systemMessage 138008c2 — unchanged before/after)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa (Postgres Chat Memory1 cred Dnnofg8Xb27VQOhI n8n_test-db)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "live_untouched": "spine 9qVy… active 7aba1447 (draft cfd0e776 pre-existing), parser XTODTw 89b63c51, sendmsg aoyd… 91171ac3 — identical before/after"
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v (7db593b0) waitForSubWorkflow, returns the test:egress list in the webhook response — the egress read is DIRECT from test:egress:{test_run_id} via the harness's own read-egress node; zz-canary-read LLIbMXAixexM9Cwc was NOT republished, its Read Egress key is hardcoded to a stale run id anyway) -> REST GET /executions/{id}?includeData=true matched by test_run_id + sub-executions via metadata.subExecution. Item mode=uac, deterministic mocks at item top level (access_levels ['dealer'] included on business-query mocks — pre-existing If4), follow-up turns state-injected at item top level as previous_conversation_state (rev-1/rev-2 precedent); parser-tier turns (Q6, Q9-t2/t3p) omit the mock (real fork wI5RkNGW3EOJfBdo @ c7d9cfa2, is_test=true). Contact 437264483. Prefix UAC-MCR3r3-. n8n_test session table untouched (uac mode; state injection replaces regress-capture per the rev-2 mechanics the UAC 'Same mechanics' line points at).",
+ "units": "miss-company-routing-round3.gates.test.js 85/85, rev4.spine 33/33, rev4.output_exchange 48/48 on repo files (byte-== deployed)",
+ "case": "parser tier — OPEN-OFFER company_pick arm, first execution proof (fork unchanged c7d9cfa2)",
+ "verdict": "PASS",
+ "notes": "raw \"sorento\" on the injected Q5-t2 state, NO mock: fork output_exchange emitted escalation {is_escalation_confirmation:true, company_pick:\"Sorento\"} (message_type casual, domain_hint null, no current_message entity, no preferred_assignee_id, member_pick_context true) -> spine company_pick -> Sorento/mocha/warehouse -> HI short-circuit. Companion raw \"yes mocha\" -> company_pick Mocha -> Mocha pair. No Lesson-39 soft abandon occurred (both first-run hits). Live parser XTODTw 89b63c51 unchanged after",
+ "turns": {
+  "Q6-t1": {
+   "test_run_id": "UAC-MCR3r3-Q6-t1-20260818",
+   "clone_exec": "12932775",
+   "status": "success",
+   "gates": {
+    "clarify-company-gate": [
+     0,
+     1
+    ],
+    "cs-offer-gate": [
+     0,
+     1
+    ],
+    "If2": [
+     1,
+     0
+    ],
+    "sim-inject-gate": [
+     1,
+     0
+    ]
+   },
+   "tool_filter": null,
+   "miss_roster_plan": null,
+   "bmmo": null,
+   "escalation_context": {
+    "routing_source": "company_pick",
+    "company_id": "00000000-0000-0000-0000-000000000001",
+    "brand_code": "mocha",
+    "company_name": "Sorento",
+    "team": "warehouse"
+   },
+   "roster_calls": {},
+   "lane_nodes_executed": [
+    "escalate-catalog",
+    "Call 'sub-human-intervention'"
+   ],
+   "orphaned_egress_nodes_executed": [],
+   "nodes_executed": [
+    "Call 'sub-human-intervention'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "check-access",
+    "check-access-http",
+    "clarify-company-gate",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "cs-offer-gate",
+    "divert-suggest-yes",
+    "escalate-catalog",
+    "escalation-context",
+    "get-session-vars",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sim-inject-session",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-out-of-scope",
+    "tf-message"
+   ],
+   "sent_texts": [],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "sorento"
+     },
+     "test_run_id": "UAC-MCR3r3-Q6-t1-20260818",
+     "ts": "2026-08-18T02:40:43.943-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "casual",
+        "intent_hint": null,
+        "domain_hint": null,
+        "user_goal": "trying to respond to the escalation offer by naming Sorento",
+        "access_levels": [],
+        "entities": [],
+        "routing": {
+         "suggested_team": "warehouse",
+         "suggested_agent": "general_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": true,
+         "company_pick": "Sorento"
+        },
+        "response": "Informed the user that request is out of scope and will proceed to escalate to the warehouse team",
+        "last_result_set": [],
+        "selection_context": null,
+        "date_filter_start": null,
+        "date_filter_end": null,
+        "date_mode": null,
+        "match_mode": "and",
+        "contains_flyer": false,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null
+         },
+         {
+          "plan_idx": 1,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha"
+         }
+        ],
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       }
+      }
+     },
+     "test_run_id": "UAC-MCR3r3-Q6-t1-20260818",
+     "ts": "2026-08-18T02:40:43.940-04:00"
+    },
+    {
+     "guard": "human-intervention-sub",
+     "kind": "would_write",
+     "target": "respondio:assign+crm:sla+respondio:comment",
+     "payload": {
+      "contact_id": "437264483",
+      "agent": "general_enquiries",
+      "team": "warehouse",
+      "current_assignee": null,
+      "explicit_assignee_id": null,
+      "brand_code": "mocha",
+      "company_id": "00000000-0000-0000-0000-000000000001"
+     },
+     "turn_id": "12932775",
+     "test_run_id": "UAC-MCR3r3-Q6-t1-20260818",
+     "ts": "2026-08-18T02:40:43.780-04:00"
+    }
+   ],
+   "persisted_vars": {
+    "message_type": "casual",
+    "intent_hint": null,
+    "domain_hint": null,
+    "user_goal": "trying to respond to the escalation offer by naming Sorento",
+    "access_levels": [],
+    "entities": [],
+    "routing": {
+     "suggested_team": "warehouse",
+     "suggested_agent": "general_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": true,
+     "company_pick": "Sorento"
+    },
+    "response": "Informed the user that request is out of scope and will proceed to escalate to the warehouse team",
+    "last_result_set": [],
+    "selection_context": null,
+    "date_filter_start": null,
+    "date_filter_end": null,
+    "date_mode": null,
+    "match_mode": "and",
+    "contains_flyer": false,
+    "dym_offer": null,
+    "dym_candidates": [],
+    "ideation": null,
+    "routing_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null
+     },
+     {
+      "plan_idx": 1,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha"
+     }
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_company": null,
+    "routing_companies": [
+     {
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC-SC08B"
+      ]
+     },
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "codes": [
+       "MWC-SC08B"
+      ]
+     }
+    ]
+   },
+   "subs": {
+    "Call 'sub-query-reformulator'#12932781": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "nodes": [
+      "AI Agent",
+      "OpenAI Chat Model",
+      "When Executed by Another Workflow",
+      "output_exchange",
+      "suggest-follow-up",
+      "test-reformulator-bypass"
+     ],
+     "is_test": true
+    },
+    "Call 'sub-human-intervention'#12932786": {
+     "workflowId": "vUfFUDjLAuMaeQE6",
+     "status": "success",
+     "nodes": [
+      "When Executed by Another Workflow",
+      "chat?",
+      "test-guard",
+      "test-guard-record"
+     ],
+     "is_test": true
+    },
+    "sorento-sub-respond-sendmsg-respond2#12932787": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "nodes": [
+      "Code in JavaScript",
+      "If1",
+      "When Executed by Another Workflow",
+      "chat?"
+     ],
+     "is_test": true
+    },
+    "Call 'sub-respond-save-message-redis'2#12932788": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ],
+     "is_test": null
+    }
+   }
+  },
+  "Q6b-t1": {
+   "test_run_id": "UAC-MCR3r3-Q6b-t1-20260818",
+   "clone_exec": "12932843",
+   "status": "success",
+   "gates": {
+    "clarify-company-gate": [
+     0,
+     1
+    ],
+    "cs-offer-gate": [
+     0,
+     1
+    ],
+    "If2": [
+     1,
+     0
+    ],
+    "sim-inject-gate": [
+     1,
+     0
+    ]
+   },
+   "tool_filter": null,
+   "miss_roster_plan": null,
+   "bmmo": null,
+   "escalation_context": {
+    "routing_source": "company_pick",
+    "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+    "brand_code": null,
+    "company_name": "Mocha",
+    "team": "warehouse"
+   },
+   "roster_calls": {},
+   "lane_nodes_executed": [
+    "escalate-catalog",
+    "Call 'sub-human-intervention'"
+   ],
+   "orphaned_egress_nodes_executed": [],
+   "nodes_executed": [
+    "Call 'sub-human-intervention'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execution Data",
+    "If2",
+    "If5",
+    "When Executed by Another Workflow",
+    "check-access",
+    "check-access-http",
+    "clarify-company-gate",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "cs-offer-gate",
+    "divert-suggest-yes",
+    "escalate-catalog",
+    "escalation-context",
+    "get-session-vars",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-message-is-audio",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sim-inject-session",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tag-out-of-scope",
+    "tf-message"
+   ],
+   "sent_texts": [],
+   "egress_full": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "target": "redis:sorento-respond-message->mongo",
+     "payload": {
+      "contact_id": "437264483",
+      "message": "yes mocha"
+     },
+     "test_run_id": "UAC-MCR3r3-Q6b-t1-20260818",
+     "ts": "2026-08-18T02:41:15.596-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "target": "crm:conversation-variables:PUT",
+     "payload": {
+      "contact_id": "437264483",
+      "body": {
+       "variables": {
+        "message_type": "casual",
+        "intent_hint": null,
+        "domain_hint": null,
+        "user_goal": "trying to confirm the offered escalation to Mocha",
+        "access_levels": [],
+        "entities": [],
+        "routing": {
+         "suggested_team": "warehouse",
+         "suggested_agent": "general_enquiries"
+        },
+        "escalation": {
+         "is_escalation_confirmation": true,
+         "company_pick": "Mocha"
+        },
+        "response": "Informed the user that request is out of scope and will proceed to escalate to the warehouse team",
+        "last_result_set": [],
+        "selection_context": null,
+        "date_filter_start": null,
+        "date_filter_end": null,
+        "date_mode": null,
+        "match_mode": "and",
+        "contains_flyer": false,
+        "dym_offer": null,
+        "dym_candidates": [],
+        "ideation": null,
+        "routing_roster_plan": [
+         {
+          "plan_idx": 0,
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null
+         },
+         {
+          "plan_idx": 1,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha"
+         }
+        ],
+        "routing_brand": null,
+        "routing_brand_source": null,
+        "routing_company": null,
+        "routing_companies": [
+         {
+          "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "company_name": "Mocha",
+          "brand_code": null,
+          "codes": [
+           "MWC-SC08B"
+          ]
+         },
+         {
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "mocha",
+          "codes": [
+           "MWC-SC08B"
+          ]
+         }
+        ]
+       }
+      }
+     },
+     "test_run_id": "UAC-MCR3r3-Q6b-t1-20260818",
+     "ts": "2026-08-18T02:41:15.589-04:00"
+    },
+    {
+     "guard": "human-intervention-sub",
+     "kind": "would_write",
+     "target": "respondio:assign+crm:sla+respondio:comment",
+     "payload": {
+      "contact_id": "437264483",
+      "agent": "general_enquiries",
+      "team": "warehouse",
+      "current_assignee": null,
+      "explicit_assignee_id": null,
+      "brand_code": null,
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2"
+     },
+     "turn_id": "12932843",
+     "test_run_id": "UAC-MCR3r3-Q6b-t1-20260818",
+     "ts": "2026-08-18T02:41:15.439-04:00"
+    }
+   ],
+   "persisted_vars": {
+    "message_type": "casual",
+    "intent_hint": null,
+    "domain_hint": null,
+    "user_goal": "trying to confirm the offered escalation to Mocha",
+    "access_levels": [],
+    "entities": [],
+    "routing": {
+     "suggested_team": "warehouse",
+     "suggested_agent": "general_enquiries"
+    },
+    "escalation": {
+     "is_escalation_confirmation": true,
+     "company_pick": "Mocha"
+    },
+    "response": "Informed the user that request is out of scope and will proceed to escalate to the warehouse team",
+    "last_result_set": [],
+    "selection_context": null,
+    "date_filter_start": null,
+    "date_filter_end": null,
+    "date_mode": null,
+    "match_mode": "and",
+    "contains_flyer": false,
+    "dym_offer": null,
+    "dym_candidates": [],
+    "ideation": null,
+    "routing_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null
+     },
+     {
+      "plan_idx": 1,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha"
+     }
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_company": null,
+    "routing_companies": [
+     {
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC-SC08B"
+      ]
+     },
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "codes": [
+       "MWC-SC08B"
+      ]
+     }
+    ]
+   },
+   "subs": {
+    "Call 'sub-query-reformulator'#12932846": {
+     "workflowId": "wI5RkNGW3EOJfBdo",
+     "status": "success",
+     "nodes": [
+      "AI Agent",
+      "OpenAI Chat Model",
+      "When Executed by Another Workflow",
+      "output_exchange",
+      "suggest-follow-up",
+      "test-reformulator-bypass"
+     ],
+     "is_test": true
+    },
+    "Call 'sub-human-intervention'#12932854": {
+     "workflowId": "vUfFUDjLAuMaeQE6",
+     "status": "success",
+     "nodes": [
+      "When Executed by Another Workflow",
+      "chat?",
+      "test-guard",
+      "test-guard-record"
+     ],
+     "is_test": true
+    },
+    "sorento-sub-respond-sendmsg-respond2#12932855": {
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "status": "success",
+     "nodes": [
+      "Code in JavaScript",
+      "If1",
+      "When Executed by Another Workflow",
+      "chat?"
+     ],
+     "is_test": true
+    },
+    "Call 'sub-respond-save-message-redis'2#12932856": {
+     "workflowId": "tWm5DYLxfypmVC1T",
+     "status": "success",
+     "nodes": [
+      "Redis",
+      "When Executed by Another Workflow"
+     ],
+     "is_test": null
+    }
+   }
+  }
+ },
+ "S0_all_pass": true
+}

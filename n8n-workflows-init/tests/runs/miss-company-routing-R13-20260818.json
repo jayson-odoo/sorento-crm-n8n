@@ -1,0 +1,309 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round 4 (all-domain miss offer + miss-line uuid hygiene + F-R4-3 team collapse)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 3e7fa66d (versionId==activeVersionId BEFORE and AFTER; 171 nodes; miss-roster-gate leftValue e4575d3e, miss-roster-plan 95d6c814, disallowed-entity-gate 069b3691, promo-picker 05a96e3a, compile-current-state 8deebd5e, escalate-catalog 0168df84, build-miss-member-offer fab11982 \u2014 all byte-verified vs tests/diffs/miss-company-routing/* before and after)",
+  "get_results_fork": "t4QvrtrPnTwRU6br @ 9ee992e9 (output-structurer 698f89f1)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (output_exchange a68c5992 / systemMessage 138008c2 \u2014 unchanged)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "savemsg_fork": "tWm5DYLxfypmVC1T @ ce78408e",
+  "live_untouched_before_and_after": {
+   "9qVyfUxmRQqrpGRMDLRuz": "active 7aba1447 / draft cfd0e776",
+   "XTODTw-dJcV0uRdC056hG": "b9ac64a2 (SEE DEVIATION D1 \u2014 the UAC quotes 89b63c51; live parser had already moved to b9ac64a2 at 2026-08-18T07:17:57Z, BEFORE this pass, and is identical before/after it)",
+   "rysSPgUssLDf6xJc": "cacd7c95",
+   "Fss5aAaXthJSWpZCgKiKR": "f214cb7e",
+   "aoydkG1dbItXR5jXFEQsP": "91171ac3",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v waitForSubWorkflow, returns the test:egress list in the webhook response) -> REST GET /executions/{id}?includeData=true, clone exec matched by MY test_run_id (prefix UAC-MCR4-), every sub-execution fetched (137 swept). Item mode=uac, scope=deterministic with mock_reformulator_output at item TOP level (access_levels ['dealer'] on business-query mocks \u2014 pre-existing If4); follow-up turns inject the previous turn's save-session-vars would_write variables at item top level as previous_conversation_state (sim-inject-gate TRUE observed). Parser-tier turns (CAP-t2, CAP-t3) OMIT the mock (real fork wI5RkNGW3EOJfBdo, is_test=true). Contacts 437264483 (all cases) and 487555417 (T1 tier-rebase regression). n8n_test session table untouched (uac mode + state injection).",
+ "case": "R13 \u2014 (A) code-hygiene sweep across code-bearing types: an orders-by-DO-number turn",
+ "verdict": "BLOCKED (no two-company DO fixture) \u2014 offline + live-adjacent proof PASS",
+ "notes": "DEVIATION D6. 'any order M2608-1026' ran live (exec 12946645): the DO resolves to a SINGLE company (lookup_companies == []), so no per-company miss line is produced and the R13 clause cannot be observed on it. PROOFS ACCEPTED IN PLACE (the UAC's own escape clause): (i) round4.gates.test.js on the DEPLOYED get-results output-structurer body (getresults-output-structurer.js sha 698f89f1 == the fork's jsCode) \u2014 'W1(ii): orders-by-DO \u2014 the DO number M2608-1026 is KEPT (an entity_type===\\'product\\' filter would have deleted it)'; (ii) the LIVE evidence from R12(a) exec 12947249, where the same _codes predicate on an ORDERS turn renders '*Sorento:* no orders records for MUB6201.' \u2014 the canonical_code clause survives, byte-identical to the round-3 rev-3 output. No clause disappeared anywhere in this pass: all 32 rendered texts carry ZERO uuid tokens and every miss line that had a code before still has it.",
+ "turns": {
+  "UAC-MCR4-R13p-20260818": {
+   "exec": "12946645",
+   "status": "success",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "ts": "2026-08-18T05:11:30.846-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:11:30.841-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:11:30.785-04:00"
+    }
+   ],
+   "sent": [
+    "Here are the orders I found.\n\n1. *Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Order Date:* 17/08/2026\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n\n_Data last updated: 18/08/2026 17:02:54_"
+   ],
+   "subs": [
+    [
+     "Call 'sub-query-reformulator'",
+     "12946653",
+     "wI5RkNGW3EOJfBdo"
+    ],
+    [
+     "Execute 'sub-get-rag'",
+     "12946654",
+     "tWP33QOFT7SxThfT"
+    ],
+    [
+     "Call 'sub-get-results'",
+     "12946659",
+     "t4QvrtrPnTwRU6br"
+    ],
+    [
+     "sorento-sub-respond-sendmsg-respond2",
+     "12946660",
+     "aQUmwMVplmNcyUVc"
+    ],
+    [
+     "Call 'sub-respond-save-message-redis'2",
+     "12946661",
+     "tWm5DYLxfypmVC1T"
+    ]
+   ],
+   "branches": {
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "if-tier-ask": [
+     [
+      0,
+      1
+     ]
+    ],
+    "miss-roster-gate": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "central-exchange",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-tier-ask",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-roster-gate",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "promo-picker",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  },
+  "R12a": {
+   "exec": "12947249",
+   "status": "success",
+   "egress": [
+    {
+     "guard": "save-message-redis",
+     "kind": "would_log",
+     "ts": "2026-08-18T05:17:28.758-04:00"
+    },
+    {
+     "guard": "save-session-vars",
+     "kind": "would_write",
+     "ts": "2026-08-18T05:17:28.753-04:00"
+    },
+    {
+     "guard": "sendmsg-sub",
+     "kind": "would_send",
+     "ts": "2026-08-18T05:17:28.689-04:00"
+    }
+   ],
+   "sent": [
+    "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n\n2. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Order Date:* 17/08/2026\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 18/08/2026 17:02:54_\n\nWould you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin\n4. Cyndi\n5. Aisyah\n6. Balqis\n7. Niki\n8. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+   ],
+   "subs": [
+    [
+     "Call 'sub-query-reformulator'",
+     "12947257",
+     "wI5RkNGW3EOJfBdo"
+    ],
+    [
+     "Execute 'sub-get-rag'",
+     "12947258",
+     "tWP33QOFT7SxThfT"
+    ],
+    [
+     "Call 'sub-get-results'",
+     "12947260",
+     "t4QvrtrPnTwRU6br"
+    ],
+    [
+     "sorento-sub-respond-sendmsg-respond2",
+     "12947262",
+     "aQUmwMVplmNcyUVc"
+    ],
+    [
+     "Call 'sub-respond-save-message-redis'2",
+     "12947263",
+     "tWm5DYLxfypmVC1T"
+    ]
+   ],
+   "branches": {
+    "sim-inject-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "offer-hold-gate": [
+     [
+      0,
+      1
+     ]
+    ],
+    "if-tier-ask": [
+     [
+      0,
+      1
+     ]
+    ],
+    "miss-roster-gate": [
+     [
+      1,
+      0
+     ]
+    ],
+    "miss-members-gate": [
+     [
+      1,
+      0
+     ]
+    ]
+   },
+   "executed": [
+    "Call 'sub-get-results'",
+    "Call 'sub-query-reformulator'",
+    "Call 'sub-respond-save-message-redis'2",
+    "Execute 'sub-get-rag'",
+    "Execution Data",
+    "If",
+    "If-ideate",
+    "If1",
+    "If10",
+    "If2",
+    "If3",
+    "If5",
+    "If6",
+    "If7",
+    "If9",
+    "When Executed by Another Workflow",
+    "attach-merge",
+    "build-miss-member-offer",
+    "central-exchange",
+    "check-access",
+    "check-access-http",
+    "compile-current-state",
+    "console-incoming-gate",
+    "crossdomain-compose",
+    "crossdomain-gate",
+    "crossdomain-zeroset",
+    "disallowed-entity-gate",
+    "dym-gate-partial",
+    "dym-transform-partial",
+    "get-cs-members-miss",
+    "get-session-vars",
+    "get-session-vars-http",
+    "guard-d-record",
+    "guard-h-record",
+    "if-audio-in",
+    "if-got-attachments",
+    "if-message-is-audio",
+    "if-tier-ask",
+    "if-transcribed-confirm",
+    "is-escalation-declined",
+    "is-human-intervened",
+    "miss-members-gate",
+    "miss-roster-gate",
+    "miss-roster-plan",
+    "not-supported-domain",
+    "offer-hold-gate",
+    "promo-picker",
+    "redis-pop-main-message-list",
+    "replay-check-access",
+    "replay-get-results",
+    "replay-resolve-entity",
+    "resolve-entity",
+    "resolve-entity-http",
+    "session-get-gate",
+    "session-save-gate",
+    "sim-inject-gate",
+    "sorento-sub-respond-findcontact-respond",
+    "sorento-sub-respond-sendmsg-respond2",
+    "tf-message",
+    "tool-filter",
+    "validator"
+   ]
+  }
+ }
+}

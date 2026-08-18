@@ -1,0 +1,38 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "round": "round-3 rev-3 (Q-series)",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 7db593b0-ef2e-453b-bc98-30ff9267bf41 (draft==active before AND after the pass; 160 nodes; changed-node bodies byte-compared == repo files: miss-roster-gate 92ca1ccc, miss-roster-plan c4a19b6f, miss-members-gate 14576e69 (NEW), build-miss-member-offer fab11982, compile-current-state 6bff997d, clarify-company-reply==offer-hold-reply 377c2df4, cs-offer-gate conditions ce99a16c / g2 fafa8b77)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (output_exchange a68c5992 / systemMessage 138008c2 — unchanged before/after)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa (Postgres Chat Memory1 cred Dnnofg8Xb27VQOhI n8n_test-db)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "live_untouched": "spine 9qVy… active 7aba1447 (draft cfd0e776 pre-existing), parser XTODTw 89b63c51, sendmsg aoyd… 91171ac3 — identical before/after"
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds the item, executes clone txiPzSxy3Pclsz6v (7db593b0) waitForSubWorkflow, returns the test:egress list in the webhook response — the egress read is DIRECT from test:egress:{test_run_id} via the harness's own read-egress node; zz-canary-read LLIbMXAixexM9Cwc was NOT republished, its Read Egress key is hardcoded to a stale run id anyway) -> REST GET /executions/{id}?includeData=true matched by test_run_id + sub-executions via metadata.subExecution. Item mode=uac, deterministic mocks at item top level (access_levels ['dealer'] included on business-query mocks — pre-existing If4), follow-up turns state-injected at item top level as previous_conversation_state (rev-1/rev-2 precedent); parser-tier turns (Q6, Q9-t2/t3p) omit the mock (real fork wI5RkNGW3EOJfBdo @ c7d9cfa2, is_test=true). Contact 437264483. Prefix UAC-MCR3r3-. n8n_test session table untouched (uac mode; state injection replaces regress-capture per the rev-2 mechanics the UAC 'Same mechanics' line points at).",
+ "units": "miss-company-routing-round3.gates.test.js 85/85, rev4.spine 33/33, rev4.output_exchange 48/48 on repo files (byte-== deployed)",
+ "case": "P2 warehouse roster probe (read-only, zz-roster-probe ZS0KErse7GDh9mJK via test_workflow, only probe-params pinned)",
+ "verdict": "PASS / NOT BLOCKED",
+ "exec": "12931119",
+ "results": {
+  "warehouse/general_enquiries Sorento (with and without brand_code=mocha)": [
+   {
+    "name": "Ili Mahfuzah",
+    "respond_user_id": "1096809"
+   }
+  ],
+  "warehouse/general_enquiries Mocha": [
+   {
+    "name": "Tasa",
+    "respond_user_id": "1177437"
+   }
+  ],
+  "control purchasing/incoming_stock_enquiries Sorento": [
+   {
+    "name": "Jereen Tee",
+    "respond_user_id": "1037238"
+   }
+  ]
+ },
+ "notes": "Plain offers make no roster call, so this only documents what a LIVE \"yes\" would hit at next-assignee: both warehouse teams are non-empty (1 member each) — no BLOCKED-BY-CONFIG."
+}

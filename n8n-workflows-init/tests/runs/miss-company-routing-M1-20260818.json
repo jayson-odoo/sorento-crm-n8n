@@ -1,0 +1,494 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ a1969f5c-884e-4bee-85fb-bd96c18c6d89 during ALL M-case executions (last M-run started 02:12:08Z; rev-2 d4ce02eb-e337-447c-bf05-9a13f504dd53 published 02:13:03Z, escalation-context no-plan arm only, spot-checked separately — see R2spot file); versionId==activeVersionId throughout; all 9 changed/new node bodies sha-verified == tests/diffs/miss-company-routing/* before running",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ d7be8443-827e-4a85-9638-aa243fea6c2d (unchanged after the pass)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5-d188-484e-b3f4-a06fbf43e1b8",
+  "live_untouched_recheck_after_pass": {
+   "9qVyfUxmRQqrpGRMDLRuz": "efa21057-a7e0-4be3-b6af-f8ced2c3749c",
+   "XTODTw-dJcV0uRdC056hG": "89b63c51-57f0-45fd-96ce-2df103c2fb9d",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e-3dd9-4766-8c49-2f32f8f66bda"
+  }
+ },
+ "mechanism": "POST /webhook/zz-run-hint (zz-canary-run VtIV3TF3aw2Fx8No: clears test:q:{contact}+test:egress:{id}, seeds item, executes clone waitForSubWorkflow, returns test:egress list) -> REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with mock at item TOP-LEVEL mock_reformulator_output (NOT item.message.* as the UAC template shows — the clone maps $('redis-pop-main-message-list').json.message.mock_reformulator_output and redis pop wraps the seeded item under 'message'); session row reset to {\"variables\":{},\"referenced_result_set\":[]} between independent cases via host psql to n8n_test",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "M1 partial miss (order found in Mocha only, MUB6201 resolves in both) -> miss company's member picker",
+ "turn": {
+  "msg": "any order for MUB6201",
+  "mock": "full-shape business_query/order mock (UAC order mock + B1 field superset)",
+  "run": "12906535",
+  "clone": "12906536",
+  "subs": {
+   "Call 'sub-get-results'": [
+    {
+     "executionId": "12906545",
+     "workflowId": "t4QvrtrPnTwRU6br"
+    }
+   ],
+   "Call 'sub-query-reformulator'": [
+    {
+     "executionId": "12906541",
+     "workflowId": "wI5RkNGW3EOJfBdo"
+    }
+   ],
+   "Call 'sub-respond-save-message-redis'2": [
+    {
+     "executionId": "12906547",
+     "workflowId": "tWm5DYLxfypmVC1T"
+    }
+   ],
+   "Execute 'sub-get-rag'": [
+    {
+     "executionId": "12906543",
+     "workflowId": "tWP33QOFT7SxThfT"
+    }
+   ],
+   "sorento-sub-respond-sendmsg-respond2": [
+    {
+     "executionId": "12906546",
+     "workflowId": "aQUmwMVplmNcyUVc"
+    }
+   ]
+  },
+  "egress": [
+   {
+    "guard": "save-message-redis",
+    "kind": "would_log",
+    "target": "redis:sorento-respond-message->mongo",
+    "payload": {
+     "contact_id": "437264483",
+     "message": "any order for MUB6201"
+    },
+    "test_run_id": "UAC-MCR-M1-t1b-20260818",
+    "ts": "2026-08-17T22:06:52.883-04:00"
+   },
+   {
+    "guard": "save-session-vars",
+    "kind": "would_write",
+    "target": "crm:conversation-variables:PUT",
+    "payload": {
+     "contact_id": "437264483",
+     "body": {
+      "variables": {
+       "message_type": "business_query",
+       "intent_hint": "check_order",
+       "domain_hint": "order",
+       "user_goal": "checking any order for MUB6201",
+       "access_levels": [
+        "dealer"
+       ],
+       "entities": [
+        {
+         "raw": "MUB6201",
+         "hint": "product",
+         "canonical_code": "MUB6201",
+         "current_message": true,
+         "confident": true
+        }
+       ],
+       "routing": {
+        "suggested_team": "customer_service",
+        "suggested_agent": "order_enquiries"
+       },
+       "escalation": {
+        "is_escalation_confirmation": false
+       },
+       "response": "Previous turn (order): returned 2 records\n\nWould you like me to escalate to customer_service team?",
+       "last_result_set": [
+        {
+         "idx": 1,
+         "uuid": null,
+         "label": "M2608-0723",
+         "entity_type": null,
+         "product": null,
+         "attachment_type": null,
+         "filename": null
+        },
+        {
+         "idx": 2,
+         "uuid": null,
+         "label": "M2608-1026",
+         "entity_type": null,
+         "product": null,
+         "attachment_type": null,
+         "filename": null
+        },
+        {
+         "idx": 3,
+         "label": "Maryam Ariffin",
+         "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+         "respond_user_id": "1144607",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "company_ids": [
+          "00000000-0000-0000-0000-000000000001"
+         ],
+         "companies": [
+          "Sorento"
+         ]
+        },
+        {
+         "idx": 4,
+         "label": "Cyndi",
+         "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+         "respond_user_id": "1144556",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "company_ids": [
+          "00000000-0000-0000-0000-000000000001"
+         ],
+         "companies": [
+          "Sorento"
+         ]
+        },
+        {
+         "idx": 5,
+         "label": "Aisyah",
+         "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+         "respond_user_id": "1144561",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "company_ids": [
+          "00000000-0000-0000-0000-000000000001"
+         ],
+         "companies": [
+          "Sorento"
+         ]
+        },
+        {
+         "idx": 6,
+         "label": "Balqis",
+         "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+         "respond_user_id": "1144558",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "company_ids": [
+          "00000000-0000-0000-0000-000000000001"
+         ],
+         "companies": [
+          "Sorento"
+         ]
+        },
+        {
+         "idx": 7,
+         "label": "Niki",
+         "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+         "respond_user_id": "1144554",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "company_ids": [
+          "00000000-0000-0000-0000-000000000001"
+         ],
+         "companies": [
+          "Sorento"
+         ]
+        },
+        {
+         "idx": 8,
+         "label": "Nurain",
+         "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+         "respond_user_id": "1144604",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "company_ids": [
+          "00000000-0000-0000-0000-000000000001"
+         ],
+         "companies": [
+          "Sorento"
+         ]
+        }
+       ],
+       "selection_context": "member_offer",
+       "date_filter_start": null,
+       "date_filter_end": null,
+       "date_mode": null,
+       "match_mode": "and",
+       "contains_flyer": false,
+       "dym_offer": null,
+       "dym_candidates": [],
+       "ideation": null,
+       "routing_roster_plan": [
+        {
+         "plan_idx": 0,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha"
+        }
+       ],
+       "routing_brand": "mocha",
+       "routing_brand_source": "resolved",
+       "routing_company": "00000000-0000-0000-0000-000000000001",
+       "routing_companies": [
+        {
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": null,
+         "codes": [
+          "MUB6201"
+         ]
+        },
+        {
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "mocha",
+         "codes": [
+          "MUB6201"
+         ]
+        }
+       ]
+      },
+      "user_response": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n\n2. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n*Order Date:* 17/08/2026\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 17/08/2026 17:25:54_\n\nWould you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin (Sorento)\n4. Cyndi (Sorento)\n5. Aisyah (Sorento)\n6. Balqis (Sorento)\n7. Niki (Sorento)\n8. Nurain (Sorento)\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+     }
+    },
+    "test_run_id": "UAC-MCR-M1-t1b-20260818",
+    "ts": "2026-08-17T22:06:52.877-04:00"
+   },
+   {
+    "guard": "sendmsg-sub",
+    "kind": "would_send",
+    "channel": "text",
+    "target": "437264483",
+    "payload": {
+     "part": 1,
+     "total_parts": 1,
+     "message": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n\n2. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n*Order Date:* 17/08/2026\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 17/08/2026 17:25:54_\n\nWould you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin (Sorento)\n4. Cyndi (Sorento)\n5. Aisyah (Sorento)\n6. Balqis (Sorento)\n7. Niki (Sorento)\n8. Nurain (Sorento)\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+     "message_len": 916,
+     "quick_reply": null,
+     "result_idx": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ]
+    },
+    "test_run_id": "UAC-MCR-M1-t1b-20260818",
+    "ts": "2026-08-17T22:06:52.683-04:00"
+   }
+  ],
+  "safety_S1_S6": {
+   "S1": "PASS — sendmsg subs ['12906546'] is_test=[True]; orphaned egress nodes executed=[]; no respond.io message HTTP in any sub runData",
+   "S2": "PASS — Call 'sub-human-intervention' not executed this turn",
+   "S3": "PASS — save-session-vars (prod PUT) ran=False, update-human-intervened ran=False (both orphaned); session persisted only via ['pg-upsert-session'] (n8n_test-db cred)",
+   "S4": "PASS — get-results fork tool(s) ['crm_order_management_orders_list '] (read allowlist; never crm_it_support_ticket_create)",
+   "S5": "PASS — trigger test_mode=true; item test_run_id/scope/mode present; parser fork is_test=[True]; sendmsg/HI subs is_test=true. NOTE (pre-existing): get-results fork t4QvrtrPnTwRU6br takes no is_test input; read-only tool verified under S4",
+   "S6": "PASS — parser fork nodes=[['When Executed by Another Workflow', 'mock-reformulator-output', 'test-reformulator-bypass']], agent_ran=[False]; clone LLM nodes executed=[]"
+  }
+ },
+ "first_attempt_note": "First attempt UAC-MCR-M1-t1-20260818 (run 12906280/clone 12906281) placed the mock at item.message.mock_reformulator_output per the UAC template -> bypass NOT taken, real fork gpt-5.4-mini ran once (S6 deterministic violation on that attempt only; functional outputs identical, zero egress held). Mock location fixed to item top-level and the case re-run cleanly; session reset in between.",
+ "crm_drift_note": "UAC fixture said 1 Mocha order for MUB6201; CRM now returns 2 (M2608-0723, M2608-1026), so the picker numbering starts at 3 (not 2). The structural assertion (numbering CONTINUES after the reply's numbered blocks) holds: order blocks 1..2, members 3..8.",
+ "assertions": [
+  {
+   "id": "miss-roster-gate TRUE branch on the answered order turn",
+   "pass": true,
+   "observed": {
+    "branches": [
+     1,
+     0
+    ],
+    "has_result": true,
+    "lookup_companies": [
+     "Mocha",
+     "Sorento"
+    ],
+    "answered_companies": [
+     "Mocha",
+     "Mocha"
+    ]
+   }
+  },
+  {
+   "id": "miss-roster-plan = exactly 1 item {Sorento, brand mocha} (cs-roster-plan shape incl codes/companies)",
+   "pass": true,
+   "observed": [
+    {
+     "plan_idx": 0,
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "mocha",
+     "codes": [
+      "MUB6201"
+     ],
+     "multi_company": false,
+     "companies": [
+      "Sorento"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "get-cs-members-miss executed ONCE with brand_code=mocha & company_id=Sorento (input fields; URL template sha-verified byte-equal to get-cs-members which appends both from $json), 200, 6 members; get-cs-members (escalate lane) NOT executed",
+   "pass": true,
+   "observed": {
+    "status": 200,
+    "member_names": [
+     "Maryam Ariffin",
+     "Cyndi",
+     "Aisyah",
+     "Balqis",
+     "Niki",
+     "Nurain"
+    ],
+    "input_plan_item": {
+     "brand_code": "mocha",
+     "company_id": "00000000-0000-0000-0000-000000000001"
+    },
+    "get_cs_members_executed": false,
+    "cs_roster_plan_executed": false
+   }
+  },
+  {
+   "id": "reply = found order blocks + presenter miss line + frozen phrase + picker (members numbered 3..8, 'n. Name (Sorento)') + just-reply-'yes' sentence",
+   "pass": true,
+   "observed": {
+    "user_response": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n\n2. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Status:* New Order\n*Warehouse:* MOCHA-WH\n*Products:* MUB6201 (2)\n*Order Date:* 17/08/2026\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 17/08/2026 17:25:54_\n\nWould you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin (Sorento)\n4. Cyndi (Sorento)\n5. Aisyah (Sorento)\n6. Balqis (Sorento)\n7. Niki (Sorento)\n8. Nurain (Sorento)\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+    "miss_offer_text": "Please choose who to route to (reply with the number):\n3. Maryam Ariffin (Sorento)\n4. Cyndi (Sorento)\n5. Aisyah (Sorento)\n6. Balqis (Sorento)\n7. Niki (Sorento)\n8. Nurain (Sorento)\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+   }
+  },
+  {
+   "id": "persisted state: phrase regex matches variables.response; last_result_set = 2 order rows + 6 member rows (idx continuous, full cs_last_result_set shape); selection_context member_offer; routing_roster_plan = 1 Sorento row; routing_company/routing_brand = Sorento/mocha",
+   "pass": true,
+   "observed": {
+    "response_tail": "Previous turn (order): returned 2 records\n\nWould you like me to escalate to customer_service team?",
+    "selection_context": "member_offer",
+    "routing_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha"
+     }
+    ],
+    "routing_company": "00000000-0000-0000-0000-000000000001",
+    "routing_brand": "mocha",
+    "last_result_set": [
+     {
+      "idx": 1,
+      "label": "M2608-0723",
+      "uuid": null,
+      "respond_user_id": null,
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null,
+      "company_ids": null,
+      "companies": null
+     },
+     {
+      "idx": 2,
+      "label": "M2608-1026",
+      "uuid": null,
+      "respond_user_id": null,
+      "company_id": null,
+      "company_name": null,
+      "brand_code": null,
+      "company_ids": null,
+      "companies": null
+     },
+     {
+      "idx": 3,
+      "label": "Maryam Ariffin",
+      "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+      "respond_user_id": "1144607",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 4,
+      "label": "Cyndi",
+      "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+      "respond_user_id": "1144556",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 5,
+      "label": "Aisyah",
+      "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+      "respond_user_id": "1144561",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 6,
+      "label": "Balqis",
+      "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+      "respond_user_id": "1144558",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 7,
+      "label": "Niki",
+      "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+      "respond_user_id": "1144554",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 8,
+      "label": "Nurain",
+      "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+      "respond_user_id": "1144604",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "S0_all_pass": true,
+ "verdict": "PASS"
+}

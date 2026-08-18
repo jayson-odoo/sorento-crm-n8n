@@ -1,0 +1,17 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "change": "miss-company-routing round-3 — P1 prerequisite (plan §R3.5): read-only roster probe for purchasing/incoming_stock_enquiries",
+ "mechanism": "test_workflow on zz-roster-probe ZS0KErse7GDh9mJK (inactive/manual helper; NOT edited) with `probe-params` pinned to 4 URLs; `team-members-GET` (httpRequest GET, cred crm-n8n-auth = same as clone get-cs-members) ran REAL against the CRM (fullResponse). CRM READ only. Never next-assignee. Manual exec 12921184.",
+ "exec": "12921184",
+ "probes": [
+  {"label": "P1-purchasing-incoming-sorento+mocha", "url": "…/external/team-members?agent_code=incoming_stock_enquiries&team_code=purchasing&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha", "statusCode": 200, "members": [{"name": "Jereen Tee", "user_id": "3760012d-7f5a-4b44-bf1a-e3349f7b398d", "respond_user_id": "1037238"}]},
+  {"label": "P1-purchasing-incoming-sorento", "url": "…&company_id=00000000-0000-0000-0000-000000000001", "statusCode": 200, "members": [{"name": "Jereen Tee", "user_id": "3760012d-7f5a-4b44-bf1a-e3349f7b398d", "respond_user_id": "1037238"}]},
+  {"label": "P1-purchasing-incoming-mocha", "url": "…&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2", "statusCode": 200, "members": [{"name": "Lucas", "user_id": "117532cf-9260-4b2c-9afa-b3c97e975249", "respond_user_id": "1177555"}]},
+  {"label": "P1-purchasing-incoming-noparams", "url": "…&contact_id=437264483 (no company_id)", "statusCode": 200, "members": [{"name": "Jereen Tee", "user_id": "3760012d-7f5a-4b44-bf1a-e3349f7b398d", "respond_user_id": "1037238"}]}
+ ],
+ "result": "NOT blocked-by-config: both companies have a non-empty purchasing/incoming_stock_enquiries roster (Sorento = 1 member Jereen Tee; Mocha = 1 member Lucas; brand_code=mocha on Sorento returns the same single member). N1–N3 are therefore runnable (an incoming miss picker on Sorento would show exactly one member, numbered after the incoming block); N10 (degraded roster) would need a pinned 404/empty response.",
+ "corroboration": "N4-picker t1 (clone exec 12921463) get-cs-members returned the identical two rosters (Mocha → Lucas 1177555, Sorento → Jereen Tee 1037238).",
+ "S0": "CRM GET only; zero egress; helper workflow untouched (versionId fefd90d1-… unchanged, never activated)",
+ "verdict": "PASS"
+}

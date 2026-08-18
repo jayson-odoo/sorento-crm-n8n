@@ -1,0 +1,49 @@
+{
+ "date": "2026-08-17",
+ "tester": "sorento-tester",
+ "change": "brand-company-routing",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ ac51a12e-1493-4bc8-82a1-8beef6065dd8 (versionId==activeVersionId)",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ d2b82e80-8f22-437d-bf33-3781c505cd5f",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ 7b4baaa8-5cb5-460e-b2f4-94a562dcc54f",
+  "live_untouched": {
+   "9qVyfUxmRQqrpGRMDLRuz": "d6f6b90c-3d8a-4704-a103-d1d0f99b78db",
+   "XTODTw-dJcV0uRdC056hG": "9df39ff6-3604-421b-b727-b45f65545200",
+   "rrYXzE61gCNUck_zmXe-G": "5018a189-22df-4cb9-aa89-fa509377abe9"
+  }
+ },
+ "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No (execute_workflow webhook body {test_run_id,contact,item}) seeds test:q:437264483 + fires clone (waitForSubWorkflow) + reads test:egress:{test_run_id}; item mode=regress-capture (session via n8n_test.respond_contacts_test), scope=deterministic with message.mock_reformulator_output (consumed by parser fork test-reformulator-bypass, is_test=true); execution data read via n8n REST GET /executions/{id}?includeData=true (Lesson 7) incl. sub-executions; session row reset to {\"variables\":{}} between independent cases via host psql to n8n_test (guarded current_database()=n8n_test; never a prod DB)",
+ "contact": "437264483 (two-company, FULL access)",
+ "case": "R1 replay norm() rule (static verification)",
+ "assertions": [
+  {
+   "id": "norm() rule present in aROEBlQyyoQaB7a1 › Diff (versionId d52af206-8d1d-435a-b6a6-e515140416a4)",
+   "pass": false,
+   "status": "superseded",
+   "observed": "AT RUN TIME the orchestrator draft carried the rev-1 TREE-WIDE rule and matched the file: if ((k === 'routing_brand' || k === 'routing_brand_source' || k === 'routing_company' || k === 'routing_companies' || k === 'company_id' || k === 'company_name' || k === 'brand_code') && (v[k] === null || v[k] === undefined)) continue; — that body is what `aROEBlQyyoQaB7a1 › Diff` still holds. ⚠️ The claimed identity is now FALSE: rev-4 replaced tests/diffs/brand-company-routing/replay-Diff.js with the container-scoped split rule + the new ROUTING_VARS constant (and registered routing_roster_plan), and the orchestrator was deliberately not touched. Re-apply the rev-4 body and re-assert — tracked in review §4 P4."
+  },
+  {
+   "id": "static reasoning: non-CS golden turns",
+   "pass": false,
+   "status": "observation",
+   "observed": "NOT AN ASSERTION — recorded as an observation: the supporting node outputs are real execution data, but the step from \"the new keys are null on non-CS turns\" to \"the replay diff is empty\" is inference over the norm() body, which is exactly what AC8 measures and what assertions 1/3 were downgraded for. compile-current-state now always emits routing_brand/routing_brand_source/routing_company/routing_companies; on non-CS turns they are null (verified live: B6bt2 warehouse turn, B9c fallback, P1) → dropped by norm() on the replay side; golden lacks the keys → no diff. On CS-offer turns with a resolve they are non-null → surfaces for review (intended, Lesson 40). cs_last_result_set rows: company_id/company_name/brand_code null on the fallback item (B9c) → inert. ⚠️ Scope: this reasoning covers the four rev-1 keys only. The rev-4 key routing_roster_plan (and the container-scoped form of the generic-name rule) post-dates every execution here and is unverified until P6."
+  },
+  {
+   "id": "sample replay run (AC8, turn_limit=3 non-CS golden turns → zero new replay_node_diffs)",
+   "pass": false,
+   "status": "deferred",
+   "observed": "NOT RUN — replay orchestrator attributes turns by \"latest clone execution\" and shares the clone lane (Lessons 29/30); running it requires editing its Init Params defaults (turn_limit) which is a workflow edit outside my remit and risks a wedge. The static assertions above do NOT stand in for this: reading the norm() body cannot show the rule suppresses the diffs. AC8 is therefore DEFERRED to promote-time (reviewer/captain runs a turn_limit=3 replay), not satisfied."
+  }
+ ],
+ "egress": [],
+ "safety_S1_S6": {
+  "S1": "PASS (n/a — no execution)",
+  "S2": "PASS (n/a — no execution)",
+  "S3": "PASS (n/a — no execution)",
+  "S4": "PASS (n/a — no execution)",
+  "S5": "PASS (n/a — no execution)",
+  "S6": "PASS (n/a — no execution)"
+ },
+ "verdict": "DEFERRED — no passing assertion in this case: the rule check is SUPERSEDED and the remaining entry is an observation, not a measurement. the orchestrator still holds the rev-1 tree-wide rule while the committed replay-Diff.js is the rev-4 container-scoped version. AC8 sample replay NOT RUN. Not a PASS.",
+ "S0_all_pass": true
+}

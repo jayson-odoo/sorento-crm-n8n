@@ -1,0 +1,18 @@
+={{ (() => { try {
+  /* miss-company-routing rev-4 — offer-hold-gate (sits between If-ideate[false] and If10).
+     TRUE only when: the parser stayed in an open member offer (member_pick_context) but resolved
+     nothing (offer_hold / member_reprompt) — not a confirmation, not a decline, not a retarget —
+     AND the persisted offer is a MULTI-company pool (routing_roster_plan.length > 1, the same
+     criterion escalation-context uses for multi_company_unpicked). Fail-closed: any missing
+     signal or throw => false => the original If10 path, byte-identical to before. */
+  const o = $('Call \'sub-query-reformulator\'').first().json.output || {};
+  const e = o.escalation || {};
+  if (e.is_escalation_confirmation === true || e.escalation_declined === true || e.retarget_team === true) return false;
+  if (o.member_pick_context !== true) return false;
+  if (e.offer_hold !== true && typeof e.member_reprompt !== 'string') return false;
+  const s = $('get-session-vars').first().json;
+  const prev = (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {};
+  if (prev.selection_context !== 'member_offer') return false;
+  const rp = Array.isArray(prev.routing_roster_plan) ? prev.routing_roster_plan : [];
+  return rp.length > 1;
+} catch (err) { return false; } })() }}
