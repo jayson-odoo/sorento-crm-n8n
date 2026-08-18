@@ -597,3 +597,50 @@ speculative domain — safe-abandon direction), and F2 (captain-accepted chat-co
 **Promotion is captain-gated on the R7 checklist**, applied as sha-gated node hunks against LIVE at promote time (a hotfix
 worker is editing the live spine concurrently — re-measure every gate; live was `efa21057` / parser `89b63c51` at this
 review's fetches), with step 2's parser body = **`a68c5992…` (rev-5)**. Reviewer authorizes; does not execute.
+
+---
+
+# Staged live payload — reviewer pass 4, 2026-08-18
+
+## R10. Staged live payload verification (2026-08-18)
+
+Independent read-only re-verification of the STAGED (not applied) round-2 promotion payload
+(`tests/runs/miss-company-routing-promote-STAGED-20260818.md`, dir `tests/backups/miss-company-routing/LIVE-PROMOTE-STAGED-20260818/`)
+against R7 (+R8/R9 rev-5 parser body). Live/clone/fork re-fetched via public REST GET only; nothing written, nothing executed.
+Shas = sha256 of the raw string (`jq -j`), first 8 hex.
+
+| # | check | result | measured |
+|---|---|---|---|
+| 1a | PRE spine == current live | PASS | live `9qVy…` versionId `7aba1447-61f6-490d-89b4-22d1a196716d` == activeVersionId, updatedAt 03:47:32Z, 127 nodes; `{versionId,activeVersionId,nodes,connections,settings}` sha identical to `PRE-…-7aba1447.json` (`46680cdc…`); `jq -S` full-file diff empty |
+| 1b | PRE parser == current live | PASS | `XTODTw…` `89b63c51-57f0-45fd-96ce-2df103c2fb9d` draft==active, 7 nodes, sha `9c7eb3ad…` identical to PRE |
+| 1c | PRE HI == current live | PASS | `rrYX…` `9249e00e-3dd9-4766-8c49-2f32f8f66bda` draft==active, identical to PRE (nothing to promote) |
+| 2a | R7 sha gates on PRE parser | PASS | `output_exchange.jsCode` `3ee5b658`; `AI Agent.options.systemMessage` `583bcfb0`; trigger `When Executed by Another Workflow` carries `previous_conversation_state` |
+| 2b | R7 sha gates on PRE spine | PASS | `escalation-context` `8c12563c`; `build-cs-member-offer` `37a1b023`; `escalate-catalog` `8b4ae985` (1× `case 'escalation_declined'`, 0× `offer_hold`); `compile-current-state` `0b0912f1` (exactly one `^return output;`, deps `_ideate`/`_sug`/`_mem`/`_dymLastResultSet`/`qf` each declared once, live sentence "choose who to route to. Reply the number or name:" present 1×) |
+| 2c | R7 edge shapes on PRE | PASS | `central-exchange` → single edge `dym-transform-partial` (its only inbound); HI inbound = exactly `escalation-context`; `If-ideate[1]` → `If10` (If10's only inbound); `If-ideate[0]` → `ideate-turn-http` |
+| 2d | 9 new nodes absent on PRE | PASS | 0/9 present; none of the 9 new node ids collide with a live node id |
+| 3a | PAYLOAD spine vs PRE — node sweep | PASS | 127 → 136 nodes, 0 duplicate names; params changed on exactly `compile-current-state` (→`492a8591`), `escalate-catalog` (→`5ec7d6a7`), `build-cs-member-offer` (→`c7046c45`), `escalation-context` (→`cca7a245`); exactly 9 added; 0 dropped; 0 non-`parameters` field diffs (type/typeVersion/credentials/onError/position/disabled) on any pre-existing node |
+| 3b | PAYLOAD spine vs PRE — connections | PASS | exactly 11 keys changed = R7 3f: `central-exchange`→`miss-roster-gate` {T `miss-roster-plan`→`get-cs-members-miss`→`build-miss-member-offer`→`dym-transform-partial`, F `dym-transform-partial`}; `escalation-context`→`clarify-company-gate` {T `clarify-company-reply` (terminal, no outbound key), F `Call 'sub-human-intervention'`}; `If-ideate[1]`→`offer-hold-gate` {T `offer-hold-reply`→`tag-offer-hold`→`escalate-catalog`, F `If10`}; `If-ideate[0]` stays `ideate-turn-http` |
+| 3c | hotfix leaves preserved | PASS | `Call 'sub-get-results'` node byte-identical to PRE (`tool={{ $('tool-filter').first().json.name }}`, `contact_id={{ $('sorento-sub-respond-findcontact-respond').first().json.id }}` no trailing space); `tier-probe` byte-identical; `if-tier-ask` byte-identical (`options.typeValidation=loose`, `version 2`); all `executeWorkflow` workflowId leaves identical to PRE |
+| 4a | PAYLOAD spine vs clone `0557b0b4` — 13 nodes | PASS | clone re-fetched at `0557b0b4-8f2d-457e-8f64-4e1d600c6ca1` (159 nodes); 11/13 nodes params byte-equal to clone (`build-cs-member-offer`, `escalation-context` + the 9 new); `escalate-catalog` and `compile-current-state` differ from clone BY DESIGN (F6); type/typeVersion/credentials/onError equal on all 13; new/rewired connection entries byte-equal to clone for 10/11 keys, the 11th (`If-ideate`) differs only in output[0] which correctly keeps LIVE's `ideate-turn-http` (clone has the test-only `ideate-egress-gate`) |
+| 4b | `escalate-catalog` live→payload | PASS (F6-i) | `diff` = one insertion `82a83,91`: the `case 'offer_hold': … break;` block (9 lines) immediately after `case 'escalation_declined': … break;`, byte-equal to the clone's block; live's `#9 _ct` hunk kept (2 `_ct` refs live/payload, 0 on clone) — clone body NOT copied |
+| 4c | `compile-current-state` live→payload | PASS (F6-ii) | 684 → 773 lines; `diff` = exactly the merge-arm hunks (`75,78c75,80`, `80c82,92`, `82a95,96`, `86c100,108`) + one insertion `682a705,771`. Payload lines 75–108 == clone 75–108 except the ONE sentence line, which keeps LIVE's "choose who to route to. Reply the number or name:" (clone: "— reply the number or name:"); payload 705–771 == clone 1082–1148 IDENTICAL (miss/clarify block, `_mcClar` two-node loop, `_mcPlan`/`_mcCo`) placed before the unique final `return output;`; clone-only lane markers (`N-1a`,`N-2`,`spec-search`,`spec_search`) 0× in payload (clone 1/5/1/9) |
+| 4d | repo bodies == payload | PASS | `spine-escalation-context.js` `cca7a245`, `spine-build-cs-member-offer.js` `c7046c45`, `spine-build-miss-member-offer.js` `68eef4c7`, `spine-clarify-company-reply.js` `7ff06aa8` (both `clarify-company-reply` and `offer-hold-reply`), `spine-miss-roster-plan.js` `0b7907d6`, `.expr.txt` leftValues `024d91e3`/`63e30a3d`/`8f14a430` (F1-corrected values), `PAYLOAD-node-escalate-catalog.js` `5ec7d6a7`, `PAYLOAD-node-compile-current-state.js` `492a8591` — all byte-equal to the payload node bodies; `tag-offer-hold` set 3.4 `branch_kind='offer_hold'` |
+| 5 | PAYLOAD parser vs PRE | PASS | 7 nodes both sides, 0 added/dropped, connections byte-equal, settings `{executionOrder:v1}`; only two leaves differ: `output_exchange` `/jsCode` `3ee5b658`→**`a68c5992`** (== repo `parser-fork-output_exchange.js` == fork `wI5RkNGW3EOJfBdo` @ `c7d9cfa2`; F5 `shortOk` guard line present) and `AI Agent` `/options/systemMessage` `583bcfb0`→**`138008c2`** (== repo, == fork); NO `Postgres Chat Memory` (fork has one; payload has 0 memory nodes); live `suggest-follow-up` `338ea668` retained (fork's older `5e659811` NOT carried); options keys unchanged (`["systemMessage"]`) |
+| 6a | no fork ids / test scaffolding leaked | PASS | 0 occurrences in either payload of `wI5RkNGW3EOJfBdo`, `vUfFUDjLAuMaeQE6`, `t4QvrtrPnTwRU6br`, `aQUmwMVplmNcyUVc`, `tWm5DYLxfypmVC1T`, `txiPzSxy3Pclsz6v`, `Dnnofg8Xb27VQOhI`, `main-message-list-test`, `sorento-respond-message-TEST`, `test_mode`, `test-guard`, `n8n_test`. `is_test` appears only where LIVE already has it (schema-only entries on `Call 'sub-human-intervention'`/`send-transcript-confirm`/`sorento-sub-respond-sendmsg-presign-fail`, value absent — byte-identical to PRE) and in a code COMMENT of `clarify-company-reply`/`offer-hold-reply`; parser `mock_reformulator` refs are live's own `test-reformulator-bypass`/`mock-reformulator-output` nodes (byte-identical to PRE) |
+| 6b | `$('X')` refs resolve on live | PASS | every `$('…')` reference in the 13 touched/new bodies names a node present in the payload (0 missing) |
+| 6c | `get-cs-members-miss` == live `get-cs-members` | PASS | params byte-equal, credential `httpHeaderAuth mNsZWyU82NYV58k2 crm-n8n-auth` equal, httpRequest 4.3, `onError: continueRegularOutput` |
+| 7 | REST PUT shape | PASS | both payloads: keys exactly `{name,nodes,connections,settings}`, `settings == {executionOrder:"v1"}`, `name` equal to live. Live's extra settings (`availableInMCP`, `callerPolicy: workflowsFromSameOwner`, `binaryMode`) are known to survive a stripped PUT server-side (memory note, verified 2026-08-17 on the clone) — **apply-step post-check: re-assert those three keys after PUT** |
+
+Not measured (out of scope of a payload review, unchanged from R9): runtime behaviour — covered by the round's tester evidence and R8 real-parser proof.
+
+### Verdict — **APPROVE-TO-APPLY**
+
+The staged payloads are exactly the R7 promote map rebased on live `7aba1447` / `89b63c51`: every gate re-measured
+true on the PRE bodies, the PRE dumps are byte-identical to live right now, the spine PUT touches precisely the 4
+mapped nodes + 9 new nodes + 11 connection keys and nothing else (hotfix leaves and all 114 other nodes byte-identical),
+`escalate-catalog`/`compile-current-state` are anchored insertions on the LIVE bodies (F6-i/F6-ii honoured, no clone lane
+work carried), the parser PUT changes only the two rev-5 leaves (`a68c5992` / `138008c2`) with no fork scaffolding, and
+no test guard / fork id / test-DB reference is present in either payload. Reviewer authorizes; captain executes.
+Apply order + post-checks as recorded in the STAGED run doc (parser PUT → assert active + shas; spine PUT → assert active,
+136 nodes, 4 shas, 9 nodes, 11 connection keys, hotfix leaves, settings extras; HI unchanged; any mismatch ⇒ PUT the PRE
+body back). Never edit live mid-cycle.
