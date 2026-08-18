@@ -81,7 +81,7 @@ Sweep of the payload: vs LIVE — param mismatches on exactly the 4 nodes above 
 
 1. Re-fetch all three; assert versionIds/updatedAt above unchanged and draft==active — else STOP and re-measure.
 2. PUT parser payload → assert `activeVersionId==versionId`, `output_exchange` `a68c5992`, systemMessage `138008c2`.
-3. PUT spine payload → assert active, 137 nodes, the shas above (incl. `miss-roster-gate` `92ca1ccc`, `miss-members-gate` `14576e69`, ccs `c864f204`; `cs-offer-gate` must equal live), 9 new nodes present, the 3 rewires, hotfix leaves intact;
+3. PUT spine payload → assert active, 137 nodes, the shas above (incl. `miss-roster-gate` `92ca1ccc`, `miss-members-gate` `14576e69`, ccs `c864f204`; `cs-offer-gate` must equal live), 10 new nodes present, the 3 rewires + miss-members-gate split, hotfix leaves intact;
    full param-hash sweep vs `PRE-9qVy…` shows exactly the 4 changed + 10 new + 12 connection keys. Post-PUT: smoke ONE answered turn (LESSONS #45).
    ⚠️ Live currently carries a content-empty UI draft `cfd0e776` ≠ active `7aba1447` (nodes/connections/settings identical to the
    PRE backup — verified twice); the PUT supersedes it. Re-check before applying that the draft is still content-identical.
