@@ -460,3 +460,81 @@ no new external call — the offer-hold path is LLM-free and read-free).
   (also deployed to the new `offer-hold-reply`). Guards to strip: none. The S3 credential re-point is fork-only — do NOT promote.
 - The alias map is a stopgap: when the CRM exposes `companies.code` on resolve-entity matches, thread it through
   `disallowed-entity-gate` → plan rows and drop `_CO_ALIASES` from both tiers (the `company_code`/`code` key path is already live).
+
+## rev-5 (reviewer F5, 2026-08-18): short-path domain/entity guard on the deterministic company pick — parser fork ONLY
+
+Published (same mechanics: REST `PUT /workflows/wI5RkNGW3EOJfBdo` assembled by script from a FRESH GET at 03:31Z + the repo body
+file, byte-exact; ONE publish; PUT auto-activates):
+
+| workflow | before (= `backups/…/parser-fork-wI5RkNGW3EOJfBdo/rev-5/VERSION.json`) | after (draft==active) | publish time (UTC) |
+|---|---|---|---|
+| parser fork `wI5RkNGW3EOJfBdo` | `de9ff09d-a240-46af-98fd-0d5992fdd16d` (body sha `b2ac7783…`, re-verified on the fresh GET) | **`c7d9cfa2-b46e-43b4-a227-8104616401e4`** | **03:32:04Z** |
+
+Spine clone `0557b0b4-…` and sendmsg fork `b48e0eaa-…` untouched. Live parser `XTODTw-dJcV0uRdC056hG` re-fetched read-only after:
+`89b63c51-…`, unchanged. Post-PUT no-op `setNodeSettings` (`AI Agent.retryOnFail:true`, already true) re-ran the MCP validation:
+the pre-existing fork warning set only (`Postgres Chat Memory` SUBNODE_NOT_CONNECTED/DISCONNECTED_NODE, OpenAI `builtInTools`
+INVALID_PARAMETER — LESSONS #13), no errors, versionId still `c7d9cfa2-…`. On the re-fetch: exactly `output_exchange.jsCode`
+changed; every other node field, the connections and `settings` are byte-identical to the pre-PUT dump; systemMessage sha
+`138008c2…` unchanged (== `parser-fork-AI-Agent.systemMessage.txt`).
+
+### F5 — the finding
+
+`_coCompanyPick` (C) ran the deterministic tier on ANY ≤4-word reply with no domain/entity guard, and Tier 2.5 sits before Tier 3
+(`_isNewQuery`) in the Δ3 arm — so a short new query naming one offered company right after an offer ("mocha promotions",
+"sorento stock MUB", "show sorento orders", "mocha promotions this month" — LLM `business_query` + `domain_hint`) became a
+company-scoped **escalation** (`{is_escalation_confirmation:true, company_pick}`) instead of being answered. Reproduced offline on
+the rev-4 body: all four emit a pick (the extended unit fails exactly the 6 new F5 assertions against `de9ff09d`).
+
+### Fix — exact guard shipped (`_coCompanyPick`, ONE expression + comments; nothing else in the body changed)
+
+```js
+const shortOk = words.length > 0 && words.length <= 4 && (kept.length < 2 || (!curEnt && !domainQ));
+```
+
+- `kept` = the reply minus fillers, `curEnt` = any `current_message:true` entity, `domainQ` = `(!!domain_hint || message_type
+  business_query/clarification) && is_affirmative !== true` — the SAME predicates the long path (`longOk`) already uses (== the Δ3
+  arm's `_isNewQuery`, kept in lockstep). Single-token remainders (`"srt"`, `"mocha"`, `"Mocha team pls"` ⇒ `["mocha"]`, `"ok go
+  with sorento"` ⇒ `["sorento"]`, `"yes please escalate to srt team"` ⇒ `["srt"]`) are exempt — behaviour byte-for-byte as rev-4,
+  incl. the LESSON-39 shape where the real parser speculatively domain-classifies a bare company token (unit added).
+- Header comment (C) gained a two-line rev-5 note; the `shortOk` line gained a five-line rev-5 comment. Diff vs rev-4 = those
+  comment lines + the one expression (`git diff HEAD~1 -- tests/diffs/miss-company-routing/parser-fork-output_exchange.js`).
+- The rev-4 no-context arm (`_selCtx !== 'member_offer'`, gate `!domain_hint`) uses the same resolver, so `business_query`
+  without a `domain_hint` ("mocha promotions" classified bq/null) is now refused there too (unit added). The LLM-pick validator
+  (`pickLlm`) already required `!domainQ` — unchanged.
+- **Tier order NOT moved** (Tier 2.5 still precedes Tier 3): moving Tier 2.5 after `_isNewQuery` would drop the single-token
+  picks whenever the real parser speculatively assigns a domain to a bare company/code token (the exact "bare Nur ⇒ order search"
+  speculation the Δ3 comment records; M8b "srt" happened to come back `casual`, but a bare "sorento" is not guaranteed to) — i.e.
+  not behaviour-preserving on the evidenced class. The guard alone yields the reviewer's target set: ≥2-token domain/entity
+  replies fall through Tier 2.5 (deterministic refused, LLM pick refused by `domainQ`) to Tier 3.
+
+### Observed classification of the four probes (offline unit on the deployed body, LLM output stubbed as the reviewer's probe
+shapes; real-fork confirmation = UAC M8h)
+
+| probe | LLM stub | rev-4 body (`de9ff09d`) | rev-5 body (`c7d9cfa2`) |
+|---|---|---|---|
+| "mocha promotions" | business_query / promotion | `company_pick Mocha` (escalation) | Tier 3 new query: escalation untouched, `message_type business_query`, `domain_hint promotion`, no `member_pick_context`/`offer_hold`/`correction` |
+| "sorento stock MUB" | business_query / inventory, entity MUB current | `company_pick Sorento`, entities cleared | Tier 3 new query; entity preserved (1 row) |
+| "show sorento orders" | business_query / order, entity sorento current | `company_pick Sorento` | Tier 3 new query; `domain_hint order` kept |
+| "mocha promotions this month" | business_query / promotion | `company_pick Mocha` | Tier 3 new query |
+
+Must-still-pick set (unit, rev-5 body): "yes mocha" (affirmative), "mocha please" (casual), "Mocha team pls" (casual, even with a
+current-message brand entity), "srt" (casual), bare "sorento" speculatively bq/order + current entity, "yes please escalate to
+srt team", "please escalate to sorento team" (request_for_help), "ok go with sorento" (with and without `is_affirmative`) — all
+resolve to the expected company. Unit file: `tests/unit/miss-company-routing-rev4.output_exchange.test.js` — 32 → **48 cases**,
+48/48 on the deployed body (re-fetched `after-oe.js`), 42/48 on the rev-4 backup (the 6 F5 must-not-pick assertions fail there,
+as expected).
+
+### rev-5 sha256 table (byte-exact; `after` re-fetched from the published workflow == repo file)
+
+| body | before (= `backups/…/rev-5/output_exchange.jsCode.js`) | after (published `c7d9cfa2-…`, = `diffs/miss-company-routing/parser-fork-output_exchange.js`) |
+|---|---|---|
+| parser fork `output_exchange.jsCode` | `b2ac7783daf6b92da226a4752191900b92d8c1bbdd81beab03d43efc3a013c43` | **`a68c5992acacdd1eb9d190630408f46f3959b9c34fc48577a1feb51023d985d2`** |
+| parser fork `AI Agent.systemMessage` | `138008c23eabfead0c780bf281005589156f46e3d8683a7bae26f3f4b8d46aa2` | unchanged |
+
+### rev-5 UAC / promote notes
+
+- UAC: `tests/miss-company-routing-UAC.md` — parser fork target bumped to `c7d9cfa2-…`; new **M8h** (the four F5 probes on an open
+  both-miss offer must NOT pick — Tier 3 fall-through, `If2` FALSE, `offer-hold-gate` FALSE, HI not called; plus the must-still-pick
+  companions on the same seed). Re-run M7a/M7b/M8a–M8c on the new fork version.
+- Promote mapping: unchanged in shape — the parser fork `output_exchange` whole body (now = live + pass-1 + rev-3 + rev-4 + rev-5
+  hunks) applies as-is to live `89b63c51-…` (unchanged). Guards to strip: none.

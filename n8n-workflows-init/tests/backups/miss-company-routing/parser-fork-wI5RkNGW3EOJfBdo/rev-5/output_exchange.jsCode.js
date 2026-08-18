@@ -1261,8 +1261,6 @@ if (/^marketing_promotion_(sorento|cabana|mocha)$/.test(String(output.output.rou
 //      please escalate to srt team" / "can you route this to the sorento team please" resolve, while
 //      "any mocha promotions this month" (domain promotion) and "check stock MUB6201 sorento" (product
 //      code) stay new queries (LESSON 39). Any product-code-like token refuses the pick on BOTH paths.
-//      rev-5 (F5): the ≤4-word path applies the SAME entity/domain guard once the stripped remainder has
-//      ≥2 tokens ("mocha promotions", "show sorento orders" ⇒ answered); a single token stays unguarded.
 //  (D) a negator anywhere in the reply ("no", "not mocha", "don't want sorento") refuses the pick —
 //      never assign against a stated negative; the decline / reprompt arms handle it.
 //  (E) `multi` = the offered pool has >1 company (routing_roster_plan.length > 1 — the same criterion
@@ -1293,12 +1291,7 @@ function _coCompanyPick(o) {
   const prodTok = words.some(w => /^[a-z]{2,}[a-z0-9-]*\d/i.test(String(w).replace(/[^a-z0-9-]/gi, '')));   // (C) MUB6201 / SRTKT72SS / MWCX7608-SH-S10
   const curEnt = (Array.isArray(o.entities) ? o.entities : []).some(e => e && e.current_message === true);
   const domainQ = (!!o.domain_hint || o.message_type === 'business_query' || o.message_type === 'clarification') && o.is_affirmative !== true;   // == the Δ3 arm's _isNewQuery (kept in lockstep)
-  // rev-5 (reviewer F5): the SHORT path (≤4 words) is unguarded ONLY while the filler-stripped remainder is a
-  // single token ("srt", "mocha", "yes mocha team please" ⇒ ["mocha"]); a ≥2-token remainder ("mocha promotions",
-  // "sorento stock MUB", "show sorento orders", "mocha promotions this month") must ALSO carry no current-message
-  // entity and not be a domain query — the same guard as the long path — so a short new query naming an offered
-  // company right after an offer is answered, not turned into a company-scoped escalation (LESSON 39).
-  const shortOk = words.length > 0 && words.length <= 4 && (kept.length < 2 || (!curEnt && !domainQ));
+  const shortOk = words.length > 0 && words.length <= 4;
   const longOk  = words.length > 4 && kept.length > 0 && kept.length <= 6 && !curEnt && !domainQ;
   const hits = (texts) => {   // exactly-one company, word-boundary on ANY of its keys, across the given lower-cased texts
     const h = new Set();

@@ -134,5 +134,44 @@ check('no offer open at all: "sorento" → untouched', !esc(o).company_pick, esc
 o = run('sorento', llm({ message_type: 'casual' }), { ...NO_CTX_STATE, response: 'Escalation declined.', escalation: { is_escalation_confirmation: false, escalation_declined: true } });
 check('after an explicit decline (plan carried, no phrase): "sorento" → untouched (offer closed)', !esc(o).company_pick, esc(o));
 
+// ── rev-5 (reviewer F5): short-path (≤4 words) domain/entity guard when the stripped remainder has ≥2 tokens ──
+// (a) the evidenced pick turns MUST still resolve (LLM classifications as observed on the tester's runs)
+o = run('yes mocha', llm({ message_type: 'confirmation', is_affirmative: true }), BOTH_STATE);
+check('rev-5 pick "yes mocha" (M7a, affirmative) → Mocha', isPick(o, 'Mocha'), esc(o));
+o = run('mocha please', llm({ message_type: 'casual' }), BOTH_STATE);
+check('rev-5 pick "mocha please" (M7b, casual) → Mocha', isPick(o, 'Mocha'), esc(o));
+o = run('Mocha team pls', llm({ message_type: 'casual', entities: [{ raw: 'Mocha', hint: 'brand', current_message: true }] }), BOTH_STATE);
+check('rev-5 pick "Mocha team pls" (casual, even with a current-message brand entity — single token) → Mocha', isPick(o, 'Mocha'), esc(o));
+o = run('srt', llm({ message_type: 'casual', correction: true }), BOTH_STATE);
+check('rev-5 pick "srt" (M8b) → Sorento', isPick(o, 'Sorento'), esc(o));
+o = run('sorento', llm({ message_type: 'business_query', domain_hint: 'order', entities: [{ raw: 'sorento', hint: 'customer', current_message: true }] }), BOTH_STATE);
+check('rev-5 pick bare "sorento" speculatively domain-classified (LESSON 39 shape) → still Sorento (single token exempt)', isPick(o, 'Sorento'), esc(o));
+o = run('yes please escalate to srt team', llm({ message_type: 'request_for_help', is_affirmative: true }), BOTH_STATE);
+check('rev-5 pick "yes please escalate to srt team" (M8a) → Sorento', isPick(o, 'Sorento'), esc(o));
+o = run('please escalate to sorento team', llm({ message_type: 'request_for_help', is_affirmative: null }), BOTH_STATE);
+check('rev-5 pick "please escalate to sorento team" (M8c) → Sorento', isPick(o, 'Sorento'), esc(o));
+o = run('ok go with sorento', llm({ message_type: 'casual', is_affirmative: true }), BOTH_STATE);
+check('rev-5 pick "ok go with sorento" → Sorento', isPick(o, 'Sorento'), esc(o));
+o = run('ok go with sorento', llm({ message_type: 'casual' }), BOTH_STATE);
+check('rev-5 pick "ok go with sorento" (casual, no affirmative flag) → Sorento via Tier 2.5', isPick(o, 'Sorento'), esc(o));
+// (b) the F5 probes MUST NOT pick: they fall through Tier 2.5 to Tier 3 (new query) — escalation/message_type/entities untouched,
+//     no member_pick_context, no offer_hold, no correction ⇒ normal downstream handling answers them (M8h)
+const notHijacked = (o, mt) => !esc(o).company_pick && esc(o).is_escalation_confirmation !== true && !esc(o).offer_hold
+  && esc(o).member_reprompt === undefined && o.member_pick_context !== true && o.correction !== true && o.message_type === mt;
+o = run('mocha promotions', llm({ message_type: 'business_query', domain_hint: 'promotion' }), BOTH_STATE);
+check('F5 "mocha promotions" (business_query/promotion) → NOT a pick; new query, untouched', notHijacked(o, 'business_query') && o.domain_hint === 'promotion', { esc: esc(o), mt: o.message_type, mpc: o.member_pick_context });
+o = run('sorento stock MUB', llm({ message_type: 'business_query', domain_hint: 'inventory', entities: [{ raw: 'MUB', hint: 'product', current_message: true }] }), BOTH_STATE);
+check('F5 "sorento stock MUB" (business_query/inventory) → NOT a pick; new query, entity kept', notHijacked(o, 'business_query') && Array.isArray(o.entities) && o.entities.length === 1, { esc: esc(o), mt: o.message_type, ents: o.entities });
+o = run('show sorento orders', llm({ message_type: 'business_query', domain_hint: 'order', entities: [{ raw: 'sorento', hint: 'customer', current_message: true }] }), BOTH_STATE);
+check('F5 "show sorento orders" (business_query/order + current-message entity) → NOT a pick; new query', notHijacked(o, 'business_query') && o.domain_hint === 'order', { esc: esc(o), mt: o.message_type });
+o = run('mocha promotions this month', llm({ message_type: 'business_query', domain_hint: 'promotion', date_mode: 'range' }), BOTH_STATE);
+check('F5 "mocha promotions this month" (4 words, business_query/promotion) → NOT a pick; new query', notHijacked(o, 'business_query') && o.domain_hint === 'promotion', { esc: esc(o), mt: o.message_type });
+o = run('mocha promotions', llm({ message_type: 'business_query', domain_hint: null }), BOTH_STATE);
+check('F5 "mocha promotions" classified business_query WITHOUT a domain_hint → still NOT a pick', notHijacked(o, 'business_query'), esc(o));
+o = run('mocha promotions', llm({ message_type: 'business_query', domain_hint: 'promotion' }), NO_CTX_STATE);
+check('F5 no-context arm: "mocha promotions" → untouched', !esc(o).company_pick && o.member_pick_context !== true, esc(o));
+o = run('mocha promotions', llm({ message_type: 'business_query', domain_hint: null }), NO_CTX_STATE);
+check('F5 no-context arm: "mocha promotions" (business_query, no dh — passes the arm gate) → guard refuses the pick', !esc(o).company_pick && o.member_pick_context !== true, esc(o));
+
 console.log(`\n${passes} passed, ${fails} failed`);
 process.exit(fails ? 1 : 0);
