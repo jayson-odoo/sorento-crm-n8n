@@ -1,0 +1,134 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "case": "P3 prerequisite \u2014 read-only zz-roster-probe for the four NEW round-4 routing pairs x {Sorento, Mocha}",
+ "helper": "zz-roster-probe ZS0KErse7GDh9mJK (INACTIVE test helper). DEVIATION D2: its probe-params jsCode was temporarily swapped for the 12 P3 URLs, the workflow executed once (manual), then the ORIGINAL jsCode was restored and re-verified byte-equal (sha ad5b8b07). No workflow under test was touched. Read-only GET /api/v1/external/team-members only; next-assignee never called.",
+ "probe_exec": "12945607",
+ "status": "success",
+ "result_count": 12,
+ "verdict": "11/12 OK, 1 BLOCKED-BY-CONFIG",
+ "BLOCKED_BY_CONFIG": [
+  {
+   "company": "Mocha",
+   "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+   "team": "purchasing_certification",
+   "agent": "general_enquiries",
+   "http": 404,
+   "crm_detail": "No team found for agent and team_code='purchasing_certification' in company '38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2'. Configure that company's team set before routing to it.",
+   "impact": "the round-4 certificates lane renders the plain offer for Mocha with no roster call (so nothing is blocked at render time), but a LIVE 'yes' on a Mocha certificates miss would hit next-assignee with an unconfigured team. Admin team-set gap \u2014 captain action."
+  }
+ ],
+ "rows": [
+  {
+   "label": "P3-marketing_promotion-general_enquiries-Sorento+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_promotion&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Kia Yee"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-marketing_promotion-general_enquiries-Sorento+nobrand",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_promotion&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001",
+   "status": 200,
+   "members": [
+    "Am",
+    "Kia Yee",
+    "Aqi"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-marketing_promotion-general_enquiries-Mocha+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_promotion&tier=1&contact_id=437264483&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Kia Yee"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-purchasing_product-general_enquiries-Sorento+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=purchasing_product&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Chew Hong"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-purchasing_product-general_enquiries-Sorento+nobrand",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=purchasing_product&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001",
+   "status": 200,
+   "members": [
+    "Chew Hong"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-purchasing_product-general_enquiries-Mocha+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=purchasing_product&tier=1&contact_id=437264483&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Arwen"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-marketing_product-general_enquiries-Sorento+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_product&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Charissa Wang",
+    "Kia Yee"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-marketing_product-general_enquiries-Sorento+nobrand",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_product&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001",
+   "status": 200,
+   "members": [
+    "Tay Zhi Yang",
+    "Charissa Wang",
+    "Kia Yee"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-marketing_product-general_enquiries-Mocha+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=marketing_product&tier=1&contact_id=437264483&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Kia Yee"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-purchasing_certification-general_enquiries-Sorento+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=purchasing_certification&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001&brand_code=mocha",
+   "status": 200,
+   "members": [
+    "Josephine Ng"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-purchasing_certification-general_enquiries-Sorento+nobrand",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=purchasing_certification&tier=1&contact_id=437264483&company_id=00000000-0000-0000-0000-000000000001",
+   "status": 200,
+   "members": [
+    "Josephine Ng"
+   ],
+   "error": null
+  },
+  {
+   "label": "P3-purchasing_certification-general_enquiries-Mocha+brand:mocha",
+   "url": "https://fe-sorento.foundryx.my/api/v1/external/team-members?agent_code=general_enquiries&team_code=purchasing_certification&tier=1&contact_id=437264483&company_id=38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2&brand_code=mocha",
+   "status": 404,
+   "members": null,
+   "error": "404 - \"{\\\"detail\\\":\\\"No team found for agent and team_code='purchasing_certification' in company '38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2'. Configure that company's team set before routing to it.\\\"}\""
+  }
+ ]
+}

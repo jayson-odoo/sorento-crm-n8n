@@ -1,0 +1,24 @@
+{
+ "date": "2026-08-18",
+ "tester": "sorento-tester",
+ "case": "S3 \u2014 sendmsg fork prod-DB write closed (unchanged hard gate)",
+ "verdict": "PASS",
+ "targets": {
+  "spine_clone": "txiPzSxy3Pclsz6v @ 3e7fa66d (versionId==activeVersionId BEFORE and AFTER; 171 nodes; miss-roster-gate leftValue e4575d3e, miss-roster-plan 95d6c814, disallowed-entity-gate 069b3691, promo-picker 05a96e3a, compile-current-state 8deebd5e, escalate-catalog 0168df84, build-miss-member-offer fab11982 \u2014 all byte-verified vs tests/diffs/miss-company-routing/* before and after)",
+  "get_results_fork": "t4QvrtrPnTwRU6br @ 9ee992e9 (output-structurer 698f89f1)",
+  "parser_fork": "wI5RkNGW3EOJfBdo @ c7d9cfa2 (output_exchange a68c5992 / systemMessage 138008c2 \u2014 unchanged)",
+  "sendmsg_fork": "aQUmwMVplmNcyUVc @ b48e0eaa",
+  "hi_fork": "vUfFUDjLAuMaeQE6 @ 0fdba9e5",
+  "savemsg_fork": "tWm5DYLxfypmVC1T @ ce78408e",
+  "live_untouched_before_and_after": {
+   "9qVyfUxmRQqrpGRMDLRuz": "active 7aba1447 / draft cfd0e776",
+   "XTODTw-dJcV0uRdC056hG": "b9ac64a2 (SEE DEVIATION D1 \u2014 the UAC quotes 89b63c51; live parser had already moved to b9ac64a2 at 2026-08-18T07:17:57Z, BEFORE this pass, and is identical before/after it)",
+   "rysSPgUssLDf6xJc": "cacd7c95",
+   "Fss5aAaXthJSWpZCgKiKR": "f214cb7e",
+   "aoydkG1dbItXR5jXFEQsP": "91171ac3",
+   "rrYXzE61gCNUck_zmXe-G": "9249e00e"
+  }
+ },
+ "notes": "sendmsg fork aQUmwMVplmNcyUVc @ b48e0eaa. Credential audit of the fork's persistence nodes: 'Postgres Chat Memory1' (@n8n/n8n-nodes-langchain.memoryPostgresChat) -> {id: Dnnofg8Xb27VQOhI, name: n8n_test-db}; 'log-chat-history-n8ntest' (n8n-nodes-base.postgres) -> {id: Dnnofg8Xb27VQOhI, name: n8n_test-db}. NO node in the fork carries the prod 'sorento-crm-db' credential. Runtime: all 32 sendmsg sub-executions in this pass short-circuited before any send/persist HTTP node \u2014 observed node sets were ['Chat Memory Manager','Code in JavaScript','If1','Loop Over Items','When Executed by Another Workflow','chat?','guard-record-text','guard-text','is-last-quickreply'] x25, ['Code in JavaScript','If1','When Executed by Another Workflow','chat?'] x3 (empty-text early exit), and the quick-reply variant [... 'guard-qr','guard-record-qr' ...] x2. Zero api.respond.io references anywhere in the 145 swept sub-executions.",
+ "sendmsg_invocations": 32
+}
