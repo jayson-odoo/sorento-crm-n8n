@@ -644,3 +644,109 @@ no test guard / fork id / test-DB reference is present in either payload. Review
 Apply order + post-checks as recorded in the STAGED run doc (parser PUT → assert active + shas; spine PUT → assert active,
 136 nodes, 4 shas, 9 nodes, 11 connection keys, hotfix leaves, settings extras; HI unchanged; any mismatch ⇒ PUT the PRE
 body back). Never edit live mid-cycle.
+
+## R11. Round-3 review + combined round-2+3 payload verification (2026-08-18)
+
+Reviewer pass over plan §Round 3 (R3.0–R3.7, planner decisions D1 = domain's own routing team / D2 = none flipped /
+D3 = (b) widen `cs-offer-gate`), the coder's round-3 + round-3 rev-2 diff sections, the tester's rev-2 FULL re-run
+(25 execs), and the refreshed combined round-2+3 staged live payload. Read-only: REST GETs (workflows + 3 parent execs
++ 5 sub-execs) and repo reads. Units re-run locally. Nothing edited, nothing executed, nothing promoted.
+Shas = sha256 first 8 hex of the raw leaf (`jq -j`) unless noted; object shas = sorted-JSON.
+
+### Per-check table
+
+| # | check | result | measured |
+|---|---|---|---|
+| 1 | clone `txiPzSxy3Pclsz6v` published state | PASS | versionId == activeVersionId == `e54e114e-86e6-4023-8926-3fec6fc1ef51`, 159 nodes / 143 connection sources, updatedAt 04:48:12Z |
+| 2 | the 3 round-3 shas on the published clone == repo files == diff-doc | PASS | `miss-roster-gate.leftValue` **`d24dd81b`**, `cs-offer-gate` g2 **`cfa8c18e`** (conditions json `391a31c8`), `build-cs-member-offer.jsCode` **`63c1c46e`** — each byte-equal to `tests/diffs/miss-company-routing/{spine-miss-roster-gate.expr.txt, spine-cs-offer-gate.expr.txt, spine-build-cs-member-offer.js}` |
+| 3 | clone delta vs round-3 PRE `0557b0b4` is EXACTLY the claimed set | PASS | param-changed = {`miss-roster-gate`, `cs-offer-gate`, `build-cs-member-offer`} only; 0 added/dropped nodes; connections byte-identical; 0 non-param field diffs (id/type/typeVersion/credentials/onError/disabled) |
+| 4 | round-2 lane bodies unchanged on `e54e114e` | PASS | `miss-roster-plan` `0b7907d6` · `build-miss-member-offer` `68eef4c7` · `compile-current-state` `5a84dfea` · `escalation-context` `cca7a245` · `escalate-catalog` `0168df84` · `clarify-company-reply`/`offer-hold-reply` `7ff06aa8` · `offer-hold-gate` `8f14a430` · `clarify-company-gate` `63e30a3d` · `tool-filter` `bffb4c3a` |
+| 5 | parser fork untouched | PASS | `wI5RkNGW3EOJfBdo` draft==active `c7d9cfa2-…`; `output_exchange` `a68c5992`, systemMessage `138008c2` |
+| 6 | clone guard wiring intact (fail-closed clone) | PASS | all 19 `executeWorkflow` targets are the TEST forks only (`wI5RkNGW3EOJfBdo`/`vUfFUDjLAuMaeQE6`/`t4QvrtrPnTwRU6br`/`aQUmwMVplmNcyUVc`/`tWm5DYLxfypmVC1T`/`tWP33QOFT7SxThfT`); connections untouched by both PUTs ⇒ the 5 orphaned egress nodes stay orphaned |
+| 7 | LESSONS #45 forbidden tokens | PASS | `prototype`/`constructor`/`__proto__`: 0 hits in any non-Code node's parameters on the clone AND in the spine payload's non-Code nodes; sole Code-node hit is the pre-existing `compile-current-state` jsCode (different sandbox, allowed) |
+| 8 | offline units re-run by the reviewer | PASS | `tests/unit/miss-company-routing-round3.gates.test.js` **52 passed, 0 failed** on the repo expression files (== deployed shas per check 2); node:test wrapper 1/1 |
+| 9 | exec spot-check N1r2 `12922904` | PASS | success on the clone; `tool-filter` = `crm_incoming_stock_list`; `miss-roster-gate` [1,0] TRUE, lane ran (`miss-roster-plan` 1 Sorento row brand `mocha` → `get-cs-members-miss` 200 = Jereen Tee only → `build-miss-member-offer` picker "2. Jereen Tee"); persisted `response` ends `Would you like me to escalate to *Sorento* purchasing team?`; `last_result_set` idx 1 (MUB6201) + idx 2 (Sorento member); `routing_company` Sorento / `routing_brand` mocha; get-results sub-exec `12922914` = fork `t4QvrtrPnTwRU6br`, nodes `MCP Client1`+`output-structurer` only (READ); sendmsg sub `12922916` = fork `aQUmwMVplmNcyUVc`, `HTTP Request` NOT executed; no orphaned egress node ran |
+| 10 | exec spot-check N4-picker t3 `12923121` | PASS | `escalation-context` = {company_id Sorento `…0001`, brand_code `mocha`, routing_source `company_pick`, team `purchasing`}; `clarify-company-gate` [0,1] FALSE → HI; HI sub `12923129` = fork `vUfFUDjLAuMaeQE6` short-circuited at `test-guard` (4 nodes, no assign/SLA/PIC); sendmsg sub `12923130` fork, no `HTTP Request` |
+| 11 | exec spot-check R-M1r2 `12923242` (orders regression) | PASS | `tool-filter` = `crm_order_management_orders_list`; gate TRUE; picker members 3–8 (Maryam…Nurain, the round-2 M1r3 CS roster); same fork-only sub-exec pattern; no orphaned egress node ran |
+| 12 | zero-egress re-confirmation from evidence | PASS | all 15 rev-2 evidence JSONs: verdict PASS + `S0_all_pass:true`; egress actions across the whole set = {`would_log`,`would_send`,`would_write`} ONLY — no non-would action, no respond.io 2xx send, no assignment/SLA/PUT write; resolved get-results tools ∈ {incoming_stock_list, orders_list, inventory_stock_balance_list, marketing_promotions_list} — all READ, never `crm_it_support_ticket_create` |
+| 13 | scope/tier | PASS | plan scope `deterministic` matches: 24/25 turns on the fork bypass (0 LLM tokens); the single parser-tier turn (N4b) is a rev-4 regression re-run on the unchanged fork — allowed |
+| 14 | live spine current state (R10 1a re-run) | PASS | `9qVy…` activeVersionId **`7aba1447`** (updatedAt 04:28:14Z); draft `cfd0e776` ≠ active but nodes/connections/settings/name shas ALL identical to `PRE-9qVy…-7aba1447.json` — the content-empty UI draft is still content-identical (re-verified this pass) |
+| 15 | live parser + HI current state (R10 1b/1c re-run) | PASS | `XTODTw…` draft==active `89b63c51`, nodes/connections/settings identical to PRE; `rrYX…` draft==active `9249e00e` |
+| 16 | R7/R10 sha gates on PRE/live | PASS | spine: `escalation-context` `8c12563c` · `build-cs-member-offer` `37a1b023` · `escalate-catalog` `8b4ae985` · `compile-current-state` `0b0912f1`; parser: `output_exchange` `3ee5b658` · systemMessage `583bcfb0` |
+| 17 | `cs-offer-gate` live before-shape | PASS | live (draft+PRE) conditions json `ce99a16c`, 3 conditions, node id `18e0a370-…` == clone PRE `0557b0b4` (`ce99a16c`, 3) — the hunk applies cleanly; payload keeps the LIVE node id with clone `e54e114e` params (byte-equal, `391a31c8`) |
+| 18 | payload spine sweep vs PRE | PASS | 127 → 136 nodes; params changed on EXACTLY 5 (`compile-current-state` `492a8591`, `escalate-catalog` `5ec7d6a7`, `build-cs-member-offer` **`63c1c46e`**, `escalation-context` `cca7a245`, `cs-offer-gate` `391a31c8`); EXACTLY 9 new, 0 dropped, 0 non-param field diffs; EXACTLY 11 connection keys changed (the R10 3b set); top keys `{name,nodes,connections,settings}`, settings `{executionOrder:v1}` |
+| 19 | payload == clone on the touched nodes | PASS | 12/14 touched nodes params byte-equal to clone `e54e114e` (incl. `miss-roster-gate` `d24dd81b`, `cs-offer-gate`, `build-cs-member-offer` `63c1c46e`); `escalate-catalog`+`compile-current-state` differ BY DESIGN (F6 anchored insertions on the LIVE bodies, == `PAYLOAD-node-*.js` files `5ec7d6a7`/`492a8591`); type/typeVersion/onError/credentials equal on all 14 |
+| 20 | `get-cs-members-miss` mirrors LIVE `get-cs-members` | PASS | params byte-equal, credential equal, `onError continueRegularOutput` |
+| 21 | gate dependencies exist on live | PASS | `tool-filter` on live PRE with params byte-equal to clone (jsCode `bffb4c3a`); `crossdomain-render` on live PRE emits `_xdBlock` with `any: blocks.length > 0` — exactly the shape the new leg reads (and the leg tolerates not-executed / no-block: units i-d, ii-b) |
+| 22 | no fork ids / test scaffolding in either payload | PASS | 0 occurrences of any fork id, clone id, test cred/list/DB name, `test_mode`, `test-guard`; `is_test` only as live's own schema-only entries (byte-identical to PRE) + one code comment in `clarify-company-reply`/`offer-hold-reply` |
+| 23 | parser payload unchanged since R10 | PASS | vs PRE: 7 nodes both sides, connections byte-equal, only `output_exchange` (`3ee5b658`→`a68c5992`) and systemMessage (`583bcfb0`→`138008c2`) differ; 0 memory nodes; == fork `c7d9cfa2` leaves == repo files |
+| 24 | domain audit independently cross-checked | PASS | grep of the CRM repo (worktree `agent-af782288cc8ee12b6`): `stamp_lookup_companies` is called from exactly 6 services — order, incoming_stock, inventory, marketing, certificate_query, product (+ the helper itself) — matching R3.1's stamp column tool-for-tool; presenters expose exactly 14 `crm_*` tools, all present in the audit table; no per-company tool missed. The captain's "DO" has no distinct tool — delivery fields ride the orders builders (`Actual Delivery Date` in `_orders_list`/by-product), i.e. covered by the orders lane |
+| 25 | fail-closed on every new leg | PASS | allowlist miss / tool-filter absent / throw / routing mismatch / xd block ⇒ false (units vii-a–d, v-a–d, ii; real execs N7/N8/N9 gate FALSE with the miss line present); `cs-offer-gate` g2 try→false (the recorded semantic delta: routing:null now fails closed instead of throwing — an improvement); roster 404/empty ⇒ byte-identical passthrough (N10 + `onError`) |
+| 26 | byte-identical orders/stock/single-company behaviour | PASS | tester R-M1 sent text byte-identical to round-2 M1r3 (spot-checked: same CS roster 3–8), R-M5 qty-0 no offer, R-M8 t1 picker byte-identical to M7d t1, R-B t1 byte-identical to M7e t1; F-R3-5 units prove orders/single outputs of `build-cs-member-offer` == PRE body on the same fixtures |
+
+### Findings
+
+- **F-R11-1 (none blocking).** All rev-1 blockers closed: F-R3-4 (sandbox `prototype` throw) fixed by `d24dd81b` and proven
+  in the real sandbox on every answered-turn shape (N1/N5/N7/N8/N9/R-M1 — TRUE and FALSE branches both exercised, no
+  ExpressionError); F-R3-5 fixed by `63c1c46e` with orders/single byte-identity proven both offline and on-exec.
+- **F-R11-2 (residuals, cosmetic, agreed-deferred):** F-R3-2 stale "order turn" header comments in `miss-roster-plan`/
+  `build-miss-member-offer`; F-R3-3 family in `build-cs-member-offer` (the `customer_service` fallback literal — reachable
+  only if `escalate-catalog.response` is empty, which the offer arm never produces — and the `no customer-service members
+  are configured — omitted` line, mirrored verbatim by `compile-current-state`, so it must move in lockstep). Fold all
+  into the next body change; none affects behaviour now.
+- **F-R11-3 (replay-norm, clarification on R3.4):** R3.4's "0 expected diffs" is correct for `miss-roster-gate` (golden
+  envelopes predate `lookup_companies` stamping ⇒ gate FALSE corpus-wide) and needs no norm rule. The D3=b `cs-offer-gate`
+  widening (decided after R3.4 was written) is also inert on the historical corpus: pinned golden parser outputs predate the
+  `routing` field (brand-company-routing, 2026-08-17), so g2's `routing || {}` matches no pair ⇒ FALSE, same branch as the
+  old gate. Fresh post-2026-08-17 captures of incoming not-found turns will show the picker as diffs BY DESIGN (Lesson 40/41).
+  No `norm()` change. Recorded so future replay diffs on such turns aren't misread as regressions.
+- **F-R11-4 (observation, out of scope — flag for a later routing round):** tester rev-2 observation 4 — on an incoming
+  turn answered in BOTH companies (N5b), `disallowed-entity-gate` persisted a single Mocha `routing_companies` row although
+  the envelope covered both. Harmless here (gate FALSE), pre-existing axes logic; worth its own look.
+
+### Judged items (my view; captain owns the decision)
+
+- **Allowlist vs the captain's "bring each one that lacks the offer onto the same mechanism" (D2):** the captain's order
+  itself allows "any you deliberately left out and why", and the promote record lists them with reasons. Stock is the
+  captain's own decision 2 (qty-0 == honest answer). Promotions ×2 / master products / product attachments / certificates
+  are left out on the "definitive answer, nothing for the other team to look up" rule — I find this consistent and correct
+  (a per-company absence there is the answer, not a lead), and each is a one-row `LANE` flip if the captain reads
+  requirement 2 more broadly. **This stays a captain decision at the promote gate — confirm D2=none when authorizing.**
+- **D3=b consequence (no-entity incoming not-found ⇒ picker with plan `company_id null`, probe 12923358):** acceptable.
+  It is exactly the shape CS/order not-found turns have had since round 2 (pre-existing for CS); the widening only gives
+  purchasing the same behaviour, and a null plan company falls through to the existing escalation-context arms. No change
+  requested.
+- **One-offer-per-turn precedence (gate yields to `crossdomain-render`'s `_xdBlock.any`):** correct design — two frozen
+  phrases on one turn would break the "yes" contract; verified on live shape (check 21) and units (ii)/(ii-b), plus the
+  real xd-probe path (N6, exactly ONE offer).
+
+### Verdict — **APPROVE** (round 3 + combined round-2+3 staged payload)
+
+Round 3 rev-2 is verified byte-exact on the published clone, the domain audit is independently confirmed complete, every
+new leg is fail-closed, the round-2 orders/stock/single-company behaviour is proven byte-identical, zero egress is
+re-confirmed on all 25 executions (evidence + 3 independent exec spot-checks incl. sub-executions), and the refreshed
+combined payload is exactly the R10-approved payload plus the three round-3 bodies (`d24dd81b` / `cfa8c18e`+`391a31c8` /
+`63c1c46e`) with the sweep still closed (5 changed + 9 new + 11 connection keys, nothing else). **APPROVE-TO-APPLY stands
+for the combined round-2+3 payload.** Promotion remains captain-gated (`needs-decision [key=promote-round2-3]`).
+
+### PROMOTE CHECKLIST — delta over R7 (only what changed; everything else in R7 + the STAGED run doc apply-order stands)
+
+1. **R7 3e (add 9 nodes):** `miss-roster-gate` leftValue is **`d24dd81b`** (round-3 rev-2) — NOT `024d91e3` (round 2)
+   and NOT `031dda83` (round-3 rev-1, sandbox-fatal: it throws on every answered turn — must never reach live).
+2. **R7 3b (`build-cs-member-offer`):** promote sha is **`63c1c46e`** (F-R3-5 team-label note) — supersedes `c7046c45`;
+   gate on live `37a1b023` unchanged; orders/single output byte-identity already proven, no re-measure beyond the sha.
+3. **NEW 5th changed node — `cs-offer-gate` (LIVE node id `18e0a370-…`, promote keys on name):** gate = live conditions
+   json sha `ce99a16c` with EXACTLY 3 conditions (measured true on `7aba1447`); then conditions := clone `e54e114e`
+   params (g1 unchanged, g2 = allowlist-pair boolean IIFE `cfa8c18e`, g3 removed; resulting conditions json `391a31c8`).
+   Gate miss ⇒ STOP (someone touched the node) — re-derive, never body-copy.
+4. **Sweep expectation update (R7 3g / R10 3a-3b):** post-PUT param-hash vs `PRE-9qVy…-7aba1447.json` must show exactly
+   **5 changed + 9 new + 11 connection keys** (was 4+9+11), 136 nodes, 0 dropped, 0 non-param field diffs.
+5. **Live-draft note (LESSONS #24):** live spine carries a content-empty UI draft `cfd0e776` ≠ active `7aba1447`
+   (nodes/connections/settings byte-identical to PRE — re-verified 2026-08-18 in this pass). The promote PUT supersedes
+   it. Immediately before applying: re-fetch and re-confirm the draft is STILL content-identical to the PRE backup —
+   if it has drifted, STOP and diff before any publish.
+6. **Post-PUT expression smoke (LESSONS #45):** after the spine PUT, run ONE answered-turn watch case FIRST (the R7 §7(i)
+   partial-miss order turn) and confirm no `ExpressionError` at `miss-roster-gate`/`cs-offer-gate` before walking the rest
+   of the watch list; add to the §7 watch: an incoming partial-miss turn (`*<Co>* purchasing team` + picker) and an
+   incoming not-found turn (picker now renders — D3=b).
+7. Parser payload, apply order (parser before spine), rollback method, and all other R7/R10 rows: **unchanged**.
