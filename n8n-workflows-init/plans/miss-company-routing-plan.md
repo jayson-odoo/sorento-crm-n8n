@@ -136,7 +136,7 @@ Grounding columns: presenter builder = `sorento_crm_mcp/presenters.py` (`_BUILDE
 | `crm_incoming_stock_list` | incoming | yes (`_incoming_list` L386) | yes (`incoming_list`) | `incoming stock records` | purchasing / incoming_stock_enquiries | the other company's purchasing knows its inbound — captain: genuine | **ADDED (round 3)** |
 | `crm_incoming_stock_by_product` | incoming | yes (L423) | yes (`incoming_for_product`) | `incoming stock records` | purchasing / incoming_stock_enquiries | same | **ADDED** |
 | `crm_incoming_stock_shipments` | incoming | yes (L465) | yes (`incoming_shipments`) | `incoming shipments records` | purchasing / incoming_stock_enquiries | same (container listing) | **ADDED** (same lane; shape legs protect) |
-| `crm_inventory_stock_balance_list` | inventory | yes (`_stock` L812) | yes (`inventory_service.list_stock`) | `stock records` | warehouse / general_enquiries | "no balance row" is the same business fact as a 0-on-hand row (captain decision 2: qty 0 is an answer) — an honest answer, not a hand-off | **LEFT OUT** (decision 2; would be inconsistent to offer on "no row" but not on "0") — one allowlist row flips it (D2) |
+| `crm_inventory_stock_balance_list` | inventory | yes (`_stock` L812) | yes (`inventory_service.list_stock`) | `stock records` | warehouse / general_enquiries | "no balance row" is the same business fact as a 0-on-hand row (captain decision 2: qty 0 is an answer) — an honest answer, not a hand-off | ~~LEFT OUT~~ **COVERED-PLAIN (rev-3** — captain correction 2026-08-18: plain offer, no members; a qty-0 ROW is still an answer, only a company with ZERO rows is a miss**)** |
 | `crm_marketing_promotions_list` | promotion | yes (`_promotions` L493) | yes (`marketing_service.list_promotions`) | `promotions records` | marketing_promotion / general_enquiries | no promotion exists at that company — a definitive marketing fact, nothing for the other team to look up | **LEFT OUT** (D2 flip available; offer would read `*Sorento* marketing_promotion team`, HI resolves that team per company) |
 | `crm_marketing_promotion_products_list` | promotion | yes (L511) | yes (`list_promotion_products`) | `promotion products records` | marketing_promotion / general_enquiries | same | **LEFT OUT** |
 | `crm_master_products_list` | master_products | yes (`_products` L532) | yes (`product_service.list_products`) | `products records` | purchasing_product / general_enquiries | product not in that company's catalogue (only reachable via spec/attribute filters — a product in both masters returns a row) — honest answer | **LEFT OUT** |
@@ -154,7 +154,8 @@ Verified: presenter/stamp columns from code (paths above); the incoming envelope
 
 Summary: covered = orders (2 tools) · added = incoming (3 tools) · left out = stock, promotions (2), master products, product attachments,
 certificates (decision 2 + "honest answer" rule; each is a one-row allowlist flip) · N/A by construction = resource attachments, forms, portal
-link, GRN/SPO, ideate.
+link, GRN/SPO, ideate. *(Superseded in part by rev-3: stock moves to covered-plain; incoming moves to plain (offer, no members); the member
+picker becomes orders-only. See "Round 3 rev-3" below.)*
 
 ### R3.2 Recommended gate generalisation (the ONLY body change)
 
@@ -252,3 +253,154 @@ Staged payload `tests/backups/miss-company-routing/LIVE-PROMOTE-STAGED-20260818/
 node: `miss-roster-gate` (new node, leftValue `024d91e3` → the round-3 sha). R7 3e / R10 4a+4d rows must be re-measured for that node; every
 other R7 gate, the 9-node/11-edge shape, `escalate-catalog`/`compile-current-state` anchored insertions and the parser payload
 (`a68c5992` / `138008c2`) are unchanged. Refresh the STAGED run doc as one round-2+3 record, then `needs-decision [key=promote-round2-3]`.
+
+### Round 3 rev-3 (captain corrections: plain offer for incoming+stock, members orders-only)
+
+Captain corrections (2026-08-18, live chat-console test of the clone — these OVERRIDE D1–D3 where they conflict):
+1. Incoming miss reply showed the member picker ("…Please choose who to route to … 2. Jereen Tee…") — "there is no
+   need to get the members for incoming lol, this only applies for customer order enquiries". Incoming keeps the
+   escalation OFFER but with **no roster fetch and no member picker**.
+2. Stock reply ("Company: Mocha … Quantity On Hand: 0 / … *Sorento:* no stock records for MUB6201.") — "things like
+   stock also should have the would you like me to escalate, but without the members; we only need cs members".
+   Stock per-company miss (a company ENTIRELY absent from the answers) now gets the plain offer too. Decision 2
+   still stands and is compatible: a qty-0 ROW is an answer (its `company_name` field marks the company answered);
+   only a company with ZERO rows is a miss — the existing gate/plan derivation yields exactly this with no extra leg.
+
+**Rev-3 shape:** member picker (roster fetch + numbered members + number/name picks) = **orders/customer_service
+ONLY**. Incoming + stock miss = plain frozen phrase `Would you like me to escalate to *<Co>* <team> team?` (single
+miss names the company; both-miss = plain phrase, no company). "Yes" routes via the persisted axes (single-miss →
+that company's team round-robin via the rev-4 `prior_state` arm; both-miss → `multi_company_unpicked` → company
+clarify; a company-name reply resolves via the parser's EXISTING rev-4 open-offer `company_pick` arm — see §V3
+below, **no parser change**). No roster call at all on the plain lanes. D3 moves from (b) to (c): `cs-offer-gate`
+reverts to CS/order-only and the clarify copy drops "a number, a name" when no picker was shown.
+
+Builds on clone `txiPzSxy3Pclsz6v` @ `e54e114e` + parser fork `wI5RkNGW3EOJfBdo` @ `c7d9cfa2` (**fork untouched**).
+**scope: `deterministic`** — spine-only; the 1–3 parser-tier turns below are regression proofs of UNCHANGED fork
+arms (precedent: round-2 M4b / round-3 N4b, R11 check 13).
+
+#### V1. LANE table (rev-3 — the single allowlist, mirrored byte-identical in `miss-roster-gate` and `miss-roster-plan`)
+
+| tool (`tool-filter.name`) | domain_hint | team (phrase + roster + HI, D1: the domain's own routing team) | agent | `members` |
+|---|---|---|---|---|
+| `crm_order_management_orders_list` | order | customer_service | order_enquiries | **true** |
+| `crm_order_management_orders_by_product_list` | order | customer_service | order_enquiries | **true** |
+| `crm_incoming_stock_list` | incoming | purchasing | incoming_stock_enquiries | **false** |
+| `crm_incoming_stock_by_product` | incoming | purchasing | incoming_stock_enquiries | **false** |
+| `crm_incoming_stock_shipments` | incoming | purchasing | incoming_stock_enquiries | **false** |
+| `crm_inventory_stock_balance_list` (NEW row) | inventory | warehouse | general_enquiries | **false** |
+
+Grounding: stock tool + routing pair verified against the deployed parser fork (`output_exchange` `deriveRouting`:
+`case 'inventory': { suggested_team: 'warehouse', suggested_agent: 'general_enquiries' }`, sha `a68c5992` == clone
+fork; consistent with `crossdomain-zeroset`'s inventory→warehouse map and the R3.1 audit row). Stock has exactly ONE
+per-company presenter tool — `crm_inventory_stock_balance_list` (`_stock`, stamped by `inventory_service.list_stock`;
+R11 check 24 confirmed the 14-tool sweep, no other stock renderer). Phrase team per lane = the lane's `team` column
+verbatim (`*Sorento* purchasing team` — captain-accepted wording; stock reads `*Sorento* warehouse team`): the phrase
+must name the team HI will actually route to (`next-assignee(agent_code=<agent>, team_code=<team>, company_id)`).
+The `members` flag is carried in BOTH LANE copies for byte-identical lockstep; the gate ignores it (offer/no-offer
+only), `miss-roster-plan` stamps it onto every plan item.
+
+**D2' (captain-confirm at the promote gate):** promotions ×2 / master products / product attachments / certificates
+STAY OUT ("definitive answer, nothing for the other team to look up"). The captain's "things like stock" wording
+COULD be read as "every per-company miss line" — each is still a one-row LANE flip (`members:false`); do not flip
+without an explicit captain order.
+
+#### V2. Roster skip design (chosen: option (a) — one new If node)
+
+An HTTP node in the path always fires, so plain lanes must be routed AROUND `get-cs-members-miss`, not through it:
+
+- **`miss-members-gate` (NEW, If)** between `miss-roster-plan` and `get-cs-members-miss`. leftValue
+  `={{ $json.members === true }}` (plan items all carry the lane flag; no forbidden sandbox tokens — LESSONS #45
+  grep + one real-execution smoke still mandatory). TRUE → `get-cs-members-miss` → `build-miss-member-offer`
+  (orders lane, unchanged chain). FALSE → `build-miss-member-offer` **directly** (plain lanes + the
+  `_miss_plan_empty` sentinel, which now never spends its stray roster read).
+- Rejected alternatives: making `get-cs-members-miss` conditional (impossible — HTTP in path fires); replacing
+  `miss-roster-gate` with a Switch (remove+re-add churn, larger review surface); routing plain lanes from the gate
+  straight to `dym-transform-partial` (the lane must re-emit the ENVELOPE item — `miss-roster-plan` outputs plan
+  items and would break the happy-path reply; `build-miss-member-offer` is the existing envelope re-emitter).
+- Promote-payload delta of (a): +1 node, +1 changed connection key (see §V7). Smallest of the workable options.
+
+#### V3. Node-by-node (coder; clone `e54e114e` + fork `c7d9cfa2`; guards untouched; fork NOT edited)
+
+| node | change |
+|---|---|
+| `miss-roster-gate` (If, existing) | leftValue: add the ONE stock row to LANE (+ the `members` field on every row, ignored by the gate). Every other leg byte-identical (has_result, domain+routing lockstep, xd yield, company_name-labelled answers, non-empty miss set, try→false). New sha replaces `d24dd81b`. |
+| `miss-roster-plan` (code, existing) | Mirror the rev-3 LANE (with `members`); stamp `members: lane.members` on every real plan item and `members:false` on the `_miss_plan_empty` sentinel (a sentinel must never fetch a roster). Fix the stale "order turn" header comment while the body is open (closes F-R3-2 for this node). Derivation otherwise byte-identical. |
+| `miss-members-gate` (NEW, If) | §V2. Fail-closed note: a plan item MISSING the flag routes FALSE → plain path → `build-miss-member-offer` sees plan items, roster parse yields `[]` → envelope passthrough, turn byte-identical (never a broken turn, never a surprise picker). |
+| `get-cs-members-miss` | byte-identical (now reached only via `miss-members-gate` TRUE = orders). |
+| `build-miss-member-offer` (code, existing) | New **plain arm** ABOVE the roster parsing: read the plan via `$('miss-roster-plan')` as today; when every non-sentinel plan item carries `members === false` → skip roster parsing entirely and return `[{ json: { ...env, miss_plain_offer: true, miss_roster_plan: <non-sentinel plan items mapped {plan_idx, company_id, company_name, brand_code}> } }]` — NO `miss_member_offer`, NO `miss_member_rows`, NO `miss_offer_text` (pool = ALL miss companies; no intersection rule — no roster was shown). Zero non-sentinel items ⇒ envelope passthrough. Members lanes byte-identical output (M1r3 shape). Fix the stale header comment (F-R3-2). |
+| `compile-current-state` (hunk) | Third arm in the rev-2 miss/clarify block, after the rows arm: `else if (_mcMem && _mcMem.miss_plain_offer === true && <same guard set as the rows arm: !_ideate && !_sug && !_mem && !_dymLastResultSet && non-empty user_response> && _mcPlan.length)` → append **the frozen phrase ONLY**: `output.user_response += "\n\n" + _mcPhrase;` and the SAME phrase to persisted `variables.response` (parser prefix-regex contract `/would you like me to escalate/i` — verified: the confirmation arm and the rev-4 open-offer arm both key on `previous_conversation_state.response`); persist `routing_roster_plan = _mcPlan`, `routing_company`/`routing_brand` = the single pair when `_mcPlan.length === 1`, nulls when >1. **NO picker text, NO `last_result_set` extension, NO `selection_context` change** (stays null — the Δ3 member arm must NOT open). `_mcCo`/`_mcTeam`/`_mcPhrase` composition is shared with the rows arm and already renders `*<Co>* <team> team` on single-miss and the plain phrase on multi. |
+| `clarify-company-reply` + `offer-hold-reply` (shared body) | Copy branch: `prev.selection_context === 'member_offer'` → EXISTING copy byte-identical (`… — reply a number, a name, or the company (X / Y) and I'll assign automatically.`); ELSE (no picker was shown — plain-offer both-miss, not-found both-miss) → **frozen rev-3 copy** `${lead} — reply with the company (${list}) and I'll assign automatically.` (closes F-R3-1 properly, option (c)). `offer-hold-gate` only fires with `selection_context === 'member_offer'`, so `offer-hold-reply` always takes the member branch — no behaviour change there. |
+| `cs-offer-gate` (If, existing) | **REVERT to the round-2/live shape** (conditions json `ce99a16c`, 3 conditions — byte-exact from the PRE backup `PRE-9qVy…-7aba1447.json` / clone `0557b0b4`; D3=b undone). Consequence: incoming/stock NOT-FOUND turns return to the pre-round-3 plain phrase (`escalate-catalog` not_found → `Would you like me to escalate to <team> team?`, no picker); a following "yes" on a 2-company not-found still lands `multi_company_unpicked` → clarify, now with the rev-3 plain copy (F-R3-1 closed by copy, not by picker). CS/order not-found keeps its picker. |
+| `build-cs-member-offer` | **KEEP `63c1c46e`** (dynamic team note). With the revert the purchasing note is unreachable, but the body's orders/single-company output is proven byte-identical (R11 check 26 + F-R3-5 units) — keeping avoids another body flip and preserves the F-R3-3-family fix. |
+| everything else | byte-identical: `escalation-context` `cca7a245`, `clarify-company-gate` `63e30a3d`, `offer-hold-gate` `8f14a430`, `escalate-catalog` `0168df84`, `tag-offer-hold`, HI, sendmsg, parser fork `c7d9cfa2` (`a68c5992`/`138008c2`). |
+
+**Parser verification (no edit, but a NEWLY LOAD-BEARING arm):** the rev-4 "company pick on an OPEN offer WITHOUT
+member-pick context" arm (`output_exchange` — `_selCtx !== 'member_offer'`, frozen phrase in the persisted
+`response`, `!domain_hint`, `_coCompanyPick`) is what resolves a company-name reply after a PLAIN both-miss offer
+(and after its clarify, which re-persists the phrase; the clarify arm writes `selection_context` only when truthy,
+so the plain offer's null context survives). That arm has never been proven on a real execution (it was written
+for the empty-roster edge; every prior company_pick run rode the Δ3 `member_offer` arm) — UAC Q6 is its parser-tier
+proof. Lesson-39 tolerance applies (a bare company token is seed-sensitive: resolve OR safe new-query abandon both
+pass; a WRONG company or a member resolve = hard fail). Bare "yes" needs no context at all (prefix regex on the
+persisted response → confirmation arm → escalation-context `prior_state` / `multi_company_unpicked`).
+
+**Junk on a plain offer (accepted + documented, not guarded):** `offer-hold-gate` keys on parser
+`member_pick_context === true` AND persisted `selection_context === 'member_offer'` — neither holds on a plain
+offer, so junk falls through to the normal path (typically the clarification LLM), ccs persists THAT reply and the
+frozen phrase is gone → the offer closes (a later "yes"/company-name does nothing — same as the M8e decline
+semantics: the carried-forward `routing_roster_plan` is inert without the phrase). This is byte-identical to how
+the pre-existing not-found plain offer has always behaved; protecting it would need a parser `offer_hold` emission
+outside the Δ3 arm = a fork change out of rev-3's scope. UAC Q9 documents it.
+
+#### V4. Replay-norm impact
+
+None new. Golden envelopes predate `lookup_companies` stamping ⇒ `miss-roster-gate` stays FALSE corpus-wide (stock
+row included). The `cs-offer-gate` revert restores the exact pre-round-3 gate; on the pinned corpus g2 was FALSE
+either way (golden parser outputs predate the `routing` field — F-R11-3) ⇒ same branch, 0 diffs. Fresh captures of
+rev-3 UAC turns surface the new nodes/keys as diffs BY DESIGN (Lessons 40/41). `miss_plain_offer` /
+`members` ride existing per-run containers — no `norm()` rule.
+
+#### V5. Safety
+
+STRICTLY LESS egress-adjacent than rev-2: plain lanes make NO external call at all (the roster GET now fires only
+on orders); no new external call anywhere; every clone guard untouched; all new/changed legs fail closed (missing
+`members` flag → plain path → passthrough; sentinel → passthrough; plain arm guard miss → no phrase → turn
+byte-identical). §0 S1–S6 on every case. LESSONS #45: grep every new/changed expression for
+`prototype|constructor|__proto__` + smoke ONE real clone execution through `miss-members-gate` and the new
+`miss-roster-gate` leftValue BEFORE tester handoff.
+
+**Prerequisite P2 (tester, read-only, optional-but-recommended):** `zz-roster-probe` for
+`(team_code=warehouse, agent_code=general_enquiries)` × {Sorento, Mocha} — the clone's HI fork short-circuits before
+any CRM team lookup, but a live "yes" on a stock miss will hit `next-assignee` with that pair; an empty/404 team is
+an admin-config gap to hand the captain (BLOCKED-BY-CONFIG rule, R7 §7(iv)), NOT a harness failure. No probe needed
+for the plain offers themselves (no roster call).
+
+#### V6. UAC
+
+Cases Q1–Q9 + S3/S appended to `tests/miss-company-routing-UAC.md` ("Round 3 rev-3" section): incoming single-miss
+plain offer (asserts `get-cs-members-miss` NOT executed), incoming "yes" → HI purchasing pair, stock single-miss
+plain offer + "yes" (captain's exact MUB6201 shape: Mocha rows incl. qty 0 = answered, Sorento absent = the only
+miss), stock fully-answered/qty-0 control (no offer), stock both-miss → plain phrase → "yes" → plain-copy clarify →
+company reply → HI, parser-tier open-offer company_pick proof, orders regression (picker byte-identical, M1r3),
+not-found regression (cs-offer-gate reverted: no picker on incoming/stock, picker kept on CS/order, plain clarify
+copy on "yes"), junk-on-plain-offer behaviour doc, §0 everywhere.
+
+#### V7. Promote implication (combined round-2+3 payload refresh)
+
+Vs the CURRENT staged payload (R10/R11: 136 nodes, 5 changed + 9 new + 11 connection keys):
+- **`cs-offer-gate` DROPS from the payload** (reverted = byte-identical to live `ce99a16c`) ⇒ changed 5 → **4**
+  (`compile-current-state` — NEW payload body, the plain arm anchored on the R10 F6 live-based body;
+  `escalate-catalog` `5ec7d6a7`, `build-cs-member-offer` `63c1c46e`, `escalation-context` `cca7a245` unchanged).
+- New nodes 9 → **10** (+ `miss-members-gate`); within them, NEW shas for `miss-roster-gate` (stock row — replaces
+  `d24dd81b`), `miss-roster-plan` (members flag), `build-miss-member-offer` (plain arm),
+  `clarify-company-reply`/`offer-hold-reply` (copy branch); `get-cs-members-miss`/`clarify-company-gate`/
+  `offer-hold-gate`/`tag-offer-hold` unchanged.
+- Connection keys 11 → **12** (the `miss-roster-plan` key retargets to `miss-members-gate`; + the new
+  `miss-members-gate` key). Node count 136 → **137**.
+- Sweep expectation (R7 3g / R10 3a-3b / R11 delta 4): **4 changed + 10 new + 12 connection keys, 137 nodes,
+  0 dropped, 0 non-param field diffs.** Parser payload unchanged (`a68c5992`/`138008c2`); apply order and rollback
+  method unchanged. R11 delta rows 1/3/4 must be re-measured for the new shas; R11 delta 6 watch list gains: an
+  incoming PLAIN miss turn (phrase, no picker, no roster GET) and a stock PLAIN miss turn, and the incoming
+  not-found watch row reverts to "NO picker".
+Refresh the STAGED run doc as one round-2+3(rev-3) record, then `needs-decision [key=promote-round2-3]` with the
+D2' captain-confirm line.

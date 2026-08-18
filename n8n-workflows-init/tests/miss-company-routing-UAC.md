@@ -97,6 +97,11 @@ Notes for the tester
 
 ## Round 3 — incoming-stock + all-domain audit (plan §R3, 2026-08-18)
 
+> ⚠️ **Partially SUPERSEDED by "Round 3 rev-3" below** (captain corrections 2026-08-18): the incoming MEMBER PICKER
+> expectations in N1/N2-picker-URL/N4-picker and the stock-stays-out rows (N7, R-M5's "no offer" on the Sorento-absent
+> shape) describe the rev-2 body and are replaced by the Q-series. The rev-2 table is kept for the record; do not
+> re-run it as-is on the rev-3 body.
+
 Targets: clone `txiPzSxy3Pclsz6v` @ the round-3 publish (was `0557b0b4-…`; ONLY `miss-roster-gate.leftValue` changes — assert every
 other round-2 sha listed in plan §R3.3 unchanged) + parser fork `wI5RkNGW3EOJfBdo` @ **`c7d9cfa2-…` UNCHANGED** + sendmsg fork
 `aQUmwMVplmNcyUVc` @ `b48e0eaa-…` unchanged. **scope: `deterministic`** (parser-tier turns below are regression re-runs of the round-2 set,
@@ -139,3 +144,60 @@ Notes for the tester
   (`lookup_companies`, answers' `company_name`, miss line) before asserting N1; if the shape moved, substitute and record.
 - Zero members from Sorento purchasing (P1) is NOT a lane bug — it is admin team-set config; report it as BLOCKED-BY-CONFIG for N1–N3 and
   run N10 in its place.
+
+## Round 3 rev-3 — plain offer for incoming + stock, members orders-only (plan §"Round 3 rev-3", 2026-08-18)
+
+Targets: clone `txiPzSxy3Pclsz6v` @ the rev-3 publish (base `e54e114e-…`; changed vs it: `miss-roster-gate` leftValue
+(stock LANE row + `members` flags), `miss-roster-plan`, NEW `miss-members-gate` If + 2 edges, `build-miss-member-offer`
+(plain arm), `compile-current-state` (plain sub-arm), `clarify-company-reply`/`offer-hold-reply` (copy branch),
+`cs-offer-gate` REVERTED to `ce99a16c`; `build-cs-member-offer` stays `63c1c46e`) + parser fork `wI5RkNGW3EOJfBdo` @
+**`c7d9cfa2-…` UNCHANGED** + sendmsg fork `aQUmwMVplmNcyUVc` @ `b48e0eaa-…` unchanged. **scope: `deterministic`**
+(the parser-tier turns Q6/Q9 exercise UNCHANGED fork arms — Q6 is the first execution proof of the rev-4 open-offer
+`company_pick` arm, which rev-3 makes load-bearing). Same mechanics, item template, contact `437264483`,
+`UAC-MCR3r3-` prefix, `mode=regress-capture` for sequences, reset `respond_contacts_test` between independent cases.
+Every case bound to `UAC.md` **§0 S1–S6**.
+
+Mocks: incoming = the N-series base. Stock (Q3/Q4/Q5 base): `{ "message_type": "business_query", "domain_hint":
+"inventory", "intent_hint": "check_stock", "requested_attributes": ["__all__"], "entities": [{ "raw": "MUB6201",
+"hint": "product", "current_message": true }], "routing": { "suggested_team": "warehouse", "suggested_agent":
+"general_enquiries" }, "escalation": { "is_escalation_confirmation": false }, "access_levels": <as the M6b/N8 mock —
+omitting it errors pre-existing If4> }`. Confirm mocks: as M3 but routing purchasing/incoming_stock_enquiries (Q2) or
+warehouse/general_enquiries (Q3-t2, Q5-t2). Company-pick mock (Q5-t3): as M4a-t3 with the warehouse routing.
+
+Fixtures (re-probe first — **volatile**): **MUB6201 stock** = the captain's exact console shape: Mocha rows incl. a
+`Quantity On Hand: 0` row, Sorento ABSENT (`*Sorento:* no stock records for MUB6201.`) — the single-miss stock
+fixture AND the qty-0-is-answered proof in one turn. **MUB6201 incoming** = Sorento partial miss (volatile after ETA
+2026-08-25). Both-miss stock/incoming fixture: MWC-SC08B had neither stock nor incoming on 2026-08-18 — but
+both-miss means `has_result:false` (not-found path, no envelope miss line), so the BOTH-MISS PLAIN LANE (gate TRUE
+on an answered envelope with 2 miss companies) may have NO live fixture: an answered turn requires ≥1 answer, whose
+company is then not a miss. **If no natural both-miss-answered fixture exists (expected), Q5's t1 runs as a pinned
+`test_workflow` with `central-exchange` pinned to a 2-miss synthetic envelope, or the offline unit stands as the t1
+proof and Q5 t2/t3 run state-injected** (`previous_conversation_state` carries the plain-offer state — phrase in
+`response`, 2-row `routing_roster_plan`, `selection_context` null). Fully-answered stock control (Q4): any
+two-company product with stock rows in both, or a single-company product (no `lookup_companies`).
+**P2 (plan §V5, read-only, before Q3):** `zz-roster-probe` for `warehouse`/`general_enquiries` × {Sorento, Mocha} —
+does NOT block the plain offer (no roster call); an empty team = BLOCKED-BY-CONFIG note for the captain about what a
+LIVE "yes" would hit at `next-assignee`.
+
+| # | case | turns | expect |
+|---|---|---|---|
+| Q1 | **incoming single-miss → PLAIN offer, no roster, no picker.** "incoming for MUB6201", incoming mock | 1 | `tool-filter.name == "crm_incoming_stock_list"`; `miss-roster-gate` TRUE; `miss-roster-plan` = 1 item `{plan_idx:0, company_id:<Sorento>, company_name:"Sorento", brand_code:"mocha", members:false}`; **`miss-members-gate` FALSE branch; `get-cs-members-miss` NOT EXECUTED (hard assert — zero roster GET on the whole exec)**; `build-miss-member-offer` executed, output carries `miss_plain_offer:true`, NO `miss_member_rows`/`miss_offer_text`; `get-cs-members`/`cs-roster-plan`/`build-cs-member-offer` NOT executed. Reply = the Mocha incoming block + `*Sorento:* no incoming stock records for MUB6201.` + **`Would you like me to escalate to *Sorento* purchasing team?`** and NOTHING AFTER IT — no `Please choose who to route to`, no numbered member line, no yes-sentence (assert absence of `/Please choose who to route to/` and of any member-row line). Attachment still its own `would_send`. Persisted state: `variables.response` ends with the phrase; `last_result_set` = the envelope row(s) ONLY (no member rows, no idx beyond the answer blocks); **`selection_context` null (NOT member_offer)**; `routing_roster_plan` = 1 Sorento row; `routing_company == <Sorento>`; `routing_brand == "mocha"`. §0 |
+| Q2 | Q1 then **bare "yes"** (confirm mock, purchasing routing) | 2 | rev-4 verbatim arm, no new code: `escalation-context` `routing_source == "prior_state"`, `company_id == <Sorento>`, `brand_code == "mocha"`, `team == "purchasing"`; `clarify-company-gate` FALSE; HI fork called with that pair + `agent incoming_stock_enquiries`, NO explicit assignee; `get-round-robin-assignee` NOT executed; egress `human-intervention-sub would_write.payload` matches. §0 |
+| Q3 | **stock single-miss → PLAIN offer + "yes"** (captain's exact MUB6201 shape). t1 "stock for MUB6201", stock mock; t2 "yes" (confirm mock, warehouse routing) | 2 | t1: `tool-filter.name == "crm_inventory_stock_balance_list"`; gate TRUE (**the qty-0 Mocha row counts Mocha as ANSWERED — miss set == [Sorento] only, assert `miss-roster-plan` has exactly 1 item and it is Sorento**); `miss-members-gate` FALSE, `get-cs-members-miss` NOT executed; reply = Mocha stock blocks (incl. the qty-0 row, unchanged) + `*Sorento:* no stock records for MUB6201.` + **`Would you like me to escalate to *Sorento* warehouse team?`**, no picker; persisted axes = Sorento pair, `selection_context` null. t2: `routing_source == "prior_state"`, Sorento pair, `team == "warehouse"`; HI `would_write.payload` shows team warehouse / agent general_enquiries — never customer_service/purchasing. §0 |
+| Q4 | **stock control — answered everywhere ⇒ NO offer.** (a) two-company product with stock rows in BOTH companies (qty values irrelevant — a qty-0 row is an answer); (b) single-company product (no `lookup_companies`) — stock mock each | 1 each | `miss-roster-gate` FALSE; no lane node executed; reply carries NO `would you like me to escalate` phrase from the miss lane; state byte-identical to the rev-2 body for the same item. This RESTATES R-M5 for rev-3: the old "stock stays out" is now "stock with no per-company miss stays out" — the R-M5 fixture MUST be re-checked: if it was the MUB6201 Sorento-absent shape, its rev-3 expected value is Q3-t1 (offer), not silence. §0 |
+| Q5 | **both-miss plain → "yes" → PLAIN-copy clarify → company reply → HI.** t1 = both-miss answered envelope (pinned/offline per Fixtures note) on the stock (or incoming) lane → phrase is the PLAIN multi form **`Would you like me to escalate to warehouse team?`** (no company named, no picker); persisted `routing_roster_plan` = 2 rows {Mocha, Sorento}, `routing_company`/`routing_brand` null, `selection_context` null. t2 "yes" (confirm mock) → `routing_source == "multi_company_unpicked"`, `clarify-company-gate` TRUE, HI NOT called, NO `human-intervention-sub` egress; reply == **`Both *Mocha* and *Sorento* teams are listed — reply with the company (Mocha / Sorento) and I'll assign automatically.`** (rev-3 plain copy — assert NO occurrence of `a number, a name`); state re-persisted (phrase still in `variables.response`, 2-row plan, `selection_context` STILL null — the re-persist arm writes it only when truthy). t3 "mocha" (company_pick mock, warehouse routing) → `routing_source == "company_pick"`, `company_id == <Mocha>`, HI called with the Mocha pair, no explicit assignee. §0 |
+| Q6 | **parser tier — the OPEN-OFFER company_pick arm (first execution proof; fork unchanged).** Re-seed Q5 t1+t2 state (plain both-miss offer + clarify; `selection_context` null, phrase in persisted `response`), send raw **"sorento"** (companion: **"yes mocha"** → Mocha) with NO mock, `is_test=true` | 1–2 | Fork `output_exchange` emits `escalation == { is_escalation_confirmation:true, company_pick:"Sorento" }` via the rev-4 no-context arm (`_selCtx !== 'member_offer'` + frozen phrase in prior response + no `domain_hint`), no `preferred_assignee_id`, no `current_message:true` entity; spine `company_pick` → Sorento pair → HI short-circuit. **Lesson-39 tolerance:** the LLM classifying the bare token as a business query (`domain_hint` set) ⇒ the arm correctly yields to Tier-3 new-query — record as SOFT (safe abandon, re-run once); a WRONG company, a member resolve, or `escalation_declined` = hard FAIL. Live parser `XTODTw` versionId unchanged after. §0 |
+| Q7 | **orders regression — picker unchanged.** Re-run M1 ("any order for MUB6201", order mock): `miss-members-gate` TRUE branch, `get-cs-members-miss` executed ONCE (same URL asserts as M1), sent text **byte-identical to M1r3/R-M1 (exec 12923242)** modulo data-stamp — phrase `…*Sorento* customer_service team?` + full picker + yes-sentence; persisted `selection_context == "member_offer"`, member rows in `last_result_set`. Spot: M2 (number pick) or M3 ("yes") → same pairs as round 2. Offer-hold regression: R-M8 t1+t2 re-run — member-context clarify copy UNCHANGED (**still** `…reply a number, a name, or the company (Mocha / Sorento)…` — `offer-hold-reply` takes the member branch), state survives. §0 |
+| Q8 | **not-found regression (cs-offer-gate reverted).** (a) incoming not-found (no-entity probe shape 12923358 or MWC-SC08B `has_result:false`): plain `Would you like me to escalate to purchasing team?` from `escalate-catalog`, **NO picker** (`cs-offer-gate` FALSE; `cs-roster-plan`/`get-cs-members`/`build-cs-member-offer` NOT executed) — byte-identical to the pre-round-3 (`0557b0b4`/live) shape; (b) CS/order not-found (B3rev2 shape): picker STILL renders (gate back to its original 3 conditions), byte-identical to M7e-ii; (c) (a) then "yes" on a 2-company product: `multi_company_unpicked` → clarify with the **rev-3 PLAIN copy** (`routing_roster_plan` empty + `selection_context` null ⇒ no "a number, a name"), then a company reply (mock `company_pick`) → HI pair. §0 |
+| Q9 | **junk on a PLAIN offer — accepted behaviour doc (no guard).** Q1 (or Q3) state, then raw junk "asdkjh" (parser tier; deterministic alternative: casual mock with no escalation flags) | 2 | No crash, no HI call, no `human-intervention-sub` egress; `offer-hold-gate` FALSE (needs `member_pick_context` + persisted `member_offer` — a plain offer has neither); the turn takes the normal path (clarification LLM permitted on the parser-tier run); persisted `variables.response` NO LONGER carries the frozen phrase (offer closed) and a following "yes" (confirm mock) does NOT reach HI with the old pair (`offeredEscalation` regex false ⇒ no confirmation). Document: identical to the pre-existing not-found plain-offer semantics — NOT a rev-3 regression. §0 |
+| S3 | **sendmsg fork prod-DB write closed** — unchanged hard gate (fork `b48e0eaa`, `Postgres Chat Memory1` on `n8n_test-db`). | – | hard gate |
+| S | **§0 zero-egress on EVERY case** (S1–S6): only `would_send`/`would_write`/`would_log`; 5 orphaned egress nodes never executed; every sub-execution `is_test=true`; external calls observed = CRM READS only — and on Q1/Q2/Q3/Q4/Q5 **zero** `team-members` GETs (the roster read is orders-only now; `get-cs-members-miss` firing on any Q1–Q5 exec is a FAIL); `zz-roster-probe` P2 is the only probe. LESSONS #45 pre-handoff smoke: coder proves ONE real execution through `miss-members-gate` + the new `miss-roster-gate` leftValue with no ExpressionError before the tester starts. | – | hard gate |
+
+Offline units (extend `tests/unit/miss-company-routing-round3.gates.test.js`, run on the repo expression/body files
+== deployed shas): gate — stock tool + inventory/warehouse routing + Sorento-absent envelope ⇒ TRUE (flips old unit
+(iii)); stock all-answered / qty-0-rows-everywhere ⇒ FALSE; promotions/master/attachments ⇒ FALSE unchanged;
+`miss-members-gate` — `members:true` ⇒ TRUE, `members:false`/missing ⇒ FALSE; `build-miss-member-offer` — plain-flag
+plan ⇒ `miss_plain_offer:true` + no rows/text, sentinel-only ⇒ passthrough, members-lane fixtures byte-identical to
+rev-2 outputs; ccs plain arm — phrase-only append (single-named / multi-plain), axes persisted, `selection_context`
+untouched, guard set (`_sug` etc.) refuses; clarify copy — member branch byte-identical, plain branch exact rev-3
+string; grep every new/changed `.expr.txt` for `prototype|constructor|__proto__` (0 hits).
