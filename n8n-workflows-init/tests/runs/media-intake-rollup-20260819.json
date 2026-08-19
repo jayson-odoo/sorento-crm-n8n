@@ -1,0 +1,876 @@
+{
+ "date": "2026-08-19",
+ "change": "media-intake (voice + image via CRM POST /api/v1/external/media/process) — clone txiPzSxy3Pclsz6v ONLY",
+ "clone_version_before": "6380c2ac-d310-48b7-b077-38ac003412a4 (171 nodes)",
+ "clone_version_after": "2f36a7f4-e497-4a67-b5a7-969229df9a00 (183 nodes, activeVersionId==versionId)",
+ "mechanism": "zz-canary-run VtIV3TF3aw2Fx8No via POST /webhook/zz-run-hint {test_run_id, contact 437264483, item}; item mode=uac scope=deterministic; CRM media call MOCKED on the harness (media-egress-gate TRUE: test_run_id && scope!=chat-ui) — the real media-extract-http/media-poll-http nodes did NOT execute in any case (prod CRM write + provider spend forbidden from the clone); reformulator mocked except MI-15 (real parser fork wI5RkNGW3EOJfBdo, is_test=true); CRM resolve/get-results = real READS. Execution data via REST GET /executions/{id}?includeData=true, sendmsg fork sub-executions fetched and asserted guard-path-only.",
+ "prod_redis_sorento-respond-message_LLEN": "before=0 after=0 for every run (zz-canary-run llen-prod-before/after, execs 13086612..13086911)",
+ "crm_endpoint_zero_write_probe": {
+  "workflow": "zz-media-probe tF02D1bUGYBADVkN (webhook, deactivated after)",
+  "exec": "13087035",
+  "GET /media/jobs/<zero-uuid>": {
+   "statusCode": 404,
+   "code": "NOT_FOUND"
+  },
+  "POST /media/process modality=video": {
+   "statusCode": 422,
+   "detail": "Input should be 'image' or 'voice'"
+  },
+  "meaning": "route deployed on prod; crm-n8n-auth key authenticates AND holds integration.chatbot_media.process (a 401/403 would have come first); no row written (pydantic rejects before the handler)"
+ },
+ "cases": [
+  {
+   "case": "MI-01 voice happy — transcript enters the intent pipeline (orders, real CRM read)",
+   "test_run_id": "UAC-MI-01-20260819",
+   "clone_exec": "13086684",
+   "status": "success",
+   "wall_s": 7.6,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "continue/completed"
+   ],
+   "polls": 0,
+   "tf_text": "any order for MUB6201",
+   "confirmation_sent": true,
+   "confirmation_text": "Here is what I heard: \"any order for MUB6201\"",
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "order",
+    "intent_hint": "check_order",
+    "user_goal": "any order for MUB6201"
+   },
+   "would_sends": [
+    {
+     "node": "send-transcript-confirm",
+     "sub_exec": "13086692",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Here is what I heard: \"any order for MUB6201\""
+    },
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086699",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Order Date:* 17/08/2026\n*Actual Delivery Date:* 19/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:35:00\n*Transporter:* MOCHA\n*Driver:* KIMI\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (2)\n\n2. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 19/08/2026 17:14:18_\n\nWould you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin\n4. Cyndi\n5. Aisyah\n6. Balqis\n7. Niki\n8. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-02 image + caption happy, warn_80 appended to the confirmation (stock, real CRM read)",
+   "test_run_id": "UAC-MI-02-20260819",
+   "clone_exec": "13086705",
+   "status": "success",
+   "wall_s": 6.8,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "continue/completed"
+   ],
+   "polls": 0,
+   "tf_text": "check stock for these: MUB6201",
+   "confirmation_sent": true,
+   "confirmation_text": "I read MUB6201 from that photo. Is that right?\n\nYou have 9 of 50 photo reads left this month. The allowance resets on 1 September.",
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "inventory",
+    "intent_hint": "check_stock",
+    "user_goal": "check stock for these: MUB6201"
+   },
+   "would_sends": [
+    {
+     "node": "send-transcript-confirm",
+     "sub_exec": "13086710",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I read MUB6201 from that photo. Is that right?\n\nYou have 9 of 50 photo reads left this month. The allowance resets on 1 September."
+    },
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086718",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Stock details found for the requested products.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Warehouse:* MERU\n*System Location:* HOLD\n*Quantity On Hand:* 0\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Warehouse:* MERU\n*System Location:* MOCHA-WH\n*Quantity On Hand:* 3\n\n*Sorento:* no stock records for MUB6201.\n\n_Data last updated: 19/08/2026 17:47:38_\n\nWould you like me to escalate to *Sorento* warehouse team?"
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-03 captionless image -> needs_clarification -> CRM question, turn ENDS before the pipeline",
+   "test_run_id": "UAC-MI-03-20260819",
+   "clone_exec": "13086722",
+   "status": "success",
+   "wall_s": 4.7,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "reply/needs_clarification"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086730",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?"
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-04 denied_gate voice (media access not enabled for the contact) -> not_enabled notice",
+   "test_run_id": "UAC-MI-04-20260819",
+   "clone_exec": "13086659",
+   "status": "success",
+   "wall_s": 4.8,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "reply/denied_gate"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086667",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I cannot listen to voice notes on this number yet. Type your message instead and I will help straight away."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-05 denied_quota image (no degraded model configured) -> quota_exhausted notice",
+   "test_run_id": "UAC-MI-05-20260819",
+   "clone_exec": "13086732",
+   "status": "success",
+   "wall_s": 4.8,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "reply/denied_quota"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086740",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "You have used all 50 of this month's photo reads, so I have not read this one. The allowance resets on 1 September. Type the codes and I will look them up straight away."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-06 denied_duration voice (clip over the cap by the duration_ms hint) -> too_long notice",
+   "test_run_id": "UAC-MI-06-20260819",
+   "clone_exec": "13086743",
+   "status": "success",
+   "wall_s": 4.7,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "reply/denied_duration"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086751",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-07a denied_burst first-in-window -> pacing notice",
+   "test_run_id": "UAC-MI-07a-20260819",
+   "clone_exec": "13086754",
+   "status": "success",
+   "wall_s": 4.7,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "reply/denied_burst"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086762",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "That is a lot at once - give me a moment to catch up, then send the rest."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-07b denied_burst suppressed (notice already shown this window) -> SILENT, nothing sent",
+   "test_run_id": "UAC-MI-07b-20260819",
+   "clone_exec": "13086765",
+   "status": "success",
+   "wall_s": 4.7,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "silent/denied_burst_suppressed"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": false,
+   "reformulator": null,
+   "would_sends": [],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-08 transport failure (HTTP node error / timeout, no decision) -> CRM fallback copy, turn never wedges",
+   "test_run_id": "UAC-MI-08-20260819",
+   "clone_exec": "13086774",
+   "status": "success",
+   "wall_s": 4.9,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "crm",
+   "route": [
+    "reply/transport"
+   ],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086782",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I could not make out that voice note. Please send it again or type your message and I will help straight away."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-09 status pending -> poll(6s) pending -> poll(6s) completed -> continue",
+   "test_run_id": "UAC-MI-09-20260819",
+   "clone_exec": "13086791",
+   "status": "success",
+   "wall_s": 18.9,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "poll/pending",
+    "poll/pending",
+    "continue/completed"
+   ],
+   "polls": 2,
+   "tf_text": "any order for MUB6201",
+   "confirmation_sent": true,
+   "confirmation_text": "Here is what I heard: \"any order for MUB6201\"",
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "order",
+    "intent_hint": "check_order",
+    "user_goal": "any order for MUB6201"
+   },
+   "would_sends": [
+    {
+     "node": "send-transcript-confirm",
+     "sub_exec": "13086815",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Here is what I heard: \"any order for MUB6201\""
+    },
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086823",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Order Date:* 17/08/2026\n*Actual Delivery Date:* 19/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:35:00\n*Transporter:* MOCHA\n*Driver:* KIMI\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (2)\n\n2. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 19/08/2026 17:14:18_\n\nWould you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin\n4. Cyndi\n5. Aisyah\n6. Balqis\n7. Niki\n8. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-10 status pending exhausted (2 polls still pending) -> fallback reply",
+   "test_run_id": "UAC-MI-10-20260819",
+   "clone_exec": "13086827",
+   "status": "success",
+   "wall_s": 17.0,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "poll/pending",
+    "poll/pending",
+    "reply/pending_exhausted"
+   ],
+   "polls": 2,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086851",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I could not make out that voice note. Please send it again or type your message and I will help straight away."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-11 status failed (worker measured clip over cap) -> immediate poll fetches the ledger too_long notice; internal error NOT leaked",
+   "test_run_id": "UAC-MI-11-20260819",
+   "clone_exec": "13086857",
+   "status": "success",
+   "wall_s": 4.8,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "poll/failed",
+    "reply/failed"
+   ],
+   "polls": 1,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086862",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-11b status failed (provider failure, no refusal notice) -> CRM fallback, internal error NOT leaked",
+   "test_run_id": "UAC-MI-11b-20260819",
+   "clone_exec": "13086868",
+   "status": "success",
+   "wall_s": 5.0,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "poll/failed",
+    "reply/failed"
+   ],
+   "polls": 1,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": true,
+   "reformulator": null,
+   "would_sends": [
+    {
+     "node": "send-media-reply",
+     "sub_exec": "13086876",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I could not read anything from that photo. Type the codes and I will look them up straight away."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-12 degraded tier (at quota, degraded model configured) -> continue, degraded notice appended to the confirmation",
+   "test_run_id": "UAC-MI-12-20260819",
+   "clone_exec": "13086879",
+   "status": "success",
+   "wall_s": 6.7,
+   "modality": "image",
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "continue/completed"
+   ],
+   "polls": 0,
+   "tf_text": "check stock for these: MUB6201",
+   "confirmation_sent": true,
+   "confirmation_text": "I read MUB6201 from that photo. Is that right?\n\nI am reading this one with a simpler model and may get it wrong, so typing the codes is exact. This month's full-accuracy photo reads are used up and the allowance resets on 1 September.",
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "inventory",
+    "intent_hint": "check_stock",
+    "user_goal": "check stock for these: MUB6201"
+   },
+   "would_sends": [
+    {
+     "node": "send-transcript-confirm",
+     "sub_exec": "13086886",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "I read MUB6201 from that photo. Is that right?\n\nI am reading this one with a simpler model and may get it wrong, so typing the codes is exact. This month's full-accuracy photo reads are used up and the allowance resets on 1 September."
+    },
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086892",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Stock details found for the requested products.\n\n1. *Company:* Mocha\n*Product Code:* MUB6201\n*Warehouse:* MERU\n*System Location:* HOLD\n*Quantity On Hand:* 0\n\n2. *Company:* Mocha\n*Product Code:* MUB6201\n*Warehouse:* MERU\n*System Location:* MOCHA-WH\n*Quantity On Hand:* 3\n\n*Sorento:* no stock records for MUB6201.\n\n_Data last updated: 19/08/2026 17:47:38_\n\nWould you like me to escalate to *Sorento* warehouse team?"
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-13 REGRESSION: plain text turn -> modality null -> tf-message -> not-supported reply byte-identical to today",
+   "test_run_id": "UAC-MI-13-20260819",
+   "clone_exec": "13086613",
+   "status": "success",
+   "wall_s": 5.9,
+   "modality": null,
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": null,
+   "extract_source": null,
+   "route": [],
+   "polls": 0,
+   "tf_text": "What is the weather in KL today",
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "goods_receive",
+    "intent_hint": "goods_receive_status",
+    "user_goal": "What is the weather in KL today"
+   },
+   "would_sends": [
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086625",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container"
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-14 REGRESSION: pdf/file attachment is NOT media for this lane -> falls through exactly as today",
+   "test_run_id": "UAC-MI-14-20260819",
+   "clone_exec": "13086896",
+   "status": "success",
+   "wall_s": 6.4,
+   "modality": null,
+   "duration_ms": null,
+   "duration_source": null,
+   "egress_gate_branches": null,
+   "extract_source": null,
+   "route": [],
+   "polls": 0,
+   "tf_text": null,
+   "confirmation_sent": false,
+   "confirmation_text": null,
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "goods_receive",
+    "intent_hint": "goods_receive_status",
+    "user_goal": "What is the weather in KL today"
+   },
+   "would_sends": [
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086906",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container"
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  },
+  {
+   "case": "MI-15 PARSER TIER: voice transcript through the REAL parser fork (no reformulator mock) -> answered as if typed",
+   "test_run_id": "UAC-MI-15-20260819",
+   "clone_exec": "13086912",
+   "status": "success",
+   "wall_s": 9.8,
+   "modality": "voice",
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "egress_gate_branches": [
+    [
+     1,
+     0
+    ]
+   ],
+   "extract_source": "mock",
+   "route": [
+    "continue/completed"
+   ],
+   "polls": 0,
+   "tf_text": "any order for MUB6201",
+   "confirmation_sent": true,
+   "confirmation_text": "Here is what I heard: \"any order for MUB6201\"",
+   "reply_via_send_media_reply": false,
+   "reformulator": {
+    "message_type": "business_query",
+    "domain_hint": "order",
+    "intent_hint": "check_order",
+    "user_goal": "trying to check any order for MUB6201"
+   },
+   "would_sends": [
+    {
+     "node": "send-transcript-confirm",
+     "sub_exec": "13086917",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Here is what I heard: \"any order for MUB6201\""
+    },
+    {
+     "node": "sorento-sub-respond-sendmsg-respond2",
+     "sub_exec": "13086928",
+     "workflowId": "aQUmwMVplmNcyUVc",
+     "real_send_nodes": [],
+     "guard_nodes": [
+      "guard-text",
+      "guard-record-text"
+     ],
+     "would_send": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Order Date:* 17/08/2026\n*Actual Delivery Date:* 19/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:35:00\n*Transporter:* MOCHA\n*Driver:* KIMI\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (2)\n\n2. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 19/08/2026 17:14:18_\n\nWould you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin\n4. Cyndi\n5. Aisyah\n6. Balqis\n7. Niki\n8. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+    }
+   ],
+   "S0": {
+    "forbidden_nodes_executed": [],
+    "S1_no_real_send": true,
+    "S2_no_assign_writes": true,
+    "S3_no_crm_writes": true,
+    "real_http_nodes_executed": []
+   }
+  }
+ ],
+ "verdict": "PASS — 17/17 clone executions success; every decision/status/notice shape produced its intended CRM-rendered customer copy via the guarded sendmsg fork (would_send only); extracted text entered the intent pipeline byte-identically to a typed turn (tf-message text == rendered_text; reformulator/CRM read/answer as for typed); zero egress (S1/S2/S3), no real media HTTP node executed, prod ingest list untouched."
+}

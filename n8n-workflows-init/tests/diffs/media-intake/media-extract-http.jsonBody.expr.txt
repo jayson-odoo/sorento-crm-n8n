@@ -1,0 +1,22 @@
+={{ JSON.stringify((() => {
+  // MediaProcessRequest — sorento-crm app/schemas/external/media.py. One call per inbound media
+  // message; n8n WAITS for it (synchronous wire). message_id + modality + media_ordinal is the
+  // idempotency key, which is what makes retryOnFail free (no second spend).
+  const m = $('detect-media').first().json._media || {};
+  const body = {
+    respond_io_id: String(m.respond_io_id || ''),
+    message_id: String(m.message_id || ''),
+    modality: m.modality,
+    media_ordinal: 0,
+    media_url: m.media_url,
+    mime_type: m.mime_type || null,
+    caption: m.caption || null,
+    bytes: (m.bytes == null ? null : m.bytes),
+    turn_id: String($execution.id),
+    context: { source: 'n8n-spine', attachment_type: m.attachment_type || null, duration_source: m.duration_source || null }
+  };
+  // duration_ms is ALWAYS sent for voice (captain requirement); see detect-media for how it is
+  // derived when the channel carries no duration (size-derived lower bound, never over-states).
+  if (m.modality === 'voice') body.duration_ms = Number.isFinite(Number(m.duration_ms)) ? Math.max(0, Math.round(Number(m.duration_ms))) : 0;
+  return body;
+})()) }}

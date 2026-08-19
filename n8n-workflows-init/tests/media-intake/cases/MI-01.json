@@ -1,0 +1,121 @@
+{
+ "_case": "MI-01 voice happy — transcript enters the intent pipeline (orders, real CRM read)",
+ "_expect": {
+  "route": "continue/completed",
+  "tf_text": "any order for MUB6201",
+  "confirm": "Here is what I heard: \"any order for MUB6201\"",
+  "reply": "orders answer for MUB6201 (sendmsg would_send)",
+  "egress": "would_send only"
+ },
+ "item": {
+  "message": {
+   "message": {
+    "message": {
+     "type": "attachment",
+     "text": null,
+     "attachment": {
+      "type": "audio",
+      "url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+      "isPending": false,
+      "fileName": "uac-voice-note.ogg",
+      "mimeType": "audio/ogg; codecs=opus",
+      "ext": "ogg",
+      "size": 40000,
+      "mime": "audio/ogg"
+     }
+    }
+   },
+   "replyTo": {}
+  },
+  "contact": {
+   "id": "437264483",
+   "phone": "60100000000",
+   "firstName": "Jayson",
+   "lastName": "Canary",
+   "custom_fields": [
+    {
+     "name": "is_human_intervened",
+     "value": "false"
+    },
+    {
+     "name": "is_allowed_stock",
+     "value": "true"
+    }
+   ],
+   "assignee": {
+    "id": null
+   }
+  },
+  "messageId": "1783918786001358",
+  "replyTo": null,
+  "test_run_id": "UAC-MI-01-20260819",
+  "scope": "deterministic",
+  "mode": "uac",
+  "mock_reformulator_output": {
+   "message_type": "business_query",
+   "domain_hint": "order",
+   "intent_hint": "check_order",
+   "user_goal": "any order for MUB6201",
+   "entities": [
+    {
+     "raw": "MUB6201",
+     "hint": "product",
+     "current_message": true
+    }
+   ],
+   "access_levels": [],
+   "routing": {
+    "suggested_team": "customer_service",
+    "suggested_agent": "order_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "correction": false,
+   "date_mode": null,
+   "query_scope": null,
+   "match_mode": null,
+   "contains_flyer": false,
+   "date_filter_start": null,
+   "date_filter_end": null
+  },
+  "mock_media_response": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "completed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": {
+    "mode": "pinned",
+    "language": "en"
+   },
+   "result": {
+    "entities": [],
+    "attributes": [],
+    "conflicts": [],
+    "image_kind": null,
+    "caption_intent": null,
+    "notes": null,
+    "needs_clarification": false,
+    "truncated": false,
+    "rendered_text": "any order for MUB6201",
+    "confirmation_message": "Here is what I heard: \"any order for MUB6201\"",
+    "clarification_message": null,
+    "transcript": "any order for MUB6201",
+    "languages_detected": [
+     "en"
+    ]
+   },
+   "error": null,
+   "_mock": true
+  }
+ }
+}

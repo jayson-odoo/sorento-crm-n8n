@@ -1,0 +1,69 @@
+{
+ "_case": "MI-13 REGRESSION: plain text turn -> modality null -> tf-message -> not-supported reply byte-identical to today",
+ "_expect": {
+  "route": "n/a (if-media-in FALSE)",
+  "tf_text": "What is the weather in KL today",
+  "reply": "not-supported canned reply"
+ },
+ "item": {
+  "message": {
+   "message": {
+    "message": {
+     "text": "What is the weather in KL today",
+     "type": "text",
+     "attachment": {
+      "type": "text",
+      "description": ""
+     }
+    }
+   },
+   "replyTo": {}
+  },
+  "contact": {
+   "id": "437264483",
+   "phone": "60100000000",
+   "firstName": "Jayson",
+   "lastName": "Canary",
+   "custom_fields": [
+    {
+     "name": "is_human_intervened",
+     "value": "false"
+    },
+    {
+     "name": "is_allowed_stock",
+     "value": "true"
+    }
+   ],
+   "assignee": {
+    "id": null
+   }
+  },
+  "messageId": "1783918786008699",
+  "replyTo": null,
+  "test_run_id": "UAC-MI-13-20260819",
+  "scope": "deterministic",
+  "mode": "uac",
+  "mock_reformulator_output": {
+   "message_type": "business_query",
+   "intent_hint": "goods_receive_status",
+   "domain_hint": "goods_receive",
+   "user_goal": "What is the weather in KL today",
+   "access_levels": [],
+   "entities": [],
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "correction": false,
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "general_enquiries"
+   },
+   "date_mode": null,
+   "query_scope": null,
+   "match_mode": null,
+   "contains_flyer": false,
+   "date_filter_start": null,
+   "date_filter_end": null
+  }
+ }
+}

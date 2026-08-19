@@ -1,0 +1,81 @@
+{
+ "_case": "MI-08 transport failure (HTTP node error / timeout, no decision) -> CRM fallback copy, turn never wedges",
+ "_expect": {
+  "route": "reply/transport",
+  "reply_text": "I could not make out that voice note. Please send it again or type your message and I will help straight away."
+ },
+ "item": {
+  "message": {
+   "message": {
+    "message": {
+     "type": "attachment",
+     "text": null,
+     "attachment": {
+      "type": "audio",
+      "url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+      "isPending": false,
+      "fileName": "uac-voice-note.ogg",
+      "mimeType": "audio/ogg; codecs=opus",
+      "ext": "ogg",
+      "size": 40000,
+      "mime": "audio/ogg"
+     }
+    }
+   },
+   "replyTo": {}
+  },
+  "contact": {
+   "id": "437264483",
+   "phone": "60100000000",
+   "firstName": "Jayson",
+   "lastName": "Canary",
+   "custom_fields": [
+    {
+     "name": "is_human_intervened",
+     "value": "false"
+    },
+    {
+     "name": "is_allowed_stock",
+     "value": "true"
+    }
+   ],
+   "assignee": {
+    "id": null
+   }
+  },
+  "messageId": "1783918786006783",
+  "replyTo": null,
+  "test_run_id": "UAC-MI-08-20260819",
+  "scope": "deterministic",
+  "mode": "uac",
+  "mock_reformulator_output": {
+   "message_type": "business_query",
+   "intent_hint": "goods_receive_status",
+   "domain_hint": "goods_receive",
+   "user_goal": "What is the weather in KL today",
+   "access_levels": [],
+   "entities": [],
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "correction": false,
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "general_enquiries"
+   },
+   "date_mode": null,
+   "query_scope": null,
+   "match_mode": null,
+   "contains_flyer": false,
+   "date_filter_start": null,
+   "date_filter_end": null
+  },
+  "mock_media_response": {
+   "error": {
+    "message": "The connection timed out",
+    "name": "NodeApiError",
+    "description": "mock of onError=continueRegularOutput"
+   }
+  }
+ }
+}

@@ -1,0 +1,128 @@
+{
+ "_case": "MI-02 image + caption happy, warn_80 appended to the confirmation (stock, real CRM read)",
+ "_expect": {
+  "route": "continue/completed",
+  "tf_text": "check stock for these: MUB6201",
+  "confirm": "I read MUB6201 from that photo. Is that right?\n\nYou have 9 of 50 photo reads left this month. The allowance resets on 1 September.",
+  "reply": "stock answer for MUB6201"
+ },
+ "item": {
+  "message": {
+   "message": {
+    "message": {
+     "type": "attachment",
+     "text": "check stock for these",
+     "attachment": {
+      "type": "image",
+      "url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/0d61c8b1460da0da9eb75bf946a34e9bimage1787030003532",
+      "isPending": false,
+      "fileName": "image1787030003532",
+      "mimeType": "image/jpeg",
+      "ext": "jpg",
+      "size": 153739,
+      "mime": "image/jpeg"
+     }
+    }
+   },
+   "replyTo": {}
+  },
+  "contact": {
+   "id": "437264483",
+   "phone": "60100000000",
+   "firstName": "Jayson",
+   "lastName": "Canary",
+   "custom_fields": [
+    {
+     "name": "is_human_intervened",
+     "value": "false"
+    },
+    {
+     "name": "is_allowed_stock",
+     "value": "true"
+    }
+   ],
+   "assignee": {
+    "id": null
+   }
+  },
+  "messageId": "1783918786008341",
+  "replyTo": null,
+  "test_run_id": "UAC-MI-02-20260819",
+  "scope": "deterministic",
+  "mode": "uac",
+  "mock_reformulator_output": {
+   "message_type": "business_query",
+   "domain_hint": "inventory",
+   "intent_hint": "check_stock",
+   "user_goal": "check stock for these: MUB6201",
+   "entities": [
+    {
+     "raw": "MUB6201",
+     "hint": "product",
+     "current_message": true
+    }
+   ],
+   "access_levels": [],
+   "routing": {
+    "suggested_team": "warehouse",
+    "suggested_agent": "general_enquiries"
+   },
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "correction": false,
+   "date_mode": null,
+   "query_scope": null,
+   "match_mode": null,
+   "contains_flyer": false,
+   "date_filter_start": null,
+   "date_filter_end": null
+  },
+  "mock_media_response": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "completed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [
+    {
+     "kind": "warn_80",
+     "text": "You have 9 of 50 photo reads left this month. The allowance resets on 1 September.",
+     "append": true
+    }
+   ],
+   "language_strategy": null,
+   "result": {
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "product",
+      "current_message": true,
+      "confident": true
+     }
+    ],
+    "attributes": [],
+    "conflicts": [],
+    "image_kind": "label",
+    "caption_intent": "check stock for these",
+    "notes": null,
+    "needs_clarification": false,
+    "truncated": false,
+    "rendered_text": "check stock for these: MUB6201",
+    "confirmation_message": "I read MUB6201 from that photo. Is that right?",
+    "clarification_message": null,
+    "transcript": null,
+    "languages_detected": null
+   },
+   "error": null,
+   "_mock": true
+  }
+ }
+}
