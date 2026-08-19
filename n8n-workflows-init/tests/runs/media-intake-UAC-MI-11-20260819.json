@@ -1,0 +1,291 @@
+{
+ "date": "2026-08-19",
+ "case": "MI-11 status failed (worker measured clip over cap) -> immediate poll fetches the ledger too_long notice; internal error NOT leaked",
+ "test_run_id": "UAC-MI-11-20260819",
+ "clone": "txiPzSxy3Pclsz6v",
+ "clone_exec_id": "13086857",
+ "clone_status": "success",
+ "clone_finished": true,
+ "wall_s": 4.8,
+ "last_node": "send-media-reply",
+ "error": null,
+ "media_lane": {
+  "detect-media._media": {
+   "modality": "voice",
+   "attachment_type": "audio",
+   "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+   "mime_type": "audio/ogg; codecs=opus",
+   "caption": null,
+   "bytes": 40000,
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "message_id": "1783918786006129",
+   "respond_io_id": "437264483",
+   "test_run_id": "UAC-MI-11-20260819",
+   "scope": "deterministic"
+  },
+  "if-media-in.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "media-egress-gate.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "media-extract-mock.out": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "failed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": {
+    "mode": "pinned",
+    "language": "en"
+   },
+   "result": null,
+   "error": "The voice note is 151 seconds, over the 120 second limit.",
+   "_mock": true
+  },
+  "media-extract-http.ran": false,
+  "media-extract.in": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "failed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": {
+    "mode": "pinned",
+    "language": "en"
+   },
+   "result": null,
+   "error": "The voice note is 151 seconds, over the 120 second limit.",
+   "_mock": true
+  },
+  "media-route.runs": [
+   {
+    "action": "poll",
+    "modality": "voice",
+    "rendered_text": null,
+    "confirmation_text": null,
+    "reply_text": null,
+    "poll_wait_s": 0,
+    "poll_n": 0,
+    "job_id": "mock-job-1",
+    "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "message_id": "1783918786006129",
+    "_media_trace": {
+     "source": "mock",
+     "decision": "accepted",
+     "status": "failed",
+     "job_id": "mock-job-1",
+     "tier": "standard",
+     "idempotent_replay": false,
+     "quota": {
+      "used": 41,
+      "limit": 50,
+      "remaining": 9,
+      "period_key": "2026-08",
+      "resets_on": "1 September"
+     },
+     "notice_kinds": [],
+     "poll_n": 0,
+     "transport_error": null,
+     "crm_error": "The voice note is 151 seconds, over the 120 second limit."
+    },
+    "reason": "failed"
+   },
+   {
+    "action": "reply",
+    "modality": "voice",
+    "rendered_text": null,
+    "confirmation_text": null,
+    "reply_text": "That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it.",
+    "poll_wait_s": 0,
+    "poll_n": 1,
+    "job_id": "mock-job-1",
+    "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "message_id": "1783918786006129",
+    "_media_trace": {
+     "source": "mock",
+     "decision": "accepted",
+     "status": "failed",
+     "job_id": "mock-job-1",
+     "tier": null,
+     "idempotent_replay": false,
+     "quota": null,
+     "notice_kinds": [
+      "too_long"
+     ],
+     "poll_n": 1,
+     "transport_error": null,
+     "crm_error": "The voice note is 151 seconds, over the 120 second limit."
+    },
+    "reason": "failed"
+   }
+  ],
+  "if-media-poll.branches": [
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "wait-media-poll.runs": 1,
+  "media-poll-mock.runs": [
+   {
+    "_mock": true,
+    "job_id": "mock-job-1",
+    "status": "failed",
+    "result": null,
+    "notices": [
+     {
+      "kind": "too_long",
+      "text": "That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it.",
+      "append": true
+     }
+    ],
+    "error": "The voice note is 151 seconds, over the 120 second limit."
+   }
+  ],
+  "media-poll-merge.runs": [
+   {
+    "job_id": "mock-job-1",
+    "decision": "accepted",
+    "status": "failed",
+    "idempotent_replay": false,
+    "tier": null,
+    "quota": null,
+    "notices": [
+     {
+      "kind": "too_long",
+      "text": "That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it.",
+      "append": true
+     }
+    ],
+    "language_strategy": null,
+    "result": null,
+    "error": "The voice note is 151 seconds, over the 120 second limit.",
+    "_polled": true,
+    "_poll_n": 1,
+    "_poll_ok": true,
+    "_mock": true
+   }
+  ],
+  "if-media-ok.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "if-media-reply.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "send-media-reply.ran": true,
+  "send-media-reply.sub_exec": [
+   "13086862"
+  ],
+  "patch-transcript.ran": false,
+  "tf-message.text": null,
+  "if-transcribed-confirm.branches": null,
+  "send-transcript-confirm.ran": false,
+  "send-transcript-confirm.sub_exec": [],
+  "if-message-is-audio.branches": null,
+  "reformulator.out": null,
+  "compile-current-state.response": null,
+  "sendmsg_sub_execs": {
+   "send-media-reply": [
+    "13086862"
+   ]
+  }
+ },
+ "egress_hook": {
+  "egress": [
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it.\",\n    \"message_len\": 94,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-11-20260819\",\n  \"ts\": \"2026-08-19T07:12:59.805-04:00\"\n}"
+  ]
+ },
+ "S0": {
+  "forbidden_nodes_executed": [],
+  "sendmsg_fork_subexecs": {
+   "13086862": {
+    "node": "send-media-reply",
+    "workflowId": "aQUmwMVplmNcyUVc",
+    "status": "success",
+    "real_send_nodes_executed": [],
+    "guard_nodes_executed": [
+     "guard-text",
+     "guard-record-text"
+    ],
+    "would_send_message": {
+     "message": "That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it.",
+     "part": 1,
+     "total_parts": 1,
+     "quick_reply": "",
+     "contact_identifer": "437264483",
+     "result": null
+    },
+    "executed": [
+     "Chat Memory Manager",
+     "Code in JavaScript",
+     "If1",
+     "Loop Over Items",
+     "When Executed by Another Workflow",
+     "chat?",
+     "guard-record-text",
+     "guard-text",
+     "is-last-quickreply"
+    ]
+   }
+  },
+  "S1_no_real_send": true,
+  "S2_no_assign_writes": true,
+  "S3_no_crm_writes": true,
+  "S5_is_test": true,
+  "egress_list_from_hook": [
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"That voice note is longer than 120 seconds. Please send a shorter one and I will listen to it.\",\n    \"message_len\": 94,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-11-20260819\",\n  \"ts\": \"2026-08-19T07:12:59.805-04:00\"\n}"
+  ]
+ },
+ "executed_nodes": [
+  "When Executed by Another Workflow",
+  "detect-media",
+  "if-media-in",
+  "if-media-ok",
+  "if-media-poll",
+  "if-media-reply",
+  "media-egress-gate",
+  "media-extract",
+  "media-extract-mock",
+  "media-poll-gate",
+  "media-poll-merge",
+  "media-poll-mock",
+  "media-route",
+  "redis-pop-main-message-list",
+  "send-media-reply",
+  "wait-media-poll"
+ ]
+}

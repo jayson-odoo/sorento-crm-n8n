@@ -1,0 +1,115 @@
+{
+ "_case": "MI-03 captionless image -> needs_clarification -> CRM question, turn ENDS before the pipeline",
+ "_expect": {
+  "route": "reply/needs_clarification",
+  "reply_text": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?",
+  "tf_message": "NOT executed"
+ },
+ "item": {
+  "message": {
+   "message": {
+    "message": {
+     "type": "attachment",
+     "text": null,
+     "attachment": {
+      "type": "image",
+      "url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/0d61c8b1460da0da9eb75bf946a34e9bimage1787030003532",
+      "isPending": false,
+      "fileName": "image1787030003532",
+      "mimeType": "image/jpeg",
+      "ext": "jpg",
+      "size": 153739,
+      "mime": "image/jpeg"
+     }
+    }
+   },
+   "replyTo": {}
+  },
+  "contact": {
+   "id": "437264483",
+   "phone": "60100000000",
+   "firstName": "Jayson",
+   "lastName": "Canary",
+   "custom_fields": [
+    {
+     "name": "is_human_intervened",
+     "value": "false"
+    },
+    {
+     "name": "is_allowed_stock",
+     "value": "true"
+    }
+   ],
+   "assignee": {
+    "id": null
+   }
+  },
+  "messageId": "1783918786000897",
+  "replyTo": null,
+  "test_run_id": "UAC-MI-03-20260819",
+  "scope": "deterministic",
+  "mode": "uac",
+  "mock_reformulator_output": {
+   "message_type": "business_query",
+   "intent_hint": "goods_receive_status",
+   "domain_hint": "goods_receive",
+   "user_goal": "What is the weather in KL today",
+   "access_levels": [],
+   "entities": [],
+   "escalation": {
+    "is_escalation_confirmation": false
+   },
+   "correction": false,
+   "routing": {
+    "suggested_team": "purchasing",
+    "suggested_agent": "general_enquiries"
+   },
+   "date_mode": null,
+   "query_scope": null,
+   "match_mode": null,
+   "contains_flyer": false,
+   "date_filter_start": null,
+   "date_filter_end": null
+  },
+  "mock_media_response": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "completed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": null,
+   "result": {
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "product",
+      "current_message": true,
+      "confident": true
+     }
+    ],
+    "attributes": [],
+    "conflicts": [],
+    "image_kind": "label",
+    "caption_intent": null,
+    "notes": null,
+    "needs_clarification": true,
+    "truncated": false,
+    "rendered_text": null,
+    "confirmation_message": null,
+    "clarification_message": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?",
+    "transcript": null,
+    "languages_detected": null
+   },
+   "error": null,
+   "_mock": true
+  }
+ }
+}

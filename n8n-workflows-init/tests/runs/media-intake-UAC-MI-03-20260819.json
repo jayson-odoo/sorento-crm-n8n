@@ -1,0 +1,253 @@
+{
+ "date": "2026-08-19",
+ "case": "MI-03 captionless image -> needs_clarification -> CRM question, turn ENDS before the pipeline",
+ "test_run_id": "UAC-MI-03-20260819",
+ "clone": "txiPzSxy3Pclsz6v",
+ "clone_exec_id": "13086722",
+ "clone_status": "success",
+ "clone_finished": true,
+ "wall_s": 4.7,
+ "last_node": "send-media-reply",
+ "error": null,
+ "media_lane": {
+  "detect-media._media": {
+   "modality": "image",
+   "attachment_type": "image",
+   "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/0d61c8b1460da0da9eb75bf946a34e9bimage1787030003532",
+   "mime_type": "image/jpeg",
+   "caption": null,
+   "bytes": 153739,
+   "duration_ms": null,
+   "duration_source": null,
+   "message_id": "1783918786000897",
+   "respond_io_id": "437264483",
+   "test_run_id": "UAC-MI-03-20260819",
+   "scope": "deterministic"
+  },
+  "if-media-in.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "media-egress-gate.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "media-extract-mock.out": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "completed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": null,
+   "result": {
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "product",
+      "current_message": true,
+      "confident": true
+     }
+    ],
+    "attributes": [],
+    "conflicts": [],
+    "image_kind": "label",
+    "caption_intent": null,
+    "notes": null,
+    "needs_clarification": true,
+    "truncated": false,
+    "rendered_text": null,
+    "confirmation_message": null,
+    "clarification_message": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?",
+    "transcript": null,
+    "languages_detected": null
+   },
+   "error": null,
+   "_mock": true
+  },
+  "media-extract-http.ran": false,
+  "media-extract.in": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "completed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": null,
+   "result": {
+    "entities": [
+     {
+      "raw": "MUB6201",
+      "hint": "product",
+      "current_message": true,
+      "confident": true
+     }
+    ],
+    "attributes": [],
+    "conflicts": [],
+    "image_kind": "label",
+    "caption_intent": null,
+    "notes": null,
+    "needs_clarification": true,
+    "truncated": false,
+    "rendered_text": null,
+    "confirmation_message": null,
+    "clarification_message": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?",
+    "transcript": null,
+    "languages_detected": null
+   },
+   "error": null,
+   "_mock": true
+  },
+  "media-route.runs": [
+   {
+    "action": "reply",
+    "modality": "image",
+    "rendered_text": null,
+    "confirmation_text": null,
+    "reply_text": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?",
+    "poll_wait_s": 0,
+    "poll_n": 0,
+    "job_id": "mock-job-1",
+    "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/0d61c8b1460da0da9eb75bf946a34e9bimage1787030003532",
+    "message_id": "1783918786000897",
+    "_media_trace": {
+     "source": "mock",
+     "decision": "accepted",
+     "status": "completed",
+     "job_id": "mock-job-1",
+     "tier": "standard",
+     "idempotent_replay": false,
+     "quota": {
+      "used": 41,
+      "limit": 50,
+      "remaining": 9,
+      "period_key": "2026-08",
+      "resets_on": "1 September"
+     },
+     "notice_kinds": [],
+     "poll_n": 0,
+     "transport_error": null,
+     "crm_error": null
+    },
+    "reason": "needs_clarification"
+   }
+  ],
+  "if-media-poll.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "wait-media-poll.runs": 0,
+  "media-poll-mock.runs": [],
+  "media-poll-merge.runs": [],
+  "if-media-ok.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "if-media-reply.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "send-media-reply.ran": true,
+  "send-media-reply.sub_exec": [
+   "13086730"
+  ],
+  "patch-transcript.ran": false,
+  "tf-message.text": null,
+  "if-transcribed-confirm.branches": null,
+  "send-transcript-confirm.ran": false,
+  "send-transcript-confirm.sub_exec": [],
+  "if-message-is-audio.branches": null,
+  "reformulator.out": null,
+  "compile-current-state.response": null,
+  "sendmsg_sub_execs": {
+   "send-media-reply": [
+    "13086730"
+   ]
+  }
+ },
+ "egress_hook": {
+  "egress": [
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?\",\n    \"message_len\": 93,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-03-20260819\",\n  \"ts\": \"2026-08-19T07:11:47.193-04:00\"\n}"
+  ]
+ },
+ "S0": {
+  "forbidden_nodes_executed": [],
+  "sendmsg_fork_subexecs": {
+   "13086730": {
+    "node": "send-media-reply",
+    "workflowId": "aQUmwMVplmNcyUVc",
+    "status": "success",
+    "real_send_nodes_executed": [],
+    "guard_nodes_executed": [
+     "guard-text",
+     "guard-record-text"
+    ],
+    "would_send_message": {
+     "message": "I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?",
+     "part": 1,
+     "total_parts": 1,
+     "quick_reply": "",
+     "contact_identifer": "437264483",
+     "result": null
+    },
+    "executed": [
+     "Chat Memory Manager",
+     "Code in JavaScript",
+     "If1",
+     "Loop Over Items",
+     "When Executed by Another Workflow",
+     "chat?",
+     "guard-record-text",
+     "guard-text",
+     "is-last-quickreply"
+    ]
+   }
+  },
+  "S1_no_real_send": true,
+  "S2_no_assign_writes": true,
+  "S3_no_crm_writes": true,
+  "S5_is_test": true,
+  "egress_list_from_hook": [
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"I read MUB6201 and batch number YG2539 from that photo. What would you like me to do with it?\",\n    \"message_len\": 93,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-03-20260819\",\n  \"ts\": \"2026-08-19T07:11:47.193-04:00\"\n}"
+  ]
+ },
+ "executed_nodes": [
+  "When Executed by Another Workflow",
+  "detect-media",
+  "if-media-in",
+  "if-media-ok",
+  "if-media-poll",
+  "if-media-reply",
+  "media-egress-gate",
+  "media-extract",
+  "media-extract-mock",
+  "media-route",
+  "redis-pop-main-message-list",
+  "send-media-reply"
+ ]
+}

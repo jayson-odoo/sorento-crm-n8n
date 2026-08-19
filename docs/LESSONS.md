@@ -68,3 +68,30 @@ Hard-won knowledge. Read before editing workflows or building harness pieces —
 
 43. **A static HTML page served by an n8n webhook CANNOT fetch other n8n webhooks.** n8n force-injects `Content-Security-Policy: sandbox …` (no `allow-same-origin`) on every HTML webhook response → the page runs at a `null` origin; the webhooks' `Access-Control-Allow-Origin` is pinned to the host (setting the webhook's `allowedOrigins:'*'` does NOT change the emitted header) → every `fetch` is CORS-blocked (`origin 'null' … not equal to`). Overriding CSP via the respondToWebhook `responseHeaders` is ignored. Dead end — don't build a custom-HTML chat page this way.
 44. **For a chat webpage, use the native `@n8n/n8n-nodes-langchain.chatTrigger`** (`public:true`, `mode:'hostedChat'`, `options.responseMode:'lastNode'`). n8n's first-party widget talks to its own backend → no CORS/CSP fight, real webpage at `/webhook/{chatTriggerWebhookId}/chat`. `lastNode` mode requires the terminal node to emit `{ output: '<text>' }`. For an ASYNC pipeline (our dispatcher→spine reply lands in redis later), make the chat workflow **synchronous**: inject → fire → `Wait`(≈12s) → read the redis rendezvous (`chat:reply:{sessionId}`, redis `get` keyType=`list` = LRANGE) → format `{output}`. The widget shows a spinner then the reply inline. chat_id carrier = the chat `sessionId` stashed into `contact.chat_id`.
+
+## Media intake (voice + image via the CRM media endpoint, 2026-08-19)
+
+45. **Gate an optional-side-branch If on `$('X').isExecuted && …`** — `$('patch-transcript').isExecuted` is a plain
+    boolean in expressions (the save-message-redis node already uses `$('tf-message').isExecuted`), so a
+    post-findcontact gate can read a node that only runs on some turns without erroring on the others (MI-13: text
+    turn, `patch-transcript` absent, `if-transcribed-confirm` evaluated FALSE cleanly). Don't gate on a proxy field
+    from an always-run node when the real signal lives on an optional one.
+46. **Loop counters in a Code node: use `$runIndex`, not `$('self').first()`.** In a poll loop (Wait → HTTP → Code →
+    back to the router) `$runIndex` is the Code node's own 0-based run — a MAX_POLLS guard built on it cannot be
+    defeated by run-index ambiguity of `$('…').first()`. `media-poll-merge` sets `_poll_n = $runIndex + 1`.
+47. **A CRM endpoint that WRITES (ledger/job rows) is an egress for the harness even when it is "just metering".**
+    Same pattern as `ideate-egress-gate`: `test_run_id && scope!=='chat-ui'` → Code mock (reads
+    `message.mock_media_response` / `mock_media_poll[]`), else the real HTTP node; join on a NoOp. Probe reachability
+    + auth + permission of the real route with ZERO writes: `GET …/jobs/<zero-uuid>` → 404 and a `POST` with a body
+    pydantic rejects (`modality:"video"`) → 422; a 401/403 would come first. (`zz-media-probe tF02D1bUGYBADVkN`.)
+48. **REST PUT cannot set `settings.availableInMCP`** (400 additional properties) ⇒ a throwaway workflow created via
+    REST cannot be `execute_workflow`-ed by MCP ("Workflow is not available in MCP"). Give it a webhook trigger,
+    `POST /workflows/{id}/activate`, fire with curl, then deactivate. Also: python `urllib` gets a WAF 403 from the
+    n8n public API unless it sends a browser/curl `User-Agent`.
+49. **Respond.io carries NO duration for WhatsApp voice notes** (`attachment = {type,url,fileName,mimeType,mime,ext,size,isPending}`).
+    When a downstream contract wants `duration_ms` always, send the channel value if any, else a size-derived LOWER
+    bound (bytes×8/32 kbps) and label the source in an echoed `context` — under-stating is safe when the receiver
+    measures the real length and only uses the hint to refuse early.
+50. **HTTP node `onError: continueRegularOutput` + a router Code node** is the graceful-degrade shape: the node's
+    `{error:{message…}}` item (no `decision`) routes to a customer-facing fallback and the execution still ends
+    `success`; `retryOnFail` is safe only when the far end is idempotent (media: message_id+modality+ordinal).

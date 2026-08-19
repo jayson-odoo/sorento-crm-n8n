@@ -1,0 +1,168 @@
+{
+ "date": "2026-08-19",
+ "case": "MI-14 REGRESSION: pdf/file attachment is NOT media for this lane -> falls through exactly as today",
+ "test_run_id": "UAC-MI-14-20260819",
+ "clone": "txiPzSxy3Pclsz6v",
+ "clone_exec_id": "13086896",
+ "clone_status": "success",
+ "clone_finished": true,
+ "wall_s": 6.4,
+ "last_node": "console-incoming-gate",
+ "error": null,
+ "media_lane": {
+  "detect-media._media": {
+   "modality": null,
+   "attachment_type": "file",
+   "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505043295/e35b441b2120a37e980d2ee7ec3ee30bMAP5045C-NG.pdf",
+   "mime_type": "application/pdf",
+   "caption": null,
+   "bytes": 985325,
+   "duration_ms": null,
+   "duration_source": null,
+   "message_id": "1783918786003999",
+   "respond_io_id": "437264483",
+   "test_run_id": "UAC-MI-14-20260819",
+   "scope": "deterministic"
+  },
+  "if-media-in.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "media-egress-gate.branches": null,
+  "media-extract-mock.out": null,
+  "media-extract-http.ran": false,
+  "media-extract.in": null,
+  "media-route.runs": [],
+  "if-media-poll.branches": null,
+  "wait-media-poll.runs": 0,
+  "media-poll-mock.runs": [],
+  "media-poll-merge.runs": [],
+  "if-media-ok.branches": null,
+  "if-media-reply.branches": null,
+  "send-media-reply.ran": false,
+  "send-media-reply.sub_exec": [],
+  "patch-transcript.ran": false,
+  "tf-message.text": null,
+  "if-transcribed-confirm.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "send-transcript-confirm.ran": false,
+  "send-transcript-confirm.sub_exec": [],
+  "if-message-is-audio.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "reformulator.out": {
+   "message_type": "business_query",
+   "domain_hint": "goods_receive",
+   "intent_hint": "goods_receive_status",
+   "user_goal": "What is the weather in KL today"
+  },
+  "compile-current-state.response": null,
+  "sendmsg_sub_execs": {
+   "sorento-sub-respond-sendmsg-respond2": [
+    "13086906"
+   ]
+  }
+ },
+ "egress_hook": {
+  "egress": [
+   "{\n  \"guard\": \"save-message-redis\",\n  \"kind\": \"would_log\",\n  \"target\": \"redis:sorento-respond-message->mongo\",\n  \"payload\": { \"contact_id\": \"437264483\", \"message\": null },\n  \"test_run_id\": \"UAC-MI-14-20260819\",\n  \"ts\": \"2026-08-19T07:13:19.491-04:00\"\n}",
+   "{\n  \"guard\": \"save-session-vars\",\n  \"kind\": \"would_write\",\n  \"target\": \"crm:conversation-variables:PUT\",\n  \"payload\": { \"contact_id\": \"437264483\", \"body\": {\"variables\":{\"message_type\":\"business_query\",\"intent_hint\":\"goods_receive_status\",\"domain_hint\":\"goods_receive\",\"user_goal\":\"What is the weather in KL today\",\"query_scope\":null,\"access_levels\":[],\"entities\":[],\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\",\"last_result_set\":[],\"selection_context\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":null,\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":[],\"ideation\":null,\"routing_roster_plan\":null,\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":null,\"routing_companies\":null},\"user_response\":\"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\"} },\n  \"test_run_id\": \"UAC-MI-14-20260819\",\n  \"ts\": \"2026-08-19T07:13:19.486-04:00\"\n}",
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\",\n    \"message_len\": 134,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-14-20260819\",\n  \"ts\": \"2026-08-19T07:13:19.423-04:00\"\n}"
+  ]
+ },
+ "S0": {
+  "forbidden_nodes_executed": [],
+  "sendmsg_fork_subexecs": {
+   "13086906": {
+    "node": "sorento-sub-respond-sendmsg-respond2",
+    "workflowId": "aQUmwMVplmNcyUVc",
+    "status": "success",
+    "real_send_nodes_executed": [],
+    "guard_nodes_executed": [
+     "guard-text",
+     "guard-record-text"
+    ],
+    "would_send_message": {
+     "message": "Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container",
+     "part": 1,
+     "total_parts": 1,
+     "quick_reply": "",
+     "contact_identifer": "437264483",
+     "result": []
+    },
+    "executed": [
+     "Chat Memory Manager",
+     "Code in JavaScript",
+     "If1",
+     "Loop Over Items",
+     "When Executed by Another Workflow",
+     "chat?",
+     "guard-record-text",
+     "guard-text",
+     "is-last-quickreply"
+    ]
+   }
+  },
+  "S1_no_real_send": true,
+  "S2_no_assign_writes": true,
+  "S3_no_crm_writes": true,
+  "S5_is_test": true,
+  "egress_list_from_hook": [
+   "{\n  \"guard\": \"save-message-redis\",\n  \"kind\": \"would_log\",\n  \"target\": \"redis:sorento-respond-message->mongo\",\n  \"payload\": { \"contact_id\": \"437264483\", \"message\": null },\n  \"test_run_id\": \"UAC-MI-14-20260819\",\n  \"ts\": \"2026-08-19T07:13:19.491-04:00\"\n}",
+   "{\n  \"guard\": \"save-session-vars\",\n  \"kind\": \"would_write\",\n  \"target\": \"crm:conversation-variables:PUT\",\n  \"payload\": { \"contact_id\": \"437264483\", \"body\": {\"variables\":{\"message_type\":\"business_query\",\"intent_hint\":\"goods_receive_status\",\"domain_hint\":\"goods_receive\",\"user_goal\":\"What is the weather in KL today\",\"query_scope\":null,\"access_levels\":[],\"entities\":[],\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\",\"last_result_set\":[],\"selection_context\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":null,\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":[],\"ideation\":null,\"routing_roster_plan\":null,\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":null,\"routing_companies\":null},\"user_response\":\"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\"} },\n  \"test_run_id\": \"UAC-MI-14-20260819\",\n  \"ts\": \"2026-08-19T07:13:19.486-04:00\"\n}",
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\",\n    \"message_len\": 134,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-14-20260819\",\n  \"ts\": \"2026-08-19T07:13:19.423-04:00\"\n}"
+  ]
+ },
+ "executed_nodes": [
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execution Data",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If5",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "cs-offer-gate",
+  "detect-media",
+  "escalate-catalog",
+  "get-session-vars",
+  "get-session-vars-http",
+  "guard-d-record",
+  "guard-h-record",
+  "if-audio-b64",
+  "if-got-attachments",
+  "if-media-in",
+  "if-message-is-audio",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "not-supported-domain",
+  "offer-hold-gate",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "session-get-gate",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tag-not-supported",
+  "tf-message"
+ ]
+}

@@ -1,0 +1,92 @@
+{
+ "_case": "MI-15 PARSER TIER: voice transcript through the REAL parser fork (no reformulator mock) -> answered as if typed",
+ "_expect": {
+  "route": "continue/completed",
+  "tf_text": "any order for MUB6201",
+  "reformulator": "real fork run; domain order/check_order expected",
+  "reply": "orders answer for MUB6201"
+ },
+ "item": {
+  "message": {
+   "message": {
+    "message": {
+     "type": "attachment",
+     "text": null,
+     "attachment": {
+      "type": "audio",
+      "url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+      "isPending": false,
+      "fileName": "uac-voice-note.ogg",
+      "mimeType": "audio/ogg; codecs=opus",
+      "ext": "ogg",
+      "size": 40000,
+      "mime": "audio/ogg"
+     }
+    }
+   },
+   "replyTo": {}
+  },
+  "contact": {
+   "id": "437264483",
+   "phone": "60100000000",
+   "firstName": "Jayson",
+   "lastName": "Canary",
+   "custom_fields": [
+    {
+     "name": "is_human_intervened",
+     "value": "false"
+    },
+    {
+     "name": "is_allowed_stock",
+     "value": "true"
+    }
+   ],
+   "assignee": {
+    "id": null
+   }
+  },
+  "messageId": "1783918786004431",
+  "replyTo": null,
+  "test_run_id": "UAC-MI-15-20260819",
+  "scope": "deterministic",
+  "mode": "uac",
+  "mock_media_response": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "completed",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": {
+    "mode": "pinned",
+    "language": "en"
+   },
+   "result": {
+    "entities": [],
+    "attributes": [],
+    "conflicts": [],
+    "image_kind": null,
+    "caption_intent": null,
+    "notes": null,
+    "needs_clarification": false,
+    "truncated": false,
+    "rendered_text": "any order for MUB6201",
+    "confirmation_message": "Here is what I heard: \"any order for MUB6201\"",
+    "clarification_message": null,
+    "transcript": "any order for MUB6201",
+    "languages_detected": [
+     "en"
+    ]
+   },
+   "error": null,
+   "_mock": true
+  }
+ }
+}

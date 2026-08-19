@@ -1,0 +1,614 @@
+{
+ "date": "2026-08-19",
+ "case": "MI-09 status pending -> poll(6s) pending -> poll(6s) completed -> continue",
+ "test_run_id": "UAC-MI-09-20260819",
+ "clone": "txiPzSxy3Pclsz6v",
+ "clone_exec_id": "13086791",
+ "clone_status": "success",
+ "clone_finished": true,
+ "wall_s": 18.9,
+ "last_node": "console-incoming-gate",
+ "error": null,
+ "media_lane": {
+  "detect-media._media": {
+   "modality": "voice",
+   "attachment_type": "audio",
+   "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+   "mime_type": "audio/ogg; codecs=opus",
+   "caption": null,
+   "bytes": 40000,
+   "duration_ms": 10000,
+   "duration_source": "estimated_from_size_32kbps",
+   "message_id": "1783918786009800",
+   "respond_io_id": "437264483",
+   "test_run_id": "UAC-MI-09-20260819",
+   "scope": "deterministic"
+  },
+  "if-media-in.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "media-egress-gate.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "media-extract-mock.out": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "pending",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": {
+    "mode": "pinned",
+    "language": "en"
+   },
+   "result": null,
+   "error": null,
+   "_mock": true
+  },
+  "media-extract-http.ran": false,
+  "media-extract.in": {
+   "job_id": "mock-job-1",
+   "decision": "accepted",
+   "status": "pending",
+   "idempotent_replay": false,
+   "tier": "standard",
+   "quota": {
+    "used": 41,
+    "limit": 50,
+    "remaining": 9,
+    "period_key": "2026-08",
+    "resets_on": "1 September"
+   },
+   "notices": [],
+   "language_strategy": {
+    "mode": "pinned",
+    "language": "en"
+   },
+   "result": null,
+   "error": null,
+   "_mock": true
+  },
+  "media-route.runs": [
+   {
+    "action": "poll",
+    "modality": "voice",
+    "rendered_text": null,
+    "confirmation_text": null,
+    "reply_text": null,
+    "poll_wait_s": 6,
+    "poll_n": 0,
+    "job_id": "mock-job-1",
+    "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "message_id": "1783918786009800",
+    "_media_trace": {
+     "source": "mock",
+     "decision": "accepted",
+     "status": "pending",
+     "job_id": "mock-job-1",
+     "tier": "standard",
+     "idempotent_replay": false,
+     "quota": {
+      "used": 41,
+      "limit": 50,
+      "remaining": 9,
+      "period_key": "2026-08",
+      "resets_on": "1 September"
+     },
+     "notice_kinds": [],
+     "poll_n": 0,
+     "transport_error": null,
+     "crm_error": null
+    },
+    "reason": "pending"
+   },
+   {
+    "action": "poll",
+    "modality": "voice",
+    "rendered_text": null,
+    "confirmation_text": null,
+    "reply_text": null,
+    "poll_wait_s": 6,
+    "poll_n": 1,
+    "job_id": "mock-job-1",
+    "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "message_id": "1783918786009800",
+    "_media_trace": {
+     "source": "mock",
+     "decision": "accepted",
+     "status": "pending",
+     "job_id": "mock-job-1",
+     "tier": null,
+     "idempotent_replay": false,
+     "quota": null,
+     "notice_kinds": [],
+     "poll_n": 1,
+     "transport_error": null,
+     "crm_error": null
+    },
+    "reason": "pending"
+   },
+   {
+    "action": "continue",
+    "modality": "voice",
+    "rendered_text": "any order for MUB6201",
+    "confirmation_text": "Here is what I heard: \"any order for MUB6201\"",
+    "reply_text": null,
+    "poll_wait_s": 0,
+    "poll_n": 2,
+    "job_id": "mock-job-1",
+    "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "message_id": "1783918786009800",
+    "_media_trace": {
+     "source": "mock",
+     "decision": "accepted",
+     "status": "completed",
+     "job_id": "mock-job-1",
+     "tier": "standard",
+     "idempotent_replay": false,
+     "quota": null,
+     "notice_kinds": [],
+     "poll_n": 2,
+     "transport_error": null,
+     "crm_error": null
+    },
+    "reason": "completed"
+   }
+  ],
+  "if-media-poll.branches": [
+   [
+    1,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "wait-media-poll.runs": 2,
+  "media-poll-mock.runs": [
+   {
+    "_mock": true,
+    "job_id": "mock-job-1",
+    "status": "pending",
+    "result": null,
+    "notices": [],
+    "error": null
+   },
+   {
+    "_mock": true,
+    "job_id": "mock-job-1",
+    "status": "completed",
+    "tier": "standard",
+    "result": {
+     "entities": [],
+     "attributes": [],
+     "conflicts": [],
+     "image_kind": null,
+     "caption_intent": null,
+     "notes": null,
+     "needs_clarification": false,
+     "truncated": false,
+     "rendered_text": "any order for MUB6201",
+     "confirmation_message": "Here is what I heard: \"any order for MUB6201\"",
+     "clarification_message": null,
+     "transcript": "any order for MUB6201",
+     "languages_detected": [
+      "en"
+     ]
+    },
+    "notices": [],
+    "error": null
+   }
+  ],
+  "media-poll-merge.runs": [
+   {
+    "job_id": "mock-job-1",
+    "decision": "accepted",
+    "status": "pending",
+    "idempotent_replay": false,
+    "tier": null,
+    "quota": null,
+    "notices": [],
+    "language_strategy": null,
+    "result": null,
+    "error": null,
+    "_polled": true,
+    "_poll_n": 1,
+    "_poll_ok": true,
+    "_mock": true
+   },
+   {
+    "job_id": "mock-job-1",
+    "decision": "accepted",
+    "status": "completed",
+    "idempotent_replay": false,
+    "tier": "standard",
+    "quota": null,
+    "notices": [],
+    "language_strategy": null,
+    "result": {
+     "entities": [],
+     "attributes": [],
+     "conflicts": [],
+     "image_kind": null,
+     "caption_intent": null,
+     "notes": null,
+     "needs_clarification": false,
+     "truncated": false,
+     "rendered_text": "any order for MUB6201",
+     "confirmation_message": "Here is what I heard: \"any order for MUB6201\"",
+     "clarification_message": null,
+     "transcript": "any order for MUB6201",
+     "languages_detected": [
+      "en"
+     ]
+    },
+    "error": null,
+    "_polled": true,
+    "_poll_n": 2,
+    "_poll_ok": true,
+    "_mock": true
+   }
+  ],
+  "if-media-ok.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "if-media-reply.branches": null,
+  "send-media-reply.ran": false,
+  "send-media-reply.sub_exec": [],
+  "patch-transcript.ran": true,
+  "patch-transcript.E": {
+   "text": "any order for MUB6201",
+   "type": "text",
+   "attachment": {
+    "type": "text",
+    "url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "isPending": false,
+    "fileName": "uac-voice-note.ogg",
+    "mimeType": "audio/ogg; codecs=opus",
+    "ext": "ogg",
+    "size": 40000,
+    "mime": "audio/ogg",
+    "source_url": "https://cdn.chatapi.net/whatsapp_business/453209/505042987/uac-voice-note.ogg",
+    "source_type": "audio"
+   }
+  },
+  "patch-transcript._media": {
+   "modality": "voice",
+   "confirmation_text": "Here is what I heard: \"any order for MUB6201\"",
+   "rendered_text": "any order for MUB6201",
+   "job_id": "mock-job-1",
+   "trace": {
+    "source": "mock",
+    "decision": "accepted",
+    "status": "completed",
+    "job_id": "mock-job-1",
+    "tier": "standard",
+    "idempotent_replay": false,
+    "quota": null,
+    "notice_kinds": [],
+    "poll_n": 2,
+    "transport_error": null,
+    "crm_error": null
+   }
+  },
+  "tf-message.text": "any order for MUB6201",
+  "if-transcribed-confirm.branches": [
+   [
+    1,
+    0
+   ]
+  ],
+  "send-transcript-confirm.ran": true,
+  "send-transcript-confirm.sub_exec": [
+   "13086815"
+  ],
+  "if-message-is-audio.branches": [
+   [
+    0,
+    1
+   ]
+  ],
+  "reformulator.out": {
+   "message_type": "business_query",
+   "domain_hint": "order",
+   "intent_hint": "check_order",
+   "user_goal": "any order for MUB6201"
+  },
+  "compile-current-state.response": null,
+  "sendmsg_sub_execs": {
+   "send-transcript-confirm": [
+    "13086815"
+   ],
+   "sorento-sub-respond-sendmsg-respond2": [
+    "13086823"
+   ]
+  }
+ },
+ "egress_hook": {
+  "egress": [
+   "{\n  \"guard\": \"save-message-redis\",\n  \"kind\": \"would_log\",\n  \"target\": \"redis:sorento-respond-message->mongo\",\n  \"payload\": { \"contact_id\": \"437264483\", \"message\": \"any order for MUB6201\" },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:36.821-04:00\"\n}",
+   "{\n  \"guard\": \"save-session-vars\",\n  \"kind\": \"would_write\",\n  \"target\": \"crm:conversation-variables:PUT\",\n  \"payload\": { \"contact_id\": \"437264483\", \"body\": {\"variables\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"user_goal\":\"any order for MUB6201\",\"query_scope\":null,\"access_levels\":[],\"entities\":[{\"raw\":\"MUB6201\",\"hint\":\"product\",\"current_message\":true,\"canonical_code\":\"MUB6201\"}],\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Previous turn (order): returned 2 records\\n\\nWould you like me to escalate to *Sorento* customer_service team?\",\"last_result_set\":[{\"idx\":1,\"uuid\":null,\"label\":\"M2608-1026\",\"entity_type\":null,\"product\":null,\"attachment_type\":null,\"filename\":null},{\"idx\":2,\"uuid\":null,\"label\":\"M2608-0723\",\"entity_type\":null,\"product\":null,\"attachment_type\":null,\"filename\":null},{\"idx\":3,\"label\":\"Maryam Ariffin\",\"uuid\":\"0d69dfb7-dcf7-41fe-8457-f45897895182\",\"respond_user_id\":\"1144607\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":4,\"label\":\"Cyndi\",\"uuid\":\"12246ae8-59e0-46a1-9cf0-fd80f45c1db9\",\"respond_user_id\":\"1144556\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":5,\"label\":\"Aisyah\",\"uuid\":\"70578600-0cc5-4040-ac81-c27bb31e917b\",\"respond_user_id\":\"1144561\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":6,\"label\":\"Balqis\",\"uuid\":\"a41fbc80-db8c-4c4d-bbe1-7006fb438a06\",\"respond_user_id\":\"1144558\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":7,\"label\":\"Niki\",\"uuid\":\"b69bb614-afed-49a2-ae1f-f0351c325bfd\",\"respond_user_id\":\"1144554\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":8,\"label\":\"Nurain\",\"uuid\":\"c483d959-f8b5-488a-bb9d-168fa0292d75\",\"respond_user_id\":\"1144604\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]}],\"selection_context\":\"member_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":null,\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":[],\"ideation\":null,\"routing_roster_plan\":[{\"plan_idx\":0,\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\"}],\"routing_brand\":\"mocha\",\"routing_brand_source\":\"resolved\",\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"routing_companies\":[{\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\",\"brand_code\":null,\"codes\":[\"MUB6201\"]},{\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"codes\":[\"MUB6201\"]}]},\"user_response\":\"Here are the orders I found.\\n\\n1. *Company:* Mocha\\n*Order Number:* M2608-1026\\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\\n*Order Date:* 17/08/2026\\n*Actual Delivery Date:* 19/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 09:35:00\\n*Transporter:* MOCHA\\n*Driver:* KIMI\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (2)\\n\\n2. *Company:* Mocha\\n*Order Number:* M2608-0723\\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\\n*Order Date:* 11/08/2026\\n*Actual Delivery Date:* 13/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 08:44:00\\n*Transporter:* MOCHA\\n*Driver:* NAN\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (1)\\n\\n*Sorento:* no orders records for MUB6201.\\n\\n_Data last updated: 19/08/2026 17:14:18_\\n\\nWould you like me to escalate to *Sorento* customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n3. Maryam Ariffin\\n4. Cyndi\\n5. Aisyah\\n6. Balqis\\n7. Niki\\n8. Nurain\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\"} },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:36.818-04:00\"\n}",
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"Here is what I heard: \\\"any order for MUB6201\\\"\",\n    \"message_len\": 45,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:34.990-04:00\"\n}",
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"Here are the orders I found.\\n\\n1. *Company:* Mocha\\n*Order Number:* M2608-1026\\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\\n*Order Date:* 17/08/2026\\n*Actual Delivery Date:* 19/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 09:35:00\\n*Transporter:* MOCHA\\n*Driver:* KIMI\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (2)\\n\\n2. *Company:* Mocha\\n*Order Number:* M2608-0723\\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\\n*Order Date:* 11/08/2026\\n*Actual Delivery Date:* 13/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 08:44:00\\n*Transporter:* MOCHA\\n*Driver:* NAN\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (1)\\n\\n*Sorento:* no orders records for MUB6201.\\n\\n_Data last updated: 19/08/2026 17:14:18_\\n\\nWould you like me to escalate to *Sorento* customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n3. Maryam Ariffin\\n4. Cyndi\\n5. Aisyah\\n6. Balqis\\n7. Niki\\n8. Nurain\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\",\n    \"message_len\": 992,\n    \"quick_reply\": null,\n    \"result_idx\": [1,2,3,4,5,6,7,8]\n  },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:36.765-04:00\"\n}"
+  ]
+ },
+ "S0": {
+  "forbidden_nodes_executed": [],
+  "sendmsg_fork_subexecs": {
+   "13086815": {
+    "node": "send-transcript-confirm",
+    "workflowId": "aQUmwMVplmNcyUVc",
+    "status": "success",
+    "real_send_nodes_executed": [],
+    "guard_nodes_executed": [
+     "guard-text",
+     "guard-record-text"
+    ],
+    "would_send_message": {
+     "message": "Here is what I heard: \"any order for MUB6201\"",
+     "part": 1,
+     "total_parts": 1,
+     "quick_reply": "",
+     "contact_identifer": "437264483",
+     "result": null
+    },
+    "executed": [
+     "Chat Memory Manager",
+     "Code in JavaScript",
+     "If1",
+     "Loop Over Items",
+     "When Executed by Another Workflow",
+     "chat?",
+     "guard-record-text",
+     "guard-text",
+     "is-last-quickreply"
+    ]
+   },
+   "13086823": {
+    "node": "sorento-sub-respond-sendmsg-respond2",
+    "workflowId": "aQUmwMVplmNcyUVc",
+    "status": "success",
+    "real_send_nodes_executed": [],
+    "guard_nodes_executed": [
+     "guard-text",
+     "guard-record-text"
+    ],
+    "would_send_message": {
+     "message": "Here are the orders I found.\n\n1. *Company:* Mocha\n*Order Number:* M2608-1026\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\n*Order Date:* 17/08/2026\n*Actual Delivery Date:* 19/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 09:35:00\n*Transporter:* MOCHA\n*Driver:* KIMI\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (2)\n\n2. *Company:* Mocha\n*Order Number:* M2608-0723\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\n*Order Date:* 11/08/2026\n*Actual Delivery Date:* 13/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 08:44:00\n*Transporter:* MOCHA\n*Driver:* NAN\n*Lorry Plate:* VDJ8711\n*Warehouse:* MWH\n*Products:* MUB6201 (1)\n\n*Sorento:* no orders records for MUB6201.\n\n_Data last updated: 19/08/2026 17:14:18_\n\nWould you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n3. Maryam Ariffin\n4. Cyndi\n5. Aisyah\n6. Balqis\n7. Niki\n8. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+     "part": 1,
+     "total_parts": 1,
+     "quick_reply": "",
+     "contact_identifer": "437264483",
+     "result": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "M2608-1026",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "uuid": null,
+       "label": "M2608-0723",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 3,
+       "label": "Maryam Ariffin",
+       "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+       "respond_user_id": "1144607",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "mocha",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 4,
+       "label": "Cyndi",
+       "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+       "respond_user_id": "1144556",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "mocha",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 5,
+       "label": "Aisyah",
+       "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+       "respond_user_id": "1144561",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "mocha",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 6,
+       "label": "Balqis",
+       "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+       "respond_user_id": "1144558",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "mocha",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 7,
+       "label": "Niki",
+       "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+       "respond_user_id": "1144554",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "mocha",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 8,
+       "label": "Nurain",
+       "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+       "respond_user_id": "1144604",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "mocha",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      }
+     ]
+    },
+    "executed": [
+     "Chat Memory Manager",
+     "Code in JavaScript",
+     "If1",
+     "Loop Over Items",
+     "When Executed by Another Workflow",
+     "chat?",
+     "guard-record-text",
+     "guard-text",
+     "is-last-quickreply"
+    ]
+   }
+  },
+  "S1_no_real_send": true,
+  "S2_no_assign_writes": true,
+  "S3_no_crm_writes": true,
+  "S5_is_test": true,
+  "egress_list_from_hook": [
+   "{\n  \"guard\": \"save-message-redis\",\n  \"kind\": \"would_log\",\n  \"target\": \"redis:sorento-respond-message->mongo\",\n  \"payload\": { \"contact_id\": \"437264483\", \"message\": \"any order for MUB6201\" },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:36.821-04:00\"\n}",
+   "{\n  \"guard\": \"save-session-vars\",\n  \"kind\": \"would_write\",\n  \"target\": \"crm:conversation-variables:PUT\",\n  \"payload\": { \"contact_id\": \"437264483\", \"body\": {\"variables\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"user_goal\":\"any order for MUB6201\",\"query_scope\":null,\"access_levels\":[],\"entities\":[{\"raw\":\"MUB6201\",\"hint\":\"product\",\"current_message\":true,\"canonical_code\":\"MUB6201\"}],\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Previous turn (order): returned 2 records\\n\\nWould you like me to escalate to *Sorento* customer_service team?\",\"last_result_set\":[{\"idx\":1,\"uuid\":null,\"label\":\"M2608-1026\",\"entity_type\":null,\"product\":null,\"attachment_type\":null,\"filename\":null},{\"idx\":2,\"uuid\":null,\"label\":\"M2608-0723\",\"entity_type\":null,\"product\":null,\"attachment_type\":null,\"filename\":null},{\"idx\":3,\"label\":\"Maryam Ariffin\",\"uuid\":\"0d69dfb7-dcf7-41fe-8457-f45897895182\",\"respond_user_id\":\"1144607\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":4,\"label\":\"Cyndi\",\"uuid\":\"12246ae8-59e0-46a1-9cf0-fd80f45c1db9\",\"respond_user_id\":\"1144556\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":5,\"label\":\"Aisyah\",\"uuid\":\"70578600-0cc5-4040-ac81-c27bb31e917b\",\"respond_user_id\":\"1144561\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":6,\"label\":\"Balqis\",\"uuid\":\"a41fbc80-db8c-4c4d-bbe1-7006fb438a06\",\"respond_user_id\":\"1144558\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":7,\"label\":\"Niki\",\"uuid\":\"b69bb614-afed-49a2-ae1f-f0351c325bfd\",\"respond_user_id\":\"1144554\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]},{\"idx\":8,\"label\":\"Nurain\",\"uuid\":\"c483d959-f8b5-488a-bb9d-168fa0292d75\",\"respond_user_id\":\"1144604\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"company_ids\":[\"00000000-0000-0000-0000-000000000001\"],\"companies\":[\"Sorento\"]}],\"selection_context\":\"member_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":null,\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":[],\"ideation\":null,\"routing_roster_plan\":[{\"plan_idx\":0,\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\"}],\"routing_brand\":\"mocha\",\"routing_brand_source\":\"resolved\",\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"routing_companies\":[{\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\",\"brand_code\":null,\"codes\":[\"MUB6201\"]},{\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"mocha\",\"codes\":[\"MUB6201\"]}]},\"user_response\":\"Here are the orders I found.\\n\\n1. *Company:* Mocha\\n*Order Number:* M2608-1026\\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\\n*Order Date:* 17/08/2026\\n*Actual Delivery Date:* 19/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 09:35:00\\n*Transporter:* MOCHA\\n*Driver:* KIMI\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (2)\\n\\n2. *Company:* Mocha\\n*Order Number:* M2608-0723\\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\\n*Order Date:* 11/08/2026\\n*Actual Delivery Date:* 13/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 08:44:00\\n*Transporter:* MOCHA\\n*Driver:* NAN\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (1)\\n\\n*Sorento:* no orders records for MUB6201.\\n\\n_Data last updated: 19/08/2026 17:14:18_\\n\\nWould you like me to escalate to *Sorento* customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n3. Maryam Ariffin\\n4. Cyndi\\n5. Aisyah\\n6. Balqis\\n7. Niki\\n8. Nurain\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\"} },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:36.818-04:00\"\n}",
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"Here is what I heard: \\\"any order for MUB6201\\\"\",\n    \"message_len\": 45,\n    \"quick_reply\": null,\n    \"result_idx\": []\n  },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:34.990-04:00\"\n}",
+   "{\n  \"guard\": \"sendmsg-sub\",\n  \"kind\": \"would_send\",\n  \"channel\": \"text\",\n  \"target\": \"437264483\",\n  \"payload\": {\n    \"part\": 1,\n    \"total_parts\": 1,\n    \"message\": \"Here are the orders I found.\\n\\n1. *Company:* Mocha\\n*Order Number:* M2608-1026\\n*Customer:* HAPPY TILES TRADING - [CERAMIC]\\n*Order Date:* 17/08/2026\\n*Actual Delivery Date:* 19/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 09:35:00\\n*Transporter:* MOCHA\\n*Driver:* KIMI\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (2)\\n\\n2. *Company:* Mocha\\n*Order Number:* M2608-0723\\n*Customer:* YOO LIVING HOUSE - [CERAMIC]\\n*Order Date:* 11/08/2026\\n*Actual Delivery Date:* 13/08/2026\\n*Status:* Picked Up / In Transit\\n*Pickup Time:* 08:44:00\\n*Transporter:* MOCHA\\n*Driver:* NAN\\n*Lorry Plate:* VDJ8711\\n*Warehouse:* MWH\\n*Products:* MUB6201 (1)\\n\\n*Sorento:* no orders records for MUB6201.\\n\\n_Data last updated: 19/08/2026 17:14:18_\\n\\nWould you like me to escalate to *Sorento* customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n3. Maryam Ariffin\\n4. Cyndi\\n5. Aisyah\\n6. Balqis\\n7. Niki\\n8. Nurain\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\",\n    \"message_len\": 992,\n    \"quick_reply\": null,\n    \"result_idx\": [1,2,3,4,5,6,7,8]\n  },\n  \"test_run_id\": \"UAC-MI-09-20260819\",\n  \"ts\": \"2026-08-19T07:12:36.765-04:00\"\n}"
+  ]
+ },
+ "executed_nodes": [
+  "Call 'sub-get-results'",
+  "Call 'sub-query-reformulator'",
+  "Call 'sub-respond-save-message-redis'2",
+  "Execute 'sub-get-rag'",
+  "Execution Data",
+  "If",
+  "If-ideate",
+  "If1",
+  "If10",
+  "If2",
+  "If3",
+  "If5",
+  "If6",
+  "If7",
+  "If9",
+  "When Executed by Another Workflow",
+  "attach-merge",
+  "build-miss-member-offer",
+  "central-exchange",
+  "check-access",
+  "check-access-http",
+  "compile-current-state",
+  "console-incoming-gate",
+  "crossdomain-compose",
+  "crossdomain-gate",
+  "crossdomain-zeroset",
+  "detect-media",
+  "disallowed-entity-gate",
+  "dym-gate-partial",
+  "dym-transform-partial",
+  "get-cs-members-miss",
+  "get-session-vars",
+  "get-session-vars-http",
+  "guard-d-record",
+  "guard-h-record",
+  "if-got-attachments",
+  "if-media-in",
+  "if-media-ok",
+  "if-media-poll",
+  "if-message-is-audio",
+  "if-tier-ask",
+  "if-transcribed-confirm",
+  "is-escalation-declined",
+  "is-human-intervened",
+  "media-egress-gate",
+  "media-extract",
+  "media-extract-mock",
+  "media-poll-gate",
+  "media-poll-merge",
+  "media-poll-mock",
+  "media-route",
+  "miss-members-gate",
+  "miss-roster-gate",
+  "miss-roster-plan",
+  "not-supported-domain",
+  "offer-hold-gate",
+  "patch-transcript",
+  "promo-picker",
+  "redis-pop-main-message-list",
+  "replay-check-access",
+  "replay-get-results",
+  "replay-resolve-entity",
+  "resolve-entity",
+  "resolve-entity-http",
+  "send-transcript-confirm",
+  "session-get-gate",
+  "session-save-gate",
+  "sim-inject-gate",
+  "sorento-sub-respond-findcontact-respond",
+  "sorento-sub-respond-sendmsg-respond2",
+  "tf-message",
+  "tool-filter",
+  "validator",
+  "wait-media-poll"
+ ]
+}
