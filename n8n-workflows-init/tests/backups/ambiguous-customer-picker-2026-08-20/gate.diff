@@ -1,0 +1,58 @@
+271a272,328
+> // ── AMBIGUOUS CUSTOMER → ASK WHICH COMPANY (captain, 2026-08-20) ──────────────
+> // A fuzzy customer token can resolve to several UNRELATED companies: "4 smart" returned 15
+> // accounts across 4 SMART PLUS, SB SMART CONCEPT, EUROSMART BATHROOM SOLUTION, DE SMART HOME
+> // TRADING, FOUR SMART PLUS ENTERPRISE and V SMART KITCHEN, and the answer listed 16 orders
+> // belonging to three of them (exec 13207261). The If3 miss gate cannot catch this — the customer
+> // DID resolve, just to too many — so ask instead of unioning, reusing the require_specific picker
+> // this node already renders (numbered list -> selection_context 'disambiguation' -> positional
+> // pick). No new lane, no new node.
+> //
+> // Accounts of the SAME company are NOT ambiguity: "MASTILE KLANG SDN BHD", "… [A/C I]",
+> // "… - [IBORN]" share one base name and must keep answering together (the blessed case returns
+> // exactly one order and must not start asking). Grouping is therefore by BASE NAME, with
+> // bracketed/parenthesised account suffixes and the SDN BHD form stripped before counting.
+> //
+> // Never fires when the customer arrived via an explicit PICK — the captain's rule is that a pick
+> // merges the whole family — nor when another picker already claimed this turn (!require_specific).
+> if (!require_specific && (ALLOWED[domain] ?? []).includes('customer')) {
+>   const _pickApplied = parser.dym_pick_applied === true
+>     || Number(parser.dym_partial_pick) > 0
+>     || (Array.isArray(parser.reference_positions) && parser.reference_positions.length > 0);
+>   const _custName = (m) => {
+>     const d = (m && m.display) || {};
+>     // strip the ACCOUNT suffix only ("- [IBORN]", "[A/C I]") — the legal name, including a
+>     // parenthesised "(M)", stays. The picker lists COMPANIES; account markers are noise here.
+>     return String(d.customer_name || d.debtor_name || '').trim()
+>       .replace(/\s*-\s*\[[^\]]*\]\s*$/, '')
+>       .replace(/\s*\[[^\]]*\]\s*$/, '')
+>       .trim();
+>   };
+>   const _custBase = (m) => (_custName(m) || String((m && m.canonical_code) || ''))
+>     .toUpperCase()
+>     .replace(/\[[^\]]*\]|\([^)]*\)/g, ' ')          // [A/C I], (CERAMIC & ELLECI)
+>     .replace(/\bSDN\.?\s*BHD\.?\b|\bSDN\b|\bBHD\b/g, ' ')
+>     .replace(/[^A-Z0-9]+/g, ' ')
+>     .trim();
+>   const _bases = new Map();
+>   for (const m of flat) {
+>     if (!m || !m.uuid || String(m.entity_type).toLowerCase() !== 'customer') continue;
+>     const b = _custBase(m);
+>     if (b && !_bases.has(b)) _bases.set(b, m);          // first row wins: resolver ranks by similarity
+>   }
+>   if (!_pickApplied && _bases.size > 1) {
+>     const _reps = [..._bases.values()].slice(0, 8);     // cap the list; 8 lines is already a lot to read
+>     require_specific   = true;
+>     gate_passed        = false;
+>     gate_reason        = `'${domain}' customer token matches ${_bases.size} different companies; user must pick`;
+>     gate_clarification = 'Which customer do you mean? Please choose:\n'
+>       + _reps.map((m, i) => `${i + 1}. ${_custName(m) || m.canonical_code}`).join('\n');
+>     // the roster compile-current-state persists comes from compatible_entities, so it must be the
+>     // SAME rows in the SAME order as the numbered lines above or the positional pick misresolves.
+>     // `title` is what compile-current-state labels the roster row with (its priority is
+>     // title -> code -> canonical_code), so the persisted rows read as company NAMES and a reply
+>     // by name resolves as well as a reply by number. `code` stays the canonical debtor code.
+>     compatible_entities = _reps.map(m => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code, title: _custName(m) || m.canonical_code }));
+>   }
+> }
+> 
