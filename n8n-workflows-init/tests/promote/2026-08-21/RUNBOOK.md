@@ -31,11 +31,14 @@ Console `zz-chat` was also fixed today (drains `chat:reply:{chat_id}` before dis
 
 1. `GET /workflows/{id}` → assert `versionId === activeVersionId` and it still equals the base above.
 2. Assert node count (127 spine / 7 parser) and that `If3` still carries the OLD expression (no `allowed_lookup`).
-3. Backups in this folder are the rollback: `BACKUP-live-spine-57e70ce2.json`, `BACKUP-live-parser-350942ca.json`.
+3. Backups in this folder are the rollback: `BACKUP-live-spine.json`, `BACKUP-live-parser.json` (written by the build script from the same fresh GET the payloads were patched onto).
 
 ## Execute
 
 ```
+# rebuild first — re-fetches live, re-asserts every anchor, refuses on an unpublished draft
+python3 ../build-promote.py ../src ./
+
 PUT $N8N_API_BASE/workflows/9qVyfUxmRQqrpGRMDLRuz   --data-binary @PUT-live-spine.json
 PUT $N8N_API_BASE/workflows/XTODTw-dJcV0uRdC056hG   --data-binary @PUT-live-parser.json
 ```
@@ -59,3 +62,13 @@ One PUT of the matching `BACKUP-*.json` per target (auto-activates, restores the
 - The probe annotation discloses has/no-delivery for companies the asker did not pick. Product decision, flagged in `tests/diffs/customer-picker-probe.md`.
 - Prompt changes cannot be diffed behaviourally. The two hunks are additive and were exercised on the fork: `any offer for srtwc286-sh` → promotion tier ask; `any actual video for srtwc286` → the video picker still maps correctly.
 - Everything here was proven on the clone/fork with the zero-egress harness; no live execution was involved in any test.
+
+## Late additions (2026-08-21, after the first build)
+
+- `disallowed-entity-gate` + `compile-current-state`: `picker_families` — the picker remembers which accounts each candidate stands for, so a pick covers the same accounts the probe measured (the "has delivery" → "no delivery" contradiction).
+- `output_exchange`: a **domain change clears carried scope** when the turn names its own entities. Fixes a promotion query's product leaking into the next order question; a pure `reuse` turn ("any promotion for it") still carries by design.
+- Rebuild with `build-promote.py` rather than editing the payloads — it re-fetches live, re-asserts every anchor (including that live's `output_exchange` is still the fork base and that the video mapping survives), and refuses to build against an unpublished draft.
+
+## Known gap, not addressed here
+
+A pronoun-only domain switch ("any offer for **it**") returns a null domain from the LLM, so the fork's domain-continuity carry keeps the previous domain and answers in the old one. Pre-existing; fixing it means either a prompt change or another deterministic text rule, and neither was in scope.
