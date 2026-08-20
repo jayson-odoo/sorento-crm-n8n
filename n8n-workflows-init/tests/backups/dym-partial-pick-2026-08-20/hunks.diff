@@ -1,0 +1,46 @@
+225c225,230
+<     const _sameHint = _prior.filter(e => norm(e.hint) === norm(_hit.for_hint));
+---
+>     // ADD-BOTH safety: an entity ALREADY minted by a pick THIS TURN is not a source token. Without
+>     // this exclusion the second candidate of a multi-pick (same for_raw, same for_hint) lands on the
+>     // first pick's own entity and overwrites it — measured, exec 13203346: merging both MASTILE KLANG
+>     // accounts returned only the last one. _ceDymPickedKeys already records every code applyDymPick
+>     // minted this turn, so the guard needs no new state.
+>     const _sameHint = _prior.filter(e => norm(e.hint) === norm(_hit.for_hint) && !_ceDymPickedKeys.has(_ceKey(e)));
+288,289c293,325
+<   if (!_hit) return;                          // code not in the map → fall through to today's behaviour
+<   output.output.entities = applyDymPick(_hit, _offer, _prev.entities, true);
+---
+>   if (_hit) { output.output.entities = applyDymPick(_hit, _offer, _prev.entities, true); return; }
+>   // ── PARTIAL-REPLY PICK (captain, 2026-08-20) ────────────────────────────────
+>   // A reply that is a FRAGMENT of an offered code — "MASTILE KLANG" against the offered
+>   // "MASTILE KLANG SDN BHD" — is a pick, not a new query. Customers reply with the name they
+>   // know, not the ledger's full legal string. MEASURED: exec 13201053 fell through to the
+>   // member-pick arm and answered with the clarification LLM ("what information do you need
+>   // about MASTILE KLANG?"), losing the turn's date window and product entirely.
+>   // The exact-match path above is untouched; this runs ONLY when it found nothing.
+>   // Guards: a fully-classified new query (own domain AND intent) is never hijacked; ≥4 chars;
+>   // never a date or a bare number (the numbered path owns those); and the reply must be
+>   // contained IN the candidate, never the reverse — an offered code embedded in a larger
+>   // new-domain phrase must keep falling through (the #5 domain-carry regression guard).
+>   if (output.output.domain_hint && output.output.intent_hint) return;
+>   if (_msg.length < 4 || _msg.length > 60 || _isDateLike(_msg) || /^\d+$/.test(_msg)) return;
+>   // "reply a product then is product, reply a person's name then is person" (captain, 2026-08-20):
+>   // a reply that IS a label on the open roster (CS members, company picks) belongs to that arm, even
+>   // if it also happens to be a fragment of an offered code. The exact-code path above still wins for
+>   // a real code; only the fuzzy fragment path defers here.
+>   const _rosterLabels = new Set((Array.isArray(_prev.last_result_set) ? _prev.last_result_set : [])
+>       .map(_r => norm(_r && _r.label)).filter(Boolean));
+>   if (_rosterLabels.has(_msg)) return;
+>   const _partials = _cands.filter(c => !_isDateLike(c.code)
+>       && norm(c.code) !== _msg && norm(c.code).includes(_msg));
+>   if (!_partials.length) return;
+>   // An ambiguous fragment MERGES every candidate it matches (captain's decision, 2026-08-20):
+>   // "MASTILE KLANG" prefixes both the plain account and "[A/C I]", so both are queried rather
+>   // than one being guessed. Threaded with slot-matching OFF so replacements ACCUMULATE (the
+>   // ADD-BOTH contract dymNumberedMultiSelect already uses) and so #5's domain-carry fires —
+>   // a fragment reply is a bare-reply-to-offer, never a fresh catalogue lookup.
+>   let _base = Array.isArray(_prev.entities) ? _prev.entities : [];
+>   for (const _c of _partials) _base = applyDymPick(_c, _offer, _base, false);
+>   output.output.entities = _base;
+>   output.output.dym_partial_pick = _partials.length;   // diagnostic (drop-when-absent in replay norm())
