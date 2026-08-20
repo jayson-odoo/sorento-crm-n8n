@@ -21,7 +21,9 @@ The report's §4.8 candidate, applied verbatim: keep the loose guess only when t
 
 ## Open finding surfaced by the fixed run (NOT part of this hunk)
 
-The now-answered turn returns 16 orders across **three distinct companies** — SB SMART CONCEPT SDN BHD, EUROSMART BATHROOM SOLUTION (M) SDN BHD, SMART PLUS SDN BHD — because the customer token "4 smart" fuzzy-resolves to all of them. The If3 gate cannot catch this: the customer *did* resolve, just ambiguously. This is cross-customer breadth of a different class (ambiguous-resolve, not miss) and needs its own decision — ask/disambiguate vs union. Captain decision pending.
+The now-answered turn returns 16 orders across **three distinct companies** — SB SMART CONCEPT SDN BHD, EUROSMART BATHROOM SOLUTION (M) SDN BHD, SMART PLUS SDN BHD — because the customer token "4 smart" fuzzy-resolves to all of them. The If3 gate cannot catch this: the customer *did* resolve, just ambiguously. This is cross-customer breadth of a different class (ambiguous-resolve, not miss).
+
+**Captain decision, 2026-08-20: LEAVE AS IS for now** — a vague customer token keeps returning every matching company's orders; recorded as a known gap, revisit later. The companion decision: an explicit fragment PICK keeps merging every account under the picked name (the MASTILE `[A/C I]`/`[IBORN]`/`[CERAMIC]` family), because a pick means the customer chose that name. Any future ask-rule therefore applies only to freshly-typed, un-picked tokens.
 
 ## Promote (HELD)
 
