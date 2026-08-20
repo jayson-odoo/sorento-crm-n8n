@@ -108,7 +108,7 @@ assert p['versionId'] == p['activeVersionId'], 'live parser has an unpublished d
 PN = {n['name']: n for n in p['nodes']}
 assert PN['output_exchange']['parameters']['jsCode'] == S('ox-before.js'), \
     'live output_exchange is no longer the fork base — cherry-pick instead of copying'
-PN['output_exchange']['parameters']['jsCode'] = S('ox-after8.js')
+PN['output_exchange']['parameters']['jsCode'] = S('ox-after10.js')
 sysmsg = PN['AI Agent']['parameters']['options']['systemMessage']
 for old, new in (
     ('- "selling price", "promo price", "promotion price", "discount price" → domain_hint = promotion',
