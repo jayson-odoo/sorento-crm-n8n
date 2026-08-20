@@ -1,0 +1,74 @@
+287a288,305
+> // shared by the ambiguity picker AND the pinned-pick block below — ONE definition, so the two
+> // can never disagree about what counts as "the same company".
+> const _custName = (m) => {
+>   const d = (m && m.display) || {};
+>   // strip the ACCOUNT suffix only ("- [IBORN]", "[A/C I]") — the legal name, including a
+>   // parenthesised "(M)", stays. The picker lists COMPANIES; account markers are noise here.
+>   return String(d.customer_name || d.debtor_name || '').trim()
+>     .replace(/\s*-\s*\[[^\]]*\]\s*$/, '')
+>     .replace(/\s*\[[^\]]*\]\s*$/, '')
+>     .trim();
+> };
+> const _custBase = (m) => (_custName(m) || String((m && m.canonical_code) || ''))
+>   .toUpperCase()
+>   .replace(/\[[^\]]*\]|\([^)]*\)/g, ' ')          // [A/C I], (CERAMIC & ELLECI)
+>   .replace(/\bSDN\.?\s*BHD\.?\b|\bSDN\b|\bBHD\b/g, ' ')
+>   .replace(/[^A-Z0-9]+/g, ' ')
+>   .trim();
+> 
+292,306d309
+<   const _custName = (m) => {
+<     const d = (m && m.display) || {};
+<     // strip the ACCOUNT suffix only ("- [IBORN]", "[A/C I]") — the legal name, including a
+<     // parenthesised "(M)", stays. The picker lists COMPANIES; account markers are noise here.
+<     return String(d.customer_name || d.debtor_name || '').trim()
+<       .replace(/\s*-\s*\[[^\]]*\]\s*$/, '')
+<       .replace(/\s*\[[^\]]*\]\s*$/, '')
+<       .trim();
+<   };
+<   const _custBase = (m) => (_custName(m) || String((m && m.canonical_code) || ''))
+<     .toUpperCase()
+<     .replace(/\[[^\]]*\]|\([^)]*\)/g, ' ')          // [A/C I], (CERAMIC & ELLECI)
+<     .replace(/\bSDN\.?\s*BHD\.?\b|\bSDN\b|\bBHD\b/g, ' ')
+<     .replace(/[^A-Z0-9]+/g, ' ')
+<     .trim();
+328a332,369
+> // ── A PINNED PICK WINS OVER FUZZY RE-RESOLUTION (captain, 2026-08-20) ────────
+> // An entity carrying a uuid came from a roster pick — the customer already told us which row they
+> // meant. The resolver still re-resolves its NAME as text, and that sprays siblings: picking
+> // "SIGNATURE BUILDING MATERIAL SDN BHD" off the picker matched 9 customers, KL BUILDING MATERIALS
+> // among them, and the answer showed the wrong company (exec 13212841). Restrict the picked
+> // entity's TYPE to the pinned uuids; other types (the product, the date-scoped rest) are untouched.
+> // Fails open: applied only when every pinned uuid actually survived resolution, so a stale pin
+> // leaves the turn byte-identical.
+> if (!require_specific) {
+>   const _pins = (Array.isArray(parser.entities) ? parser.entities : [])
+>     .filter(e => e && e.current_message === true && e.uuid);
+>   const _pinUuids = new Set(_pins.map(e => String(e.uuid)));
+>   if (_pinUuids.size) {
+>     const _pinTypes = new Set(_pins.map(e => String(e.hint || '').toLowerCase()).filter(Boolean));
+>     const _allPresent = [..._pinUuids].every(u => compatible_entities.some(c => String(c.uuid) === u));
+>     if (_allPresent) {
+>       // A picked CUSTOMER selects its whole ACCOUNT FAMILY, never just the pinned row — the
+>       // captain's rule is that a pick answers the company. Picking "SIGNATURE BUILDING MATERIAL
+>       // SDN BHD" therefore keeps 300-S292/S293/S294 ([A/C I]/[III]/[IV]) and drops KL BUILDING
+>       // MATERIALS, KOW HOCK, MKH, TEK WEE and TROPICANA, which merely share the words.
+>       const _rowByUuid = new Map(flat.filter(m => m && m.uuid).map(m => [String(m.uuid), m]));
+>       const _pinBases = new Set([..._pinUuids]
+>         .map(u => _rowByUuid.get(u))
+>         .filter(m => m && String(m.entity_type).toLowerCase() === 'customer')
+>         .map(_custBase).filter(Boolean));
+>       const _kept = compatible_entities.filter(c => {
+>         const t = String(c.entity_type).toLowerCase();
+>         if (!_pinTypes.has(t)) return true;                       // other types untouched
+>         if (_pinUuids.has(String(c.uuid))) return true;           // the pinned row itself
+>         if (t !== 'customer' || !_pinBases.size) return false;    // non-customer pins stay exact
+>         const row = _rowByUuid.get(String(c.uuid));
+>         return !!row && _pinBases.has(_custBase(row));            // same company -> keep
+>       });
+>       if (_kept.length) compatible_entities = _kept;
+>     }
+>   }
+> }
+> 
