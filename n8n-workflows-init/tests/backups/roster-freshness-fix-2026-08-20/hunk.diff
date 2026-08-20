@@ -1,0 +1,18 @@
+1140,1141c1140,1153
+<   const _cpFreshTyped = (Array.isArray(qf.entities) ? qf.entities : [])
+<     .some(e => e && e.current_message === true && e.ordinal == null && e.dym_slot == null);
+---
+>   // Freshness is judged on what the CUSTOMER actually typed — the LLM's OWN entity list — not the
+>   // post-processed one. output_exchange re-attaches the prior scope on a pick (its block C) as
+>   // current_message with no ordinal, and the old test read that as a new enquiry and dropped the
+>   // very roster this block exists to keep: after picking "1" the session carried cust=0 and the
+>   // list was gone, so a following "all" had no context to expand (execs 13238271 / 13238351).
+>   const _cpRawEnts = (() => { try {
+>     const _j = $('Call \'sub-query-reformulator\'').first().json;
+>     const _r = _j && _j._parser_raw;
+>     return Array.isArray(_r && _r.entities) ? _r.entities : null;
+>   } catch (e) { return null; } })();
+>   const _cpFreshTyped = Array.isArray(_cpRawEnts)
+>     ? _cpRawEnts.some(e => e && e.current_message === true)
+>     : (Array.isArray(qf.entities) ? qf.entities : [])
+>         .some(e => e && e.current_message === true && e.ordinal == null && e.dym_slot == null);
