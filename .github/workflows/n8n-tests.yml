@@ -30,3 +30,10 @@ jobs:
         env:
           REQUIRE_FULL_COVERAGE: '1'
         run: npm test
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run deploy.py gate tests (stdlib unittest, offline, 0 network to n8n)
+        run: python3 n8n-workflows-init/tests/unit/deploy_gates_test.py -v
