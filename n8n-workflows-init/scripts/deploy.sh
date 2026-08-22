@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 #
+# ⚠️ DEPRECATED (2026-08-22, plans/test-pyramid-and-git-deploy.md step 5). Targets the deleted
+# normalized-workflows/ + a local docker n8n; both are gone. Use `scripts/deploy.py` instead —
+# it targets export/<slug>/ on THIS instance, gates on git-clean + npm test + freshness + a
+# protected-target list, and defaults to --dry-run. Kept only for its backup-first idea; do not run.
+#
 # deploy.sh — backup-first deploy of workflow JSON into PROD n8n (run on prod).
 #
 # Pipeline: confirm -> backup prod -> credential remap -> PUT via n8n public API

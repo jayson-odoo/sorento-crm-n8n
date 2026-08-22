@@ -16,9 +16,31 @@ n8n workflows integrating **Sorento CRM** with **respond.io** (WhatsApp). The ch
 
 **Testing must NEVER reach a real contact or mutate prod.** Specifically: no WhatsApp/comment send to a real respond.io contact; no assignment/SLA/PIC-comment write (those trigger staff email/WhatsApp ripple); no write to the prod CRM (`respond_contacts.session_vars`, conversation-variables PUT, etc.). CRM **reads** against prod are allowed. Every harness design choice exists to preserve this. If something is blocked, report it — never work around a safety/permission denial.
 
+## 🧭 DESIGN PRINCIPLE: simple is better (standing, non-negotiable)
+
+The spine has grown past what its owner can read. From now on every design, plan, build and review is
+judged against this first:
+
+- **Build the simplest thing that solves the problem end to end.** One general path beats several special cases.
+- **No new node, branch, flag, sub-workflow, cache, config knob or abstraction** unless the direct path is
+  *proven* inadequate — and you must be able to say *what proved it* (an observed failure, not a hypothetical).
+- **Nothing for hypothetical futures.** Don't tailor to the ticket's example either — handle the ordinary range of real inputs without special-casing the sample.
+- **Delete dead paths, orphans and unused escape hatches** instead of keeping them "just in case". Each change should leave the workflow *smaller or equal*, not bigger, unless the feature genuinely needs new surface.
+- **Modularize by responsibility, not by history.** A sub-workflow earns its existence by having one clear input contract, one output contract, and a name that says what it does. "We forked it once" is not a reason.
+- **Readability is a requirement.** If the owner can't follow the flow in `TOPOLOGY.md` without a guide, the change is not done — fix the structure, not the docs.
+- **Canvas layout is part of the deliverable.** Nodes are laid out left→right in execution order, one lane per
+  branch, related nodes grouped and labelled by sticky note, no overlapping edges. Every build/promote re-positions
+  the nodes it touched; a change that leaves the canvas less readable than it found it is not done. Names say what
+  the node does (`route-turn`, not `If7`).
+- **Push back on findings that propose machinery.** A reviewer (`sorento-reviewer`, `/code-review`, `/codex-review`) suggesting a layer is a finding to argue with, not an instruction.
+
+**Not machinery:** fail-loud guards, negative test cases, explicit invariants and the zero-egress harness.
+Those are the direct path to a correct result and several live bugs came from their absence. Simplicity
+means no *needless* layer — not no guard. The test for a proposed guard: does a real, observed failure motivate it?
+
 ## The chatbot spine + the test clone
 
-- **`sorento-consume-main`** (`9qVyfUxmRQqrpGRMDLRuz`, ~75 nodes, LIVE/active) — the spine: redis-pop → reformulator (gpt-5.4-mini, the "semantic parser", sub `XTODTw-dJcV0uRdC056hG`) → branch (escalation/no-access/ask-access/not-supported/clarify/happy) → resolve-entity → get-rag → get-results (MCP read) → shape → send + log. A second LLM, `Basic LLM Chain` (gpt-4.1-mini), is the **clarification** path (gated behind `validator.has_result=false`, NOT always-on).
+- **`sorento-consume-main`** (`9qVyfUxmRQqrpGRMDLRuz`, **127 nodes** as of 2026-08-22 — was ~75; see `docs/SIMPLIFY-spine-audit.md`, LIVE/active) — the spine: redis-pop → reformulator (gpt-5.4-mini, the "semantic parser", sub `XTODTw-dJcV0uRdC056hG`) → branch (escalation/no-access/ask-access/not-supported/clarify/happy) → resolve-entity → get-rag → get-results (MCP read) → shape → send + log. A second LLM, `Basic LLM Chain` (gpt-4.1-mini), is the **clarification** path (gated behind `validator.has_result=false`, NOT always-on).
 - **`sorento-consume-main TEST`** (`txiPzSxy3Pclsz6v`, ~97 nodes) — the **fail-closed clone** we test against. Driven by a redis item on list `main-message-list-test` via a Manual-Trigger wrapper (`zz-canary-run` `VtIV3TF3aw2Fx8No`). It is **structurally incapable of real egress**:
   - 5 egress nodes orphaned (0 inbound): `send-message-files/images/video`, `update-human-intervened`, the prod `save-session-vars` PUT; plus `Call 'sub-respond-save-message-redis'2`.
   - All 8 shared-sub calls pass `is_test=true` → the (forked) subs short-circuit before any real send/assign.
@@ -44,7 +66,14 @@ n8n workflows integrating **Sorento CRM** with **respond.io** (WhatsApp). The ch
 | replay orchestrator | `aROEBlQyyoQaB7a1` |
 | test helpers | `zz-canary-run VtIV3TF3aw2Fx8No`, `zz-canary-seed 4eDGDBL3rEkGQuBV`, `zz-canary-read LLIbMXAixexM9Cwc` |
 
-## Two harnesses
+## Testing + deploy direction (DECIDED 2026-08-22 — see `n8n-workflows-init/plans/test-pyramid-and-git-deploy.md`)
+
+- **Git is the source of truth; deploy is a script.** Edit `export/<slug>/nodes/*.js` + `workflow.json`, not the live instance. (Transitional: until `deploy.py` lands, the verified export remains a cache and live remains authoritative — §above still applies.)
+- **Three tiers, one command each:** unit (every Code node, real body via `node-source.js`, fixtures captured from real executions, ms) → flow (lanes in-process, asserts PATH + output, seconds) → functional (~15 clone smoke turns, minutes). **Deploy refuses unless unit+flow are green.**
+- Golden-master replay is **retired** (stale since 2026-07-07, per-node noise). `tests/unit/*.test.js` copy-paste style is banned — bodies load only through `node-source.js`.
+- Logic stays in n8n (owner decision); the simplification audit runs on top of this gate, never before it.
+
+## Two harnesses (historical — superseded by the plan above; kept until the new tiers land)
 
 1. **UAC / smoke** (cycle 1): drive the clone in `uac` mode with a hand-crafted redis item; assert the branch + the **egress log** (redis key `test:egress:{test_run_id}`, records `would_send`/`would_write` instead of acting). Cases + safety checklist (§0 S1–S6) in `tests/UAC.md`. Per-case results in `tests/runs/`.
 2. **Regression (golden-master)**: capture every node's input/output for ~2,216 real historical messages into the **`n8n_test`** DB as a golden base; on a future change, **replay** with all externals pinned (deterministic, 0-cost) and diff each node's output vs golden. Design: `plans/regression-plan.md`. Build notes: `tests/regression/orchestrator-notes.md`. Schema: `tests/regression/schema.sql`. Reviewer sign-off: `tests/reviews/`.
