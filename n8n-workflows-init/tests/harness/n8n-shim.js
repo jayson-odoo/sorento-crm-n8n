@@ -22,6 +22,51 @@ const vm = require('vm');
 const assert = require('node:assert');
 
 const FIXTURES_ROOT = path.resolve(__dirname, '../fixtures/nodes');
+const EXPORT_ROOT = path.resolve(__dirname, '../../export');
+
+// ── Code-node execution mode (C1, cross-model review) ─────────────────────────────────────────
+// n8n's Code node has two modes and they are NOT interchangeable:
+//   runOnceForAllItems (the default; `parameters.mode` is OMITTED from workflow.json when it
+//                       applies) — body runs ONCE, `$input.all()` is the whole batch, `$json` is
+//                       item 0, and the body returns the WHOLE output item list.
+//   runOnceForEachItem — body runs ONCE PER INPUT ITEM, `$json`/`$input.item` are THAT item,
+//                       `$input.all()/.first()/.last()` are unavailable (n8n throws), and each run
+//                       returns exactly ONE item; the runs' results are concatenated.
+//
+// The mode is resolved from `export/<slug>/workflow.json` — the DEPLOYED artifact itself, the same
+// file run-lane.js walks and the same file tests/harness/pin-wiring.js derives the committed
+// wiring pin from. Deliberately NOT from wiring.json: that is a derived copy kept honest by a test,
+// and reading behaviour out of a copy is one more thing that can drift from what actually ships.
+// Reading workflow.json means the harness executes a node the way the bytes headed for n8n say to.
+const _wfCache = new Map();
+function _workflowOf(slug) {
+  if (!_wfCache.has(slug)) {
+    const p = path.join(EXPORT_ROOT, slug, 'workflow.json');
+    if (!fs.existsSync(p)) throw new Error(`codeNodeMode: no export/${slug}/workflow.json — run export-workflows.py`);
+    _wfCache.set(slug, JSON.parse(fs.readFileSync(p, 'utf8')));
+  }
+  return _wfCache.get(slug);
+}
+
+const MODE_ALL = 'runOnceForAllItems';
+const MODE_EACH = 'runOnceForEachItem';
+
+function assertKnownMode(mode) {
+  if (mode !== MODE_ALL && mode !== MODE_EACH) {
+    throw new Error(`n8n-shim: unknown Code node mode ${JSON.stringify(mode)} — expected "${MODE_ALL}" or "${MODE_EACH}"`);
+  }
+  return mode;
+}
+
+function codeNodeMode(slug, nodeName) {
+  const wf = _workflowOf(slug);
+  const node = (wf.nodes || []).find((n) => n.name === nodeName);
+  if (!node) throw new Error(`codeNodeMode: no node named "${nodeName}" in export/${slug}/workflow.json`);
+  if (node.type !== 'n8n-nodes-base.code') {
+    throw new Error(`codeNodeMode: "${nodeName}" in ${slug} is a ${node.type}, not a Code node`);
+  }
+  return assertKnownMode((node.parameters || {}).mode ?? MODE_ALL);
+}
 
 // ── deep copy ───────────────────────────────────────────────────────────────────────────────
 // Several node bodies splice/sort/mutate items IN PLACE (promo-picker's S4b sort is the clearest
@@ -57,36 +102,73 @@ function deepCopy(v) {
 // `items` here is already the ONE array `buildSandbox` copied for this call (see below); this
 // accessor must NOT copy again per method call, or that mutation is silently lost against an
 // independent copy (found hand-crafting the `set-human-intervened` fixture — see its
-// `source.rationale`). `.all()` still returns a fresh ARRAY (`.slice()`) so a body can't corrupt
-// the accessor's own backing array by splicing the returned list, but the ITEMS inside it are the
-// same references as `.first()`/`.item` — mutating `.all()[0].json` is visible on a later
-// `.first()` too, matching production.
-function makeAccessor(items, label, known) {
+// `source.rationale`). Since C3 (below) `.all()` returns that same backing array itself, so a body
+// that splices/sorts the returned list mutates what a later `.first()`/`.all()`/`.item` sees —
+// which is precisely what production does.
+// C3 (cross-model review): `.all()` returns the LIVE BACKING ARRAY, not `arr.slice()`. Real n8n
+// hands the body its own item array — `promo-picker` genuinely splices in place (see its own S4b
+// comments), and against a defensive copy that splice mutated a throwaway, so an in-place-mutation
+// bug behaved one way in production and another way offline. Tests stay isolated from each other
+// because `buildSandbox` deep-copies the fixture ONCE PER CALL (see below): the array a body can
+// now corrupt is this execution's private copy, never the caller's fixture or the file on disk.
+//
+// C1/C4: `perItemIndex` is set only for `$input` inside a `runOnceForEachItem` run. There:
+//   - `.all()/.first()/.last()` THROW, exactly as n8n does (they are all-items-mode-only)
+//   - `.item` is the CURRENT item, exactly resolvable
+// Everywhere else (`$input` in all-items mode, and every `$('x')` accessor in either mode) `.item`
+// is a PAIRED-ITEM read: n8n walks the paired-item links back to the one source item and throws
+// when the link is missing or ambiguous. This harness does not track paired items, so it resolves
+// `.item` only in the unambiguous case (exactly one candidate item) and THROWS on more than one.
+// Silently returning item 0 there is the green-that-cannot-fail class: a real ambiguity would read
+// as a confident answer.
+function makeAccessor(items, label, known, perItemIndex) {
   const arr = Array.isArray(items) ? items : [];
+  const perItem = typeof perItemIndex === 'number';
   const unstubbed = !known
     ? ` — this name has no "ctx" entry at all in the fixture (known: will be listed by the caller)`
     : '';
+  const modeThrow = (m) => {
+    throw new Error(
+      `${label}.${m}(): unavailable in a "runOnceForEachItem" Code node — real n8n throws here. ` +
+      `A per-item body sees only its own item, via $json / $input.item.`
+    );
+  };
   return {
     first() {
+      if (perItem) modeThrow('first');
       if (arr.length === 0) throw new Error(`${label}.first(): zero items${unstubbed || ' (fixture has zero items)'}`);
       return arr[0];
     },
     all() {
+      if (perItem) modeThrow('all');
       if (arr.length === 0 && !known) throw new Error(`${label}.all(): zero items${unstubbed}`);
-      return arr.slice();
+      return arr;
     },
     last() {
+      if (perItem) modeThrow('last');
       if (arr.length === 0) throw new Error(`${label}.last(): zero items${unstubbed || ' (fixture has zero items)'}`);
       return arr[arr.length - 1];
     },
     get item() {
+      if (perItem) return arr[perItemIndex];
       if (arr.length === 0) throw new Error(`${label}.item: zero items${unstubbed || ' (fixture has zero items)'}`);
+      if (arr.length > 1) {
+        throw new Error(
+          `${label}.item: ${arr.length} items — \`.item\` is a PAIRED ITEM read, which n8n resolves ` +
+          `through paired-item links and errors on when the link is missing or ambiguous. This ` +
+          `harness does not track paired items, so it refuses to guess (returning item 0 would be a ` +
+          `confident wrong answer). Use .first()/.all() if the body genuinely means item 0.`
+        );
+      }
       return arr[0];
     },
   };
 }
 
-function buildSandbox(fixture) {
+// `itemIndex` (C1/C2): pass a number to build the sandbox for ONE item of a `runOnceForEachItem`
+// run — `$json` and `$input.item` become THAT item, and `$input.all()/.first()/.last()` throw.
+// Omit it for the ordinary all-items sandbox (`$json` = item 0, matching n8n).
+function buildSandbox(fixture, itemIndex) {
   const ctxMapRaw = (fixture && fixture.ctx) || {};
   const inputItemsRaw = (fixture && fixture.input) || [];
 
@@ -109,7 +191,11 @@ function buildSandbox(fixture) {
     return acc;
   };
 
-  const inputAcc = makeAccessor(inputItems, '$input', true);
+  const perItem = typeof itemIndex === 'number';
+  if (perItem && (itemIndex < 0 || itemIndex >= inputItems.length)) {
+    throw new Error(`buildSandbox: itemIndex ${itemIndex} out of range (fixture has ${inputItems.length} input item(s))`);
+  }
+  const inputAcc = makeAccessor(inputItems, '$input', true, perItem ? itemIndex : undefined);
 
   // REALM (S9): deliberately do NOT inject the host's Object/Array/JSON/Set/Map/String/Number/
   // Boolean/Date/Math/RegExp/Error into this sandbox. `vm.createContext(sandbox)` always hands the
@@ -127,7 +213,7 @@ function buildSandbox(fixture) {
   const sandbox = {
     $: dollar,
     $input: inputAcc,
-    $json: inputItems.length ? inputItems[0].json : undefined,
+    $json: perItem ? inputItems[itemIndex].json : (inputItems.length ? inputItems[0].json : undefined),
     $runIndex: (fixture && fixture.runIndex) ?? 0,
     $execution: (fixture && fixture.execution) ?? { id: 'test' },
     console,
@@ -137,16 +223,71 @@ function buildSandbox(fixture) {
   return sandbox;
 }
 
-// Run a node body (bare `return ...`, as n8n Code "Run Once for All Items" bodies are written)
-// against a fixture. Returns the RAW value the body returned — an array of {json} items, an array
-// of plain objects, a single plain object, or (if the body is buggy) anything else. Callers that
-// want to compare against a fixture's `expected` should normalize first (see normalizeReturn).
-function runNode({ body, fixture }) {
+// C1: a `runOnceForEachItem` body returns ONE item per run. n8n rejects an array there ("Code
+// doesn't return a single object"), so accepting one silently would let a body that is wrong in
+// production look right offline.
+function normalizeEachItemReturn(returned, i) {
+  if (Array.isArray(returned)) {
+    throw new Error(
+      `runNode (runOnceForEachItem): the body returned an ARRAY for input item ${i} — a per-item ` +
+      `Code node must return a single item ({json: {...}} or a plain object); n8n errors on an array here`
+    );
+  }
+  if (!returned || typeof returned !== 'object') {
+    throw new Error(
+      `runNode (runOnceForEachItem): the body returned a ${returned === null ? 'null' : typeof returned} ` +
+      `for input item ${i} — a per-item Code node must return a single item`
+    );
+  }
+  return Object.prototype.hasOwnProperty.call(returned, 'json') ? returned : { json: returned };
+}
+
+// Run a node body (bare `return ...`, as n8n Code node bodies are written) against a fixture.
+//
+// MODE IS NOT OPTIONAL (C1). Real n8n runs the body once for the whole batch or once per item, and
+// which one it does is a property of the DEPLOYED node, not of the test. Pass either
+// `slug` + `nodeName` (resolved from export/<slug>/workflow.json — use this for any real exported
+// body, so the harness can never drift from what ships) or an explicit `mode` (for a synthetic
+// body that has no deployed node behind it). Guessing a default was how a per-item node got
+// executed for-all-items with nobody noticing, so there is no default.
+//
+// Returns the RAW value the body returned:
+//   runOnceForAllItems — whatever the body returned, untouched (array of {json} items, array of
+//                        plain objects, a single plain object, or — if the body is buggy —
+//                        anything else). Callers comparing against a fixture's `expected` should
+//                        normalize first (see normalizeReturn).
+//   runOnceForEachItem — the concatenated per-run results, already an array of {json} items (which
+//                        normalizeReturn then passes through unchanged).
+function runNode({ body, fixture, slug, nodeName, mode }) {
   if (typeof body !== 'string') throw new Error('runNode: body must be the node source as a string (load it via node-source.js)');
-  const sandbox = buildSandbox(fixture);
-  const ctx = vm.createContext(sandbox);
+  let resolvedMode;
+  if (mode !== undefined) {
+    resolvedMode = assertKnownMode(mode);
+  } else if (slug && nodeName) {
+    resolvedMode = codeNodeMode(slug, nodeName);
+  } else {
+    throw new Error(
+      'runNode: no execution mode — pass `slug` + `nodeName` (resolved from export/<slug>/workflow.json, ' +
+      'correct for any real exported body) or an explicit `mode` for a synthetic body. There is no ' +
+      'default: silently assuming runOnceForAllItems is how a per-item node gets mis-executed.'
+    );
+  }
   const script = `(function(){\n${body}\n})()`;
-  return vm.runInContext(script, ctx, { filename: 'n8n-code-node.js' });
+
+  if (resolvedMode === MODE_ALL) {
+    const ctx = vm.createContext(buildSandbox(fixture));
+    return vm.runInContext(script, ctx, { filename: 'n8n-code-node.js' });
+  }
+
+  // runOnceForEachItem: one execution per input item, results concatenated. With zero input items
+  // the body never runs at all (n8n emits nothing), which is why this is not an error.
+  const inputCount = ((fixture && fixture.input) || []).length;
+  const out = [];
+  for (let i = 0; i < inputCount; i++) {
+    const ctx = vm.createContext(buildSandbox(fixture, i));
+    out.push(normalizeEachItemReturn(vm.runInContext(script, ctx, { filename: 'n8n-code-node.js' }), i));
+  }
+  return out;
 }
 
 // S7: `assertOutputEquals` (below) diffs `actual` against `expected` only AFTER both sides pass
@@ -176,6 +317,30 @@ function assertNoNonFiniteNumbers(value, path) {
 //   - a single plain object            -> [{json: obj}]
 //   - an array of plain objects        -> obj.map(o => ({json: o}))
 //   - an array of {json: ...} items    -> left as-is
+// C5 (cross-model review): n8n requires every output item's `json` to be a NON-ARRAY OBJECT. It
+// errors on `{json: []}`, on `{json: null}`, and on an array element that isn't an object at all
+// ("Always return an array of objects"). This normalizer used to wave all three through — `[]` and
+// `null` are perfectly good JSON, so they survived the round-trip and could even compare equal to
+// a fixture that legitimately held them, which is a production error passing as a green test.
+// Validate the shape and name the offending index.
+function assertItemShape(out) {
+  out.forEach((it, i) => {
+    if (!it || typeof it !== 'object' || Array.isArray(it)) {
+      throw new Error(
+        `normalizeReturn: output index ${i} is ${Array.isArray(it) ? 'an array' : (it === null ? 'null' : typeof it)}, ` +
+        `not an item object — n8n requires an array of objects`
+      );
+    }
+    const j = it.json;
+    if (!j || typeof j !== 'object' || Array.isArray(j)) {
+      throw new Error(
+        `normalizeReturn: output index ${i} has json = ${Array.isArray(j) ? 'an array' : (j === null ? 'null' : typeof j)} — ` +
+        `n8n requires each item's \`json\` to be a non-array object, and errors on this in production`
+      );
+    }
+  });
+}
+
 function normalizeReturn(returned) {
   let out;
   if (Array.isArray(returned)) {
@@ -188,6 +353,7 @@ function normalizeReturn(returned) {
   } else {
     throw new Error(`normalizeReturn: node returned a ${returned === null ? 'null' : typeof returned}, which n8n's Code node cannot turn into items`);
   }
+  assertItemShape(out);
   assertNoNonFiniteNumbers(out, '');
   return out;
 }
@@ -227,6 +393,7 @@ function loadFixtures(slug, nodeName) {
 
 module.exports = {
   runNode,
+  codeNodeMode,
   loadFixtures,
   assertOutputEquals,
   normalizeReturn,

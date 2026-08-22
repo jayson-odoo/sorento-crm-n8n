@@ -228,13 +228,44 @@ function loadCodeBody(slug, nodeName) {
   return src[file];
 }
 
+// C7 (cross-model review): honour the Code node's execution `mode`, exactly as the unit tier does
+// — otherwise the two tiers disagree about what the SAME deployed node does. The mode is read off
+// the node object this walker already holds (from the very workflow.json it is walking), so an
+// injected `workflowJson` is honoured too, and there is no second lookup to drift.
 function runCodeNode(slug, node, items, ctxView, execution) {
   const body = loadCodeBody(slug, node.name);
-  const raw = runNode({ body, fixture: { ctx: ctxView, input: items, execution } });
+  const mode = (node.parameters || {}).mode ?? 'runOnceForAllItems';
+  const raw = runNode({ body, fixture: { ctx: ctxView, input: items, execution }, mode });
   return { items: normalizeReturn(raw), outputIndex: 0 };
 }
 
+// C6 (cross-model review): real n8n evaluates an If/Switch condition for EVERY input item and
+// SPLITS the batch across the outputs — one If can emit items on both the true and the false
+// branch. This walker evaluates the condition once (against `$json` = item 0) and routes the whole
+// batch down a single edge, which is a silently wrong branch the moment more than one item arrives.
+//
+// MEASURED before choosing the fix: instrumented `runIfNode`/`runSwitchNode` to log
+// `items.length` and ran the whole flow suite — 82 If invocations across every committed lane, 0
+// Switch invocations, and EVERY one received exactly 1 item. So per-item bucketing has no caller
+// to justify it; per this repo's design principle the honest fix is to refuse the case loudly
+// rather than build a splitter nothing exercises. What would need real per-item bucketing: a lane
+// whose start/end pair crosses an If/Switch with a multi-item batch (e.g. anything downstream of
+// `tier-probe-collect`, which really does carry 3 items) — that needs `{items, outputIndex}` to
+// become a per-output item map, and `runLane` to walk more than one branch.
+function assertSingleItem(node, items) {
+  if (items.length > 1) {
+    throw new Error(
+      `run-lane: "${node.name}" received more than one input item (${items.length}). Real n8n ` +
+      `evaluates an If/Switch condition PER ITEM and splits the batch across its outputs (items can ` +
+      `come out on BOTH branches); this walker evaluates once for the batch and would route all ` +
+      `${items.length} items down one edge — a silently wrong branch. Implement per-item bucketing ` +
+      `before using a multi-item batch in a lane.`
+    );
+  }
+}
+
 function runIfNode(node, items, ctxView) {
+  assertSingleItem(node, items);
   const sandbox = buildSandbox({ ctx: ctxView, input: items });
   const vmCtx = vm.createContext(sandbox);
   ensureExpressionExtensions(vmCtx);
@@ -243,6 +274,7 @@ function runIfNode(node, items, ctxView) {
 }
 
 function runSwitchNode(node, items, ctxView) {
+  assertSingleItem(node, items);
   const sandbox = buildSandbox({ ctx: ctxView, input: items });
   const vmCtx = vm.createContext(sandbox);
   ensureExpressionExtensions(vmCtx);

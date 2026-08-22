@@ -59,7 +59,9 @@ for (const slug of SLUGS) {
       const body = src[file];
       for (const { name, fixture } of fixtures) {
         await t.test(name, () => {
-          const out = runNode({ body, fixture });
+          // C1: slug + nodeName so the shim resolves this node's DEPLOYED execution mode
+          // (runOnceForAllItems / runOnceForEachItem) from export/<slug>/workflow.json.
+          const out = runNode({ body, fixture, slug, nodeName });
           try {
             assertOutputEquals(out, fixture.expected);
             row.pass += 1;

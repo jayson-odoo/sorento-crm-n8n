@@ -12,6 +12,7 @@ const { runNode, normalizeReturn } = require('../harness/n8n-shim');
 
 const SLUG = 'live-spine-sorento-consume-main';
 const NODE_FILE = 'dym-transform.js';
+const NODE_NAME = 'dym-transform';   // C1: the shim resolves this node's deployed mode by name
 const src = loadNodes(SLUG, [NODE_FILE]);
 const BODY = src[NODE_FILE];
 
@@ -28,7 +29,7 @@ function run({ notFound = NOT_FOUND, parserOutput, resolutions, gate } = {}) {
   };
   // JSON round-trip: vm-context objects/arrays aren't assert.deepStrictEqual-comparable against
   // this file's own-realm literals (see the identical note in promo-picker.test.js).
-  return JSON.parse(JSON.stringify(normalizeReturn(runNode({ body: BODY, fixture }))[0].json));
+  return JSON.parse(JSON.stringify(normalizeReturn(runNode({ body: BODY, fixture, slug: SLUG, nodeName: NODE_NAME }))[0].json));
 }
 
 test('dym-transform: never throws on a completely empty context (every $() read is wrapped)', () => {
@@ -42,7 +43,7 @@ test('dym-transform: never throws on a completely empty context (every $() read 
     },
     input: [{ json: {} }],
   };
-  const out = normalizeReturn(runNode({ body: BODY, fixture }));
+  const out = normalizeReturn(runNode({ body: BODY, fixture, slug: SLUG, nodeName: NODE_NAME }));
   assert.strictEqual(out.length, 1);
   assert.strictEqual(out[0].json.probe_needed, false);
 });

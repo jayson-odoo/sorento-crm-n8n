@@ -111,3 +111,45 @@ test('S13: evalConditionGroup defaults an omitted typeValidation to "strict" (n8
     /strict typeValidation failure/
   );
 });
+
+// ══════════════════════════════════════════════════════════════════════════════════════════════
+// Cross-model (codex gpt-5.5) review findings C6 / C7 — the LANE tier's own divergences from n8n.
+// ══════════════════════════════════════════════════════════════════════════════════════════════
+
+// C6: real n8n evaluates an If/Switch condition for EVERY input item and splits the items across
+// its outputs — one If can emit items on BOTH the true and the false branch. This walker evaluates
+// the condition ONCE for the whole batch and routes the batch whole, which is a silently wrong
+// branch the moment >1 item reaches it. MEASURED: across every committed lane, 0 If/Switch
+// invocations receive more than one item (instrumented run-lane, 82 invocations, all items=1) — so
+// per-item bucketing has no caller to justify it and the honest fix is to refuse the case.
+// `if-message-is-audio` is reached with whatever items its caller passes; feed it two.
+test('C6: run-lane throws when an If receives >1 input item, instead of routing the batch whole', () => {
+  assert.throws(
+    () => runLane({
+      slug: SLUG,
+      start: 'if-message-is-audio',
+      end: 'if-message-is-audio',
+      ctx: {},
+      input: [{ json: { message: { message: { type: 'audio' } } } }, { json: { message: { message: { type: 'text' } } } }],
+    }),
+    /more than one input item/
+  );
+});
+
+// C7: a Code node's execution mode must be honoured on the LANE path too, not only in the unit
+// tier — otherwise the two tiers disagree about what the same deployed node does.
+// `transcribed-message` is `runOnceForEachItem` (the only per-item node in the live spine); run it
+// as its own one-node lane with two input items and require two output items.
+test('C7: run-lane honours a Code node\'s runOnceForEachItem mode (2 items in, 2 out)', () => {
+  const res = runLane({
+    slug: SLUG,
+    start: 'transcribed-message',
+    end: 'transcribed-message',
+    ctx: { 'is-human-intervened': [{ json: { contact_id: 42 } }] },
+    input: [{ json: { text: 'first' } }, { json: { text: 'second' } }],
+  });
+  assert.deepStrictEqual(
+    JSON.parse(JSON.stringify(res.end)),
+    [{ json: { contact_id: 42, message: 'first' } }, { json: { contact_id: 42, message: 'second' } }]
+  );
+});

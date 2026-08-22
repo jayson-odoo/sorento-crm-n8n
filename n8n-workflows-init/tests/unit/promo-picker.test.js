@@ -20,6 +20,7 @@ const { runNode, normalizeReturn } = require('../harness/n8n-shim');
 
 const SLUG = 'live-spine-sorento-consume-main';
 const NODE_FILE = 'promo-picker.js';
+const NODE_NAME = 'promo-picker';   // C1: the shim resolves this node's deployed mode by name
 const src = loadNodes(SLUG, [NODE_FILE]);
 const BODY = src[NODE_FILE];
 
@@ -40,7 +41,7 @@ function run({ validator, qf, gate, wrap } = {}) {
     },
     input: [{ json: inputJson }],
   };
-  const out = normalizeReturn(runNode({ body: BODY, fixture }));
+  const out = normalizeReturn(runNode({ body: BODY, fixture, slug: SLUG, nodeName: NODE_NAME }));
   // JSON round-trip: `out` was constructed inside the vm's OWN realm, so its arrays/objects are
   // not `assert.deepStrictEqual`-comparable against this file's own (different-realm) `[]`/`{}`
   // literals -- node's assert treats same-shape-but-different-realm values as "not
@@ -101,7 +102,7 @@ test('promo-picker: unknown envelope shape fails CLOSED (no attachments), never 
     // deliberately no `answers` key -- an envelope shape the node does not recognise
     input: [{ json: { attachments: j.attachments } }],
   };
-  const o = JSON.parse(JSON.stringify(normalizeReturn(runNode({ body: BODY, fixture }))[0].json));
+  const o = JSON.parse(JSON.stringify(normalizeReturn(runNode({ body: BODY, fixture, slug: SLUG, nodeName: NODE_NAME }))[0].json));
   assert.deepStrictEqual(o.attachments, []);
   assert.strictEqual(o._promo_picker_shape, 'unrecognised');
 });
