@@ -51,15 +51,17 @@ import hashlib
 import json
 import pathlib
 import sys
+import tempfile
 
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parent          # n8n-workflows-init/
 EXPORT = ROOT / "export"
 
-DEFAULT_OUT_DIR = pathlib.Path(
-    "/private/tmp/claude-501/-Users-tehjayson-Documents-foundryx-sorento-crm-n8n/"
-    "fbe01629-b2af-4327-a030-0b661b628c92/scratchpad/assembled"
-)
+# S14 (reviewer): this used to be a hardcoded path under one specific agent session's scratchpad
+# (`/private/tmp/claude-501/.../fbe01629-.../scratchpad/assembled`) — dead on any other machine or
+# session. `tempfile.gettempdir()` is the portable equivalent (`/tmp` on this box, but correct
+# wherever it runs); `--out` still overrides it for anyone who wants a specific location.
+DEFAULT_OUT_DIR = pathlib.Path(tempfile.gettempdir()) / "sorento-crm-n8n-assembled"
 
 
 class AssembleError(Exception):

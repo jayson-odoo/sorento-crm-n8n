@@ -1,0 +1,851 @@
+{
+  "live-spine-sorento-consume-main": {
+    "Split Out": {
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "nonJsCodeParamsSha256": "d0d20e2649f88dcb3e2e8bca2a95ef207280fd6af6c37be579e4f13069687c56"
+    },
+    "Call 'sub-human-intervention'": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "36186169b8a220ce28a8c65a7677ec5efc0b51a23ec576d2bd0f272236c70060",
+      "workflowIdValue": "rrYXzE61gCNUck_zmXe-G"
+    },
+    "send-message-files": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "17829348d76a21103b1ad89303686a1a7ddc7926ce39aa1cdc37925c05ed5293",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    "send-message-images": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "6b59656cafb11e66cfc3be30acfad3944579c4a9a517ca53f39b7a52454d77ed",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    "Switch": {
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "ee034d6796eb2273ed4cbc542b2ab5daa8c5287bc60769083edbce471c6a99af"
+    },
+    "send-message-video": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "2d61e0882bac4b8c43caf4e035c8cd30c464206c0f850cb5d5a64b43b5d96bd6",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    "get-presigned-url": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "9b5a547cdd0ac9516c130f7bb5fd86bb14be32952772371d18d47caa99fe0223",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "is-human-intervened": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "nonJsCodeParamsSha256": "410eeab3bfd99913d3a0230260a7308c8b788d535444211f4313a64bbbfe0fdf"
+    },
+    "if-message-is-audio": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "2d0b94cd0a51051c7f5b84acc397a2edb68e565288be2904e5f9596d60ba3b30"
+    },
+    "sorento-sub-respond-sendmsg-respond-transcribed-message": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "f0481f1d40a07c7a46ddafd884bff26cf54fe65d31903e8a20576bec353132f8",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "transcribed-message": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "9dccccc47bbe4044270e82904b37c66f238d2dc49cb1126f68e69a56739ab2c6",
+      "mode": "runOnceForEachItem"
+    },
+    "if-got-attachments": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "nonJsCodeParamsSha256": "0be8baf166d694ab286e686a50f9a9e15e7b17c0c1421a0efc21042664726349"
+    },
+    "sorento-sub-respond-sendmsg-respond2": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "9956da1a0a19839de539b9fa93baca334d25348c0ea8fdf0823db421a071b01f",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "Remove Duplicates": {
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "bac6d2fe6aaaf069686107ae8ff4ae84be5775e009d953c808751a341769c7ab"
+    },
+    "update-human-intervened": {
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1,
+      "nonJsCodeParamsSha256": "6c1891f0aead4e11e763de3f91fe518b51e8acd62c8c84d9bf04ae0ad5c8608b",
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      }
+    },
+    "set-human-intervened": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "sorento-sub-respond-sendmsg-respond4": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "7a80cbb54c4dcea7e95f8a7c9a3cf83001bcbc54c125b668bba37f647136e385",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "Call 'sub-query-reformulator'": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "58c7f1a2e9b45061c93eed28ad22bca531dd0d72e26e4d95a3cdb7edd9dc0c67",
+      "workflowIdValue": "XTODTw-dJcV0uRdC056hG"
+    },
+    "Execute 'sub-get-rag'": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "f82b6a687970a85b8a49960aec00171d82740b785baa872d76590f59a758b394",
+      "workflowIdValue": "tWP33QOFT7SxThfT"
+    },
+    "Call 'sub-respond-save-message-redis'2": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "818b4e922359a6e7e273f9c77903bbc080c89be18d21d4f847f58359666ee86b",
+      "workflowIdValue": "UrETd-jm46tFj3Xw7w8vL"
+    },
+    "tf-message": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "set-ran-query-formulator": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "Execution Data": {
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "nonJsCodeParamsSha256": "cfb51b03a57e972defddc59667488bc7a4a60d98e7cf89cb8667090bc4d12da2"
+    },
+    "If2": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "0e072afece24fac40b4fe5f72892f88ea5326d19998056b2f10600e67dff4275"
+    },
+    "resolve-entity": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "12144a921673d65cf184de20ee8bd09b8f273c8c9f8bbb2a6497f49308ac54b1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "get-access-types": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "af15277cc188a3cdcbc692ec4fb7531b06e81c30838aed2c868ff74f1d25d37c",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "If": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "9b1148d8081bf242ab1e7ecac4db7595496a871142217832d728730c8a59b4b8"
+    },
+    "Aggregate": {
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "nonJsCodeParamsSha256": "16893b17fb923acf38073b558a85ad86d8e17dad45d3ffb15dab87dd580b3c4b"
+    },
+    "If4": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "a23b9a9386d96599f3d40aa6d0e4d1993d66a77c092d6cc9f8d772ecffb5b023"
+    },
+    "check-access": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "88779570da126e202d827e26ff14a908655c42148c79fadb4c418df401a6c371",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "If5": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "2130cb4579dc78982882ccb9097cd90ca86597a66ac533abace90bb3ab588cad"
+    },
+    "sorento-sub-respond-sendmsg-respond5": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "b9a20fedd2083e211004c775215bb6883772a850efc4e33dd14b48869a7812e1",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "If3": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "90c8a52f1637ef1284eb95e52fabe2e0e0dc3fd51139982b21d8e94a59550b1d"
+    },
+    "Call 'sub-get-results'": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "69be53906674c81f100b24b8a906deafe19d173ccf3387130f3951bf375f46cf",
+      "workflowIdValue": "rysSPgUssLDf6xJc"
+    },
+    "If6": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "98d3502cd17a2a6fb311b8a55ed9879a9ff057c522fa1da4290d35c6c126d92c"
+    },
+    "save-session-vars": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "872c23aa35a1f284a0a381a16994802691ffc624881d2ac06400e9c9ed9d0a23",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "compile-current-state": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "get-session-vars": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "c6886c7d64695a00acc42d2cf37b80a073e1b7a0d421e1d12c1640ffe85b56c4",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "Aggregate1": {
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "nonJsCodeParamsSha256": "cf55f4e6ef8ffd59c0add0d28e44a8fe38f19042c7a8575f7c4e52c9aedbd9e7"
+    },
+    "validator": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "Edit Fields": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "c1781e4cc37fb21f942d652e65fe36cd3291ff94781e6c3028bea609d22a71f5"
+    },
+    "If7": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "bffaabf06b0cae1243696055d344cc0430ac4be167b8066bcd87961ba57dd46c"
+    },
+    "If8": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "f8818f152c2f7a2626e0439ce0bd2a5bc4ea0d8201870311c3850c5aeb32415b"
+    },
+    "Edit Fields2": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "ffdd8a56e05b34a20be115b707049fdd422a2b7116d0bc165957583cc588df5d"
+    },
+    "Transcribe a recording": {
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "nonJsCodeParamsSha256": "536e3a3d3a967078913c1df67c3e06e004c2543dbf87bf2fc6828705e327cc8f",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    "Code in JavaScript": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "Schedule Trigger": {
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "4b9cef2386a3dad2704a484669c29edc5f94a3584b26356bb235de7ec8b5afb6"
+    },
+    "When Executed by Another Workflow": {
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "nonJsCodeParamsSha256": "b15a73c57864804af5b12b6b7e3379efdf1224a53b95ee5ec63b3e43cf270a9a"
+    },
+    "If9": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "ee1acd8436fb83570afe206dc8de0736f6f464731dc7edb347f4e227ffe71022"
+    },
+    "Basic LLM Chain": {
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "nonJsCodeParamsSha256": "2c4fa75fb7e31e653db60fd6590120541582ab37c47d5812d2f6d6a1b87d9a89"
+    },
+    "OpenAI Chat Model": {
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "867f55ace915d0398f3c06ab62154af3025b517e6568745046c0fb6273bea751",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    "central-exchange": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "sorento-sub-respond-findcontact-respond": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "construct-user-prompt": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "resolve-entity-clarification": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "b7c70c6928322a5d82bb6a9853d57399da1ce2fb9e0ef5d25356522ae1ca84eb",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "disallowed-entity-gate": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "not-found-error-message": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "access-level-choice-message": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "not-supported-domain": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "ce0c1eb4163f94c2bd7868a4f9098c88cc25e30b62593bca56dd709a4dbc2237"
+    },
+    "sorento-sub-respond-sendmsg-respond": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "44078d8ac43ae56d27502349590510c7d99b437348e1feb44ce8fda3c769223d",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "tool-filter": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "If1": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "235cc91a4159d56413a7dde3f732cb407b68eac4ced20115593b240b9b9a759d"
+    },
+    "If10": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "4611a429a05aebd31d3bde6babf8dec059b76f6c05830560adcaaa43e212bfe7"
+    },
+    "sorento-sub-respond-sendmsg-respond3": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "e747c3b6747e2a93eddcc60f443cb6ae69d50619fbc905d80743a03030e73283",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "Loop Over Items1": {
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "nonJsCodeParamsSha256": "976f0859a9a6fce7f1861b4dac187652b40c090c842a3debca230d389d33edf6"
+    },
+    "redis-pop-main-message-list": {
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "nonJsCodeParamsSha256": "b8d2921c361c9da555464b2c8dcc5f16294123808fed70a0cdfb257a4412ccee",
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      }
+    },
+    "tag-not-found": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "f3a2feb66ef7e6de3d2809c193b28c6333dd0ce4aca82734c80ac739c469a16a"
+    },
+    "tag-access-choice": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "af98d2fdd20f1064b9009df72807252fb2d972212bdb0f949d1175ecac3ab267"
+    },
+    "tag-demand-qty": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "5bad238777f4345dbb7cde96db307e1cd87702cd8ae446a8aa2424c40304fd35"
+    },
+    "tag-not-supported": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "1dd32714af27eebae6220f64eeb47e6c9d2091ccda52b44ec627d1c6132df2ae"
+    },
+    "tag-clarify-menu": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "6707c792d2fdb105a18c244c3164fa37614015faf565433b61877a7fd666ba56"
+    },
+    "tag-escalate-offer": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "34ba083e3f7d6234e8b8827113abf0263fe12e5bba40ad98c865779b23ad426b"
+    },
+    "tag-out-of-scope": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "d0990aa1f94c5b540a1af6d4edfa49b8b7de6d53e603e6c97b445ec0c0248c37"
+    },
+    "escalate-catalog": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "cs-offer-gate": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "e31ae92276558a963f2b374cc9ce404dab8816fee3657b970166ea03f50442bd"
+    },
+    "get-cs-members": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "5efc69f3aa6d4a1b3e55acaec6a26bb9ae6fd68314e527eeb8a7fbd74f236307",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "build-cs-member-offer": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "build-suggest-offer": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "is-escalation-declined": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "c5d1f6b98f7c97aca729919d9266a9310c2b53db5ca2b8bd393dbb0a50677c5a"
+    },
+    "tag-escalation-declined": {
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "nonJsCodeParamsSha256": "7d101fe14b8ad7365e9137f909266fa4955e2648301bc9d418b60dde713910f6"
+    },
+    "divert-suggest-yes": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "37d0c25ada347a659113cedbc196b2b9884a5088f2b90cb5d1143f4716b92f15"
+    },
+    "If-incoming-picker": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "40124901015d9266cf742e94b9f049ca0878ed41f1474be1f43ee145cb58315e"
+    },
+    "probe-incoming": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "013fbb3d1eef418d8790c4c28a6a3f030e2ed02f7c511a4df39170bdf12c1cd6",
+      "workflowIdValue": "rysSPgUssLDf6xJc"
+    },
+    "annotate-incoming-picker": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "sibling-gate": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "670d04b9f348e05f1eeee38e273292f56f1afeaaaa71bc27fa1c2c1215a7f082"
+    },
+    "family-fetch": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "2ac8eba80b75551b8b0f47de66af48d810b8768cc7af4b555ed1338a65c7cc53",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "sibling-transform": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "sibling-probe": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "baa79b74a46d32587a1d4af16b23bd999a866d44b4cb7383e59ff7eb703c1443",
+      "workflowIdValue": "Fss5aAaXthJSWpZCgKiKR"
+    },
+    "If-ideate": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "28bdcfab76ccac6cd3d6601c9d709fede3805e35445f41e5c724d5fb1ad0d498"
+    },
+    "ideate-turn-http": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "nonJsCodeParamsSha256": "ac0de90f67b86e92ef019993b1d4a062cddacec2d2b20789331f0efbb1ef73f5",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mNsZWyU82NYV58k2",
+          "name": "crm-n8n-auth"
+        }
+      }
+    },
+    "build-ideate-reply": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "if-audio-in": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "709ff35b0f7427d59841581302abdb75922be6d74dea5d5f5508f87c303ccead"
+    },
+    "if-voice-allowed": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "80c2b005795587ddd4a470791e442d28432baf6cc6ee101a889ebd0719f841cd"
+    },
+    "fetch-audio": {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "nonJsCodeParamsSha256": "cb62649e195a739a66428f538ac3e61e462334d52b79a1756bbbea89d67a11f1"
+    },
+    "whisper-transcribe": {
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "nonJsCodeParamsSha256": "480112a5ad33c3241e14dd064cbac50950d2093597dc5842e1bccba39ad21f82",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    "patch-transcript": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "if-transcribed-confirm": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "4ea32d2516cfa918aa467ffb3a8e164ca32ee644d43f9ee1467819052dc14617"
+    },
+    "send-transcript-confirm": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "3bbf5863bc31a495fb2d62b84443036a969e69829f401195204e4451d3303f3d",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "send-voice-not-allowed": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "408477ac050cfcc78178e29a9cf0bf1880370097fa2065794abc4ca7127de9ff",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "crossdomain-zeroset": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "crossdomain-gate": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "nonJsCodeParamsSha256": "a8f857e5d207cfee50149e9b1d5851a690f0ec0d9b3cbae9a756aabf38774fc8"
+    },
+    "crossdomain-probe": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "nonJsCodeParamsSha256": "8f7d1d6c83b6949925cb88d6a77d66d887ce3ed4f7dc2a4fdaeeacce89bf223e",
+      "workflowIdValue": "Fss5aAaXthJSWpZCgKiKR"
+    },
+    "crossdomain-render": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "crossdomain-compose": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "attach-merge": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "presign-fail-notice": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "sorento-sub-respond-sendmsg-presign-fail": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "96cd2560ce42712ec553c86c79017cedf7fccfd25395b1979375a6fbb32625bc",
+      "workflowIdValue": "aoydkG1dbItXR5jXFEQsP"
+    },
+    "dym-transform": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "dym-gate": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "ffa5c846fd9af09a4279dcc5fae5c3b6693cdb93d1ca69d08026156901e0390b"
+    },
+    "dym-probe": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "c5fafc0640c156753ade4dbf6fc90eafffb607eb0c0afe3939ffb367b689a14d",
+      "workflowIdValue": "Fss5aAaXthJSWpZCgKiKR"
+    },
+    "dym-annotate": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "dym-transform-partial": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "dym-gate-partial": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "ffa5c846fd9af09a4279dcc5fae5c3b6693cdb93d1ca69d08026156901e0390b"
+    },
+    "dym-probe-partial": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "238bc21edf858d1a4641d50f55bf82eb86c097c14df0503c22c18722f452dca8",
+      "workflowIdValue": "Fss5aAaXthJSWpZCgKiKR"
+    },
+    "dym-annotate-partial": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "promo-picker": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "tier-gate": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "if-tier-ask": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "ad1ebabb2051c5f6e8bc588612425e2c41c1bc9c3f4d67c09d64b1c52d277b72"
+    },
+    "tier-probe-plan": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "tier-probe": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "nonJsCodeParamsSha256": "377d59b0f5e15165e1f29629c4140b0f319708d2e01f083a6d6b654cab001084",
+      "workflowIdValue": "rysSPgUssLDf6xJc"
+    },
+    "tier-probe-collect": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "if-tier-has-any": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "929f571d464a60b97db459220361aa1a5a45c69e7c81720381091e319a9c6907"
+    },
+    "if-promo-dym": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "b3764003531744157bb84c0b9d136d4f2848e62d72304f4a92aafbfea9c607a3"
+    },
+    "promo-dym-plan": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "promo-dym-probe": {
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "71eb1445c5ef88984ac1fc3620a6c1c5c6cf677c0b3a2da1e35f63dc6fe5423f",
+      "workflowIdValue": "Fss5aAaXthJSWpZCgKiKR"
+    },
+    "cs-roster-plan": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "escalation-context": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    }
+  },
+  "sub-semantic-parser": {
+    "When Executed by Another Workflow": {
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "nonJsCodeParamsSha256": "ca6f5e8463db4664d8bbeee654a27520f83d6ef046b5af9d07ab7c1eab1cf5e9"
+    },
+    "OpenAI Chat Model": {
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "nonJsCodeParamsSha256": "96c1dc3db349695d229fa7e32f9e5a5daf26ae8d49b3d9f4cf1f6bd14880a892",
+      "credentials": {
+        "openAiApi": {
+          "id": "o130We0PEJ77Z1lH",
+          "name": "sorento-openai"
+        }
+      }
+    },
+    "output_exchange": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "9dccccc47bbe4044270e82904b37c66f238d2dc49cb1126f68e69a56739ab2c6",
+      "mode": "runOnceForEachItem"
+    },
+    "AI Agent": {
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "nonJsCodeParamsSha256": "0867966923585a9c21e3b4f2ad30f1f299d3d857d3759a88594b7672301858e9"
+    },
+    "test-reformulator-bypass": {
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "nonJsCodeParamsSha256": "785decb816ebbe1be18810b4fcc8d3b87d3578247b509f4a65dc914861ff6a56"
+    },
+    "mock-reformulator-output": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    },
+    "suggest-follow-up": {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "nonJsCodeParamsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mode": null
+    }
+  }
+}

@@ -3,7 +3,8 @@
     "execution_id": "13469053",
     "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
     "node": "tf-message",
-    "captured_at": "2026-08-22T11:43:37+00:00"
+    "captured_at": "2026-08-22T11:43:37+00:00",
+    "expected_from": "runData"
   },
   "ctx": {
     "When Executed by Another Workflow": [
@@ -2509,5 +2510,50 @@
     }
   ],
   "runIndex": 0,
-  "volatile": []
+  "ran": [
+    "When Executed by Another Workflow",
+    "redis-pop-main-message-list",
+    "if-audio-in",
+    "tf-message",
+    "sorento-sub-respond-findcontact-respond",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "if-message-is-audio",
+    "get-session-vars",
+    "Call 'sub-query-reformulator'",
+    "check-access",
+    "If5",
+    "If2",
+    "If-ideate",
+    "If10",
+    "is-escalation-declined",
+    "If9",
+    "If1",
+    "not-supported-domain",
+    "If",
+    "If7",
+    "resolve-entity",
+    "disallowed-entity-gate",
+    "If3",
+    "If-incoming-picker",
+    "not-found-error-message",
+    "sibling-gate",
+    "dym-transform",
+    "dym-gate",
+    "if-promo-dym",
+    "dym-probe",
+    "dym-annotate",
+    "build-suggest-offer",
+    "tag-not-found",
+    "escalate-catalog",
+    "cs-offer-gate",
+    "compile-current-state",
+    "crossdomain-compose",
+    "sorento-sub-respond-sendmsg-respond2",
+    "Execution Data",
+    "attach-merge",
+    "if-got-attachments",
+    "save-session-vars",
+    "Call 'sub-respond-save-message-redis'2"
+  ]
 }

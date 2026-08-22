@@ -8,13 +8,15 @@ Fixtures land at:
     n8n-workflows-init/tests/fixtures/nodes/<slug>/<nodeName>/<case>.json
 
 one file per (Code node, runIndex) actually present in the execution, shaped:
-    { "source": {execution_id, workflow_id, node, captured_at[, dev_contact]},
+    { "source": {execution_id, workflow_id, node, captured_at, expected_from[, dev_contact]},
       "ctx": {<node name>: [{"json": {...}}]},   # every node that ran, runIndex 0, main[0]
       "input": [{"json": {...}}],                # this node's INPUT (previous node's output)
       "expected": [{"json": {...}}],              # this node's OUTPUT, main[0]
       "runIndex": 0,
       "execution": {"id": "<execution_id>"},      # so n8n-shim's $execution reads a real id
-      "volatile": [] }
+      "ran": ["nodeA", "nodeB", ...] }            # every node that ran, in real execution order —
+                                                    # the flow-test path oracle (tests/flow/_lib.js's
+                                                    # derivePathFromCtx) walks this, not ctx-key guessing
 
 `ctx`/`input`/`expected` are PII-scrubbed via scripts/scrub-fixtures.py's own scrub_fixture_object
 (imported below — see that file's docstring for exactly what is/isn't redacted and why). The map
@@ -233,7 +235,14 @@ def capture_one(base, key, execution_id, nodes_filter, case_base, slug_override,
 
     slug = find_slug(workflow_id, slug_override)
     code_nodes = load_code_nodes(slug)
-    ran = set(run_data.keys())
+    # S5 (reviewer, path oracle): `run_data.keys()` preserves n8n's own insertion order, which IS
+    # this execution's real node-run order (each node's runData entry is appended as it finishes).
+    # Keep that ORDERED list separately from the unordered `ran` set below (used only for
+    # membership tests) — it becomes each fixture's own `ran`, which tests/flow/_lib.js's
+    # `derivePathFromCtx` uses as an independent, unambiguous path oracle instead of inferring
+    # "what ran" from ctx-key presence + connection-graph guessing.
+    ran_list = list(run_data.keys())
+    ran = set(ran_list)
 
     if nodes_filter:
         requested = set(nodes_filter)
@@ -271,6 +280,11 @@ def capture_one(base, key, execution_id, nodes_filter, case_base, slug_override,
                 "workflow_id": workflow_id,
                 "node": node_name,
                 "captured_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                # S6 (reviewer, legibility): every fixture this script writes comes straight from
+                # a real execution's runData, never from running a body once to freeze whatever it
+                # happened to return — that "body-run" provenance is a separate, hand-authored
+                # class (see tests/unit/_all-nodes.test.js's summary table for the split).
+                "expected_from": "runData",
             }
             if dev_contact:
                 source["dev_contact"] = True
@@ -282,7 +296,9 @@ def capture_one(base, key, execution_id, nodes_filter, case_base, slug_override,
                 "expected": expected,
                 "runIndex": run_idx,
                 "execution": {"id": str(execution_id)},
-                "volatile": [],
+                # S5 (reviewer, path oracle): every node this execution actually ran, in real
+                # execution order — see the `ran_list` comment above.
+                "ran": ran_list,
             }
 
             out_dir = FIXTURES / slug / safe_dirname(node_name)

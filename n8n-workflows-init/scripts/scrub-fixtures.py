@@ -45,12 +45,14 @@ import json
 import pathlib
 import re
 import sys
+import tempfile
 
 DEFAULT_ROOT = pathlib.Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "nodes"
-DEFAULT_MAP = pathlib.Path(
-    "/private/tmp/claude-501/-Users-tehjayson-Documents-foundryx-sorento-crm-n8n/"
-    "fbe01629-b2af-4327-a030-0b661b628c92/scratchpad/pii-scrub-map.json"
-)
+# S14 (reviewer): this used to be a hardcoded path under one specific agent session's scratchpad —
+# dead on any other machine/session. `tempfile.gettempdir()` is the portable equivalent (still
+# OUTSIDE the repo, per the docstring above); `--map` still overrides it for a session that wants
+# the map to persist somewhere more durable than the OS temp dir.
+DEFAULT_MAP = pathlib.Path(tempfile.gettempdir()) / "sorento-crm-n8n-pii-scrub-map.json"
 
 # ── patterns ────────────────────────────────────────────────────────────────────────────────
 # Malaysian mobile, with or without "+"/"60" country code, no internal separators (that's how

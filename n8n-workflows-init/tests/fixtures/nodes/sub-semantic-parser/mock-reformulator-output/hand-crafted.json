@@ -5,7 +5,8 @@
     "node": "mock-reformulator-output",
     "captured_at": "2026-08-22T00:00:00+00:00",
     "hand_crafted": true,
-    "rationale": "0 traffic in 6-day REST retention across ALL 1803 success + 5 error executions of the parser sub XTODTw-dJcV0uRdC056hG (full scan, not just a sample): this node only runs when the caller passes BOTH is_test=true AND a non-empty mock_reformulator_output (test-reformulator-bypass If gate) -- no real caller of the LIVE published parser sub sets that; it is a test-harness-only bypass. ctx is a plausible mock parser-output envelope. Ran through the real (2-line) body; output eyeballed sane (straight passthrough into {output: ...})."
+    "rationale": "0 traffic in 6-day REST retention across ALL 1803 success + 5 error executions of the parser sub XTODTw-dJcV0uRdC056hG (full scan, not just a sample): this node only runs when the caller passes BOTH is_test=true AND a non-empty mock_reformulator_output (test-reformulator-bypass If gate) -- no real caller of the LIVE published parser sub sets that; it is a test-harness-only bypass. ctx is a plausible mock parser-output envelope. Ran through the real (2-line) body; output eyeballed sane (straight passthrough into {output: ...}).",
+    "expected_from": "body-run"
   },
   "ctx": {
     "When Executed by Another Workflow": [
@@ -60,6 +61,5 @@
   "runIndex": 0,
   "execution": {
     "id": "hand-crafted"
-  },
-  "volatile": []
+  }
 }

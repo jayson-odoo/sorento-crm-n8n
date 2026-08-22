@@ -23,7 +23,7 @@ test('flow: reply (compile-current-state -> crossdomain-compose)', async (t) => 
   for (const exec of EXECS) {
     await t.test(exec, () => {
       const fx = loadFixture(SLUG, 'compile-current-state', exec);
-      const expectedPath = derivePathFromCtx(wf, new Set(Object.keys(fx.ctx)), START, END);
+      const expectedPath = derivePathFromCtx(wf, fx, START, END);
 
       const res = runLane({
         slug: SLUG,

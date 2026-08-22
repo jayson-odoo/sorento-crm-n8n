@@ -1,10 +1,18 @@
 // ── tests/flow/happy.test.js — lane "happy": resolve-entity -> compile-current-state ──────────
-// The full stock-found success path: resolve-entity (stubbed httpRequest) -> disallowed-entity-gate
-// -> If3 -> get-rag -> tool-filter -> if-tier-ask -> get-results -> validator -> promo-picker ->
-// crossdomain-zeroset -> crossdomain-gate -> If6 -> central-exchange -> dym-transform-partial ->
-// dym-gate-partial -> compile-current-state. Only exec-13481094 (of the 6 captured) actually found
-// real stock (If6 true), so it is the sole case here — the other 5 hit the not-found branch
-// instead, which is exercised by miss-dym.test.js.
+// The full lane from entity resolution through to the final compiled state, which BOTH the
+// stock-found and stock-not-found sub-branches converge back through — so this lane is exercised
+// by every one of the 6 captured executions, not just the one that hit If6 TRUE.
+//
+// exec-13481094 is the only one of the 6 that actually found real stock (If6 TRUE, going on
+// through central-exchange -> dym-transform-partial -> dym-gate-partial). exec-13462354 and
+// exec-13479632 take the not-found branch instead (same as miss-dym.test.js exercises on a
+// narrower sub-lane), but they still walk THIS full lane end-to-end and are asserted here too —
+// fixed 2026-08-23 (reviewer S5): this previously only covered exec-13481094 with the (wrong)
+// comment that the other 5 execs "are exercised by miss-dym.test.js" — they weren't, on this
+// wider start/end pair. `execution: {id: ...}` is threaded through explicitly because
+// `compile-current-state`'s did-you-mean payload stamps `dym_offer.id` from the REAL execution id
+// (proven by re-running this lane without it: `dym_offer.id` comes back `"test"`, the shim's
+// default, instead of the captured run's actual id).
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert');
@@ -14,20 +22,26 @@ const { loadFixture, loadWorkflow, derivePathFromCtx, deriveInputFor, jsonNormal
 const SLUG = 'live-spine-sorento-consume-main';
 const START = 'resolve-entity';
 const END = 'compile-current-state';
+const EXECS = ['exec-13462354', 'exec-13479632', 'exec-13481094'];
 
-test('flow: happy (resolve-entity -> compile-current-state)', () => {
+test('flow: happy (resolve-entity -> compile-current-state)', async (t) => {
   const wf = loadWorkflow(SLUG);
-  const fx = loadFixture(SLUG, 'compile-current-state', 'exec-13481094');
-  const expectedPath = derivePathFromCtx(wf, new Set(Object.keys(fx.ctx)), START, END);
+  for (const exec of EXECS) {
+    await t.test(exec, () => {
+      const fx = loadFixture(SLUG, 'compile-current-state', exec);
+      const expectedPath = derivePathFromCtx(wf, fx, START, END);
 
-  const res = runLane({
-    slug: SLUG,
-    start: START,
-    end: END,
-    ctx: fx.ctx,
-    input: deriveInputFor(wf, fx.ctx, START),
-  });
+      const res = runLane({
+        slug: SLUG,
+        start: START,
+        end: END,
+        ctx: fx.ctx,
+        input: deriveInputFor(wf, fx.ctx, START),
+        execution: { id: exec.replace(/^exec-/, '') },
+      });
 
-  assert.deepStrictEqual(res.path, expectedPath);
-  assert.deepStrictEqual(jsonNormalize(res.end), fx.ctx[END]);
+      assert.deepStrictEqual(res.path, expectedPath);
+      assert.deepStrictEqual(jsonNormalize(res.end), fx.ctx[END]);
+    });
+  }
 });

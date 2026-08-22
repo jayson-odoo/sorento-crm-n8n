@@ -17,11 +17,12 @@ const fs = require('fs');
 const path = require('path');
 const { loadNodes, manifestOf } = require('../offline/node-source');
 const { runNode, loadFixtures, assertOutputEquals, FIXTURES_ROOT } = require('../harness/n8n-shim');
+const { buildWiring, diffWiring, WIRING_PATH } = require('../harness/pin-wiring');
 
 const SLUGS = ['live-spine-sorento-consume-main', 'sub-semantic-parser'];
 const REQUIRE_FULL_COVERAGE = process.env.REQUIRE_FULL_COVERAGE === '1';
 
-const summaryRows = [];      // {slug, node, fixtures, pass, fail}
+const summaryRows = [];      // {slug, node, fixtures, pass, fail, runData, bodyRun}
 const noFixtureNodes = [];   // 'slug/node' strings
 
 for (const slug of SLUGS) {
@@ -31,7 +32,14 @@ for (const slug of SLUGS) {
   for (const nodeName of nodeNames) {
     const file = man.nodes[nodeName].file;
     const fixtures = loadFixtures(slug, nodeName);
-    const row = { slug, node: nodeName, fixtures: fixtures.length, pass: 0, fail: 0 };
+    // S6 (reviewer, legibility): "N fixtures" reads as "N independent assertions" unless it's
+    // clear how many actually came from a REAL execution's runData vs. from running the body
+    // once and freezing whatever it returned ("body-run" — includes hand-authored ones). Split
+    // by each fixture's own `source.expected_from` (added by capture-fixtures.py / backfilled
+    // onto pre-existing fixtures) so the summary table says which is which.
+    const runData = fixtures.filter((f) => f.fixture.source && f.fixture.source.expected_from === 'runData').length;
+    const bodyRun = fixtures.length - runData;
+    const row = { slug, node: nodeName, fixtures: fixtures.length, pass: 0, fail: 0, runData, bodyRun };
     summaryRows.push(row);
 
     if (fixtures.length === 0) {
@@ -53,7 +61,7 @@ for (const slug of SLUGS) {
         await t.test(name, () => {
           const out = runNode({ body, fixture });
           try {
-            assertOutputEquals(out, fixture.expected, fixture.volatile || []);
+            assertOutputEquals(out, fixture.expected);
             row.pass += 1;
           } catch (e) {
             row.fail += 1;
@@ -65,6 +73,31 @@ for (const slug of SLUGS) {
   }
 }
 
+// S2 (reviewer, highest value): what SHIPS is workflow.json; only a Code node's jsCode body is
+// exercised by anything above this test. A Code node's execution `mode`
+// (runOnceForEachItem/runOnceForAllItems), an executeWorkflow node's `workflowId.value` (which
+// sub-workflow it actually calls — how a node gets repointed at a REAL-EGRESS sub, safety-
+// critical), credentials, typeVersion, and every other non-jsCode parameter can change with zero
+// test noticing — proven with real experiments (flip a Code node's mode; repoint an
+// executeWorkflow node's workflowId.value) both shipping GREEN before this test existed. Rebuilds
+// the wiring fresh from export/<slug>/workflow.json (tests/harness/pin-wiring.js — the SAME
+// function the `pin-wiring.js --write` generator uses, so the test and the generator can never
+// define "the wiring" differently) and deep-equals it against the committed
+// tests/fixtures/wiring.json, failing with a readable per-node/per-field diff.
+test('S2: non-jsCode workflow wiring matches the committed pin (tests/fixtures/wiring.json)', () => {
+  const fresh = buildWiring();
+  const committedRaw = fs.readFileSync(WIRING_PATH, 'utf8');
+  const committed = JSON.parse(committedRaw);
+  const diff = diffWiring(committed, fresh);
+  assert.deepStrictEqual(
+    diff,
+    [],
+    `wiring.json is STALE vs export/ (${diff.length} field(s) changed) — if this change was ` +
+    `deliberate, re-pin it: node n8n-workflows-init/tests/harness/pin-wiring.js --write\n  ` +
+    diff.join('\n  ')
+  );
+});
+
 test('coverage gate', () => {
   if (!REQUIRE_FULL_COVERAGE) return; // off by default -- plan step 2 turns this on
   assert.deepStrictEqual(
@@ -75,18 +108,44 @@ test('coverage gate', () => {
   );
 });
 
+// S6: every fixture must carry a real `source.expected_from` — a fixture with neither 'runData'
+// nor 'body-run' would silently vanish from BOTH halves of the summary split (counted in neither
+// `runData` nor `bodyRun`, since `bodyRun` here is computed as fixtures.length - runData... — so
+// this asserts the classification directly, not just via that subtraction).
+test('S6: every fixture has a valid source.expected_from ("runData" or "body-run")', () => {
+  for (const slug of SLUGS) {
+    const man = manifestOf(slug);
+    for (const nodeName of Object.keys(man.nodes)) {
+      for (const { name, fixture } of loadFixtures(slug, nodeName)) {
+        const ef = fixture.source && fixture.source.expected_from;
+        assert.ok(
+          ef === 'runData' || ef === 'body-run',
+          `${slug}/${nodeName}/${name}: source.expected_from must be "runData" or "body-run", got ${JSON.stringify(ef)}`
+        );
+      }
+    }
+  }
+});
+
 test('summary table', () => {
   const nameW = Math.max(4, ...summaryRows.map((r) => `${r.slug}/${r.node}`.length));
   console.log('\nnode fixture summary (' + path.basename(__filename) + ')');
-  console.log('node'.padEnd(nameW) + '  fixtures  pass  fail');
+  console.log('node'.padEnd(nameW) + '  fixtures  runData  body-run  pass  fail');
   for (const r of summaryRows) {
     console.log(
       `${r.slug}/${r.node}`.padEnd(nameW) + '  ' +
       String(r.fixtures).padEnd(8) + '  ' +
+      String(r.runData).padEnd(7) + '  ' +
+      String(r.bodyRun).padEnd(8) + '  ' +
       String(r.pass).padEnd(4) + '  ' +
       String(r.fail)
     );
   }
   const covered = summaryRows.filter((r) => r.fixtures > 0).length;
+  const totalRunData = summaryRows.reduce((n, r) => n + r.runData, 0);
+  const totalBodyRun = summaryRows.reduce((n, r) => n + r.bodyRun, 0);
   console.log(`\n${covered}/${summaryRows.length} nodes have >=1 fixture; ${noFixtureNodes.length} have none (REQUIRE_FULL_COVERAGE=${REQUIRE_FULL_COVERAGE ? '1' : '0'})`);
+  console.log(`${summaryRows.reduce((n, r) => n + r.fixtures, 0)} fixtures total: ${totalRunData} from real runData, ` +
+    `${totalBodyRun} body-run (body executed once and frozen, incl. hand-authored) — ` +
+    `"N fixtures" is NOT "N independent assertions" until you know this split.`);
 });

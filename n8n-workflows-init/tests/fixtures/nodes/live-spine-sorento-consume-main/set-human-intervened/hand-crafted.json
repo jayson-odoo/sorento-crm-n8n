@@ -5,7 +5,8 @@
     "node": "set-human-intervened",
     "captured_at": "2026-08-22T00:00:00+00:00",
     "hand_crafted": true,
-    "rationale": "0 traffic in 6-day REST retention. Wired (is-human-intervened[FALSE-branch, i.e. contact IS currently human-intervened] -> update-human-intervened, set-human-intervened): this is the 'reset out of human-intervention' step, hit only on the rare turn where a contact currently has is_human_intervened=true. FIXED 2026-08-22 (n8n-shim.js same-reference fix, docs/LESSONS.md): the body calls $input.first() TWICE ('.json.custom_fields.find(...).value = \"false\"' then 'return $input.first().json'); real n8n's $input.first() returns the SAME mutable item reference both times, so the mutation from the first call is visible on the second. Previously n8n-shim.js's makeAccessor().first()/.item()/.all() each called deepCopy(arr[0]) fresh off the ORIGINAL fixture array on every call, so the two calls in this shim returned INDEPENDENT copies and the first call's mutation was silently lost -- this fixture was weakened to seed is_human_intervened=\"false\" (idempotent) and assert passthrough only, to avoid a green-that-cannot-fail fixture. n8n-shim.js now deep-copies each fixture array ONCE per buildSandbox call and every accessor built from that call shares the same references, so a mutation from one $input.first() call IS visible on a later one in the same node body -- matching production. This fixture now seeds is_human_intervened=\"true\" on input and asserts \"false\" in expected, actually exercising the flip."
+    "rationale": "0 traffic in 6-day REST retention. Wired (is-human-intervened[FALSE-branch, i.e. contact IS currently human-intervened] -> update-human-intervened, set-human-intervened): this is the 'reset out of human-intervention' step, hit only on the rare turn where a contact currently has is_human_intervened=true. FIXED 2026-08-22 (n8n-shim.js same-reference fix, docs/LESSONS.md): the body calls $input.first() TWICE ('.json.custom_fields.find(...).value = \"false\"' then 'return $input.first().json'); real n8n's $input.first() returns the SAME mutable item reference both times, so the mutation from the first call is visible on the second. Previously n8n-shim.js's makeAccessor().first()/.item()/.all() each called deepCopy(arr[0]) fresh off the ORIGINAL fixture array on every call, so the two calls in this shim returned INDEPENDENT copies and the first call's mutation was silently lost -- this fixture was weakened to seed is_human_intervened=\"false\" (idempotent) and assert passthrough only, to avoid a green-that-cannot-fail fixture. n8n-shim.js now deep-copies each fixture array ONCE per buildSandbox call and every accessor built from that call shares the same references, so a mutation from one $input.first() call IS visible on a later one in the same node body -- matching production. This fixture now seeds is_human_intervened=\"true\" on input and asserts \"false\" in expected, actually exercising the flip.",
+    "expected_from": "body-run"
   },
   "ctx": {},
   "input": [
@@ -89,6 +90,5 @@
   "runIndex": 0,
   "execution": {
     "id": "hand-crafted"
-  },
-  "volatile": []
+  }
 }

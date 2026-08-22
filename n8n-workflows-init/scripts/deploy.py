@@ -110,14 +110,36 @@ def _load_module(name, filename):
 ew = _load_module("export_workflows", "export-workflows.py")
 asm = _load_module("assemble", "assemble.py")
 
-# Never PUT to these without --i-know-this-is-live (CLAUDE.md "Key IDs").
-PROTECTED = {
+# S10b (reviewer): this used to be a DENYLIST (`PROTECTED = {known-live-id: label, ...}`) — and it
+# already omitted real live ids named in this repo's own CLAUDE.md "Key IDs" table
+# (`Fss5aAaXthJSWpZCgKiKR` live sub-get-results, `tWP33QOFT7SxThfT` live sub-get-rag,
+# `rysSPgUssLDf6xJc` which carries live's main CRM read path). A denylist of live ids DRIFTS — every
+# id this repo learns about later needs someone to remember to add it here, and a forgotten one is
+# an ungated PUT to production with no warning at all. An ALLOWLIST doesn't drift the same way: an
+# id NOT in it is unprotected by omission only in the safe direction (over-cautious, not
+# under-cautious) — a brand-new scratch/throwaway id deploy.py has never heard of requires
+# --i-know-this-is-live too, until someone deliberately adds it here.
+#
+# Start EMPTY. Add an id here ONLY for a scratch/throwaway clone you know is safe to PUT to without
+# the --i-know-this-is-live acknowledgment (e.g. a disposable dev-only workflow you just created for
+# a one-off experiment). Every real id in CLAUDE.md's "Key IDs" table — live or clone alike — stays
+# OFF this list; the clone still gets its own explicit guard below.
+UNPROTECTED = set()
+
+# Purely cosmetic — labels a few well-known ids in gate (d)'s message so an operator recognizes
+# what they're about to touch. Never used to decide allow/deny; that's UNPROTECTED (above) and
+# CLONE_GUARD_ID (below) only.
+KNOWN_ID_LABELS = {
     "9qVyfUxmRQqrpGRMDLRuz": "LIVE spine sorento-consume-main",
     "XTODTw-dJcV0uRdC056hG": "LIVE parser sub-semantic-parser",
     "aoydkG1dbItXR5jXFEQsP": "LIVE sub-sendmsg",
     "rrYXzE61gCNUck_zmXe-G": "LIVE sub-human-intervention",
     "UrETd-jm46tFj3Xw7w8vL": "LIVE sub-save-message-redis",
+    "Fss5aAaXthJSWpZCgKiKR": "LIVE sub-get-results (MCP read)",
+    "tWP33QOFT7SxThfT": "LIVE sub-get-rag (pgvector)",
+    "rysSPgUssLDf6xJc": "sub-get-results TEST (carries LIVE's main CRM read path — see CLAUDE.md)",
 }
+
 # Never PUT here without --target-override (another person's active build).
 CLONE_GUARD_ID = "txiPzSxy3Pclsz6v"
 CLONE_GUARD_NAME = "clone-sorento-consume-main-TEST (someone else's active build)"
@@ -137,18 +159,23 @@ def hr(title):
 def gate_a(slug, allow_dirty):
     export_path = str(EXPORT / slug)
     tests_path = str(ROOT / "tests")
+    # S10 misc (reviewer): this used to check only export/<slug>/ + tests/ — an uncommitted edit
+    # to deploy.py or assemble.py THEMSELVES (scripts/) could change what actually gets assembled
+    # and PUT without ever being reviewed or committed, and this gate would say "clean" the whole
+    # time. scripts/ covers deploy.py, assemble.py, and everything else that runs during a deploy.
+    scripts_path = str(ROOT / "scripts")
     res = subprocess.run(
-        ["git", "status", "--porcelain", "--", export_path, tests_path],
+        ["git", "status", "--porcelain", "--", export_path, tests_path, scripts_path],
         cwd=REPO_ROOT, capture_output=True, text=True)
     dirty = res.stdout.strip()
     if not dirty:
-        return True, f"(a) OK — git clean under export/{slug}/ and tests/"
+        return True, f"(a) OK — git clean under export/{slug}/, tests/, and scripts/"
     if allow_dirty:
         lines = "\n".join(f"        {l}" for l in dirty.splitlines())
-        return True, (f"(a) ⚠️  DIRTY under export/{slug}/ or tests/ — proceeding anyway "
+        return True, (f"(a) ⚠️  DIRTY under export/{slug}/, tests/, or scripts/ — proceeding anyway "
                        f"(--allow-dirty). UNCOMMITTED CHANGES ARE ABOUT TO BE DEPLOYED:\n{lines}")
     lines = "\n".join(f"        {l}" for l in dirty.splitlines())
-    return False, (f"(a) FAIL — uncommitted changes under export/{slug}/ or tests/ "
+    return False, (f"(a) FAIL — uncommitted changes under export/{slug}/, tests/, or scripts/ "
                     f"(commit first, or pass --allow-dirty):\n{lines}")
 
 
@@ -183,6 +210,19 @@ def gate_c(base, key, slug, src_id, to_id, manifest):
                             f"{exp_v} vs live {live_v}. Re-run export-workflows.py."), None
         return True, (f"(c) OK — export/{slug} matches live versionId "
                        f"{str(live_v)[:8]} (own-id deploy)"), live
+    # S10 misc (reviewer): this used to only check the TARGET on a retarget — nothing verified the
+    # SOURCE export/<slug>/ itself wasn't stale against the workflow it was pulled FROM (src_id).
+    # A stale export deployed onto a *different* target still silently propagates stale bytes; the
+    # own-id branch above already runs exactly this check, a retarget needs the same one.
+    try:
+        src_live = ew.fetch(base, key, src_id)
+    except urllib.error.HTTPError as e:
+        return False, f"(c) FAIL — GET source {src_id} failed: HTTP {e.code}", None
+    exp_v, src_live_v = manifest.get("versionId"), src_live.get("versionId")
+    if exp_v != src_live_v:
+        return False, (f"(c) FAIL — export/{slug} is STALE vs its OWN source {src_id}: export "
+                        f"versionId {exp_v} vs live {src_live_v}. Re-run export-workflows.py "
+                        f"before retargeting it onto {to_id}."), None
     try:
         target = ew.fetch(base, key, to_id)
     except urllib.error.HTTPError as e:
@@ -193,24 +233,80 @@ def gate_c(base, key, slug, src_id, to_id, manifest):
                         f"UNPUBLISHED DRAFT: versionId {v} != activeVersionId {av}. "
                         f"A deploy now would overwrite work not yet published. "
                         f"Publish or resolve it first."), None
-    return True, (f"(c) OK — target {to_id} '{target.get('name')}' "
+    return True, (f"(c) OK — export/{slug} matches its own source {src_id} "
+                   f"({str(src_live_v)[:8]}); target {to_id} '{target.get('name')}' "
                    f"({len(target.get('nodes', []))} nodes) draft==active "
                    f"({str(v)[:8]}) — retargeting export/{slug} onto it"), target
 
 
+# ------------------------------------------------------------------ gate c2 (S10a, reviewer) --
+# TOCTOU: gate (c) reads the target's versionId ONCE, early — then gate (b)'s `npm test` run, the
+# gate (h) diff, and (unless --yes) an interactive `input()` prompt all elapse before the PUT.
+# n8n's PUT is a BLIND OVERWRITE (no If-Match / version precondition on the API), so anyone else's
+# write to this SAME target workflow in that window is silently clobbered with no error and no
+# trace beyond "well, gate (c) passed". Re-fetch the target immediately before the PUT and abort if
+# its versionId moved since gate (c) — this is the same read-only GET gate (c) already does, just
+# repeated at the moment that actually matters.
+def gate_c2_recheck(base, key, to_id, expected_version_id):
+    try:
+        target = ew.fetch(base, key, to_id)
+    except urllib.error.HTTPError as e:
+        return False, f"(c2) FAIL — re-GET {to_id} failed: HTTP {e.code}", None
+    now_v = target.get("versionId")
+    if now_v != expected_version_id:
+        return False, (f"(c2) FAIL — target {to_id} CHANGED since gate (c): versionId was "
+                        f"{expected_version_id}, is now {now_v}. Someone else wrote to this "
+                        f"workflow while this deploy was running. Re-run deploy.py from scratch "
+                        f"(re-review the new state before overwriting it)."), target
+    return True, f"(c2) OK — target {to_id} unchanged since gate (c) ({str(now_v)[:8]})", target
+
+
 # ------------------------------------------------------------------ gate d --
-def gate_d(to_id, i_know_this_is_live, target_override):
-    if to_id in PROTECTED and not i_know_this_is_live:
-        return False, (f"(d) FAIL — {to_id} is PROTECTED ({PROTECTED[to_id]}). "
+# ids known (via KNOWN_ID_LABELS, purely a display aid elsewhere) to be a LIVE workflow — used
+# ONLY for the src-is-live-onto-clone hard refusal below, never for the allow/deny decision itself
+# (that's UNPROTECTED).
+_LIVE_LABELED_IDS = {i for i, label in KNOWN_ID_LABELS.items() if label.startswith("LIVE")}
+
+
+def gate_d(to_id, i_know_this_is_live, target_override, yes, src_id=None):
+    # S10 misc (reviewer): never let a slug whose own export was pulled from a LIVE workflow get
+    # PUT onto the TEST clone — that would replace the fail-closed clone's topology with live's,
+    # defeating every containment property CLAUDE.md documents for it (is_test guards, forked
+    # subs, orphaned sends, ...). Hard refusal: no flag overrides this, unlike the other clone
+    # guard below (which is about someone else's WORK, not about smuggling live topology in).
+    if to_id == CLONE_GUARD_ID and src_id in _LIVE_LABELED_IDS:
+        return False, (f"(d) FAIL — refusing to PUT a LIVE-sourced export ({src_id}, "
+                        f"{KNOWN_ID_LABELS.get(src_id)}) onto the TEST clone {to_id}. This would "
+                        f"replace the fail-closed clone's own topology with live's. No flag "
+                        f"overrides this — deploy a genuine clone-slug export instead.")
+    if to_id == CLONE_GUARD_ID:
+        # The clone gets its OWN override (--target-override), not --i-know-this-is-live — it
+        # isn't "live" (the whole reason UNPROTECTED/i_know_this_is_live exist), it's someone
+        # else's in-progress build. Handled here, standalone, so it does NOT also fall into the
+        # generic "not in UNPROTECTED -> needs --i-know-this-is-live" branch below.
+        if not target_override:
+            return False, (f"(d) FAIL — {to_id} is {CLONE_GUARD_NAME}. "
+                            f"Pass --target-override to override.")
+    elif to_id not in UNPROTECTED and not i_know_this_is_live:
+        label = KNOWN_ID_LABELS.get(to_id, "not on the UNPROTECTED allowlist")
+        return False, (f"(d) FAIL — {to_id} ({label}) is not in UNPROTECTED. "
                         f"Pass --i-know-this-is-live to override.")
-    if to_id == CLONE_GUARD_ID and not target_override:
-        return False, (f"(d) FAIL — {to_id} is {CLONE_GUARD_NAME}. "
-                        f"Pass --target-override to override.")
+    # S10b (reviewer): promotion stays USER-GATED per CLAUDE.md's HARD SAFETY RULE — --yes (skip
+    # the interactive confirm at gate (h)) is only for a target this script already considers safe
+    # by default (UNPROTECTED). Anything else — meaning anything requiring --i-know-this-is-live or
+    # --target-override to even reach here — still needs the interactive "y" at gate (h); no
+    # combination of flags makes an unattended write to it possible.
+    if to_id not in UNPROTECTED and yes:
+        return False, (f"(d) FAIL — {to_id} is not in UNPROTECTED; --yes (non-interactive) is "
+                        f"refused for it. Promotion to anything but a known-safe scratch id stays "
+                        f"user-gated — drop --yes and confirm interactively at gate (h).")
     note = ""
-    if to_id in PROTECTED:
-        note = f"  ⚠️  DEPLOYING TO LIVE ({PROTECTED[to_id]}) — --i-know-this-is-live acknowledged."
+    if to_id in UNPROTECTED:
+        note = "  (UNPROTECTED — no live/clone acknowledgment needed)"
     elif to_id == CLONE_GUARD_ID:
         note = "  ⚠️  DEPLOYING TO SOMEONE ELSE'S CLONE — --target-override acknowledged."
+    else:
+        note = f"  ⚠️  DEPLOYING TO {KNOWN_ID_LABELS.get(to_id, to_id)} — --i-know-this-is-live acknowledged."
     return True, f"(d) OK — {to_id} not blocked.{note}"
 
 
@@ -330,7 +426,7 @@ def do_deploy(args):
         sys.exit(1)
 
     hr("gate (d) target safety")
-    ok, msg = gate_d(to_id, args.i_know_this_is_live, args.target_override)
+    ok, msg = gate_d(to_id, args.i_know_this_is_live, args.target_override, args.yes, src_id=src_id)
     print(f"  {msg}")
     if not ok:
         sys.exit(1)
@@ -372,6 +468,18 @@ def do_deploy(args):
             print("aborted.")
             sys.exit(1)
 
+    hr("gate (c2) freshness re-check (TOCTOU)")
+    ok, msg, _recheck_wf = gate_c2_recheck(base, key, to_id, target_wf.get("versionId"))
+    print(f"  {msg}")
+    if not ok:
+        sys.exit(1)
+
+    # S10a (reviewer): print the rollback command BEFORE the PUT, not after — `do_put` raising
+    # (an HTTPError, a network blip) previously skipped this line entirely, leaving no rollback
+    # command printed for a PUT that may or may not have partially landed. The backup file it
+    # points at was already written in gate (e), long before this point.
+    print(f"\nRollback command (save this BEFORE the PUT, in case it fails partway):\n  {rollback_command(backup_path, to_id)}")
+
     hr("gate (i) PUT")
     status, resp = do_put(base, key, to_id, put_body)
     print(f"  PUT {to_id}: HTTP {status}")
@@ -396,7 +504,7 @@ def do_rollback(args):
     base, key = ew.env()
 
     hr("gate (d) target safety")
-    ok, msg = gate_d(to_id, args.i_know_this_is_live, args.target_override)
+    ok, msg = gate_d(to_id, args.i_know_this_is_live, args.target_override, args.yes)
     print(f"  {msg}")
     if not ok:
         sys.exit(1)

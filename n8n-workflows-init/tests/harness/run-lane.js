@@ -42,35 +42,28 @@ function exprBody(raw) {
 // prototypes (only If-node condition strings use these — grepped every exported Code node body,
 // none do — so this is scoped to run-lane's own evaluator, not to n8n-shim's Code-node sandbox).
 //
-// REALM GOTCHA (found empirically, not obvious): `vm.createContext(sandbox)` gives the script its
-// OWN separate intrinsics — a string literal evaluated INSIDE the vm context boxes against THAT
-// context's native String.prototype, not the host's, even though the sandbox also exposes a
-// `String` identifier bound to the host's String constructor (`("").constructor === String` is
-// FALSE across that boundary — proven with a throwaway vm.createContext probe). So patching the
-// host's `String.prototype` (e.g. via n8n-shim's sandbox object) silently does nothing for actual
-// in-vm string values — every real fixture value in this workflow's `custom_fields[].value` is a
-// JSON string, so this bit for real. Fix: patch via a script run INSIDE the target vm context,
-// reaching the realm-local prototype through `"".constructor.prototype` instead of an identifier.
+// REALM (S9): n8n-shim's `buildSandbox` no longer injects the HOST's String/Boolean/Number
+// constructors — the vm context now resolves those identifiers to its OWN native realm (see
+// n8n-shim.js's buildSandbox comment), the same realm every string/boolean/number literal
+// evaluated in this context is boxed against. So a plain `String.prototype` / `Boolean.prototype`
+// / `Number.prototype` identifier, evaluated INSIDE the vm context via vm.runInContext, now
+// reaches the correct realm-local prototype directly — no more need to detour through a
+// primitive's own `.constructor.prototype` to dodge a shadowing host reference.
 function ensureExpressionExtensions(vmCtx) {
-  // NOTE: reach each realm-local prototype via a primitive's own `.constructor.prototype`
-  // (`"".constructor.prototype`, not a bare `String.prototype`) — a bare `String`/`Boolean`/
-  // `Number` identifier here would resolve through the sandbox's OWN `String` etc. properties
-  // (n8n-shim's buildSandbox puts the HOST constructors there so Code-node bodies can use them),
-  // which shadows the vm context's real intrinsic and silently patches the wrong realm.
   vm.runInContext(`(function(){
-    if (!"".constructor.prototype.toBoolean) {
+    if (!String.prototype.toBoolean) {
       // n8n data-transformation-functions: String.toBoolean() — 'true'/'yes'/'1' (case-insensitive,
       // trimmed) is true, everything else false.
-      Object.defineProperty("".constructor.prototype, 'toBoolean', { enumerable: false, value: function () {
+      Object.defineProperty(String.prototype, 'toBoolean', { enumerable: false, value: function () {
         var v = this.toString().trim().toLowerCase();
         return v === 'true' || v === 'yes' || v === '1';
       }});
     }
-    if (!true.constructor.prototype.toBoolean) {
-      Object.defineProperty(true.constructor.prototype, 'toBoolean', { enumerable: false, value: function () { return this.valueOf(); }});
+    if (!Boolean.prototype.toBoolean) {
+      Object.defineProperty(Boolean.prototype, 'toBoolean', { enumerable: false, value: function () { return this.valueOf(); }});
     }
-    if (!(0).constructor.prototype.toBoolean) {
-      Object.defineProperty((0).constructor.prototype, 'toBoolean', { enumerable: false, value: function () { return this.valueOf() !== 0; }});
+    if (!Number.prototype.toBoolean) {
+      Object.defineProperty(Number.prototype, 'toBoolean', { enumerable: false, value: function () { return this.valueOf() !== 0; }});
     }
   })();`, vmCtx, { filename: 'n8n-expr-extensions.js' });
 }
@@ -125,10 +118,30 @@ function typedValue(actual, wantType, typeValidation, label) {
   return coerce(actual, wantType);
 }
 
+// S12 (reviewer): `cond.rightValue` is used everywhere below as a LITERAL — never run through
+// `evalExpr` — because every rightValue in this workflow today happens to BE a literal (0 cases
+// checked). n8n itself lets an If/Switch condition's rightValue be an `={{ ... }}` expression too;
+// silently comparing against the un-evaluated STRING `"={{ $json.threshold }}"` instead of its
+// evaluated value would be a wrong-branch bug this evaluator could not see itself commit. Guard it:
+// throw the moment a rightValue turns out to be an expression, rather than adding a code path
+// there is no real condition in this workflow to test yet.
+function guardRightValueNotExpression(rightValue, label) {
+  if (typeof rightValue === 'string' && /^=\s*\{\{[\s\S]*\}\}\s*$/.test(rightValue)) {
+    throw new Error(
+      `run-lane: unsupported rightValue on ${label}: "${rightValue}" looks like an n8n expression — ` +
+      `this evaluator only compares rightValue as a LITERAL (matches every condition in this workflow ` +
+      `today); evaluating an expression-valued rightValue is not implemented, add it rather than ` +
+      `silently comparing against the un-evaluated string`
+    );
+  }
+  return rightValue;
+}
+
 function evalCondition(cond, sandboxCtx, typeValidation, label) {
   const op = cond.operator.operation;
   const wantType = cond.operator.type;
   const rawActual = evalExpr(cond.leftValue, sandboxCtx);
+  guardRightValueNotExpression(cond.rightValue, label);
   switch (op) {
     case 'true': {
       const v = typedValue(rawActual, 'boolean', typeValidation, `${label} (true)`);
@@ -165,7 +178,14 @@ function evalCondition(cond, sandboxCtx, typeValidation, label) {
 
 function evalConditionGroup(conditionsBlock, sandboxCtx, label) {
   const { combinator, conditions, options } = conditionsBlock;
-  const typeValidation = (options && options.typeValidation) || 'loose';
+  // S13 (reviewer): n8n's own default for If v2.1+ / Switch's condition options is 'strict', not
+  // 'loose' — this fallback only mattered as a default if some condition block omitted the key,
+  // and none of this workflow's 33 condition blocks do (all set it explicitly, checked against
+  // export/*/workflow.json), so flipping it changes no CURRENT behaviour. It stops being inert the
+  // moment a future condition block omits the key, so the fallback needs to match production then,
+  // not before. (The strict-vs-absent semantics `typedValue` implements above are unchanged by
+  // this — the reviewer adjudicated that logic correct; only this DEFAULT was wrong.)
+  const typeValidation = (options && options.typeValidation) || 'strict';
   const results = conditions.map((c, i) => evalCondition(c, sandboxCtx, typeValidation, `${label}[${i}]`));
   if (combinator === 'and') return results.every(Boolean);
   if (combinator === 'or') return results.some(Boolean);
@@ -189,9 +209,21 @@ function mergeCtx(baseCtx, overlay) {
 }
 
 // ── node execution ─────────────────────────────────────────────────────────────────────────
+// S11 (reviewer): a node name isn't always its file name — `export-workflows.py` runs node names
+// through `safe_name` (any character outside `[A-Za-z0-9._-]` becomes `_`), so e.g. "Code in
+// JavaScript" exports as `Code_in_JavaScript.js`, not `Code in JavaScript.js`. `nodeName + '.js'`
+// only happened to work for every node a lane currently walks through (none of them need
+// escaping); using MANIFEST.json's own `nodes.<name>.file` — the SAME mapping
+// tests/unit/_all-nodes.test.js already relies on — is correct for every node, not just the ones
+// that dodge the landmine by luck.
 function loadCodeBody(slug, nodeName) {
-  const { loadNodes } = require('../offline/node-source');
-  const file = nodeName + '.js';
+  const { loadNodes, manifestOf } = require('../offline/node-source');
+  const man = manifestOf(slug);
+  const rec = man.nodes && man.nodes[nodeName];
+  if (!rec || !rec.file) {
+    throw new Error(`loadCodeBody: MANIFEST.json for ${slug} has no file mapping for node "${nodeName}"`);
+  }
+  const file = rec.file;
   const src = loadNodes(slug, [file]);
   return src[file];
 }
@@ -227,8 +259,17 @@ function runSwitchNode(node, items, ctxView) {
 
 function runSetNode(node, items, ctxView) {
   const assignments = node.parameters.assignments.assignments;
+  // n8n Set (Edit Fields) v3.4 DEFAULTS `includeOtherFields` to false, and none of this
+  // workflow's 9 Set nodes set it explicitly (checked against export/*/workflow.json — every
+  // one omits the key). A missing/falsy `includeOtherFields` means the node's OUTPUT is ONLY
+  // the fields it assigns, dropping every other upstream field — proven against real captured
+  // runData: `tag-not-found`'s output is exactly `{branch_kind: 'not_found'}`, not the upstream
+  // item plus that key (fixture: tests/fixtures/nodes/live-spine-sorento-consume-main/
+  // compile-current-state/exec-13462354.json, ctx['tag-not-found']). Spreading `item.json`
+  // unconditionally (the prior shape of this function) was invisibly wrong for every one of
+  // this workflow's Set nodes.
   const outItems = items.map((item) => {
-    const json = { ...item.json };
+    const json = node.parameters.includeOtherFields ? { ...item.json } : {};
     for (const a of assignments) {
       if (typeof a.value === 'string' && a.value.startsWith('=')) {
         const sandbox = buildSandbox({ ctx: ctxView, input: [item] });
@@ -316,8 +357,23 @@ function runLane({ slug, start, end, ctx, input, stubs, workflowJson, execution 
     const targets = nodeConns && nodeConns.main && nodeConns.main[outputIndex];
     if (!targets || targets.length === 0) break; // dead end: no outgoing edge on the taken output
 
+    // S12 (reviewer): 7 nodes in this workflow fan the SAME output out to more than one target
+    // (e.g. `is-human-intervened`[output 1] -> both `update-human-intervened` AND
+    // `set-human-intervened`) — real n8n runs every one of them. Silently taking `targets[0]` and
+    // dropping the rest is a silent truncation a lane test could never catch (the dropped branch
+    // just never runs, no error, no wrong-looking output on the ONE path still followed). A lane
+    // that legitimately needs to walk into a fan-out today doesn't exist in this suite; when one
+    // does, it needs real multi-target support, not a first-target guess.
+    if (targets.length > 1) {
+      throw new Error(
+        `run-lane: "${currentName}" fans out to ${targets.length} targets on this output ` +
+        `(${targets.map((t) => t.node).join(', ')}) — this lane walker is single-path and would ` +
+        `silently drop everything but the first; add real fan-out support before using this in a lane`
+      );
+    }
+
     currentItems = outItems;
-    currentName = targets[0].node; // lanes are single-path; first target on the taken output wins
+    currentName = targets[0].node; // lanes are single-path; first (only) target on the taken output
   }
 
   return { path: path_, outputs, end: outputs[end] };

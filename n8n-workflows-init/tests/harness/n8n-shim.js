@@ -111,6 +111,19 @@ function buildSandbox(fixture) {
 
   const inputAcc = makeAccessor(inputItems, '$input', true);
 
+  // REALM (S9): deliberately do NOT inject the host's Object/Array/JSON/Set/Map/String/Number/
+  // Boolean/Date/Math/RegExp/Error into this sandbox. `vm.createContext(sandbox)` always hands the
+  // script its OWN native realm (own Array, own String.prototype, etc.) regardless of what
+  // properties the sandbox object carries — that is standard `vm` behaviour, not something this
+  // shim opts into. Explicitly assigning the HOST's constructors onto the sandbox only shadows
+  // that native resolution with a cross-realm reference, which is actively wrong: real n8n Code
+  // node bodies run in ONE realm, so `[] instanceof Array` is true there, but was FALSE in this
+  // shim (proven with a throwaway vm.createContext probe) because the sandbox's own `Array`
+  // property pointed at the HOST's Array while `[]` literals were built against the vm context's
+  // native Array.prototype. Leaving these off lets `Array`/`Object`/`JSON`/etc. resolve to the vm
+  // context's own built-ins, which is both simpler (nothing to keep in sync) and correct (matches
+  // production's single-realm semantics). No exported node body uses `instanceof` today, but nothing
+  // should have to re-discover this landmine for the first one that does.
   const sandbox = {
     $: dollar,
     $input: inputAcc,
@@ -118,18 +131,6 @@ function buildSandbox(fixture) {
     $runIndex: (fixture && fixture.runIndex) ?? 0,
     $execution: (fixture && fixture.execution) ?? { id: 'test' },
     console,
-    JSON,
-    Object,
-    Array,
-    Set,
-    Map,
-    String,
-    Number,
-    Boolean,
-    Date,
-    Math,
-    RegExp,
-    Error,
     TextEncoder,
     structuredClone: typeof structuredClone === 'function' ? structuredClone : undefined,
   };
@@ -148,73 +149,66 @@ function runNode({ body, fixture }) {
   return vm.runInContext(script, ctx, { filename: 'n8n-code-node.js' });
 }
 
+// S7: `assertOutputEquals` (below) diffs `actual` against `expected` only AFTER both sides pass
+// through `stripVolatile`'s `deepCopy` — a JSON round-trip. `JSON.stringify(NaN)` (and
+// `Infinity`/`-Infinity`) silently produces `null`, so a refactor that makes a node body compute
+// NaN where it used to compute a real number would round-trip to `null` and could then compare
+// EQUAL to a fixture that legitimately has `null` in that slot — a real bug hidden by the very
+// mechanism meant to catch it. Walk the RAW returned value here, before any round-trip has a
+// chance to erase the evidence, and throw loudly on the first non-finite numeric leaf found.
+function assertNoNonFiniteNumbers(value, path) {
+  if (typeof value === 'number' && !Number.isFinite(value)) {
+    throw new Error(
+      `normalizeReturn: node returned a non-finite number (${value}) at ${path || '<root>'} — ` +
+      `this would silently become \`null\` after assertOutputEquals's JSON round-trip and could ` +
+      `compare equal to a legitimate null; fix the node body's math, don't let this pass through`
+    );
+  }
+  if (Array.isArray(value)) {
+    value.forEach((v, i) => assertNoNonFiniteNumbers(v, `${path || ''}[${i}]`));
+  } else if (value && typeof value === 'object') {
+    for (const k of Object.keys(value)) assertNoNonFiniteNumbers(value[k], path ? `${path}.${k}` : k);
+  }
+}
+
 // n8n Code "Run Once for All Items" normalizes whatever the body returns into an array of
 // {json: {...}} items:
 //   - a single plain object            -> [{json: obj}]
 //   - an array of plain objects        -> obj.map(o => ({json: o}))
 //   - an array of {json: ...} items    -> left as-is
 function normalizeReturn(returned) {
+  let out;
   if (Array.isArray(returned)) {
     const alreadyItemShaped = returned.length === 0 || returned.every(
       (it) => it && typeof it === 'object' && !Array.isArray(it) && Object.prototype.hasOwnProperty.call(it, 'json')
     );
-    return alreadyItemShaped ? returned : returned.map((o) => ({ json: o }));
+    out = alreadyItemShaped ? returned : returned.map((o) => ({ json: o }));
+  } else if (returned && typeof returned === 'object') {
+    out = [{ json: returned }];
+  } else {
+    throw new Error(`normalizeReturn: node returned a ${returned === null ? 'null' : typeof returned}, which n8n's Code node cannot turn into items`);
   }
-  if (returned && typeof returned === 'object') {
-    return [{ json: returned }];
-  }
-  throw new Error(`normalizeReturn: node returned a ${returned === null ? 'null' : typeof returned}, which n8n's Code node cannot turn into items`);
+  assertNoNonFiniteNumbers(out, '');
+  return out;
 }
 
-// ── volatile-path deletion (dot paths, "*" wildcards an array index or every object key) ──────
-function walkDelete(node, parts) {
-  if (node === null || node === undefined) return;
-  const [head, ...rest] = parts;
-  if (head === '*') {
-    if (Array.isArray(node)) {
-      for (const child of node) {
-        if (rest.length === 0) continue; // "*" alone (delete every element) isn't a supported leaf
-        walkDelete(child, rest);
-      }
-    } else if (typeof node === 'object') {
-      for (const key of Object.keys(node)) {
-        if (rest.length === 0) delete node[key];
-        else walkDelete(node[key], rest);
-      }
-    }
-    return;
-  }
-  if (rest.length === 0) {
-    if (Array.isArray(node)) {
-      const idx = Number(head);
-      if (Number.isInteger(idx) && idx >= 0 && idx < node.length) node[idx] = null;
-    } else if (typeof node === 'object') {
-      delete node[head];
-    }
-    return;
-  }
-  let child;
-  if (Array.isArray(node)) {
-    const idx = Number(head);
-    child = Number.isInteger(idx) ? node[idx] : undefined;
-  } else if (typeof node === 'object') {
-    child = node[head];
-  }
-  walkDelete(child, rest);
-}
-
-function stripVolatile(value, volatilePaths) {
-  const copy = deepCopy(value);
-  for (const p of volatilePaths || []) walkDelete(copy, String(p).split('.'));
-  return copy;
-}
-
+// S8 (reviewer): a `volatile:["*.json"]` fixture field could delete an ENTIRE output before
+// comparing, making any assertion pass no matter what the node returned — and 0 of 144 committed
+// fixtures ever used `volatile` for anything. Per this repo's simplest-thing-that-works principle,
+// the mechanism is deleted outright rather than hardened: an unused escape hatch that can blank a
+// whole assertion is a liability sitting idle, not a feature earning its keep. If a future fixture
+// genuinely needs to ignore a volatile field (a timestamp, a generated id), reintroduce a NARROWLY
+// SCOPED version then — deep-equal ONE key's value, never delete the shape of the comparison.
+//
 // Deep-equal `actual` (the RAW value a node body returned) against `expected` (the fixture's
-// n8n-normalized `expected` array), after deleting each `volatile` path from both sides.
-function assertOutputEquals(actual, expected, volatile) {
+// n8n-normalized `expected` array). Both sides are JSON-round-tripped first (via `deepCopy`) so an
+// in-process `undefined`-valued key (which a real n8n item, always JSON-serialized in transit,
+// could never carry — see tests/flow/_lib.js's `jsonNormalize` for the same reasoning) can't cause
+// a false mismatch against an already-JSON `expected`.
+function assertOutputEquals(actual, expected) {
   const normalized = normalizeReturn(actual);
-  const a = stripVolatile(normalized, volatile);
-  const e = stripVolatile(expected, volatile);
+  const a = deepCopy(normalized);
+  const e = deepCopy(expected);
   assert.deepStrictEqual(a, e);
 }
 

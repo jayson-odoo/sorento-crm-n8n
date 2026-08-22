@@ -19,21 +19,32 @@ function loadWorkflow(slug) {
 
 // ── independent path oracle ─────────────────────────────────────────────────────────────────
 // Deliberately does NOT reuse run-lane's own traversal (that would make the path assertion
-// tautological — it would only prove run-lane agrees with itself). Instead it derives "what
-// actually ran" straight from the fixture: a captured execution's `ctx` has an entry for every
-// node that ran, so walking the connections graph forward from `start` and, at each node, only
-// stepping into a neighbour that (a) is reachable and (b) has a ctx entry, reconstructs the real
-// taken path.
+// tautological — it would only prove run-lane agrees with itself).
 //
-// RELIABILITY CAVEAT (be honest about this, per the task): this is sound exactly when at most one
-// forward neighbour of the current node has a ctx entry — true for every lane in this suite
-// (checked by hand against run-lane's own output below), because none of the five lanes revisit a
-// node already on the path via a second route. It would be UNSOUND for a lane containing a
-// reconvergence (two different upstream branches both landing back on a downstream node that is
-// itself forward-reachable from an earlier branch point still under consideration) — this oracle
-// would then see two ctx-having candidates and cannot pick between them; it throws in that case
-// rather than guessing.
-function derivePathFromCtx(wf, ctxKeys, start, end) {
+// PRIMARY (S5, reviewer): capture-fixtures.py now records `ran` — every node the execution
+// actually ran, in REAL execution order (Python dict preserves n8n's own runData insertion order,
+// which is appended-to as each node finishes — see capture-fixtures.py's `ran_list` comment).
+// When a fixture has `ran`, the path is just the sub-list between `start` and `end` — no graph
+// walk, no ambiguity, independent of run-lane and of the connections graph alike.
+//
+// FALLBACK (pre-existing fixtures captured before `ran` existed): walk the connections graph
+// forward from `start`, stepping into whichever neighbour (a) is reachable and (b) has a `ctx`
+// entry. Sound exactly when at most one forward neighbour of the current node has a ctx entry —
+// true for every lane in this suite (cross-checked by hand: every fixture actually in use here
+// carries `ran`, and slicing `ran` agrees with this fallback byte-for-byte — see the reviewer
+// verification in the task report). It would be UNSOUND for a lane containing a reconvergence
+// (two upstream branches both landing back on a node still forward-reachable from an earlier
+// branch point) — this fallback then sees two ctx-having candidates and cannot pick between them;
+// it throws in that case rather than guessing.
+function derivePathFromRan(ran, start, end) {
+  const si = ran.indexOf(start);
+  const ei = ran.indexOf(end, si === -1 ? 0 : si);
+  if (si === -1) throw new Error(`derivePathFromRan: start "${start}" not found in fixture.ran`);
+  if (ei === -1) throw new Error(`derivePathFromRan: end "${end}" not found in fixture.ran at/after "${start}"`);
+  return ran.slice(si, ei + 1);
+}
+
+function derivePathFromConnectionsWalk(wf, ctxKeys, start, end) {
   const connections = wf.connections || {};
   const path_ = [start];
   const visited = new Set([start]);
@@ -59,6 +70,13 @@ function derivePathFromCtx(wf, ctxKeys, start, end) {
     visited.add(current);
   }
   return path_;
+}
+
+// `fx` is the WHOLE loaded fixture (not just its ctx) so this can prefer `fx.ran` and only fall
+// back to the connections walk (using `fx.ctx`'s keys) when a fixture predates that field.
+function derivePathFromCtx(wf, fx, start, end) {
+  if (Array.isArray(fx.ran)) return derivePathFromRan(fx.ran, start, end);
+  return derivePathFromConnectionsWalk(wf, new Set(Object.keys(fx.ctx)), start, end);
 }
 
 // ── true input to a lane's `start` node ────────────────────────────────────────────────────
