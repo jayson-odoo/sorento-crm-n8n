@@ -1,0 +1,196 @@
+{
+  "source": {
+    "execution_id": "11827379",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "promo-picker",
+    "captured_at": "2026-08-22T00:00:00Z",
+    "note": "validator+qf payload from real exec 11827379 (see tests/offline/promo-picker/fixtures.json); expected output frozen by running the CURRENT exported node body (not the stale local offline copy) once through tests/harness/n8n-shim.js \u2014 input shape deliberately has no `answers` key (probe.js \"unknown\" shape case), proving fail-closed (D10-era body)."
+  },
+  "ctx": {
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check promotions for bathroom furniture",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "bathroom furniture",
+                "hint": "category",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "marketing_promotion_sorento",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          }
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "access_notice": "",
+          "company_team": null,
+          "brand_gate_empty": false
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "attachments": [
+          {
+            "url": "https://cdn-sorento.com/promotion/8c8ad7ea-b226-419a-bf34-09b0065c7ff1/AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+            "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-07T14:48:48.733893"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/0cc538b2-5a72-46cd-a88b-2decc995b88c/AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 END USER.pdf",
+            "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 END USER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-07T14:48:29.864835"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/922284a5-d00d-43ab-b131-46116c5450e3/AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+            "filename": "AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-07T14:48:13.814225"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/ba534144-f54e-449c-9976-e9dbcdcd1f3c/SORENTO UPDATED BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+            "filename": "SORENTO UPDATED BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-06T14:36:07.117998"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/a3b4a59a-212d-4705-9ebf-dac59bb00700/UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+            "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-06T14:19:31.464790"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/f15218a4-02ca-4634-99be-02648fd7697d/UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 END USER.pdf",
+            "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 END USER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-06T14:18:45.245677"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/2bb0b133-23b0-4e86-9189-2935daebf60d/UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+            "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-06T14:18:24.701889"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/7b5ffd2d-e8c3-43db-bf3d-518f3efe4a82/SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 OFFICE.pdf",
+            "filename": "SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 (2) OFFICE.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-05T08:39:12.659545"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/cb190bc5-5e1d-4a7e-aebe-4928a39b665e/SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 END USER.pdf",
+            "filename": "SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 (2) END USER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-05T08:38:43.869748"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/a263741f-f48c-4a0a-bd07-8bf6fce62812/SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 DEALER.pdf",
+            "filename": "SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 (2) DEALER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-08-05T08:38:16.830657"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/998d1817-ffb2-4107-81fd-73d11a18c6f0/UPDATED SORENTO BATHROOM FURNITURE PROMO_25062026 DEALER.pdf",
+            "filename": "UPDATED SORENTO BATHROOM FURNITURE PROMO_25062026 DEALER.pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-06-25T16:47:02.160295"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/6c25639f-3549-47a8-b426-3d2227f19006/CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf",
+            "filename": "CABANA BATHROOM FURNITURE PROMO_15062026 (DEALER USE).pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-06-24T17:58:41.699037"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/84740516-847a-4cf4-a3ee-df12563bd50a/CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf",
+            "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (DEALER USE).pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-06-24T17:32:38.414509"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/04bb9bf9-673a-4e4c-be5b-501c94138d1b/CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 END USER.pdf",
+            "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (END USER).pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-06-24T17:31:02.852978"
+          },
+          {
+            "url": "https://cdn-sorento.com/promotion/b05fcccc-70ab-4d3f-b390-f462e83a48a4/CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 OFFICE USE.pdf",
+            "filename": "CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 (OFFICE USE).pdf",
+            "mimeType": "application/pdf",
+            "attachmentType": "Promotion",
+            "uploadedAt": "2026-06-24T17:29:37.148159"
+          }
+        ]
+      }
+    }
+  ],
+  "runIndex": 0,
+  "volatile": [],
+  "expected": [
+    {
+      "json": {
+        "attachments": [],
+        "response_intro": "I found several promotions but could not list them. Please narrow your search.",
+        "response": "I found several promotions but could not list them. Please narrow your search.",
+        "_promo_picker_shape": "unrecognised"
+      }
+    }
+  ]
+}

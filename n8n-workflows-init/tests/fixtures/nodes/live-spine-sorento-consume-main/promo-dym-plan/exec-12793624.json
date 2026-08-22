@@ -1,0 +1,3939 @@
+{
+  "source": {
+    "execution_id": "12793624",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "promo-dym-plan",
+    "captured_at": "2026-08-22T12:02:00+00:00"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000019"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "4277444f-11ab-47eb-8bd5-cc6c60c59faf",
+              "contact": {
+                "id": 900000019,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": null,
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "email": "<redacted>"
+                },
+                "created_at": 1782546255
+              },
+              "message": {
+                "messageId": 1786943087000000,
+                "channelMessageId": "wamid.HBgLNjAxNjQzODExNzkVAgASGCBBQ0E2N0RFMDNFQ0QwOTcxMTYzOEJBMkIyMUFFQTc4NgA=",
+                "contactId": 900000019,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1786943087000,
+                "message": {
+                  "type": "text",
+                  "text": "Promotion for srt377-rg"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 53\"},\"wa_id\":\"60100000016\",\"user_id\":\"MY.900000036\",\"firstName\":\"Person 11\",\"lastName\":\"Person 52\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000019,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": "true"
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/8a173394-2f90-4f07-b52e-5c34e91a6ebe"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [
+                "imported_20260627_150636"
+              ],
+              "assignee": null,
+              "lifecycle": null,
+              "created_at": 1782546255
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "4277444f-11ab-47eb-8bd5-cc6c60c59faf",
+          "contact": {
+            "id": 900000019,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": null,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "email": "<redacted>"
+            },
+            "created_at": 1782546255
+          },
+          "message": {
+            "messageId": 1786943087000000,
+            "channelMessageId": "wamid.HBgLNjAxNjQzODExNzkVAgASGCBBQ0E2N0RFMDNFQ0QwOTcxMTYzOEJBMkIyMUFFQTc4NgA=",
+            "contactId": 900000019,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1786943087000,
+            "message": {
+              "type": "text",
+              "text": "Promotion for srt377-rg"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 53\"},\"wa_id\":\"60100000016\",\"user_id\":\"MY.900000036\",\"firstName\":\"Person 11\",\"lastName\":\"Person 52\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000019,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/8a173394-2f90-4f07-b52e-5c34e91a6ebe"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000019,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/8a173394-2f90-4f07-b52e-5c34e91a6ebe"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000019",
+          "session_vars": {
+            "variables": {
+              "response": "text"
+            },
+            "user_response": "text"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check the promotion for srt377-rg",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "srt377-rg",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "marketing_promotion_sorento",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check the promotion for srt377-rg",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "srt377-rg",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "marketing_promotion_sorento",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "get-access-types": [
+      {
+        "json": {
+          "name": "Sorento Office",
+          "keywords": [
+            "sorento office",
+            "office"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Sorento Dealer",
+          "keywords": [
+            "sorento dealer",
+            "dealer"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Mocha Dealer",
+          "keywords": [
+            "mocha dealer"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Mocha Office",
+          "keywords": [
+            "mocha office",
+            "office"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Cabana Office",
+          "keywords": [
+            "cabana office",
+            "office"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Cabana Dealer",
+          "keywords": [
+            "cabana dealer"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "End User",
+          "keywords": [
+            "customer",
+            "consumer",
+            "homeowner",
+            "b2c",
+            "end-user",
+            "enduser",
+            "user",
+            "client"
+          ]
+        }
+      }
+    ],
+    "Aggregate": [
+      {
+        "json": {
+          "name": [
+            "Cabana Dealer",
+            "Cabana Office",
+            "End User",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Sorento Dealer",
+            "Sorento Office"
+          ]
+        }
+      }
+    ],
+    "tier-gate": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false
+        }
+      }
+    ],
+    "If4": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false
+        }
+      }
+    ],
+    "resolve-entity": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          }
+        }
+      }
+    ],
+    "If3": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          }
+        }
+      }
+    ],
+    "If-incoming-picker": [],
+    "not-found-error-message": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": ""
+        }
+      }
+    ],
+    "sibling-gate": [],
+    "dym-transform": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [
+            {
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "code": "SRT377-FRG"
+            },
+            {
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "code": "SRT314-RG"
+            },
+            {
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "code": "SRT315-RG"
+            }
+          ],
+          "dym_candidate_codes": [
+            "SRT377-FRG",
+            "SRT314-RG",
+            "SRT315-RG"
+          ],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": "crm_marketing_promotions_list",
+          "probe_noun": "promotion",
+          "probe_predicate": "row_present",
+          "probe_needed": true,
+          "probe_skip_reason": null,
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "dym-gate": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [
+            {
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "code": "SRT377-FRG"
+            },
+            {
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "code": "SRT314-RG"
+            },
+            {
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "code": "SRT315-RG"
+            }
+          ],
+          "dym_candidate_codes": [
+            "SRT377-FRG",
+            "SRT314-RG",
+            "SRT315-RG"
+          ],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": "crm_marketing_promotions_list",
+          "probe_noun": "promotion",
+          "probe_predicate": "row_present",
+          "probe_needed": true,
+          "probe_skip_reason": null,
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "if-promo-dym": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [
+            {
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "code": "SRT377-FRG"
+            },
+            {
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "code": "SRT314-RG"
+            },
+            {
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "code": "SRT315-RG"
+            }
+          ],
+          "dym_candidate_codes": [
+            "SRT377-FRG",
+            "SRT314-RG",
+            "SRT315-RG"
+          ],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": "crm_marketing_promotions_list",
+          "probe_noun": "promotion",
+          "probe_predicate": "row_present",
+          "probe_needed": true,
+          "probe_skip_reason": null,
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "promo-dym-plan": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [
+            {
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "code": "SRT377-FRG"
+            },
+            {
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "code": "SRT314-RG"
+            },
+            {
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "code": "SRT315-RG"
+            }
+          ],
+          "dym_candidate_codes": [
+            "SRT377-FRG",
+            "SRT314-RG",
+            "SRT315-RG"
+          ],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": "crm_marketing_promotions_list",
+          "probe_noun": "promotion",
+          "probe_predicate": "row_present",
+          "probe_needed": true,
+          "probe_skip_reason": null,
+          "probe_lane": "d1",
+          "_dym_probe_input": true,
+          "probe_code": "SRT377-FRG",
+          "probe_entity": {
+            "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+            "entity_type": "product",
+            "code": "SRT377-FRG"
+          }
+        }
+      },
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [
+            {
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "code": "SRT377-FRG"
+            },
+            {
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "code": "SRT314-RG"
+            },
+            {
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "code": "SRT315-RG"
+            }
+          ],
+          "dym_candidate_codes": [
+            "SRT377-FRG",
+            "SRT314-RG",
+            "SRT315-RG"
+          ],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": "crm_marketing_promotions_list",
+          "probe_noun": "promotion",
+          "probe_predicate": "row_present",
+          "probe_needed": true,
+          "probe_skip_reason": null,
+          "probe_lane": "d1",
+          "_dym_probe_input": true,
+          "probe_code": "SRT314-RG",
+          "probe_entity": {
+            "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+            "entity_type": "product",
+            "code": "SRT314-RG"
+          }
+        }
+      },
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [
+            {
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "code": "SRT377-FRG"
+            },
+            {
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "code": "SRT314-RG"
+            },
+            {
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "code": "SRT315-RG"
+            }
+          ],
+          "dym_candidate_codes": [
+            "SRT377-FRG",
+            "SRT314-RG",
+            "SRT315-RG"
+          ],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": "crm_marketing_promotions_list",
+          "probe_noun": "promotion",
+          "probe_predicate": "row_present",
+          "probe_needed": true,
+          "probe_skip_reason": null,
+          "probe_lane": "d1",
+          "_dym_probe_input": true,
+          "probe_code": "SRT315-RG",
+          "probe_entity": {
+            "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+            "entity_type": "product",
+            "code": "SRT315-RG"
+          }
+        }
+      }
+    ],
+    "promo-dym-probe": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "SRT320-FRG",
+              "display": "SRT320-FRG",
+              "id": "ea157432-e002-4c68-89e2-1f3d30560da8",
+              "sim": 0.571,
+              "is_variant": false
+            },
+            {
+              "value": "SRT105-FRG",
+              "display": "SRT105-FRG",
+              "id": "56021937-b48e-4fe5-b1b4-7c3b71344dd9",
+              "sim": 0.467,
+              "is_variant": false
+            },
+            {
+              "value": "SRT443-FRG",
+              "display": "SRT443-FRG",
+              "id": "d8fec677-b798-45b3-ac47-f2fd6eab6d99",
+              "sim": 0.467,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      },
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "SRTBF31414-RG",
+              "display": "SRTBF31414-RG",
+              "id": "35ce0df4-7cb4-4dc3-9b68-64c242e624e7",
+              "sim": 0.5,
+              "is_variant": false
+            },
+            {
+              "value": "SRT102-RG",
+              "display": "SRT102-RG",
+              "id": "dade3973-b09f-45a6-a375-18d91ee7dc17",
+              "sim": 0.429,
+              "is_variant": false
+            },
+            {
+              "value": "SRT2402-RG",
+              "display": "SRT2402-RG",
+              "id": "f17dbc3f-599c-40ed-b7cd-a802bd14d3bb",
+              "sim": 0.4,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      },
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "SRTWT6215-RG",
+              "display": "SRTWT6215-RG",
+              "id": "2c328f32-10f4-4f06-8f1c-51f1dc256a0b",
+              "sim": 0.438,
+              "is_variant": false
+            },
+            {
+              "value": "SRT102-RG",
+              "display": "SRT102-RG",
+              "id": "dade3973-b09f-45a6-a375-18d91ee7dc17",
+              "sim": 0.429,
+              "is_variant": false
+            },
+            {
+              "value": "SRT2402-RG",
+              "display": "SRT2402-RG",
+              "id": "f17dbc3f-599c-40ed-b7cd-a802bd14d3bb",
+              "sim": 0.4,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "dym-annotate": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_available_codes": [],
+          "dym_probe_meta": {
+            "ok": true,
+            "tool": "crm_marketing_promotions_list",
+            "noun": "promotion",
+            "predicate": "row_present",
+            "probed": [
+              "srt377-frg",
+              "srt314-rg",
+              "srt315-rg"
+            ],
+            "answer_count": 0,
+            "reason": null
+          }
+        }
+      }
+    ],
+    "build-suggest-offer": [
+      {
+        "json": {
+          "tokens": [
+            "srt377-rg"
+          ],
+          "elapsed_ms": 550.3,
+          "resolutions": [
+            {
+              "token": "srt377-rg",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.61538464,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT377-FRG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT314-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.53846157,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT315-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTWT177-RG",
+                  "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.46666667,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTWT177-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRT3364-3-RG",
+                  "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                  "match_field": "product_code",
+                  "match_tier": "trgm",
+                  "similarity": 0.4375,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRT3364-3-RG",
+                    "is_variant": false,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "unresolved_tokens": [
+            "srt377-rg"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "no entities and 'promotion' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "suggest_offer": true,
+          "suggest_selection_context": "suggest_offer",
+          "suggest_response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+          "suggest_quick_reply": "SRT377-FRG,SRT314-RG,SRT315-RG,Yes escalate,No it's okay",
+          "suggest_last_result_set": [
+            {
+              "idx": 1,
+              "label": "SRT377-FRG",
+              "value": "SRT377-FRG",
+              "product": "SRT377-FRG",
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product"
+            },
+            {
+              "idx": 2,
+              "label": "SRT314-RG",
+              "value": "SRT314-RG",
+              "product": "SRT314-RG",
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product"
+            },
+            {
+              "idx": 3,
+              "label": "SRT315-RG",
+              "value": "SRT315-RG",
+              "product": "SRT315-RG",
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product"
+            }
+          ],
+          "dym_candidates": [
+            {
+              "code": "SRT377-FRG",
+              "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+              "entity_type": "product",
+              "for_raw": "srt377-rg",
+              "for_hint": "product",
+              "for_canonical": null
+            },
+            {
+              "code": "SRT314-RG",
+              "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+              "entity_type": "product",
+              "for_raw": "srt377-rg",
+              "for_hint": "product",
+              "for_canonical": null
+            },
+            {
+              "code": "SRT315-RG",
+              "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+              "entity_type": "product",
+              "for_raw": "srt377-rg",
+              "for_hint": "product",
+              "for_canonical": null
+            }
+          ],
+          "dym_offer": {
+            "id": "12793624",
+            "domain": "promotion",
+            "ttl": 3,
+            "candidates": [
+              {
+                "code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              },
+              {
+                "code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              },
+              {
+                "code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              }
+            ],
+            "picked": []
+          }
+        }
+      }
+    ],
+    "tag-not-found": [
+      {
+        "json": {
+          "branch_kind": "not_found"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-offer-gate": [],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "user_goal": "trying to check the promotion for srt377-rg",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "srt377-rg",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "marketing_promotion_sorento",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "SRT377-FRG",
+                "value": "SRT377-FRG",
+                "product": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "entity_type": "product"
+              },
+              {
+                "idx": 2,
+                "label": "SRT314-RG",
+                "value": "SRT314-RG",
+                "product": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "entity_type": "product"
+              },
+              {
+                "idx": 3,
+                "label": "SRT315-RG",
+                "value": "SRT315-RG",
+                "product": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "entity_type": "product"
+              }
+            ],
+            "selection_context": "suggest_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": {
+              "id": "12793624",
+              "domain": "promotion",
+              "ttl": 3,
+              "candidates": [
+                {
+                  "code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                },
+                {
+                  "code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                },
+                {
+                  "code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                }
+              ],
+              "picked": []
+            },
+            "dym_candidates": [
+              {
+                "code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              },
+              {
+                "code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              },
+              {
+                "code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              }
+            ],
+            "ideation": null
+          },
+          "user_response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+          "quick_reply": "SRT377-FRG,SRT314-RG,SRT315-RG,Yes escalate,No it's okay"
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "user_goal": "trying to check the promotion for srt377-rg",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "srt377-rg",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "marketing_promotion_sorento",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "SRT377-FRG",
+                "value": "SRT377-FRG",
+                "product": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "entity_type": "product"
+              },
+              {
+                "idx": 2,
+                "label": "SRT314-RG",
+                "value": "SRT314-RG",
+                "product": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "entity_type": "product"
+              },
+              {
+                "idx": 3,
+                "label": "SRT315-RG",
+                "value": "SRT315-RG",
+                "product": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "entity_type": "product"
+              }
+            ],
+            "selection_context": "suggest_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": {
+              "id": "12793624",
+              "domain": "promotion",
+              "ttl": 3,
+              "candidates": [
+                {
+                  "code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                },
+                {
+                  "code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                },
+                {
+                  "code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                }
+              ],
+              "picked": []
+            },
+            "dym_candidates": [
+              {
+                "code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              },
+              {
+                "code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              },
+              {
+                "code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "entity_type": "product",
+                "for_raw": "srt377-rg",
+                "for_hint": "product",
+                "for_canonical": null
+              }
+            ],
+            "ideation": null
+          },
+          "user_response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+          "quick_reply": "SRT377-FRG,SRT314-RG,SRT315-RG,Yes escalate,No it's okay"
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000019",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_promotion",
+              "domain_hint": "promotion",
+              "user_goal": "trying to check the promotion for srt377-rg",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "srt377-rg",
+                  "hint": "product",
+                  "canonical_code": null,
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "marketing_promotion_sorento",
+                "suggested_agent": "general_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "SRT377-FRG",
+                  "value": "SRT377-FRG",
+                  "product": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "entity_type": "product"
+                },
+                {
+                  "idx": 2,
+                  "label": "SRT314-RG",
+                  "value": "SRT314-RG",
+                  "product": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "entity_type": "product"
+                },
+                {
+                  "idx": 3,
+                  "label": "SRT315-RG",
+                  "value": "SRT315-RG",
+                  "product": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "entity_type": "product"
+                }
+              ],
+              "selection_context": "suggest_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": {
+                "id": "12793624",
+                "domain": "promotion",
+                "ttl": 3,
+                "candidates": [
+                  {
+                    "code": "SRT377-FRG",
+                    "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                    "entity_type": "product",
+                    "for_raw": "srt377-rg",
+                    "for_hint": "product",
+                    "for_canonical": null
+                  },
+                  {
+                    "code": "SRT314-RG",
+                    "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                    "entity_type": "product",
+                    "for_raw": "srt377-rg",
+                    "for_hint": "product",
+                    "for_canonical": null
+                  },
+                  {
+                    "code": "SRT315-RG",
+                    "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                    "entity_type": "product",
+                    "for_raw": "srt377-rg",
+                    "for_hint": "product",
+                    "for_canonical": null
+                  }
+                ],
+                "picked": []
+              },
+              "dym_candidates": [
+                {
+                  "code": "SRT377-FRG",
+                  "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                },
+                {
+                  "code": "SRT314-RG",
+                  "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                },
+                {
+                  "code": "SRT315-RG",
+                  "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                  "entity_type": "product",
+                  "for_raw": "srt377-rg",
+                  "for_hint": "product",
+                  "for_canonical": null
+                }
+              ],
+              "ideation": null
+            },
+            "user_response": "Couldn't find \"srt377-rg\". Did you mean:\n1. SRT377-FRG - no promotion\n2. SRT314-RG - no promotion\n3. SRT315-RG - no promotion\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?",
+            "quick_reply": "SRT377-FRG,SRT314-RG,SRT315-RG,Yes escalate,No it's okay"
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000019,
+          "phone_number": "<redacted>",
+          "message": "Promotion for srt377-rg",
+          "sent_at": 1786943104517,
+          "turn_id": "12793624",
+          "data": "{\"contact_id\":\"900000019\",\"phone_number\":\"+60100000016\",\"message\":\"Promotion for srt377-rg\",\"sent_at\":1786943087000,\"first_name\":\"Person 52\",\"last_name\":\"Person 54\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1786943087000000\",\"turn_id\":\"12793624\",\"state_trace\":{\"v\":1,\"before\":{\"response\":\"text\"},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_promotion\",\"domain_hint\":\"promotion\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check the promotion for srt377-rg\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"srt377-rg\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"marketing_promotion_sorento\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_promotion\",\"domain_hint\":\"promotion\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check the promotion for srt377-rg\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"srt377-rg\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"marketing_promotion_sorento\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":false,\"entities_emptied_by_filter\":false},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_promotion\",\"domain_hint\":\"promotion\",\"user_goal\":\"trying to check the promotion for srt377-rg\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"srt377-rg\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"marketing_promotion_sorento\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Couldn't find \\\"srt377-rg\\\". Did you mean:\\n1. SRT377-FRG - no promotion\\n2. SRT314-RG - no promotion\\n3. SRT315-RG - no promotion\\nReply with a code to continue, or would you like me to escalate to marketing_promotion_sorento team?\",\"last_result_set\":{\"n\":3,\"first\":\"SRT377-FRG\"},\"selection_context\":\"suggest_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":{\"id\":\"12793624\",\"domain\":\"promotion\",\"ttl\":3,\"candidates\":[{\"code\":\"SRT377-FRG\",\"uuid\":\"09b42ca9-7268-4326-8386-43bbc6083887\",\"entity_type\":\"product\",\"for_raw\":\"srt377-rg\",\"for_hint\":\"product\",\"for_canonical\":null},{\"code\":\"SRT314-RG\",\"uuid\":\"97d74726-7f76-4d7e-aba3-1c049077a41b\",\"entity_type\":\"product\",\"for_raw\":\"srt377-rg\",\"for_hint\":\"product\",\"for_canonical\":null},{\"code\":\"SRT315-RG\",\"uuid\":\"3ecd6faa-158c-43ff-b873-205ffd0c1a37\",\"entity_type\":\"product\",\"for_raw\":\"srt377-rg\",\"for_hint\":\"product\",\"for_canonical\":null}],\"picked\":[]},\"dym_candidates\":{\"n\":3,\"first\":\"SRT377-FRG\"},\"ideation\":null}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "tokens": [
+          "srt377-rg"
+        ],
+        "elapsed_ms": 550.3,
+        "resolutions": [
+          {
+            "token": "srt377-rg",
+            "resolved": false,
+            "ambiguous": false,
+            "matches": [],
+            "alternatives": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.61538464,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT377-FRG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT314-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT315-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTWT177-RG",
+                "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.46666667,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTWT177-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT3364-3-RG",
+                "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.4375,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT3364-3-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "unresolved_tokens": [
+          "srt377-rg"
+        ],
+        "fallback_match_mode": "or",
+        "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+        "gate_passed": false,
+        "require_specific": false,
+        "resolved_company": null,
+        "company_team": null,
+        "resolved_companies": [],
+        "access_denied_levels": [],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "access_notice": "",
+        "gate_reason": "no entities and 'promotion' requires a scoping entity",
+        "gate_clarification": "",
+        "compatible_entities": [],
+        "gate_debug": {
+          "domain": "promotion",
+          "allowed_lookup": [
+            "product",
+            "promotion",
+            "category",
+            "brand"
+          ],
+          "entities_count": 0
+        },
+        "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+        "is_clarification": false,
+        "found_summary": "",
+        "dym_probe_entities": [
+          {
+            "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+            "entity_type": "product",
+            "code": "SRT377-FRG"
+          },
+          {
+            "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+            "entity_type": "product",
+            "code": "SRT314-RG"
+          },
+          {
+            "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+            "entity_type": "product",
+            "code": "SRT315-RG"
+          }
+        ],
+        "dym_candidate_codes": [
+          "SRT377-FRG",
+          "SRT314-RG",
+          "SRT315-RG"
+        ],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": "crm_marketing_promotions_list",
+        "probe_noun": "promotion",
+        "probe_predicate": "row_present",
+        "probe_needed": true,
+        "probe_skip_reason": null,
+        "probe_lane": "d1",
+        "_dym_probe_input": true
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "tokens": [
+          "srt377-rg"
+        ],
+        "elapsed_ms": 550.3,
+        "resolutions": [
+          {
+            "token": "srt377-rg",
+            "resolved": false,
+            "ambiguous": false,
+            "matches": [],
+            "alternatives": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.61538464,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT377-FRG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT314-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT315-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTWT177-RG",
+                "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.46666667,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTWT177-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT3364-3-RG",
+                "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.4375,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT3364-3-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "unresolved_tokens": [
+          "srt377-rg"
+        ],
+        "fallback_match_mode": "or",
+        "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+        "gate_passed": false,
+        "require_specific": false,
+        "resolved_company": null,
+        "company_team": null,
+        "resolved_companies": [],
+        "access_denied_levels": [],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "access_notice": "",
+        "gate_reason": "no entities and 'promotion' requires a scoping entity",
+        "gate_clarification": "",
+        "compatible_entities": [],
+        "gate_debug": {
+          "domain": "promotion",
+          "allowed_lookup": [
+            "product",
+            "promotion",
+            "category",
+            "brand"
+          ],
+          "entities_count": 0
+        },
+        "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+        "is_clarification": false,
+        "found_summary": "",
+        "dym_probe_entities": [
+          {
+            "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+            "entity_type": "product",
+            "code": "SRT377-FRG"
+          },
+          {
+            "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+            "entity_type": "product",
+            "code": "SRT314-RG"
+          },
+          {
+            "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+            "entity_type": "product",
+            "code": "SRT315-RG"
+          }
+        ],
+        "dym_candidate_codes": [
+          "SRT377-FRG",
+          "SRT314-RG",
+          "SRT315-RG"
+        ],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": "crm_marketing_promotions_list",
+        "probe_noun": "promotion",
+        "probe_predicate": "row_present",
+        "probe_needed": true,
+        "probe_skip_reason": null,
+        "probe_lane": "d1",
+        "_dym_probe_input": true,
+        "probe_code": "SRT377-FRG",
+        "probe_entity": {
+          "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+          "entity_type": "product",
+          "code": "SRT377-FRG"
+        }
+      }
+    },
+    {
+      "json": {
+        "tokens": [
+          "srt377-rg"
+        ],
+        "elapsed_ms": 550.3,
+        "resolutions": [
+          {
+            "token": "srt377-rg",
+            "resolved": false,
+            "ambiguous": false,
+            "matches": [],
+            "alternatives": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.61538464,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT377-FRG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT314-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT315-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTWT177-RG",
+                "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.46666667,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTWT177-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT3364-3-RG",
+                "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.4375,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT3364-3-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "unresolved_tokens": [
+          "srt377-rg"
+        ],
+        "fallback_match_mode": "or",
+        "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+        "gate_passed": false,
+        "require_specific": false,
+        "resolved_company": null,
+        "company_team": null,
+        "resolved_companies": [],
+        "access_denied_levels": [],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "access_notice": "",
+        "gate_reason": "no entities and 'promotion' requires a scoping entity",
+        "gate_clarification": "",
+        "compatible_entities": [],
+        "gate_debug": {
+          "domain": "promotion",
+          "allowed_lookup": [
+            "product",
+            "promotion",
+            "category",
+            "brand"
+          ],
+          "entities_count": 0
+        },
+        "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+        "is_clarification": false,
+        "found_summary": "",
+        "dym_probe_entities": [
+          {
+            "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+            "entity_type": "product",
+            "code": "SRT377-FRG"
+          },
+          {
+            "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+            "entity_type": "product",
+            "code": "SRT314-RG"
+          },
+          {
+            "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+            "entity_type": "product",
+            "code": "SRT315-RG"
+          }
+        ],
+        "dym_candidate_codes": [
+          "SRT377-FRG",
+          "SRT314-RG",
+          "SRT315-RG"
+        ],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": "crm_marketing_promotions_list",
+        "probe_noun": "promotion",
+        "probe_predicate": "row_present",
+        "probe_needed": true,
+        "probe_skip_reason": null,
+        "probe_lane": "d1",
+        "_dym_probe_input": true,
+        "probe_code": "SRT314-RG",
+        "probe_entity": {
+          "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+          "entity_type": "product",
+          "code": "SRT314-RG"
+        }
+      }
+    },
+    {
+      "json": {
+        "tokens": [
+          "srt377-rg"
+        ],
+        "elapsed_ms": 550.3,
+        "resolutions": [
+          {
+            "token": "srt377-rg",
+            "resolved": false,
+            "ambiguous": false,
+            "matches": [],
+            "alternatives": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT377-FRG",
+                "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.61538464,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT377-FRG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT314-RG",
+                "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT314-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT315-RG",
+                "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.53846157,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT315-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTWT177-RG",
+                "uuid": "e57024f0-3576-41d9-88cc-2b979639f289",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.46666667,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTWT177-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRT3364-3-RG",
+                "uuid": "30944159-6f18-463d-a40d-079e904eb801",
+                "match_field": "product_code",
+                "match_tier": "trgm",
+                "similarity": 0.4375,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRT3364-3-RG",
+                  "is_variant": false,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "unresolved_tokens": [
+          "srt377-rg"
+        ],
+        "fallback_match_mode": "or",
+        "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+        "gate_passed": false,
+        "require_specific": false,
+        "resolved_company": null,
+        "company_team": null,
+        "resolved_companies": [],
+        "access_denied_levels": [],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "access_notice": "",
+        "gate_reason": "no entities and 'promotion' requires a scoping entity",
+        "gate_clarification": "",
+        "compatible_entities": [],
+        "gate_debug": {
+          "domain": "promotion",
+          "allowed_lookup": [
+            "product",
+            "promotion",
+            "category",
+            "brand"
+          ],
+          "entities_count": 0
+        },
+        "escalate_message": "Couldn't find: \"srt377-rg\". Would you like me to escalate to marketing_promotion_sorento team?",
+        "is_clarification": false,
+        "found_summary": "",
+        "dym_probe_entities": [
+          {
+            "uuid": "09b42ca9-7268-4326-8386-43bbc6083887",
+            "entity_type": "product",
+            "code": "SRT377-FRG"
+          },
+          {
+            "uuid": "97d74726-7f76-4d7e-aba3-1c049077a41b",
+            "entity_type": "product",
+            "code": "SRT314-RG"
+          },
+          {
+            "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+            "entity_type": "product",
+            "code": "SRT315-RG"
+          }
+        ],
+        "dym_candidate_codes": [
+          "SRT377-FRG",
+          "SRT314-RG",
+          "SRT315-RG"
+        ],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": "crm_marketing_promotions_list",
+        "probe_noun": "promotion",
+        "probe_predicate": "row_present",
+        "probe_needed": true,
+        "probe_skip_reason": null,
+        "probe_lane": "d1",
+        "_dym_probe_input": true,
+        "probe_code": "SRT315-RG",
+        "probe_entity": {
+          "uuid": "3ecd6faa-158c-43ff-b873-205ffd0c1a37",
+          "entity_type": "product",
+          "code": "SRT315-RG"
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "12793624"
+  },
+  "volatile": []
+}

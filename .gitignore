@@ -26,3 +26,9 @@ sorento_embedding.sql
 # === OS / editor cruft ===
 .DS_Store
 *.swp
+
+# PII pseudonymisation map for test fixtures — never commit
+n8n-workflows-init/.pii-scrub-map.json
+
+# deploy.py gate (e) pre-write backups — machine-local, dirties the tree if tracked
+n8n-workflows-init/tests/backups/*.json

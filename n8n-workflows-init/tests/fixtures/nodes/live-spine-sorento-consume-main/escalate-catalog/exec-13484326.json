@@ -1,0 +1,3010 @@
+{
+  "source": {
+    "execution_id": "13484326",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "escalate-catalog",
+    "captured_at": "2026-08-22T11:43:36+00:00"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000007"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "87f42ba7-21f5-48f2-9e7a-e7d3dc53fd9b",
+              "contact": {
+                "id": 900000007,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": 900000006,
+                  "email": "<redacted>",
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "role": "user"
+                },
+                "created_at": 1785977537
+              },
+              "message": {
+                "messageId": 1787395943000000,
+                "channelMessageId": "wamid.HBgLNjAxNjIyOTExNzkVAgASGBQzQUFDMTIwRTg5QTA3ODk0N0Y3NgA=",
+                "contactId": 900000007,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787395943000,
+                "message": {
+                  "type": "text",
+                  "text": "IBKS7245-NG-SS"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 27\"},\"wa_id\":\"60100000005\",\"user_id\":\"MY.900000025\",\"firstName\":\"Person 25\",\"lastName\":\"Person 26\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000007,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": null
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/62ab75cf-fda5-4f41-9cdd-f6a2142f7935"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [],
+              "assignee": {
+                "id": 900000006,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "email": "<redacted>"
+              },
+              "lifecycle": null,
+              "created_at": 1785977537
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "87f42ba7-21f5-48f2-9e7a-e7d3dc53fd9b",
+          "contact": {
+            "id": 900000007,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": 900000006,
+              "email": "<redacted>",
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "role": "user"
+            },
+            "created_at": 1785977537
+          },
+          "message": {
+            "messageId": 1787395943000000,
+            "channelMessageId": "wamid.HBgLNjAxNjIyOTExNzkVAgASGBQzQUFDMTIwRTg5QTA3ODk0N0Y3NgA=",
+            "contactId": 900000007,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787395943000,
+            "message": {
+              "type": "text",
+              "text": "IBKS7245-NG-SS"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 27\"},\"wa_id\":\"60100000005\",\"user_id\":\"MY.900000025\",\"firstName\":\"Person 25\",\"lastName\":\"Person 26\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000007,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/62ab75cf-fda5-4f41-9cdd-f6a2142f7935"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": {
+            "id": 900000006,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": null,
+          "created_at": 1785977537
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000007,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/62ab75cf-fda5-4f41-9cdd-f6a2142f7935"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": {
+            "id": 900000006,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": null,
+          "created_at": 1785977537
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000007",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "purchasing",
+                "suggested_agent": "incoming_stock_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "IBKS7245",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "IBKS7245-NG-SS",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (incoming): returned 2 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check the ETA for IBKS7245",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "incoming",
+              "intent_hint": "check_incoming",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": null,
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                  "label": "IBKS7245-NG-SS",
+                  "product": "IBKS7245-NG-SS",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 2,
+                  "uuid": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+                  "label": "IBKS7245-NG-BL",
+                  "product": "IBKS7245-NG-BL",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "IBKS7245-NG-SS",
+                    "IBKS7245-NG-BL"
+                  ],
+                  "brand_code": null,
+                  "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                  "company_name": "Mocha"
+                }
+              ],
+              "selection_context": "disambiguation",
+              "routing_roster_plan": null,
+              "routing_brand_source": null
+            },
+            "user_response": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. IBKS7245-NG-SS \u2014 no incoming\n2. IBKS7245-NG-BL \u2014 has incoming"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_incoming",
+            "domain_hint": "incoming",
+            "scope_intent": null,
+            "is_affirmative": null,
+            "user_goal": "trying to refer to IBKS7245-NG-SS",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "IBKS7245-NG-SS",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "purchasing",
+              "suggested_agent": "incoming_stock_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "entity_op_corrected": "reuse->replace_combine",
+            "domain_signal_source": "intent_none",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "domain_inherited_compatible": true,
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": null,
+            "domain_hint": null,
+            "scope_intent": null,
+            "is_affirmative": null,
+            "user_goal": "trying to refer to IBKS7245-NG-SS",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "IBKS7245-NG-SS",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "reuse",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": null,
+              "suggested_agent": null
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Incoming Stock Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Incoming Stock Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [],
+    "If7": [],
+    "resolve-entity": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "IBKS7245-NG-SS"
+          ],
+          "elapsed_ms": 54.48,
+          "intersection": [
+            {
+              "entity_type": "product",
+              "canonical_code": "IBKS7245-NG-SS",
+              "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": "Mocha",
+              "display": {
+                "product_name": "IBKS7245-NG-SS",
+                "is_active": true,
+                "brand": null
+              }
+            }
+          ],
+          "by_entity_type": {
+            "product": [
+              {
+                "entity_type": "product",
+                "canonical_code": "IBKS7245-NG-SS",
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "display": {
+                  "product_name": "IBKS7245-NG-SS",
+                  "is_active": true,
+                  "brand": null
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "IBKS7245-NG-SS",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "product",
+                  "matched_words": [
+                    "IBKS7245-NG-SS"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "IBKS7245-NG-SS"
+          ],
+          "elapsed_ms": 54.48,
+          "intersection": [
+            {
+              "entity_type": "product",
+              "canonical_code": "IBKS7245-NG-SS",
+              "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": "Mocha",
+              "display": {
+                "product_name": "IBKS7245-NG-SS",
+                "is_active": true,
+                "brand": null
+              }
+            }
+          ],
+          "by_entity_type": {
+            "product": [
+              {
+                "entity_type": "product",
+                "canonical_code": "IBKS7245-NG-SS",
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "display": {
+                  "product_name": "IBKS7245-NG-SS",
+                  "is_active": true,
+                  "brand": null
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "IBKS7245-NG-SS",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "product",
+                  "matched_words": [
+                    "IBKS7245-NG-SS"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ],
+          "gate_passed": true,
+          "require_specific": false,
+          "resolved_company": "mocha",
+          "company_team": null,
+          "resolved_companies": [
+            "mocha"
+          ],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [
+            {
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": "Mocha",
+              "brand_code": null,
+              "codes": [
+                "IBKS7245-NG-SS"
+              ]
+            }
+          ],
+          "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "ok",
+          "gate_clarification": "",
+          "compatible_entities": [
+            {
+              "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+              "entity_type": "product",
+              "code": "IBKS7245-NG-SS"
+            }
+          ],
+          "gate_debug": {
+            "domain": "incoming",
+            "allowed_lookup": [
+              "product",
+              "inbound_shipment",
+              "category",
+              "brand"
+            ],
+            "entities_count": 1
+          }
+        }
+      }
+    ],
+    "If3": [],
+    "Execute 'sub-get-rag'": [
+      {
+        "json": {
+          "tools": [
+            {
+              "name": "crm_incoming_stock_list",
+              "similarity": 0.35247010045013627
+            }
+          ]
+        }
+      }
+    ],
+    "tool-filter": [
+      {
+        "json": {
+          "name": "crm_incoming_stock_list",
+          "similarity": 0.35247010045013627,
+          "_tool_pick": {
+            "chosen": "crm_incoming_stock_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": true
+          }
+        }
+      }
+    ],
+    "if-tier-ask": [],
+    "Call 'sub-get-results'": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "validator": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "promo-picker": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "crossdomain-zeroset": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": true,
+            "origin_domain": "incoming",
+            "other_tool": "crm_inventory_stock_balance_list",
+            "team": "purchasing",
+            "requested": [
+              "IBKS7245-NG-SS"
+            ],
+            "returned_codes": [],
+            "missing": [
+              {
+                "code": "IBKS7245-NG-SS",
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "_n": "IBKS7245-NG-SS",
+                "entity_type": "product"
+              }
+            ],
+            "probe_entities": [
+              {
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "entity_type": "product",
+                "code": "IBKS7245-NG-SS"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "crossdomain-gate": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": true,
+            "origin_domain": "incoming",
+            "other_tool": "crm_inventory_stock_balance_list",
+            "team": "purchasing",
+            "requested": [
+              "IBKS7245-NG-SS"
+            ],
+            "returned_codes": [],
+            "missing": [
+              {
+                "code": "IBKS7245-NG-SS",
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "_n": "IBKS7245-NG-SS",
+                "entity_type": "product"
+              }
+            ],
+            "probe_entities": [
+              {
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "entity_type": "product",
+                "code": "IBKS7245-NG-SS"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "crossdomain-probe": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* IBKS7245-NG-SS\n*Warehouse:* MERU\n*System Location:* HOLD\n*Quantity On Hand:* 10\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "IBKS7245-NG-SS",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "IBKS7245-NG-SS"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "MERU"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "HOLD"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 10
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "crossdomain-render": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": true,
+            "origin_domain": "incoming",
+            "other_tool": "crm_inventory_stock_balance_list",
+            "team": "purchasing",
+            "requested": [
+              "IBKS7245-NG-SS"
+            ],
+            "returned_codes": [],
+            "missing": [
+              {
+                "code": "IBKS7245-NG-SS",
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "_n": "IBKS7245-NG-SS",
+                "entity_type": "product"
+              }
+            ],
+            "probe_entities": [
+              {
+                "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+                "entity_type": "product",
+                "code": "IBKS7245-NG-SS"
+              }
+            ]
+          },
+          "_xdBlock": {
+            "block": "But here are the stock details for the requested products:\n\n- *Product Code:* IBKS7245-NG-SS\n*Warehouse:* MERU\n*System Location:* HOLD\n*Quantity On Hand:* 10",
+            "any": true,
+            "attachments": [],
+            "team": "purchasing",
+            "origin": "incoming",
+            "probed_rows": 1,
+            "rendered_rows": 1
+          }
+        }
+      }
+    ],
+    "If6": [],
+    "Aggregate1": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ]
+        }
+      }
+    ],
+    "not-found-error-message": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 product: IBKS7245-NG-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 product: IBKS7245-NG-SS"
+        }
+      }
+    ],
+    "sibling-gate": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 product: IBKS7245-NG-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 product: IBKS7245-NG-SS"
+        }
+      }
+    ],
+    "family-fetch": [
+      {
+        "json": {
+          "data": [
+            {
+              "product_code": "IBKS7245-NG-SS",
+              "product_name": "IBKS7245-NG-SS",
+              "description": "IBORN HANDMADE NANO GRAIN KITCHEN SINK (750*450*DEPTH 220MM) IBKS7245-NG-SS",
+              "category_id": "2aca6ede-a569-4d8e-84d9-bbacceee055d",
+              "brand_id": null,
+              "base_uom_id": "c145fb3e-6cd3-4250-a483-ef1741aa7f11",
+              "item_type": null,
+              "list_price": "350.00",
+              "cost_price": null,
+              "invoice_price": null,
+              "currency": "MYR",
+              "weight": null,
+              "dimensions_length": null,
+              "dimensions_width": null,
+              "dimensions_height": null,
+              "warranty_months": null,
+              "has_serial_tracking": false,
+              "has_batch_tracking": false,
+              "reorder_level": 0,
+              "reorder_quantity": 0,
+              "is_active": true,
+              "id": "441f6dd6-4459-4788-8031-087ae4c51fef",
+              "is_discontinued": false,
+              "is_variant": false,
+              "variant_of": null,
+              "variants": [],
+              "variant_link_manual": false,
+              "variant_child_count": 0,
+              "created_at": "2026-08-05T14:34:03.093998",
+              "updated_at": "2026-08-17T03:44:08.668761",
+              "created_by": "9993276c-a55e-4a54-9686-7138f5fa1306",
+              "updated_by": "0053661c-b0a6-4708-8a81-948e8dbae9ad",
+              "category": {
+                "id": "2aca6ede-a569-4d8e-84d9-bbacceee055d",
+                "category_code": "IB-SINK",
+                "category_name": "IB-SINK"
+              },
+              "brand": null,
+              "base_uom": {
+                "id": "c145fb3e-6cd3-4250-a483-ef1741aa7f11",
+                "uom_code": "EA",
+                "uom_name": "Each"
+              },
+              "field_attachments": null,
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": null
+            }
+          ],
+          "pagination": {
+            "total": 1,
+            "page": 1,
+            "limit": 5000
+          },
+          "empty": false,
+          "fallback_used": false,
+          "resolved_entities": null,
+          "lookup_companies": null
+        }
+      }
+    ],
+    "sibling-transform": [
+      {
+        "json": {
+          "siblings": [
+            {
+              "uuid": "441f6dd6-4459-4788-8031-087ae4c51fef",
+              "entity_type": "product",
+              "code": "IBKS7245-NG-SS"
+            }
+          ],
+          "base_codes": [
+            "IBKS7245-NG-SS"
+          ],
+          "sibling_count": 1
+        }
+      }
+    ],
+    "sibling-probe": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "build-suggest-offer": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "id": "70c695aa-d814-472d-be75-dcc2ed15a1d7",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "id": "47bd1e20-3cb9-49c8-aa93-2baedd394857",
+              "sim": 0.667,
+              "is_variant": false
+            },
+            {
+              "value": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "id": "2e5ca1be-237e-43cd-9f57-80bee3e579bd",
+              "sim": 0.429,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": {
+            "denied": [
+              {
+                "field": "eta_delay_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETA Delay"
+              },
+              {
+                "field": "inspection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Inspection"
+              },
+              {
+                "field": "approval_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "CIDB Approval"
+              },
+              {
+                "field": "gatepass_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Gatepass"
+              },
+              {
+                "field": "warehouse_arrival_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Warehouse Arrival"
+              },
+              {
+                "field": "informed_collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection Informed"
+              },
+              {
+                "field": "collection_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Collection"
+              },
+              {
+                "field": "loading_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Loading"
+              },
+              {
+                "field": "etc_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETC"
+              },
+              {
+                "field": "etd_date",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "ETD"
+              },
+              {
+                "field": "liner_code",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Liner"
+              },
+              {
+                "field": "china_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "China Forwarder"
+              },
+              {
+                "field": "malaysia_forwarder",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Malaysia Forwarder"
+              },
+              {
+                "field": "consignee",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Consignee"
+              },
+              {
+                "field": "delivery_warehouse",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Delivery Warehouse"
+              },
+              {
+                "field": "free_days_available",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Free Days Available"
+              },
+              {
+                "field": "loc",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Location"
+              },
+              {
+                "field": "stacked",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "Stacked"
+              },
+              {
+                "field": "coa_permit_no",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override.",
+                "label": "COA Permit No."
+              },
+              {
+                "field": "source_sheet",
+                "agent_code": "incoming_stock_enquiries",
+                "outcome": "field_not_allowed",
+                "reason": "This contact holds the agent, but this field is not allowed on it. Tick the field on the agent, or add a per-contact override."
+              }
+            ],
+            "note": "These fields are omitted because this caller may not see them. Absent does NOT mean the value is unknown or not yet reached."
+          },
+          "requested_attributes": [],
+          "keys_served": false,
+          "suggest_offer": true,
+          "suggest_selection_context": "suggest_offer",
+          "suggest_response": "No incoming stock (ETA) for IBKS7245-NG-SS. Try: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+          "suggest_quick_reply": "IBKS7245-NG-BL,IBKS8245-NG-SS,IBKS5245-NG-BL,Yes escalate,No it's okay",
+          "suggest_last_result_set": [
+            {
+              "idx": 1,
+              "label": "IBKS7245-NG-BL",
+              "value": "IBKS7245-NG-BL",
+              "product": "IBKS7245-NG-BL",
+              "display": "IBKS7245-NG-BL",
+              "order_number": null
+            },
+            {
+              "idx": 2,
+              "label": "IBKS8245-NG-SS",
+              "value": "IBKS8245-NG-SS",
+              "product": "IBKS8245-NG-SS",
+              "display": "IBKS8245-NG-SS",
+              "order_number": null
+            },
+            {
+              "idx": 3,
+              "label": "IBKS5245-NG-BL",
+              "value": "IBKS5245-NG-BL",
+              "product": "IBKS5245-NG-BL",
+              "display": "IBKS5245-NG-BL",
+              "order_number": null
+            }
+          ],
+          "dym_candidates": [
+            {
+              "code": "IBKS7245-NG-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "IBKS7245-NG-SS",
+              "for_hint": "product",
+              "for_canonical": "IBKS7245-NG-SS"
+            },
+            {
+              "code": "IBKS8245-NG-SS",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "IBKS7245-NG-SS",
+              "for_hint": "product",
+              "for_canonical": "IBKS7245-NG-SS"
+            },
+            {
+              "code": "IBKS5245-NG-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "IBKS7245-NG-SS",
+              "for_hint": "product",
+              "for_canonical": "IBKS7245-NG-SS"
+            }
+          ],
+          "dym_offer": {
+            "id": "13484326",
+            "domain": "incoming",
+            "ttl": 3,
+            "candidates": [
+              {
+                "code": "IBKS7245-NG-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              },
+              {
+                "code": "IBKS8245-NG-SS",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              },
+              {
+                "code": "IBKS5245-NG-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              }
+            ],
+            "picked": []
+          }
+        }
+      }
+    ],
+    "tag-not-found": [
+      {
+        "json": {
+          "branch_kind": "not_found"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Here's what you want:\n\u2022 product: IBKS7245-NG-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-offer-gate": [],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_incoming",
+            "domain_hint": "incoming",
+            "user_goal": "trying to refer to IBKS7245-NG-SS",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "IBKS7245-NG-SS",
+                "hint": "product",
+                "canonical_code": "IBKS7245-NG-SS",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "purchasing",
+              "suggested_agent": "incoming_stock_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "No incoming stock (ETA) for IBKS7245-NG-SS. Try: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "IBKS7245-NG-BL",
+                "value": "IBKS7245-NG-BL",
+                "product": "IBKS7245-NG-BL",
+                "display": "IBKS7245-NG-BL",
+                "order_number": null
+              },
+              {
+                "idx": 2,
+                "label": "IBKS8245-NG-SS",
+                "value": "IBKS8245-NG-SS",
+                "product": "IBKS8245-NG-SS",
+                "display": "IBKS8245-NG-SS",
+                "order_number": null
+              },
+              {
+                "idx": 3,
+                "label": "IBKS5245-NG-BL",
+                "value": "IBKS5245-NG-BL",
+                "product": "IBKS5245-NG-BL",
+                "display": "IBKS5245-NG-BL",
+                "order_number": null
+              }
+            ],
+            "selection_context": "suggest_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": {
+              "id": "13484326",
+              "domain": "incoming",
+              "ttl": 3,
+              "candidates": [
+                {
+                  "code": "IBKS7245-NG-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                },
+                {
+                  "code": "IBKS8245-NG-SS",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                },
+                {
+                  "code": "IBKS5245-NG-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                }
+              ],
+              "picked": []
+            },
+            "dym_candidates": [
+              {
+                "code": "IBKS7245-NG-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              },
+              {
+                "code": "IBKS8245-NG-SS",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              },
+              {
+                "code": "IBKS5245-NG-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              }
+            ],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+            "routing_companies": [
+              {
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "brand_code": null,
+                "codes": [
+                  "IBKS7245-NG-SS"
+                ]
+              }
+            ]
+          },
+          "user_response": "No incoming stock (ETA) for IBKS7245-NG-SS. Try: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+          "quick_reply": "IBKS7245-NG-BL,IBKS8245-NG-SS,IBKS5245-NG-BL,Yes escalate,No it's okay"
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_incoming",
+            "domain_hint": "incoming",
+            "user_goal": "trying to refer to IBKS7245-NG-SS",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "IBKS7245-NG-SS",
+                "hint": "product",
+                "canonical_code": "IBKS7245-NG-SS",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "purchasing",
+              "suggested_agent": "incoming_stock_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "No incoming stock (ETA) for IBKS7245-NG-SS. Try: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "IBKS7245-NG-BL",
+                "value": "IBKS7245-NG-BL",
+                "product": "IBKS7245-NG-BL",
+                "display": "IBKS7245-NG-BL",
+                "order_number": null
+              },
+              {
+                "idx": 2,
+                "label": "IBKS8245-NG-SS",
+                "value": "IBKS8245-NG-SS",
+                "product": "IBKS8245-NG-SS",
+                "display": "IBKS8245-NG-SS",
+                "order_number": null
+              },
+              {
+                "idx": 3,
+                "label": "IBKS5245-NG-BL",
+                "value": "IBKS5245-NG-BL",
+                "product": "IBKS5245-NG-BL",
+                "display": "IBKS5245-NG-BL",
+                "order_number": null
+              }
+            ],
+            "selection_context": "suggest_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": {
+              "id": "13484326",
+              "domain": "incoming",
+              "ttl": 3,
+              "candidates": [
+                {
+                  "code": "IBKS7245-NG-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                },
+                {
+                  "code": "IBKS8245-NG-SS",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                },
+                {
+                  "code": "IBKS5245-NG-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                }
+              ],
+              "picked": []
+            },
+            "dym_candidates": [
+              {
+                "code": "IBKS7245-NG-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              },
+              {
+                "code": "IBKS8245-NG-SS",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              },
+              {
+                "code": "IBKS5245-NG-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "IBKS7245-NG-SS",
+                "for_hint": "product",
+                "for_canonical": "IBKS7245-NG-SS"
+              }
+            ],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+            "routing_companies": [
+              {
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "brand_code": null,
+                "codes": [
+                  "IBKS7245-NG-SS"
+                ]
+              }
+            ]
+          },
+          "user_response": "No incoming stock (ETA) for IBKS7245-NG-SS.\nBut here are the stock details for the requested products:\n\n- *Product Code:* IBKS7245-NG-SS\n*Warehouse:* MERU\n*System Location:* HOLD\n*Quantity On Hand:* 10\n\nTry: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+          "quick_reply": "IBKS7245-NG-BL,IBKS8245-NG-SS,IBKS5245-NG-BL,Yes escalate,No it's okay"
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000007",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_incoming",
+              "domain_hint": "incoming",
+              "user_goal": "trying to refer to IBKS7245-NG-SS",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "IBKS7245-NG-SS",
+                  "hint": "product",
+                  "canonical_code": "IBKS7245-NG-SS",
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "purchasing",
+                "suggested_agent": "incoming_stock_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "No incoming stock (ETA) for IBKS7245-NG-SS. Try: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "IBKS7245-NG-BL",
+                  "value": "IBKS7245-NG-BL",
+                  "product": "IBKS7245-NG-BL",
+                  "display": "IBKS7245-NG-BL",
+                  "order_number": null
+                },
+                {
+                  "idx": 2,
+                  "label": "IBKS8245-NG-SS",
+                  "value": "IBKS8245-NG-SS",
+                  "product": "IBKS8245-NG-SS",
+                  "display": "IBKS8245-NG-SS",
+                  "order_number": null
+                },
+                {
+                  "idx": 3,
+                  "label": "IBKS5245-NG-BL",
+                  "value": "IBKS5245-NG-BL",
+                  "product": "IBKS5245-NG-BL",
+                  "display": "IBKS5245-NG-BL",
+                  "order_number": null
+                }
+              ],
+              "selection_context": "suggest_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": {
+                "id": "13484326",
+                "domain": "incoming",
+                "ttl": 3,
+                "candidates": [
+                  {
+                    "code": "IBKS7245-NG-BL",
+                    "uuid": null,
+                    "entity_type": null,
+                    "for_raw": "IBKS7245-NG-SS",
+                    "for_hint": "product",
+                    "for_canonical": "IBKS7245-NG-SS"
+                  },
+                  {
+                    "code": "IBKS8245-NG-SS",
+                    "uuid": null,
+                    "entity_type": null,
+                    "for_raw": "IBKS7245-NG-SS",
+                    "for_hint": "product",
+                    "for_canonical": "IBKS7245-NG-SS"
+                  },
+                  {
+                    "code": "IBKS5245-NG-BL",
+                    "uuid": null,
+                    "entity_type": null,
+                    "for_raw": "IBKS7245-NG-SS",
+                    "for_hint": "product",
+                    "for_canonical": "IBKS7245-NG-SS"
+                  }
+                ],
+                "picked": []
+              },
+              "dym_candidates": [
+                {
+                  "code": "IBKS7245-NG-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                },
+                {
+                  "code": "IBKS8245-NG-SS",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                },
+                {
+                  "code": "IBKS5245-NG-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "IBKS7245-NG-SS",
+                  "for_hint": "product",
+                  "for_canonical": "IBKS7245-NG-SS"
+                }
+              ],
+              "ideation": null,
+              "routing_roster_plan": null,
+              "routing_brand": null,
+              "routing_brand_source": null,
+              "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "routing_companies": [
+                {
+                  "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                  "company_name": "Mocha",
+                  "brand_code": null,
+                  "codes": [
+                    "IBKS7245-NG-SS"
+                  ]
+                }
+              ]
+            },
+            "user_response": "No incoming stock (ETA) for IBKS7245-NG-SS.\nBut here are the stock details for the requested products:\n\n- *Product Code:* IBKS7245-NG-SS\n*Warehouse:* MERU\n*System Location:* HOLD\n*Quantity On Hand:* 10\n\nTry: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?",
+            "quick_reply": "IBKS7245-NG-BL,IBKS8245-NG-SS,IBKS5245-NG-BL,Yes escalate,No it's okay"
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000007,
+          "phone_number": "<redacted>",
+          "message": "IBKS7245-NG-SS",
+          "sent_at": 1787395955795,
+          "turn_id": "13484326",
+          "data": "{\"contact_id\":\"900000007\",\"phone_number\":\"+60100000005\",\"message\":\"IBKS7245-NG-SS\",\"sent_at\":1787395943000,\"first_name\":\"Person 25\",\"last_name\":null,\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787395943000000\",\"turn_id\":\"13484326\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"incoming_stock_enquiries\"},\"entities\":[{\"raw\":\"IBKS7245\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"IBKS7245-NG-SS\",\"current_message\":true}],\"ideation\":null,\"response\":\"Previous turn (incoming): returned 2 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check the ETA for IBKS7245\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"incoming\",\"intent_hint\":\"check_incoming\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":null,\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":2,\"first\":\"IBKS7245-NG-SS\"},\"routing_company\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"IBKS7245-NG-SS\",\"IBKS7245-NG-BL\"],\"brand_code\":null,\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\"}],\"selection_context\":\"disambiguation\",\"routing_roster_plan\":null,\"routing_brand_source\":null},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"trying to refer to IBKS7245-NG-SS\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"IBKS7245-NG-SS\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_incoming\",\"domain_hint\":\"incoming\",\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"trying to refer to IBKS7245-NG-SS\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"IBKS7245-NG-SS\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"incoming_stock_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"entity_op_corrected\":\"reuse->replace_combine\",\"domain_signal_source\":\"intent_none\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"domain_inherited_compatible\":true,\"entities_filtered\":false,\"entities_emptied_by_filter\":false},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_incoming\",\"domain_hint\":\"incoming\",\"user_goal\":\"trying to refer to IBKS7245-NG-SS\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"IBKS7245-NG-SS\",\"hint\":\"product\",\"canonical_code\":\"IBKS7245-NG-SS\",\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"incoming_stock_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"No incoming stock (ETA) for IBKS7245-NG-SS. Try: IBKS7245-NG-BL, IBKS8245-NG-SS, IBKS5245-NG-BL. Reply with a code to continue, or would you like me to escalate to purchasing team?\",\"last_result_set\":{\"n\":3,\"first\":\"IBKS7245-NG-BL\"},\"selection_context\":\"suggest_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":{\"id\":\"13484326\",\"domain\":\"incoming\",\"ttl\":3,\"candidates\":[{\"code\":\"IBKS7245-NG-BL\",\"uuid\":null,\"entity_type\":null,\"for_raw\":\"IBKS7245-NG-SS\",\"for_hint\":\"product\",\"for_canonical\":\"IBKS7245-NG-SS\"},{\"code\":\"IBKS8245-NG-SS\",\"uuid\":null,\"entity_type\":null,\"for_raw\":\"IBKS7245-NG-SS\",\"for_hint\":\"product\",\"for_canonical\":\"IBKS7245-NG-SS\"},{\"code\":\"IBKS5245-NG-BL\",\"uuid\":null,\"entity_type\":null,\"for_raw\":\"IBKS7245-NG-SS\",\"for_hint\":\"product\",\"for_canonical\":\"IBKS7245-NG-SS\"}],\"picked\":[]},\"dym_candidates\":{\"n\":3,\"first\":\"IBKS7245-NG-BL\"},\"ideation\":null,\"routing_roster_plan\":null,\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"routing_companies\":[{\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\",\"brand_code\":null,\"codes\":[\"IBKS7245-NG-SS\"]}]}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "branch_kind": "not_found"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "branch_kind": "not_found",
+        "response": "Here's what you want:\n\u2022 product: IBKS7245-NG-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?",
+        "manualResponse": true,
+        "includeResponse": true,
+        "is_escalate_offer": true
+      }
+    }
+  ],
+  "runIndex": 0,
+  "volatile": []
+}

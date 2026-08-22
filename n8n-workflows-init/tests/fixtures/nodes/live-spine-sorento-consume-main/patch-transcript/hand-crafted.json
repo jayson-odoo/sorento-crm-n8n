@@ -1,0 +1,65 @@
+{
+  "source": {
+    "execution_id": null,
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "patch-transcript",
+    "captured_at": "2026-08-22T00:00:00+00:00",
+    "hand_crafted": true,
+    "rationale": "0 traffic in 6-day REST retention: this is the whisper-transcribe->patch-transcript lane (distinct from 'Transcribe a recording'->transcribed-message), also part of the never-really-live voice path (LESSONS 'Voice STT was never wired', tested only via /voice in zz-chat). ctx built from the real redis-pop-main-message-list nested shape (item.message.message.message.message, grounded in escalation-context/exec-13442024.json), input = a plausible whisper {text} output. Ran through the real body; output eyeballed sane (audio->text type flip, source_url preserved, _transcribed/_transcript stamped)."
+  },
+  "ctx": {
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "message": {
+                "message": {
+                  "type": "audio",
+                  "attachment": {
+                    "url": "https://media.example.com/voice-note-abc123.ogg"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "text": "Do you have the SRT332 basin in white?"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "message": {
+          "message": {
+            "message": {
+              "message": {
+                "type": "text",
+                "attachment": {
+                  "url": "https://media.example.com/voice-note-abc123.ogg",
+                  "source_url": "https://media.example.com/voice-note-abc123.ogg",
+                  "type": "text"
+                },
+                "text": "Do you have the SRT332 basin in white?"
+              }
+            }
+          },
+          "_transcribed": true,
+          "_transcript": "Do you have the SRT332 basin in white?"
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "hand-crafted"
+  },
+  "volatile": []
+}

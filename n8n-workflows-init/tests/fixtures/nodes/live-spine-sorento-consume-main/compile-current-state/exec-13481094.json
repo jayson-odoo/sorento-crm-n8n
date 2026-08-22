@@ -1,0 +1,1919 @@
+{
+  "source": {
+    "execution_id": "13481094",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "compile-current-state",
+    "captured_at": "2026-08-22T11:43:36+00:00"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000001"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "d142caed-37cc-4644-abfd-61e29fe27806",
+              "contact": {
+                "id": 900000001,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": 900000002,
+                  "email": "<redacted>",
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "role": "user"
+                },
+                "created_at": 1782546255
+              },
+              "message": {
+                "messageId": 1787393919000000,
+                "channelMessageId": "wamid.HBgLNjAxNjIyNzE2NzkVAgASGCBBQzYyRkVFNzgwMTM0MTA2Q0M4MTE2N0NFNDFBRkE2OQA=",
+                "contactId": 900000001,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787393919000,
+                "message": {
+                  "type": "text",
+                  "text": "SRTBF11832 got stock?"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 13\"},\"wa_id\":\"60100000001\",\"user_id\":\"MY.900000022\",\"firstName\":\"Person 11\",\"lastName\":\"Person 12\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000001,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": "true"
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/04ddf73e-3a0e-4914-8b24-18ed8aac06b8"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [
+                "imported_20260627_150636"
+              ],
+              "assignee": {
+                "id": 900000002,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "email": "<redacted>"
+              },
+              "lifecycle": "New Lead",
+              "created_at": 1782546255
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "d142caed-37cc-4644-abfd-61e29fe27806",
+          "contact": {
+            "id": 900000001,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": 900000002,
+              "email": "<redacted>",
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "role": "user"
+            },
+            "created_at": 1782546255
+          },
+          "message": {
+            "messageId": 1787393919000000,
+            "channelMessageId": "wamid.HBgLNjAxNjIyNzE2NzkVAgASGCBBQzYyRkVFNzgwMTM0MTA2Q0M4MTE2N0NFNDFBRkE2OQA=",
+            "contactId": 900000001,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787393919000,
+            "message": {
+              "type": "text",
+              "text": "SRTBF11832 got stock?"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 13\"},\"wa_id\":\"60100000001\",\"user_id\":\"MY.900000022\",\"firstName\":\"Person 11\",\"lastName\":\"Person 12\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000001,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/04ddf73e-3a0e-4914-8b24-18ed8aac06b8"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": {
+            "id": 900000002,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": "New Lead",
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000001,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/04ddf73e-3a0e-4914-8b24-18ed8aac06b8"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": {
+            "id": 900000002,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": "New Lead",
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000001",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "marketing_product",
+                "suggested_agent": "general_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "SRTUB206",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "SRTUB206",
+                  "current_message": true
+                },
+                {
+                  "raw": "technical drawing",
+                  "hint": "attachment_type",
+                  "confident": true,
+                  "canonical_code": "Technical Specifications",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (product_attachment): returned 1 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check whether SRTUB206 has a technical drawing",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "product_attachment",
+              "intent_hint": "check_product_attachment",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": "sorento",
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": null,
+                  "label": "SRTUB206",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "SRTUB206"
+                  ],
+                  "brand_code": "sorento",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": null,
+              "routing_roster_plan": null,
+              "routing_brand_source": "resolved"
+            },
+            "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* SRTUB206\n*Attachment Type:* Technical Specifications\n*File Name:* SRTUB206_TD.jpg\n\n_Data last updated: 14/05/2026 17:52:18_"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check whether SRTBF11832 is in stock",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "SRTBF11832",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": true,
+            "entities_emptied_by_filter": false,
+            "broaden_dropped": [
+              "attachment_type:technical drawing"
+            ]
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check whether SRTBF11832 is in stock",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "SRTBF11832",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [],
+    "If7": [],
+    "resolve-entity": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "SRTBF11832"
+          ],
+          "elapsed_ms": 49.8,
+          "intersection": [
+            {
+              "entity_type": "product",
+              "canonical_code": "SRTBF11832",
+              "uuid": "7278e1f0-ba8d-4161-988e-d96c00d63db3",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "product_name": "SRTBF11832",
+                "is_active": true,
+                "brand": {
+                  "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                  "brand_code": "SORENTO",
+                  "brand_name": "SORENTO"
+                }
+              }
+            },
+            {
+              "entity_type": "product",
+              "canonical_code": "SRTBF11832-NEW",
+              "uuid": "f19897e2-be30-4baf-8f0a-2fe7d5eff2c7",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "product_name": "SRTBF11832-NEW",
+                "is_active": true,
+                "brand": {
+                  "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                  "brand_code": "SORENTO",
+                  "brand_name": "SORENTO"
+                }
+              }
+            }
+          ],
+          "by_entity_type": {
+            "product": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTBF11832",
+                "uuid": "7278e1f0-ba8d-4161-988e-d96c00d63db3",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTBF11832",
+                  "is_active": true,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTBF11832-NEW",
+                "uuid": "f19897e2-be30-4baf-8f0a-2fe7d5eff2c7",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTBF11832-NEW",
+                  "is_active": true,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "SRTBF11832",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "product",
+                  "matched_words": [
+                    "SRTBF11832"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "SRTBF11832"
+          ],
+          "elapsed_ms": 49.8,
+          "intersection": [
+            {
+              "entity_type": "product",
+              "canonical_code": "SRTBF11832",
+              "uuid": "7278e1f0-ba8d-4161-988e-d96c00d63db3",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "product_name": "SRTBF11832",
+                "is_active": true,
+                "brand": {
+                  "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                  "brand_code": "SORENTO",
+                  "brand_name": "SORENTO"
+                }
+              }
+            },
+            {
+              "entity_type": "product",
+              "canonical_code": "SRTBF11832-NEW",
+              "uuid": "f19897e2-be30-4baf-8f0a-2fe7d5eff2c7",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "product_name": "SRTBF11832-NEW",
+                "is_active": true,
+                "brand": {
+                  "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                  "brand_code": "SORENTO",
+                  "brand_name": "SORENTO"
+                }
+              }
+            }
+          ],
+          "by_entity_type": {
+            "product": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTBF11832",
+                "uuid": "7278e1f0-ba8d-4161-988e-d96c00d63db3",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTBF11832",
+                  "is_active": true,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTBF11832-NEW",
+                "uuid": "f19897e2-be30-4baf-8f0a-2fe7d5eff2c7",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTBF11832-NEW",
+                  "is_active": true,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "SRTBF11832",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "product",
+                  "matched_words": [
+                    "SRTBF11832"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ],
+          "gate_passed": true,
+          "require_specific": false,
+          "resolved_company": "sorento",
+          "company_team": null,
+          "resolved_companies": [
+            "sorento"
+          ],
+          "routing_brand": "sorento",
+          "routing_brand_source": "resolved",
+          "routing_companies": [
+            {
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "sorento",
+              "codes": [
+                "SRTBF11832",
+                "SRTBF11832-NEW"
+              ]
+            }
+          ],
+          "routing_company": "00000000-0000-0000-0000-000000000001",
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "ok",
+          "gate_clarification": "",
+          "compatible_entities": [
+            {
+              "uuid": "7278e1f0-ba8d-4161-988e-d96c00d63db3",
+              "entity_type": "product",
+              "code": "SRTBF11832"
+            },
+            {
+              "uuid": "f19897e2-be30-4baf-8f0a-2fe7d5eff2c7",
+              "entity_type": "product",
+              "code": "SRTBF11832-NEW"
+            }
+          ],
+          "gate_debug": {
+            "domain": "inventory",
+            "allowed_lookup": [
+              "product",
+              "category",
+              "brand"
+            ],
+            "entities_count": 2
+          }
+        }
+      }
+    ],
+    "If3": [],
+    "Execute 'sub-get-rag'": [
+      {
+        "json": {
+          "tools": [
+            {
+              "name": "crm_inventory_stock_balance_list",
+              "similarity": 0.4870152538118202
+            }
+          ]
+        }
+      }
+    ],
+    "tool-filter": [
+      {
+        "json": {
+          "name": "crm_inventory_stock_balance_list",
+          "similarity": 0.4870152538118202,
+          "_tool_pick": {
+            "chosen": "crm_inventory_stock_balance_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": true
+          }
+        }
+      }
+    ],
+    "if-tier-ask": [],
+    "Call 'sub-get-results'": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "validator": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "promo-picker": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "crossdomain-zeroset": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "origin_domain": "inventory",
+            "other_tool": "crm_incoming_stock_list",
+            "team": "warehouse",
+            "requested": [
+              "SRTBF11832"
+            ],
+            "returned_codes": [
+              "SRTBF11832-NEW"
+            ],
+            "missing": [],
+            "probe_entities": []
+          }
+        }
+      }
+    ],
+    "crossdomain-gate": [],
+    "If6": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "origin_domain": "inventory",
+            "other_tool": "crm_incoming_stock_list",
+            "team": "warehouse",
+            "requested": [
+              "SRTBF11832"
+            ],
+            "returned_codes": [
+              "SRTBF11832-NEW"
+            ],
+            "missing": [],
+            "probe_entities": []
+          }
+        }
+      }
+    ],
+    "central-exchange": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "origin_domain": "inventory",
+            "other_tool": "crm_incoming_stock_list",
+            "team": "warehouse",
+            "requested": [
+              "SRTBF11832"
+            ],
+            "returned_codes": [
+              "SRTBF11832-NEW"
+            ],
+            "missing": [],
+            "probe_entities": []
+          }
+        }
+      }
+    ],
+    "dym-transform-partial": [
+      {
+        "json": {
+          "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+          "response_intro": "Stock details found for the requested products.",
+          "answers": [
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BUKIT RAJA"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "BRW"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 4
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SRTBF11832-NEW",
+              "fields": [
+                {
+                  "key": "product_code",
+                  "label": "Product Code",
+                  "value": "SRTBF11832-NEW"
+                },
+                {
+                  "key": "warehouse",
+                  "label": "Warehouse",
+                  "value": "BERSATU (PORT KLANG)"
+                },
+                {
+                  "key": "system_location",
+                  "label": "System Location",
+                  "value": "DC1"
+                },
+                {
+                  "key": "quantity_on_hand",
+                  "label": "Quantity On Hand",
+                  "value": 0
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": "2026-08-21T17:13:25.172043",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "origin_domain": "inventory",
+            "other_tool": "crm_incoming_stock_list",
+            "team": "warehouse",
+            "requested": [
+              "SRTBF11832"
+            ],
+            "returned_codes": [
+              "SRTBF11832-NEW"
+            ],
+            "missing": [],
+            "probe_entities": []
+          },
+          "dym_probe_entities": [],
+          "dym_candidate_codes": [],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": null,
+          "probe_noun": null,
+          "probe_predicate": null,
+          "probe_needed": false,
+          "probe_skip_reason": "no_d1_candidates",
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "dym-gate-partial": [],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "user_goal": "trying to check whether SRTBF11832 is in stock",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "SRTBF11832",
+                "hint": "product",
+                "canonical_code": "SRTBF11832",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Previous turn (inventory): returned 2 records",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "uuid": null,
+                "label": "SRTBF11832-NEW",
+                "entity_type": null,
+                "product": null,
+                "attachment_type": null,
+                "filename": null
+              },
+              {
+                "idx": 2,
+                "uuid": null,
+                "label": "SRTBF11832-NEW",
+                "entity_type": null,
+                "product": null,
+                "attachment_type": null,
+                "filename": null
+              }
+            ],
+            "selection_context": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": "sorento",
+            "routing_brand_source": "resolved",
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "sorento",
+                "codes": [
+                  "SRTBF11832",
+                  "SRTBF11832-NEW"
+                ]
+              }
+            ]
+          },
+          "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_"
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "user_goal": "trying to check whether SRTBF11832 is in stock",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "SRTBF11832",
+                "hint": "product",
+                "canonical_code": "SRTBF11832",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Previous turn (inventory): returned 2 records",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "uuid": null,
+                "label": "SRTBF11832-NEW",
+                "entity_type": null,
+                "product": null,
+                "attachment_type": null,
+                "filename": null
+              },
+              {
+                "idx": 2,
+                "uuid": null,
+                "label": "SRTBF11832-NEW",
+                "entity_type": null,
+                "product": null,
+                "attachment_type": null,
+                "filename": null
+              }
+            ],
+            "selection_context": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": "sorento",
+            "routing_brand_source": "resolved",
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "sorento",
+                "codes": [
+                  "SRTBF11832",
+                  "SRTBF11832-NEW"
+                ]
+              }
+            ]
+          },
+          "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_"
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000001",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_stock",
+              "domain_hint": "inventory",
+              "user_goal": "trying to check whether SRTBF11832 is in stock",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "SRTBF11832",
+                  "hint": "product",
+                  "canonical_code": "SRTBF11832",
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "warehouse",
+                "suggested_agent": "general_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "Previous turn (inventory): returned 2 records",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": null,
+                  "label": "SRTBF11832-NEW",
+                  "entity_type": null,
+                  "product": null,
+                  "attachment_type": null,
+                  "filename": null
+                },
+                {
+                  "idx": 2,
+                  "uuid": null,
+                  "label": "SRTBF11832-NEW",
+                  "entity_type": null,
+                  "product": null,
+                  "attachment_type": null,
+                  "filename": null
+                }
+              ],
+              "selection_context": null,
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": null,
+              "dym_candidates": [],
+              "ideation": null,
+              "routing_roster_plan": null,
+              "routing_brand": "sorento",
+              "routing_brand_source": "resolved",
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "routing_companies": [
+                {
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "sorento",
+                  "codes": [
+                    "SRTBF11832",
+                    "SRTBF11832-NEW"
+                  ]
+                }
+              ]
+            },
+            "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_"
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000001,
+          "phone_number": "<redacted>",
+          "message": "SRTBF11832 got stock?",
+          "sent_at": 1787393927991,
+          "turn_id": "13481094",
+          "data": "{\"contact_id\":\"900000001\",\"phone_number\":\"+60100000001\",\"message\":\"SRTBF11832 got stock?\",\"sent_at\":1787393919000,\"first_name\":\"Person 12\",\"last_name\":\"Person 14\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787393919000000\",\"turn_id\":\"13481094\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"marketing_product\",\"suggested_agent\":\"general_enquiries\"},\"entities\":[{\"raw\":\"SRTUB206\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"SRTUB206\",\"current_message\":true},{\"raw\":\"technical drawing\",\"hint\":\"attachment_type\",\"confident\":true,\"canonical_code\":\"Technical Specifications\",\"current_message\":true}],\"ideation\":null,\"response\":\"Previous turn (product_attachment): returned 1 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check whether SRTUB206 has a technical drawing\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"product_attachment\",\"intent_hint\":\"check_product_attachment\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":\"sorento\",\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":1,\"first\":\"SRTUB206\"},\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"SRTUB206\"],\"brand_code\":\"sorento\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":null,\"routing_roster_plan\":null,\"routing_brand_source\":\"resolved\"},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check whether SRTBF11832 is in stock\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"SRTBF11832\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check whether SRTBF11832 is in stock\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"SRTBF11832\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":true,\"entities_emptied_by_filter\":false,\"broaden_dropped\":[\"attachment_type:technical drawing\"]},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"user_goal\":\"trying to check whether SRTBF11832 is in stock\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"SRTBF11832\",\"hint\":\"product\",\"canonical_code\":\"SRTBF11832\",\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Previous turn (inventory): returned 2 records\",\"last_result_set\":{\"n\":2,\"first\":\"SRTBF11832-NEW\"},\"selection_context\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":{\"n\":0,\"first\":null},\"ideation\":null,\"routing_roster_plan\":null,\"routing_brand\":\"sorento\",\"routing_brand_source\":\"resolved\",\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"routing_companies\":[{\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"sorento\",\"codes\":[\"SRTBF11832\",\"SRTBF11832-NEW\"]}]}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_",
+        "response_intro": "Stock details found for the requested products.",
+        "answers": [
+          {
+            "title": "SRTBF11832-NEW",
+            "fields": [
+              {
+                "key": "product_code",
+                "label": "Product Code",
+                "value": "SRTBF11832-NEW"
+              },
+              {
+                "key": "warehouse",
+                "label": "Warehouse",
+                "value": "BUKIT RAJA"
+              },
+              {
+                "key": "system_location",
+                "label": "System Location",
+                "value": "BRW"
+              },
+              {
+                "key": "quantity_on_hand",
+                "label": "Quantity On Hand",
+                "value": 4
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "expiring_soon": false,
+              "unallocated": false,
+              "partially_allocated": false
+            }
+          },
+          {
+            "title": "SRTBF11832-NEW",
+            "fields": [
+              {
+                "key": "product_code",
+                "label": "Product Code",
+                "value": "SRTBF11832-NEW"
+              },
+              {
+                "key": "warehouse",
+                "label": "Warehouse",
+                "value": "BERSATU (PORT KLANG)"
+              },
+              {
+                "key": "system_location",
+                "label": "System Location",
+                "value": "DC1"
+              },
+              {
+                "key": "quantity_on_hand",
+                "label": "Quantity On Hand",
+                "value": 0
+              }
+            ],
+            "flags": {
+              "discontinued": false,
+              "expired": false,
+              "expiring_soon": false,
+              "unallocated": false,
+              "partially_allocated": false
+            }
+          }
+        ],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-08-21T17:13:25.172043",
+        "has_result": true,
+        "alternatives": [],
+        "relaxed_axis": null,
+        "field_access": null,
+        "requested_attributes": [],
+        "keys_served": false,
+        "is_valid": true,
+        "_xd": {
+          "active": false,
+          "origin_domain": "inventory",
+          "other_tool": "crm_incoming_stock_list",
+          "team": "warehouse",
+          "requested": [
+            "SRTBF11832"
+          ],
+          "returned_codes": [
+            "SRTBF11832-NEW"
+          ],
+          "missing": [],
+          "probe_entities": []
+        },
+        "dym_probe_entities": [],
+        "dym_candidate_codes": [],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": null,
+        "probe_noun": null,
+        "probe_predicate": null,
+        "probe_needed": false,
+        "probe_skip_reason": "no_d1_candidates",
+        "probe_lane": "d1",
+        "_dym_probe_input": true
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "variables": {
+          "message_type": "business_query",
+          "intent_hint": "check_stock",
+          "domain_hint": "inventory",
+          "user_goal": "trying to check whether SRTBF11832 is in stock",
+          "query_brands": [],
+          "access_levels": [],
+          "entities": [
+            {
+              "raw": "SRTBF11832",
+              "hint": "product",
+              "canonical_code": "SRTBF11832",
+              "current_message": true,
+              "confident": true
+            }
+          ],
+          "routing": {
+            "suggested_team": "warehouse",
+            "suggested_agent": "general_enquiries"
+          },
+          "escalation": {
+            "is_escalation_confirmation": false
+          },
+          "response": "Previous turn (inventory): returned 2 records",
+          "last_result_set": [
+            {
+              "idx": 1,
+              "uuid": null,
+              "label": "SRTBF11832-NEW",
+              "entity_type": null,
+              "product": null,
+              "attachment_type": null,
+              "filename": null
+            },
+            {
+              "idx": 2,
+              "uuid": null,
+              "label": "SRTBF11832-NEW",
+              "entity_type": null,
+              "product": null,
+              "attachment_type": null,
+              "filename": null
+            }
+          ],
+          "selection_context": null,
+          "date_filter_start": null,
+          "date_filter_end": null,
+          "date_mode": null,
+          "match_mode": "and",
+          "contains_flyer": false,
+          "dym_offer": null,
+          "dym_candidates": [],
+          "ideation": null,
+          "routing_roster_plan": null,
+          "routing_brand": "sorento",
+          "routing_brand_source": "resolved",
+          "routing_company": "00000000-0000-0000-0000-000000000001",
+          "routing_companies": [
+            {
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "sorento",
+              "codes": [
+                "SRTBF11832",
+                "SRTBF11832-NEW"
+              ]
+            }
+          ]
+        },
+        "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 4\n\n2. *Product Code:* SRTBF11832-NEW\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n_Data last updated: 21/08/2026 17:13:25_"
+      }
+    }
+  ],
+  "runIndex": 0,
+  "volatile": []
+}

@@ -1,0 +1,429 @@
+{
+  "source": {
+    "execution_id": "13057122",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "set-ran-query-formulator",
+    "captured_at": "2026-08-22T12:02:00+00:00"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000021"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "9f939dfb-bc10-4e96-a7c1-223fb22e3a1e",
+              "contact": {
+                "id": 900000021,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": null,
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "email": "<redacted>"
+                },
+                "created_at": 1786502021
+              },
+              "message": {
+                "messageId": 1787118655000000,
+                "channelMessageId": "wamid.HBgLNjAxNjY2MTExNzgVAgASGCBBQzRDMjZFRkRCMjVCQjAyREY1NDg0NkJGMEM2NkU5RgA=",
+                "contactId": 900000021,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787118655000,
+                "message": {
+                  "type": "text",
+                  "text": "M504-16 stock"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 60\"},\"wa_id\":\"60100000018\",\"user_id\":\"MY.900000038\",\"firstName\":\"Person 58\",\"lastName\":\"Person 59\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000021,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": null
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/a0cb22f1-1a0e-42fa-b604-f1925e5b52d9"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [],
+              "assignee": null,
+              "lifecycle": null,
+              "created_at": 1786502021
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "9f939dfb-bc10-4e96-a7c1-223fb22e3a1e",
+          "contact": {
+            "id": 900000021,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": null,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "email": "<redacted>"
+            },
+            "created_at": 1786502021
+          },
+          "message": {
+            "messageId": 1787118655000000,
+            "channelMessageId": "wamid.HBgLNjAxNjY2MTExNzgVAgASGCBBQzRDMjZFRkRCMjVCQjAyREY1NDg0NkJGMEM2NkU5RgA=",
+            "contactId": 900000021,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787118655000,
+            "message": {
+              "type": "text",
+              "text": "M504-16 stock"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 60\"},\"wa_id\":\"60100000018\",\"user_id\":\"MY.900000038\",\"firstName\":\"Person 58\",\"lastName\":\"Person 59\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000021,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/a0cb22f1-1a0e-42fa-b604-f1925e5b52d9"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1786502021
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000021,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/a0cb22f1-1a0e-42fa-b604-f1925e5b52d9"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1786502021
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000021",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "purchasing",
+                "suggested_agent": "incoming_stock_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "MKS9140-SS",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "MKS9140-SS",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Here's what you want:\n\u2022 product: MKS9140-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check the ETA for MKS9140-SS",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "incoming",
+              "intent_hint": "check_incoming",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [],
+              "date_filter_start": null,
+              "selection_context": null
+            },
+            "user_response": "Here's what you want:\n\u2022 product: MKS9140-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [],
+    "set-ran-query-formulator": [
+      {
+        "json": {
+          "response": "There is some error encountered by the AI: OpenAI: Rate limit reached"
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000021,
+          "phone_number": "<redacted>",
+          "message": "M504-16 stock",
+          "sent_at": 1787118665243,
+          "turn_id": "13057122",
+          "data": "{\"contact_id\":\"900000021\",\"phone_number\":\"+60100000018\",\"message\":\"M504-16 stock\",\"sent_at\":1787118655000,\"first_name\":\"Person 61\",\"last_name\":null,\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787118655000000\",\"turn_id\":\"13057122\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"incoming_stock_enquiries\"},\"entities\":[{\"raw\":\"MKS9140-SS\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"MKS9140-SS\",\"current_message\":true}],\"ideation\":null,\"response\":\"Here's what you want:\\n\u2022 product: MKS9140-SS\\n\\nBut no incoming matched these. Would you like me to escalate to purchasing team?\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check the ETA for MKS9140-SS\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"incoming\",\"intent_hint\":\"check_incoming\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":0,\"first\":null},\"date_filter_start\":null,\"selection_context\":null},\"parser_raw\":null,\"parser_applied\":null,\"after\":null}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "respond_io_id": "900000021",
+        "session_vars": {
+          "variables": {
+            "routing": {
+              "suggested_team": "purchasing",
+              "suggested_agent": "incoming_stock_enquiries"
+            },
+            "entities": [
+              {
+                "raw": "MKS9140-SS",
+                "hint": "product",
+                "confident": true,
+                "canonical_code": "MKS9140-SS",
+                "current_message": true
+              }
+            ],
+            "ideation": null,
+            "response": "Here's what you want:\n\u2022 product: MKS9140-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?",
+            "date_mode": null,
+            "dym_offer": null,
+            "user_goal": "trying to check the ETA for MKS9140-SS",
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "match_mode": "and",
+            "domain_hint": "incoming",
+            "intent_hint": "check_incoming",
+            "message_type": "business_query",
+            "query_brands": [],
+            "access_levels": [],
+            "contains_flyer": false,
+            "dym_candidates": [],
+            "date_filter_end": null,
+            "last_result_set": [],
+            "date_filter_start": null,
+            "selection_context": null
+          },
+          "user_response": "Here's what you want:\n\u2022 product: MKS9140-SS\n\nBut no incoming matched these. Would you like me to escalate to purchasing team?"
+        },
+        "error": "OpenAI: Rate limit reached"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "response": "There is some error encountered by the AI: OpenAI: Rate limit reached"
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13057122"
+  },
+  "volatile": []
+}

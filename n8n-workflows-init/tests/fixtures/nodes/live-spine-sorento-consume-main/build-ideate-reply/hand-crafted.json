@@ -1,0 +1,47 @@
+{
+  "source": {
+    "execution_id": null,
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "build-ideate-reply",
+    "captured_at": "2026-08-22T00:00:00+00:00",
+    "hand_crafted": true,
+    "rationale": "0 traffic in 6-day REST retention: ideation feature is LIVE but INERT per LESSONS 'Ideation + voice PROMOTED LIVE -- inert until user lands B1->B2->B3 in order'. Ctx is a plausible ideate-turn-http 'complete' response (reply_text + link + session_vars.ideation). Ran through the real body; output eyeballed sane (link appended once, ideation pointer carried)."
+  },
+  "ctx": {
+    "ideate-turn-http": [
+      {
+        "json": {
+          "status": "complete",
+          "reply_text": "Got it! I've logged your idea for a wall-mounted basin mixer.",
+          "link": "https://ideate.sorento.example.com/i/9f21",
+          "session_vars": {
+            "ideation": {
+              "stage": "logged",
+              "idea_id": "9f21"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "input": [],
+  "expected": [
+    {
+      "json": {
+        "response": "Got it! I've logged your idea for a wall-mounted basin mixer.\n\nhttps://ideate.sorento.example.com/i/9f21",
+        "manualResponse": true,
+        "includeResponse": true,
+        "ideation": {
+          "stage": "logged",
+          "idea_id": "9f21"
+        },
+        "ideate_status": "complete"
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "hand-crafted"
+  },
+  "volatile": []
+}

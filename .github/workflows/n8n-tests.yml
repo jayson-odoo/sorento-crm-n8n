@@ -1,0 +1,32 @@
+name: n8n-tests
+
+# Tier 1 (unit, node-per-node) + Tier 2 (flow/integration) from
+# n8n-workflows-init/plans/test-pyramid-and-git-deploy.md. Entirely offline:
+# tests/harness/n8n-shim.js and tests/harness/run-lane.js execute the exported
+# node bodies (tests/offline/node-source.js sha-verifies them against the local
+# export/<slug>/MANIFEST.json ONLY — no call to the live n8n instance, no DB
+# connection, no .env). Nothing here needs secrets.
+#
+# REQUIRE_FULL_COVERAGE=1 turns on the "every spine Code node has >=1 fixture"
+# gate in tests/unit/_all-nodes.test.js (plan step 2) — verified locally green
+# before wiring this in.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run tests (unit + flow, offline, 0 network to n8n)
+        env:
+          REQUIRE_FULL_COVERAGE: '1'
+        run: npm test

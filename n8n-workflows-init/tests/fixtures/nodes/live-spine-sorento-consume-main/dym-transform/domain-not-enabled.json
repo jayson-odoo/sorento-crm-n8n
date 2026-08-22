@@ -1,0 +1,81 @@
+{
+  "source": {
+    "execution_id": "synthetic-D18",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "dym-transform",
+    "captured_at": "2026-08-22T00:00:00Z",
+    "note": "Adapted from tests/offline/promo-dym-probe (D18 plan) real-shaped codes/uuids; run through the CURRENT exported dym-transform.js (not the stale local offline copy) via tests/harness/n8n-shim.js and frozen. \"order\" is not in DOMAIN_PROBE -> probe_needed false, probe_skip_reason domain_not_enabled."
+  },
+  "ctx": {
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "domain_hint": "order",
+            "entities": [],
+            "routing": {
+              "suggested_team": "customer_service"
+            }
+          }
+        }
+      }
+    ],
+    "resolve-entity": [
+      {
+        "json": {
+          "resolutions": [
+            {
+              "token": "x",
+              "resolved": false,
+              "matches": []
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": null
+          },
+          "compatible_entities": [],
+          "require_specific": false
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "escalate_message": "Could not find promotion. Would you like me to escalate?",
+        "is_clarification": false,
+        "found_summary": ""
+      }
+    }
+  ],
+  "runIndex": 0,
+  "volatile": [],
+  "expected": [
+    {
+      "json": {
+        "escalate_message": "Could not find promotion. Would you like me to escalate?",
+        "is_clarification": false,
+        "found_summary": "",
+        "dym_probe_entities": [],
+        "dym_candidate_codes": [],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": null,
+        "probe_noun": null,
+        "probe_predicate": null,
+        "probe_needed": false,
+        "probe_skip_reason": "domain_not_enabled",
+        "probe_lane": "d1",
+        "_dym_probe_input": true
+      }
+    }
+  ]
+}

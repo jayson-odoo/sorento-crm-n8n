@@ -1,0 +1,1657 @@
+{
+  "source": {
+    "execution_id": "13479632",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "build-suggest-offer",
+    "captured_at": "2026-08-22T11:43:37+00:00"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000009"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "c7aaae08-c2c3-4cb8-8a1f-ffc3c68dccf1",
+              "contact": {
+                "id": 900000009,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": null,
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "email": "<redacted>"
+                },
+                "created_at": 1782546255
+              },
+              "message": {
+                "messageId": 1787392981000000,
+                "channelMessageId": "wamid.HBgLNjAxNDkyODk2ODcVAgASGBQzQTFCMUQ0NEQxQTgwMjRGMDIzOAA=",
+                "contactId": 900000009,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787392981000,
+                "message": {
+                  "type": "text",
+                  "text": "Mmc544 stock"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 33\"},\"wa_id\":\"60100000007\",\"user_id\":\"MY.900000027\",\"firstName\":\"Person 31\",\"lastName\":\"Person 32\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000009,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": "true"
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/b0d8b35b-95f8-418f-a5a2-991b04a72ea7"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [
+                "imported_20260627_150636"
+              ],
+              "assignee": null,
+              "lifecycle": null,
+              "created_at": 1782546255
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "c7aaae08-c2c3-4cb8-8a1f-ffc3c68dccf1",
+          "contact": {
+            "id": 900000009,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": null,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "email": "<redacted>"
+            },
+            "created_at": 1782546255
+          },
+          "message": {
+            "messageId": 1787392981000000,
+            "channelMessageId": "wamid.HBgLNjAxNDkyODk2ODcVAgASGBQzQTFCMUQ0NEQxQTgwMjRGMDIzOAA=",
+            "contactId": 900000009,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787392981000,
+            "message": {
+              "type": "text",
+              "text": "Mmc544 stock"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 33\"},\"wa_id\":\"60100000007\",\"user_id\":\"MY.900000027\",\"firstName\":\"Person 31\",\"lastName\":\"Person 32\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000009,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/b0d8b35b-95f8-418f-a5a2-991b04a72ea7"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000009,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/b0d8b35b-95f8-418f-a5a2-991b04a72ea7"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000009",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "warehouse",
+                "suggested_agent": "general_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "544",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": null,
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (inventory): returned 4 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check stock for 544",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "inventory",
+              "intent_hint": "check_stock",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": "cabana",
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": null,
+                  "label": "MHS1544-BL-DIY",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 2,
+                  "uuid": null,
+                  "label": "MHS1544-BL-DIY",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 3,
+                  "uuid": null,
+                  "label": "MHS1544-GM-DIY",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 4,
+                  "uuid": null,
+                  "label": "MHS1544-GM-DIY",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": null,
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "MHS1544-BL-DIY",
+                    "MHS1544-HS-GM-DIY",
+                    "IB115445-BL",
+                    "IBKS5448-BL",
+                    "IB115445",
+                    "IBKS5448-NG-BL",
+                    "MHS1544-GM-DIY",
+                    "MHS1544-CR-DIY",
+                    "MMC544-AL-BL",
+                    "MHS1544-HS-CR-DIY",
+                    "MHS1544-HS-BL-DIY",
+                    "MSS8544-CR",
+                    "MSS8544-BL",
+                    "MSS8544-GM"
+                  ],
+                  "brand_code": null,
+                  "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                  "company_name": "Mocha"
+                },
+                {
+                  "codes": [
+                    "CB2544SS"
+                  ],
+                  "brand_code": "cabana",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": null,
+              "routing_roster_plan": null,
+              "routing_brand_source": "resolved"
+            },
+            "user_response": "Stock details found for the requested products.\n\n1. *Company:* Mocha\n*Product Code:* MHS1544-BL-DIY\n*Warehouse:* HQ\n*System Location:* HQ\n*Quantity On Hand:* 125\n\n2. *Company:* Mocha\n*Product Code:* MHS1544-BL-DIY\n*Warehouse:* MERU\n*System Location:* MOCHA-WH\n*Quantity On Hand:* 36\n\n3. *Company:* Mocha\n*Product Code:* MHS1544-GM-DIY\n*Warehouse:* HQ\n*System Location:* HQ\n*Quantity On Hand:* 125\n\n4. *Company:* Mocha\n*Product Code:* MHS1544-GM-DIY\n*Warehouse:* MERU\n*System Location:* MOCHA-WH\n*Quantity On Hand:* 30\n\n*Sorento:* no stock records for MHS1544-BL-DIY, MHS1544-HS-GM-DIY, CB2544SS, IB115445-BL, IBKS5448-BL, IB115445, IBKS5448-NG-BL, MHS1544-GM-DIY, MHS1544-CR-DIY, MMC544-AL-BL, MHS1544-HS-CR-DIY, MHS1544-HS-BL-DIY, MSS8544-CR, MSS8544-BL, MSS8544-GM.\n\n_Data last updated: 21/08/2026 17:13:25_"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check stock for Mmc544",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "Mmc544",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check stock for Mmc544",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "Mmc544",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [],
+    "If7": [],
+    "resolve-entity": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "Mmc544"
+          ],
+          "elapsed_ms": 44.94,
+          "intersection": [
+            {
+              "entity_type": "product",
+              "canonical_code": "MMC544-AL-BL",
+              "uuid": "a8d1b908-3b95-4078-8582-a2a30c98044c",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": "Mocha",
+              "display": {
+                "product_name": "MMC544-AL-BL",
+                "is_active": true,
+                "brand": null
+              }
+            }
+          ],
+          "by_entity_type": {
+            "product": [
+              {
+                "entity_type": "product",
+                "canonical_code": "MMC544-AL-BL",
+                "uuid": "a8d1b908-3b95-4078-8582-a2a30c98044c",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "display": {
+                  "product_name": "MMC544-AL-BL",
+                  "is_active": true,
+                  "brand": null
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "Mmc544",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "product",
+                  "matched_words": [
+                    "Mmc544"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "Mmc544"
+          ],
+          "elapsed_ms": 44.94,
+          "intersection": [
+            {
+              "entity_type": "product",
+              "canonical_code": "MMC544-AL-BL",
+              "uuid": "a8d1b908-3b95-4078-8582-a2a30c98044c",
+              "match_field": "product_code",
+              "match_tier": "and",
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": "Mocha",
+              "display": {
+                "product_name": "MMC544-AL-BL",
+                "is_active": true,
+                "brand": null
+              }
+            }
+          ],
+          "by_entity_type": {
+            "product": [
+              {
+                "entity_type": "product",
+                "canonical_code": "MMC544-AL-BL",
+                "uuid": "a8d1b908-3b95-4078-8582-a2a30c98044c",
+                "match_field": "product_code",
+                "match_tier": "and",
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "display": {
+                  "product_name": "MMC544-AL-BL",
+                  "is_active": true,
+                  "brand": null
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "Mmc544",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "product",
+                  "matched_words": [
+                    "Mmc544"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ],
+          "gate_passed": true,
+          "require_specific": false,
+          "resolved_company": "mocha",
+          "company_team": null,
+          "resolved_companies": [
+            "mocha"
+          ],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [
+            {
+              "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "company_name": "Mocha",
+              "brand_code": null,
+              "codes": [
+                "MMC544-AL-BL"
+              ]
+            }
+          ],
+          "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "ok",
+          "gate_clarification": "",
+          "compatible_entities": [
+            {
+              "uuid": "a8d1b908-3b95-4078-8582-a2a30c98044c",
+              "entity_type": "product",
+              "code": "MMC544-AL-BL"
+            }
+          ],
+          "gate_debug": {
+            "domain": "inventory",
+            "allowed_lookup": [
+              "product",
+              "category",
+              "brand"
+            ],
+            "entities_count": 1
+          }
+        }
+      }
+    ],
+    "If3": [],
+    "Execute 'sub-get-rag'": [
+      {
+        "json": {
+          "tools": [
+            {
+              "name": "crm_inventory_stock_balance_list",
+              "similarity": 0.4778441233690638
+            }
+          ]
+        }
+      }
+    ],
+    "tool-filter": [
+      {
+        "json": {
+          "name": "crm_inventory_stock_balance_list",
+          "similarity": 0.4778441233690638,
+          "_tool_pick": {
+            "chosen": "crm_inventory_stock_balance_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": true
+          }
+        }
+      }
+    ],
+    "if-tier-ask": [],
+    "Call 'sub-get-results'": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "MMC545-AL-BL",
+              "display": "MMC545-AL-BL",
+              "id": "e2f7114c-e371-4891-9278-15169a93aaea",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC546-AL-BL",
+              "display": "MMC546-AL-BL",
+              "id": "2f28268c-e2a0-4dec-b428-515410e9e9ee",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC548-AL-BL",
+              "display": "MMC548-AL-BL",
+              "id": "194bdb76-69a9-473c-9559-8fc7bffe67c2",
+              "sim": 0.733,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "validator": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "MMC545-AL-BL",
+              "display": "MMC545-AL-BL",
+              "id": "e2f7114c-e371-4891-9278-15169a93aaea",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC546-AL-BL",
+              "display": "MMC546-AL-BL",
+              "id": "2f28268c-e2a0-4dec-b428-515410e9e9ee",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC548-AL-BL",
+              "display": "MMC548-AL-BL",
+              "id": "194bdb76-69a9-473c-9559-8fc7bffe67c2",
+              "sim": 0.733,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "promo-picker": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "MMC545-AL-BL",
+              "display": "MMC545-AL-BL",
+              "id": "e2f7114c-e371-4891-9278-15169a93aaea",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC546-AL-BL",
+              "display": "MMC546-AL-BL",
+              "id": "2f28268c-e2a0-4dec-b428-515410e9e9ee",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC548-AL-BL",
+              "display": "MMC548-AL-BL",
+              "id": "194bdb76-69a9-473c-9559-8fc7bffe67c2",
+              "sim": 0.733,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "crossdomain-zeroset": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [
+            {
+              "value": "MMC545-AL-BL",
+              "display": "MMC545-AL-BL",
+              "id": "e2f7114c-e371-4891-9278-15169a93aaea",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC546-AL-BL",
+              "display": "MMC546-AL-BL",
+              "id": "2f28268c-e2a0-4dec-b428-515410e9e9ee",
+              "sim": 0.733,
+              "is_variant": false
+            },
+            {
+              "value": "MMC548-AL-BL",
+              "display": "MMC548-AL-BL",
+              "id": "194bdb76-69a9-473c-9559-8fc7bffe67c2",
+              "sim": 0.733,
+              "is_variant": false
+            }
+          ],
+          "relaxed_axis": "entity",
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "origin_domain": "inventory",
+            "other_tool": "crm_incoming_stock_list",
+            "team": "warehouse",
+            "requested": [],
+            "returned_codes": [],
+            "missing": [],
+            "probe_entities": []
+          }
+        }
+      }
+    ],
+    "crossdomain-gate": [],
+    "If6": [],
+    "Aggregate1": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ]
+        }
+      }
+    ],
+    "not-found-error-message": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 product: MMC544-AL-BL\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 product: MMC544-AL-BL"
+        }
+      }
+    ],
+    "sibling-gate": [],
+    "dym-transform": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 product: MMC544-AL-BL\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 product: MMC544-AL-BL",
+          "dym_probe_entities": [],
+          "dym_candidate_codes": [],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": null,
+          "probe_noun": null,
+          "probe_predicate": null,
+          "probe_needed": false,
+          "probe_skip_reason": "no_d1_candidates",
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "dym-gate": [],
+    "build-suggest-offer": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 product: MMC544-AL-BL\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 product: MMC544-AL-BL",
+          "suggest_offer": true,
+          "suggest_selection_context": "suggest_offer",
+          "suggest_response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+          "suggest_quick_reply": "MMC545-AL-BL,MMC546-AL-BL,MMC548-AL-BL,Yes escalate,No it's okay",
+          "suggest_last_result_set": [
+            {
+              "idx": 1,
+              "label": "MMC545-AL-BL",
+              "value": "MMC545-AL-BL",
+              "product": "MMC545-AL-BL",
+              "display": "MMC545-AL-BL",
+              "order_number": null
+            },
+            {
+              "idx": 2,
+              "label": "MMC546-AL-BL",
+              "value": "MMC546-AL-BL",
+              "product": "MMC546-AL-BL",
+              "display": "MMC546-AL-BL",
+              "order_number": null
+            },
+            {
+              "idx": 3,
+              "label": "MMC548-AL-BL",
+              "value": "MMC548-AL-BL",
+              "product": "MMC548-AL-BL",
+              "display": "MMC548-AL-BL",
+              "order_number": null
+            }
+          ],
+          "dym_candidates": [
+            {
+              "code": "MMC545-AL-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "MMC544-AL-BL",
+              "for_hint": "product",
+              "for_canonical": "MMC544-AL-BL"
+            },
+            {
+              "code": "MMC546-AL-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "MMC544-AL-BL",
+              "for_hint": "product",
+              "for_canonical": "MMC544-AL-BL"
+            },
+            {
+              "code": "MMC548-AL-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "MMC544-AL-BL",
+              "for_hint": "product",
+              "for_canonical": "MMC544-AL-BL"
+            }
+          ],
+          "dym_offer": {
+            "id": "13479632",
+            "domain": "inventory",
+            "ttl": 3,
+            "candidates": [
+              {
+                "code": "MMC545-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              },
+              {
+                "code": "MMC546-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              },
+              {
+                "code": "MMC548-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              }
+            ],
+            "picked": []
+          }
+        }
+      }
+    ],
+    "tag-not-found": [
+      {
+        "json": {
+          "branch_kind": "not_found"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Here's what you want:\n\u2022 product: MMC544-AL-BL\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-offer-gate": [],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "user_goal": "trying to check stock for Mmc544",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "Mmc544",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "MMC545-AL-BL",
+                "value": "MMC545-AL-BL",
+                "product": "MMC545-AL-BL",
+                "display": "MMC545-AL-BL",
+                "order_number": null
+              },
+              {
+                "idx": 2,
+                "label": "MMC546-AL-BL",
+                "value": "MMC546-AL-BL",
+                "product": "MMC546-AL-BL",
+                "display": "MMC546-AL-BL",
+                "order_number": null
+              },
+              {
+                "idx": 3,
+                "label": "MMC548-AL-BL",
+                "value": "MMC548-AL-BL",
+                "product": "MMC548-AL-BL",
+                "display": "MMC548-AL-BL",
+                "order_number": null
+              }
+            ],
+            "selection_context": "suggest_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": {
+              "id": "13479632",
+              "domain": "inventory",
+              "ttl": 3,
+              "candidates": [
+                {
+                  "code": "MMC545-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                },
+                {
+                  "code": "MMC546-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                },
+                {
+                  "code": "MMC548-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                }
+              ],
+              "picked": []
+            },
+            "dym_candidates": [
+              {
+                "code": "MMC545-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              },
+              {
+                "code": "MMC546-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              },
+              {
+                "code": "MMC548-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              }
+            ],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+            "routing_companies": [
+              {
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "brand_code": null,
+                "codes": [
+                  "MMC544-AL-BL"
+                ]
+              }
+            ]
+          },
+          "user_response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+          "quick_reply": "MMC545-AL-BL,MMC546-AL-BL,MMC548-AL-BL,Yes escalate,No it's okay"
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_stock",
+            "domain_hint": "inventory",
+            "user_goal": "trying to check stock for Mmc544",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "Mmc544",
+                "hint": "product",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "MMC545-AL-BL",
+                "value": "MMC545-AL-BL",
+                "product": "MMC545-AL-BL",
+                "display": "MMC545-AL-BL",
+                "order_number": null
+              },
+              {
+                "idx": 2,
+                "label": "MMC546-AL-BL",
+                "value": "MMC546-AL-BL",
+                "product": "MMC546-AL-BL",
+                "display": "MMC546-AL-BL",
+                "order_number": null
+              },
+              {
+                "idx": 3,
+                "label": "MMC548-AL-BL",
+                "value": "MMC548-AL-BL",
+                "product": "MMC548-AL-BL",
+                "display": "MMC548-AL-BL",
+                "order_number": null
+              }
+            ],
+            "selection_context": "suggest_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": {
+              "id": "13479632",
+              "domain": "inventory",
+              "ttl": 3,
+              "candidates": [
+                {
+                  "code": "MMC545-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                },
+                {
+                  "code": "MMC546-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                },
+                {
+                  "code": "MMC548-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                }
+              ],
+              "picked": []
+            },
+            "dym_candidates": [
+              {
+                "code": "MMC545-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              },
+              {
+                "code": "MMC546-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              },
+              {
+                "code": "MMC548-AL-BL",
+                "uuid": null,
+                "entity_type": null,
+                "for_raw": "MMC544-AL-BL",
+                "for_hint": "product",
+                "for_canonical": "MMC544-AL-BL"
+              }
+            ],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+            "routing_companies": [
+              {
+                "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                "company_name": "Mocha",
+                "brand_code": null,
+                "codes": [
+                  "MMC544-AL-BL"
+                ]
+              }
+            ]
+          },
+          "user_response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+          "quick_reply": "MMC545-AL-BL,MMC546-AL-BL,MMC548-AL-BL,Yes escalate,No it's okay"
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000009",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_stock",
+              "domain_hint": "inventory",
+              "user_goal": "trying to check stock for Mmc544",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "Mmc544",
+                  "hint": "product",
+                  "canonical_code": null,
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "warehouse",
+                "suggested_agent": "general_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "MMC545-AL-BL",
+                  "value": "MMC545-AL-BL",
+                  "product": "MMC545-AL-BL",
+                  "display": "MMC545-AL-BL",
+                  "order_number": null
+                },
+                {
+                  "idx": 2,
+                  "label": "MMC546-AL-BL",
+                  "value": "MMC546-AL-BL",
+                  "product": "MMC546-AL-BL",
+                  "display": "MMC546-AL-BL",
+                  "order_number": null
+                },
+                {
+                  "idx": 3,
+                  "label": "MMC548-AL-BL",
+                  "value": "MMC548-AL-BL",
+                  "product": "MMC548-AL-BL",
+                  "display": "MMC548-AL-BL",
+                  "order_number": null
+                }
+              ],
+              "selection_context": "suggest_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": {
+                "id": "13479632",
+                "domain": "inventory",
+                "ttl": 3,
+                "candidates": [
+                  {
+                    "code": "MMC545-AL-BL",
+                    "uuid": null,
+                    "entity_type": null,
+                    "for_raw": "MMC544-AL-BL",
+                    "for_hint": "product",
+                    "for_canonical": "MMC544-AL-BL"
+                  },
+                  {
+                    "code": "MMC546-AL-BL",
+                    "uuid": null,
+                    "entity_type": null,
+                    "for_raw": "MMC544-AL-BL",
+                    "for_hint": "product",
+                    "for_canonical": "MMC544-AL-BL"
+                  },
+                  {
+                    "code": "MMC548-AL-BL",
+                    "uuid": null,
+                    "entity_type": null,
+                    "for_raw": "MMC544-AL-BL",
+                    "for_hint": "product",
+                    "for_canonical": "MMC544-AL-BL"
+                  }
+                ],
+                "picked": []
+              },
+              "dym_candidates": [
+                {
+                  "code": "MMC545-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                },
+                {
+                  "code": "MMC546-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                },
+                {
+                  "code": "MMC548-AL-BL",
+                  "uuid": null,
+                  "entity_type": null,
+                  "for_raw": "MMC544-AL-BL",
+                  "for_hint": "product",
+                  "for_canonical": "MMC544-AL-BL"
+                }
+              ],
+              "ideation": null,
+              "routing_roster_plan": null,
+              "routing_brand": null,
+              "routing_brand_source": null,
+              "routing_company": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+              "routing_companies": [
+                {
+                  "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                  "company_name": "Mocha",
+                  "brand_code": null,
+                  "codes": [
+                    "MMC544-AL-BL"
+                  ]
+                }
+              ]
+            },
+            "user_response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+            "quick_reply": "MMC545-AL-BL,MMC546-AL-BL,MMC548-AL-BL,Yes escalate,No it's okay"
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000009,
+          "phone_number": "<redacted>",
+          "message": "Mmc544 stock",
+          "sent_at": 1787392990816,
+          "turn_id": "13479632",
+          "data": "{\"contact_id\":\"900000009\",\"phone_number\":\"+60100000007\",\"message\":\"Mmc544 stock\",\"sent_at\":1787392981000,\"first_name\":\"Person 31\",\"last_name\":\"Person 34\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787392981000000\",\"turn_id\":\"13479632\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"entities\":[{\"raw\":\"544\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":null,\"current_message\":true}],\"ideation\":null,\"response\":\"Previous turn (inventory): returned 4 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check stock for 544\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"inventory\",\"intent_hint\":\"check_stock\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":\"cabana\",\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":4,\"first\":\"MHS1544-BL-DIY\"},\"routing_company\":null,\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"MHS1544-BL-DIY\",\"MHS1544-HS-GM-DIY\",\"IB115445-BL\",\"IBKS5448-BL\",\"IB115445\",\"IBKS5448-NG-BL\",\"MHS1544-GM-DIY\",\"MHS1544-CR-DIY\",\"MMC544-AL-BL\",\"MHS1544-HS-CR-DIY\",\"MHS1544-HS-BL-DIY\",\"MSS8544-CR\",\"MSS8544-BL\",\"MSS8544-GM\"],\"brand_code\":null,\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\"},{\"codes\":[\"CB2544SS\"],\"brand_code\":\"cabana\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":null,\"routing_roster_plan\":null,\"routing_brand_source\":\"resolved\"},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check stock for Mmc544\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"Mmc544\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check stock for Mmc544\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"Mmc544\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":false,\"entities_emptied_by_filter\":false},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"user_goal\":\"trying to check stock for Mmc544\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"Mmc544\",\"hint\":\"product\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?\",\"last_result_set\":{\"n\":3,\"first\":\"MMC545-AL-BL\"},\"selection_context\":\"suggest_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":{\"id\":\"13479632\",\"domain\":\"inventory\",\"ttl\":3,\"candidates\":[{\"code\":\"MMC545-AL-BL\",\"uuid\":null,\"entity_type\":null,\"for_raw\":\"MMC544-AL-BL\",\"for_hint\":\"product\",\"for_canonical\":\"MMC544-AL-BL\"},{\"code\":\"MMC546-AL-BL\",\"uuid\":null,\"entity_type\":null,\"for_raw\":\"MMC544-AL-BL\",\"for_hint\":\"product\",\"for_canonical\":\"MMC544-AL-BL\"},{\"code\":\"MMC548-AL-BL\",\"uuid\":null,\"entity_type\":null,\"for_raw\":\"MMC544-AL-BL\",\"for_hint\":\"product\",\"for_canonical\":\"MMC544-AL-BL\"}],\"picked\":[]},\"dym_candidates\":{\"n\":3,\"first\":\"MMC545-AL-BL\"},\"ideation\":null,\"routing_roster_plan\":null,\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"routing_companies\":[{\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\",\"brand_code\":null,\"codes\":[\"MMC544-AL-BL\"]}]}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "response_intro": [
+          "No matching results found."
+        ],
+        "escalate_message": "Here's what you want:\n\u2022 product: MMC544-AL-BL\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?",
+        "is_clarification": false,
+        "found_summary": "\u2022 product: MMC544-AL-BL",
+        "dym_probe_entities": [],
+        "dym_candidate_codes": [],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": null,
+        "probe_noun": null,
+        "probe_predicate": null,
+        "probe_needed": false,
+        "probe_skip_reason": "no_d1_candidates",
+        "probe_lane": "d1",
+        "_dym_probe_input": true
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "response_intro": [
+          "No matching results found."
+        ],
+        "escalate_message": "Here's what you want:\n\u2022 product: MMC544-AL-BL\n\nBut no inventory matched these. Would you like me to escalate to warehouse team?",
+        "is_clarification": false,
+        "found_summary": "\u2022 product: MMC544-AL-BL",
+        "suggest_offer": true,
+        "suggest_selection_context": "suggest_offer",
+        "suggest_response": "No stock for MMC544-AL-BL. Try: MMC545-AL-BL, MMC546-AL-BL, MMC548-AL-BL. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+        "suggest_quick_reply": "MMC545-AL-BL,MMC546-AL-BL,MMC548-AL-BL,Yes escalate,No it's okay",
+        "suggest_last_result_set": [
+          {
+            "idx": 1,
+            "label": "MMC545-AL-BL",
+            "value": "MMC545-AL-BL",
+            "product": "MMC545-AL-BL",
+            "display": "MMC545-AL-BL",
+            "order_number": null
+          },
+          {
+            "idx": 2,
+            "label": "MMC546-AL-BL",
+            "value": "MMC546-AL-BL",
+            "product": "MMC546-AL-BL",
+            "display": "MMC546-AL-BL",
+            "order_number": null
+          },
+          {
+            "idx": 3,
+            "label": "MMC548-AL-BL",
+            "value": "MMC548-AL-BL",
+            "product": "MMC548-AL-BL",
+            "display": "MMC548-AL-BL",
+            "order_number": null
+          }
+        ],
+        "dym_candidates": [
+          {
+            "code": "MMC545-AL-BL",
+            "uuid": null,
+            "entity_type": null,
+            "for_raw": "MMC544-AL-BL",
+            "for_hint": "product",
+            "for_canonical": "MMC544-AL-BL"
+          },
+          {
+            "code": "MMC546-AL-BL",
+            "uuid": null,
+            "entity_type": null,
+            "for_raw": "MMC544-AL-BL",
+            "for_hint": "product",
+            "for_canonical": "MMC544-AL-BL"
+          },
+          {
+            "code": "MMC548-AL-BL",
+            "uuid": null,
+            "entity_type": null,
+            "for_raw": "MMC544-AL-BL",
+            "for_hint": "product",
+            "for_canonical": "MMC544-AL-BL"
+          }
+        ],
+        "dym_offer": {
+          "id": "13479632",
+          "domain": "inventory",
+          "ttl": 3,
+          "candidates": [
+            {
+              "code": "MMC545-AL-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "MMC544-AL-BL",
+              "for_hint": "product",
+              "for_canonical": "MMC544-AL-BL"
+            },
+            {
+              "code": "MMC546-AL-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "MMC544-AL-BL",
+              "for_hint": "product",
+              "for_canonical": "MMC544-AL-BL"
+            },
+            {
+              "code": "MMC548-AL-BL",
+              "uuid": null,
+              "entity_type": null,
+              "for_raw": "MMC544-AL-BL",
+              "for_hint": "product",
+              "for_canonical": "MMC544-AL-BL"
+            }
+          ],
+          "picked": []
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "volatile": [],
+  "execution": {
+    "id": "13479632"
+  }
+}

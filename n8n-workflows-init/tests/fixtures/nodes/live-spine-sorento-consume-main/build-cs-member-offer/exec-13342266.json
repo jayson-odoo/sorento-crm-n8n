@@ -1,0 +1,2042 @@
+{
+  "source": {
+    "execution_id": "13342266",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "build-cs-member-offer",
+    "captured_at": "2026-08-22T12:01:54+00:00"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000012"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "1c5df5f4-9c2b-470f-b2ec-0ca8ef19655e",
+              "contact": {
+                "id": 900000012,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": 900000002,
+                  "email": "<redacted>",
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "role": "user"
+                },
+                "created_at": 1778415977
+              },
+              "message": {
+                "messageId": 1787303492000000,
+                "channelMessageId": "wamid.HBgLNjAxNjU2MjI0ODcVAgASGBYzRUIwRTA5MTY1MDdCOUMxNTkwRkREAA==",
+                "contactId": 900000012,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787303492000,
+                "message": {
+                  "type": "text",
+                  "text": "zin yuan marketing DO of CB2150"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 40\"},\"wa_id\":\"60100000010\",\"user_id\":\"MY.900000030\",\"firstName\":\"Person 40\",\"lastName\":\"\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000012,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": "true"
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/678da08e-afac-469f-baed-7f8892ad151b"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [
+                "imported_20260510_200514",
+                "imported_20260627_150636"
+              ],
+              "assignee": {
+                "id": 900000002,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "email": "<redacted>"
+              },
+              "lifecycle": null,
+              "created_at": 1778415977
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "1c5df5f4-9c2b-470f-b2ec-0ca8ef19655e",
+          "contact": {
+            "id": 900000012,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": 900000002,
+              "email": "<redacted>",
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "role": "user"
+            },
+            "created_at": 1778415977
+          },
+          "message": {
+            "messageId": 1787303492000000,
+            "channelMessageId": "wamid.HBgLNjAxNjU2MjI0ODcVAgASGBYzRUIwRTA5MTY1MDdCOUMxNTkwRkREAA==",
+            "contactId": 900000012,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787303492000,
+            "message": {
+              "type": "text",
+              "text": "zin yuan marketing DO of CB2150"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 40\"},\"wa_id\":\"60100000010\",\"user_id\":\"MY.900000030\",\"firstName\":\"Person 40\",\"lastName\":\"\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000012,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/678da08e-afac-469f-baed-7f8892ad151b"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260510_200514",
+            "imported_20260627_150636"
+          ],
+          "assignee": {
+            "id": 900000002,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": null,
+          "created_at": 1778415977
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000012,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/678da08e-afac-469f-baed-7f8892ad151b"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260510_200514",
+            "imported_20260627_150636"
+          ],
+          "assignee": {
+            "id": 900000002,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": null,
+          "created_at": 1778415977
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000012",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "warehouse",
+                "suggested_agent": "general_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "SRTFC2032",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "SRTFC2032",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "No stock for SRTFC2032. Try: SRTFC2043, SRTFC2044. Reply with a code to continue, or would you like me to escalate to warehouse team?",
+              "date_mode": null,
+              "dym_offer": {
+                "id": "13341642",
+                "ttl": 3,
+                "domain": "inventory",
+                "picked": [],
+                "candidates": [
+                  {
+                    "code": "SRTFC2043",
+                    "uuid": null,
+                    "for_raw": "SRTFC2032",
+                    "for_hint": "product",
+                    "entity_type": null,
+                    "for_canonical": "SRTFC2032"
+                  },
+                  {
+                    "code": "SRTFC2044",
+                    "uuid": null,
+                    "for_raw": "SRTFC2032",
+                    "for_hint": "product",
+                    "entity_type": null,
+                    "for_canonical": "SRTFC2032"
+                  }
+                ]
+              },
+              "user_goal": "trying to check the stock level of SRTFC2032",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "inventory",
+              "intent_hint": "check_stock",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": "sorento",
+              "contains_flyer": false,
+              "dym_candidates": [
+                {
+                  "code": "SRTFC2043",
+                  "uuid": null,
+                  "for_raw": "SRTFC2032",
+                  "for_hint": "product",
+                  "entity_type": null,
+                  "for_canonical": "SRTFC2032"
+                },
+                {
+                  "code": "SRTFC2044",
+                  "uuid": null,
+                  "for_raw": "SRTFC2032",
+                  "for_hint": "product",
+                  "entity_type": null,
+                  "for_canonical": "SRTFC2032"
+                }
+              ],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "SRTFC2043",
+                  "value": "SRTFC2043",
+                  "display": "SRTFC2043",
+                  "product": "SRTFC2043",
+                  "order_number": null
+                },
+                {
+                  "idx": 2,
+                  "label": "SRTFC2044",
+                  "value": "SRTFC2044",
+                  "display": "SRTFC2044",
+                  "product": "SRTFC2044",
+                  "order_number": null
+                }
+              ],
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "SRTFC2032"
+                  ],
+                  "brand_code": "sorento",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": "suggest_offer",
+              "routing_roster_plan": null,
+              "routing_brand_source": "resolved"
+            },
+            "quick_reply": "SRTFC2043,SRTFC2044,Yes escalate,No it's okay",
+            "user_response": "No stock for SRTFC2032.\nBut there is INCOMING stock (ETA) for the requested products:\n\n- *Product Code:* SRTFC2032\n*Container:* TCNU1214770\n*ETA:* 2026-08-12\n*Incoming Quantity:* 304\n\ud83d\udea9  *(PENDING ALLOCATION)*\n\nI have attached the file(s) below.\n\nTry: SRTFC2043, SRTFC2044. Reply with a code to continue, or would you like me to escalate to warehouse team?"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to view the delivery order for CB2150 for Zin Yuan Marketing",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "zin yuan marketing",
+                "hint": "customer",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              },
+              {
+                "raw": "CB2150",
+                "hint": "order",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false,
+            "suggest_pick_context": true
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to view the delivery order for CB2150 for Zin Yuan Marketing",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "zin yuan marketing",
+                "hint": "customer",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              },
+              {
+                "raw": "CB2150",
+                "hint": "order",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Order Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Order Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [],
+    "If7": [],
+    "resolve-entity": [
+      {
+        "json": {
+          "tokens": [
+            "zin yuan marketing",
+            "CB2150"
+          ],
+          "elapsed_ms": 1022.87,
+          "resolutions": [
+            {
+              "token": "zin yuan marketing",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "300-Z015",
+                  "uuid": "30608c30-ce6d-4d17-a68a-c0965a882bc7",
+                  "match_field": "customer_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "customer_name": "ZIN YUAN MARKETING SDN BHD (PROJECT)",
+                    "phone_number": "03-7984 7826",
+                    "email": null
+                  }
+                },
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "300-Z015",
+                  "uuid": "d7455084-b88b-424a-98f5-3611199976f1",
+                  "match_field": "customer_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "customer_name": "ZIN YUAN MARKETING SDN BHD",
+                    "phone_number": null,
+                    "email": null
+                  }
+                },
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "ZIN YUAN MARKETING SDN BHD",
+                  "uuid": "d7455084-b88b-424a-98f5-3611199976f1",
+                  "match_field": "debtor_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "debtor_name": "ZIN YUAN MARKETING SDN BHD",
+                    "debtor_code": "300-Z015",
+                    "source": "orders"
+                  }
+                },
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "ZIN YUAN MARKETING SDN BHD (PROJECT)",
+                  "uuid": "30608c30-ce6d-4d17-a68a-c0965a882bc7",
+                  "match_field": "debtor_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "debtor_name": "ZIN YUAN MARKETING SDN BHD (PROJECT)",
+                    "debtor_code": "300-Z015",
+                    "source": "orders"
+                  }
+                }
+              ],
+              "alternatives": []
+            },
+            {
+              "token": "CB2150",
+              "resolved": false,
+              "ambiguous": true,
+              "matches": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "CB2150",
+                  "uuid": "d3dd9956-4515-4a91-b5c2-d901f5ba1929",
+                  "match_field": "product_code",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "CB2150",
+                    "is_active": true,
+                    "brand": {
+                      "brand_id": "9f1277f0-42fa-442c-978f-ab5f41e72a20",
+                      "brand_code": "CABANA",
+                      "brand_name": "CABANA"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "CB2150-DIY",
+                  "uuid": "edeb9714-51f5-4db1-9dec-1578cd4d4f29",
+                  "match_field": "product_code",
+                  "match_tier": "prefix",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "CB2150-DIY",
+                    "is_active": true,
+                    "brand": {
+                      "brand_id": "9f1277f0-42fa-442c-978f-ab5f41e72a20",
+                      "brand_code": "CABANA",
+                      "brand_name": "CABANA"
+                    }
+                  }
+                }
+              ],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [],
+          "fallback_applied": true,
+          "fallback_requested_types": [
+            "customer",
+            "order"
+          ],
+          "fallback_types_found": [
+            "customer",
+            "product"
+          ],
+          "fallback_per_token": true,
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "tokens": [
+            "zin yuan marketing",
+            "CB2150"
+          ],
+          "elapsed_ms": 1022.87,
+          "resolutions": [
+            {
+              "token": "zin yuan marketing",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "300-Z015",
+                  "uuid": "30608c30-ce6d-4d17-a68a-c0965a882bc7",
+                  "match_field": "customer_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "customer_name": "ZIN YUAN MARKETING SDN BHD (PROJECT)",
+                    "phone_number": "03-7984 7826",
+                    "email": null
+                  }
+                },
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "300-Z015",
+                  "uuid": "d7455084-b88b-424a-98f5-3611199976f1",
+                  "match_field": "customer_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "customer_name": "ZIN YUAN MARKETING SDN BHD",
+                    "phone_number": null,
+                    "email": null
+                  }
+                },
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "ZIN YUAN MARKETING SDN BHD",
+                  "uuid": "d7455084-b88b-424a-98f5-3611199976f1",
+                  "match_field": "debtor_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "debtor_name": "ZIN YUAN MARKETING SDN BHD",
+                    "debtor_code": "300-Z015",
+                    "source": "orders"
+                  }
+                },
+                {
+                  "entity_type": "customer",
+                  "canonical_code": "ZIN YUAN MARKETING SDN BHD (PROJECT)",
+                  "uuid": "30608c30-ce6d-4d17-a68a-c0965a882bc7",
+                  "match_field": "debtor_name",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "debtor_name": "ZIN YUAN MARKETING SDN BHD (PROJECT)",
+                    "debtor_code": "300-Z015",
+                    "source": "orders"
+                  }
+                }
+              ],
+              "alternatives": []
+            },
+            {
+              "token": "CB2150",
+              "resolved": false,
+              "ambiguous": true,
+              "matches": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "CB2150",
+                  "uuid": "d3dd9956-4515-4a91-b5c2-d901f5ba1929",
+                  "match_field": "product_code",
+                  "match_tier": "exact",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "CB2150",
+                    "is_active": true,
+                    "brand": {
+                      "brand_id": "9f1277f0-42fa-442c-978f-ab5f41e72a20",
+                      "brand_code": "CABANA",
+                      "brand_name": "CABANA"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "CB2150-DIY",
+                  "uuid": "edeb9714-51f5-4db1-9dec-1578cd4d4f29",
+                  "match_field": "product_code",
+                  "match_tier": "prefix",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "CB2150-DIY",
+                    "is_active": true,
+                    "brand": {
+                      "brand_id": "9f1277f0-42fa-442c-978f-ab5f41e72a20",
+                      "brand_code": "CABANA",
+                      "brand_name": "CABANA"
+                    }
+                  }
+                }
+              ],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [],
+          "fallback_applied": true,
+          "fallback_requested_types": [
+            "customer",
+            "order"
+          ],
+          "fallback_types_found": [
+            "customer",
+            "product"
+          ],
+          "fallback_per_token": true,
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": true,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [
+            "sorento",
+            "cabana"
+          ],
+          "routing_brand": "cabana",
+          "routing_brand_source": "resolved",
+          "routing_companies": [
+            {
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "codes": [
+                "CB2150",
+                "CB2150-DIY"
+              ]
+            }
+          ],
+          "routing_company": "00000000-0000-0000-0000-000000000001",
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "ok",
+          "gate_clarification": "",
+          "compatible_entities": [
+            {
+              "uuid": "30608c30-ce6d-4d17-a68a-c0965a882bc7",
+              "entity_type": "customer",
+              "code": "ZIN YUAN MARKETING SDN BHD (PROJECT)"
+            },
+            {
+              "uuid": "d7455084-b88b-424a-98f5-3611199976f1",
+              "entity_type": "customer",
+              "code": "ZIN YUAN MARKETING SDN BHD"
+            },
+            {
+              "uuid": "d3dd9956-4515-4a91-b5c2-d901f5ba1929",
+              "entity_type": "product",
+              "code": "CB2150"
+            },
+            {
+              "uuid": "edeb9714-51f5-4db1-9dec-1578cd4d4f29",
+              "entity_type": "product",
+              "code": "CB2150-DIY"
+            }
+          ],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 4
+          }
+        }
+      }
+    ],
+    "If3": [],
+    "Execute 'sub-get-rag'": [
+      {
+        "json": {
+          "tools": [
+            {
+              "name": "crm_order_management_orders_list",
+              "similarity": 0.48813322250791
+            }
+          ]
+        }
+      }
+    ],
+    "tool-filter": [
+      {
+        "json": {
+          "name": "crm_order_management_orders_list",
+          "similarity": 0.48813322250791,
+          "_tool_pick": {
+            "chosen": "crm_order_management_orders_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": true
+          }
+        }
+      }
+    ],
+    "if-tier-ask": [],
+    "Call 'sub-get-results'": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "validator": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "promo-picker": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "crossdomain-zeroset": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "why": "domain"
+          }
+        }
+      }
+    ],
+    "crossdomain-gate": [],
+    "If6": [],
+    "Aggregate1": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ]
+        }
+      }
+    ],
+    "not-found-error-message": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)"
+        }
+      }
+    ],
+    "sibling-gate": [],
+    "dym-transform": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)",
+          "dym_probe_entities": [],
+          "dym_candidate_codes": [],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": null,
+          "probe_noun": null,
+          "probe_predicate": null,
+          "probe_needed": false,
+          "probe_skip_reason": "domain_not_enabled",
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "dym-gate": [],
+    "build-suggest-offer": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)",
+          "suggest_offer": false
+        }
+      }
+    ],
+    "tag-not-found": [
+      {
+        "json": {
+          "branch_kind": "not_found"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-offer-gate": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-roster-plan": [
+      {
+        "json": {
+          "plan_idx": 0,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "cabana",
+          "codes": [
+            "CB2150",
+            "CB2150-DIY"
+          ],
+          "multi_company": false,
+          "companies": [
+            "Sorento"
+          ]
+        }
+      }
+    ],
+    "get-cs-members": [
+      {
+        "json": {
+          "body": [
+            {
+              "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+              "name": "Person 1",
+              "respond_user_id": "1144607",
+              "email": "person1@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+              "name": "Person 2",
+              "respond_user_id": "1144556",
+              "email": "person2@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+              "name": "Person 6",
+              "respond_user_id": "1144561",
+              "email": "person6@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+              "name": "Person 8",
+              "respond_user_id": "1144558",
+              "email": "person8@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+              "name": "Person 9",
+              "respond_user_id": "1144554",
+              "email": "person9@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+              "name": "Person 10",
+              "respond_user_id": "1144604",
+              "email": "person10@example.com",
+              "sort_order": null
+            }
+          ],
+          "headers": {
+            "date": "Fri, 21 Aug 2026 09:11:42 GMT",
+            "content-type": "application/json",
+            "transfer-encoding": "chunked",
+            "connection": "close",
+            "server": "cloudflare",
+            "x-trace-id": "adc59d786f1e497e",
+            "vary": "Accept-Encoding",
+            "x-frame-options": "SAMEORIGIN",
+            "x-content-type-options": "nosniff",
+            "x-xss-protection": "1; mode=block",
+            "cf-cache-status": "DYNAMIC",
+            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+            "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=13,cfOrigin;dur=74",
+            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=qPaVjOg%2Fqr3MPUaSdby9TIf52405PjMJtpyIAt3IKR7XAqUpUzO0hOyugnXkEGwfL2ilcAMQ60U%2Fg2NCs5UXI250Y1j6MMRINVPUu6x%2Fn42XftjFXzyhTz1QEuLIAMwgXrCYiEawP3vN\"}]}",
+            "cf-ray": "a2e8830c4b118938-SIN",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "statusCode": 200,
+          "statusMessage": "OK"
+        }
+      }
+    ],
+    "build-cs-member-offer": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true,
+          "routing_companies": [
+            {
+              "plan_idx": 0,
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "codes": [
+                "CB2150",
+                "CB2150-DIY"
+              ],
+              "multi_company": false,
+              "companies": [
+                "Sorento"
+              ]
+            }
+          ],
+          "cs_multi_note": null,
+          "member_offer": true,
+          "selection_context": "member_offer",
+          "cs_last_result_set": [
+            {
+              "idx": 1,
+              "label": "Person 1",
+              "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+              "respond_user_id": "1144607",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 2,
+              "label": "Person 2",
+              "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+              "respond_user_id": "1144556",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 3,
+              "label": "Person 6",
+              "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+              "respond_user_id": "1144561",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 4,
+              "label": "Person 8",
+              "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+              "respond_user_id": "1144558",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 5,
+              "label": "Person 9",
+              "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+              "respond_user_id": "1144554",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 6,
+              "label": "Person 10",
+              "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+              "respond_user_id": "1144604",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": "cabana",
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "user_goal": "trying to view the delivery order for CB2150 for Zin Yuan Marketing",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "zin yuan marketing",
+                "hint": "customer",
+                "canonical_code": "300-Z015",
+                "current_message": true,
+                "confident": true
+              },
+              {
+                "raw": "CB2150",
+                "hint": "product",
+                "canonical_code": "CB2150",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Person 1",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                "respond_user_id": "1144607",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 2,
+                "label": "Person 2",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                "respond_user_id": "1144556",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 3,
+                "label": "Person 6",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                "respond_user_id": "1144561",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 4,
+                "label": "Person 8",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                "respond_user_id": "1144558",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 5,
+                "label": "Person 9",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                "respond_user_id": "1144554",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 6,
+                "label": "Person 10",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                "respond_user_id": "1144604",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              }
+            ],
+            "selection_context": "member_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": [
+              {
+                "plan_idx": 0,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana"
+              }
+            ],
+            "routing_brand": "cabana",
+            "routing_brand_source": "resolved",
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "codes": [
+                  "CB2150",
+                  "CB2150-DIY"
+                ]
+              }
+            ]
+          },
+          "user_response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "user_goal": "trying to view the delivery order for CB2150 for Zin Yuan Marketing",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "zin yuan marketing",
+                "hint": "customer",
+                "canonical_code": "300-Z015",
+                "current_message": true,
+                "confident": true
+              },
+              {
+                "raw": "CB2150",
+                "hint": "product",
+                "canonical_code": "CB2150",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Person 1",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                "respond_user_id": "1144607",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 2,
+                "label": "Person 2",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                "respond_user_id": "1144556",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 3,
+                "label": "Person 6",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                "respond_user_id": "1144561",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 4,
+                "label": "Person 8",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                "respond_user_id": "1144558",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 5,
+                "label": "Person 9",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                "respond_user_id": "1144554",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 6,
+                "label": "Person 10",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                "respond_user_id": "1144604",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              }
+            ],
+            "selection_context": "member_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": [
+              {
+                "plan_idx": 0,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana"
+              }
+            ],
+            "routing_brand": "cabana",
+            "routing_brand_source": "resolved",
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": "cabana",
+                "codes": [
+                  "CB2150",
+                  "CB2150-DIY"
+                ]
+              }
+            ]
+          },
+          "user_response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000012",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_order",
+              "domain_hint": "order",
+              "user_goal": "trying to view the delivery order for CB2150 for Zin Yuan Marketing",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "zin yuan marketing",
+                  "hint": "customer",
+                  "canonical_code": "300-Z015",
+                  "current_message": true,
+                  "confident": true
+                },
+                {
+                  "raw": "CB2150",
+                  "hint": "product",
+                  "canonical_code": "CB2150",
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "customer_service",
+                "suggested_agent": "order_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "Person 1",
+                  "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                  "respond_user_id": "1144607",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 2,
+                  "label": "Person 2",
+                  "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                  "respond_user_id": "1144556",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 3,
+                  "label": "Person 6",
+                  "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                  "respond_user_id": "1144561",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 4,
+                  "label": "Person 8",
+                  "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                  "respond_user_id": "1144558",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 5,
+                  "label": "Person 9",
+                  "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                  "respond_user_id": "1144554",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 6,
+                  "label": "Person 10",
+                  "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                  "respond_user_id": "1144604",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                }
+              ],
+              "selection_context": "member_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": null,
+              "dym_candidates": [],
+              "ideation": null,
+              "routing_roster_plan": [
+                {
+                  "plan_idx": 0,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana"
+                }
+              ],
+              "routing_brand": "cabana",
+              "routing_brand_source": "resolved",
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "routing_companies": [
+                {
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": "cabana",
+                  "codes": [
+                    "CB2150",
+                    "CB2150-DIY"
+                  ]
+                }
+              ]
+            },
+            "user_response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000012,
+          "phone_number": "<redacted>",
+          "message": "zin yuan marketing DO of CB2150",
+          "sent_at": 1787303503305,
+          "turn_id": "13342266",
+          "data": "{\"contact_id\":\"900000012\",\"phone_number\":\"+60100000010\",\"message\":\"zin yuan marketing DO of CB2150\",\"sent_at\":1787303492000,\"first_name\":\"Person 40\",\"last_name\":null,\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787303492000000\",\"turn_id\":\"13342266\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"entities\":[{\"raw\":\"SRTFC2032\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"SRTFC2032\",\"current_message\":true}],\"ideation\":null,\"response\":\"No stock for SRTFC2032. Try: SRTFC2043, SRTFC2044. Reply with a code to continue, or would you like me to escalate to warehouse team?\",\"date_mode\":null,\"dym_offer\":{\"id\":\"13341642\",\"ttl\":3,\"domain\":\"inventory\",\"picked\":[],\"candidates\":[{\"code\":\"SRTFC2043\",\"uuid\":null,\"for_raw\":\"SRTFC2032\",\"for_hint\":\"product\",\"entity_type\":null,\"for_canonical\":\"SRTFC2032\"},{\"code\":\"SRTFC2044\",\"uuid\":null,\"for_raw\":\"SRTFC2032\",\"for_hint\":\"product\",\"entity_type\":null,\"for_canonical\":\"SRTFC2032\"}]},\"user_goal\":\"trying to check the stock level of SRTFC2032\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"inventory\",\"intent_hint\":\"check_stock\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":\"sorento\",\"contains_flyer\":false,\"dym_candidates\":{\"n\":2,\"first\":\"SRTFC2043\"},\"date_filter_end\":null,\"last_result_set\":{\"n\":2,\"first\":\"SRTFC2043\"},\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"SRTFC2032\"],\"brand_code\":\"sorento\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":\"suggest_offer\",\"routing_roster_plan\":null,\"routing_brand_source\":\"resolved\"},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to view the delivery order for CB2150 for Zin Yuan Marketing\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"zin yuan marketing\",\"hint\":\"customer\",\"canonical_code\":null,\"current_message\":true,\"confident\":true},{\"raw\":\"CB2150\",\"hint\":\"order\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to view the delivery order for CB2150 for Zin Yuan Marketing\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"zin yuan marketing\",\"hint\":\"customer\",\"canonical_code\":null,\"current_message\":true,\"confident\":true},{\"raw\":\"CB2150\",\"hint\":\"order\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":false,\"entities_emptied_by_filter\":false,\"suggest_pick_context\":true},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"user_goal\":\"trying to view the delivery order for CB2150 for Zin Yuan Marketing\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"zin yuan marketing\",\"hint\":\"customer\",\"canonical_code\":\"300-Z015\",\"current_message\":true,\"confident\":true},{\"raw\":\"CB2150\",\"hint\":\"product\",\"canonical_code\":\"CB2150\",\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Here's what you want:\\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\\n\u2022 product: CB2150 (+1 more)\\n\\nBut no order matched these. Would you like me to escalate to customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n1. Person 1\\n2. Person 2\\n3. Person 6\\n4. Person 8\\n5. Person 9\\n6. Person 10\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\",\"last_result_set\":{\"n\":6,\"first\":\"Person 1\"},\"selection_context\":\"member_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":{\"n\":0,\"first\":null},\"ideation\":null,\"routing_roster_plan\":[{\"plan_idx\":0,\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"cabana\"}],\"routing_brand\":\"cabana\",\"routing_brand_source\":\"resolved\",\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"routing_companies\":[{\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":\"cabana\",\"codes\":[\"CB2150\",\"CB2150-DIY\"]}]}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "body": [
+          {
+            "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+            "name": "Person 1",
+            "respond_user_id": "1144607",
+            "email": "person1@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+            "name": "Person 2",
+            "respond_user_id": "1144556",
+            "email": "person2@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+            "name": "Person 6",
+            "respond_user_id": "1144561",
+            "email": "person6@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+            "name": "Person 8",
+            "respond_user_id": "1144558",
+            "email": "person8@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+            "name": "Person 9",
+            "respond_user_id": "1144554",
+            "email": "person9@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+            "name": "Person 10",
+            "respond_user_id": "1144604",
+            "email": "person10@example.com",
+            "sort_order": null
+          }
+        ],
+        "headers": {
+          "date": "Fri, 21 Aug 2026 09:11:42 GMT",
+          "content-type": "application/json",
+          "transfer-encoding": "chunked",
+          "connection": "close",
+          "server": "cloudflare",
+          "x-trace-id": "adc59d786f1e497e",
+          "vary": "Accept-Encoding",
+          "x-frame-options": "SAMEORIGIN",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "1; mode=block",
+          "cf-cache-status": "DYNAMIC",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=13,cfOrigin;dur=74",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=qPaVjOg%2Fqr3MPUaSdby9TIf52405PjMJtpyIAt3IKR7XAqUpUzO0hOyugnXkEGwfL2ilcAMQ60U%2Fg2NCs5UXI250Y1j6MMRINVPUu6x%2Fn42XftjFXzyhTz1QEuLIAMwgXrCYiEawP3vN\"}]}",
+          "cf-ray": "a2e8830c4b118938-SIN",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "statusCode": 200,
+        "statusMessage": "OK"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "branch_kind": "not_found",
+        "response": "Here's what you want:\n\u2022 customer: ZIN YUAN MARKETING SDN BHD (PROJECT) (+1 more)\n\u2022 product: CB2150 (+1 more)\n\nBut no order matched these. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 6\n4. Person 8\n5. Person 9\n6. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "manualResponse": true,
+        "includeResponse": true,
+        "is_escalate_offer": true,
+        "routing_companies": [
+          {
+            "plan_idx": 0,
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "codes": [
+              "CB2150",
+              "CB2150-DIY"
+            ],
+            "multi_company": false,
+            "companies": [
+              "Sorento"
+            ]
+          }
+        ],
+        "cs_multi_note": null,
+        "member_offer": true,
+        "selection_context": "member_offer",
+        "cs_last_result_set": [
+          {
+            "idx": 1,
+            "label": "Person 1",
+            "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+            "respond_user_id": "1144607",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          },
+          {
+            "idx": 2,
+            "label": "Person 2",
+            "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+            "respond_user_id": "1144556",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          },
+          {
+            "idx": 3,
+            "label": "Person 6",
+            "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+            "respond_user_id": "1144561",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          },
+          {
+            "idx": 4,
+            "label": "Person 8",
+            "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+            "respond_user_id": "1144558",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          },
+          {
+            "idx": 5,
+            "label": "Person 9",
+            "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+            "respond_user_id": "1144554",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          },
+          {
+            "idx": 6,
+            "label": "Person 10",
+            "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+            "respond_user_id": "1144604",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "cabana",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13342266"
+  },
+  "volatile": []
+}
