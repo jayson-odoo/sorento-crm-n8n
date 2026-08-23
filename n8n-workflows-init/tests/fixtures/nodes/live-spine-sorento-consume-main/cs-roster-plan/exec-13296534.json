@@ -1,0 +1,1937 @@
+{
+  "source": {
+    "execution_id": "13296534",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "cs-roster-plan",
+    "captured_at": "2026-08-22T12:01:54+00:00",
+    "expected_from": "runData"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000011"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "5955017c-96c5-44fe-9b64-143f2e2187a6",
+              "contact": {
+                "id": 900000011,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": null,
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "email": "<redacted>"
+                },
+                "created_at": 1783310342
+              },
+              "message": {
+                "messageId": 1787274408000000,
+                "channelMessageId": "wamid.HBgLNjAxODMyMjc5NzEVAgASGBYzRUIwQzVEQ0NBQ0NBNkNBMzMzNkMwAA==",
+                "contactId": 900000011,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787274408000,
+                "message": {
+                  "type": "text",
+                  "text": "PS202608-0344 done deliver?"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 39\"},\"wa_id\":\"60100000009\",\"user_id\":\"MY.900000029\",\"firstName\":\"Person 2\",\"lastName\":\"Person 38\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000011,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": null
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/50cede30-7067-49d5-a065-4e44c4552c96"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [],
+              "assignee": null,
+              "lifecycle": "New Lead",
+              "created_at": 1783310342
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "5955017c-96c5-44fe-9b64-143f2e2187a6",
+          "contact": {
+            "id": 900000011,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": null,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "email": "<redacted>"
+            },
+            "created_at": 1783310342
+          },
+          "message": {
+            "messageId": 1787274408000000,
+            "channelMessageId": "wamid.HBgLNjAxODMyMjc5NzEVAgASGBYzRUIwQzVEQ0NBQ0NBNkNBMzMzNkMwAA==",
+            "contactId": 900000011,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787274408000,
+            "message": {
+              "type": "text",
+              "text": "PS202608-0344 done deliver?"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 39\"},\"wa_id\":\"60100000009\",\"user_id\":\"MY.900000029\",\"firstName\":\"Person 2\",\"lastName\":\"Person 38\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000011,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/50cede30-7067-49d5-a065-4e44c4552c96"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": null,
+          "lifecycle": "New Lead",
+          "created_at": 1783310342
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000011,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/50cede30-7067-49d5-a065-4e44c4552c96"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": null,
+          "lifecycle": "New Lead",
+          "created_at": 1783310342
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000011",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "purchasing",
+                "suggested_agent": "incoming_stock_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "BRC21165XUW-P-ENG",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "BRC21165XUW-P-ENG",
+                  "current_message": true
+                },
+                {
+                  "raw": "PS202608-0275",
+                  "hint": "customer_order",
+                  "confident": true,
+                  "canonical_code": "PS202608-0275",
+                  "current_message": false
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (incoming): returned 1 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check the incoming status for BRC21165XUW-P-ENG",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "incoming",
+              "intent_hint": "check_incoming",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": "bravat",
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": null,
+                  "label": "BRC21165XUW-P-ENG",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "BRC21165XUW-P-ENG"
+                  ],
+                  "brand_code": "bravat",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": null,
+              "routing_roster_plan": null,
+              "routing_brand_source": "resolved"
+            },
+            "user_response": "I have attached the file(s) below.\n\n1. *Product Code:* BRC21165XUW-P-ENG\n*Container:* SEGU4251723\n*ETA:* 2026-08-13\n*Incoming Quantity:* 280\n\ud83d\udea9  *(PENDING ALLOCATION)*"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check whether delivery order PS202608-0344 has been delivered",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "PS202608-0344",
+                "hint": "order",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [
+              "delivery"
+            ],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": "delivered",
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "entity_op_corrected": "reuse->replace_combine",
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check whether delivery order PS202608-0344 has been delivered",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "PS202608-0344",
+                "hint": "order",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "reuse",
+            "scope_exclusive": false,
+            "requested_attributes": [
+              "delivery"
+            ],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": "delivered",
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Order Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Order Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [],
+    "If7": [],
+    "resolve-entity": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "PS202608-0344"
+          ],
+          "elapsed_ms": 68.37,
+          "intersection": [
+            {
+              "entity_type": "customer_order",
+              "canonical_code": "PS202608-0344",
+              "uuid": "d3005f33-e6d3-4c6c-be3a-b8f00e0b19e8",
+              "match_field": "order_number",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "customer_name": "JIAN HORNG TRADING SDN BHD (PROJECT)",
+                "actual_delivery_date": null,
+                "estimated_delivery_date": "2026-08-24"
+              }
+            }
+          ],
+          "by_entity_type": {
+            "customer_order": [
+              {
+                "entity_type": "customer_order",
+                "canonical_code": "PS202608-0344",
+                "uuid": "d3005f33-e6d3-4c6c-be3a-b8f00e0b19e8",
+                "match_field": "order_number",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "customer_name": "JIAN HORNG TRADING SDN BHD (PROJECT)",
+                  "actual_delivery_date": null,
+                  "estimated_delivery_date": "2026-08-24"
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "PS202608-0344",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "customer_order",
+                  "matched_words": [
+                    "PS202608-0344"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "PS202608-0344"
+          ],
+          "elapsed_ms": 68.37,
+          "intersection": [
+            {
+              "entity_type": "customer_order",
+              "canonical_code": "PS202608-0344",
+              "uuid": "d3005f33-e6d3-4c6c-be3a-b8f00e0b19e8",
+              "match_field": "order_number",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "customer_name": "JIAN HORNG TRADING SDN BHD (PROJECT)",
+                "actual_delivery_date": null,
+                "estimated_delivery_date": "2026-08-24"
+              }
+            }
+          ],
+          "by_entity_type": {
+            "customer_order": [
+              {
+                "entity_type": "customer_order",
+                "canonical_code": "PS202608-0344",
+                "uuid": "d3005f33-e6d3-4c6c-be3a-b8f00e0b19e8",
+                "match_field": "order_number",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "customer_name": "JIAN HORNG TRADING SDN BHD (PROJECT)",
+                  "actual_delivery_date": null,
+                  "estimated_delivery_date": "2026-08-24"
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "PS202608-0344",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "customer_order",
+                  "matched_words": [
+                    "PS202608-0344"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": false
+                }
+              ]
+            }
+          ],
+          "gate_passed": true,
+          "require_specific": false,
+          "resolved_company": "sorento",
+          "company_team": null,
+          "resolved_companies": [
+            "sorento"
+          ],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [
+            {
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "codes": [
+                "PS202608-0344"
+              ]
+            }
+          ],
+          "routing_company": "00000000-0000-0000-0000-000000000001",
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "ok",
+          "gate_clarification": "",
+          "compatible_entities": [
+            {
+              "uuid": "d3005f33-e6d3-4c6c-be3a-b8f00e0b19e8",
+              "entity_type": "customer_order",
+              "code": "PS202608-0344"
+            }
+          ],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 1
+          }
+        }
+      }
+    ],
+    "If3": [],
+    "Execute 'sub-get-rag'": [
+      {
+        "json": {
+          "tools": [
+            {
+              "name": "crm_order_management_orders_list",
+              "similarity": 0.5175043571151943
+            }
+          ]
+        }
+      }
+    ],
+    "tool-filter": [
+      {
+        "json": {
+          "name": "crm_order_management_orders_list",
+          "similarity": 0.5175043571151943,
+          "_tool_pick": {
+            "chosen": "crm_order_management_orders_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": false
+          }
+        }
+      }
+    ],
+    "if-tier-ask": [],
+    "Call 'sub-get-results'": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [
+            "delivery"
+          ],
+          "keys_served": false
+        }
+      }
+    ],
+    "validator": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [
+            "delivery"
+          ],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "promo-picker": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [
+            "delivery"
+          ],
+          "keys_served": false,
+          "is_valid": true
+        }
+      }
+    ],
+    "crossdomain-zeroset": [
+      {
+        "json": {
+          "response": "No matching results found.",
+          "response_intro": "No matching results found.",
+          "answers": [],
+          "attachments": [],
+          "action_links": [],
+          "last_updated_at": null,
+          "has_result": false,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [
+            "delivery"
+          ],
+          "keys_served": false,
+          "is_valid": true,
+          "_xd": {
+            "active": false,
+            "why": "domain"
+          }
+        }
+      }
+    ],
+    "crossdomain-gate": [],
+    "If6": [],
+    "Aggregate1": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ]
+        }
+      }
+    ],
+    "not-found-error-message": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 customer_order: PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT))"
+        }
+      }
+    ],
+    "sibling-gate": [],
+    "dym-transform": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 customer_order: PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT))",
+          "dym_probe_entities": [],
+          "dym_candidate_codes": [],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": null,
+          "probe_noun": null,
+          "probe_predicate": null,
+          "probe_needed": false,
+          "probe_skip_reason": "domain_not_enabled",
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "dym-gate": [],
+    "build-suggest-offer": [
+      {
+        "json": {
+          "response_intro": [
+            "No matching results found."
+          ],
+          "escalate_message": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "\u2022 customer_order: PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT))",
+          "suggest_offer": false
+        }
+      }
+    ],
+    "tag-not-found": [
+      {
+        "json": {
+          "branch_kind": "not_found"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-offer-gate": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-roster-plan": [
+      {
+        "json": {
+          "plan_idx": 0,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": null,
+          "codes": [
+            "PS202608-0344"
+          ],
+          "multi_company": false,
+          "companies": [
+            "Sorento"
+          ]
+        }
+      }
+    ],
+    "get-cs-members": [
+      {
+        "json": {
+          "body": [
+            {
+              "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+              "name": "Person 1",
+              "respond_user_id": "1144607",
+              "email": "person1@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+              "name": "Person 2",
+              "respond_user_id": "1144556",
+              "email": "person2@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+              "name": "Person 3",
+              "respond_user_id": "1136807",
+              "email": "person3@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+              "name": "Person 4",
+              "respond_user_id": "1136805",
+              "email": "person4@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+              "name": "Person 5",
+              "respond_user_id": "1136799",
+              "email": "person5@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+              "name": "Person 6",
+              "respond_user_id": "1144561",
+              "email": "person6@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+              "name": "Person 7",
+              "respond_user_id": "1136808",
+              "email": "person7@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+              "name": "Person 8",
+              "respond_user_id": "1144558",
+              "email": "person8@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+              "name": "Person 9",
+              "respond_user_id": "1144554",
+              "email": "person9@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+              "name": "Person 10",
+              "respond_user_id": "1144604",
+              "email": "person10@example.com",
+              "sort_order": null
+            }
+          ],
+          "headers": {
+            "date": "Fri, 21 Aug 2026 01:06:58 GMT",
+            "content-type": "application/json",
+            "transfer-encoding": "chunked",
+            "connection": "close",
+            "server": "cloudflare",
+            "x-trace-id": "25d75ef1bfd64978",
+            "vary": "Accept-Encoding",
+            "x-frame-options": "SAMEORIGIN",
+            "x-content-type-options": "nosniff",
+            "x-xss-protection": "1; mode=block",
+            "cf-cache-status": "DYNAMIC",
+            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+            "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=5,cfOrigin;dur=45",
+            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=y09sBdTDU5g5zIBXxSpgMvDiACzZwW1g3uD7hWAMbJGu1t2LHNzPZP69LlprBTCw3gz7gYFCQ8J57bD5jxNp9NKJMuMOWDGhORUl2wu0AYPSX7go7Aq3PeSYKDK6XgrGVh6I6qp4bw%2BT\"}]}",
+            "cf-ray": "a2e5bcf88cb4d4a0-SIN",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "statusCode": 200,
+          "statusMessage": "OK"
+        }
+      }
+    ],
+    "build-cs-member-offer": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true,
+          "routing_companies": [
+            {
+              "plan_idx": 0,
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "codes": [
+                "PS202608-0344"
+              ],
+              "multi_company": false,
+              "companies": [
+                "Sorento"
+              ]
+            }
+          ],
+          "cs_multi_note": null,
+          "member_offer": true,
+          "selection_context": "member_offer",
+          "cs_last_result_set": [
+            {
+              "idx": 1,
+              "label": "Person 1",
+              "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+              "respond_user_id": "1144607",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 2,
+              "label": "Person 2",
+              "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+              "respond_user_id": "1144556",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 3,
+              "label": "Person 3",
+              "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+              "respond_user_id": "1136807",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 4,
+              "label": "Person 4",
+              "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+              "respond_user_id": "1136805",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 5,
+              "label": "Person 5",
+              "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+              "respond_user_id": "1136799",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 6,
+              "label": "Person 6",
+              "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+              "respond_user_id": "1144561",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 7,
+              "label": "Person 7",
+              "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+              "respond_user_id": "1136808",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 8,
+              "label": "Person 8",
+              "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+              "respond_user_id": "1144558",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 9,
+              "label": "Person 9",
+              "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+              "respond_user_id": "1144554",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            },
+            {
+              "idx": 10,
+              "label": "Person 10",
+              "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+              "respond_user_id": "1144604",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "company_ids": [
+                "00000000-0000-0000-0000-000000000001"
+              ],
+              "companies": [
+                "Sorento"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "user_goal": "trying to check whether delivery order PS202608-0344 has been delivered",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "PS202608-0344",
+                "hint": "customer_order",
+                "canonical_code": "PS202608-0344",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Person 1",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                "respond_user_id": "1144607",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 2,
+                "label": "Person 2",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                "respond_user_id": "1144556",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 3,
+                "label": "Person 3",
+                "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+                "respond_user_id": "1136807",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 4,
+                "label": "Person 4",
+                "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+                "respond_user_id": "1136805",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 5,
+                "label": "Person 5",
+                "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+                "respond_user_id": "1136799",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 6,
+                "label": "Person 6",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                "respond_user_id": "1144561",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 7,
+                "label": "Person 7",
+                "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+                "respond_user_id": "1136808",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 8,
+                "label": "Person 8",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                "respond_user_id": "1144558",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 9,
+                "label": "Person 9",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                "respond_user_id": "1144554",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 10,
+                "label": "Person 10",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                "respond_user_id": "1144604",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              }
+            ],
+            "selection_context": "member_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": [
+              {
+                "plan_idx": 0,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null
+              }
+            ],
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "codes": [
+                  "PS202608-0344"
+                ]
+              }
+            ]
+          },
+          "user_response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "user_goal": "trying to check whether delivery order PS202608-0344 has been delivered",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "PS202608-0344",
+                "hint": "customer_order",
+                "canonical_code": "PS202608-0344",
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Person 1",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                "respond_user_id": "1144607",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 2,
+                "label": "Person 2",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                "respond_user_id": "1144556",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 3,
+                "label": "Person 3",
+                "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+                "respond_user_id": "1136807",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 4,
+                "label": "Person 4",
+                "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+                "respond_user_id": "1136805",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 5,
+                "label": "Person 5",
+                "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+                "respond_user_id": "1136799",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 6,
+                "label": "Person 6",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                "respond_user_id": "1144561",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 7,
+                "label": "Person 7",
+                "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+                "respond_user_id": "1136808",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 8,
+                "label": "Person 8",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                "respond_user_id": "1144558",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 9,
+                "label": "Person 9",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                "respond_user_id": "1144554",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              },
+              {
+                "idx": 10,
+                "label": "Person 10",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                "respond_user_id": "1144604",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "companies": [
+                  "Sorento"
+                ]
+              }
+            ],
+            "selection_context": "member_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": [
+              {
+                "plan_idx": 0,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null
+              }
+            ],
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "codes": [
+                  "PS202608-0344"
+                ]
+              }
+            ]
+          },
+          "user_response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000011",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_order",
+              "domain_hint": "order",
+              "user_goal": "trying to check whether delivery order PS202608-0344 has been delivered",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "PS202608-0344",
+                  "hint": "customer_order",
+                  "canonical_code": "PS202608-0344",
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "customer_service",
+                "suggested_agent": "order_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "Person 1",
+                  "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                  "respond_user_id": "1144607",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 2,
+                  "label": "Person 2",
+                  "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                  "respond_user_id": "1144556",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 3,
+                  "label": "Person 3",
+                  "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+                  "respond_user_id": "1136807",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 4,
+                  "label": "Person 4",
+                  "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+                  "respond_user_id": "1136805",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 5,
+                  "label": "Person 5",
+                  "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+                  "respond_user_id": "1136799",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 6,
+                  "label": "Person 6",
+                  "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                  "respond_user_id": "1144561",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 7,
+                  "label": "Person 7",
+                  "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+                  "respond_user_id": "1136808",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 8,
+                  "label": "Person 8",
+                  "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                  "respond_user_id": "1144558",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 9,
+                  "label": "Person 9",
+                  "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                  "respond_user_id": "1144554",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                },
+                {
+                  "idx": 10,
+                  "label": "Person 10",
+                  "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                  "respond_user_id": "1144604",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "company_ids": [
+                    "00000000-0000-0000-0000-000000000001"
+                  ],
+                  "companies": [
+                    "Sorento"
+                  ]
+                }
+              ],
+              "selection_context": "member_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": null,
+              "dym_candidates": [],
+              "ideation": null,
+              "routing_roster_plan": [
+                {
+                  "plan_idx": 0,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null
+                }
+              ],
+              "routing_brand": null,
+              "routing_brand_source": null,
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "routing_companies": [
+                {
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "codes": [
+                    "PS202608-0344"
+                  ]
+                }
+              ]
+            },
+            "user_response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000011,
+          "phone_number": "<redacted>",
+          "message": "PS202608-0344 done deliver?",
+          "sent_at": 1787274418462,
+          "turn_id": "13296534",
+          "data": "{\"contact_id\":\"900000011\",\"phone_number\":\"+60100000009\",\"message\":\"PS202608-0344 done deliver?\",\"sent_at\":1787274408000,\"first_name\":\"Person 2\",\"last_name\":\"Person 38\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787274408000000\",\"turn_id\":\"13296534\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"incoming_stock_enquiries\"},\"entities\":[{\"raw\":\"BRC21165XUW-P-ENG\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"BRC21165XUW-P-ENG\",\"current_message\":true},{\"raw\":\"PS202608-0275\",\"hint\":\"customer_order\",\"confident\":true,\"canonical_code\":\"PS202608-0275\",\"current_message\":false}],\"ideation\":null,\"response\":\"Previous turn (incoming): returned 1 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check the incoming status for BRC21165XUW-P-ENG\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"incoming\",\"intent_hint\":\"check_incoming\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":\"bravat\",\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":1,\"first\":\"BRC21165XUW-P-ENG\"},\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"BRC21165XUW-P-ENG\"],\"brand_code\":\"bravat\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":null,\"routing_roster_plan\":null,\"routing_brand_source\":\"resolved\"},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check whether delivery order PS202608-0344 has been delivered\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"PS202608-0344\",\"hint\":\"order\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[\"delivery\"],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":\"delivered\",\"correction\":false,\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check whether delivery order PS202608-0344 has been delivered\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"PS202608-0344\",\"hint\":\"order\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[\"delivery\"],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":\"delivered\",\"correction\":false,\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"entity_op_corrected\":\"reuse->replace_combine\",\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":false,\"entities_emptied_by_filter\":false},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"user_goal\":\"trying to check whether delivery order PS202608-0344 has been delivered\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"PS202608-0344\",\"hint\":\"customer_order\",\"canonical_code\":\"PS202608-0344\",\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n1. Person 1\\n2. Person 2\\n3. Person 3\\n4. Person 4\\n5. Person 5\\n6. Person 6\\n7. Person 7\\n8. Person 8\\n9. Person 9\\n10. Person 10\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\",\"last_result_set\":{\"n\":10,\"first\":\"Person 1\"},\"selection_context\":\"member_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":{\"n\":0,\"first\":null},\"ideation\":null,\"routing_roster_plan\":[{\"plan_idx\":0,\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":null}],\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"routing_companies\":[{\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":null,\"codes\":[\"PS202608-0344\"]}]}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "branch_kind": "not_found",
+        "response": "Order PS202608-0344 (JIAN HORNG TRADING SDN BHD (PROJECT)) hasn't been delivered yet. Would you like me to escalate to customer_service team?",
+        "manualResponse": true,
+        "includeResponse": true,
+        "is_escalate_offer": true
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "plan_idx": 0,
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento",
+        "brand_code": null,
+        "codes": [
+          "PS202608-0344"
+        ],
+        "multi_company": false,
+        "companies": [
+          "Sorento"
+        ]
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13296534"
+  },
+  "ran": [
+    "When Executed by Another Workflow",
+    "redis-pop-main-message-list",
+    "if-audio-in",
+    "tf-message",
+    "sorento-sub-respond-findcontact-respond",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "if-message-is-audio",
+    "get-session-vars",
+    "Call 'sub-query-reformulator'",
+    "check-access",
+    "If5",
+    "If2",
+    "If-ideate",
+    "If10",
+    "is-escalation-declined",
+    "If9",
+    "If1",
+    "not-supported-domain",
+    "If",
+    "If7",
+    "resolve-entity",
+    "disallowed-entity-gate",
+    "If3",
+    "Execute 'sub-get-rag'",
+    "tool-filter",
+    "if-tier-ask",
+    "Call 'sub-get-results'",
+    "validator",
+    "promo-picker",
+    "crossdomain-zeroset",
+    "crossdomain-gate",
+    "If6",
+    "Aggregate1",
+    "not-found-error-message",
+    "sibling-gate",
+    "dym-transform",
+    "dym-gate",
+    "build-suggest-offer",
+    "tag-not-found",
+    "escalate-catalog",
+    "cs-offer-gate",
+    "cs-roster-plan",
+    "get-cs-members",
+    "build-cs-member-offer",
+    "compile-current-state",
+    "crossdomain-compose",
+    "sorento-sub-respond-sendmsg-respond2",
+    "Execution Data",
+    "attach-merge",
+    "if-got-attachments",
+    "save-session-vars",
+    "Call 'sub-respond-save-message-redis'2"
+  ]
+}

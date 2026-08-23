@@ -1,0 +1,102 @@
+{
+  "source": {
+    "execution_id": "synthetic-D18",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "dym-transform",
+    "captured_at": "2026-08-22T00:00:00Z",
+    "note": "Adapted from tests/offline/promo-dym-probe (D18 plan) real-shaped codes/uuids; run through the CURRENT exported dym-transform.js (not the stale local offline copy) via tests/harness/n8n-shim.js and frozen. promotion domain, one D1 miss candidate -> probe_needed true, dym_candidate_codes=[SRTWC286-SH].",
+    "expected_from": "body-run"
+  },
+  "ctx": {
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "domain_hint": "promotion",
+            "entities": [
+              {
+                "raw": "SRTWC286",
+                "hint": "promotion"
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service"
+            }
+          }
+        }
+      }
+    ],
+    "resolve-entity": [
+      {
+        "json": {
+          "resolutions": [
+            {
+              "token": "srtwc286",
+              "resolved": false,
+              "matches": [
+                {
+                  "canonical_code": "SRTWC286-SH",
+                  "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+                  "entity_type": "promotion",
+                  "match_tier": "fuzzy",
+                  "display": {}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": null
+          },
+          "compatible_entities": [],
+          "require_specific": false
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "escalate_message": "Could not find promotion. Would you like me to escalate?",
+        "is_clarification": false,
+        "found_summary": ""
+      }
+    }
+  ],
+  "runIndex": 0,
+  "expected": [
+    {
+      "json": {
+        "escalate_message": "Could not find promotion. Would you like me to escalate?",
+        "is_clarification": false,
+        "found_summary": "",
+        "dym_probe_entities": [
+          {
+            "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+            "entity_type": "promotion",
+            "code": "SRTWC286-SH"
+          }
+        ],
+        "dym_candidate_codes": [
+          "SRTWC286-SH"
+        ],
+        "dym_excluded_codes": [],
+        "dym_capped_codes": [],
+        "probe_cap_applied": false,
+        "probe_tool": "crm_marketing_promotions_list",
+        "probe_noun": "promotion",
+        "probe_predicate": "row_present",
+        "probe_needed": true,
+        "probe_skip_reason": null,
+        "probe_lane": "d1",
+        "_dym_probe_input": true
+      }
+    }
+  ]
+}

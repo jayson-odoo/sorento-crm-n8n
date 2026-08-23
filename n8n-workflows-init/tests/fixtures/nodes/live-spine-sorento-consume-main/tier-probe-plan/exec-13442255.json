@@ -1,0 +1,3693 @@
+{
+  "source": {
+    "execution_id": "13442255",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "tier-probe-plan",
+    "captured_at": "2026-08-22T12:01:52+00:00",
+    "expected_from": "runData"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000001"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "09aaec17-e54c-4a74-acee-acd2a90d6fc1",
+              "contact": {
+                "id": 900000001,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": 900000002,
+                  "email": "<redacted>",
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "role": "user"
+                },
+                "created_at": 1782546255
+              },
+              "message": {
+                "messageId": 1787368857000000,
+                "channelMessageId": "wamid.HBgLNjAxNjIyNzE2NzkVAgASGCBBQ0I4MUY4RUQwRUQxRkE3QUQ4NDg5OEIwMjUyRjgyQwA=",
+                "contactId": 900000001,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787368857000,
+                "message": {
+                  "type": "text",
+                  "text": "Pls share latest NL kitchen sink offer"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 13\"},\"wa_id\":\"60100000001\",\"user_id\":\"MY.900000022\",\"firstName\":\"Person 11\",\"lastName\":\"Person 12\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000001,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": "true"
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/04ddf73e-3a0e-4914-8b24-18ed8aac06b8"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [
+                "imported_20260627_150636"
+              ],
+              "assignee": {
+                "id": 900000002,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "email": "<redacted>"
+              },
+              "lifecycle": "New Lead",
+              "created_at": 1782546255
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "09aaec17-e54c-4a74-acee-acd2a90d6fc1",
+          "contact": {
+            "id": 900000001,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": 900000002,
+              "email": "<redacted>",
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "role": "user"
+            },
+            "created_at": 1782546255
+          },
+          "message": {
+            "messageId": 1787368857000000,
+            "channelMessageId": "wamid.HBgLNjAxNjIyNzE2NzkVAgASGCBBQ0I4MUY4RUQwRUQxRkE3QUQ4NDg5OEIwMjUyRjgyQwA=",
+            "contactId": 900000001,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787368857000,
+            "message": {
+              "type": "text",
+              "text": "Pls share latest NL kitchen sink offer"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 13\"},\"wa_id\":\"60100000001\",\"user_id\":\"MY.900000022\",\"firstName\":\"Person 11\",\"lastName\":\"Person 12\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000001,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/04ddf73e-3a0e-4914-8b24-18ed8aac06b8"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": {
+            "id": 900000002,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": "New Lead",
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000001,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": "true"
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/04ddf73e-3a0e-4914-8b24-18ed8aac06b8"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260627_150636"
+          ],
+          "assignee": {
+            "id": 900000002,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "email": "<redacted>"
+          },
+          "lifecycle": "New Lead",
+          "created_at": 1782546255
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000001",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "warehouse",
+                "suggested_agent": "general_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "SRTWT2203",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "SRTWT2203",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (inventory): returned 14 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check whether SRTWT2203 is in stock",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "inventory",
+              "intent_hint": "check_stock",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": null,
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 2,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 3,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 4,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 5,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 6,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 7,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 8,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 9,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 10,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 11,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 12,
+                  "uuid": null,
+                  "label": "SRTWT2203",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 13,
+                  "uuid": null,
+                  "label": "SRTWT2203-NL",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 14,
+                  "uuid": null,
+                  "label": "SRTWT2203-WEPLS",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "SRTWT2203-NL",
+                    "SRTWT2203",
+                    "SRTWT2203-WEPLS"
+                  ],
+                  "brand_code": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": null,
+              "routing_roster_plan": null,
+              "routing_brand_source": null
+            },
+            "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 51\n\n2. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-AM\n*Quantity On Hand:* 0\n\n3. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 82\n\n4. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IB\n*Quantity On Hand:* 0\n\n5. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-IR\n*Quantity On Hand:* 0\n\n6. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-NTC\n*Quantity On Hand:* 20\n\n7. *Product Code:* SRTWT2203\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-SMC\n*Quantity On Hand:* 1\n\n8. *Product Code:* SRTWT2203\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1\n*Quantity On Hand:* 0\n\n9. *Product Code:* SRTWT2203\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-BB\n*Quantity On Hand:* 0\n\n10. *Product Code:* SRTWT2203\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-IB\n*Quantity On Hand:* 0\n\n11. *Product Code:* SRTWT2203\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-IR\n*Quantity On Hand:* 0\n\n12. *Product Code:* SRTWT2203\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-NTC\n*Quantity On Hand:* 0\n\n13. *Product Code:* SRTWT2203-NL\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW\n*Quantity On Hand:* 136\n\n14. *Product Code:* SRTWT2203-WEPLS\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 300\n\n_Data last updated: 21/08/2026 17:13:25_"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to get the latest NL kitchen sink offer",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "NL kitchen sink",
+                "hint": "category",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "marketing_promotion",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to get the latest NL kitchen sink offer",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "NL kitchen sink",
+                "hint": "category",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "marketing_promotion",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "General Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "get-access-types": [
+      {
+        "json": {
+          "name": "Sorento Office",
+          "keywords": [
+            "sorento office",
+            "office"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Sorento Dealer",
+          "keywords": [
+            "sorento dealer",
+            "dealer"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Mocha Dealer",
+          "keywords": [
+            "mocha dealer"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Mocha Office",
+          "keywords": [
+            "mocha office",
+            "office"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Cabana Office",
+          "keywords": [
+            "cabana office",
+            "office"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "Cabana Dealer",
+          "keywords": [
+            "cabana dealer"
+          ]
+        }
+      },
+      {
+        "json": {
+          "name": "End User",
+          "keywords": [
+            "customer",
+            "consumer",
+            "homeowner",
+            "b2c",
+            "end-user",
+            "enduser",
+            "user",
+            "client"
+          ]
+        }
+      }
+    ],
+    "Aggregate": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ]
+        }
+      }
+    ],
+    "tier-gate": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false
+        }
+      }
+    ],
+    "If4": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false
+        }
+      }
+    ],
+    "resolve-entity": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "NL kitchen sink"
+          ],
+          "elapsed_ms": 34.41,
+          "intersection": [
+            {
+              "entity_type": "promotion",
+              "canonical_code": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+              "uuid": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_13082026 (OFFICE USE).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+              "uuid": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (DEALER USE).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+              "uuid": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (END USER).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+              "uuid": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (OFFICE USE).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "15bdccfe-f543-4b3f-b06b-071f19146361",
+              "uuid": "15bdccfe-f543-4b3f-b06b-071f19146361",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "CABANA KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "273b48de-4987-4876-a2a4-27bafecad499",
+              "uuid": "273b48de-4987-4876-a2a4-27bafecad499",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "CABANA KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "1321e050-1aff-40a8-bb14-c75e5baef482",
+              "uuid": "1321e050-1aff-40a8-bb14-c75e5baef482",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "5372a38d-2062-4750-afff-7062f7f02512",
+              "uuid": "5372a38d-2062-4750-afff-7062f7f02512",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "854593df-be96-4d46-a228-fba2bc30b065",
+              "uuid": "854593df-be96-4d46-a228-fba2bc30b065",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "0e83c528-be25-4550-b316-10e21f9d7625",
+              "uuid": "0e83c528-be25-4550-b316-10e21f9d7625",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+                "is_active": true,
+                "start_date": "2026-06-19",
+                "end_date": "2026-09-19",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+              "uuid": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "CABANA KITCHEN SINK PROMO 13082026 (DEALER USE).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+              "uuid": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "536134b1-ec73-4563-9252-f91c4f072b22",
+              "uuid": "536134b1-ec73-4563-9252-f91c4f072b22",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+              "uuid": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+              "uuid": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            }
+          ],
+          "by_entity_type": {
+            "promotion": [
+              {
+                "entity_type": "promotion",
+                "canonical_code": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                "uuid": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_13082026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                "uuid": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (DEALER USE).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                "uuid": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (END USER).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+                "uuid": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "15bdccfe-f543-4b3f-b06b-071f19146361",
+                "uuid": "15bdccfe-f543-4b3f-b06b-071f19146361",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "CABANA KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "273b48de-4987-4876-a2a4-27bafecad499",
+                "uuid": "273b48de-4987-4876-a2a4-27bafecad499",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "CABANA KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "1321e050-1aff-40a8-bb14-c75e5baef482",
+                "uuid": "1321e050-1aff-40a8-bb14-c75e5baef482",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "5372a38d-2062-4750-afff-7062f7f02512",
+                "uuid": "5372a38d-2062-4750-afff-7062f7f02512",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "854593df-be96-4d46-a228-fba2bc30b065",
+                "uuid": "854593df-be96-4d46-a228-fba2bc30b065",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "0e83c528-be25-4550-b316-10e21f9d7625",
+                "uuid": "0e83c528-be25-4550-b316-10e21f9d7625",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+                  "is_active": true,
+                  "start_date": "2026-06-19",
+                  "end_date": "2026-09-19",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+                "uuid": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "CABANA KITCHEN SINK PROMO 13082026 (DEALER USE).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+                "uuid": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "536134b1-ec73-4563-9252-f91c4f072b22",
+                "uuid": "536134b1-ec73-4563-9252-f91c4f072b22",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+                "uuid": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+                "uuid": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "NL kitchen sink",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "promotion",
+                  "matched_words": [
+                    "NL",
+                    "kitchen",
+                    "sink"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "match_mode": "and",
+          "tokens": [
+            "NL kitchen sink"
+          ],
+          "elapsed_ms": 34.41,
+          "intersection": [
+            {
+              "entity_type": "promotion",
+              "canonical_code": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+              "uuid": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_13082026 (OFFICE USE).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+              "uuid": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (DEALER USE).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+              "uuid": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (END USER).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+              "uuid": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+              "match_field": "description",
+              "match_tier": "and",
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "display": {
+                "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (OFFICE USE).pdf",
+                "is_active": true,
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "15bdccfe-f543-4b3f-b06b-071f19146361",
+              "uuid": "15bdccfe-f543-4b3f-b06b-071f19146361",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "CABANA KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "273b48de-4987-4876-a2a4-27bafecad499",
+              "uuid": "273b48de-4987-4876-a2a4-27bafecad499",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "CABANA KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "1321e050-1aff-40a8-bb14-c75e5baef482",
+              "uuid": "1321e050-1aff-40a8-bb14-c75e5baef482",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "5372a38d-2062-4750-afff-7062f7f02512",
+              "uuid": "5372a38d-2062-4750-afff-7062f7f02512",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "854593df-be96-4d46-a228-fba2bc30b065",
+              "uuid": "854593df-be96-4d46-a228-fba2bc30b065",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "0e83c528-be25-4550-b316-10e21f9d7625",
+              "uuid": "0e83c528-be25-4550-b316-10e21f9d7625",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+                "is_active": true,
+                "start_date": "2026-06-19",
+                "end_date": "2026-09-19",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+              "uuid": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "CABANA KITCHEN SINK PROMO 13082026 (DEALER USE).pdf",
+                "is_active": true,
+                "start_date": "2026-08-13",
+                "end_date": "2026-11-13",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+              "uuid": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "536134b1-ec73-4563-9252-f91c4f072b22",
+              "uuid": "536134b1-ec73-4563-9252-f91c4f072b22",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+              "uuid": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            },
+            {
+              "entity_type": "promotion",
+              "canonical_code": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+              "uuid": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+              "match_field": "description",
+              "match_tier": "domain_hint",
+              "similarity": null,
+              "display": {
+                "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                "is_active": true,
+                "start_date": "2026-07-29",
+                "end_date": "2026-10-29",
+                "promotion_type_code": "standard",
+                "promotion_type_name": "Standard Promo",
+                "is_expired": false,
+                "expired_but_usable": false
+              }
+            }
+          ],
+          "by_entity_type": {
+            "promotion": [
+              {
+                "entity_type": "promotion",
+                "canonical_code": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                "uuid": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_13082026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                "uuid": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (DEALER USE).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                "uuid": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (END USER).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+                "uuid": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+                "match_field": "description",
+                "match_tier": "and",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "description": "NL SERIES KITCHEN SINK UPDATE_22072026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "15bdccfe-f543-4b3f-b06b-071f19146361",
+                "uuid": "15bdccfe-f543-4b3f-b06b-071f19146361",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "CABANA KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "273b48de-4987-4876-a2a4-27bafecad499",
+                "uuid": "273b48de-4987-4876-a2a4-27bafecad499",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "CABANA KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "1321e050-1aff-40a8-bb14-c75e5baef482",
+                "uuid": "1321e050-1aff-40a8-bb14-c75e5baef482",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "5372a38d-2062-4750-afff-7062f7f02512",
+                "uuid": "5372a38d-2062-4750-afff-7062f7f02512",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "KITCHEN SINK PROMO 13082026 (END USER).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "854593df-be96-4d46-a228-fba2bc30b065",
+                "uuid": "854593df-be96-4d46-a228-fba2bc30b065",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "0e83c528-be25-4550-b316-10e21f9d7625",
+                "uuid": "0e83c528-be25-4550-b316-10e21f9d7625",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+                  "is_active": true,
+                  "start_date": "2026-06-19",
+                  "end_date": "2026-09-19",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+                "uuid": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "CABANA KITCHEN SINK PROMO 13082026 (DEALER USE).pdf",
+                  "is_active": true,
+                  "start_date": "2026-08-13",
+                  "end_date": "2026-11-13",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+                "uuid": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "536134b1-ec73-4563-9252-f91c4f072b22",
+                "uuid": "536134b1-ec73-4563-9252-f91c4f072b22",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+                "uuid": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              },
+              {
+                "entity_type": "promotion",
+                "canonical_code": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+                "uuid": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+                "match_field": "description",
+                "match_tier": "domain_hint",
+                "similarity": null,
+                "display": {
+                  "description": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+                  "is_active": true,
+                  "start_date": "2026-07-29",
+                  "end_date": "2026-10-29",
+                  "promotion_type_code": "standard",
+                  "promotion_type_name": "Standard Promo",
+                  "is_expired": false,
+                  "expired_but_usable": false
+                }
+              }
+            ]
+          },
+          "empty": false,
+          "unresolved_tokens": [],
+          "alternatives": [],
+          "token_coverage": [
+            {
+              "token": "NL kitchen sink",
+              "match_semantics": "max_coverage",
+              "coverage": [
+                {
+                  "entity_type": "promotion",
+                  "matched_words": [
+                    "NL",
+                    "kitchen",
+                    "sink"
+                  ],
+                  "unmatched_words": [],
+                  "truncated": true
+                }
+              ]
+            }
+          ],
+          "gate_passed": true,
+          "require_specific": false,
+          "resolved_company": "sorento",
+          "company_team": "marketing_promotion_sorento",
+          "resolved_companies": [
+            "sorento"
+          ],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [
+            {
+              "company_id": "00000000-0000-0000-0000-000000000001",
+              "company_name": "Sorento",
+              "brand_code": null,
+              "codes": [
+                "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                "288b9ac2-b92e-4f52-939a-72ed304d1a5e"
+              ]
+            }
+          ],
+          "routing_company": "00000000-0000-0000-0000-000000000001",
+          "access_denied_levels": [],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "access_notice": "",
+          "gate_reason": "ok",
+          "gate_clarification": "",
+          "compatible_entities": [
+            {
+              "uuid": "4d016a8b-ac31-4f68-b514-3396f87424dc",
+              "entity_type": "promotion",
+              "code": "4d016a8b-ac31-4f68-b514-3396f87424dc"
+            },
+            {
+              "uuid": "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+              "entity_type": "promotion",
+              "code": "67b24d95-75e6-4d9a-92f3-3f1887590f02"
+            },
+            {
+              "uuid": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+              "entity_type": "promotion",
+              "code": "9ed11a6d-5bf7-43be-8659-2d6f3460ad51"
+            },
+            {
+              "uuid": "288b9ac2-b92e-4f52-939a-72ed304d1a5e",
+              "entity_type": "promotion",
+              "code": "288b9ac2-b92e-4f52-939a-72ed304d1a5e"
+            },
+            {
+              "uuid": "15bdccfe-f543-4b3f-b06b-071f19146361",
+              "entity_type": "promotion",
+              "code": "15bdccfe-f543-4b3f-b06b-071f19146361"
+            },
+            {
+              "uuid": "273b48de-4987-4876-a2a4-27bafecad499",
+              "entity_type": "promotion",
+              "code": "273b48de-4987-4876-a2a4-27bafecad499"
+            },
+            {
+              "uuid": "1321e050-1aff-40a8-bb14-c75e5baef482",
+              "entity_type": "promotion",
+              "code": "1321e050-1aff-40a8-bb14-c75e5baef482"
+            },
+            {
+              "uuid": "5372a38d-2062-4750-afff-7062f7f02512",
+              "entity_type": "promotion",
+              "code": "5372a38d-2062-4750-afff-7062f7f02512"
+            },
+            {
+              "uuid": "854593df-be96-4d46-a228-fba2bc30b065",
+              "entity_type": "promotion",
+              "code": "854593df-be96-4d46-a228-fba2bc30b065"
+            },
+            {
+              "uuid": "0e83c528-be25-4550-b316-10e21f9d7625",
+              "entity_type": "promotion",
+              "code": "0e83c528-be25-4550-b316-10e21f9d7625"
+            },
+            {
+              "uuid": "a85e7f47-9d75-4564-82ce-71a402e5ce30",
+              "entity_type": "promotion",
+              "code": "a85e7f47-9d75-4564-82ce-71a402e5ce30"
+            },
+            {
+              "uuid": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a",
+              "entity_type": "promotion",
+              "code": "1d93c99d-4525-4d1a-b0ae-47eafdb4748a"
+            },
+            {
+              "uuid": "536134b1-ec73-4563-9252-f91c4f072b22",
+              "entity_type": "promotion",
+              "code": "536134b1-ec73-4563-9252-f91c4f072b22"
+            },
+            {
+              "uuid": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c",
+              "entity_type": "promotion",
+              "code": "5378db49-f1f5-405e-9e98-bbe14e6a8c1c"
+            },
+            {
+              "uuid": "09632a3a-aaa0-40d9-970a-8c9553c86f6c",
+              "entity_type": "promotion",
+              "code": "09632a3a-aaa0-40d9-970a-8c9553c86f6c"
+            }
+          ],
+          "gate_debug": {
+            "domain": "promotion",
+            "allowed_lookup": [
+              "product",
+              "promotion",
+              "category",
+              "brand"
+            ],
+            "entities_count": 15
+          }
+        }
+      }
+    ],
+    "If3": [],
+    "Execute 'sub-get-rag'": [
+      {
+        "json": {
+          "tools": [
+            {
+              "name": "crm_marketing_promotions_list",
+              "similarity": 0.4768941743085664
+            }
+          ]
+        }
+      }
+    ],
+    "tool-filter": [
+      {
+        "json": {
+          "name": "crm_marketing_promotions_list",
+          "similarity": 0.4768941743085664,
+          "_tool_pick": {
+            "chosen": "crm_marketing_promotions_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": false
+          }
+        }
+      }
+    ],
+    "if-tier-ask": [
+      {
+        "json": {
+          "name": "crm_marketing_promotions_list",
+          "similarity": 0.4768941743085664,
+          "_tool_pick": {
+            "chosen": "crm_marketing_promotions_list",
+            "rejected": [],
+            "count": 1,
+            "has_product": false
+          }
+        }
+      }
+    ],
+    "tier-probe-plan": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "probe_tier": "dealer",
+          "probe_access_levels": [
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Cabana Dealer"
+          ],
+          "probe_skipped": false
+        }
+      },
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "probe_tier": "office",
+          "probe_access_levels": [
+            "Sorento Office",
+            "Mocha Office",
+            "Cabana Office"
+          ],
+          "probe_skipped": false
+        }
+      },
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "probe_tier": "end_user",
+          "probe_access_levels": [
+            "End User"
+          ],
+          "probe_skipped": false
+        }
+      }
+    ],
+    "tier-probe": [
+      {
+        "json": {
+          "response": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA KITCHEN SINK PROMO 13082026 DEALER USE.pdf\n*Start Date:* 2026-08-13\n*End Date:* 2026-11-13\n\n2. *Promotion:* UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf\n*Start Date:* 2026-07-29\n*End Date:* 2026-10-29\n\n3. *Promotion:* UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf\n*Start Date:* 2026-07-29\n*End Date:* 2026-10-29\n\n4. *Promotion:* NL SERIES KITCHEN SINK UPDATE_22072026 DEALER USE.pdf\n*Start Date:* 2026-07-13\n*End Date:* 2026-10-13\n\n_Data last updated: 17/08/2026 11:12:55_",
+          "response_intro": "I have attached the file(s) below.",
+          "answers": [
+            {
+              "title": "CABANA KITCHEN SINK PROMO 13082026 DEALER USE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "CABANA KITCHEN SINK PROMO 13082026 DEALER USE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-08-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-11-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-29"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-29"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-29"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-29"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "NL SERIES KITCHEN SINK UPDATE_22072026 DEALER USE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "NL SERIES KITCHEN SINK UPDATE_22072026 DEALER USE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [
+            {
+              "url": "https://cdn-sorento.com/promotion/0b2b446d-aad4-4708-9447-71bc1c811438/CABANA KITCHEN SINK PROMO 13082026 DEALER USE.pdf",
+              "filename": "CABANA KITCHEN SINK PROMO 13082026 (DEALER USE).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-17T11:12:55.001986"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/c8495781-d696-4769-a98a-165518af714a/UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+              "filename": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-29T15:00:49.599657"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/631f2605-ca24-4bf2-9aa5-1a3e8247b637/UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+              "filename": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 DEALER.pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-29T14:58:32.822980"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/88484c4e-d9f4-42a1-b11a-418cbd9aad70/NL SERIES KITCHEN SINK UPDATE_22072026 DEALER USE.pdf",
+              "filename": "NL SERIES KITCHEN SINK UPDATE_22072026 (DEALER USE).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-22T15:53:34.204602"
+            }
+          ],
+          "action_links": [],
+          "last_updated_at": "2026-08-17T11:12:55.001986",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      },
+      {
+        "json": {
+          "response": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA KITCHEN SINK PROMO 13082026 OFFICE USE.pdf\n*Start Date:* 2026-08-13\n*End Date:* 2026-11-13\n\n2. *Promotion:* KITCHEN SINK PROMO 13082026 OFFICE USE.pdf\n*Start Date:* 2026-08-13\n*End Date:* 2026-11-13\n\n3. *Promotion:* NL SERIES KITCHEN SINK UPDATE_13082026 OFFICE USE.pdf\n*Start Date:* 2026-08-14\n*End Date:* 2026-11-14\n\n4. *Promotion:* UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf\n*Start Date:* 2026-07-29\n*End Date:* 2026-10-29\n\n5. *Promotion:* NL SERIES KITCHEN SINK UPDATE_22072026 OFFICE USE.pdf\n*Start Date:* 2026-07-13\n*End Date:* 2026-10-13\n\n6. *Promotion:* SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf\n*Start Date:* 2026-06-19\n*End Date:* 2026-09-19\n\n_Data last updated: 20/08/2026 16:07:01_",
+          "response_intro": "I have attached the file(s) below.",
+          "answers": [
+            {
+              "title": "CABANA KITCHEN SINK PROMO 13082026 OFFICE USE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "CABANA KITCHEN SINK PROMO 13082026 OFFICE USE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-08-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-11-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "KITCHEN SINK PROMO 13082026 OFFICE USE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "KITCHEN SINK PROMO 13082026 OFFICE USE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-08-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-11-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "NL SERIES KITCHEN SINK UPDATE_13082026 OFFICE USE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "NL SERIES KITCHEN SINK UPDATE_13082026 OFFICE USE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-08-14"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-11-14"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-29"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-29"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "NL SERIES KITCHEN SINK UPDATE_22072026 OFFICE USE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "NL SERIES KITCHEN SINK UPDATE_22072026 OFFICE USE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-06-19"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-09-19"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [
+            {
+              "url": "https://cdn-sorento.com/promotion/6191076d-2b78-4531-b716-4b0dc03a3429/CABANA KITCHEN SINK PROMO 13082026 OFFICE USE.pdf",
+              "filename": "CABANA KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-17T11:10:47.230953"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/96cffe14-c866-44a0-a28c-715bb79f776a/KITCHEN SINK PROMO 13082026 OFFICE USE.pdf",
+              "filename": "KITCHEN SINK PROMO 13082026 (OFFICE USE).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-17T10:32:20.235545"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/1637f740-c7af-4538-ba10-967570aed32a/NL SERIES KITCHEN SINK UPDATE_13082026 OFFICE USE.pdf",
+              "filename": "NL SERIES KITCHEN SINK UPDATE_13082026 (OFFICE USE).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-17T10:04:13.249545"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/ef12c307-ae40-45e6-a97f-c685efdba633/UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+              "filename": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 OFFICE.pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-29T14:59:34.289485"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/17918378-e553-4c44-9aff-0e26f29d2288/NL SERIES KITCHEN SINK UPDATE_22072026 OFFICE USE.pdf",
+              "filename": "NL SERIES KITCHEN SINK UPDATE_22072026 (OFFICE USE).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-22T15:50:37.469247"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/e84c26a1-581c-4b0e-8282-bfa12f1c605d/SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+              "filename": "SORENTO WORKSTATION KITCHEN SINK PROMO_19062026 OFFICE.pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-20T16:07:01.731679"
+            }
+          ],
+          "action_links": [],
+          "last_updated_at": "2026-08-20T16:07:01.731679",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      },
+      {
+        "json": {
+          "response": "I have attached the file(s) below.\n\n1. *Promotion:* CABANA KITCHEN SINK PROMO 13082026 END USER.pdf\n*Start Date:* 2026-08-13\n*End Date:* 2026-11-13\n\n2. *Promotion:* KITCHEN SINK PROMO 13082026 END USER.pdf\n*Start Date:* 2026-08-13\n*End Date:* 2026-11-13\n\n3. *Promotion:* UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf\n*Start Date:* 2026-07-29\n*End Date:* 2026-10-29\n\n4. *Promotion:* UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf\n*Start Date:* 2026-07-29\n*End Date:* 2026-10-29\n\n5. *Promotion:* NL SERIES KITCHEN SINK UPDATE_22072026 END USER.pdf\n*Start Date:* 2026-07-13\n*End Date:* 2026-10-13\n\n_Data last updated: 17/08/2026 11:11:41_",
+          "response_intro": "I have attached the file(s) below.",
+          "answers": [
+            {
+              "title": "CABANA KITCHEN SINK PROMO 13082026 END USER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "CABANA KITCHEN SINK PROMO 13082026 END USER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-08-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-11-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "KITCHEN SINK PROMO 13082026 END USER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "KITCHEN SINK PROMO 13082026 END USER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-08-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-11-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-29"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-29"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-29"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-29"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            },
+            {
+              "title": "NL SERIES KITCHEN SINK UPDATE_22072026 END USER.pdf",
+              "fields": [
+                {
+                  "label": "Promotion",
+                  "value": "NL SERIES KITCHEN SINK UPDATE_22072026 END USER.pdf"
+                },
+                {
+                  "label": "Start Date",
+                  "value": "2026-07-13"
+                },
+                {
+                  "label": "End Date",
+                  "value": "2026-10-13"
+                }
+              ],
+              "flags": {
+                "discontinued": false,
+                "expired": false,
+                "expiring_soon": false,
+                "unallocated": false,
+                "partially_allocated": false
+              }
+            }
+          ],
+          "attachments": [
+            {
+              "url": "https://cdn-sorento.com/promotion/c2caa03b-aef7-4846-9b3e-17c479bed951/CABANA KITCHEN SINK PROMO 13082026 END USER.pdf",
+              "filename": "CABANA KITCHEN SINK PROMO 13082026 (END USER).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-17T11:11:19.782237"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/fc6f4c18-8ee1-4b40-a8ad-568be715518c/KITCHEN SINK PROMO 13082026 END USER.pdf",
+              "filename": "KITCHEN SINK PROMO 13082026 (END USER).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-08-17T11:00:02.342302"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/2a8a4b8c-5f0f-4236-99b2-d6b1095f2e9b/UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+              "filename": "UPDATED SORENTO SSTEEL HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-29T15:01:25.393818"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/7857b899-12d6-49eb-8df7-63b6efe0eeb6/UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+              "filename": "UPDATED SORENTO BLACK HONEYCOMB KITCHEN SINK _10072026 END USER.pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-29T14:59:04.553617"
+            },
+            {
+              "url": "https://cdn-sorento.com/promotion/36c129c2-8810-4333-bf13-581077610db5/NL SERIES KITCHEN SINK UPDATE_22072026 END USER.pdf",
+              "filename": "NL SERIES KITCHEN SINK UPDATE_22072026 (END USER).pdf",
+              "mimeType": "application/pdf",
+              "attachmentType": "Promotion",
+              "uploadedAt": "2026-07-22T15:52:57.418149"
+            }
+          ],
+          "action_links": [],
+          "last_updated_at": "2026-08-17T11:11:41.466913",
+          "has_result": true,
+          "alternatives": [],
+          "relaxed_axis": null,
+          "field_access": null,
+          "requested_attributes": [],
+          "keys_served": false
+        }
+      }
+    ],
+    "tier-probe-collect": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "tier_availability": {
+            "dealer": true,
+            "office": true,
+            "end_user": true
+          },
+          "tier_available_list": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "tier_any_available": true,
+          "_tier_probe_count": 3,
+          "_tier_probe_planned": 3
+        }
+      }
+    ],
+    "if-tier-has-any": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "tier_availability": {
+            "dealer": true,
+            "office": true,
+            "end_user": true
+          },
+          "tier_available_list": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "tier_any_available": true,
+          "_tier_probe_count": 3,
+          "_tier_probe_planned": 3
+        }
+      }
+    ],
+    "access-level-choice-message": [
+      {
+        "json": {
+          "name": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_stated": [],
+          "entitled_tiers": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "entitled_unknown": [],
+          "query_brands": [],
+          "pending_pick": false,
+          "tier_ask": true,
+          "tier_proceed": false,
+          "access_levels_recomposed": [
+            "Sorento Office",
+            "Sorento Dealer",
+            "Mocha Dealer",
+            "Mocha Office",
+            "Cabana Office",
+            "Cabana Dealer",
+            "End User"
+          ],
+          "tier_probe_plan": [
+            {
+              "tier": "dealer",
+              "access_levels": [
+                "Sorento Dealer",
+                "Mocha Dealer",
+                "Cabana Dealer"
+              ]
+            },
+            {
+              "tier": "office",
+              "access_levels": [
+                "Sorento Office",
+                "Mocha Office",
+                "Cabana Office"
+              ]
+            },
+            {
+              "tier": "end_user",
+              "access_levels": [
+                "End User"
+              ]
+            }
+          ],
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "tier_availability": {
+            "dealer": true,
+            "office": true,
+            "end_user": true
+          },
+          "tier_available_list": [
+            "dealer",
+            "office",
+            "end_user"
+          ],
+          "tier_any_available": true,
+          "_tier_probe_count": 3,
+          "_tier_probe_planned": 3,
+          "tier_offer": true,
+          "tier_last_result_set": [
+            {
+              "idx": 1,
+              "label": "Office",
+              "value": "office",
+              "tier": "office",
+              "uuid": null,
+              "entity_type": "access_tier",
+              "product": null,
+              "filename": null
+            },
+            {
+              "idx": 2,
+              "label": "Dealer",
+              "value": "dealer",
+              "tier": "dealer",
+              "uuid": null,
+              "entity_type": "access_tier",
+              "product": null,
+              "filename": null
+            },
+            {
+              "idx": 3,
+              "label": "End user",
+              "value": "end_user",
+              "tier": "end_user",
+              "uuid": null,
+              "entity_type": "access_tier",
+              "product": null,
+              "filename": null
+            }
+          ],
+          "escalate_message": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+          "is_clarification": true,
+          "quick_reply": ""
+        }
+      }
+    ],
+    "tag-access-choice": [
+      {
+        "json": {
+          "branch_kind": "access_choice"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "access_choice",
+          "response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": false
+        }
+      }
+    ],
+    "cs-offer-gate": [],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "user_goal": "trying to get the latest NL kitchen sink offer",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "NL kitchen sink",
+                "hint": "category",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "marketing_promotion",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Office",
+                "value": "office",
+                "tier": "office",
+                "uuid": null,
+                "entity_type": "access_tier",
+                "product": null,
+                "filename": null
+              },
+              {
+                "idx": 2,
+                "label": "Dealer",
+                "value": "dealer",
+                "tier": "dealer",
+                "uuid": null,
+                "entity_type": "access_tier",
+                "product": null,
+                "filename": null
+              },
+              {
+                "idx": 3,
+                "label": "End user",
+                "value": "end_user",
+                "tier": "end_user",
+                "uuid": null,
+                "entity_type": "access_tier",
+                "product": null,
+                "filename": null
+              }
+            ],
+            "selection_context": "tier_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "codes": [
+                  "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                  "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                  "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                  "288b9ac2-b92e-4f52-939a-72ed304d1a5e"
+                ]
+              }
+            ]
+          },
+          "user_response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+          "quick_reply": null
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "user_goal": "trying to get the latest NL kitchen sink offer",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "NL kitchen sink",
+                "hint": "category",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "marketing_promotion",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Office",
+                "value": "office",
+                "tier": "office",
+                "uuid": null,
+                "entity_type": "access_tier",
+                "product": null,
+                "filename": null
+              },
+              {
+                "idx": 2,
+                "label": "Dealer",
+                "value": "dealer",
+                "tier": "dealer",
+                "uuid": null,
+                "entity_type": "access_tier",
+                "product": null,
+                "filename": null
+              },
+              {
+                "idx": 3,
+                "label": "End user",
+                "value": "end_user",
+                "tier": "end_user",
+                "uuid": null,
+                "entity_type": "access_tier",
+                "product": null,
+                "filename": null
+              }
+            ],
+            "selection_context": "tier_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": null,
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_companies": [
+              {
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "brand_code": null,
+                "codes": [
+                  "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                  "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                  "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                  "288b9ac2-b92e-4f52-939a-72ed304d1a5e"
+                ]
+              }
+            ]
+          },
+          "user_response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+          "quick_reply": null
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000001",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_promotion",
+              "domain_hint": "promotion",
+              "user_goal": "trying to get the latest NL kitchen sink offer",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "NL kitchen sink",
+                  "hint": "category",
+                  "canonical_code": null,
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "marketing_promotion",
+                "suggested_agent": "general_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "Office",
+                  "value": "office",
+                  "tier": "office",
+                  "uuid": null,
+                  "entity_type": "access_tier",
+                  "product": null,
+                  "filename": null
+                },
+                {
+                  "idx": 2,
+                  "label": "Dealer",
+                  "value": "dealer",
+                  "tier": "dealer",
+                  "uuid": null,
+                  "entity_type": "access_tier",
+                  "product": null,
+                  "filename": null
+                },
+                {
+                  "idx": 3,
+                  "label": "End user",
+                  "value": "end_user",
+                  "tier": "end_user",
+                  "uuid": null,
+                  "entity_type": "access_tier",
+                  "product": null,
+                  "filename": null
+                }
+              ],
+              "selection_context": "tier_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": null,
+              "dym_candidates": [],
+              "ideation": null,
+              "routing_roster_plan": null,
+              "routing_brand": null,
+              "routing_brand_source": null,
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "routing_companies": [
+                {
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "brand_code": null,
+                  "codes": [
+                    "4d016a8b-ac31-4f68-b514-3396f87424dc",
+                    "67b24d95-75e6-4d9a-92f3-3f1887590f02",
+                    "9ed11a6d-5bf7-43be-8659-2d6f3460ad51",
+                    "288b9ac2-b92e-4f52-939a-72ed304d1a5e"
+                  ]
+                }
+              ]
+            },
+            "user_response": "Which access level do you need for NL kitchen sink?\n1. Office - has promotion\n2. Dealer - has promotion\n3. End user - has promotion\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+            "quick_reply": null
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000001,
+          "phone_number": "<redacted>",
+          "message": "Pls share latest NL kitchen sink offer",
+          "sent_at": 1787368865427,
+          "turn_id": "13442255",
+          "data": "{\"contact_id\":\"900000001\",\"phone_number\":\"+60100000001\",\"message\":\"Pls share latest NL kitchen sink offer\",\"sent_at\":1787368857000,\"first_name\":\"Person 12\",\"last_name\":\"Person 14\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787368857000000\",\"turn_id\":\"13442255\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"entities\":[{\"raw\":\"SRTWT2203\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"SRTWT2203\",\"current_message\":true}],\"ideation\":null,\"response\":\"Previous turn (inventory): returned 14 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check whether SRTWT2203 is in stock\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"inventory\",\"intent_hint\":\"check_stock\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":null,\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":14,\"first\":\"SRTWT2203\"},\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"SRTWT2203-NL\",\"SRTWT2203\",\"SRTWT2203-WEPLS\"],\"brand_code\":null,\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":null,\"routing_roster_plan\":null,\"routing_brand_source\":null},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_promotion\",\"domain_hint\":\"promotion\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to get the latest NL kitchen sink offer\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"NL kitchen sink\",\"hint\":\"category\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"marketing_promotion\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_promotion\",\"domain_hint\":\"promotion\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to get the latest NL kitchen sink offer\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"NL kitchen sink\",\"hint\":\"category\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"marketing_promotion\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":false,\"entities_emptied_by_filter\":false},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_promotion\",\"domain_hint\":\"promotion\",\"user_goal\":\"trying to get the latest NL kitchen sink offer\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"NL kitchen sink\",\"hint\":\"category\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"marketing_promotion\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Which access level do you need for NL kitchen sink?\\n1. Office - has promotion\\n2. Dealer - has promotion\\n3. End user - has promotion\\nReply with the number(s), e.g. \\\"1\\\", \\\"1 and 2\\\", or \\\"all\\\".\",\"last_result_set\":{\"n\":3,\"first\":\"Office\"},\"selection_context\":\"tier_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":{\"n\":0,\"first\":null},\"ideation\":null,\"routing_roster_plan\":null,\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"routing_companies\":[{\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\",\"brand_code\":null,\"codes\":[\"4d016a8b-ac31-4f68-b514-3396f87424dc\",\"67b24d95-75e6-4d9a-92f3-3f1887590f02\",\"9ed11a6d-5bf7-43be-8659-2d6f3460ad51\",\"288b9ac2-b92e-4f52-939a-72ed304d1a5e\"]}]}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "name": "crm_marketing_promotions_list",
+        "similarity": 0.4768941743085664,
+        "_tool_pick": {
+          "chosen": "crm_marketing_promotions_list",
+          "rejected": [],
+          "count": 1,
+          "has_product": false
+        }
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "name": [
+          "Sorento Office",
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Mocha Office",
+          "Cabana Office",
+          "Cabana Dealer",
+          "End User"
+        ],
+        "tier_stated": [],
+        "entitled_tiers": [
+          "dealer",
+          "office",
+          "end_user"
+        ],
+        "entitled_unknown": [],
+        "query_brands": [],
+        "pending_pick": false,
+        "tier_ask": true,
+        "tier_proceed": false,
+        "access_levels_recomposed": [
+          "Sorento Office",
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Mocha Office",
+          "Cabana Office",
+          "Cabana Dealer",
+          "End User"
+        ],
+        "tier_probe_plan": [
+          {
+            "tier": "dealer",
+            "access_levels": [
+              "Sorento Dealer",
+              "Mocha Dealer",
+              "Cabana Dealer"
+            ]
+          },
+          {
+            "tier": "office",
+            "access_levels": [
+              "Sorento Office",
+              "Mocha Office",
+              "Cabana Office"
+            ]
+          },
+          {
+            "tier": "end_user",
+            "access_levels": [
+              "End User"
+            ]
+          }
+        ],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "probe_tier": "dealer",
+        "probe_access_levels": [
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Cabana Dealer"
+        ],
+        "probe_skipped": false
+      }
+    },
+    {
+      "json": {
+        "name": [
+          "Sorento Office",
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Mocha Office",
+          "Cabana Office",
+          "Cabana Dealer",
+          "End User"
+        ],
+        "tier_stated": [],
+        "entitled_tiers": [
+          "dealer",
+          "office",
+          "end_user"
+        ],
+        "entitled_unknown": [],
+        "query_brands": [],
+        "pending_pick": false,
+        "tier_ask": true,
+        "tier_proceed": false,
+        "access_levels_recomposed": [
+          "Sorento Office",
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Mocha Office",
+          "Cabana Office",
+          "Cabana Dealer",
+          "End User"
+        ],
+        "tier_probe_plan": [
+          {
+            "tier": "dealer",
+            "access_levels": [
+              "Sorento Dealer",
+              "Mocha Dealer",
+              "Cabana Dealer"
+            ]
+          },
+          {
+            "tier": "office",
+            "access_levels": [
+              "Sorento Office",
+              "Mocha Office",
+              "Cabana Office"
+            ]
+          },
+          {
+            "tier": "end_user",
+            "access_levels": [
+              "End User"
+            ]
+          }
+        ],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "probe_tier": "office",
+        "probe_access_levels": [
+          "Sorento Office",
+          "Mocha Office",
+          "Cabana Office"
+        ],
+        "probe_skipped": false
+      }
+    },
+    {
+      "json": {
+        "name": [
+          "Sorento Office",
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Mocha Office",
+          "Cabana Office",
+          "Cabana Dealer",
+          "End User"
+        ],
+        "tier_stated": [],
+        "entitled_tiers": [
+          "dealer",
+          "office",
+          "end_user"
+        ],
+        "entitled_unknown": [],
+        "query_brands": [],
+        "pending_pick": false,
+        "tier_ask": true,
+        "tier_proceed": false,
+        "access_levels_recomposed": [
+          "Sorento Office",
+          "Sorento Dealer",
+          "Mocha Dealer",
+          "Mocha Office",
+          "Cabana Office",
+          "Cabana Dealer",
+          "End User"
+        ],
+        "tier_probe_plan": [
+          {
+            "tier": "dealer",
+            "access_levels": [
+              "Sorento Dealer",
+              "Mocha Dealer",
+              "Cabana Dealer"
+            ]
+          },
+          {
+            "tier": "office",
+            "access_levels": [
+              "Sorento Office",
+              "Mocha Office",
+              "Cabana Office"
+            ]
+          },
+          {
+            "tier": "end_user",
+            "access_levels": [
+              "End User"
+            ]
+          }
+        ],
+        "brand_gate_empty": false,
+        "brand_unheld": false,
+        "probe_tier": "end_user",
+        "probe_access_levels": [
+          "End User"
+        ],
+        "probe_skipped": false
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13442255"
+  },
+  "ran": [
+    "When Executed by Another Workflow",
+    "redis-pop-main-message-list",
+    "if-audio-in",
+    "tf-message",
+    "sorento-sub-respond-findcontact-respond",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "if-message-is-audio",
+    "get-session-vars",
+    "Call 'sub-query-reformulator'",
+    "check-access",
+    "If5",
+    "If2",
+    "If-ideate",
+    "If10",
+    "is-escalation-declined",
+    "If9",
+    "If1",
+    "not-supported-domain",
+    "If",
+    "get-access-types",
+    "Aggregate",
+    "tier-gate",
+    "If4",
+    "resolve-entity",
+    "disallowed-entity-gate",
+    "If3",
+    "Execute 'sub-get-rag'",
+    "tool-filter",
+    "if-tier-ask",
+    "tier-probe-plan",
+    "tier-probe",
+    "tier-probe-collect",
+    "if-tier-has-any",
+    "access-level-choice-message",
+    "tag-access-choice",
+    "escalate-catalog",
+    "cs-offer-gate",
+    "compile-current-state",
+    "crossdomain-compose",
+    "sorento-sub-respond-sendmsg-respond2",
+    "Execution Data",
+    "attach-merge",
+    "if-got-attachments",
+    "save-session-vars",
+    "Call 'sub-respond-save-message-redis'2"
+  ]
+}

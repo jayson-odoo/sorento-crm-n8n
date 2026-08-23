@@ -1,0 +1,116 @@
+{
+  "source": {
+    "execution_id": "11827379",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "promo-picker",
+    "captured_at": "2026-08-22T00:00:00Z",
+    "note": "validator+qf payload from real exec 11827379 (see tests/offline/promo-picker/fixtures.json); expected output frozen by running the CURRENT exported node body (not the stale local offline copy) once through tests/harness/n8n-shim.js",
+    "expected_from": "body-run"
+  },
+  "ctx": {
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_promotion",
+            "domain_hint": "promotion",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check promotions for bathroom furniture",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "bathroom furniture",
+                "hint": "category",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "marketing_promotion_sorento",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          }
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "access_notice": "",
+          "company_team": null,
+          "brand_gate_empty": false
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "response": "I have attached the file(s) below.\n\n1. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n2. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 END USER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n3. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n4. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n5. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n6. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 END USER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n7. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n8. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 OFFICE.pdf\n*Start Date:* 2026-08-05\n*End Date:* 2026-11-05\n\n9. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 END USER.pdf\n*Start Date:* 2026-08-05\n*End Date:* 2026-11-05\n\n10. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 DEALER.pdf\n*Start Date:* 2026-08-05\n*End Date:* 2026-11-05\n\n11. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_25062026 DEALER.pdf\n*Start Date:* 2026-06-25\n*End Date:* 2026-09-25\n\n12. *Promotion:* CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf\n*Start Date:* 2026-06-08\n*End Date:* 2026-09-08\n\n13. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n14. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 END USER.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n15. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 OFFICE USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n_Data last updated: 07/08/2026 14:49:29_",
+        "response_intro": "I have attached the file(s) below.",
+        "answers": [],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-08-07T14:49:29.468947",
+        "has_result": true,
+        "alternatives": [],
+        "relaxed_axis": null,
+        "field_access": null,
+        "requested_attributes": [],
+        "keys_served": false,
+        "is_valid": true
+      }
+    }
+  ],
+  "runIndex": 0,
+  "expected": [
+    {
+      "json": {
+        "response": "I have attached the file(s) below.\n\n1. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n2. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 END USER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n3. *Promotion:* AUGUST SORENTO SPECIAL BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-08-31\n\n4. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n5. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 OFFICE.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n6. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 END USER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n7. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_06082026 DEALER.pdf\n*Start Date:* 2026-08-06\n*End Date:* 2026-11-06\n\n8. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 OFFICE.pdf\n*Start Date:* 2026-08-05\n*End Date:* 2026-11-05\n\n9. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 END USER.pdf\n*Start Date:* 2026-08-05\n*End Date:* 2026-11-05\n\n10. *Promotion:* SORENTO UPDATED BATHROOM FURNITURE PROMO_11052026 2 DEALER.pdf\n*Start Date:* 2026-08-05\n*End Date:* 2026-11-05\n\n11. *Promotion:* UPDATED SORENTO BATHROOM FURNITURE PROMO_25062026 DEALER.pdf\n*Start Date:* 2026-06-25\n*End Date:* 2026-09-25\n\n12. *Promotion:* CABANA BATHROOM FURNITURE PROMO_15062026 DEALER USE.pdf\n*Start Date:* 2026-06-08\n*End Date:* 2026-09-08\n\n13. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 DEALER USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n14. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 END USER.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n15. *Promotion:* CABANA NEW ARRIVAL BATHROOM FURNITURE PROMO CBFAL5572_18062026 OFFICE USE.pdf\n*Start Date:* 2026-06-18\n*End Date:* 2026-09-18\n\n_Data last updated: 07/08/2026 14:49:29_",
+        "response_intro": "I have attached the file(s) below.",
+        "answers": [],
+        "attachments": [],
+        "action_links": [],
+        "last_updated_at": "2026-08-07T14:49:29.468947",
+        "has_result": true,
+        "alternatives": [],
+        "relaxed_axis": null,
+        "field_access": null,
+        "requested_attributes": [],
+        "keys_served": false,
+        "is_valid": true,
+        "_promo_sort": {
+          "reordered": false,
+          "pairable": true,
+          "order": []
+        }
+      }
+    }
+  ]
+}

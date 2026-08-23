@@ -1,0 +1,571 @@
+{
+  "source": {
+    "execution_id": "13056697",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "set-ran-query-formulator",
+    "captured_at": "2026-08-22T12:01:59+00:00",
+    "expected_from": "runData"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000020"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "86c29d1d-5f3e-4640-bce7-b4558a844570",
+              "contact": {
+                "id": 900000020,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": null,
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "email": "<redacted>"
+                },
+                "created_at": 1777334185
+              },
+              "message": {
+                "messageId": 1787118372000000,
+                "channelMessageId": "wamid.HBgLNjAxMjkzMjI3NTIVAgASGCBBQzczQUNDQTJCREQxRjU3MTU4M0FERjNBNTJGOTUwQgA=",
+                "contactId": 900000020,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787118372000,
+                "message": {
+                  "type": "text",
+                  "text": "Please provide latest technical drawing of CSH2071"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 57\"},\"wa_id\":\"60100000017\",\"user_id\":\"MY.900000037\",\"firstName\":\"Person 55\",\"lastName\":\"Person 56\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000020,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": ""
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": ""
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": ""
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/9ad65d5f-3cdf-45da-bc89-dcfe5356e810"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [
+                "imported_20260510_200514"
+              ],
+              "assignee": null,
+              "lifecycle": null,
+              "created_at": 1777334185
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "86c29d1d-5f3e-4640-bce7-b4558a844570",
+          "contact": {
+            "id": 900000020,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": null,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "email": "<redacted>"
+            },
+            "created_at": 1777334185
+          },
+          "message": {
+            "messageId": 1787118372000000,
+            "channelMessageId": "wamid.HBgLNjAxMjkzMjI3NTIVAgASGCBBQzczQUNDQTJCREQxRjU3MTU4M0FERjNBNTJGOTUwQgA=",
+            "contactId": 900000020,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787118372000,
+            "message": {
+              "type": "text",
+              "text": "Please provide latest technical drawing of CSH2071"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 57\"},\"wa_id\":\"60100000017\",\"user_id\":\"MY.900000037\",\"firstName\":\"Person 55\",\"lastName\":\"Person 56\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000020,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": ""
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": ""
+            },
+            {
+              "name": "is_human_intervened",
+              "value": ""
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/9ad65d5f-3cdf-45da-bc89-dcfe5356e810"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260510_200514"
+          ],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1777334185
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000020,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": ""
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": ""
+            },
+            {
+              "name": "is_human_intervened",
+              "value": ""
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/9ad65d5f-3cdf-45da-bc89-dcfe5356e810"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [
+            "imported_20260510_200514"
+          ],
+          "assignee": null,
+          "lifecycle": null,
+          "created_at": 1777334185
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000020",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "warehouse",
+                "suggested_agent": "general_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "SRTKS6090-BL",
+                  "hint": "product",
+                  "confident": true,
+                  "canonical_code": "SRTKS6090-BL",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (inventory): returned 5 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check stock for SRTKS6090-BL",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "inventory",
+              "intent_hint": "check_stock",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": "sorento",
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": null,
+                  "label": "SRTKS6090-BL",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 2,
+                  "uuid": null,
+                  "label": "SRTKS6090-BL",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 3,
+                  "uuid": null,
+                  "label": "SRTKS6090-BL",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 4,
+                  "uuid": null,
+                  "label": "SRTKS6090-BL",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                },
+                {
+                  "idx": 5,
+                  "uuid": null,
+                  "label": "SRTKS6090-BL",
+                  "product": null,
+                  "filename": null,
+                  "entity_type": null,
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": "00000000-0000-0000-0000-000000000001",
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "SRTKS6090-BL"
+                  ],
+                  "brand_code": "sorento",
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": null,
+              "routing_roster_plan": null,
+              "routing_brand_source": "resolved"
+            },
+            "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTKS6090-BL\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n2. *Product Code:* SRTKS6090-BL\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-S/L\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n3. *Product Code:* SRTKS6090-BL\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SRTKS6090-BL\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 2\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTKS6090-BL\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n_Data last updated: 19/08/2026 12:11:16_"
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [],
+    "set-ran-query-formulator": [
+      {
+        "json": {
+          "response": "There is some error encountered by the AI: OpenAI: Rate limit reached"
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000020,
+          "phone_number": "<redacted>",
+          "message": "Please provide latest technical drawing of CSH2071",
+          "sent_at": 1787118382565,
+          "turn_id": "13056697",
+          "data": "{\"contact_id\":\"900000020\",\"phone_number\":\"+60100000017\",\"message\":\"Please provide latest technical drawing of CSH2071\",\"sent_at\":1787118372000,\"first_name\":\"Person 55\",\"last_name\":\"Person 56\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787118372000000\",\"turn_id\":\"13056697\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"warehouse\",\"suggested_agent\":\"general_enquiries\"},\"entities\":[{\"raw\":\"SRTKS6090-BL\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":\"SRTKS6090-BL\",\"current_message\":true}],\"ideation\":null,\"response\":\"Previous turn (inventory): returned 5 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check stock for SRTKS6090-BL\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"inventory\",\"intent_hint\":\"check_stock\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":\"sorento\",\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":5,\"first\":\"SRTKS6090-BL\"},\"routing_company\":\"00000000-0000-0000-0000-000000000001\",\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"SRTKS6090-BL\"],\"brand_code\":\"sorento\",\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":null,\"routing_roster_plan\":null,\"routing_brand_source\":\"resolved\"},\"parser_raw\":null,\"parser_applied\":null,\"after\":null}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "respond_io_id": "900000020",
+        "session_vars": {
+          "variables": {
+            "routing": {
+              "suggested_team": "warehouse",
+              "suggested_agent": "general_enquiries"
+            },
+            "entities": [
+              {
+                "raw": "SRTKS6090-BL",
+                "hint": "product",
+                "confident": true,
+                "canonical_code": "SRTKS6090-BL",
+                "current_message": true
+              }
+            ],
+            "ideation": null,
+            "response": "Previous turn (inventory): returned 5 records",
+            "date_mode": null,
+            "dym_offer": null,
+            "user_goal": "trying to check stock for SRTKS6090-BL",
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "match_mode": "and",
+            "domain_hint": "inventory",
+            "intent_hint": "check_stock",
+            "message_type": "business_query",
+            "query_brands": [],
+            "access_levels": [],
+            "routing_brand": "sorento",
+            "contains_flyer": false,
+            "dym_candidates": [],
+            "date_filter_end": null,
+            "last_result_set": [
+              {
+                "idx": 1,
+                "uuid": null,
+                "label": "SRTKS6090-BL",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 2,
+                "uuid": null,
+                "label": "SRTKS6090-BL",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 3,
+                "uuid": null,
+                "label": "SRTKS6090-BL",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 4,
+                "uuid": null,
+                "label": "SRTKS6090-BL",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              },
+              {
+                "idx": 5,
+                "uuid": null,
+                "label": "SRTKS6090-BL",
+                "product": null,
+                "filename": null,
+                "entity_type": null,
+                "attachment_type": null
+              }
+            ],
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "date_filter_start": null,
+            "routing_companies": [
+              {
+                "codes": [
+                  "SRTKS6090-BL"
+                ],
+                "brand_code": "sorento",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento"
+              }
+            ],
+            "selection_context": null,
+            "routing_roster_plan": null,
+            "routing_brand_source": "resolved"
+          },
+          "user_response": "Stock details found for the requested products.\n\n1. *Product Code:* SRTKS6090-BL\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n2. *Product Code:* SRTKS6090-BL\n*Warehouse:* BUKIT RAJA\n*System Location:* BRW-S/L\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n3. *Product Code:* SRTKS6090-BL\n*Warehouse:* BERSATU (PORT KLANG)\n*System Location:* DC1-BB\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n4. *Product Code:* SRTKS6090-BL\n*Warehouse:* MERU\n*System Location:* MWH-BB\n*Quantity On Hand:* 2\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n5. *Product Code:* SRTKS6090-BL\n*Warehouse:* WH3 (PSM)\n*System Location:* WH3-PSM\n*Quantity On Hand:* 0\n\u26a0\ufe0f  *(PRODUCT DISCONTINUED)*\n\n_Data last updated: 19/08/2026 12:11:16_"
+        },
+        "error": "OpenAI: Rate limit reached"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "response": "There is some error encountered by the AI: OpenAI: Rate limit reached"
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13056697"
+  },
+  "ran": [
+    "When Executed by Another Workflow",
+    "redis-pop-main-message-list",
+    "if-audio-in",
+    "tf-message",
+    "sorento-sub-respond-findcontact-respond",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "if-message-is-audio",
+    "get-session-vars",
+    "Call 'sub-query-reformulator'",
+    "set-ran-query-formulator",
+    "sorento-sub-respond-sendmsg-respond",
+    "Execution Data",
+    "Call 'sub-respond-save-message-redis'2"
+  ]
+}

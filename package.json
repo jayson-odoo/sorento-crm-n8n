@@ -1,0 +1,11 @@
+{
+  "name": "sorento-crm-n8n",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Test pyramid for the Sorento CRM n8n spine (n8n-workflows-init/plans/test-pyramid-and-git-deploy.md).",
+  "scripts": {
+    "test:unit": "node --test n8n-workflows-init/tests/unit/*.test.js",
+    "test:flow": "node --test n8n-workflows-init/tests/flow/*.test.js",
+    "test": "REQUIRE_FULL_COVERAGE=1 npm run test:unit && npm run test:flow"
+  }
+}

@@ -68,3 +68,40 @@ Hard-won knowledge. Read before editing workflows or building harness pieces —
 
 43. **A static HTML page served by an n8n webhook CANNOT fetch other n8n webhooks.** n8n force-injects `Content-Security-Policy: sandbox …` (no `allow-same-origin`) on every HTML webhook response → the page runs at a `null` origin; the webhooks' `Access-Control-Allow-Origin` is pinned to the host (setting the webhook's `allowedOrigins:'*'` does NOT change the emitted header) → every `fetch` is CORS-blocked (`origin 'null' … not equal to`). Overriding CSP via the respondToWebhook `responseHeaders` is ignored. Dead end — don't build a custom-HTML chat page this way.
 44. **For a chat webpage, use the native `@n8n/n8n-nodes-langchain.chatTrigger`** (`public:true`, `mode:'hostedChat'`, `options.responseMode:'lastNode'`). n8n's first-party widget talks to its own backend → no CORS/CSP fight, real webpage at `/webhook/{chatTriggerWebhookId}/chat`. `lastNode` mode requires the terminal node to emit `{ output: '<text>' }`. For an ASYNC pipeline (our dispatcher→spine reply lands in redis later), make the chat workflow **synchronous**: inject → fire → `Wait`(≈12s) → read the redis rendezvous (`chat:reply:{sessionId}`, redis `get` keyType=`list` = LRANGE) → format `{output}`. The widget shows a spinner then the reply inline. chat_id carrier = the chat `sessionId` stashed into `contact.chat_id`.
+
+## Building the unit-test harness (test-pyramid-and-git-deploy step 1, 2026-08-22)
+
+**§75.** REST `GET /executions` retention on this n8n instance is ~6 days, and the endpoint has no
+`nodeNames` filter — you cannot ask it for "just this node's runData across history". Harvesting
+per-node fixtures therefore means downloading WHOLE executions (`includeData=true`, every node's
+runData) and slicing locally, not targeted per-node pulls. `scripts/capture-fixtures.py` does this
+plus a local scan cache (keyed on execution id) so a re-run doesn't re-download what it already has.
+Plan accordingly for coverage work: the corpus you can harvest from is bounded by the 6-day window
+at the moment you run the script, not by how far back an execution *ID* exists.
+
+**§76.** `tests/offline/*` (the pre-shim probes) keep their OWN local copies of node bodies, and
+those copies are stale vs `export/` — confirmed on `promo-picker` and `promo-dym-probe` while
+building the shim. This is the exact F-STALE class §-labelled in `node-source.js`'s own header
+comment, just re-discovered in a sibling directory. Rule going forward, now enforced by convention
+not just comment: **any NEW test loads node bodies via `tests/offline/node-source.js` only** (sha-
+verified against `export/<slug>/MANIFEST.json`); the copy-paste style seen in old
+`tests/unit/*.test.js` files is BANNED for new tests. Existing `tests/offline/*` probes are legacy,
+not a pattern to extend.
+
+**§77.** Two `vm`-realm gotchas hit building `tests/harness/run-lane.js`'s expression evaluator.
+(1) `vm.runInContext` runs in its OWN realm: an array/object built inside is not `instanceof` the
+host's `Array`/`Object`, so `assert.deepStrictEqual` against an outer-realm `[]`/`{}` fails even
+when contents match — round-trip through `JSON.parse(JSON.stringify(...))` first. (2) Patching
+`String.prototype` for n8n's expression-only `.toBoolean()` from OUTSIDE the vm does nothing to
+values created INSIDE it — a bare `String` identifier resolves through the HOST constructor, not
+the realm-local one. Patch from a script run INSIDE the context, via `"".constructor.prototype` —
+see `run-lane.js`'s `ensureExpressionExtensions`.
+
+**§78.** `n8n-shim.js`'s `$('x').first()` / `.item` / `.all()` originally deep-copied the fixture
+array on EVERY call, so a body that mutates via one accessor call and re-reads via a later one
+(`$input.first().json.x = "false"; return $input.first().json`, the real shape of
+`set-human-intervened`) lost its own mutation: two calls returned independent copies. Real n8n
+hands back the SAME item reference across accessor calls in one node execution. Fixed by copying
+each fixture array ONCE per `buildSandbox` call (fixture stays pristine across tests) and returning
+the cached reference after. A hand-crafted fixture had been deliberately weakened to hide this gap
+(input/expected both `"false"`) — its `source.rationale` is the paper trail; re-armed to `"true"` → `"false"`.

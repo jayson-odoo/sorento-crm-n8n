@@ -1,0 +1,2075 @@
+{
+  "source": {
+    "execution_id": "13194546",
+    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+    "node": "build-cs-member-offer",
+    "captured_at": "2026-08-22T12:01:55+00:00",
+    "expected_from": "runData"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "test": null,
+          "test_run_id": null,
+          "started_at": null,
+          "contact": "900000010"
+        }
+      }
+    ],
+    "redis-pop-main-message-list": [
+      {
+        "json": {
+          "message": {
+            "message": {
+              "event_type": "message.received",
+              "event_id": "03aa7aa4-1aab-47ff-bd1b-e5cfcfd9c811",
+              "contact": {
+                "id": 900000010,
+                "firstName": "<redacted>",
+                "lastName": "<redacted>",
+                "phone": "<redacted>",
+                "email": "<redacted>",
+                "language": null,
+                "profilePic": null,
+                "countryCode": "MY",
+                "status": "open",
+                "assignee": {
+                  "id": null,
+                  "firstName": "<redacted>",
+                  "lastName": "<redacted>",
+                  "email": "<redacted>"
+                },
+                "created_at": 1782961741
+              },
+              "message": {
+                "messageId": 1787209470000000,
+                "channelMessageId": "wamid.HBgLNjAxNjI2MDExNzkVAgASGBYzRUIwMUEzRkZBOTY4QkJGMzAzQkJBAA==",
+                "contactId": 900000010,
+                "channelId": 453209,
+                "traffic": "incoming",
+                "timestamp": 1787209470000,
+                "message": {
+                  "type": "text",
+                  "text": "delivery J&W"
+                }
+              },
+              "channel": {
+                "id": 453209,
+                "name": "Internal (+60 11-1673 1179)",
+                "source": "whatsapp_business",
+                "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 37\"},\"wa_id\":\"60100000008\",\"user_id\":\"MY.900000028\",\"firstName\":\"Person 35\",\"lastName\":\"Person 36\"}}",
+                "created_at": 1767682908
+              },
+              "sender": {
+                "source": "contact",
+                "userId": null,
+                "teamId": null,
+                "workflowId": null,
+                "broadcastHistoryId": null
+              }
+            },
+            "contact": {
+              "id": 900000010,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "phone": "<redacted>",
+              "email": "<redacted>",
+              "language": null,
+              "profilePic": null,
+              "locale": null,
+              "countryCode": "MY",
+              "status": "open",
+              "isBlocked": false,
+              "custom_fields": [
+                {
+                  "name": "enquiry_type",
+                  "value": null
+                },
+                {
+                  "name": "user_type",
+                  "value": null
+                },
+                {
+                  "name": "complaint_id",
+                  "value": null
+                },
+                {
+                  "name": "is_allowed_stock",
+                  "value": null
+                },
+                {
+                  "name": "is_human_intervened",
+                  "value": "false"
+                },
+                {
+                  "name": "backend_id",
+                  "value": "https://fe-sorento.foundryx.my/user-management/contacts/d98753ee-56dd-4bb3-ab43-5ed63e5e06f4"
+                },
+                {
+                  "name": "is_allowed_ai",
+                  "value": "true"
+                },
+                {
+                  "name": "is_allowed_voice",
+                  "value": null
+                }
+              ],
+              "tags": [],
+              "assignee": null,
+              "lifecycle": "New Lead",
+              "created_at": 1782961741
+            }
+          }
+        }
+      }
+    ],
+    "if-audio-in": [],
+    "tf-message": [
+      {
+        "json": {
+          "event_type": "message.received",
+          "event_id": "03aa7aa4-1aab-47ff-bd1b-e5cfcfd9c811",
+          "contact": {
+            "id": 900000010,
+            "firstName": "<redacted>",
+            "lastName": "<redacted>",
+            "phone": "<redacted>",
+            "email": "<redacted>",
+            "language": null,
+            "profilePic": null,
+            "countryCode": "MY",
+            "status": "open",
+            "assignee": {
+              "id": null,
+              "firstName": "<redacted>",
+              "lastName": "<redacted>",
+              "email": "<redacted>"
+            },
+            "created_at": 1782961741
+          },
+          "message": {
+            "messageId": 1787209470000000,
+            "channelMessageId": "wamid.HBgLNjAxNjI2MDExNzkVAgASGBYzRUIwMUEzRkZBOTY4QkJGMzAzQkJBAA==",
+            "contactId": 900000010,
+            "channelId": 453209,
+            "traffic": "incoming",
+            "timestamp": 1787209470000,
+            "message": {
+              "type": "text",
+              "text": "delivery J&W"
+            }
+          },
+          "channel": {
+            "id": 453209,
+            "name": "Internal (+60 11-1673 1179)",
+            "source": "whatsapp_business",
+            "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 37\"},\"wa_id\":\"60100000008\",\"user_id\":\"MY.900000028\",\"firstName\":\"Person 35\",\"lastName\":\"Person 36\"}}",
+            "created_at": 1767682908
+          },
+          "sender": {
+            "source": "contact",
+            "userId": null,
+            "teamId": null,
+            "workflowId": null,
+            "broadcastHistoryId": null
+          }
+        }
+      }
+    ],
+    "sorento-sub-respond-findcontact-respond": [
+      {
+        "json": {
+          "id": 900000010,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/d98753ee-56dd-4bb3-ab43-5ed63e5e06f4"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": null,
+          "lifecycle": "New Lead",
+          "created_at": 1782961741
+        }
+      }
+    ],
+    "if-transcribed-confirm": [],
+    "is-human-intervened": [
+      {
+        "json": {
+          "id": 900000010,
+          "firstName": "<redacted>",
+          "lastName": "<redacted>",
+          "phone": "<redacted>",
+          "email": "<redacted>",
+          "language": null,
+          "profilePic": null,
+          "locale": null,
+          "countryCode": "MY",
+          "status": "open",
+          "isBlocked": false,
+          "custom_fields": [
+            {
+              "name": "enquiry_type",
+              "value": null
+            },
+            {
+              "name": "user_type",
+              "value": null
+            },
+            {
+              "name": "complaint_id",
+              "value": null
+            },
+            {
+              "name": "is_allowed_stock",
+              "value": null
+            },
+            {
+              "name": "is_human_intervened",
+              "value": "false"
+            },
+            {
+              "name": "backend_id",
+              "value": "https://fe-sorento.foundryx.my/user-management/contacts/d98753ee-56dd-4bb3-ab43-5ed63e5e06f4"
+            },
+            {
+              "name": "is_allowed_ai",
+              "value": "true"
+            },
+            {
+              "name": "is_allowed_voice",
+              "value": null
+            }
+          ],
+          "tags": [],
+          "assignee": null,
+          "lifecycle": "New Lead",
+          "created_at": 1782961741
+        }
+      }
+    ],
+    "if-message-is-audio": [],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000010",
+          "session_vars": {
+            "variables": {
+              "routing": {
+                "suggested_team": "purchasing",
+                "suggested_agent": "incoming_stock_enquiries"
+              },
+              "entities": [
+                {
+                  "raw": "2219",
+                  "hint": "customer",
+                  "confident": true,
+                  "canonical_code": "305-B004",
+                  "current_message": true
+                }
+              ],
+              "ideation": null,
+              "response": "Previous turn (incoming): returned 9 records",
+              "date_mode": null,
+              "dym_offer": null,
+              "user_goal": "trying to check incoming status for 2219",
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "match_mode": "and",
+              "domain_hint": "incoming",
+              "intent_hint": "check_incoming",
+              "message_type": "business_query",
+              "query_brands": [],
+              "access_levels": [],
+              "routing_brand": null,
+              "contains_flyer": false,
+              "dym_candidates": [],
+              "date_filter_end": null,
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "uuid": "a44f65f1-d586-4e98-8ef6-fbace3e8f366",
+                  "label": "MWT2219",
+                  "product": "MWT2219",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 2,
+                  "uuid": "b6e37de4-2279-4d6a-80c0-427a8500a061",
+                  "label": "BRBC22191W-1-ENG",
+                  "product": "BRBC22191W-1-ENG",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 3,
+                  "uuid": "b99cdf76-3b83-4981-bed8-5f0c756621d0",
+                  "label": "BRBC22192W-1-ENG",
+                  "product": "BRBC22192W-1-ENG",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 4,
+                  "uuid": "a19f2800-931b-4bc9-91cf-328460732d0c",
+                  "label": "BRBCX22199W-1-ENG",
+                  "product": "BRBCX22199W-1-ENG",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 5,
+                  "uuid": "5e584d0f-2fa9-45bc-ba6e-6eb5da2a437b",
+                  "label": "C22199W-1-ENG",
+                  "product": "C22199W-1-ENG",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 6,
+                  "uuid": "26311678-529d-410e-bf6b-4a91fdc4c1a0",
+                  "label": "SRTWT2219",
+                  "product": "SRTWT2219",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 7,
+                  "uuid": "2b13d0d2-49e6-4df6-be5f-fcdd0cc38459",
+                  "label": "SRTWT2219-NL",
+                  "product": "SRTWT2219-NL",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 8,
+                  "uuid": "df42979f-e144-4f64-b858-72dd5dee8a2c",
+                  "label": "SRTWT2219-WEPLS",
+                  "product": "SRTWT2219-WEPLS",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                },
+                {
+                  "idx": 9,
+                  "uuid": "97dac9fd-dd10-4bce-a02c-41ab4a86bdd1",
+                  "label": "MWT2219",
+                  "product": "MWT2219",
+                  "filename": null,
+                  "entity_type": "product",
+                  "attachment_type": null
+                }
+              ],
+              "routing_company": null,
+              "date_filter_start": null,
+              "routing_companies": [
+                {
+                  "codes": [
+                    "MWT2219"
+                  ],
+                  "brand_code": null,
+                  "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+                  "company_name": "Mocha"
+                },
+                {
+                  "codes": [
+                    "BRBC22191W-1-ENG",
+                    "BRBC22192W-1-ENG",
+                    "BRBCX22199W-1-ENG",
+                    "C22199W-1-ENG",
+                    "SRTWT2219",
+                    "SRTWT2219-NL",
+                    "SRTWT2219-WEPLS",
+                    "MWT2219"
+                  ],
+                  "brand_code": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento"
+                }
+              ],
+              "selection_context": "disambiguation",
+              "routing_roster_plan": null,
+              "routing_brand_source": null
+            },
+            "user_response": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. MWT2219 \u2014 no incoming\n2. BRBC22191W-1-ENG \u2014 no incoming\n3. BRBC22192W-1-ENG \u2014 no incoming\n4. BRBCX22199W-1-ENG \u2014 no incoming\n5. C22199W-1-ENG \u2014 no incoming\n6. SRTWT2219 \u2014 no incoming\n7. SRTWT2219-NL \u2014 no incoming\n8. SRTWT2219-WEPLS \u2014 no incoming\n9. MWT2219 \u2014 no incoming\n\nNone of these have incoming stock right now."
+          }
+        }
+      }
+    ],
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check the delivery status for J&W",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "J&W",
+                "hint": "customer",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [
+              "delivery"
+            ],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "scope_exclusive_applied": false,
+            "entity_op_applied": "replace_combine",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check the delivery status for J&W",
+            "access_levels": [],
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "J&W",
+                "hint": "customer",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [
+              "delivery"
+            ],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false,
+              "company_pick": null
+            }
+          }
+        }
+      }
+    ],
+    "check-access": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Order Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If5": [
+      {
+        "json": {
+          "allowed": true,
+          "decision": "allow",
+          "agent_name": "Order Enquiries",
+          "attributes": null,
+          "all_attributes_allowed": null
+        }
+      }
+    ],
+    "If2": [],
+    "If-ideate": [],
+    "If10": [],
+    "is-escalation-declined": [],
+    "If9": [],
+    "If1": [],
+    "not-supported-domain": [],
+    "If": [],
+    "If7": [],
+    "resolve-entity": [
+      {
+        "json": {
+          "tokens": [
+            "J&W"
+          ],
+          "elapsed_ms": 770.93,
+          "resolutions": [
+            {
+              "token": "J&W",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [
+            "J&W"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+        }
+      }
+    ],
+    "disallowed-entity-gate": [
+      {
+        "json": {
+          "tokens": [
+            "J&W"
+          ],
+          "elapsed_ms": 770.93,
+          "resolutions": [
+            {
+              "token": "J&W",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [
+            "J&W"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [],
+          "routing_company": null,
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "no entities and 'order' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 0
+          }
+        }
+      }
+    ],
+    "If3": [
+      {
+        "json": {
+          "tokens": [
+            "J&W"
+          ],
+          "elapsed_ms": 770.93,
+          "resolutions": [
+            {
+              "token": "J&W",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [
+            "J&W"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [],
+          "routing_company": null,
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "no entities and 'order' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 0
+          }
+        }
+      }
+    ],
+    "If-incoming-picker": [],
+    "not-found-error-message": [
+      {
+        "json": {
+          "tokens": [
+            "J&W"
+          ],
+          "elapsed_ms": 770.93,
+          "resolutions": [
+            {
+              "token": "J&W",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [
+            "J&W"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [],
+          "routing_company": null,
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "no entities and 'order' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": ""
+        }
+      }
+    ],
+    "sibling-gate": [],
+    "dym-transform": [
+      {
+        "json": {
+          "tokens": [
+            "J&W"
+          ],
+          "elapsed_ms": 770.93,
+          "resolutions": [
+            {
+              "token": "J&W",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [
+            "J&W"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [],
+          "routing_company": null,
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "no entities and 'order' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "dym_probe_entities": [],
+          "dym_candidate_codes": [],
+          "dym_excluded_codes": [],
+          "dym_capped_codes": [],
+          "probe_cap_applied": false,
+          "probe_tool": null,
+          "probe_noun": null,
+          "probe_predicate": null,
+          "probe_needed": false,
+          "probe_skip_reason": "domain_not_enabled",
+          "probe_lane": "d1",
+          "_dym_probe_input": true
+        }
+      }
+    ],
+    "dym-gate": [],
+    "build-suggest-offer": [
+      {
+        "json": {
+          "tokens": [
+            "J&W"
+          ],
+          "elapsed_ms": 770.93,
+          "resolutions": [
+            {
+              "token": "J&W",
+              "resolved": false,
+              "ambiguous": false,
+              "matches": [],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [
+            "J&W"
+          ],
+          "fallback_match_mode": "or",
+          "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+          "gate_passed": false,
+          "require_specific": false,
+          "resolved_company": null,
+          "company_team": null,
+          "resolved_companies": [],
+          "routing_brand": null,
+          "routing_brand_source": null,
+          "routing_companies": [],
+          "routing_company": null,
+          "access_denied_levels": [],
+          "access_notice": "",
+          "brand_gate_empty": false,
+          "brand_unheld": false,
+          "gate_reason": "no entities and 'order' requires a scoping entity",
+          "gate_clarification": "",
+          "compatible_entities": [],
+          "gate_debug": {
+            "domain": "order",
+            "allowed_lookup": [
+              "order",
+              "customer_order",
+              "transporter",
+              "customer",
+              "product"
+            ],
+            "entities_count": 0
+          },
+          "escalate_message": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?",
+          "is_clarification": false,
+          "found_summary": "",
+          "suggest_offer": false
+        }
+      }
+    ],
+    "tag-not-found": [
+      {
+        "json": {
+          "branch_kind": "not_found"
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-offer-gate": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true
+        }
+      }
+    ],
+    "cs-roster-plan": [
+      {
+        "json": {
+          "plan_idx": 0,
+          "company_id": null,
+          "company_name": null,
+          "brand_code": null,
+          "codes": [],
+          "multi_company": false,
+          "companies": []
+        }
+      }
+    ],
+    "get-cs-members": [
+      {
+        "json": {
+          "body": [
+            {
+              "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+              "name": "Person 1",
+              "respond_user_id": "1144607",
+              "email": "person1@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+              "name": "Person 2",
+              "respond_user_id": "1144556",
+              "email": "person2@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+              "name": "Person 3",
+              "respond_user_id": "1136807",
+              "email": "person3@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+              "name": "Person 4",
+              "respond_user_id": "1136805",
+              "email": "person4@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+              "name": "Person 5",
+              "respond_user_id": "1136799",
+              "email": "person5@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+              "name": "Person 6",
+              "respond_user_id": "1144561",
+              "email": "person6@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+              "name": "Person 7",
+              "respond_user_id": "1136808",
+              "email": "person7@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+              "name": "Person 8",
+              "respond_user_id": "1144558",
+              "email": "person8@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+              "name": "Person 9",
+              "respond_user_id": "1144554",
+              "email": "person9@example.com",
+              "sort_order": null
+            },
+            {
+              "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+              "name": "Person 10",
+              "respond_user_id": "1144604",
+              "email": "person10@example.com",
+              "sort_order": null
+            }
+          ],
+          "headers": {
+            "date": "Thu, 20 Aug 2026 07:04:49 GMT",
+            "content-type": "application/json",
+            "transfer-encoding": "chunked",
+            "connection": "close",
+            "server": "cloudflare",
+            "x-trace-id": "fd3f9b05799e49eb",
+            "vary": "Accept-Encoding",
+            "x-frame-options": "SAMEORIGIN",
+            "x-content-type-options": "nosniff",
+            "x-xss-protection": "1; mode=block",
+            "cf-cache-status": "DYNAMIC",
+            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+            "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=8,cfOrigin;dur=41",
+            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=5MBBNnme%2FebJOW8Kd2r4rJ8MbYih5tNLFvs67nwydyOWqCAR329tUC8%2BpxWwx8elsXJrAVlzz%2BOse%2Bi9U5%2Ff0hPinprGGCNa3%2BZsrDdpepfxSCiihbIh650GQn6PjAJ6pmmU%2FbjwkSca\"}]}",
+            "cf-ray": "a2df8bccdbc91d6d-SIN",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "statusCode": 200,
+          "statusMessage": "OK"
+        }
+      }
+    ],
+    "build-cs-member-offer": [
+      {
+        "json": {
+          "branch_kind": "not_found",
+          "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+          "manualResponse": true,
+          "includeResponse": true,
+          "is_escalate_offer": true,
+          "routing_companies": [
+            {
+              "plan_idx": 0,
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "codes": [],
+              "multi_company": false,
+              "companies": []
+            }
+          ],
+          "cs_multi_note": null,
+          "member_offer": true,
+          "selection_context": "member_offer",
+          "cs_last_result_set": [
+            {
+              "idx": 1,
+              "label": "Person 1",
+              "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+              "respond_user_id": "1144607",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 2,
+              "label": "Person 2",
+              "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+              "respond_user_id": "1144556",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 3,
+              "label": "Person 3",
+              "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+              "respond_user_id": "1136807",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 4,
+              "label": "Person 4",
+              "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+              "respond_user_id": "1136805",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 5,
+              "label": "Person 5",
+              "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+              "respond_user_id": "1136799",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 6,
+              "label": "Person 6",
+              "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+              "respond_user_id": "1144561",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 7,
+              "label": "Person 7",
+              "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+              "respond_user_id": "1136808",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 8,
+              "label": "Person 8",
+              "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+              "respond_user_id": "1144558",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 9,
+              "label": "Person 9",
+              "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+              "respond_user_id": "1144554",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            },
+            {
+              "idx": 10,
+              "label": "Person 10",
+              "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+              "respond_user_id": "1144604",
+              "company_id": null,
+              "company_name": null,
+              "brand_code": null,
+              "company_ids": [
+                null
+              ],
+              "companies": []
+            }
+          ]
+        }
+      }
+    ],
+    "compile-current-state": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "user_goal": "trying to check the delivery status for J&W",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "J&W",
+                "hint": "customer",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Person 1",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                "respond_user_id": "1144607",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 2,
+                "label": "Person 2",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                "respond_user_id": "1144556",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 3,
+                "label": "Person 3",
+                "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+                "respond_user_id": "1136807",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 4,
+                "label": "Person 4",
+                "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+                "respond_user_id": "1136805",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 5,
+                "label": "Person 5",
+                "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+                "respond_user_id": "1136799",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 6,
+                "label": "Person 6",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                "respond_user_id": "1144561",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 7,
+                "label": "Person 7",
+                "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+                "respond_user_id": "1136808",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 8,
+                "label": "Person 8",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                "respond_user_id": "1144558",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 9,
+                "label": "Person 9",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                "respond_user_id": "1144554",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 10,
+                "label": "Person 10",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                "respond_user_id": "1144604",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              }
+            ],
+            "selection_context": "member_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": [
+              {
+                "plan_idx": 0,
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null
+              }
+            ],
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": null,
+            "routing_companies": null
+          },
+          "user_response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+        }
+      }
+    ],
+    "crossdomain-compose": [
+      {
+        "json": {
+          "variables": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "user_goal": "trying to check the delivery status for J&W",
+            "query_brands": [],
+            "access_levels": [],
+            "entities": [
+              {
+                "raw": "J&W",
+                "hint": "customer",
+                "canonical_code": null,
+                "current_message": true,
+                "confident": true
+              }
+            ],
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "last_result_set": [
+              {
+                "idx": 1,
+                "label": "Person 1",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                "respond_user_id": "1144607",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 2,
+                "label": "Person 2",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                "respond_user_id": "1144556",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 3,
+                "label": "Person 3",
+                "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+                "respond_user_id": "1136807",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 4,
+                "label": "Person 4",
+                "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+                "respond_user_id": "1136805",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 5,
+                "label": "Person 5",
+                "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+                "respond_user_id": "1136799",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 6,
+                "label": "Person 6",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                "respond_user_id": "1144561",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 7,
+                "label": "Person 7",
+                "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+                "respond_user_id": "1136808",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 8,
+                "label": "Person 8",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                "respond_user_id": "1144558",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 9,
+                "label": "Person 9",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                "respond_user_id": "1144554",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              },
+              {
+                "idx": 10,
+                "label": "Person 10",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                "respond_user_id": "1144604",
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null,
+                "company_ids": [
+                  null
+                ],
+                "companies": []
+              }
+            ],
+            "selection_context": "member_offer",
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "date_mode": null,
+            "match_mode": "and",
+            "contains_flyer": false,
+            "dym_offer": null,
+            "dym_candidates": [],
+            "ideation": null,
+            "routing_roster_plan": [
+              {
+                "plan_idx": 0,
+                "company_id": null,
+                "company_name": null,
+                "brand_code": null
+              }
+            ],
+            "routing_brand": null,
+            "routing_brand_source": null,
+            "routing_company": null,
+            "routing_companies": null
+          },
+          "user_response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+        }
+      }
+    ],
+    "sorento-sub-respond-sendmsg-respond2": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "Execution Data": [
+      {
+        "json": {
+          "success": true
+        }
+      }
+    ],
+    "attach-merge": [
+      {
+        "json": {
+          "attachments": []
+        }
+      }
+    ],
+    "if-got-attachments": [],
+    "save-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000010",
+          "session_vars": {
+            "variables": {
+              "message_type": "business_query",
+              "intent_hint": "check_order",
+              "domain_hint": "order",
+              "user_goal": "trying to check the delivery status for J&W",
+              "query_brands": [],
+              "access_levels": [],
+              "entities": [
+                {
+                  "raw": "J&W",
+                  "hint": "customer",
+                  "canonical_code": null,
+                  "current_message": true,
+                  "confident": true
+                }
+              ],
+              "routing": {
+                "suggested_team": "customer_service",
+                "suggested_agent": "order_enquiries"
+              },
+              "escalation": {
+                "is_escalation_confirmation": false
+              },
+              "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+              "last_result_set": [
+                {
+                  "idx": 1,
+                  "label": "Person 1",
+                  "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+                  "respond_user_id": "1144607",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 2,
+                  "label": "Person 2",
+                  "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+                  "respond_user_id": "1144556",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 3,
+                  "label": "Person 3",
+                  "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+                  "respond_user_id": "1136807",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 4,
+                  "label": "Person 4",
+                  "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+                  "respond_user_id": "1136805",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 5,
+                  "label": "Person 5",
+                  "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+                  "respond_user_id": "1136799",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 6,
+                  "label": "Person 6",
+                  "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+                  "respond_user_id": "1144561",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 7,
+                  "label": "Person 7",
+                  "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+                  "respond_user_id": "1136808",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 8,
+                  "label": "Person 8",
+                  "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+                  "respond_user_id": "1144558",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 9,
+                  "label": "Person 9",
+                  "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+                  "respond_user_id": "1144554",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                },
+                {
+                  "idx": 10,
+                  "label": "Person 10",
+                  "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+                  "respond_user_id": "1144604",
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null,
+                  "company_ids": [
+                    null
+                  ],
+                  "companies": []
+                }
+              ],
+              "selection_context": "member_offer",
+              "date_filter_start": null,
+              "date_filter_end": null,
+              "date_mode": null,
+              "match_mode": "and",
+              "contains_flyer": false,
+              "dym_offer": null,
+              "dym_candidates": [],
+              "ideation": null,
+              "routing_roster_plan": [
+                {
+                  "plan_idx": 0,
+                  "company_id": null,
+                  "company_name": null,
+                  "brand_code": null
+                }
+              ],
+              "routing_brand": null,
+              "routing_brand_source": null,
+              "routing_company": null,
+              "routing_companies": null
+            },
+            "user_response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+          }
+        }
+      }
+    ],
+    "Call 'sub-respond-save-message-redis'2": [
+      {
+        "json": {
+          "contact_id": 900000010,
+          "phone_number": "<redacted>",
+          "message": "delivery J&W",
+          "sent_at": 1787209489884,
+          "turn_id": "13194546",
+          "data": "{\"contact_id\":\"900000010\",\"phone_number\":\"+60100000008\",\"message\":\"delivery J&W\",\"sent_at\":1787209470000,\"first_name\":\"Person 35\",\"last_name\":\"Person 36\",\"reply_to_message_id\":null,\"reply_to_message\":null,\"type\":\"incoming\",\"message_id\":\"1787209470000000\",\"turn_id\":\"13194546\",\"state_trace\":{\"v\":1,\"before\":{\"routing\":{\"suggested_team\":\"purchasing\",\"suggested_agent\":\"incoming_stock_enquiries\"},\"entities\":[{\"raw\":\"2219\",\"hint\":\"customer\",\"confident\":true,\"canonical_code\":\"305-B004\",\"current_message\":true}],\"ideation\":null,\"response\":\"Previous turn (incoming): returned 9 records\",\"date_mode\":null,\"dym_offer\":null,\"user_goal\":\"trying to check incoming status for 2219\",\"escalation\":{\"is_escalation_confirmation\":false},\"match_mode\":\"and\",\"domain_hint\":\"incoming\",\"intent_hint\":\"check_incoming\",\"message_type\":\"business_query\",\"query_brands\":[],\"access_levels\":[],\"routing_brand\":null,\"contains_flyer\":false,\"dym_candidates\":{\"n\":0,\"first\":null},\"date_filter_end\":null,\"last_result_set\":{\"n\":9,\"first\":\"MWT2219\"},\"routing_company\":null,\"date_filter_start\":null,\"routing_companies\":[{\"codes\":[\"MWT2219\"],\"brand_code\":null,\"company_id\":\"38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2\",\"company_name\":\"Mocha\"},{\"codes\":[\"BRBC22191W-1-ENG\",\"BRBC22192W-1-ENG\",\"BRBCX22199W-1-ENG\",\"C22199W-1-ENG\",\"SRTWT2219\",\"SRTWT2219-NL\",\"SRTWT2219-WEPLS\",\"MWT2219\"],\"brand_code\":null,\"company_id\":\"00000000-0000-0000-0000-000000000001\",\"company_name\":\"Sorento\"}],\"selection_context\":\"disambiguation\",\"routing_roster_plan\":null,\"routing_brand_source\":null},\"parser_raw\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check the delivery status for J&W\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"J&W\",\"hint\":\"customer\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[\"delivery\"],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}},\"parser_applied\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"trying to check the delivery status for J&W\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"J&W\",\"hint\":\"customer\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[\"delivery\"],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"domain_signal_source\":\"intent_explicit\",\"scope_exclusive_applied\":false,\"entity_op_applied\":\"replace_combine\",\"query_brands\":[],\"entities_filtered\":false,\"entities_emptied_by_filter\":false},\"after\":{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"user_goal\":\"trying to check the delivery status for J&W\",\"query_brands\":[],\"access_levels\":[],\"entities\":[{\"raw\":\"J&W\",\"hint\":\"customer\",\"canonical_code\":null,\"current_message\":true,\"confident\":true}],\"routing\":{\"suggested_team\":\"customer_service\",\"suggested_agent\":\"order_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false},\"response\":\"Couldn't find: \\\"J&W\\\". Would you like me to escalate to customer_service team?\\n\\nPlease choose who to route to (reply with the number):\\n1. Person 1\\n2. Person 2\\n3. Person 3\\n4. Person 4\\n5. Person 5\\n6. Person 6\\n7. Person 7\\n8. Person 8\\n9. Person 9\\n10. Person 10\\n\\nIf you have no preference, just reply 'yes' and we'll assign automatically.\",\"last_result_set\":{\"n\":10,\"first\":\"Person 1\"},\"selection_context\":\"member_offer\",\"date_filter_start\":null,\"date_filter_end\":null,\"date_mode\":null,\"match_mode\":\"and\",\"contains_flyer\":false,\"dym_offer\":null,\"dym_candidates\":{\"n\":0,\"first\":null},\"ideation\":null,\"routing_roster_plan\":[{\"plan_idx\":0,\"company_id\":null,\"company_name\":null,\"brand_code\":null}],\"routing_brand\":null,\"routing_brand_source\":null,\"routing_company\":null,\"routing_companies\":null}}}"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "body": [
+          {
+            "user_id": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+            "name": "Person 1",
+            "respond_user_id": "1144607",
+            "email": "person1@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+            "name": "Person 2",
+            "respond_user_id": "1144556",
+            "email": "person2@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+            "name": "Person 3",
+            "respond_user_id": "1136807",
+            "email": "person3@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+            "name": "Person 4",
+            "respond_user_id": "1136805",
+            "email": "person4@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+            "name": "Person 5",
+            "respond_user_id": "1136799",
+            "email": "person5@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "70578600-0cc5-4040-ac81-c27bb31e917b",
+            "name": "Person 6",
+            "respond_user_id": "1144561",
+            "email": "person6@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+            "name": "Person 7",
+            "respond_user_id": "1136808",
+            "email": "person7@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+            "name": "Person 8",
+            "respond_user_id": "1144558",
+            "email": "person8@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+            "name": "Person 9",
+            "respond_user_id": "1144554",
+            "email": "person9@example.com",
+            "sort_order": null
+          },
+          {
+            "user_id": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+            "name": "Person 10",
+            "respond_user_id": "1144604",
+            "email": "person10@example.com",
+            "sort_order": null
+          }
+        ],
+        "headers": {
+          "date": "Thu, 20 Aug 2026 07:04:49 GMT",
+          "content-type": "application/json",
+          "transfer-encoding": "chunked",
+          "connection": "close",
+          "server": "cloudflare",
+          "x-trace-id": "fd3f9b05799e49eb",
+          "vary": "Accept-Encoding",
+          "x-frame-options": "SAMEORIGIN",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "1; mode=block",
+          "cf-cache-status": "DYNAMIC",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=8,cfOrigin;dur=41",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=5MBBNnme%2FebJOW8Kd2r4rJ8MbYih5tNLFvs67nwydyOWqCAR329tUC8%2BpxWwx8elsXJrAVlzz%2BOse%2Bi9U5%2Ff0hPinprGGCNa3%2BZsrDdpepfxSCiihbIh650GQn6PjAJ6pmmU%2FbjwkSca\"}]}",
+          "cf-ray": "a2df8bccdbc91d6d-SIN",
+          "alt-svc": "h3=\":443\"; ma=86400"
+        },
+        "statusCode": 200,
+        "statusMessage": "OK"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "branch_kind": "not_found",
+        "response": "Couldn't find: \"J&W\". Would you like me to escalate to customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4\n5. Person 5\n6. Person 6\n7. Person 7\n8. Person 8\n9. Person 9\n10. Person 10\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "manualResponse": true,
+        "includeResponse": true,
+        "is_escalate_offer": true,
+        "routing_companies": [
+          {
+            "plan_idx": 0,
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "codes": [],
+            "multi_company": false,
+            "companies": []
+          }
+        ],
+        "cs_multi_note": null,
+        "member_offer": true,
+        "selection_context": "member_offer",
+        "cs_last_result_set": [
+          {
+            "idx": 1,
+            "label": "Person 1",
+            "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+            "respond_user_id": "1144607",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 2,
+            "label": "Person 2",
+            "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+            "respond_user_id": "1144556",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 3,
+            "label": "Person 3",
+            "uuid": "4dbed5e6-3be2-47a7-9d17-233d3df25d3f",
+            "respond_user_id": "1136807",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 4,
+            "label": "Person 4",
+            "uuid": "5eec9b80-d431-4e7e-a352-a1e753fc6a7e",
+            "respond_user_id": "1136805",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 5,
+            "label": "Person 5",
+            "uuid": "642699bd-cb2e-44a1-9aa8-9a05b21275e2",
+            "respond_user_id": "1136799",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 6,
+            "label": "Person 6",
+            "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+            "respond_user_id": "1144561",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 7,
+            "label": "Person 7",
+            "uuid": "8c41264e-896f-44e8-91f0-14c39a9432e5",
+            "respond_user_id": "1136808",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 8,
+            "label": "Person 8",
+            "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+            "respond_user_id": "1144558",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 9,
+            "label": "Person 9",
+            "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+            "respond_user_id": "1144554",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          },
+          {
+            "idx": 10,
+            "label": "Person 10",
+            "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+            "respond_user_id": "1144604",
+            "company_id": null,
+            "company_name": null,
+            "brand_code": null,
+            "company_ids": [
+              null
+            ],
+            "companies": []
+          }
+        ]
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13194546"
+  },
+  "ran": [
+    "When Executed by Another Workflow",
+    "redis-pop-main-message-list",
+    "if-audio-in",
+    "tf-message",
+    "sorento-sub-respond-findcontact-respond",
+    "if-transcribed-confirm",
+    "is-human-intervened",
+    "if-message-is-audio",
+    "get-session-vars",
+    "Call 'sub-query-reformulator'",
+    "check-access",
+    "If5",
+    "If2",
+    "If-ideate",
+    "If10",
+    "is-escalation-declined",
+    "If9",
+    "If1",
+    "not-supported-domain",
+    "If",
+    "If7",
+    "resolve-entity",
+    "disallowed-entity-gate",
+    "If3",
+    "If-incoming-picker",
+    "not-found-error-message",
+    "sibling-gate",
+    "dym-transform",
+    "dym-gate",
+    "build-suggest-offer",
+    "tag-not-found",
+    "escalate-catalog",
+    "cs-offer-gate",
+    "cs-roster-plan",
+    "get-cs-members",
+    "build-cs-member-offer",
+    "compile-current-state",
+    "crossdomain-compose",
+    "sorento-sub-respond-sendmsg-respond2",
+    "Execution Data",
+    "attach-merge",
+    "if-got-attachments",
+    "save-session-vars",
+    "Call 'sub-respond-save-message-redis'2"
+  ]
+}
