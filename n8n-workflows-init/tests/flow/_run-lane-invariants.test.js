@@ -10,27 +10,35 @@ const { runLane } = require('../harness/run-lane');
 
 const SLUG = 'live-spine-sorento-consume-main';
 
-// S11: "Code in JavaScript" is the one node in this workflow whose export-workflows.py `safe_name`
-// file (`Code_in_JavaScript.js`, underscores) differs from `nodeName + '.js'` (spaces) — every
-// other node a real lane walks through happens to dodge this by luck (no spaces/punctuation in its
-// name). It is also a dead/orphaned node (0 inbound edges — see export's `.dead` marker next to its
-// fixture dir), so no start/end pair used by any OTHER flow test ever reaches it; run it directly
-// as its own one-node lane to prove run-lane resolves its body via MANIFEST.json's `nodes.<name>
-// .file`, not a naive name-concat that would 404 against export/<slug>/nodes/.
+// S11 (CANARY since 2026-08-23 — read this before "fixing" it). The original test ran the dead
+// node `Code in JavaScript` as a one-node lane, because it was the ONLY node in either tracked
+// export whose export-workflows.py `safe_name` file (`Code_in_JavaScript.js`, underscores)
+// differed from `nodeName + '.js'` (spaces) — so it was the only node that could tell run-lane's
+// MANIFEST lookup apart from a naive name-concat.
+//
+// That node was deleted with the dead Whisper lane (docs/SIMPLIFY-spine-audit.md §8; keeping dead
+// production surface alive to feed a test is the wrong trade). Today EVERY tracked Code node's
+// manifest file is exactly `name + '.js'`, so the two implementations are observationally
+// identical and no test can separate them. Rather than pretend otherwise with a lane that proves
+// nothing, this asserts the precondition directly: the moment a Code node with a space or other
+// `safe_name`-mangled character appears, this fails and says to restore a real one-node lane over
+// THAT node.
 test('S11: run-lane resolves a Code node body via MANIFEST file mapping, not nodeName + ".js"', () => {
-  const res = runLane({
-    slug: SLUG,
-    start: 'Code in JavaScript',
-    end: 'Code in JavaScript',
-    ctx: { 'tf-message': [{ json: { message: { message: { attachment: { url: 'https://example.test/a.png' } } } } }] },
-    input: [{ json: {} }],
-  });
-  assert.deepStrictEqual(res.path, ['Code in JavaScript']);
-  // JSON round-trip before comparing: `res.end`'s items are built INSIDE the shim's vm context
-  // (see tests/unit/_shim-invariants.test.js's S9 test for why), so they carry that realm's own
-  // Object.prototype — deepStrictEqual treats that as a real difference even when every own
-  // property matches. Isolate the thing this test actually checks (the VALUE).
-  assert.deepStrictEqual(JSON.parse(JSON.stringify(res.end)), [{ json: { data: 'https://example.test/a.png' } }]);
+  const fs = require('fs');
+  const path = require('path');
+  const mangled = [];
+  for (const slug of [SLUG, 'sub-semantic-parser']) {
+    const man = JSON.parse(fs.readFileSync(path.resolve(
+      __dirname, '../../export', slug, 'MANIFEST.json'), 'utf8'));
+    for (const [name, rec] of Object.entries(man.nodes || {})) {
+      if (rec.file !== `${name}.js`) mangled.push(`${slug}/${name} -> ${rec.file}`);
+    }
+  }
+  assert.deepStrictEqual(mangled, [],
+    'a tracked Code node\'s manifest file name now differs from nodeName + ".js" — the naive ' +
+    'concat and the MANIFEST lookup are distinguishable again, so run it as a one-node lane here ' +
+    'and assert its output (that is what this test used to do with "Code in JavaScript"): ' +
+    mangled.join(', '));
 });
 
 // S12a: `is-human-intervened`[output 1] fans out to BOTH `update-human-intervened` AND
@@ -138,18 +146,32 @@ test('C6: run-lane throws when an If receives >1 input item, instead of routing 
 
 // C7: a Code node's execution mode must be honoured on the LANE path too, not only in the unit
 // tier — otherwise the two tiers disagree about what the same deployed node does.
-// `transcribed-message` is `runOnceForEachItem` (the only per-item node in the live spine); run it
-// as its own one-node lane with two input items and require two output items.
+// Re-pointed 2026-08-23: this used to run the spine's `transcribed-message`, deleted with the dead
+// Whisper lane. `sub-semantic-parser/output_exchange` is now the only `runOnceForEachItem` Code
+// node in either tracked export (asserted in tests/unit/_shim-invariants.test.js's C1), and it is
+// also the body the owner cares most about, so the lane tier exercises the mode on THAT one. Two
+// DIFFERENT items in — a per-item run cannot be faked by duplicating one result.
 test('C7: run-lane honours a Code node\'s runOnceForEachItem mode (2 items in, 2 out)', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const base = JSON.parse(fs.readFileSync(path.resolve(
+    __dirname, '../fixtures/nodes/sub-semantic-parser/output_exchange/exec-13488887.json'), 'utf8'));
+  const itemA = JSON.parse(JSON.stringify(base.input[0]));
+  const itemB = JSON.parse(JSON.stringify(base.input[0]));
+  const parsedB = JSON.parse(itemB.json.output);
+  parsedB.user_goal = 'SECOND ITEM GOAL';
+  itemB.json.output = JSON.stringify(parsedB);
+
   const res = runLane({
-    slug: SLUG,
-    start: 'transcribed-message',
-    end: 'transcribed-message',
-    ctx: { 'is-human-intervened': [{ json: { contact_id: 42 } }] },
-    input: [{ json: { text: 'first' } }, { json: { text: 'second' } }],
+    slug: 'sub-semantic-parser',
+    start: 'output_exchange',
+    end: 'output_exchange',
+    ctx: base.ctx,
+    input: [itemA, itemB],
+    execution: base.execution,
   });
-  assert.deepStrictEqual(
-    JSON.parse(JSON.stringify(res.end)),
-    [{ json: { contact_id: 42, message: 'first' } }, { json: { contact_id: 42, message: 'second' } }]
-  );
+  const out = JSON.parse(JSON.stringify(res.end));
+  assert.strictEqual(out.length, 2, 'runOnceForEachItem must emit one item per input item');
+  assert.notDeepStrictEqual(out[0], out[1], 'the two items must not collapse into one result');
+  assert.strictEqual(out[1].json.output.user_goal, 'SECOND ITEM GOAL');
 });

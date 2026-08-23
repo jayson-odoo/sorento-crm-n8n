@@ -106,10 +106,19 @@ invisible.
 | **output_exchange** | 12 | 2 → **9** | 17 → **75** |
 | suggest-follow-up | 12 | 5 | 42 |
 
-Nodes with 0 mutants (`Code in JavaScript`, `mock-reformulator-output`, `set-human-intervened`,
-`set-ran-query-formulator`, `sorento-sub-respond-findcontact-respond`, `tf-message`,
-`transcribed-message`) are one-liners or pure literals with nothing to perturb. `presign-fail-notice`
-and `Code in JavaScript` are the two dead nodes marked `.dead` in the fixtures tree.
+Nodes with 0 mutants (`mock-reformulator-output`, `set-human-intervened`,
+`set-ran-query-formulator`, `sorento-sub-respond-findcontact-respond`, `tf-message`) are one-liners
+or pure literals with nothing to perturb. `presign-fail-notice` is the one remaining node marked
+`.dead` in the fixtures tree. (`Code in JavaScript` and `transcribed-message` were also on both lists
+until 2026-08-23, when they were deleted from live with the rest of the dead Whisper lane —
+`docs/SIMPLIFY-spine-audit.md` §8.)
+
+> ⚠️ **This table is STALE and reads LOW.** Re-measured 2026-08-23 at the same `--per-node 12` after
+> the fixture work in PRs #32–#36: `promo-picker` 17 → **83 %**, `compile-current-state` 42 → **83 %**,
+> `build-suggest-offer` 33 → **83 %**, `disallowed-entity-gate` 25 → **75 %**, `dym-transform` 67 →
+> **83 %**, `crossdomain-compose` 42 → **50 %**. The rows below have not been re-run wholesale; the
+> per-item numbers in `docs/SIMPLIFY-spine-audit.md` are the current ones. Re-run `npm run mutate`
+> and replace this table before quoting the 35 % headline again.
 
 `output_exchange`'s 75 % at `--per-node 12` and 88 % at `--per-node 100` are the same suite measured
 at two sample sizes; the deeper sample is the one to trust and the one to track.
