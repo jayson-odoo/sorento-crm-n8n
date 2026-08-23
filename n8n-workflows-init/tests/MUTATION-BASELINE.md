@@ -40,6 +40,25 @@ The parser's output shaper, 1,386 lines, the repo owner's #1 regression worry.
 | before (3 captured fixtures) | 100 | 22 | **22 %** |
 | after (74 fixtures: 3 captured + 71 reasoned) | 100 | 88 | **88 %** |
 
+### Re-measured for the issue-#30 fix (`fix/dym-multiselect-add-both`)
+
+`--per-node 100` is a **sample**, and the sample is a stride over the mutant list
+(`list[floor(k*L/n)]`), so changing the body changes `L` and therefore changes *which* 100 mutants
+get run. The fix adds 10 mutable tokens (706 → 716), which is enough to make the sampled rate move
+15 points on its own — it read 88 % → 73 % — with no fixture having got weaker. So the fix was
+measured over the **whole population** instead, where the two runs are comparable by construction:
+
+| | mutants | killed | rate |
+|---|---|---|---|
+| before the fix (75 fixtures) | 706 (all) | 526 | **74.5 %** |
+| after the fix (79 fixtures) | 716 (all) | 537 | **75.0 %** |
+
+Eleven more mutants die while only ten new ones exist, i.e. every mutable token the fix introduced
+is killed by the new fixtures *and* one previously-surviving mutant (`_idx < 0 »&&« _hit.for_hint`)
+is now killed too. Reproduce either side with
+`npm run mutate -- --node output_exchange --slug sub-semantic-parser --per-node 800`.
+Lesson for anyone re-measuring after a body edit: **compare populations, not samples.**
+
 All 12 remaining survivors are argued equivalent below. (A separate ad-hoc harness scored this node
 9/30 = 30 % before this work; that run sampled only `===`/`&&` and did not exclude comments, so its
 number is not comparable to the ones above. The 22 % row is this harness measuring the same
@@ -153,7 +172,7 @@ The `else if` requires `!_quoted && !_dymPick`, under which `_prevScope` **is** 
 second arm can never run, which is why `_noScope` (line 1131) and its length test (line 1178) are
 unkillable. Deleting it would remove the only reader of `_noScope`.
 
-### 4. 🔴 Numbered did-you-mean multi-select is last-wins, not ADD-BOTH
+### 4. 🔴 Numbered did-you-mean multi-select was last-wins, not ADD-BOTH (fixed — issue #30)
 
 The one behavioural defect found. `dymNumberedMultiSelect`'s own comment states the contract:
 
@@ -175,14 +194,16 @@ invisible on any transcript where the customer had more than one entity in scope
 
 Customer impact: picking two did-you-mean suggestions returns results for only the second.
 
-Both shapes are committed:
-`dym-multiselect-adds-both-when-hint-is-ambiguous` (works) and
-`dym-multiselect-KNOWN-DEFECT-second-pick-replaces-first` (does not). The second is clearly labelled
-in its `source.rationale` as pinning a defect rather than a contract; when the `for_hint` tier is
-skipped on the numbered path, its `expected` must change to hold both codes.
+**FIXED** (issue #30, branch `fix/dym-multiselect-add-both`). The `for_hint` tier is now skipped for
+the 2nd+ pick of a numbered turn, so those picks fall through to the append path — the same outcome
+the ambiguous-scope case already reached. `dym-multiselect-KNOWN-DEFECT-second-pick-replaces-first`
+was flipped to the contract and renamed `dym-multiselect-adds-both-when-hint-is-unambiguous`; three
+further fixtures pin the boundary in both directions
+(`dym-multiselect-three-picks-all-add`, `dym-multiselect-two-source-tokens-each-replaces-its-own`,
+`dym-first-pick-still-uses-the-for-hint-fallback`).
 
-Not fixed here: this PR adds tests only, and a parser change edits the LIVE published sub
-`XTODTw-dJcV0uRdC056hG` (there is no wired fork shielding it), so it is user-gated promotion work.
+The fix edits the LIVE published sub `XTODTw-dJcV0uRdC056hG` (no wired fork shields it), so the
+promote itself stays user-gated — the branch carries the change and the tests, not a deploy.
 
 ## Fixture provenance
 

@@ -2,13 +2,13 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "⚠️ THIS FIXTURE PINS A DEFECT, NOT A CONTRACT. Same numbered multi-select as the fixture above, but the prior scope holds only the ONE missed token. Documented intent (the block's own comment, R-v3-1) is ADD-BOTH: 'two alternatives for ONE missed token are both ADDED (never last-wins)'. What the body actually does is last-wins. Pick 1 replaces 'ax' with A-1. Pick 2's for_raw lookup misses, so it falls to applyDymPick's for_hint tier - which finds EXACTLY ONE product entity, namely pick 1's own freshly written entity - and replaces it. A-1 is silently lost. _useSlot=false only disables the tier-0 dym_slot lookup; it does not disable the for_hint fallback, so the shared offer re-hits the first pick's new entity by another route - the exact failure the _useSlot flag was introduced to prevent. The sibling fixture above only passes because two prior products make that fallback ambiguous. Committed so the fix has a red anchor: when the for_hint tier is skipped on the numbered path, THIS expected must change to hold both A-1 and A-2."
+  "rationale": "The issue-#30 fix turned the 2nd+ numbered pick from a replace into an append, so the same position named twice ('1 and 1') now produces the SAME code twice inside applyDymPick instead of overwriting itself. It must not reach the customer as two entities, and it does not: the reconciliation pass's Part-5 dedupe keys on hint|canonical_code, collapses the twin, and reports entities_deduped:1. dym_replace_unmatched is set because the second pick did take the append branch. This fixture exists because the fix moved this path - before it, the for_hint tier silently absorbed the repeat - so the de-duplication is now load-bearing rather than incidental."
  },
  "ctx": {
   "When Executed by Another Workflow": [
    {
     "json": {
-     "latest_user_message": "1 and 2",
+     "latest_user_message": "1 and 1",
      "contact_id": 900000003,
      "previous_conversation_state": {
       "domain_hint": "inventory",
@@ -61,7 +61,7 @@
  "input": [
   {
    "json": {
-    "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"1 and 2\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[1,2],\"reference_target\":\"dym\",\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"1 and 1\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[1,1],\"reference_target\":\"dym\",\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
    }
   }
  ],
@@ -75,7 +75,7 @@
      "domain_hint": "inventory",
      "scope_intent": "specific",
      "is_affirmative": null,
-     "user_goal": "1 and 2",
+     "user_goal": "1 and 1",
      "access_levels": [],
      "date_mode": null,
      "date_filter_start": null,
@@ -84,10 +84,10 @@
      "demand_qty": null,
      "entities": [
       {
-       "raw": "A-2",
+       "raw": "A-1",
        "hint": "product",
-       "canonical_code": "A-2",
-       "uuid": "u2",
+       "canonical_code": "A-1",
+       "uuid": "u1",
        "current_message": true,
        "dym_slot": "off-9"
       }
@@ -114,11 +114,13 @@
      "entity_op_applied": "replace_combine",
      "query_brands": [],
      "dym_pick_applied": true,
-     "dym_offer_pick_code": "A-2",
+     "dym_offer_pick_code": "A-1",
      "dym_pick_domain_forced": "inventory",
+     "dym_replace_unmatched": true,
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "entities_deduped": 1
     },
     "_parser_raw": {
      "message_type": "business_query",
@@ -126,7 +128,7 @@
      "domain_hint": "inventory",
      "scope_intent": "specific",
      "is_affirmative": null,
-     "user_goal": "1 and 2",
+     "user_goal": "1 and 1",
      "access_levels": [],
      "date_mode": null,
      "date_filter_start": null,
@@ -140,7 +142,7 @@
      "contains_flyer": false,
      "reference_positions": [
       1,
-      2
+      1
      ],
      "reference_target": "dym",
      "person_mention": null,

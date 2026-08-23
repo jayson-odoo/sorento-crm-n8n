@@ -1,0 +1,100 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned": true,
+  "n8n_access": "read-only GET /executions only. The envelope is the one captured verbatim in exec-13584318.json (the only live media turn to date), trimmed to the keys detect-media reads, with attachment.type flipped to image so this case is not a duplicate of the voice capture.",
+  "rationale": "issue #35. `message_id + modality + media_ordinal` is the CRM's idempotency key (uq_contact_media_usage_idempotency on respond_io_id/message_id/modality/media_ordinal), so a constant-empty message_id collapses it to (contact, modality, ordinal) and a SECOND voice note from the same contact is served the FIRST note's cached transcript. The id is NOT at the A level (`item.messageId`) - the redis envelope carries it at message.message.message.messageId, which is what `$('tf-message').first().json.message.messageId` reads everywhere else in this spine (the chat_histories logger and Call 'sub-human-intervention' both write THAT value as their `message_id`). respond.io's own `messageId` is preferred over `channelMessageId` because the CRM field is documented as \"Respond.io messageId\" (app/schemas/external/media.py) and because keeping the same id space is what lets a media-ledger row be joined back to chat_histories; channelMessageId is the fallback for a channel that sends no respond.io id."
+ },
+ "ctx": {},
+ "input": [
+  {
+   "json": {
+    "message": {
+     "message": {
+      "event_type": "message.received",
+      "event_id": "e4d0a97b-9016-47c8-9bc5-549f09b99228",
+      "message": {
+       "messageId": 1787461870000000,
+       "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQTdFQ0IyM0E0RTVDMTYzQzAwNQA=",
+       "contactId": 900000001,
+       "channelId": 453209,
+       "traffic": "incoming",
+       "timestamp": 1787461870000,
+       "message": {
+        "type": "attachment",
+        "attachment": {
+         "type": "image",
+         "url": "https://cdn.chatapi.net/whatsapp_business/453209/900000001/photo.jpg",
+         "isPending": false,
+         "fileName": "photo.jpg",
+         "mimeType": "image/jpeg",
+         "ext": "jpg",
+         "size": 204800,
+         "mime": "image/jpeg"
+        }
+       }
+      }
+     },
+     "contact": {
+      "id": 900000001
+     }
+    }
+   }
+  }
+ ],
+ "runIndex": 0,
+ "execution": {
+  "id": "hand-message-id-from-real-envelope"
+ },
+ "expected": [
+  {
+   "json": {
+    "message": {
+     "message": {
+      "event_type": "message.received",
+      "event_id": "e4d0a97b-9016-47c8-9bc5-549f09b99228",
+      "message": {
+       "messageId": 1787461870000000,
+       "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQTdFQ0IyM0E0RTVDMTYzQzAwNQA=",
+       "contactId": 900000001,
+       "channelId": 453209,
+       "traffic": "incoming",
+       "timestamp": 1787461870000,
+       "message": {
+        "type": "attachment",
+        "attachment": {
+         "type": "image",
+         "url": "https://cdn.chatapi.net/whatsapp_business/453209/900000001/photo.jpg",
+         "isPending": false,
+         "fileName": "photo.jpg",
+         "mimeType": "image/jpeg",
+         "ext": "jpg",
+         "size": 204800,
+         "mime": "image/jpeg"
+        }
+       }
+      }
+     },
+     "contact": {
+      "id": 900000001
+     }
+    },
+    "_media": {
+     "modality": "image",
+     "attachment_type": "image",
+     "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/900000001/photo.jpg",
+     "mime_type": "image/jpeg",
+     "caption": null,
+     "bytes": 204800,
+     "duration_ms": null,
+     "duration_source": null,
+     "message_id": "1787461870000000",
+     "respond_io_id": "900000001",
+     "test_run_id": null,
+     "scope": null
+    }
+   }
+  }
+ ]
+}
