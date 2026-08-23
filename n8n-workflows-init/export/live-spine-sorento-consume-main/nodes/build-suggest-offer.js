@@ -97,7 +97,7 @@ const _mkOffer = (cands) => (Array.isArray(cands) && cands.length)
         sibs.sort((a, b) => (Number(b.has) - Number(a.has)) || String(a.code).localeCompare(String(b.code)));
         const exactList = [...exactCodes].map(c => c.toUpperCase()).join(', ');
         // Numbered list of ALL siblings; number-pick invite active; positional pick armed.
-        const numbered = sibs.map((s, i) => `${i + 1}. ${s.code} — ${s.has ? 'has incoming' : 'no incoming'}`).join('\n');
+        const numbered = sibs.map((s, i) => `${i + 1}. ${s.code} - ${s.has ? 'has incoming' : 'no incoming'}`).join('\n');
         out.suggest_offer = true;
         out.suggest_selection_context = 'suggest_offer';
         out.suggest_response =
@@ -254,6 +254,19 @@ if (requireSpec && _dymOk && typeof out.escalate_message === 'string' && out.esc
   }).join('\n');
 }
 
+// entity-type-label helpers (shared by the D1 multi-token block and single-token D1 CODE mode
+// below): normalized match key — resolve-entity's `token` is space/dash-stripped before it
+// reaches the resolver, `entities[].raw` is not — and a display-prettifier for a snake_case/
+// kebab-ish resolver entity_type (open vocabulary; a plain lowercase word passes through as-is).
+// Mirrors compile-current-state's confirm-prefix IIFE (normTok/prettify) byte-for-byte.
+const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+const _prettifyType = (t) => {
+  const s = String(t ?? '').trim();
+  if (!s) return '';
+  if (!/[_-]/.test(s) && s === s.toLowerCase()) return s;
+  return s.replace(/[_-]+/g, ' ').trim().toLowerCase();
+};
+
 // Renderable survivors: a token whose candidates ALL drop via humanLabel (bare uuid, no display
 // name) is skipped entirely — not shown, and its idx range is never consumed.
 const _survivors = d1s
@@ -278,7 +291,14 @@ if (_survivors.length > 1) {
     // dym-candidate-map: each candidate keeps its OWN source token so a code pick replaces the
     // right entity. _srcEnt looked up PER token (parser entity whose raw === this token).
     const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
-      .find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
+      .find(e => _typeNorm(e.raw) === _typeNorm(token));
+    // entity-type-label: resolver PRIMARY (this token's own best non-exact candidate's
+    // entity_type — open vocabulary, prettified only if snake_case/ugly), parser hint FALLBACK
+    // when the resolver named nothing, bare when neither. Matches the confirm-prefix IIFE's
+    // priority in compile-current-state (2262a99b/ae83b114) so a token's type label never
+    // disagrees between the media-confirm line and this offer line.
+    const _typeLabel = _prettifyType(s.picks[0] && s.picks[0].m && s.picks[0].m.entity_type) || (_srcEnt && _srcEnt.hint) || '';
+    const _typeSfx = _typeLabel ? ` (${_typeLabel})` : '';
     const candLines = [];
     for (const p of s.picks) {
       idx += 1;
@@ -308,7 +328,7 @@ if (_survivors.length > 1) {
         for_canonical: (_srcEnt && _srcEnt.canonical_code) || null,
       });
     }
-    blocks.push(`"${token}" — did you mean:\n` + candLines.join('\n'));
+    blocks.push(`"${token}"${_typeSfx} - did you mean:\n` + candLines.join('\n'));
   }
   out.suggest_offer = true;
   out.suggest_selection_context = 'suggest_offer';
@@ -332,7 +352,14 @@ if (d1) {
     // dym-candidate-map: the source token that produced this did-you-mean, matched to the
     // parser entity whose raw == d1.token (for_hint/for_canonical fallback matchers).
     const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
-      .find(e => String(e.raw || '').toLowerCase().trim() === String(d1.token || '').toLowerCase().trim());
+      .find(e => _typeNorm(e.raw) === _typeNorm(d1.token));
+    // entity-type-label: resolver PRIMARY (d1's own best non-exact candidate's entity_type —
+    // open vocabulary, prettified only if snake_case/ugly), parser hint FALLBACK when the
+    // resolver named nothing, bare when neither. Matches the confirm-prefix IIFE's priority in
+    // compile-current-state (2262a99b/ae83b114) so a token's type label never disagrees between
+    // the media-confirm line and this offer line.
+    const _d1TypeLabel = _prettifyType(picks[0] && picks[0].m && picks[0].m.entity_type) || (_srcEnt && _srcEnt.hint) || '';
+    const _d1TypeSfx = _d1TypeLabel ? ` (${_d1TypeLabel})` : '';
     out.suggest_offer = true;
     out.suggest_selection_context = 'suggest_offer';
     if (anyUuid) {
@@ -341,7 +368,7 @@ if (d1) {
       // button/list interpretation) and the pick round-trips by last_result_set[idx].uuid.
       const numbered = picks.map((p, i) => `${i + 1}. ${p.label}`).join('\n');
       out.suggest_response =
-        `Couldn't pin down "${d1.token}". Here are the closest matches:\n${numbered}\n` +
+        `Couldn't pin down "${d1.token}"${_d1TypeSfx}. Here are the closest matches:\n${numbered}\n` +
         `Reply with a number to continue, or would you like me to escalate to ${team} team?`;
       const nums = picks.map((_, i) => String(i + 1));
       out.suggest_quick_reply = [...nums, YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
@@ -389,11 +416,11 @@ if (d1) {
           return `${i + 1}. ${c}${sfx}`;
         }).join('\n');
         out.suggest_response =
-          `Couldn't find "${d1.token}". Did you mean:\n${_dymLines}\n` +
+          `Couldn't find "${d1.token}"${_d1TypeSfx}. Did you mean:\n${_dymLines}\n` +
           `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
       } else {
         out.suggest_response =
-          `Couldn't find "${d1.token}". Did you mean ${humanList(codes)}? ` +
+          `Couldn't find "${d1.token}"${_d1TypeSfx}. Did you mean ${humanList(codes)}? ` +
           `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
       }
       out.suggest_quick_reply = [...codes,  YES, NO].map(s => String(s).replace(/,/g, '')).join(',');

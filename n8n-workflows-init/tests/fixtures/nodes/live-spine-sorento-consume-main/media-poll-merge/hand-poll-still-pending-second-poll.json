@@ -1,0 +1,67 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; no live execution has ever reached the poll loop (see hand-poll-completed.json).",
+    "rationale": "Second time round the loop, job still pending. The point of this case is `_poll_n`: it is derived from THIS node's own $runIndex (0-based, so the second poll is runIndex 1 -> _poll_n 2), NOT from prev.poll_n, which is exactly what stops a stale $('media-route').first() read from resetting the counter and looping forever. media-route's MAX_POLLS is 2, so this output is the one that ends the loop with 'pending_exhausted'. `notices: null` in the job body must normalise to [] (the Array.isArray guard), because media-route does .filter() on it unconditionally."
+  },
+  "ctx": {
+    "media-route": [
+      {
+        "json": {
+          "action": "poll",
+          "modality": "image",
+          "rendered_text": null,
+          "confirmation_text": null,
+          "reply_text": null,
+          "poll_wait_s": 6,
+          "poll_n": 1,
+          "job_id": "job-pending-3",
+          "media_url": "https://cdn.example.invalid/photo-3.jpg",
+          "message_id": "msg-3",
+          "reason": "pending"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "job_id": "job-pending-3",
+        "status": "pending",
+        "respond_io_id": "900000001",
+        "message_id": "msg-3",
+        "modality": "image",
+        "turn_id": "13584320",
+        "context": { "source": "n8n-spine" },
+        "tier": null,
+        "result": null,
+        "notices": null,
+        "error": null
+      }
+    }
+  ],
+  "runIndex": 1,
+  "execution": { "id": "hand-poll-pending" },
+  "expected": [
+    {
+      "json": {
+        "job_id": "job-pending-3",
+        "decision": "accepted",
+        "status": "pending",
+        "idempotent_replay": false,
+        "tier": null,
+        "quota": null,
+        "notices": [],
+        "language_strategy": null,
+        "result": null,
+        "error": null,
+        "_polled": true,
+        "_poll_n": 2,
+        "_poll_ok": true,
+        "_mock": false
+      }
+    }
+  ]
+}

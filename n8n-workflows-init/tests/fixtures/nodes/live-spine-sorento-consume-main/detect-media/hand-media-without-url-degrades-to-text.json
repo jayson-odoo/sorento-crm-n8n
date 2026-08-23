@@ -1,0 +1,74 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; reasoned from the node's own contract (lines 32-35 of detect-media.js).",
+    "rationale": "The fail-safe: an audio attachment respond.io has not finished uploading (isPending, no url) MUST NOT enter the media lane, because media-extract-http would post a null media_url and the CRM would refuse - a refusal message the customer sees for a message they sent perfectly well. The body drops modality back to null so the turn falls through to tf-message and the existing pipeline answers on the caption, which is today's behaviour. The invariant this pins is that only `modality` is cleared: `attachment_type` still reads 'audio' and mime_type still reads 'audio/ogg', so the trace stays truthful about what actually arrived."
+  },
+  "ctx": {},
+  "input": [
+    {
+      "json": {
+        "message": {
+          "contact": { "id": 900000001 },
+          "message": {
+            "message": {
+              "message": {
+                "type": "attachment",
+                "text": "listen to this",
+                "attachment": {
+                  "type": "audio",
+                  "isPending": true,
+                  "fileName": "audio.opus",
+                  "mimeType": "audio/ogg",
+                  "size": 9000
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-media-without-url" },
+  "expected": [
+    {
+      "json": {
+        "message": {
+          "contact": { "id": 900000001 },
+          "message": {
+            "message": {
+              "message": {
+                "type": "attachment",
+                "text": "listen to this",
+                "attachment": {
+                  "type": "audio",
+                  "isPending": true,
+                  "fileName": "audio.opus",
+                  "mimeType": "audio/ogg",
+                  "size": 9000
+                }
+              }
+            }
+          }
+        },
+        "_media": {
+          "modality": null,
+          "attachment_type": "audio",
+          "media_url": null,
+          "mime_type": "audio/ogg",
+          "caption": "listen to this",
+          "bytes": 9000,
+          "duration_ms": null,
+          "duration_source": null,
+          "message_id": null,
+          "respond_io_id": "900000001",
+          "test_run_id": null,
+          "scope": null
+        }
+      }
+    }
+  ]
+}

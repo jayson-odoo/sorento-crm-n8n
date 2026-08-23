@@ -1,0 +1,79 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; the poll loop has NEVER run on live (the media lane was promoted 2026-08-23 and the single media turn to date, exec 13584318, was answered synchronously by the CRM with status=completed, so media-poll-merge has zero captured traffic). Inputs are built from the GET /api/v1/external/media/jobs/{job_id} callback body the node's own header documents.",
+    "rationale": "The ordinary happy poll: the CRM job finished between the synchronous 30 s wait and the first poll. `polledOk` is true (object, truthy `status`, no error), so every field is taken from the poll body: job_id/tier/notices/result pass through and `status` is String(resp.status). The node ALWAYS stamps decision='accepted' and quota=null — it is re-shaping a job-status body into the MediaProcessResponse shape media-route understands, and the job body carries neither. `_poll_n` is $runIndex+1 (=1 on the first poll), which is what makes media-route's MAX_POLLS guard un-defeatable by a stale $('...').first() read."
+  },
+  "ctx": {
+    "media-route": [
+      {
+        "json": {
+          "action": "poll",
+          "modality": "voice",
+          "rendered_text": null,
+          "confirmation_text": null,
+          "reply_text": null,
+          "poll_wait_s": 6,
+          "poll_n": 0,
+          "job_id": "job-completed-1",
+          "media_url": "https://cdn.example.invalid/voice-1.opus",
+          "message_id": "msg-1",
+          "reason": "pending"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "job_id": "job-completed-1",
+        "status": "completed",
+        "respond_io_id": "900000001",
+        "message_id": "msg-1",
+        "modality": "voice",
+        "turn_id": "13584318",
+        "context": { "source": "n8n-spine" },
+        "tier": "standard",
+        "result": {
+          "transcript": "What's the price for SRTWC286?",
+          "rendered_text": "What's the price for SRTWC286?",
+          "confirmation_message": "Here is what I heard: \"What's the price for SRTWC286?\"",
+          "clarification_message": null,
+          "needs_clarification": false
+        },
+        "notices": [],
+        "error": null
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-poll-completed" },
+  "expected": [
+    {
+      "json": {
+        "job_id": "job-completed-1",
+        "decision": "accepted",
+        "status": "completed",
+        "idempotent_replay": false,
+        "tier": "standard",
+        "quota": null,
+        "notices": [],
+        "language_strategy": null,
+        "result": {
+          "transcript": "What's the price for SRTWC286?",
+          "rendered_text": "What's the price for SRTWC286?",
+          "confirmation_message": "Here is what I heard: \"What's the price for SRTWC286?\"",
+          "clarification_message": null,
+          "needs_clarification": false
+        },
+        "error": null,
+        "_polled": true,
+        "_poll_n": 1,
+        "_poll_ok": true,
+        "_mock": false
+      }
+    }
+  ]
+}

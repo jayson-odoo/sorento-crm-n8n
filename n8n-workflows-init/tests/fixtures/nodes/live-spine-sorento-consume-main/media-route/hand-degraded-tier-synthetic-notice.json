@@ -1,0 +1,98 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; the one live media turn ran on tier 'standard' with quota 12/100, so the degraded branch has no traffic. Reasoned from the node's own contract and the two specs it cites (plans/crm-image-degraded-tier-broken-spec.md, plans/crm-media-quota-notice-wording-spec.md).",
+    "rationale": "The ONLY customer-facing string this node composes itself, so it is the one place a wording regression can originate in n8n rather than the CRM - which makes it the case most worth pinning byte-exact. Every one of the three gates must hold for it to fire: decision accepted, tier 'degraded', and the CRM attached no degraded/quota notice of its own (hasCrmDegradedNotice scans both kind and text, so a CRM notice would suppress this and avoid a double-telling). The verb is modality-dependent ('listening' for voice, 'reading' for image); the limit is parenthesised only because quota.limit is present, and the reset sentence only because resets_on is. The composed text is appended to the confirmation with a blank line, never returned instead of it, and is also stamped on _media_trace.synthetic_degraded_notice so an operator reading the trace can tell CRM copy from n8n copy."
+  },
+  "ctx": {
+    "detect-media": [
+      {
+        "json": {
+          "_media": {
+            "modality": "voice",
+            "attachment_type": "audio",
+            "media_url": "https://cdn.example.invalid/voice-degraded.opus",
+            "mime_type": "audio/ogg",
+            "caption": null,
+            "bytes": 10428,
+            "duration_ms": 2607,
+            "duration_source": "estimated_from_size_32kbps",
+            "message_id": "msg-degraded",
+            "respond_io_id": "900000001",
+            "test_run_id": null,
+            "scope": null
+          }
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "job_id": "job-degraded-5",
+        "decision": "accepted",
+        "status": "completed",
+        "idempotent_replay": false,
+        "tier": "degraded",
+        "quota": {
+          "used": 100,
+          "limit": 100,
+          "remaining": 0,
+          "period_key": "2026-08",
+          "resets_on": "1 September"
+        },
+        "notices": [],
+        "language_strategy": { "mode": "auto" },
+        "result": {
+          "transcript": "What's the price for SRTWC286?",
+          "rendered_text": "What's the price for SRTWC286?",
+          "confirmation_message": "Here is what I heard: \"What's the price for SRTWC286?\"",
+          "clarification_message": null,
+          "needs_clarification": false
+        },
+        "error": null
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-degraded-tier" },
+  "expected": [
+    {
+      "json": {
+        "action": "continue",
+        "modality": "voice",
+        "rendered_text": "What's the price for SRTWC286?",
+        "confirmation_text": "Here is what I heard: \"What's the price for SRTWC286?\"\n\nMonthly limit (100) reached, listening with a simpler model. Limit resets 1 September.",
+        "reply_text": null,
+        "poll_wait_s": 0,
+        "poll_n": 0,
+        "job_id": "job-degraded-5",
+        "media_url": "https://cdn.example.invalid/voice-degraded.opus",
+        "message_id": "msg-degraded",
+        "_media_trace": {
+          "source": "crm",
+          "decision": "accepted",
+          "status": "completed",
+          "job_id": "job-degraded-5",
+          "tier": "degraded",
+          "idempotent_replay": false,
+          "quota": {
+            "used": 100,
+            "limit": 100,
+            "remaining": 0,
+            "period_key": "2026-08",
+            "resets_on": "1 September"
+          },
+          "notice_kinds": [],
+          "poll_n": 0,
+          "transport_error": null,
+          "crm_error": null,
+          "synthetic_degraded_notice": "Monthly limit (100) reached, listening with a simpler model. Limit resets 1 September."
+        },
+        "reason": "completed"
+      }
+    }
+  ]
+}

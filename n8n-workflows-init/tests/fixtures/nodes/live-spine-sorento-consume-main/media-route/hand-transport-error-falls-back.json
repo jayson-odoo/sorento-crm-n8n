@@ -1,0 +1,68 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; no live transport failure has been observed. Input is the error item media-extract-http emits under onError=continueRegularOutput.",
+    "rationale": "media-extract-http has a 40 s timeout and runs with onError=continueRegularOutput, so a CRM timeout/5xx hands media-route an item with no `decision` at all. The turn must NOT dead-end silently: the first guard in the file catches the missing decision and replies with the CRM-owned fallback copy for this modality, copied byte-exact from wording.py. Note reply_text here is the bare fallback and does NOT go through appendNotices - there are no notices to append when the request never landed. The error string is preserved in _media_trace.transport_error (and only there: crm_error stays null because that slot means 'the CRM answered and reported an error', which is a different incident to debug)."
+  },
+  "ctx": {
+    "detect-media": [
+      {
+        "json": {
+          "_media": {
+            "modality": "image",
+            "attachment_type": "image",
+            "media_url": "https://cdn.example.invalid/photo-timeout.jpg",
+            "mime_type": "image/jpeg",
+            "caption": null,
+            "bytes": 204800,
+            "duration_ms": null,
+            "duration_source": null,
+            "message_id": "msg-timeout",
+            "respond_io_id": "900000001",
+            "test_run_id": null,
+            "scope": null
+          }
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": { "error": "connect ETIMEDOUT 10.0.0.1:443" }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-transport-error" },
+  "expected": [
+    {
+      "json": {
+        "action": "reply",
+        "modality": "image",
+        "rendered_text": null,
+        "confirmation_text": null,
+        "reply_text": "I could not read anything from that photo. Type the codes and I will look them up straight away.",
+        "poll_wait_s": 0,
+        "poll_n": 0,
+        "job_id": null,
+        "media_url": "https://cdn.example.invalid/photo-timeout.jpg",
+        "message_id": "msg-timeout",
+        "_media_trace": {
+          "source": "crm",
+          "decision": null,
+          "status": null,
+          "job_id": null,
+          "tier": null,
+          "idempotent_replay": false,
+          "quota": null,
+          "notice_kinds": [],
+          "poll_n": 0,
+          "transport_error": "connect ETIMEDOUT 10.0.0.1:443",
+          "crm_error": null
+        },
+        "reason": "transport"
+      }
+    }
+  ]
+}

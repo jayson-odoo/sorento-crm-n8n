@@ -1,0 +1,79 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only. The single live media turn (exec 13584318, captured as exec-13584318.json) was accepted+completed, so no refusal has ever been observed; this is reasoned from the node's own contract and the CRM wording contract it cites (app/services/media_extract/wording.py).",
+    "rationale": "The rule the whole file is built around: on a refusal the CRM's notice IS the reply and n8n formats nothing. 'not_enabled' is in REFUSAL_KINDS, so it becomes primaryNotice, appendixTexts is empty, and reply_text is that notice text VERBATIM - a diff here means n8n started inventing customer copy. The decision, not the HTTP status, is what routes: the body arrived 200 OK. `reason` echoes the CRM decision so the trace can distinguish this from the generic '<decision>_no_notice' fallback. job_id is null because a refused request never created a job."
+  },
+  "ctx": {
+    "detect-media": [
+      {
+        "json": {
+          "_media": {
+            "modality": "voice",
+            "attachment_type": "audio",
+            "media_url": "https://cdn.example.invalid/voice-refused.opus",
+            "mime_type": "audio/ogg",
+            "caption": null,
+            "bytes": 10428,
+            "duration_ms": 2607,
+            "duration_source": "estimated_from_size_32kbps",
+            "message_id": "msg-refused",
+            "respond_io_id": "900000001",
+            "test_run_id": null,
+            "scope": null
+          }
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "decision": "denied_not_enabled",
+        "status": null,
+        "job_id": null,
+        "tier": null,
+        "quota": null,
+        "idempotent_replay": false,
+        "notices": [
+          { "kind": "not_enabled", "text": "Voice notes are not switched on for your account yet. Type your message and I will help straight away." }
+        ],
+        "result": null
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-refusal" },
+  "expected": [
+    {
+      "json": {
+        "action": "reply",
+        "modality": "voice",
+        "rendered_text": null,
+        "confirmation_text": null,
+        "reply_text": "Voice notes are not switched on for your account yet. Type your message and I will help straight away.",
+        "poll_wait_s": 0,
+        "poll_n": 0,
+        "job_id": null,
+        "media_url": "https://cdn.example.invalid/voice-refused.opus",
+        "message_id": "msg-refused",
+        "_media_trace": {
+          "source": "crm",
+          "decision": "denied_not_enabled",
+          "status": null,
+          "job_id": null,
+          "tier": null,
+          "idempotent_replay": false,
+          "quota": null,
+          "notice_kinds": ["not_enabled"],
+          "poll_n": 0,
+          "transport_error": null,
+          "crm_error": null
+        },
+        "reason": "denied_not_enabled"
+      }
+    }
+  ]
+}

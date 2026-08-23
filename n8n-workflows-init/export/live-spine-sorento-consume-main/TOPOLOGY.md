@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **57e70ce2-b586-498d-b9d4-cbc9990a06fd** · activeVersionId **57e70ce2-b586-498d-b9d4-cbc9990a06fd** · DRAFT == ACTIVE
-- 127 nodes
+- versionId **df165492-0610-4a40-b7b6-79a136b44a32** · activeVersionId **df165492-0610-4a40-b7b6-79a136b44a32** · DRAFT == ACTIVE
+- 134 nodes
 
 ## Edges
-_152 edge groups_
+_160 edge groups_
 
 ```
 Aggregate[0] -> tier-gate
@@ -74,6 +74,7 @@ crossdomain-zeroset[0] -> crossdomain-gate
 cs-offer-gate[0] -> cs-roster-plan
 cs-offer-gate[1] -> compile-current-state
 cs-roster-plan[0] -> get-cs-members
+detect-media[0] -> if-media-in
 disallowed-entity-gate[0] -> If3
 divert-suggest-yes[0] -> tag-escalate-offer
 divert-suggest-yes[1] -> escalation-context, tag-out-of-scope
@@ -90,15 +91,19 @@ dym-transform-partial[0] -> dym-gate-partial
 escalate-catalog[0] -> cs-offer-gate
 escalation-context[0] -> Call 'sub-human-intervention'
 family-fetch[0] -> sibling-transform
-fetch-audio[0] -> whisper-transcribe
 get-access-types[0] -> Aggregate
 get-cs-members[0] -> build-cs-member-offer
 get-presigned-url[0] -> Switch
 get-session-vars[0] -> Call 'sub-query-reformulator'
 ideate-turn-http[0] -> build-ideate-reply
-if-audio-in[0] -> if-voice-allowed
-if-audio-in[1] -> tf-message
 if-got-attachments[0] -> Edit Fields
+if-media-in[0] -> media-extract-http
+if-media-in[1] -> tf-message
+if-media-ok[0] -> patch-transcript
+if-media-ok[1] -> if-media-reply
+if-media-poll[0] -> wait-media-poll
+if-media-poll[1] -> if-media-ok
+if-media-reply[0] -> send-media-reply
 if-message-is-audio[1] -> Call 'sub-respond-save-message-redis'2, get-session-vars
 if-promo-dym[0] -> promo-dym-plan
 if-promo-dym[1] -> dym-probe
@@ -107,12 +112,15 @@ if-tier-ask[1] -> Call 'sub-get-results'
 if-tier-has-any[0] -> access-level-choice-message
 if-tier-has-any[1] -> Call 'sub-get-results'
 if-transcribed-confirm[0] -> send-transcript-confirm
-if-voice-allowed[0] -> fetch-audio
-if-voice-allowed[1] -> send-voice-not-allowed
 is-escalation-declined[0] -> tag-escalation-declined
 is-escalation-declined[1] -> If9
 is-human-intervened[0] -> if-message-is-audio
 is-human-intervened[1] -> update-human-intervened, set-human-intervened
+media-extract[0] -> media-route
+media-extract-http[0] -> media-extract
+media-poll-http[0] -> media-poll-merge
+media-poll-merge[0] -> media-route
+media-route[0] -> if-media-poll
 not-found-error-message[0] -> sibling-gate
 not-supported-domain[0] -> tag-not-supported
 not-supported-domain[1] -> If
@@ -122,7 +130,7 @@ probe-incoming[0] -> annotate-incoming-picker
 promo-dym-plan[0] -> promo-dym-probe
 promo-dym-probe[0] -> dym-annotate
 promo-picker[0] -> crossdomain-zeroset
-redis-pop-main-message-list[0] -> if-audio-in
+redis-pop-main-message-list[0] -> detect-media
 resolve-entity[0] -> disallowed-entity-gate
 resolve-entity-clarification[0] -> construct-user-prompt
 send-message-files[0] -> Loop Over Items1
@@ -158,7 +166,7 @@ tier-probe-collect[0] -> if-tier-has-any
 tier-probe-plan[0] -> tier-probe
 tool-filter[0] -> if-tier-ask
 validator[0] -> promo-picker
-whisper-transcribe[0] -> patch-transcript
+wait-media-poll[0] -> media-poll-http
 ```
 
 ## Read BY NAME (`$('x')` / `$("x")`)
@@ -183,6 +191,7 @@ whisper-transcribe[0] -> patch-transcript
 - **crossdomain-render** ← attach-merge, crossdomain-compose
 - **crossdomain-zeroset** ← compile-current-state, crossdomain-render
 - **cs-roster-plan** ← build-cs-member-offer, compile-current-state
+- **detect-media** ← media-extract-http, media-route
 - **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, cs-roster-plan, dym-transform, dym-transform-partial, escalate-catalog, family-fetch, not-found-error-message, probe-incoming, promo-picker, sibling-gate, sibling-transform, tier-probe, tool-filter
 - **dym-annotate** ← build-suggest-offer
 - **dym-transform** ← dym-probe, promo-dym-plan, promo-dym-probe
@@ -193,11 +202,12 @@ whisper-transcribe[0] -> patch-transcript
 - **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, compile-current-state, construct-user-prompt, crossdomain-zeroset, escalation-context, ideate-turn-http
 - **ideate-turn-http** ← build-ideate-reply
 - **is-human-intervened** ← transcribed-message
+- **media-route** ← media-poll-merge
 - **not-found-error-message** ← escalate-catalog
-- **patch-transcript** ← send-transcript-confirm
+- **patch-transcript** ← compile-current-state, resolve-entity, send-transcript-confirm
 - **probe-incoming** ← annotate-incoming-picker
 - **promo-picker** ← compile-current-state
-- **redis-pop-main-message-list** ← fetch-audio, if-transcribed-confirm, if-voice-allowed, patch-transcript, send-voice-not-allowed, sorento-sub-respond-findcontact-respond, sorento-sub-respond-sendmsg-presign-fail
+- **redis-pop-main-message-list** ← patch-transcript, send-media-reply, sorento-sub-respond-findcontact-respond, sorento-sub-respond-sendmsg-presign-fail
 - **resolve-entity** ← If3, build-suggest-offer, compile-current-state, crossdomain-zeroset, disallowed-entity-gate, dym-transform, dym-transform-partial, not-found-error-message, promo-picker
 - **resolve-entity-clarification** ← construct-user-prompt
 - **set-ran-query-formulator** ← sorento-sub-respond-sendmsg-respond
@@ -235,8 +245,8 @@ whisper-transcribe[0] -> patch-transcript
 | dym-probe-partial | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | probe-incoming | `rysSPgUssLDf6xJc` | sub-get-results TEST |
 | promo-dym-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
+| send-media-reply | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | send-transcript-confirm | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
-| send-voice-not-allowed | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | sibling-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | sorento-sub-respond-sendmsg-presign-fail | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | sorento-sub-respond-sendmsg-respond | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
@@ -260,6 +270,8 @@ whisper-transcribe[0] -> patch-transcript
 | get-presigned-url | httpHeaderAuth | crm-n8n-auth |
 | get-session-vars | httpHeaderAuth | crm-n8n-auth |
 | ideate-turn-http | httpHeaderAuth | crm-n8n-auth |
+| media-extract-http | httpHeaderAuth | crm-n8n-auth |
+| media-poll-http | httpHeaderAuth | crm-n8n-auth |
 | redis-pop-main-message-list | redis | sorento-redis |
 | resolve-entity | httpHeaderAuth | crm-n8n-auth |
 | resolve-entity-clarification | httpHeaderAuth | crm-n8n-auth |
@@ -268,28 +280,29 @@ whisper-transcribe[0] -> patch-transcript
 | send-message-images | respondIoApi | sorento-api |
 | send-message-video | respondIoApi | sorento-api |
 | update-human-intervened | respondIoApi | sorento-api |
-| whisper-transcribe | openAiApi | sorento-openai |
 
 ## Code nodes (bodies exported to `nodes/`)
 
 | node | lines |
 |---|---|
-| compile-current-state | 684 |
+| compile-current-state | 898 |
+| build-suggest-offer | 584 |
 | promo-picker | 575 |
-| build-suggest-offer | 557 |
 | disallowed-entity-gate | 496 |
-| dym-transform | 417 |
-| dym-transform-partial | 410 |
-| not-found-error-message | 403 |
+| not-found-error-message | 436 |
+| dym-transform | 416 |
+| dym-transform-partial | 409 |
 | tier-gate | 195 |
 | crossdomain-render | 181 |
 | dym-annotate | 169 |
+| media-route | 151 |
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
 | build-cs-member-offer | 107 |
+| crossdomain-compose | 101 |
 | access-level-choice-message | 95 |
+| detect-media | 91 |
 | escalate-catalog | 89 |
-| crossdomain-compose | 86 |
 | presign-fail-notice | 62 |
 | tool-filter | 59 |
 | attach-merge | 51 |
@@ -297,10 +310,11 @@ whisper-transcribe[0] -> patch-transcript
 | sibling-transform | 47 |
 | tier-probe-collect | 47 |
 | validator | 46 |
+| patch-transcript | 43 |
 | promo-dym-plan | 37 |
 | annotate-incoming-picker | 35 |
 | tier-probe-plan | 33 |
-| patch-transcript | 29 |
+| media-poll-merge | 31 |
 | central-exchange | 28 |
 | construct-user-prompt | 25 |
 | cs-roster-plan | 21 |
