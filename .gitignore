@@ -32,3 +32,8 @@ n8n-workflows-init/.pii-scrub-map.json
 
 # deploy.py gate (e) pre-write backups — machine-local, dirties the tree if tracked
 n8n-workflows-init/tests/backups/*.json
+
+# Python bytecode — deploy.py imports export-workflows.py, so running the deploy
+# regenerates this and dirties gate (a), deadlocking the next run.
+__pycache__/
+*.pyc

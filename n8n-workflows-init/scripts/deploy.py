@@ -124,7 +124,12 @@ asm = _load_module("assemble", "assemble.py")
 # the --i-know-this-is-live acknowledgment (e.g. a disposable dev-only workflow you just created for
 # a one-off experiment). Every real id in CLAUDE.md's "Key IDs" table — live or clone alike — stays
 # OFF this list; the clone still gets its own explicit guard below.
-UNPROTECTED = set()
+UNPROTECTED = {
+    # Scratch/throwaway targets ONLY. A workflow listed here can be PUT to with no
+    # --i-know-this-is-live and with --yes (non-interactive). Never add anything a
+    # customer message can reach: the entry must be INACTIVE and have no live caller.
+    "SEqUDO7tpmtNdeDb",  # zz-DEPLOY-SANDBOX sorento-consume-main (inactive, 0 callers, created 2026-08-23)
+}
 
 # Purely cosmetic — labels a few well-known ids in gate (d)'s message so an operator recognizes
 # what they're about to touch. Never used to decide allow/deny; that's UNPROTECTED (above) and
@@ -228,7 +233,15 @@ def gate_c(base, key, slug, src_id, to_id, manifest):
     except urllib.error.HTTPError as e:
         return False, f"(c) FAIL — GET {to_id} failed: HTTP {e.code}", None
     v, av = target.get("versionId"), target.get("activeVersionId")
-    if v != av:
+    # A workflow that has NEVER been published reports activeVersionId None while still
+    # carrying a versionId. That is not an unpublished draft — there is no published
+    # version to overwrite, so there is nothing to clobber. Only treat it as a draft
+    # when something HAS been published and the draft has since moved past it.
+    # (Found 2026-08-23 on the first real deploy, against a freshly POSTed scratch clone.)
+    if av is None and not target.get("active"):
+        print(f"  (c) NOTE — target {to_id} has never been published "
+              f"(activeVersionId None, active False); no published version to overwrite.")
+    elif v != av:
         return False, (f"(c) FAIL — target {to_id} ('{target.get('name')}') has an "
                         f"UNPUBLISHED DRAFT: versionId {v} != activeVersionId {av}. "
                         f"A deploy now would overwrite work not yet published. "
