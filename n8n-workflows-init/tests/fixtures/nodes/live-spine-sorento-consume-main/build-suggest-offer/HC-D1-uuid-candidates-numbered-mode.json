@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "When any candidate is uuid-coded the offer switches to NUMBERED mode: human names in the text, digits as the buttons, and the pick round-trips through last_result_set[idx]. `value` must be the LABEL (never the uuid) while `product` keeps the canonical_code, and the dym map is keyed on the code \u2014 that split is what lets output_exchange resolve the pick without ever showing a uuid."
+  "rationale": "When any candidate is uuid-coded the offer switches to NUMBERED mode: human names in the text, digits as the buttons, and the pick round-trips through last_result_set[idx]. `value` must be the LABEL (never the uuid) while `product` keeps the canonical_code, and the dym map is keyed on the code \u2014 that split is what lets output_exchange resolve the pick without ever showing a uuid.",
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -76,7 +78,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "Couldn't pin down \"august promo\". Here are the closest matches:\n1. AUGUST PROMO\n2. JULY PROMO\nReply with a number to continue, or would you like me to escalate to customer_service team?",
+    "suggest_response": "Couldn't pin down \"august promo\" (promotion). Here are the closest matches:\n1. AUGUST PROMO\n2. JULY PROMO\nReply with a number to continue, or would you like me to escalate to customer_service team?",
     "suggest_quick_reply": "1,2,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

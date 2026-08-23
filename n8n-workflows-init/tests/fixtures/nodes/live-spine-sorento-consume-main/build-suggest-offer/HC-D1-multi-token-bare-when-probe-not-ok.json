@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "The multi-token block's has/no suffix is gated on the probe having SUCCEEDED, not merely on the code appearing in `probed`. With dym_probe_meta.ok false the whole annotation must be inert and the rendered lines byte-identical to pre-change -- loosening that gate stamps confident has/no labels off a probe that failed. Byte-for-byte the inputs of HC-D1-multi-token-annotated-and-hint-fallback.json with the one flag flipped."
+  "rationale": "The multi-token block's has/no suffix is gated on the probe having SUCCEEDED, not merely on the code appearing in `probed`. With dym_probe_meta.ok false the whole annotation must be inert and the rendered lines byte-identical to pre-change -- loosening that gate stamps confident has/no labels off a probe that failed. Byte-for-byte the inputs of HC-D1-multi-token-annotated-and-hint-fallback.json with the one flag flipped.",
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -112,7 +114,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "Couldn't find some items:\n\n\"tapA\" \u2014 did you mean:\n  1. A1\n  2. A2\n\"tapB\" \u2014 did you mean:\n  3. B1\n  4. B2\n\nReply a number to pick, or 'yes' to escalate to customer_service.",
+    "suggest_response": "Couldn't find some items:\n\n\"tapA\" (product) - did you mean:\n  1. A1\n  2. A2\n\"tapB\" (category) - did you mean:\n  3. B1\n  4. B2\n\nReply a number to pick, or 'yes' to escalate to customer_service.",
     "suggest_quick_reply": "Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

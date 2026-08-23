@@ -42,7 +42,6 @@ const DOMAIN_PROBE = {
     // additionally scoped by attachment_type_ids. 8 candidates ⇒ ~10 of the 50-row budget, so this
     // is safe with a large margin and is CONFIRMED at 8. Contrast `inventory` below, where the
     // measured grain was 3x worse than estimated — do not generalise between the two domains.
-    probe_cap: 8,
   },
   promotion: {
     tool:      'crm_marketing_promotions_list',

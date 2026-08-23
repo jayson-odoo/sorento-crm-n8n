@@ -83,4 +83,19 @@ out.variables = v;
 // NOTE (review F2): no debug key is attached to the returned item. On live this node feeds
 // `save-session-vars`, the conversation-variables PUT, which sends `JSON.stringify($json)` — the
 // WHOLE item — so any stray top-level key here is persisted into the real customer session.
+// EM-DASH SANITIZER (captain hard rule 2026-08-22): crossdomain-compose reintroduces new
+// dynamic text (xb.block from crossdomain-render, itself CRM-field-derived) AFTER
+// compile-current-state already sanitized its own output, so fold em-dash again here before
+// this becomes the item respond2 / save-session-vars see.
+(function _sanitizeEmDash(o) {
+  if (o && typeof o === 'object') {
+    for (const k of Object.keys(o)) {
+      const v = o[k];
+      if (typeof v === 'string') o[k] = v.replace(/\u2014/g, '-');
+      else if (v && typeof v === 'object') _sanitizeEmDash(v);
+    }
+  }
+  return o;
+})(out);
+
 return [{ json: out }];

@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "The annotated render is gated on at least one OFFERED code having actually been probed. When the probe succeeded but covered only codes that are not in this offer (capped, excluded or from another token), the whole annotation block must stay inert \u2014 plain humanList prose, no sort, no suffixes \u2014 rather than labelling every offered code 'no'."
+  "rationale": "The annotated render is gated on at least one OFFERED code having actually been probed. When the probe succeeded but covered only codes that are not in this offer (capped, excluded or from another token), the whole annotation block must stay inert \u2014 plain humanList prose, no sort, no suffixes \u2014 rather than labelling every offered code 'no'.",
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -92,7 +94,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "Couldn't find \"tap\". Did you mean SRTA, SRTB, or SRTC? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_response": "Couldn't find \"tap\" (product). Did you mean SRTA, SRTB, or SRTC? Reply with a code to continue, or would you like me to escalate to customer_service team?",
     "suggest_quick_reply": "SRTA,SRTB,SRTC,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

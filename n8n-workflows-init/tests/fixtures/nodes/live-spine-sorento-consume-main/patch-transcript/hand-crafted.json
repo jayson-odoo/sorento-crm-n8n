@@ -1,65 +1,114 @@
 {
-  "source": {
-    "execution_id": null,
-    "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
-    "node": "patch-transcript",
-    "captured_at": "2026-08-22T00:00:00+00:00",
-    "hand_crafted": true,
-    "rationale": "0 traffic in 6-day REST retention: this is the whisper-transcribe->patch-transcript lane (distinct from 'Transcribe a recording'->transcribed-message), also part of the never-really-live voice path (LESSONS 'Voice STT was never wired', tested only via /voice in zz-chat). ctx built from the real redis-pop-main-message-list nested shape (item.message.message.message.message, grounded in escalation-context/exec-13442024.json), input = a plausible whisper {text} output. Ran through the real body; output eyeballed sane (audio->text type flip, source_url preserved, _transcribed/_transcript stamped).",
-    "expected_from": "body-run"
-  },
-  "ctx": {
-    "redis-pop-main-message-list": [
-      {
-        "json": {
-          "message": {
-            "message": {
-              "message": {
-                "message": {
-                  "type": "audio",
-                  "attachment": {
-                    "url": "https://media.example.com/voice-note-abc123.ogg"
-                  }
+    "source": {
+        "execution_id": null,
+        "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+        "node": "patch-transcript",
+        "captured_at": "2026-08-23T00:00:00+00:00",
+        "hand_crafted": true,
+        "expected_from": "reasoned",
+        "reasoned": true,
+        "repinned_at_version": "df165492",
+        "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own upstream contract, not captured traffic",
+        "rationale": "RE-PINNED at live df165492 (media-intake promote). The OLD fixture was not wrong about behaviour, it encoded a DEAD INPUT CONTRACT: patch-transcript used to sit under `whisper-transcribe` and read the transcript off `$json.text`. That node is gone from live (so are fetch-audio / if-audio-in / if-voice-allowed / send-voice-not-allowed); the node is now fed by `if-media-ok[0]`, i.e. a `media-route` item with action='continue', and reads `rendered_text`. Feeding it the old {text} shape made `String(route.rendered_text || '')` return '' and the test failed for the right reason - a stale INPUT, so this is a fixture fix, not a live behaviour change. Input rebuilt from media-route's own `out('continue', ...)` envelope (export/live-spine-sorento-consume-main/nodes/media-route.js). Expected re-derived from the body, not frozen: deep-copy the popped queue item; on E (item.message.message.message.message) stash `source_url` = the old attachment url and `source_type` = the old attachment type, then neutralise BOTH `E.attachment.type` and `E.type` to 'text' so the surviving `if-message-is-audio` gate (which reads $('tf-message').first().json.message.message.attachment.type === 'audio') takes its FALSE branch; set E.text to the CRM's rendered_text; stamp the legacy `_transcribed`/`_transcript` pair (send-transcript-confirm still reads `_transcript`) plus the new `_media` block that compile-current-state's MI-D confirm-prefix reads. ctx keeps the real nested redis-pop shape (grounded in escalation-context/exec-13442024.json) and now carries `attachment.type` = 'audio', which the old ctx omitted - without it `source_type` could never be anything but null and the new key would be pinned meaningless."
+    },
+    "ctx": {
+        "redis-pop-main-message-list": [
+            {
+                "json": {
+                    "message": {
+                        "message": {
+                            "message": {
+                                "message": {
+                                    "type": "audio",
+                                    "attachment": {
+                                        "type": "audio",
+                                        "url": "https://media.example.com/voice-note-abc123.ogg",
+                                        "mimeType": "audio/ogg"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-        }
-      }
-    ]
-  },
-  "input": [
-    {
-      "json": {
-        "text": "Do you have the SRT332 basin in white?"
-      }
-    }
-  ],
-  "expected": [
-    {
-      "json": {
-        "message": {
-          "message": {
-            "message": {
-              "message": {
-                "type": "text",
-                "attachment": {
-                  "url": "https://media.example.com/voice-note-abc123.ogg",
-                  "source_url": "https://media.example.com/voice-note-abc123.ogg",
-                  "type": "text"
-                },
-                "text": "Do you have the SRT332 basin in white?"
-              }
+        ]
+    },
+    "input": [
+        {
+            "json": {
+                "action": "continue",
+                "modality": "voice",
+                "rendered_text": "Do you have the SRT332 basin in white?",
+                "confirmation_text": "I heard: \"Do you have the SRT332 basin in white?\" Is that right?",
+                "reply_text": null,
+                "poll_wait_s": 0,
+                "poll_n": 0,
+                "job_id": "6b1f0d9c-3f2a-4c11-9f4e-2a7c8e5d1b30",
+                "media_url": "https://media.example.com/voice-note-abc123.ogg",
+                "message_id": "msg-abc123",
+                "reason": "completed",
+                "_media_trace": {
+                    "source": "crm",
+                    "decision": "accepted",
+                    "status": "completed",
+                    "job_id": "6b1f0d9c-3f2a-4c11-9f4e-2a7c8e5d1b30",
+                    "tier": "standard",
+                    "idempotent_replay": false,
+                    "quota": null,
+                    "notice_kinds": [],
+                    "poll_n": 0,
+                    "transport_error": null,
+                    "crm_error": null
+                }
             }
-          },
-          "_transcribed": true,
-          "_transcript": "Do you have the SRT332 basin in white?"
         }
-      }
+    ],
+    "expected": [
+        {
+            "json": {
+                "message": {
+                    "message": {
+                        "message": {
+                            "message": {
+                                "type": "text",
+                                "attachment": {
+                                    "type": "text",
+                                    "url": "https://media.example.com/voice-note-abc123.ogg",
+                                    "mimeType": "audio/ogg",
+                                    "source_url": "https://media.example.com/voice-note-abc123.ogg",
+                                    "source_type": "audio"
+                                },
+                                "text": "Do you have the SRT332 basin in white?"
+                            }
+                        }
+                    },
+                    "_transcribed": true,
+                    "_transcript": "Do you have the SRT332 basin in white?",
+                    "_media": {
+                        "modality": "voice",
+                        "confirmation_text": "I heard: \"Do you have the SRT332 basin in white?\" Is that right?",
+                        "rendered_text": "Do you have the SRT332 basin in white?",
+                        "job_id": "6b1f0d9c-3f2a-4c11-9f4e-2a7c8e5d1b30",
+                        "trace": {
+                            "source": "crm",
+                            "decision": "accepted",
+                            "status": "completed",
+                            "job_id": "6b1f0d9c-3f2a-4c11-9f4e-2a7c8e5d1b30",
+                            "tier": "standard",
+                            "idempotent_replay": false,
+                            "quota": null,
+                            "notice_kinds": [],
+                            "poll_n": 0,
+                            "transport_error": null,
+                            "crm_error": null
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "runIndex": 0,
+    "execution": {
+        "id": "hand-crafted"
     }
-  ],
-  "runIndex": 0,
-  "execution": {
-    "id": "hand-crafted"
-  }
 }

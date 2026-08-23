@@ -43,12 +43,12 @@ if (missingAttachmentType) {
   const subjectText = subject ? `${subject.hint} ${subject.raw}` : 'the requested product';
   escalate_message =
     `Please provide the attachment type for ${subjectText} ` +
-    `— e.g. product image, technical drawing, or certificate.`;
+    `- e.g. product image, technical drawing, or certificate.`;
   is_clarification = true;
 
 } else if (needsScope) {
   escalate_message =
-    `A ${q.domain_hint} enquiry can't be answered with a general search — ` +
+    `A ${q.domain_hint} enquiry can't be answered with a general search - ` +
     `please specify a ${humanList(allowedTypes)} so I can look it up.`;
   is_clarification = true;
 
@@ -274,15 +274,48 @@ if (missingAttachmentType) {
   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
   const _notFoundRaw = unresolved.filter(t => !_resolvedToks.has(normRaw(t)));
   const _useBreakdown = _foundLines.length > 0;
+  // entity-type-label: name what the bot thought a not-found token was — resolver PRIMARY
+  // (this token's own resolution's matches[0].entity_type — open vocabulary, prettified only
+  // if snake_case/ugly), parser hint FALLBACK (byRaw, matched by the SAME normalized key) when
+  // the resolver named nothing for this token, bare when neither is known (byte-identical to
+  // the old line then). Matches the confirm-prefix IIFE's priority in compile-current-state
+  // so a token's type label never disagrees between the media-confirm line and this miss line.
+  // Match key is space/dash-stripped + lowercased on BOTH sides: resolver tokens are stripped
+  // before they reach the resolver (2262a99b), parser `entities[].raw` is not.
+  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+  const _prettifyType = (t) => {
+    const s = String(t ?? '').trim();
+    if (!s) return '';
+    if (!/[_-]/.test(s) && s === s.toLowerCase()) return s;
+    return s.replace(/[_-]+/g, ' ').trim().toLowerCase();
+  };
+  // FIRST-wins on a normalized-key collision (agrees with compile-current-state's
+  // .find(), which also keeps the first match). A plain Map(...map()) would keep the
+  // LAST entity instead, letting the two nodes disagree on which entity a token names.
+  const _byRawStripped = new Map();
+  for (const e of allEnts) {
+    const _k = _typeNorm(e.raw);
+    if (!_byRawStripped.has(_k)) _byRawStripped.set(_k, e);
+  }
+  const _typeOfToken = (t) => {
+    try {
+      const res = (Array.isArray(r?.resolutions) ? r.resolutions : []).find(x => _typeNorm(x?.token) === _typeNorm(t));
+      const m0 = res && Array.isArray(res.matches) && res.matches[0];
+      if (m0 && m0.entity_type) return _prettifyType(m0.entity_type);
+    } catch (e) { /* no resolutions -> fall through to parser hint */ }
+    const hint = _byRawStripped.get(_typeNorm(t))?.hint;
+    return hint ? String(hint) : '';
+  };
+  const _labelTok = (t) => { const tl = _typeOfToken(t); return `"${t}"${tl ? ` (${tl})` : ''}`; };
   // notFoundRaw override lets a branch fold some unresolved tokens into the searched noun
   // instead of listing them as "couldn't find" (e.g. attachment qualifiers like "SPAN").
   // mc-label: state the SEARCH SCOPE, so "nothing matched" cannot be read as "nothing matched in
   // the one company you were thinking of". Empty on a single-company turn, which keeps the
   // sentence byte-identical there. `_entitlementMiss` deliberately does not take it — that arm is
   // about a promotion being withheld from this contact, not about where we looked.
-  const _coSuffix = _multiCo ? ` — checked in ${_andList(_searchedCos)}` : '';
+  const _coSuffix = _multiCo ? ` - checked in ${_andList(_searchedCos)}` : '';
   const buildBreakdownMsg = (domainWord, notFoundRaw) => {
-    const nf = (notFoundRaw ?? _notFoundRaw).map(t => `"${t}"`);
+    const nf = (notFoundRaw ?? _notFoundRaw).map(_labelTok);
     const parts = [];
     if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
     if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
@@ -309,12 +342,12 @@ if (missingAttachmentType) {
       .join(', ');
     if (resolvedSummary) {
       escalate_message =
-        `I understood ${resolvedSummary}, but couldn't make out "${captured}" — ` +
+        `I understood ${resolvedSummary}, but couldn't make out "${captured}" - ` +
         `is that a ${labels}? Please label it, e.g. customer <name>, product <code>.`;
     } else {
       escalate_message =
         `I captured "${captured}" but couldn't tell which part is which. ` +
-        `For a ${q.domain_hint} enquiry, please give me a labeled specific — e.g. ${labels}.`;
+        `For a ${q.domain_hint} enquiry, please give me a labeled specific - e.g. ${labels}.`;
     }
   } else {
   const require_specific = gate.require_specific
@@ -354,13 +387,13 @@ if (missingAttachmentType) {
       const label = `${_orderMatch.canonical_code}${d.customer_name ? ` (${d.customer_name})` : ''}`;
       if (q.order_status === 'delivered') {
         const eta = d.estimated_delivery_date ? ` (estimated delivery ${d.estimated_delivery_date})` : '';
-        const st  = d.status ? ` — current status: ${d.status}` : '';
+        const st  = d.status ? ` - current status: ${d.status}` : '';
         escalate_message =
           `Order ${label} hasn't been delivered yet${st}. ` +
           `Would you like me to escalate to ${team} team?`;
       } else {
         escalate_message =
-          `Order ${label} has no outstanding items — it looks already delivered or closed. ` +
+          `Order ${label} has no outstanding items - it looks already delivered or closed. ` +
           `Would you like me to escalate to ${team} team?`;
       }
     } else if (_useBreakdown) {
@@ -377,7 +410,7 @@ if (missingAttachmentType) {
       // still overrides this whenever the resolver returns alternatives.
       // Domain-agnostic ON PURPOSE: this node serves promotion, inventory and incoming alike.
       escalate_message =
-      `Couldn't find: ${_notFoundRaw.map(t => `"${t}"`).join(', ')}. ` +
+      `Couldn't find: ${_notFoundRaw.map(_labelTok).join(', ')}. ` +
       `Would you like me to escalate to ${team} team?`;
     } else {
       const _forRequested = requested ? ` for ${requested}` : '';

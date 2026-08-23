@@ -53,8 +53,8 @@ const total = (() => {
 })();
 
 const notice = (total > failed)
-  ? `Sorry — ${failed} of ${total} files didn't attach. Please ask again, or I can escalate this.`
-  : `Sorry — I couldn't attach the file(s). Please ask again, or I can escalate this.`;
+  ? `Sorry - ${failed} of ${total} files didn't attach. Please ask again, or I can escalate this.`
+  : `Sorry - I couldn't attach the file(s). Please ask again, or I can escalate this.`;
 
 // Dead-end branch: emits a fresh item and mutates nothing. It never touches
 // `crossdomain-compose`'s item (on live that item is the body of the session PUT — review F2),

@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "The has-incoming set is built from rows that may be null, may have no title, and may have no fields at all. Each is skipped in turn; only the row that actually names SRTB contributes. If any of those guards inverts, the code set fills with junk and every sibling reads 'no incoming' \u2014 a confident wrong answer about stock the customer could have had."
+  "rationale": "The has-incoming set is built from rows that may be null, may have no title, and may have no fields at all. Each is skipped in turn; only the row that actually names SRTB contributes. If any of those guards inverts, the code set fills with junk and every sibling reads 'no incoming' \u2014 a confident wrong answer about stock the customer could have had.",
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -95,7 +97,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTB \u2014 has incoming\n2. SRTA \u2014 no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs_stock team.",
+    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTB - has incoming\n2. SRTA - no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs_stock team.",
     "suggest_quick_reply": "Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

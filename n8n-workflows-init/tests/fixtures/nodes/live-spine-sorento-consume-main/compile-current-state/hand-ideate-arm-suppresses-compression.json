@@ -3,7 +3,10 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The ideate arm sets manualResponse itself rather than trusting the upstream item, so even on a turn the parser typed as a business_query with results in the envelope, the relayed text is NOT rewritten into 'Previous turn (...)' and no roster is built. A relay that got compressed would send the customer a summary of a question they never asked."
+  "rationale": "The ideate arm sets manualResponse itself rather than trusting the upstream item, so even on a turn the parser typed as a business_query with results in the envelope, the relayed text is NOT rewritten into 'Previous turn (...)' and no roster is built. A relay that got compressed would send the customer a summary of a question they never asked.",
+  "reasoned": true,
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -73,7 +76,7 @@
      },
      "escalation": {},
      "entities": [],
-     "response": "Got it \u2014 what room is this for?",
+     "response": "Got it - what room is this for?",
      "last_result_set": [],
      "selection_context": null,
      "dym_offer": null,
@@ -87,7 +90,7 @@
      "routing_company": null,
      "routing_companies": null
     },
-    "user_response": "Got it \u2014 what room is this for?"
+    "user_response": "Got it - what room is this for?"
    }
   }
  ],

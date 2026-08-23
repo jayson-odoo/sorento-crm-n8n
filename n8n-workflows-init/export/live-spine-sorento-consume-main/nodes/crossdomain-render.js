@@ -17,7 +17,7 @@ const out  = { ...pass, _xd: zs };
 
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 const fmtValue = (v) => {
-  if (v === null || v === undefined || v === '') return '—';
+  if (v === null || v === undefined || v === '') return '-';
   if (typeof v === 'boolean') return v ? 'Yes' : 'No';
   if (typeof v === 'string' && ISO_RE.test(v)) {
     const d = new Date(v);
