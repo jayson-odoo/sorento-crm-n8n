@@ -1,0 +1,105 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The pre-`resolutions` resolver shape is still supported: with no resolutions array but a populated unresolved_tokens, the whole resolver object is treated as ONE resolution and the token label falls back through unresolved_tokens[0]. That shape also carries no entity_type, so entity_type comes out null and for_hint falls back to the PARSER entity's hint -- the two halves of the FINDING-2 fallback in one case. Dropping this branch would silently stop offering did-you-means on that shape rather than fail loudly."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "unresolved_tokens": [
+      "tap"
+     ],
+     "matches": [
+      {
+       "canonical_code": "SRTA",
+       "entity_type": null,
+       "match_tier": "trigram",
+       "uuid": "ua"
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"tap\". Did you mean SRTA? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "SRTA,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": null
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTA",
+      "uuid": "ua",
+      "entity_type": null,
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTA",
+       "uuid": "ua",
+       "entity_type": null,
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

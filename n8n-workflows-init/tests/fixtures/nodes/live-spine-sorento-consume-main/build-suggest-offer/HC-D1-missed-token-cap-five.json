@@ -1,0 +1,259 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The number of MISSED TOKENS shown is capped at five (with cap3 per token that keeps the numbered list at 15 or fewer). Six missed tokens must render five blocks numbered 1-5; the sixth appears in no surface at all."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": []
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "t1",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C1",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ut1"
+        }
+       ]
+      },
+      {
+       "token": "t2",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C2",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ut2"
+        }
+       ]
+      },
+      {
+       "token": "t3",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C3",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ut3"
+        }
+       ]
+      },
+      {
+       "token": "t4",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C4",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ut4"
+        }
+       ]
+      },
+      {
+       "token": "t5",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C5",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ut5"
+        }
+       ]
+      },
+      {
+       "token": "t6",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C6",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ut6"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find some items:\n\n\"t1\" \u2014 did you mean:\n  1. C1\n\"t2\" \u2014 did you mean:\n  2. C2\n\"t3\" \u2014 did you mean:\n  3. C3\n\"t4\" \u2014 did you mean:\n  4. C4\n\"t5\" \u2014 did you mean:\n  5. C5\n\nReply a number to pick, or 'yes' to escalate to customer_service.",
+    "suggest_quick_reply": "Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "C1",
+      "value": "C1",
+      "product": "C1",
+      "uuid": "ut1",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "C2",
+      "value": "C2",
+      "product": "C2",
+      "uuid": "ut2",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "C3",
+      "value": "C3",
+      "product": "C3",
+      "uuid": "ut3",
+      "entity_type": "product"
+     },
+     {
+      "idx": 4,
+      "label": "C4",
+      "value": "C4",
+      "product": "C4",
+      "uuid": "ut4",
+      "entity_type": "product"
+     },
+     {
+      "idx": 5,
+      "label": "C5",
+      "value": "C5",
+      "product": "C5",
+      "uuid": "ut5",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "C1",
+      "uuid": "ut1",
+      "entity_type": "product",
+      "for_raw": "t1",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "C2",
+      "uuid": "ut2",
+      "entity_type": "product",
+      "for_raw": "t2",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "C3",
+      "uuid": "ut3",
+      "entity_type": "product",
+      "for_raw": "t3",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "C4",
+      "uuid": "ut4",
+      "entity_type": "product",
+      "for_raw": "t4",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "C5",
+      "uuid": "ut5",
+      "entity_type": "product",
+      "for_raw": "t5",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "C1",
+       "uuid": "ut1",
+       "entity_type": "product",
+       "for_raw": "t1",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "C2",
+       "uuid": "ut2",
+       "entity_type": "product",
+       "for_raw": "t2",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "C3",
+       "uuid": "ut3",
+       "entity_type": "product",
+       "for_raw": "t3",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "C4",
+       "uuid": "ut4",
+       "entity_type": "product",
+       "for_raw": "t4",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "C5",
+       "uuid": "ut5",
+       "entity_type": "product",
+       "for_raw": "t5",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

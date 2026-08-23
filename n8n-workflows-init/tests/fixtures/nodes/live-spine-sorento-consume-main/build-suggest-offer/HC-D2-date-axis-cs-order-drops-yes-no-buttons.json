@@ -1,0 +1,99 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A date relaxation is a different sentence entirely: it leads with what WAS resolved (found_summary, so the offer still confirms the entities it matched on), names the customer entity, and invites a DATE. A single-day ask must not render as a range. On the customer_service/order_enquiries route the Yes/No buttons are deliberately dropped so the date buttons are the only affordance, and NO dym map is emitted at all on this axis."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "date_filter_start": "2026-08-01",
+      "date_filter_end": "2026-08-01",
+      "entities": [
+       {
+        "raw": "ACME SDN BHD",
+        "hint": "customer"
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "2026-08-05",
+       "display": "5 Aug 2026"
+      },
+      {
+       "value": "2026-08-12"
+      }
+     ],
+     "relaxed_axis": "date"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "found_summary": "Customer: ACME SDN BHD\nProduct: SRTX"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "found_summary": "Customer: ACME SDN BHD\nProduct: SRTX",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Here's what you want:\nCustomer: ACME SDN BHD\nProduct: SRTX\n\nNo delivery on 2026-08-01. ACME SDN BHD has delivery on 5 Aug 2026; 2026-08-12. Reply with a date to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "2026-08-05,2026-08-12",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "2026-08-05",
+      "value": "2026-08-05",
+      "product": "2026-08-05",
+      "display": "5 Aug 2026",
+      "order_number": null
+     },
+     {
+      "idx": 2,
+      "label": "2026-08-12",
+      "value": "2026-08-12",
+      "product": "2026-08-12",
+      "display": "2026-08-12",
+      "order_number": null
+     }
+    ]
+   }
+  }
+ ]
+}

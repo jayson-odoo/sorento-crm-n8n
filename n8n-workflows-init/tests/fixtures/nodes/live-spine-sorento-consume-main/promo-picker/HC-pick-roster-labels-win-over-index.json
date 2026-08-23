@@ -1,0 +1,190 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "N2: the parser resolves positions against the PERSISTED roster and passes the labels it picked. Indexing into this turn's re-run assumes the CRM returned the same order, which nothing guarantees. Positions say [1] and the labels say CHARLIE.pdf \u2014 the labels must win, so row 3 is the one sent. out_of_range is still computed from the ORIGINAL positions."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [
+       1
+      ],
+      "_promo_pick_labels": [
+       "CHARLIE.pdf"
+      ],
+      "entities": [
+       {
+        "raw": "CHARLIE.pdf",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "here you go",
+    "response_intro": "here you go",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I have attached the file(s) below.\n\n1. *Promotion:* CHARLIE.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "CHARLIE.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1,
+      2
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "ALPHA.pdf",
+      "value": "ALPHA.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "BRAVO.pdf",
+      "value": "BRAVO.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "idx": 3,
+      "label": "CHARLIE.pdf",
+      "value": "CHARLIE.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_pick": {
+     "positions": [
+      1
+     ],
+     "matched": 1,
+     "files": 1,
+     "out_of_range": [],
+     "drift": []
+    }
+   }
+  }
+ ]
+}

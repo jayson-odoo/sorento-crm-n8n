@@ -1,0 +1,225 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "output_exchange has already SPENT a did-you-mean pick's slot resolving the entity; applying the same number again here indexed a dym slot into the promotion result set. Either signal \u2014 reference_target==='dym' or dym_pick_applied===true \u2014 must empty `positions`. This case leaves reference_target null so only the second signal can suppress the pick, and the turn renders as a plain 3-promotion list."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [
+       2
+      ],
+      "reference_target": null,
+      "dym_pick_applied": true,
+      "entities": [
+       {
+        "raw": "taps",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "here you go\n\n1. *Promotion:* ALPHA.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n3. *Promotion:* CHARLIE.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "here you go",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found 3 promotions for taps. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n3. *Promotion:* CHARLIE.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "I found 3 promotions for taps. I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1,
+      2
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "ALPHA.pdf",
+      "value": "ALPHA.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "BRAVO.pdf",
+      "value": "BRAVO.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "idx": 3,
+      "label": "CHARLIE.pdf",
+      "value": "CHARLIE.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_picker": {
+     "count": 3,
+     "intro_swapped": true,
+     "rebuilt": false
+    }
+   }
+  }
+ ]
+}

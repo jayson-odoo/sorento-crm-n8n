@@ -1,0 +1,110 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "F6: the Q23 fallback can return exactly ONE promotion. Without this the customer who asked for an access level they do not hold receives a file from a DIFFERENT level with no explanation. A single-answer turn must therefore still lead both `response` and `response_intro` with the notice, joined by a blank line. The escalation team also comes from the gate's company_team in preference to the parser's routing."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "routing": {
+       "suggested_team": "ignored_parser_team"
+      },
+      "entities": [
+       {
+        "raw": "DEALER promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "You hold END USER access only.",
+     "company_team": "cs_promotions",
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here is the promotion.",
+    "response_intro": "Here is the promotion.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "You hold END USER access only.\n\nHere is the promotion.",
+    "response_intro": "You hold END USER access only.\n\nHere is the promotion.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0
+     ]
+    }
+   }
+  }
+ ]
+}

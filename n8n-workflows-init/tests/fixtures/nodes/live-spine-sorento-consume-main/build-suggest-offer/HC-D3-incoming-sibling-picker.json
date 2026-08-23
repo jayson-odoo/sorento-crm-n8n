@@ -1,0 +1,127 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "D3 fires only when sibling-gate routed the miss through sibling-transform AND sibling-probe on an `incoming` turn. The family is deduped case-insensitively by code (srtb is the same product as SRTB), the EXACTLY-resolved code is what the 'No incoming stock (ETA) found for ...' line names, and the list is sorted has-incoming first then by code \u2014 collapsing to plain code order when nobody has any. There is NO cap and therefore NO per-sibling buttons (respond.io's button budget): numbers are typed and only Yes/No are offered. Note the exact code itself STAYS in the numbered list; it is excluded only from the 'is there anything more to offer' test."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "SRTA",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "company_team": "cs_stock",
+     "compatible_entities": [
+      {
+       "entity_type": "product",
+       "code": "SRTA",
+       "uuid": "ua"
+      }
+     ]
+    }
+   }
+  ],
+  "sibling-transform": [
+   {
+    "json": {
+     "siblings": [
+      {
+       "code": "SRTA",
+       "uuid": "ua"
+      },
+      {
+       "code": "SRTB",
+       "uuid": "ub"
+      },
+      {
+       "code": "SRTC",
+       "uuid": "uc"
+      },
+      {
+       "code": "srtb",
+       "uuid": "ub-dup"
+      }
+     ]
+    }
+   }
+  ],
+  "sibling-probe": [
+   {
+    "json": {
+     "answers": [
+      {
+       "title": "SRTC"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTC \u2014 has incoming\n2. SRTA \u2014 no incoming\n3. SRTB \u2014 no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs_stock team.",
+    "suggest_quick_reply": "Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTC",
+      "value": "SRTC",
+      "product": "SRTC",
+      "uuid": "uc",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "SRTB",
+      "value": "SRTB",
+      "product": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product"
+     }
+    ]
+   }
+  }
+ ]
+}

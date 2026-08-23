@@ -1,0 +1,79 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "With the date axis relaxed but no date_filter_start in the parse there is no date to name, so the sentence must say 'that date' \u2014 the fallback that keeps the offer grammatical instead of emitting 'No delivery on null'."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [],
+      "routing": {
+       "suggested_team": "sales_team"
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "2026-08-12"
+      }
+     ],
+     "relaxed_axis": "date"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "found_summary": "   "
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "found_summary": "   ",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No delivery on that date. This customer has delivery on 2026-08-12. Reply with a date to continue, or would you like me to escalate to sales_team team?",
+    "suggest_quick_reply": "2026-08-12,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "2026-08-12",
+      "value": "2026-08-12",
+      "product": "2026-08-12",
+      "display": "2026-08-12",
+      "order_number": null
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The gate can pass on a raw parser HINT with no uuid behind it. Probing crm_master_product_attachments_list without an attachment_type filter returns every attachment of every type, so a brochure-only product would be labelled 'has certificate'. With no UUID-shaped attachment_type/certificate entity anywhere the node must fail CLOSED: skip reason `no_scoping_entity` and an EMPTY dym_candidate_codes, even though a perfectly good product candidate was available."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "SRTA",
+        "hint": "product"
+       },
+       {
+        "raw": "cert",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [],
+    "dym_candidate_codes": [],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": null,
+    "probe_noun": null,
+    "probe_predicate": null,
+    "probe_needed": false,
+    "probe_skip_reason": "no_scoping_entity",
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

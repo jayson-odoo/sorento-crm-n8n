@@ -1,0 +1,164 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "Every named token matched promotions of its own, yet the resolver's `intersection` is EMPTY \u2014 so no single row satisfies the whole ask and the list shown is a union of disjoint per-token sets. The user's ruling is a plain not-found: no 'closest matches'. Everything must be cleared (answers, attachments AND the roster, so a stray '1' cannot pick an invisible row) and the escalation team named. `_promo_unmatched` must be ABSENT, not empty: both tokens did contribute, so the per-item note does not apply."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       },
+       {
+        "raw": "kitchen tap",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "Cabana",
+      "kitchen tap"
+     ],
+     "resolutions": [
+      {
+       "token": "Cabana",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "CABANA PROMO"
+         }
+        }
+       ]
+      },
+      {
+       "token": "kitchen tap",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "TAP PROMO"
+         }
+        }
+       ]
+      }
+     ],
+     "intersection": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* CABANA PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* TAP PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "CABANA PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CABANA PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "TAP PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "TAP PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "CABANA.pdf"
+     },
+     {
+      "filename": "TAP.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response_intro": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing_promotion_sorento team?",
+    "answers": [],
+    "attachments": [],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1
+     ]
+    },
+    "suggest_last_result_set": [],
+    "suggest_selection_context": null,
+    "_promo_picker": {
+     "count": 2,
+     "intro_swapped": true,
+     "rebuilt": false
+    },
+    "_promo_notfound": {
+     "tokens": [
+      "Cabana",
+      "kitchen tap"
+     ],
+     "words": [],
+     "reason": "disjoint"
+    },
+    "_promo_disjoint": [
+     "Cabana",
+     "kitchen tap"
+    ]
+   }
+  }
+ ]
+}

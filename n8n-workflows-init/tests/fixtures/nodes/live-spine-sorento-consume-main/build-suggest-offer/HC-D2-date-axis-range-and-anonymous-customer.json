@@ -1,0 +1,85 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The other date arm: a start that differs from the end renders as a RANGE, and with no customer entity in the parse the sentence falls back to 'This customer' rather than printing undefined. Off the cs/order route the Yes/No buttons come back, so escalation stays reachable."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "date_filter_start": "2026-08-01",
+      "date_filter_end": "2026-08-07",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "sales_team",
+       "suggested_agent": "order_enquiries"
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "2026-08-12"
+      }
+     ],
+     "relaxed_axis": "date"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No delivery on 2026-08-01 to 2026-08-07. This customer has delivery on 2026-08-12. Reply with a date to continue, or would you like me to escalate to sales_team team?",
+    "suggest_quick_reply": "2026-08-12,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "2026-08-12",
+      "value": "2026-08-12",
+      "product": "2026-08-12",
+      "display": "2026-08-12",
+      "order_number": null
+     }
+    ]
+   }
+  }
+ ]
+}

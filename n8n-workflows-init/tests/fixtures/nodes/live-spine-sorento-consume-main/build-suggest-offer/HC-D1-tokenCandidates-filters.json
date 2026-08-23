@@ -1,0 +1,135 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "tokenCandidates walks matches THEN alternatives and drops three classes: an exact-tier entry (it would have resolved, so it is not a did-you-mean), a repeat of a code already kept, and an entity_type outside the gate's allowed_lookup. Only KEEPME survives here, so the offer must be a one-candidate offer \u2014 anything longer means a filter stopped filtering."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product",
+        "canonical_code": null
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "KEEPME",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uk"
+        }
+       ],
+       "alternatives": [
+        {
+         "canonical_code": "KEEPME",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uk-dup"
+        },
+        {
+         "canonical_code": "EXACTONE",
+         "entity_type": "product",
+         "match_tier": "EXACT",
+         "uuid": "ue"
+        },
+        {
+         "canonical_code": "PROMOONE",
+         "entity_type": "promotion",
+         "match_tier": "trigram",
+         "uuid": "up"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "gate_debug": {
+      "allowed_lookup": [
+       "product"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"tap\". Did you mean KEEPME? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "KEEPME,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "KEEPME",
+      "value": "KEEPME",
+      "product": "KEEPME",
+      "uuid": "uk",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "KEEPME",
+      "uuid": "uk",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "KEEPME",
+       "uuid": "uk",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

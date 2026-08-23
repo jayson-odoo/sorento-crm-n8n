@@ -1,0 +1,186 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "When the probe succeeded and at least one offered code was probed, the code-mode offer sorts HAS-FIRST and renders one labelled line per code. The comparator is a bare (hb - ha) stable partition on purpose: SRTB moves to the front while SRTA and SRTC keep the resolver's similarity order behind it. The sort runs BEFORE the codes / roster / dym map are derived, so all four surfaces stay index-consistent, and suggest_quick_reply stays BARE CODES in the sorted order because the pick round-trips on that exact button string."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ua"
+        },
+        {
+         "canonical_code": "SRTB",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ub"
+        },
+        {
+         "canonical_code": "SRTC",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uc"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ],
+  "dym-annotate": [
+   {
+    "json": {
+     "dym_available_codes": [
+      "SRTB"
+     ],
+     "dym_probe_meta": {
+      "ok": true,
+      "probed": [
+       "SRTA",
+       "SRTB",
+       "SRTC"
+      ],
+      "noun": "stock details"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"tap\". Did you mean:\n1. SRTB - has stock details\n2. SRTA - no stock details\n3. SRTC - no stock details\nReply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "SRTB,SRTA,SRTC,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTB",
+      "value": "SRTB",
+      "product": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "SRTC",
+      "value": "SRTC",
+      "product": "SRTC",
+      "uuid": "uc",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTC",
+      "uuid": "uc",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTB",
+       "uuid": "ub",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTA",
+       "uuid": "ua",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTC",
+       "uuid": "uc",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

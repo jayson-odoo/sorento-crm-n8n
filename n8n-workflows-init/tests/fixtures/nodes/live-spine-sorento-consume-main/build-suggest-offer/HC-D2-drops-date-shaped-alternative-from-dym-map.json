@@ -1,0 +1,123 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "FINDING-1: a date-valued candidate must never enter the dym map, or a later date reply hijacks tryDymPick and drops the customer. On the CODE arm the filter is defensive rather than structural \u2014 the date-shaped alternative still appears in the roster and the buttons (it IS a legitimate thing to reply), but isCodeShaped keeps it out of dym_candidates."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "code": "SRTX",
+       "entity_type": "product"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "2026-08-05"
+      },
+      {
+       "value": "SRTX1"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No stock for SRTX. Try: 2026-08-05, SRTX1. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "2026-08-05,SRTX1,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "2026-08-05",
+      "value": "2026-08-05",
+      "product": "2026-08-05",
+      "display": "2026-08-05",
+      "order_number": null
+     },
+     {
+      "idx": 2,
+      "label": "SRTX1",
+      "value": "SRTX1",
+      "product": "SRTX1",
+      "display": "SRTX1",
+      "order_number": null
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTX1",
+      "uuid": null,
+      "entity_type": null,
+      "for_raw": "SRTX",
+      "for_hint": "product",
+      "for_canonical": "SRTX"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTX1",
+       "uuid": null,
+       "entity_type": null,
+       "for_raw": "SRTX",
+       "for_hint": "product",
+       "for_canonical": "SRTX"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

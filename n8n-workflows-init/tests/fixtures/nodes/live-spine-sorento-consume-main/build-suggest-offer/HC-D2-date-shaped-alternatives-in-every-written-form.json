@@ -1,0 +1,113 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "isDateLike has to recognise a date however the CRM wrote it, because anything it misses becomes a dym entry that a later date reply can hijack. Three forms are offered here \u2014 unpadded ISO (2026-8-5), slash ISO (2026/08/05) and day-first (5/8/26) \u2014 alongside one real code. Only the code may reach dym_candidates; all four stay in the roster and the buttons, which is where the customer needs them."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "code": "SRTX",
+       "entity_type": "product"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "2026-8-5"
+      },
+      {
+       "value": "2026/08/05"
+      },
+      {
+       "value": "5/8/26"
+      },
+      {
+       "value": "SRTX9"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No stock for SRTX. Try: 2026-8-5, 2026/08/05, 5/8/26. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "2026-8-5,2026/08/05,5/8/26,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "2026-8-5",
+      "value": "2026-8-5",
+      "product": "2026-8-5",
+      "display": "2026-8-5",
+      "order_number": null
+     },
+     {
+      "idx": 2,
+      "label": "2026/08/05",
+      "value": "2026/08/05",
+      "product": "2026/08/05",
+      "display": "2026/08/05",
+      "order_number": null
+     },
+     {
+      "idx": 3,
+      "label": "5/8/26",
+      "value": "5/8/26",
+      "product": "5/8/26",
+      "display": "5/8/26",
+      "order_number": null
+     }
+    ],
+    "dym_candidates": [],
+    "dym_offer": null
+   }
+  }
+ ]
+}

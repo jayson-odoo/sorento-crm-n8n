@@ -1,0 +1,174 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The bread-and-butter did-you-mean: a genuinely unresolved token with three trigram candidates. Pins the whole shape at once \u2014 the humanList Oxford form 'A, B, or C', the bare-code quick replies (the pick round-trips on that exact button string, so annotation must never reach it), the comma-stripped Yes/No labels, and the dym_candidate map keyed on the SOURCE token so a later pick replaces the right entity. `team` comes from the gate's company_team in preference to the parser's routing (#9: one turn must not name three teams)."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "routing": {
+       "suggested_team": "ignored_parser_team"
+      },
+      "entities": [
+       {
+        "raw": "SRTUB6503",
+        "hint": "product",
+        "canonical_code": null
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "SRTUB6503",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTUB6503-BL",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u1"
+        },
+        {
+         "canonical_code": "SRTUB6503-WH",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u2"
+        },
+        {
+         "canonical_code": "SRTUB6503-GL",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u3"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "company_team": "cs_stock"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"SRTUB6503\". Did you mean SRTUB6503-BL, SRTUB6503-WH, or SRTUB6503-GL? Reply with a code to continue, or would you like me to escalate to cs_stock team?",
+    "suggest_quick_reply": "SRTUB6503-BL,SRTUB6503-WH,SRTUB6503-GL,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTUB6503-BL",
+      "value": "SRTUB6503-BL",
+      "product": "SRTUB6503-BL",
+      "uuid": "u1",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "SRTUB6503-WH",
+      "value": "SRTUB6503-WH",
+      "product": "SRTUB6503-WH",
+      "uuid": "u2",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "SRTUB6503-GL",
+      "value": "SRTUB6503-GL",
+      "product": "SRTUB6503-GL",
+      "uuid": "u3",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTUB6503-BL",
+      "uuid": "u1",
+      "entity_type": "product",
+      "for_raw": "SRTUB6503",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTUB6503-WH",
+      "uuid": "u2",
+      "entity_type": "product",
+      "for_raw": "SRTUB6503",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTUB6503-GL",
+      "uuid": "u3",
+      "entity_type": "product",
+      "for_raw": "SRTUB6503",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTUB6503-BL",
+       "uuid": "u1",
+       "entity_type": "product",
+       "for_raw": "SRTUB6503",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTUB6503-WH",
+       "uuid": "u2",
+       "entity_type": "product",
+       "for_raw": "SRTUB6503",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTUB6503-GL",
+       "uuid": "u3",
+       "entity_type": "product",
+       "for_raw": "SRTUB6503",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

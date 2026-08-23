@@ -1,0 +1,228 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "When the parser resolved the pick into PROMOTION entities and did NOT reuse the previous scope, this turn's answers are ALREADY the picked rows; re-applying the positions would double-filter (the live bug where picking '3' narrowed to 1 row and then reported 'there is only 1 promotion'). The branch must pass answers through untouched, republish the FULL roster so a second 'all' still expands, and stamp pre_narrowed:true."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [
+       3
+      ],
+      "entities": [
+       {
+        "raw": "CHARLIE.pdf",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "here you go",
+    "response_intro": "here you go",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "here you go",
+    "response_intro": "I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1,
+      2
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "ALPHA.pdf",
+      "value": "ALPHA.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "BRAVO.pdf",
+      "value": "BRAVO.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "idx": 3,
+      "label": "CHARLIE.pdf",
+      "value": "CHARLIE.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_pick": {
+     "positions": [
+      3
+     ],
+     "matched": 3,
+     "files": 3,
+     "out_of_range": [],
+     "drift": [],
+     "pre_narrowed": true
+    }
+   }
+  }
+ ]
+}

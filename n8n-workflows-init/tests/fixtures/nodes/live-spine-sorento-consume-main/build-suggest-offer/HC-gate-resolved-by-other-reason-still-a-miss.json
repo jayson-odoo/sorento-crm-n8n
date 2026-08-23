@@ -1,0 +1,146 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The narrowing is deliberately keyed on the two known `resolved_by` stamps. A gate resolution stamped anything else must NOT suppress the did-you-mean \u2014 otherwise any future gate stamp would silently start swallowing genuine misses."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "container status list",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "container status list",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "Packing List",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u1"
+        },
+        {
+         "canonical_code": "Stock_List",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u2"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "container status list",
+       "resolved": true,
+       "resolved_by": "some-future-stamp"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"container status list\". Did you mean Packing List, or Stock_List? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "Packing List,Stock_List,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "Packing List",
+      "value": "Packing List",
+      "product": "Packing List",
+      "uuid": "u1",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "Stock_List",
+      "value": "Stock_List",
+      "product": "Stock_List",
+      "uuid": "u2",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "Packing List",
+      "uuid": "u1",
+      "entity_type": "product",
+      "for_raw": "container status list",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "Stock_List",
+      "uuid": "u2",
+      "entity_type": "product",
+      "for_raw": "container status list",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "product_attachment",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "Packing List",
+       "uuid": "u1",
+       "entity_type": "product",
+       "for_raw": "container status list",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "Stock_List",
+       "uuid": "u2",
+       "entity_type": "product",
+       "for_raw": "container status list",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

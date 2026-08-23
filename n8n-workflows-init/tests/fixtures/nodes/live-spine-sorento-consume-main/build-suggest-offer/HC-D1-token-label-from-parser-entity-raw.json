@@ -1,0 +1,142 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "Next link in the same chain: with neither a resolution token nor unresolved_tokens the label comes from the parser's first entity raw. Two missed resolutions are offered here and BOTH fall back to the same parser raw \u2014 which is the honest outcome of having no per-token attribution left, and is exactly what the chain is specified to do."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "PARSER-RAW",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ua"
+        }
+       ]
+      },
+      {
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTB",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ub"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find some items:\n\n\"PARSER-RAW\" \u2014 did you mean:\n  1. SRTA\n\"PARSER-RAW\" \u2014 did you mean:\n  2. SRTB\n\nReply a number to pick, or 'yes' to escalate to customer_service.",
+    "suggest_quick_reply": "Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "SRTB",
+      "value": "SRTB",
+      "product": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product",
+      "for_raw": "PARSER-RAW",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product",
+      "for_raw": "PARSER-RAW",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTA",
+       "uuid": "ua",
+       "entity_type": "product",
+       "for_raw": "PARSER-RAW",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTB",
+       "uuid": "ub",
+       "entity_type": "product",
+       "for_raw": "PARSER-RAW",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

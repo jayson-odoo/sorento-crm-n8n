@@ -1,0 +1,186 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "Two independent bounds compose: cap3 keeps each token to three candidates and the token list itself is sliced to five. Six missed tokens with one candidate each therefore probe exactly five codes \u2014 under product_attachment's cap of 8, so the token slice is what is being measured here rather than the probe cap."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "cert",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "t1",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C1",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4511",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      },
+      {
+       "token": "t2",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C2",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4512",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      },
+      {
+       "token": "t3",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C3",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4513",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      },
+      {
+       "token": "t4",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C4",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4514",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      },
+      {
+       "token": "t5",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C5",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4515",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      },
+      {
+       "token": "t6",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C6",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4516",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "entity_type": "attachment_type",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4590",
+       "code": "CERT"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4511",
+      "entity_type": "product",
+      "code": "C1"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4512",
+      "entity_type": "product",
+      "code": "C2"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4513",
+      "entity_type": "product",
+      "code": "C3"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4514",
+      "entity_type": "product",
+      "code": "C4"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4515",
+      "entity_type": "product",
+      "code": "C5"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4590",
+      "entity_type": "attachment_type",
+      "code": "CERT"
+     }
+    ],
+    "dym_candidate_codes": [
+     "C1",
+     "C2",
+     "C3",
+     "C4",
+     "C5"
+    ],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_master_product_attachments_list",
+    "probe_noun": null,
+    "probe_predicate": "row_present_with_type",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

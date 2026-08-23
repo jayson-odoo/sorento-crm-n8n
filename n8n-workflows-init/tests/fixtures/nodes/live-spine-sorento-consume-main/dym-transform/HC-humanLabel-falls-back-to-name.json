@@ -1,0 +1,92 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "Third and last source: display.name. Same consequence if the chain is broken \u2014 the candidate vanishes from the probe while build-suggest-offer still renders it."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august promo",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "entity_type": "promotion",
+         "match_tier": "trgm",
+         "display": {
+          "name": "AUGUST PROMO"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "entity_type": "promotion",
+      "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332"
+     }
+    ],
+    "dym_candidate_codes": [
+     "3b9d6b74-5d4a-4b9f-b2b6-110599485332"
+    ],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_marketing_promotions_list",
+    "probe_noun": "promotion",
+    "probe_predicate": "row_present",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

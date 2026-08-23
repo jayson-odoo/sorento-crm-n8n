@@ -1,0 +1,81 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "THE ONE BEHAVIOURAL DIFFERENCE between this node and dym-transform: the partial twin's DOMAIN_PROBE has no `promotion` entry, because the partial lane comes off the RESULTS arm of If6 where a promotion miss cannot arrive. Byte-for-byte the same input that makes dym-transform plan a crm_marketing_promotions_list probe (see dym-transform/D1-promotion-miss-single-candidate.json) must here skip with `domain_not_enabled` and probe nothing. Copying the promotion entry across \u2014 the obvious 'they are twins, sync them' edit \u2014 is exactly what this pins."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august promo",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTWC286-SH",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "promotion",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [],
+    "dym_candidate_codes": [],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": null,
+    "probe_noun": null,
+    "probe_predicate": null,
+    "probe_needed": false,
+    "probe_skip_reason": "domain_not_enabled",
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

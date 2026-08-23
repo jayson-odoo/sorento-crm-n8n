@@ -1,0 +1,123 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The cap trims only when the candidate count EXCEEDS it. At exactly three candidates nothing is capped, probe_cap_applied stays false and dym_capped_codes stays empty \u2014 the boundary a '>=' mutation would silently cross, quietly dropping a candidate on ordinary traffic."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tapA",
+        "hint": "product"
+       },
+       {
+        "raw": "tapB",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tapA",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "A1",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        },
+        {
+         "canonical_code": "A2",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4502",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      },
+      {
+       "token": "tapB",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "B1",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+      "entity_type": "product",
+      "code": "A1"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4502",
+      "entity_type": "product",
+      "code": "A2"
+     },
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+      "entity_type": "product",
+      "code": "B1"
+     }
+    ],
+    "dym_candidate_codes": [
+     "A1",
+     "A2",
+     "B1"
+    ],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_inventory_stock_balance_list",
+    "probe_noun": "stock details",
+    "probe_predicate": "qty_gt_zero",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,87 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The picker annotation only runs when escalate_message is actually a non-empty STRING. On a require-specific turn whose payload carries no message at all the block must be skipped entirely \u2014 loosening any of those three conditions dereferences undefined and takes the turn down."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "certs",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "SRTUB6503",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTUB6503-BL",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u1"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": true
+    }
+   }
+  ],
+  "dym-annotate": [
+   {
+    "json": {
+     "dym_available_codes": [
+      "SRTUB6503-BL"
+     ],
+     "dym_probe_meta": {
+      "ok": true,
+      "probed": [
+       "SRTUB6503-BL"
+      ],
+      "noun": "certs"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "found_summary": ""
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "found_summary": "",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

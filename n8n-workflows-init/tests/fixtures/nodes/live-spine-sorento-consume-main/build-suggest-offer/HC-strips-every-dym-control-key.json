@@ -1,0 +1,62 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "dym-transform / dym-annotate pass the not-found payload through and APPEND their own control keys; this node must delete all fourteen so its output stays byte-identical to the pre-dym-probe shape on every un-annotated path. Each key is seeded with a sentinel here, so dropping any one of them from _DYM_CTRL_KEYS leaks a visible value. (Reviewer F-STRIP: dym_capped_codes / probe_cap_applied were the two that got missed the first time.)"
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "dym_probe_entities": "LEAKED",
+    "dym_candidate_codes": "LEAKED",
+    "dym_excluded_codes": "LEAKED",
+    "probe_tool": "LEAKED",
+    "probe_noun": "LEAKED",
+    "probe_predicate": "LEAKED",
+    "probe_needed": "LEAKED",
+    "probe_skip_reason": "LEAKED",
+    "probe_lane": "LEAKED",
+    "_dym_probe_input": "LEAKED",
+    "dym_available_codes": "LEAKED",
+    "dym_probe_meta": "LEAKED",
+    "dym_capped_codes": "LEAKED",
+    "probe_cap_applied": "LEAKED"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

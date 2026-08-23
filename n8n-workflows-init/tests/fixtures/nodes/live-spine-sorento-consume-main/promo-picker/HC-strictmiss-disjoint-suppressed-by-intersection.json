@@ -1,0 +1,218 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A non-empty promotion `intersection` is direct evidence that rows DO satisfy every token, so the disjoint rule must not fire \u2014 identical inputs to the case above apart from one intersection row. The turn renders as an ordinary 2-promotion list."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       },
+       {
+        "raw": "kitchen tap",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "Cabana",
+      "kitchen tap"
+     ],
+     "resolutions": [
+      {
+       "token": "Cabana",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "CABANA PROMO"
+         }
+        }
+       ]
+      },
+      {
+       "token": "kitchen tap",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "TAP PROMO"
+         }
+        }
+       ]
+      }
+     ],
+     "intersection": [
+      {
+       "entity_type": "promotion",
+       "display": {
+        "description": "CABANA PROMO"
+       }
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* CABANA PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* TAP PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "CABANA PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CABANA PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "TAP PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "TAP PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "CABANA.pdf"
+     },
+     {
+      "filename": "TAP.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found 2 promotions for Cabana, kitchen tap. I have attached the file(s) below.\n\n1. *Promotion:* CABANA PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* TAP PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "I found 2 promotions for Cabana, kitchen tap. I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "CABANA PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CABANA PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "TAP PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "TAP PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "CABANA.pdf"
+     },
+     {
+      "filename": "TAP.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "CABANA PROMO",
+      "value": "CABANA PROMO",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CABANA.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "TAP PROMO",
+      "value": "TAP PROMO",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "TAP.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_picker": {
+     "count": 2,
+     "intro_swapped": true,
+     "rebuilt": false
+    }
+   }
+  }
+ ]
+}

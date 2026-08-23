@@ -1,0 +1,57 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The other side of the `atts.length > 1` boundary: with TWO attachments and an envelope this node cannot read, letting them through would send every PDF at once \u2014 the precise failure this node exists to prevent. Both files are dropped and the customer is asked to narrow the search, on BOTH response fields."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": []
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here are the files.",
+    "response_intro": "Here are the files.",
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found several promotions but could not list them. Please narrow your search.",
+    "response_intro": "I found several promotions but could not list them. Please narrow your search.",
+    "attachments": [],
+    "_promo_picker_shape": "unrecognised"
+   }
+  }
+ ]
+}

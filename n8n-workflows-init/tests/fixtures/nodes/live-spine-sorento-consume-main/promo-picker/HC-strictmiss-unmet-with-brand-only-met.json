@@ -1,0 +1,130 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "'bathtub' contributed nothing while the only token that did contribute is the BRAND arm. A brand-only list is not an answer to '<brand> <category>', so this collapses to the plain not-found \u2014 and the disjoint rule must NOT claim it (a token with zero matches is the per-item case, which is more specific). Reason must read `unmet_brand_only` and the unmet token is echoed in `_promo_unmatched`; the ask line names BOTH tokens."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       },
+       {
+        "raw": "bathtub",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "Cabana",
+      "bathtub"
+     ],
+     "resolutions": [
+      {
+       "token": "Cabana",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "CABANA PROMO"
+         }
+        }
+       ]
+      },
+      {
+       "token": "bathtub",
+       "matches": []
+      }
+     ],
+     "intersection": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* CABANA PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "CABANA PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CABANA PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "CABANA.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "No promotion found for Cabana bathtub. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response_intro": "No promotion found for Cabana bathtub. Would you like me to escalate to marketing_promotion_sorento team?",
+    "answers": [],
+    "attachments": [],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0
+     ]
+    },
+    "suggest_last_result_set": [],
+    "suggest_selection_context": null,
+    "_promo_notfound": {
+     "tokens": [
+      "Cabana",
+      "bathtub"
+     ],
+     "words": [],
+     "reason": "unmet_brand_only"
+    },
+    "_promo_unmatched": [
+     "bathtub"
+    ]
+   }
+  }
+ ]
+}

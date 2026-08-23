@@ -1,0 +1,91 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "`(parser.domain_hint ?? null) !== 'promotion'` \u2014 an ABSENT domain_hint is not a promotion turn, so the node must return its input completely untouched: no sort stamp, no roster, no rewritten response. Anything else means a non-promotion domain is being rewritten by the promotion picker."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "SRTBF11834",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for SRTBF11834 is 12.",
+    "response_intro": "Stock for SRTBF11834 is 12.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Stock for SRTBF11834 is 12.",
+    "response_intro": "Stock for SRTBF11834 is 12.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": []
+   }
+  }
+ ]
+}

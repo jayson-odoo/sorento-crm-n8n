@@ -1,0 +1,132 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "token_coverage is the CRM's own honesty field: the token resolved, but the word 'shower' matched no shown promotion ('set' was a substring hit on WATER CLO*SET*). A token with unmatched words is unmet at word level whatever the intersection says, and the user asked for the failing WORD to be named so a typo can be self-corrected. Reason must be `coverage_unmet` and the message must carry the `: could not find \"shower\"` clause."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "cabana shower set",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "cabana shower set"
+     ],
+     "resolutions": [
+      {
+       "token": "cabana shower set",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "WATER CLOSET PROMO"
+         }
+        }
+       ]
+      }
+     ],
+     "intersection": [],
+     "token_coverage": [
+      {
+       "token": "cabana shower set",
+       "coverage": [
+        {
+         "entity_type": "promotion",
+         "unmatched_words": [
+          "shower"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* WATER CLOSET PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "WATER CLOSET PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "WATER CLOSET PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "WC.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "No promotion found for cabana shower set: could not find \"shower\". Would you like me to escalate to marketing_promotion_sorento team?",
+    "response_intro": "No promotion found for cabana shower set: could not find \"shower\". Would you like me to escalate to marketing_promotion_sorento team?",
+    "answers": [],
+    "attachments": [],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0
+     ]
+    },
+    "suggest_last_result_set": [],
+    "suggest_selection_context": null,
+    "_promo_notfound": {
+     "tokens": [
+      "cabana shower set"
+     ],
+     "words": [
+      "shower"
+     ],
+     "reason": "coverage_unmet"
+    }
+   }
+  }
+ ]
+}
