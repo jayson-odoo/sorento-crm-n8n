@@ -87,3 +87,13 @@ test('R1+R2: a pinned customer plus a missed product reports the product only', 
   assert.equal(o.require_specific, false, 'the pick stands - do not ask again');
   assert.deepEqual(o.dropped_filter_tokens, ['mfg6651gm'], 'the product miss is what the user needs told');
 });
+
+// R1 display: the customer typed "mfg6651-gm"; resolve-entity strips separators for product hints
+// so the resolver token is "mfg6651gm", and the miss line quoted THAT back (console retest,
+// exec 13635810). Quote what the user actually typed - the stripped form is an internal detail.
+test('R1c: the miss line quotes the raw the user typed, not the stripped resolver token', () => {
+  const o = run('not-found-error-message', 'display--not-found-error-message.json');
+  const msg = String(o.escalate_message || o.response || '');
+  assert.match(msg, /mfg6651-gm/i, 'the dash the user typed must survive into the reply');
+  assert.doesNotMatch(msg, /"mfg6651gm"/i, 'the separator-stripped internal token must not be shown');
+});

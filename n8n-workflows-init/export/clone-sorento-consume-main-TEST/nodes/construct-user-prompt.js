@@ -14,7 +14,7 @@ let input_msg = $('tf-message').first().json.message.message.text || $('tf-messa
 let user_goal = query_reformulator.output.user_goal || input_msg
 if (message_type == "casual" || message_type == "unknown") {
   session_vars = {}
-} 
+}
 return {
   "message_type": message_type,
   "intent_hint": intent_hint,

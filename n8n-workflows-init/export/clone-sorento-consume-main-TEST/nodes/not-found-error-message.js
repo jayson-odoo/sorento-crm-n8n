@@ -306,7 +306,12 @@ if (missingAttachmentType) {
     const hint = _byRawStripped.get(_typeNorm(t))?.hint;
     return hint ? String(hint) : '';
   };
-  const _labelTok = (t) => { const tl = _typeOfToken(t); return `"${t}"${tl ? ` (${tl})` : ''}`; };
+  // Quote what the CUSTOMER typed. resolve-entity strips separators for product-hint tokens, so the
+  // resolver token is "mfg6651gm" while the person wrote "mfg6651-gm" — echoing the stripped form
+  // back reads like we mangled their input (console retest, exec 13635810). _byRawStripped is keyed
+  // on exactly that normalization, so the original raw is one lookup away.
+  const _rawOfTok = (t) => _byRawStripped.get(_typeNorm(t))?.raw || t;
+  const _labelTok = (t) => { const tl = _typeOfToken(t); return `"${_rawOfTok(t)}"${tl ? ` (${tl})` : ''}`; };
   // notFoundRaw override lets a branch fold some unresolved tokens into the searched noun
   // instead of listing them as "couldn't find" (e.g. attachment qualifiers like "SPAN").
   // mc-label: state the SEARCH SCOPE, so "nothing matched" cannot be read as "nothing matched in

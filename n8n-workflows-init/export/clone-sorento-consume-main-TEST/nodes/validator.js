@@ -9,17 +9,17 @@ if ($('Edit Fields2').isExecuted && $('Edit Fields2').first().json.not_allowed_c
   const formulatorNode = $('Call \'sub-query-reformulator\'').first().json;
   const parserOutput = formulatorNode.output ?? formulatorNode;
   const demandQty = Number(parserOutput.demand_qty ?? 0);
-  
+
   // handle answer records from get-result
   const answers = Array.isArray(resultNode.answers) ? resultNode.answers : [];
-  
+
   // group by product and sum stock_qty
   const grouped = {};
-  
+
   for (const item of answers) {
     const product = item.product || 'UNKNOWN_PRODUCT';
     const stockQty = Number(item.stock_qty ?? 0);
-  
+
     if (!grouped[product]) {
       grouped[product] = {
         product,
@@ -27,11 +27,11 @@ if ($('Edit Fields2').isExecuted && $('Edit Fields2').first().json.not_allowed_c
         rows: [],
       };
     }
-  
+
     grouped[product].total_stock_qty += stockQty;
     grouped[product].rows.push(item);
   }
-  
+
   // build response_intro lines
   const introLines = Object.values(grouped).map(group => {
     const canFulfill = demandQty <= group.total_stock_qty;
@@ -41,6 +41,6 @@ if ($('Edit Fields2').isExecuted && $('Edit Fields2').first().json.not_allowed_c
     return `Quantity of ${demandQty} for product ${group.product} cannot be fulfilled. Total available quantity is ${group.total_stock_qty}.`;
   });
   output.response = introLines.join("\n")
-  
+
 }
 return output
