@@ -37,9 +37,17 @@ for (const slug of SLUGS) {
     // once and freezing whatever it returned ("body-run" — includes hand-authored ones). Split
     // by each fixture's own `source.expected_from` (added by capture-fixtures.py / backfilled
     // onto pre-existing fixtures) so the summary table says which is which.
-    const runData = fixtures.filter((f) => f.fixture.source && f.fixture.source.expected_from === 'runData').length;
-    const bodyRun = fixtures.length - runData;
-    const row = { slug, node: nodeName, fixtures: fixtures.length, pass: 0, fail: 0, runData, bodyRun };
+    const ef = (f) => (f.fixture.source && f.fixture.source.expected_from) || null;
+    const runData = fixtures.filter((f) => ef(f) === 'runData').length;
+    // 'reasoned' is a THIRD provenance, added with the mutation harness (tests/harness/mutate.js,
+    // tests/MUTATION-BASELINE.md): the fixture's decision fields were worked out from the node's
+    // contract BEFORE the body was run, and the run only confirmed them. That is a stronger claim
+    // than 'body-run' (body executed once, whatever it returned frozen) and a different one from
+    // 'runData' (a real execution said so), so it gets its own column rather than being folded
+    // into either — the split is the whole point of this table.
+    const reasoned = fixtures.filter((f) => ef(f) === 'reasoned').length;
+    const bodyRun = fixtures.length - runData - reasoned;
+    const row = { slug, node: nodeName, fixtures: fixtures.length, pass: 0, fail: 0, runData, reasoned, bodyRun };
     summaryRows.push(row);
 
     if (fixtures.length === 0) {
@@ -110,19 +118,19 @@ test('coverage gate', () => {
   );
 });
 
-// S6: every fixture must carry a real `source.expected_from` — a fixture with neither 'runData'
-// nor 'body-run' would silently vanish from BOTH halves of the summary split (counted in neither
-// `runData` nor `bodyRun`, since `bodyRun` here is computed as fixtures.length - runData... — so
-// this asserts the classification directly, not just via that subtraction).
-test('S6: every fixture has a valid source.expected_from ("runData" or "body-run")', () => {
+// S6: every fixture must carry a real `source.expected_from` — an unrecognised value would be
+// counted in NO column of the summary split (`bodyRun` is computed by subtraction), so it would
+// vanish from the very table that tells a reader how much each number is worth. Assert the
+// classification directly rather than relying on that subtraction.
+test('S6: every fixture has a valid source.expected_from ("runData", "reasoned" or "body-run")', () => {
   for (const slug of SLUGS) {
     const man = manifestOf(slug);
     for (const nodeName of Object.keys(man.nodes)) {
       for (const { name, fixture } of loadFixtures(slug, nodeName)) {
         const ef = fixture.source && fixture.source.expected_from;
         assert.ok(
-          ef === 'runData' || ef === 'body-run',
-          `${slug}/${nodeName}/${name}: source.expected_from must be "runData" or "body-run", got ${JSON.stringify(ef)}`
+          ef === 'runData' || ef === 'reasoned' || ef === 'body-run',
+          `${slug}/${nodeName}/${name}: source.expected_from must be "runData", "reasoned" or "body-run", got ${JSON.stringify(ef)}`
         );
       }
     }
@@ -132,12 +140,13 @@ test('S6: every fixture has a valid source.expected_from ("runData" or "body-run
 test('summary table', () => {
   const nameW = Math.max(4, ...summaryRows.map((r) => `${r.slug}/${r.node}`.length));
   console.log('\nnode fixture summary (' + path.basename(__filename) + ')');
-  console.log('node'.padEnd(nameW) + '  fixtures  runData  body-run  pass  fail');
+  console.log('node'.padEnd(nameW) + '  fixtures  runData  reasoned  body-run  pass  fail');
   for (const r of summaryRows) {
     console.log(
       `${r.slug}/${r.node}`.padEnd(nameW) + '  ' +
       String(r.fixtures).padEnd(8) + '  ' +
       String(r.runData).padEnd(7) + '  ' +
+      String(r.reasoned).padEnd(8) + '  ' +
       String(r.bodyRun).padEnd(8) + '  ' +
       String(r.pass).padEnd(4) + '  ' +
       String(r.fail)
@@ -145,9 +154,11 @@ test('summary table', () => {
   }
   const covered = summaryRows.filter((r) => r.fixtures > 0).length;
   const totalRunData = summaryRows.reduce((n, r) => n + r.runData, 0);
+  const totalReasoned = summaryRows.reduce((n, r) => n + r.reasoned, 0);
   const totalBodyRun = summaryRows.reduce((n, r) => n + r.bodyRun, 0);
   console.log(`\n${covered}/${summaryRows.length} nodes have >=1 fixture; ${noFixtureNodes.length} have none (REQUIRE_FULL_COVERAGE=${REQUIRE_FULL_COVERAGE ? '1' : '0'})`);
   console.log(`${summaryRows.reduce((n, r) => n + r.fixtures, 0)} fixtures total: ${totalRunData} from real runData, ` +
-    `${totalBodyRun} body-run (body executed once and frozen, incl. hand-authored) — ` +
+    `${totalReasoned} reasoned (expected derived from the node's contract first, then confirmed against the body), ` +
+    `${totalBodyRun} body-run (body executed once and frozen) — ` +
     `"N fixtures" is NOT "N independent assertions" until you know this split.`);
 });
