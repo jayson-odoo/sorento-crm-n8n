@@ -1,0 +1,206 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The same match arrives in ALL THREE envelopes (resolutions[].matches, intersection[] and by_entity_type) \u2014 as the resolver genuinely returns it. Entities are keyed BY UUID, so it counts once: entities_count 1, one compatible entity, one routing company. Without the de-dupe the same product would be offered and counted three times."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "dup-1"
+     ],
+     "resolutions": [
+      {
+       "token": "dup-1",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "dup1",
+         "entity_type": "product",
+         "canonical_code": "DUP-1",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "intersection": [
+      {
+       "uuid": "dup1",
+       "entity_type": "product",
+       "canonical_code": "DUP-1",
+       "match_tier": "exact",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      }
+     ],
+     "by_entity_type": {
+      "product": [
+       {
+        "uuid": "dup1",
+        "entity_type": "product",
+        "canonical_code": "DUP-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "dup-1"
+    ],
+    "resolutions": [
+     {
+      "token": "dup-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "dup1",
+        "entity_type": "product",
+        "canonical_code": "DUP-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "intersection": [
+     {
+      "uuid": "dup1",
+      "entity_type": "product",
+      "canonical_code": "DUP-1",
+      "match_tier": "exact",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd"
+     }
+    ],
+    "by_entity_type": {
+     "product": [
+      {
+       "uuid": "dup1",
+       "entity_type": "product",
+       "canonical_code": "DUP-1",
+       "match_tier": "exact",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      }
+     ]
+    },
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "dup-1"
+    ],
+    "resolutions": [
+     {
+      "token": "dup-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "dup1",
+        "entity_type": "product",
+        "canonical_code": "DUP-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "intersection": [
+     {
+      "uuid": "dup1",
+      "entity_type": "product",
+      "canonical_code": "DUP-1",
+      "match_tier": "exact",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd"
+     }
+    ],
+    "by_entity_type": {
+     "product": [
+      {
+       "uuid": "dup1",
+       "entity_type": "product",
+       "canonical_code": "DUP-1",
+       "match_tier": "exact",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      }
+     ]
+    },
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "DUP-1"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "dup1",
+      "entity_type": "product",
+      "code": "DUP-1"
+     }
+    ],
+    "gate_debug": {
+     "domain": "inventory",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

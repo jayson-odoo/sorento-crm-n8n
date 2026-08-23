@@ -1,0 +1,296 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "When the code is a bare uuid the label comes from the display record, in order: description > product_name > name. All three rungs are exercised here; a candidate with none of them has no renderable label and is dropped (covered separately). The roster's `value` follows the label while `product` keeps the real code, so a pick still resolves."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product"
+       },
+       {
+        "raw": "IBKS9999",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "d1",
+         "canonical_code": "3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607",
+         "entity_type": "product",
+         "match_tier": "prefix",
+         "display": {
+          "description": "Chrome basin mixer"
+         }
+        },
+        {
+         "uuid": "d2",
+         "canonical_code": "4a3b2c1d-6e5f-4071-9a82-c3d4e5f60718",
+         "entity_type": "product",
+         "match_tier": "prefix",
+         "display": {
+          "product_name": "Basin Mixer B"
+         }
+        },
+        {
+         "uuid": "d3",
+         "canonical_code": "5b4c3d2e-7f60-4182-ab93-d4e5f6071829",
+         "entity_type": "product",
+         "match_tier": "prefix",
+         "display": {
+          "name": "Basin C"
+         }
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "IBKS9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      },
+      {
+       "raw": "IBKS9999",
+       "hint": "product",
+       "canonical_code": "3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records [3 did-you-mean suggestions active]",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "test",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607",
+        "uuid": "d1",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "4a3b2c1d-6e5f-4071-9a82-c3d4e5f60718",
+        "uuid": "d2",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "5b4c3d2e-7f60-4182-ab93-d4e5f6071829",
+        "uuid": "d3",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607",
+       "uuid": "d1",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "4a3b2c1d-6e5f-4071-9a82-c3d4e5f60718",
+       "uuid": "d2",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "5b4c3d2e-7f60-4182-ab93-d4e5f6071829",
+       "uuid": "d3",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null,
+     "dym_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Chrome basin mixer",
+       "value": "Chrome basin mixer",
+       "product": "3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607",
+       "uuid": "d1",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 2,
+       "label": "Basin Mixer B",
+       "value": "Basin Mixer B",
+       "product": "4a3b2c1d-6e5f-4071-9a82-c3d4e5f60718",
+       "uuid": "d2",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 3,
+       "label": "Basin C",
+       "value": "Basin C",
+       "product": "5b4c3d2e-7f60-4182-ab93-d4e5f6071829",
+       "uuid": "d3",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ]
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"IBKS9999\", did you mean:\n  1. Chrome basin mixer\n  2. Basin Mixer B\n  3. Basin C\n\nReply a number to check it, or ask again."
+   }
+  }
+ ],
+ "runIndex": 0
+}

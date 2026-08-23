@@ -1,0 +1,192 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "FAIL-OPEN by design: the parser named a class ('brochure') that matches neither returned document type, so the full set is kept, no suffix is added and nothing is stamped. Over-broad is today's behaviour; a wrong narrowing would silently answer about the wrong document."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "brochure",
+        "hint": "attachment",
+        "canonical_code": "brochure"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "container status",
+      "list"
+     ],
+     "resolutions": [
+      {
+       "token": "container status",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u-cs",
+         "entity_type": "attachment_type",
+         "canonical_code": "container_status",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "list",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u-pl",
+         "entity_type": "attachment_type",
+         "canonical_code": null,
+         "match_tier": "word:list",
+         "display": {
+          "type_name": "Packing List"
+         }
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "container status",
+     "list"
+    ],
+    "resolutions": [
+     {
+      "token": "container status",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u-cs",
+        "entity_type": "attachment_type",
+        "canonical_code": "container_status",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "list",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u-pl",
+        "entity_type": "attachment_type",
+        "canonical_code": null,
+        "match_tier": "word:list",
+        "display": {
+         "type_name": "Packing List"
+        }
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "container status",
+     "list"
+    ],
+    "resolutions": [
+     {
+      "token": "container status",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u-cs",
+        "entity_type": "attachment_type",
+        "canonical_code": "container_status",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "list",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u-pl",
+        "entity_type": "attachment_type",
+        "canonical_code": null,
+        "match_tier": "word:list",
+        "display": {
+         "type_name": "Packing List"
+        }
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-cs",
+      "entity_type": "attachment_type",
+      "code": "container_status"
+     },
+     {
+      "uuid": "u-pl",
+      "entity_type": "attachment_type",
+      "code": null
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

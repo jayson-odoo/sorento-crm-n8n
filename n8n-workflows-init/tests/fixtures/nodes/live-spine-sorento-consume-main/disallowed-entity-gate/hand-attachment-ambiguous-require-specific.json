@@ -1,0 +1,201 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The ambiguity rule is not incoming-only: an attachment ask scoped by an ambiguous product token must be disambiguated before any document is fetched. The non-product entity (attachment_type) is resolved straight through and never offered as a choice \u2014 and once a pick is required, compatible_entities is exactly the offered products, so the attachment_type does NOT travel on to the CRM."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "MHS15",
+        "hint": "product"
+       },
+       {
+        "raw": "certificate",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs15",
+      "certificate"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs15",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u9a",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "u9b",
+         "entity_type": "product",
+         "canonical_code": "MHS1543-CR",
+         "match_tier": "prefix"
+        }
+       ]
+      },
+      {
+       "token": "certificate",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-at8",
+         "entity_type": "attachment_type",
+         "canonical_code": "certificate",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15",
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u9b",
+        "entity_type": "product",
+        "canonical_code": "MHS1543-CR",
+        "match_tier": "prefix"
+       }
+      ]
+     },
+     {
+      "token": "certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-at8",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15",
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u9b",
+        "entity_type": "product",
+        "canonical_code": "MHS1543-CR",
+        "match_tier": "prefix"
+       }
+      ]
+     },
+     {
+      "token": "certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-at8",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'product_attachment' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "product_attachment search needs to be more specific. Multiple matches found. Please choose:\n1. MHS1542-CR\n2. MHS1543-CR",
+    "compatible_entities": [
+     {
+      "uuid": "u9a",
+      "entity_type": "product",
+      "code": "MHS1542-CR"
+     },
+     {
+      "uuid": "u9b",
+      "entity_type": "product",
+      "code": "MHS1543-CR"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,150 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "F1: brand_unheld and brand_gate_empty are DIFFERENT questions and both are surfaced. With no stated tier denied, the notice is the flat brand denial built from tier-gate's OWN query_brands (not the parser's), with nothing following it \u2014 brand_unheld implies the gate closed. Two stated brands means _qb is null, so routing_brand stays null: a brand is only 'stated' when the customer named exactly one."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "query_brands": [
+       "Cabana",
+       "Mocha"
+      ],
+      "entities": [
+       {
+        "raw": "6047",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "6047"
+     ],
+     "resolutions": [
+      {
+       "token": "6047",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-pr",
+         "entity_type": "promotion",
+         "canonical_code": "PROMO-6047",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ],
+  "tier-gate": [
+   {
+    "json": {
+     "tier_stated": [],
+     "entitled_tiers": [
+      "dealer"
+     ],
+     "brand_gate_empty": true,
+     "brand_unheld": true,
+     "query_brands": [
+      "Cabana",
+      "Mocha"
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "6047"
+    ],
+    "resolutions": [
+     {
+      "token": "6047",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-pr",
+        "entity_type": "promotion",
+        "canonical_code": "PROMO-6047",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "6047"
+    ],
+    "resolutions": [
+     {
+      "token": "6047",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-pr",
+        "entity_type": "promotion",
+        "canonical_code": "PROMO-6047",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "You don't have access to Cabana, Mocha promotions.",
+    "brand_gate_empty": true,
+    "brand_unheld": true,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-pr",
+      "entity_type": "promotion",
+      "code": "PROMO-6047"
+     }
+    ],
+    "gate_debug": {
+     "domain": "promotion",
+     "allowed_lookup": [
+      "product",
+      "promotion",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

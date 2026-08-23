@@ -1,0 +1,101 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The negative of the tip: same domain, same answered shape, but the customer asked for a technical drawing, so nothing is appended. Pins that the tip is keyed on the entity raw and not on the domain alone."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "get_attachment",
+      "domain_hint": "resource_attachment",
+      "entities": [
+       {
+        "raw": "technical drawing",
+        "hint": "attachment_type"
+       }
+      ],
+      "routing": {
+       "suggested_team": "sales"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here's the catalogue.",
+     "items": [
+      {
+       "title": "Catalogue 2026"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here's the catalogue."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "get_attachment",
+     "domain_hint": "resource_attachment",
+     "routing": {
+      "suggested_team": "sales"
+     },
+     "escalation": {},
+     "entities": [
+      {
+       "raw": "technical drawing",
+       "hint": "attachment_type"
+      }
+     ],
+     "response": "Previous turn (resource_attachment): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "Catalogue 2026",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Here's the catalogue."
+   }
+  }
+ ],
+ "runIndex": 0
+}

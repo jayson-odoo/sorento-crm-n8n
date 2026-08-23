@@ -1,0 +1,148 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Two denied tiers, rendered through the label map: 'end_user' is spoken as 'end user' and the list is comma-joined. The map is the only thing between an internal tier token and the customer's screen."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "6047",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "6047"
+     ],
+     "resolutions": [
+      {
+       "token": "6047",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-pr2",
+         "entity_type": "promotion",
+         "canonical_code": "PROMO-6047",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ],
+  "tier-gate": [
+   {
+    "json": {
+     "tier_stated": [
+      "office",
+      "end_user"
+     ],
+     "entitled_tiers": [
+      "dealer"
+     ],
+     "brand_gate_empty": false,
+     "brand_unheld": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "6047"
+    ],
+    "resolutions": [
+     {
+      "token": "6047",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-pr2",
+        "entity_type": "promotion",
+        "canonical_code": "PROMO-6047",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "6047"
+    ],
+    "resolutions": [
+     {
+      "token": "6047",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-pr2",
+        "entity_type": "promotion",
+        "canonical_code": "PROMO-6047",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [
+     "office",
+     "end_user"
+    ],
+    "access_notice": "You don't have access to office, end user promotions. Here's what you do have:",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-pr2",
+      "entity_type": "promotion",
+      "code": "PROMO-6047"
+     }
+    ],
+    "gate_debug": {
+     "domain": "promotion",
+     "allowed_lookup": [
+      "product",
+      "promotion",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

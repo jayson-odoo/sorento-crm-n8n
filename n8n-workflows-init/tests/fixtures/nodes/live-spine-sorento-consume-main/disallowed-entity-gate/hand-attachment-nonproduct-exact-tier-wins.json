@@ -1,0 +1,153 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Two document types come back for one token and neither is a choice the customer should be asked about \u2014 non-products are resolved straight through. Which one? The EXACT-tier row, even though it is not first; only when there is no single exact does the first row win by position."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "certificate",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "certificate"
+     ],
+     "resolutions": [
+      {
+       "token": "certificate",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u-aw",
+         "entity_type": "attachment_type",
+         "canonical_code": "cert_generic",
+         "match_tier": "word:cert"
+        },
+        {
+         "uuid": "u-ae",
+         "entity_type": "attachment_type",
+         "canonical_code": "certificate",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "certificate",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u-aw",
+        "entity_type": "attachment_type",
+        "canonical_code": "cert_generic",
+        "match_tier": "word:cert"
+       },
+       {
+        "uuid": "u-ae",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "certificate",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u-aw",
+        "entity_type": "attachment_type",
+        "canonical_code": "cert_generic",
+        "match_tier": "word:cert"
+       },
+       {
+        "uuid": "u-ae",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-ae",
+      "entity_type": "attachment_type",
+      "code": "certificate"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

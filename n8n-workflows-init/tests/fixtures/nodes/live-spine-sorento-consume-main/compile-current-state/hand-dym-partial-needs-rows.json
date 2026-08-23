@@ -1,0 +1,170 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Nothing was returned, so this is not a PARTIAL miss \u2014 it is a plain miss, and the not-found lane owns it. Appending a did-you-mean here would double up with build-suggest-offer's own."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product"
+       },
+       {
+        "raw": "IBKS9999",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": "437264483"
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock summary.",
+     "items": []
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "c1",
+         "canonical_code": "IBKS5245-NG-BL",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "IBKS9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock summary."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      },
+      {
+       "raw": "IBKS9999",
+       "hint": "product",
+       "canonical_code": "IBKS5245-NG-BL"
+      }
+     ],
+     "response": "Previous turn (inventory): no results.",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Stock summary."
+   }
+  }
+ ],
+ "runIndex": 0
+}

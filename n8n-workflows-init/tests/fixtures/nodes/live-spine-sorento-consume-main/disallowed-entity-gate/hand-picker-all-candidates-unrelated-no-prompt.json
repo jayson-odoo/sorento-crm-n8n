@@ -1,0 +1,156 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Both candidates are description-only matches: no typed token relates to either code, so the whole offer is dropped and the customer is NOT asked to choose between two codes they never mentioned. With no offer and no exact resolution, compatible_entities falls back to the plain type-filtered set rather than the (empty) exact set."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS15",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs15"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs15",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "uz1",
+         "entity_type": "product",
+         "canonical_code": "XYZ-1",
+         "match_tier": "substring"
+        },
+        {
+         "uuid": "uz2",
+         "entity_type": "product",
+         "canonical_code": "XYZ-2",
+         "match_tier": "substring"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "uz1",
+        "entity_type": "product",
+        "canonical_code": "XYZ-1",
+        "match_tier": "substring"
+       },
+       {
+        "uuid": "uz2",
+        "entity_type": "product",
+        "canonical_code": "XYZ-2",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "uz1",
+        "entity_type": "product",
+        "canonical_code": "XYZ-1",
+        "match_tier": "substring"
+       },
+       {
+        "uuid": "uz2",
+        "entity_type": "product",
+        "canonical_code": "XYZ-2",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "uz1",
+      "entity_type": "product",
+      "code": "XYZ-1"
+     },
+     {
+      "uuid": "uz2",
+      "entity_type": "product",
+      "code": "XYZ-2"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

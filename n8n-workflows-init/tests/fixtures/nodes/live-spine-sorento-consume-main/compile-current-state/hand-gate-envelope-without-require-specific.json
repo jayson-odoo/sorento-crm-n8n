@@ -1,0 +1,105 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The product-only filter is armed by require_specific, NOT by the mere presence of compatible_entities: on a resolved turn the non-product entities the gate carried are part of the roster. selection_context is null for the same reason \u2014 nothing is being disambiguated."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "routing": {
+       "suggested_team": "purchasing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u1",
+       "entity_type": "product",
+       "code": "MHS1542-CR"
+      },
+      {
+       "uuid": "u3",
+       "entity_type": "attachment_type",
+       "code": "cert"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "results"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_incoming",
+     "domain_hint": "incoming",
+     "routing": {
+      "suggested_team": "purchasing"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Previous turn (incoming): returned 2 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": "u1",
+       "label": "MHS1542-CR",
+       "entity_type": "product",
+       "product": "MHS1542-CR",
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "uuid": "u3",
+       "label": "cert",
+       "entity_type": "attachment_type",
+       "product": "cert",
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

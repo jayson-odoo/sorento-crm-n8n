@@ -1,0 +1,156 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Two shapes the roster plan has to survive: a member row that carries a single company_id instead of a company_ids[] list (the fallback is a one-element list, not a crash), and a plan item with NO plan_idx of its own, which is numbered by its position instead of persisting an undefined index. The queried-but-unshown company is still dropped."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "SRTBF11832-NEW",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "routing_companies": [
+      {
+       "company_id": "c1",
+       "company_name": "Sorento",
+       "brand_code": null,
+       "codes": []
+      }
+     ],
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": "c1"
+    }
+   }
+  ],
+  "build-cs-member-offer": [
+   {
+    "json": {
+     "response": "Reply the number or name:\n1. Person 1",
+     "manualResponse": true,
+     "includeResponse": true,
+     "selection_context": "member_offer",
+     "cs_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 1",
+       "company_id": "c1"
+      }
+     ]
+    }
+   }
+  ],
+  "cs-roster-plan": [
+   {
+    "json": {
+     "company_id": "c1",
+     "company_name": "Sorento",
+     "brand_code": "srt"
+    }
+   },
+   {
+    "json": {
+     "plan_idx": 7,
+     "company_id": "c2",
+     "company_name": "Mocha",
+     "brand_code": "mch"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "escalate"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "SRTBF11832-NEW",
+       "hint": "product"
+      }
+     ],
+     "response": "Reply the number or name:\n1. Person 1",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 1",
+       "company_id": "c1"
+      }
+     ],
+     "selection_context": "member_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "c1",
+       "company_name": "Sorento",
+       "brand_code": "srt"
+      }
+     ],
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": "c1",
+     "routing_companies": [
+      {
+       "company_id": "c1",
+       "company_name": "Sorento",
+       "brand_code": null,
+       "codes": []
+      }
+     ]
+    },
+    "user_response": "Reply the number or name:\n1. Person 1"
+   }
+  }
+ ],
+ "runIndex": 0
+}

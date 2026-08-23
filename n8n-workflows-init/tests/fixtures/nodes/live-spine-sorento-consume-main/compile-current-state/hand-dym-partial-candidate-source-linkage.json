@@ -1,0 +1,255 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "dym-candidate-map: each candidate keeps the source token's OWN entity \u2014 matched on raw, so a second parser entity cannot lend its canonical_code \u2014 and the hint is the MATCH's entity_type when it has one, falling back to the source entity's hint only when it does not. Here the match says 'product' while the parser guessed 'category', and the second candidate (no entity_type at all) shows the fallback."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product",
+        "canonical_code": "MMC-CANON"
+       },
+       {
+        "raw": "IBKS9999",
+        "hint": "category",
+        "canonical_code": "IBKS-CANON"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "cx",
+         "canonical_code": "IBKS5245-NG-BL",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "cy",
+         "canonical_code": "IBKS6245-NG-SS",
+         "match_tier": "prefix"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "IBKS9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      },
+      {
+       "raw": "IBKS9999",
+       "hint": "product",
+       "canonical_code": "IBKS5245-NG-BL"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records [2 did-you-mean suggestions active]",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "test",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "IBKS5245-NG-BL",
+        "uuid": "cx",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": "IBKS-CANON"
+       },
+       {
+        "code": "IBKS6245-NG-SS",
+        "uuid": "cy",
+        "entity_type": null,
+        "for_raw": "IBKS9999",
+        "for_hint": "category",
+        "for_canonical": "IBKS-CANON"
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "IBKS5245-NG-BL",
+       "uuid": "cx",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": "IBKS-CANON"
+      },
+      {
+       "code": "IBKS6245-NG-SS",
+       "uuid": "cy",
+       "entity_type": null,
+       "for_raw": "IBKS9999",
+       "for_hint": "category",
+       "for_canonical": "IBKS-CANON"
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null,
+     "dym_last_result_set": [
+      {
+       "idx": 1,
+       "label": "IBKS5245-NG-BL",
+       "value": "IBKS5245-NG-BL",
+       "product": "IBKS5245-NG-BL",
+       "uuid": "cx",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": "IBKS-CANON"
+      },
+      {
+       "idx": 2,
+       "label": "IBKS6245-NG-SS",
+       "value": "IBKS6245-NG-SS",
+       "product": "IBKS6245-NG-SS",
+       "uuid": "cy",
+       "entity_type": null,
+       "for_raw": "IBKS9999",
+       "for_hint": "category",
+       "for_canonical": "IBKS-CANON"
+      }
+     ]
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"IBKS9999\", did you mean:\n  1. IBKS5245-NG-BL\n  2. IBKS6245-NG-SS\n\nReply a number to check it, or ask again."
+   }
+  }
+ ],
+ "runIndex": 0
+}

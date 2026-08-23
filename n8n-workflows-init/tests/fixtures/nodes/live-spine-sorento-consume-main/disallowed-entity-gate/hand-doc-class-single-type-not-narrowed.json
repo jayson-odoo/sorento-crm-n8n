@@ -1,0 +1,133 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The parser named a document class and exactly ONE attachment_type came back: there is nothing to narrow, so gate_reason carries no narrowing suffix and no token is stamped. The narrowing only engages when the word-tier fallback actually sprayed several classes."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "container status",
+        "hint": "attachment",
+        "canonical_code": "container status"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "container status"
+     ],
+     "resolutions": [
+      {
+       "token": "container status",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-cs",
+         "entity_type": "attachment_type",
+         "canonical_code": "container_status",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "container status"
+    ],
+    "resolutions": [
+     {
+      "token": "container status",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-cs",
+        "entity_type": "attachment_type",
+        "canonical_code": "container_status",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "container status"
+    ],
+    "resolutions": [
+     {
+      "token": "container status",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-cs",
+        "entity_type": "attachment_type",
+        "canonical_code": "container_status",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-cs",
+      "entity_type": "attachment_type",
+      "code": "container_status"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

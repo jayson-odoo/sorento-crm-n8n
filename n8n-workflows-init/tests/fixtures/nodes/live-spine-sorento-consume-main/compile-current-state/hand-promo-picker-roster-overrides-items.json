@@ -1,0 +1,116 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "promotion-picker S4: promo-picker builds its own roster and it REPLACES the roster the compression block just derived from the items, so that 'all' and a bare number are handled by the parser's suggest_offer path. The compressed `response` still reports the item count \u2014 only last_result_set and selection_context are taken over."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "routing": {
+       "suggested_team": "marketing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "promo-picker": [
+   {
+    "json": {
+     "suggest_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Raya Deal",
+       "value": "PROMO-1",
+       "uuid": "p1"
+      },
+      {
+       "idx": 2,
+       "label": "Merdeka Deal",
+       "value": "PROMO-2",
+       "uuid": "p2"
+      }
+     ]
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here are the promotions.",
+     "items": [
+      {
+       "title": "Raya Deal"
+      },
+      {
+       "title": "Merdeka Deal"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here are the promotions."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_promotion",
+     "domain_hint": "promotion",
+     "routing": {
+      "suggested_team": "marketing"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Previous turn (promotion): returned 2 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "Raya Deal",
+       "value": "PROMO-1",
+       "uuid": "p1"
+      },
+      {
+       "idx": 2,
+       "label": "Merdeka Deal",
+       "value": "PROMO-2",
+       "uuid": "p2"
+      }
+     ],
+     "selection_context": "suggest_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Here are the promotions."
+   }
+  }
+ ],
+ "runIndex": 0
+}

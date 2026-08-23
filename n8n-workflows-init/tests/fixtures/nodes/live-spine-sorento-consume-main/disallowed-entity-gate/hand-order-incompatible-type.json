@@ -1,0 +1,124 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "A brand entity on an 'order' turn. ALLOWED.order has no 'brand', so compatible_entities filters to empty while `entities` is non-empty \u2014 the 'types [...] incompatible' arm: gate_passed false, and the reason lists the DISTINCT types actually resolved. compatible_entities is the filtered (empty) list, not the raw one. Routing still reports resolved_company from the brand the PARSER named ('Cabana'), because _brands falls back to _parserBrand for every match \u2014 while routing_companies stays empty, since no COMPATIBLE entity carries a company."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "cabana"
+     ],
+     "resolutions": [
+      {
+       "token": "cabana",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-brand",
+         "entity_type": "brand",
+         "canonical_code": "CABANA"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "cabana"
+    ],
+    "resolutions": [
+     {
+      "token": "cabana",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-brand",
+        "entity_type": "brand",
+        "canonical_code": "CABANA"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "cabana"
+    ],
+    "resolutions": [
+     {
+      "token": "cabana",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-brand",
+        "entity_type": "brand",
+        "canonical_code": "CABANA"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "cabana",
+    "company_team": null,
+    "resolved_companies": [
+     "cabana"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": false,
+    "gate_reason": "types [brand] incompatible with 'order'",
+    "gate_clarification": "",
+    "compatible_entities": [],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,131 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The session write is a NAMED copy, not a spread \u2014 so every key the parser emits has to be listed explicitly, and this fixture populates all of them at once (scope, brands, tiers, both date bounds, date_mode, match_mode, contains_flyer, goal, routing, escalation). F7: query_brands is session state \u2014 a constraint the customer put on the question \u2014 and access_levels is persisted again for the conditional carry, so both must survive the turn. A key dropped or renamed here silently loses that half of the scope on the next continuation."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "user_goal": "find the raya promotions",
+      "query_scope": "brand",
+      "query_brands": [
+       "Cabana"
+      ],
+      "access_levels": [
+       "dealer"
+      ],
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "date_filter_start": "2026-08-01",
+      "date_filter_end": "2026-08-31",
+      "date_mode": "range",
+      "match_mode": "and",
+      "contains_flyer": true
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here are the Cabana promotions.",
+     "items": [
+      {
+       "title": "Raya Deal"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here are the Cabana promotions."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_promotion",
+     "domain_hint": "promotion",
+     "user_goal": "find the raya promotions",
+     "query_scope": "brand",
+     "query_brands": [
+      "Cabana"
+     ],
+     "access_levels": [
+      "dealer"
+     ],
+     "routing": {
+      "suggested_team": "marketing"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "date_filter_start": "2026-08-01",
+     "date_filter_end": "2026-08-31",
+     "date_mode": "range",
+     "match_mode": "and",
+     "contains_flyer": true,
+     "entities": [
+      {
+       "raw": "Cabana",
+       "hint": "brand"
+      }
+     ],
+     "response": "Previous turn (promotion): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "Raya Deal",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Here are the Cabana promotions."
+   }
+  }
+ ],
+ "runIndex": 0
+}

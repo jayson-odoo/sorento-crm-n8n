@@ -1,0 +1,149 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "REQUIRED_TYPES.product_attachment = ['attachment_type']: the product resolved but no attachment_type did, in the resolver OR in the parser hints, so the gate closes AFTER the compatibility check and renders the attachment_type clarification, using the parser's product raw as the subject. The REQUIRE_SPECIFIC block still runs (product_attachment is in REQUIRE_SPECIFIC_DOMAINS) and resolves the single exact product, so compatible_entities is the exact_entities set \u2014 closing the gate does not stop that resolution."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "MHS1542-CR-DIY",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs1542-cr-diy"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs1542-cr-diy",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-p6",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr-diy"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-p6",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr-diy"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-p6",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "MHS1542-CR-DIY"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": false,
+    "require_specific": false,
+    "gate_reason": "'product_attachment' requires [attachment_type] but none resolved",
+    "gate_clarification": "Please specify which type of attachment you need for MHS1542-CR-DIY, e.g. product image, technical drawing, 3D model, or certificate.",
+    "compatible_entities": [
+     {
+      "uuid": "u-p6",
+      "entity_type": "product",
+      "code": "MHS1542-CR-DIY"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

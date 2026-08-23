@@ -1,0 +1,138 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The merge arm on master_products: it is an escalate branch, so the catalogue disclaimer is NOT appended even though the roster is non-empty. It also exercises the company-label fallback \u2014 a row with an EMPTY companies[] falls back to its company_name, which is what keeps a two-company roster labelled when only one row carries the list form."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "product_info",
+      "domain_hint": "master_products",
+      "routing": {
+       "suggested_team": "sales"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": "437264483"
+    }
+   }
+  ],
+  "build-suggest-offer": [
+   {
+    "json": {
+     "suggest_offer": true,
+     "suggest_response": "Did you mean:\n1. MHS1543-CR",
+     "suggest_quick_reply": "MHS1543-CR,Yes escalate,No it's okay",
+     "suggest_last_result_set": [
+      {
+       "idx": 1,
+       "label": "MHS1543-CR"
+      }
+     ]
+    }
+   }
+  ],
+  "build-cs-member-offer": [
+   {
+    "json": {
+     "response": "unused on the merge arm",
+     "manualResponse": true,
+     "includeResponse": true,
+     "selection_context": "member_offer",
+     "cs_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 1",
+       "company_id": "c1",
+       "companies": [],
+       "company_name": "Sorento"
+      },
+      {
+       "idx": 2,
+       "label": "Person 2",
+       "company_id": "c2",
+       "companies": [
+        "Mocha"
+       ]
+      }
+     ],
+     "cs_multi_note": "Members are listed per company.",
+     "routing_companies": [
+      {
+       "company_id": "c1",
+       "company_name": "Sorento"
+      },
+      {
+       "company_id": "c2",
+       "company_name": "Mocha"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "not_found"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "product_info",
+     "domain_hint": "master_products",
+     "routing": {
+      "suggested_team": "sales"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Did you mean:\n1. MHS1543-CR\n\nMembers are listed per company.\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Mocha)\n\nOr just reply 'yes' and we'll assign automatically.",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 1",
+       "company_id": "c1",
+       "companies": [],
+       "company_name": "Sorento"
+      },
+      {
+       "idx": 2,
+       "label": "Person 2",
+       "company_id": "c2",
+       "companies": [
+        "Mocha"
+       ]
+      }
+     ],
+     "selection_context": "member_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Did you mean:\n1. MHS1543-CR\n\nMembers are listed per company.\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Mocha)\n\nOr just reply 'yes' and we'll assign automatically.",
+    "quick_reply": "MHS1543-CR,Yes escalate,No it's okay"
+   }
+  }
+ ],
+ "runIndex": 0
+}

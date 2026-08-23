@@ -1,0 +1,346 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Every entity type ALLOWED for 'product_attachment' resolved at once: all 6 survive the compatibility filter, so the gate passes with the full set. This pins the matrix ROW itself \u2014 dropping or renaming any single type in it would drop that entity from compatible_entities. This domain is also in REQUIRE_SPECIFIC_DOMAINS, so the set that comes out is exact_entities (non-products resolved straight through, one exact product per token) \u2014 which for one-match-per-token input is the same set, in token order."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "att-product",
+      "att-attachment",
+      "att-attachment_type",
+      "att-category",
+      "att-brand",
+      "att-certificate"
+     ],
+     "resolutions": [
+      {
+       "token": "att-product",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "att0",
+         "entity_type": "product",
+         "canonical_code": "ATT-PRODUCT",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "att-attachment",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "att1",
+         "entity_type": "attachment",
+         "canonical_code": "ATT-ATTACHMENT",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "att-attachment_type",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "att2",
+         "entity_type": "attachment_type",
+         "canonical_code": "ATT-ATTACHMENT_TYPE",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "att-category",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "att3",
+         "entity_type": "category",
+         "canonical_code": "ATT-CATEGORY",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "att-brand",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "att4",
+         "entity_type": "brand",
+         "canonical_code": "ATT-BRAND",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "att-certificate",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "att5",
+         "entity_type": "certificate",
+         "canonical_code": "ATT-CERTIFICATE",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "att-product",
+     "att-attachment",
+     "att-attachment_type",
+     "att-category",
+     "att-brand",
+     "att-certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "att-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att0",
+        "entity_type": "product",
+        "canonical_code": "ATT-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-attachment",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att1",
+        "entity_type": "attachment",
+        "canonical_code": "ATT-ATTACHMENT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-attachment_type",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att2",
+        "entity_type": "attachment_type",
+        "canonical_code": "ATT-ATTACHMENT_TYPE",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-category",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att3",
+        "entity_type": "category",
+        "canonical_code": "ATT-CATEGORY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-brand",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att4",
+        "entity_type": "brand",
+        "canonical_code": "ATT-BRAND",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att5",
+        "entity_type": "certificate",
+        "canonical_code": "ATT-CERTIFICATE",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "att-product",
+     "att-attachment",
+     "att-attachment_type",
+     "att-category",
+     "att-brand",
+     "att-certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "att-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att0",
+        "entity_type": "product",
+        "canonical_code": "ATT-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-attachment",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att1",
+        "entity_type": "attachment",
+        "canonical_code": "ATT-ATTACHMENT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-attachment_type",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att2",
+        "entity_type": "attachment_type",
+        "canonical_code": "ATT-ATTACHMENT_TYPE",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-category",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att3",
+        "entity_type": "category",
+        "canonical_code": "ATT-CATEGORY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-brand",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att4",
+        "entity_type": "brand",
+        "canonical_code": "ATT-BRAND",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "att-certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "att5",
+        "entity_type": "certificate",
+        "canonical_code": "ATT-CERTIFICATE",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "att0",
+      "entity_type": "product",
+      "code": "ATT-PRODUCT"
+     },
+     {
+      "uuid": "att1",
+      "entity_type": "attachment",
+      "code": "ATT-ATTACHMENT"
+     },
+     {
+      "uuid": "att2",
+      "entity_type": "attachment_type",
+      "code": "ATT-ATTACHMENT_TYPE"
+     },
+     {
+      "uuid": "att3",
+      "entity_type": "category",
+      "code": "ATT-CATEGORY"
+     },
+     {
+      "uuid": "att4",
+      "entity_type": "brand",
+      "code": "ATT-BRAND"
+     },
+     {
+      "uuid": "att5",
+      "entity_type": "certificate",
+      "code": "ATT-CERTIFICATE"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 6
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

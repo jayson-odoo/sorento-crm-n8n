@@ -1,0 +1,200 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "One miss, one voice: promo-picker renders its own 'no promotion found' line, so any token it already reported (_promo_unmatched / _promo_notfound.tokens) is skipped here instead of being reported twice in one message. promo-picker ran but published no roster, so it does NOT take over last_result_set \u2014 the roster arm needs a non-empty suggest_last_result_set."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product"
+       },
+       {
+        "raw": "IBKS9999",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "c1",
+         "canonical_code": "IBKS5245-NG-BL",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "c2",
+         "canonical_code": "IBKS6245-NG-SS",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "IBKS9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ],
+  "promo-picker": [
+   {
+    "json": {
+     "_promo_unmatched": [
+      "ibks9999"
+     ],
+     "suggest_last_result_set": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      },
+      {
+       "raw": "IBKS9999",
+       "hint": "product",
+       "canonical_code": "IBKS5245-NG-BL"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "runIndex": 0
+}

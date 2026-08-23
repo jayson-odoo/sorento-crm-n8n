@@ -1,0 +1,230 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "With the probe reporting no noun of its own, an attachment turn names the document class from the parser's attachment_type entity \u2014 and anything starting 'cert' is spoken as 'certificate', so the line reads 'no certificate' rather than echoing the customer's word back at them in a sentence that has to scan."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "get_attachment",
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "MHS1542-CR-DIY",
+        "hint": "product"
+       },
+       {
+        "raw": "certificate",
+        "hint": "attachment_type"
+       },
+       {
+        "raw": "IBKS9999",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "sales"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here is the document.",
+     "items": [
+      {
+       "title": "Catalogue",
+       "attachmentType": "certificates"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "mhs1542-cr-diy",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "up",
+         "canonical_code": "MHS1542-CR-DIY",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "c1",
+         "canonical_code": "IBKS5245-NG-BL",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "IBKS9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "up",
+       "code": "MHS1542-CR-DIY"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "attachment",
+       "attachment_type",
+       "category",
+       "brand",
+       "certificate"
+      ]
+     },
+     "resolutions": []
+    }
+   }
+  ],
+  "dym-annotate-partial": [
+   {
+    "json": {
+     "dym_probe_meta": {
+      "ok": true,
+      "probed": [
+       "ibks5245-ng-bl"
+      ]
+     },
+     "dym_available_codes": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here is the document."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "get_attachment",
+     "domain_hint": "product_attachment",
+     "routing": {
+      "suggested_team": "sales"
+     },
+     "escalation": {},
+     "entities": [
+      {
+       "raw": "MHS1542-CR-DIY",
+       "hint": "product",
+       "canonical_code": "MHS1542-CR-DIY"
+      },
+      {
+       "raw": "certificate",
+       "hint": "attachment_type"
+      },
+      {
+       "raw": "IBKS9999",
+       "hint": "product",
+       "canonical_code": "IBKS5245-NG-BL"
+      }
+     ],
+     "response": "Previous turn (product_attachment): returned 1 certificates [1 did-you-mean suggestions active]",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "Catalogue",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": "certificates",
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "test",
+      "domain": "product_attachment",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "IBKS5245-NG-BL",
+        "uuid": "c1",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "IBKS5245-NG-BL",
+       "uuid": "c1",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null,
+     "dym_last_result_set": [
+      {
+       "idx": 1,
+       "label": "IBKS5245-NG-BL",
+       "value": "IBKS5245-NG-BL",
+       "product": "IBKS5245-NG-BL",
+       "uuid": "c1",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ]
+    },
+    "user_response": "Here is the document.\n\nCouldn't find these:\n\"IBKS9999\", did you mean:\n  1. IBKS5245-NG-BL - no certificate\n\nReply a number to check it, or ask again."
+   }
+  }
+ ],
+ "runIndex": 0
+}

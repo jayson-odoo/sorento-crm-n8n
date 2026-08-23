@@ -1,0 +1,131 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The tier ask (D3): access-level-choice-message deliberately emits an EMPTY quick_reply because the ask is a numbered typed list, and this node turns that into an explicit null quick_reply rather than leaving the key absent. Its tier roster becomes last_result_set with selection_context 'tier_offer' \u2014 lowest precedence in the chain, so any member/suggest/promo roster would have won \u2014 which is what lets the parser resolve '1 and 2' to tier tokens next turn."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "routing": {
+       "suggested_team": "marketing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "access-level-choice-message": [
+   {
+    "json": {
+     "quick_reply": "",
+     "tier_offer": true,
+     "tier_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Dealer",
+       "value": "dealer",
+       "tier": "dealer",
+       "uuid": null,
+       "entity_type": "access_tier",
+       "product": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "label": "Office",
+       "value": "office",
+       "tier": "office",
+       "uuid": null,
+       "entity_type": "access_tier",
+       "product": null,
+       "filename": null
+      }
+     ],
+     "escalate_message": "Which access level do you need?\n1. Dealer\n2. Office\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+     "is_clarification": true
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "response": "Which access level do you need?\n1. Dealer\n2. Office\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+     "manualResponse": true,
+     "includeResponse": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "access_choice"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_promotion",
+     "domain_hint": "promotion",
+     "routing": {
+      "suggested_team": "marketing"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Which access level do you need?\n1. Dealer\n2. Office\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "Dealer",
+       "value": "dealer",
+       "tier": "dealer",
+       "uuid": null,
+       "entity_type": "access_tier",
+       "product": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "label": "Office",
+       "value": "office",
+       "tier": "office",
+       "uuid": null,
+       "entity_type": "access_tier",
+       "product": null,
+       "filename": null
+      }
+     ],
+     "selection_context": "tier_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Which access level do you need?\n1. Dealer\n2. Office\nReply with the number(s), e.g. \"1\", \"1 and 2\", or \"all\".",
+    "quick_reply": null
+   }
+  }
+ ],
+ "runIndex": 0
+}

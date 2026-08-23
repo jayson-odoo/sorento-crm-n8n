@@ -1,0 +1,390 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Six genuine misses in one turn, five surfaced: the token cap keeps the reply readable, and the sixth is dropped silently rather than truncating mid-list. The index is GLOBAL and CONTIGUOUS across token blocks (1..5, one candidate each) because the roster and the offer are keyed on it \u2014 renumbering per token would break the pick round-trip. for_hint falls back to the MATCH's entity_type when the parser named no entity with that raw."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "MISS1",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "m1",
+         "canonical_code": "CODE-1",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      },
+      {
+       "token": "MISS2",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "m2",
+         "canonical_code": "CODE-2",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      },
+      {
+       "token": "MISS3",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "m3",
+         "canonical_code": "CODE-3",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      },
+      {
+       "token": "MISS4",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "m4",
+         "canonical_code": "CODE-4",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      },
+      {
+       "token": "MISS5",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "m5",
+         "canonical_code": "CODE-5",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      },
+      {
+       "token": "MISS6",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "m6",
+         "canonical_code": "CODE-6",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "MISS1",
+      "MISS2",
+      "MISS3",
+      "MISS4",
+      "MISS5",
+      "MISS6"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records [5 did-you-mean suggestions active]",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "test",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "CODE-1",
+        "uuid": "m1",
+        "entity_type": "product",
+        "for_raw": "MISS1",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "CODE-2",
+        "uuid": "m2",
+        "entity_type": "product",
+        "for_raw": "MISS2",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "CODE-3",
+        "uuid": "m3",
+        "entity_type": "product",
+        "for_raw": "MISS3",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "CODE-4",
+        "uuid": "m4",
+        "entity_type": "product",
+        "for_raw": "MISS4",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "CODE-5",
+        "uuid": "m5",
+        "entity_type": "product",
+        "for_raw": "MISS5",
+        "for_hint": "product",
+        "for_canonical": null
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "CODE-1",
+       "uuid": "m1",
+       "entity_type": "product",
+       "for_raw": "MISS1",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "CODE-2",
+       "uuid": "m2",
+       "entity_type": "product",
+       "for_raw": "MISS2",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "CODE-3",
+       "uuid": "m3",
+       "entity_type": "product",
+       "for_raw": "MISS3",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "CODE-4",
+       "uuid": "m4",
+       "entity_type": "product",
+       "for_raw": "MISS4",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "CODE-5",
+       "uuid": "m5",
+       "entity_type": "product",
+       "for_raw": "MISS5",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null,
+     "dym_last_result_set": [
+      {
+       "idx": 1,
+       "label": "CODE-1",
+       "value": "CODE-1",
+       "product": "CODE-1",
+       "uuid": "m1",
+       "entity_type": "product",
+       "for_raw": "MISS1",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 2,
+       "label": "CODE-2",
+       "value": "CODE-2",
+       "product": "CODE-2",
+       "uuid": "m2",
+       "entity_type": "product",
+       "for_raw": "MISS2",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 3,
+       "label": "CODE-3",
+       "value": "CODE-3",
+       "product": "CODE-3",
+       "uuid": "m3",
+       "entity_type": "product",
+       "for_raw": "MISS3",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 4,
+       "label": "CODE-4",
+       "value": "CODE-4",
+       "product": "CODE-4",
+       "uuid": "m4",
+       "entity_type": "product",
+       "for_raw": "MISS4",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 5,
+       "label": "CODE-5",
+       "value": "CODE-5",
+       "product": "CODE-5",
+       "uuid": "m5",
+       "entity_type": "product",
+       "for_raw": "MISS5",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ]
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"MISS1\", did you mean:\n  1. CODE-1\n\"MISS2\", did you mean:\n  2. CODE-2\n\"MISS3\", did you mean:\n  3. CODE-3\n\"MISS4\", did you mean:\n  4. CODE-4\n\"MISS5\", did you mean:\n  5. CODE-5\n\nReply a number to check it, or ask again."
+   }
+  }
+ ],
+ "runIndex": 0
+}

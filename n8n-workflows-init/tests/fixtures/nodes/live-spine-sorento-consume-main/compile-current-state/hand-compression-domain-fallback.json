@@ -1,0 +1,90 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "A turn with no domain_hint (a bare-code follow-up) still gets a compressed summary \u2014 the domain slot falls back to the literal 'result' rather than printing 'null' at the parser."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": null,
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here's the product.",
+     "items": [
+      {
+       "title": "MHS1542-CR"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here's the product."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": null,
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Previous turn (result): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MHS1542-CR",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Here's the product."
+   }
+  }
+ ],
+ "runIndex": 0
+}

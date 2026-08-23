@@ -1,0 +1,166 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The customer typed a full code and the resolver also returned its -CR/-150 variants. The exact-tier row wins alone: no picker, and compatible_entities is JUST that row \u2014 the variants are dropped rather than widening the lookup behind the customer's back."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS1542",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs1542"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs1542",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-ex",
+         "entity_type": "product",
+         "canonical_code": "MHS1542",
+         "match_tier": "exact"
+        },
+        {
+         "uuid": "u9a",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "u9b",
+         "entity_type": "product",
+         "canonical_code": "MHS1543-CR",
+         "match_tier": "prefix"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-ex",
+        "entity_type": "product",
+        "canonical_code": "MHS1542",
+        "match_tier": "exact"
+       },
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u9b",
+        "entity_type": "product",
+        "canonical_code": "MHS1543-CR",
+        "match_tier": "prefix"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-ex",
+        "entity_type": "product",
+        "canonical_code": "MHS1542",
+        "match_tier": "exact"
+       },
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u9b",
+        "entity_type": "product",
+        "canonical_code": "MHS1543-CR",
+        "match_tier": "prefix"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-ex",
+      "entity_type": "product",
+      "code": "MHS1542"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

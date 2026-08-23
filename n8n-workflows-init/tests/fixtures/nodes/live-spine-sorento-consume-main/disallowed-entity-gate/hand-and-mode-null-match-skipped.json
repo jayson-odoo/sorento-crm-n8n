@@ -1,0 +1,127 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "A null row inside intersection[]: it is skipped by both the entity map and the AND-mode compatibility filter rather than dereferenced, so the typed exact still wins. Every pass over the resolver's rows has to tolerate the same input."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "sink-a"
+     ],
+     "intersection": [
+      null,
+      {
+       "uuid": "u-sa",
+       "entity_type": "product",
+       "canonical_code": "SINK-A",
+       "match_tier": "and"
+      },
+      {
+       "uuid": "u-sb",
+       "entity_type": "product",
+       "canonical_code": "SINK-B",
+       "match_tier": "and"
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "sink-a"
+    ],
+    "intersection": [
+     null,
+     {
+      "uuid": "u-sa",
+      "entity_type": "product",
+      "canonical_code": "SINK-A",
+      "match_tier": "and"
+     },
+     {
+      "uuid": "u-sb",
+      "entity_type": "product",
+      "canonical_code": "SINK-B",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "sink-a"
+    ],
+    "intersection": [
+     null,
+     {
+      "uuid": "u-sa",
+      "entity_type": "product",
+      "canonical_code": "SINK-A",
+      "match_tier": "and"
+     },
+     {
+      "uuid": "u-sb",
+      "entity_type": "product",
+      "canonical_code": "SINK-B",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-sa",
+      "entity_type": "product",
+      "code": "SINK-A"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

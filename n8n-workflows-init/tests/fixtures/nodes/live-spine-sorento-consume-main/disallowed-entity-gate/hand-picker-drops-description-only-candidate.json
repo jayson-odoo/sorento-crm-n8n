@@ -1,0 +1,174 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The picker keeps only candidates whose CODE relates to a typed token (either direction of containment). A description-only match \u2014 code XYZ-9 for the token 'mhs15' \u2014 is dropped from the offer, so it is neither numbered nor carried in compatible_entities. Without that filter the customer is asked to choose between a code they typed and one they have never seen."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS15",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs15"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs15",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u9a",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "u9b",
+         "entity_type": "product",
+         "canonical_code": "MHS1543-CR",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "u22x",
+         "entity_type": "product",
+         "canonical_code": "XYZ-9",
+         "match_tier": "substring"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u9b",
+        "entity_type": "product",
+        "canonical_code": "MHS1543-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u22x",
+        "entity_type": "product",
+        "canonical_code": "XYZ-9",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u9b",
+        "entity_type": "product",
+        "canonical_code": "MHS1543-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u22x",
+        "entity_type": "product",
+        "canonical_code": "XYZ-9",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. MHS1542-CR\n2. MHS1543-CR",
+    "compatible_entities": [
+     {
+      "uuid": "u9a",
+      "entity_type": "product",
+      "code": "MHS1542-CR"
+     },
+     {
+      "uuid": "u9b",
+      "entity_type": "product",
+      "code": "MHS1543-CR"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

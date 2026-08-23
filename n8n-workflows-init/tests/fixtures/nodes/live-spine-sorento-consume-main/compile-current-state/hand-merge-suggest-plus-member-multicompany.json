@@ -1,0 +1,165 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Delta-4: a date/code suggestion AND a CS roster in the same turn are shown TOGETHER, and this arm rebuilds the picker itself \u2014 so it must carry the same company labels and the same cs_multi_note build-cs-member-offer wrote, or a two-company roster reaches the customer as a bare list of names. A company that was QUERIED but returned no members (present in routing_companies, absent from the rows) is disclosed with the omitted-line rather than silently vanishing. selection_context is 'member_offer' (a number picks a person, not a code) while the quick replies still come from the suggestion."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "SRTBF11832-NEW",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "build-suggest-offer": [
+   {
+    "json": {
+     "suggest_offer": true,
+     "suggest_response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS",
+     "suggest_quick_reply": "IBKS5245-NG-BL,IBKS6245-NG-SS,Yes escalate,No it's okay",
+     "suggest_last_result_set": [
+      {
+       "idx": 1,
+       "label": "IBKS5245-NG-BL",
+       "value": "IBKS5245-NG-BL",
+       "uuid": "s1"
+      },
+      {
+       "idx": 2,
+       "label": "IBKS6245-NG-SS",
+       "value": "IBKS6245-NG-SS",
+       "uuid": "s2"
+      }
+     ]
+    }
+   }
+  ],
+  "build-cs-member-offer": [
+   {
+    "json": {
+     "response": "To escalate, choose who to route to.",
+     "manualResponse": true,
+     "includeResponse": true,
+     "selection_context": "member_offer",
+     "cs_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 1",
+       "company_id": "c1",
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 2,
+       "label": "Person 2",
+       "company_id": "c1",
+       "companies": [
+        "Sorento"
+       ]
+      }
+     ],
+     "cs_multi_note": "Members are listed per company.",
+     "routing_companies": [
+      {
+       "company_id": "c1",
+       "company_name": "Sorento"
+      },
+      {
+       "company_id": "c2",
+       "company_name": "Mocha"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "not_found"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "SRTBF11832-NEW",
+       "hint": "product"
+      }
+     ],
+     "response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS\n\nMembers are listed per company.\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Sorento)\n[ Mocha: no customer-service members are configured \u2014 omitted. ]\n\nOr just reply 'yes' and we'll assign automatically.",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 1",
+       "company_id": "c1",
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 2,
+       "label": "Person 2",
+       "company_id": "c1",
+       "companies": [
+        "Sorento"
+       ]
+      }
+     ],
+     "selection_context": "member_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS\n\nMembers are listed per company.\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Sorento)\n[ Mocha: no customer-service members are configured \u2014 omitted. ]\n\nOr just reply 'yes' and we'll assign automatically.",
+    "quick_reply": "IBKS5245-NG-BL,IBKS6245-NG-SS,Yes escalate,No it's okay"
+   }
+  }
+ ],
+ "runIndex": 0
+}

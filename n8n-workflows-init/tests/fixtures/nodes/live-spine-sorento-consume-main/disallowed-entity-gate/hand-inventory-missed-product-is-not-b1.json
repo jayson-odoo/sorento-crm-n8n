@@ -1,0 +1,139 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "A missed product token and no product among the compatible entities \u2014 the exact shape B1 closes the gate on \u2014 but the domain is INVENTORY, so B1 must not fire: a stock question scoped by a category is a legitimate broad answer. B1 exists only because certificate_ids alone satisfies the attachment tool's narrowing tuple."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "MHS9999",
+        "hint": "product"
+       },
+       {
+        "raw": "sinks",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs9999",
+      "sinks"
+     ],
+     "resolutions": [
+      {
+       "token": "sinks",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-c",
+         "entity_type": "category",
+         "canonical_code": "SINKS"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "MHS9999"
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs9999",
+     "sinks"
+    ],
+    "resolutions": [
+     {
+      "token": "sinks",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-c",
+        "entity_type": "category",
+        "canonical_code": "SINKS"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [
+     "MHS9999"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs9999",
+     "sinks"
+    ],
+    "resolutions": [
+     {
+      "token": "sinks",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-c",
+        "entity_type": "category",
+        "canonical_code": "SINKS"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [
+     "MHS9999"
+    ],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-c",
+      "entity_type": "category",
+      "code": "SINKS"
+     }
+    ],
+    "gate_debug": {
+     "domain": "inventory",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

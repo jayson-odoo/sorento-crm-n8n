@@ -1,0 +1,135 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "F5 regression guard: Aggregate ran and the parser stated an access level, but the domain is inventory \u2014 so NOTHING may be claimed about access. Without the domain half of that condition every stock question produced a false 'You don't have access to End User promotions'."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "access_levels": [
+       "End User"
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "srtbf11832-new"
+     ],
+     "resolutions": [
+      {
+       "token": "srtbf11832-new",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u17",
+         "entity_type": "product",
+         "canonical_code": "SRTBF11832-NEW",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ],
+  "Aggregate": [
+   {
+    "json": {
+     "name": [
+      "Sorento Dealer"
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "srtbf11832-new"
+    ],
+    "resolutions": [
+     {
+      "token": "srtbf11832-new",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u17",
+        "entity_type": "product",
+        "canonical_code": "SRTBF11832-NEW",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "srtbf11832-new"
+    ],
+    "resolutions": [
+     {
+      "token": "srtbf11832-new",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u17",
+        "entity_type": "product",
+        "canonical_code": "SRTBF11832-NEW",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u17",
+      "entity_type": "product",
+      "code": "SRTBF11832-NEW"
+     }
+    ],
+    "gate_debug": {
+     "domain": "inventory",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

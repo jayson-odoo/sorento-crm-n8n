@@ -1,0 +1,151 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The filter drops one of two candidates and the SINGLE survivor is still offered as a choice \u2014 the customer never named it, so resolving it silently would answer about a product they did not ask for."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS15",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs15"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs15",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u9a",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "uz1",
+         "entity_type": "product",
+         "canonical_code": "XYZ-1",
+         "match_tier": "substring"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "uz1",
+        "entity_type": "product",
+        "canonical_code": "XYZ-1",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs15"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs15",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u9a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "uz1",
+        "entity_type": "product",
+        "canonical_code": "XYZ-1",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. MHS1542-CR",
+    "compatible_entities": [
+     {
+      "uuid": "u9a",
+      "entity_type": "product",
+      "code": "MHS1542-CR"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

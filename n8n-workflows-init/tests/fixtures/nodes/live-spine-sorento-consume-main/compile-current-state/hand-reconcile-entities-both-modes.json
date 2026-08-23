@@ -1,0 +1,141 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The resolver's entity_type overrides the parser's hint, by two different routes: the first entity matches an OR-mode resolution TOKEN (and once matched, the intersection is not consulted \u2014 the token match wins outright), the second matches an AND-mode row by its display.product_name rather than its code. Both come back with the resolver's type and its canonical_code attached; an unmatched entity would keep the parser's guess."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "6047",
+        "hint": "product"
+       },
+       {
+        "raw": "Basin Mixer",
+        "hint": "category"
+       }
+      ],
+      "routing": {
+       "suggested_team": "marketing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here's the product.",
+     "items": [
+      {
+       "title": "MHS1542-CR"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "6047",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "p1",
+         "entity_type": "promotion",
+         "canonical_code": "PROMO-6047"
+        }
+       ]
+      }
+     ],
+     "intersection": [
+      {
+       "uuid": "p2",
+       "entity_type": "product",
+       "canonical_code": "MWC-1",
+       "display": {
+        "product_name": "Basin Mixer"
+       }
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here's the product."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_promotion",
+     "domain_hint": "promotion",
+     "routing": {
+      "suggested_team": "marketing"
+     },
+     "escalation": {},
+     "entities": [
+      {
+       "raw": "6047",
+       "hint": "promotion",
+       "canonical_code": "PROMO-6047"
+      },
+      {
+       "raw": "Basin Mixer",
+       "hint": "product",
+       "canonical_code": "MWC-1"
+      }
+     ],
+     "response": "Previous turn (promotion): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MHS1542-CR",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Here's the product."
+   }
+  }
+ ],
+ "runIndex": 0
+}

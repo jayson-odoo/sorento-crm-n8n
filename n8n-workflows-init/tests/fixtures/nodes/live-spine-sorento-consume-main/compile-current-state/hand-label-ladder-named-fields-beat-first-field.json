@@ -1,0 +1,141 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The named-field rungs of the label ladder, each with an unrelated FIRST field so the difference is visible: 'Form Name', 'Promotion Name' and 'Product' are looked up BY LABEL (case-insensitively) and only fall back to field[0] when none of them exists. With the first field also being the named one, this ladder can be broken without any test noticing."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "routing": {
+       "suggested_team": "purchasing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here you go.",
+     "items": [
+      {
+       "fields": [
+        {
+         "label": "Category",
+         "value": "Forms"
+        },
+        {
+         "label": "Form Name",
+         "value": "Warranty Form"
+        }
+       ]
+      },
+      {
+       "fields": [
+        {
+         "label": "Category",
+         "value": "Promos"
+        },
+        {
+         "label": "Promotion Name",
+         "value": "Raya Deal"
+        }
+       ]
+      },
+      {
+       "fields": [
+        {
+         "label": "Category",
+         "value": "Taps"
+        },
+        {
+         "label": "Product",
+         "value": "SRT-9"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_incoming",
+     "domain_hint": "incoming",
+     "routing": {
+      "suggested_team": "purchasing"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Previous turn (incoming): returned 3 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "Warranty Form",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "uuid": null,
+       "label": "Raya Deal",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 3,
+       "uuid": null,
+       "label": "SRT-9",
+       "entity_type": null,
+       "product": "SRT-9",
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Here you go."
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,120 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Lifecycle rule 7: no fresh offer, no domain switch, no escalation, no pick and nothing answered \u2014 so the carried offer RETAINS with its ttl decremented. It is read from the session's nested session_vars.variables shape (the CRM endpoint's), and dym_candidates mirrors the surviving candidates. The ideation pointer is carried forward from the same read, so a CRM question mid-collection cannot wipe an open draft."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "response": "Would you like me to escalate to warehouse team?",
+     "manualResponse": true,
+     "includeResponse": true
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "session_vars": {
+      "variables": {
+       "dym_offer": {
+        "id": "11",
+        "domain": "inventory",
+        "ttl": 3,
+        "candidates": [
+         {
+          "code": "A",
+          "uuid": "a"
+         }
+        ],
+        "picked": []
+       },
+       "ideation": {
+        "draft_id": "d9"
+       }
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "escalate"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Would you like me to escalate to warehouse team?",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "11",
+      "domain": "inventory",
+      "ttl": 2,
+      "candidates": [
+       {
+        "code": "A",
+        "uuid": "a"
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "A",
+       "uuid": "a"
+      }
+     ],
+     "ideation": {
+      "draft_id": "d9"
+     },
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Would you like me to escalate to warehouse team?"
+   }
+  }
+ ],
+ "runIndex": 0
+}

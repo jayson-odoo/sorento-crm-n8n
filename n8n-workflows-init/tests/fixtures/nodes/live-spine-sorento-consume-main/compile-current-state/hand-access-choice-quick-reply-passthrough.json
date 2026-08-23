@@ -1,0 +1,88 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "When access-level-choice-message DOES emit quick replies they are passed through unchanged. tier_offer is false here, so the tier roster arm does not fire and last_result_set stays empty with a null selection_context \u2014 the roster is armed by tier_offer, never by the mere presence of the node."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_promotion",
+      "domain_hint": "promotion",
+      "routing": {
+       "suggested_team": "marketing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "access-level-choice-message": [
+   {
+    "json": {
+     "quick_reply": "Dealer,Office",
+     "tier_offer": false,
+     "escalate_message": "Which level?",
+     "is_clarification": true
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "response": "Which level?",
+     "manualResponse": true,
+     "includeResponse": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "access_choice"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_promotion",
+     "domain_hint": "promotion",
+     "routing": {
+      "suggested_team": "marketing"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Which level?",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Which level?",
+    "quick_reply": "Dealer,Office"
+   }
+  }
+ ],
+ "runIndex": 0
+}

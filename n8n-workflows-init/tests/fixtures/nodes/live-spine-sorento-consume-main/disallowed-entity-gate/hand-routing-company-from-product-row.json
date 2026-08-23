@@ -1,0 +1,191 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "A product and a category resolve, in different companies. The routing axes are derived from the enquired ITEM \u2014 the product rows \u2014 so routing_company is the product's company and the category's is not offered; the non-product fallback only applies when NO product resolved. resolved_companies still lists both, because that scan is over every match."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "p-1",
+      "sinks"
+     ],
+     "resolutions": [
+      {
+       "token": "p-1",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u1",
+         "entity_type": "product",
+         "canonical_code": "P-1",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      },
+      {
+       "token": "sinks",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-cat",
+         "entity_type": "category",
+         "canonical_code": "SINKS",
+         "match_tier": "exact",
+         "company_id": "c2",
+         "company_name": "Mocha Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "p-1",
+     "sinks"
+    ],
+    "resolutions": [
+     {
+      "token": "p-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u1",
+        "entity_type": "product",
+        "canonical_code": "P-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     {
+      "token": "sinks",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-cat",
+        "entity_type": "category",
+        "canonical_code": "SINKS",
+        "match_tier": "exact",
+        "company_id": "c2",
+        "company_name": "Mocha Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "p-1",
+     "sinks"
+    ],
+    "resolutions": [
+     {
+      "token": "p-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u1",
+        "entity_type": "product",
+        "canonical_code": "P-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     {
+      "token": "sinks",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-cat",
+        "entity_type": "category",
+        "canonical_code": "SINKS",
+        "match_tier": "exact",
+        "company_id": "c2",
+        "company_name": "Mocha Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [
+     "sorento",
+     "mocha"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "P-1"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u1",
+      "entity_type": "product",
+      "code": "P-1"
+     },
+     {
+      "uuid": "u-cat",
+      "entity_type": "category",
+      "code": "SINKS"
+     }
+    ],
+    "gate_debug": {
+     "domain": "inventory",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}
