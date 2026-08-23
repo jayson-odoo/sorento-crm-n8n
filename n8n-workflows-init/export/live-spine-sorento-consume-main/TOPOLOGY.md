@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
 - versionId **df165492-0610-4a40-b7b6-79a136b44a32** · activeVersionId **df165492-0610-4a40-b7b6-79a136b44a32** · DRAFT == ACTIVE
-- 134 nodes
+- 129 nodes
 
 ## Edges
-_160 edge groups_
+_158 edge groups_
 
 ```
 Aggregate[0] -> tier-gate
@@ -16,7 +16,6 @@ Call 'sub-get-results'[1] -> set-ran-query-formulator
 Call 'sub-human-intervention'[0] -> Execution Data
 Call 'sub-query-reformulator'[0] -> check-access
 Call 'sub-query-reformulator'[1] -> set-ran-query-formulator
-Code in JavaScript[0] -> Transcribe a recording
 Edit Fields[0] -> Split Out
 Edit Fields2[0] -> If8
 Execute 'sub-get-rag'[0] -> tool-filter
@@ -53,7 +52,6 @@ Split Out[0] -> Remove Duplicates
 Switch[0] -> send-message-images
 Switch[1] -> send-message-video
 Switch[2] -> send-message-files
-Transcribe a recording[0] -> sorento-sub-respond-sendmsg-respond-transcribed-message, transcribed-message
 When Executed by Another Workflow[0] -> redis-pop-main-message-list
 access-level-choice-message[0] -> tag-access-choice
 annotate-incoming-picker[0] -> build-suggest-offer
@@ -201,7 +199,6 @@ wait-media-poll[0] -> media-poll-http
 - **get-cs-members** ← build-cs-member-offer
 - **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, compile-current-state, construct-user-prompt, crossdomain-zeroset, escalation-context, ideate-turn-http
 - **ideate-turn-http** ← build-ideate-reply
-- **is-human-intervened** ← transcribed-message
 - **media-route** ← media-poll-merge
 - **not-found-error-message** ← escalate-catalog
 - **patch-transcript** ← compile-current-state, resolve-entity, send-transcript-confirm
@@ -213,8 +210,8 @@ wait-media-poll[0] -> media-poll-http
 - **set-ran-query-formulator** ← sorento-sub-respond-sendmsg-respond
 - **sibling-probe** ← build-suggest-offer
 - **sibling-transform** ← build-suggest-offer, sibling-probe
-- **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-incoming, promo-dym-probe, resolve-entity, resolve-entity-clarification, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5, tier-probe
-- **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, construct-user-prompt, get-session-vars, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
+- **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-incoming, promo-dym-probe, resolve-entity, resolve-entity-clarification, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5, tier-probe
+- **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, construct-user-prompt, get-session-vars, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **tier-gate** ← Call 'sub-get-results', disallowed-entity-gate, if-tier-ask, tier-probe-collect, tier-probe-plan
 - **tier-probe-collect** ← access-level-choice-message
 - **tier-probe-plan** ← tier-probe-collect
@@ -224,12 +221,10 @@ wait-media-poll[0] -> media-poll-http
 
 ## Zero inbound (orphaned / triggers)
 
-- Code in JavaScript
 - OpenAI Chat Model
 - Schedule Trigger
 - When Executed by Another Workflow
 - presign-fail-notice
-- sorento-sub-respond-sendmsg-respond3
 
 ## Sub-workflow calls
 
@@ -250,9 +245,7 @@ wait-media-poll[0] -> media-poll-http
 | sibling-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | sorento-sub-respond-sendmsg-presign-fail | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | sorento-sub-respond-sendmsg-respond | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
-| sorento-sub-respond-sendmsg-respond-transcribed-message | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | sorento-sub-respond-sendmsg-respond2 | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
-| sorento-sub-respond-sendmsg-respond3 | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | sorento-sub-respond-sendmsg-respond4 | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | sorento-sub-respond-sendmsg-respond5 | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
 | tier-probe | `rysSPgUssLDf6xJc` | sub-get-results TEST |
@@ -262,7 +255,6 @@ wait-media-poll[0] -> media-poll-http
 | node | type | credential |
 |---|---|---|
 | OpenAI Chat Model | openAiApi | sorento-openai |
-| Transcribe a recording | openAiApi | sorento-openai |
 | check-access | httpHeaderAuth | crm-n8n-auth |
 | family-fetch | httpHeaderAuth | crm-n8n-auth |
 | get-access-types | httpHeaderAuth | crm-n8n-auth |
@@ -319,9 +311,7 @@ wait-media-poll[0] -> media-poll-http
 | construct-user-prompt | 25 |
 | cs-roster-plan | 21 |
 | build-ideate-reply | 15 |
-| transcribed-message | 5 |
 | tf-message | 5 |
 | set-ran-query-formulator | 5 |
 | set-human-intervened | 3 |
-| Code in JavaScript | 3 |
 | sorento-sub-respond-findcontact-respond | 1 |

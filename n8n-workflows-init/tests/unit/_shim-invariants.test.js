@@ -86,16 +86,30 @@ const { loadNodes } = require('../offline/node-source');
 const { codeNodeMode } = require('../harness/n8n-shim');
 
 // ── C1: honour the Code node's execution `mode` ────────────────────────────────────────────────
-// `runOnceForEachItem` runs the body ONCE PER INPUT ITEM. Exactly two Code nodes in the tracked
-// slugs declare it (`sub-semantic-parser/output_exchange` — the semantic parser's output shaper,
-// the single most consequential body in the repo — and `live-spine/transcribed-message`), and
-// every committed fixture for them has exactly ONE input item, so per-item and for-all-items
-// coincide today and the divergence was invisible. Feed TWO items and watch them separate.
+// `runOnceForEachItem` runs the body ONCE PER INPUT ITEM. Exactly ONE Code node in the tracked
+// slugs still declares it — `sub-semantic-parser/output_exchange`, the semantic parser's output
+// shaper and the single most consequential body in the repo — and every committed fixture for it
+// has exactly ONE input item, so per-item and for-all-items coincide today and the divergence was
+// invisible. Feed TWO items and watch them separate (next test).
+//
+// The spine's only other per-item node was `transcribed-message`, deleted with the dead Whisper
+// lane in the delete-dead slice (docs/SIMPLIFY-spine-audit.md §8). Rather than re-point this at
+// another named node, the spine side is now asserted as an INVARIANT over the whole export: no
+// spine Code node declares a non-default mode. That fires the day one does — which is exactly when
+// a single-item fixture for it would stop being enough.
 test('C1: codeNodeMode reads the deployed mode out of export/<slug>/workflow.json', () => {
   assert.strictEqual(codeNodeMode('sub-semantic-parser', 'output_exchange'), 'runOnceForEachItem');
-  assert.strictEqual(codeNodeMode('live-spine-sorento-consume-main', 'transcribed-message'), 'runOnceForEachItem');
   // n8n omits `parameters.mode` entirely when it is the default — that must resolve, not throw.
   assert.strictEqual(codeNodeMode('live-spine-sorento-consume-main', 'dym-transform'), 'runOnceForAllItems');
+  const spine = JSON.parse(fs.readFileSync(path.join(
+    __dirname, '../../export/live-spine-sorento-consume-main/workflow.json'
+  ), 'utf8'));
+  const perItem = spine.nodes
+    .filter((n) => n.type.endsWith('.code') && (n.parameters || {}).mode === 'runOnceForEachItem')
+    .map((n) => n.name);
+  assert.deepStrictEqual(perItem, [],
+    'a spine Code node now runs runOnceForEachItem — give it a two-item fixture before trusting ' +
+    'any single-item fixture for it');
 });
 
 test('C1: output_exchange (runOnceForEachItem) runs once per item — 2 items in, 2 items out', () => {
