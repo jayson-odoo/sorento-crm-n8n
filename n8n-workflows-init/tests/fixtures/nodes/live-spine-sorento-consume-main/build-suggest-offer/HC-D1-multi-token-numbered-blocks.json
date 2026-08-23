@@ -1,0 +1,210 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A multi-item miss must show EVERY missed token, each with its OWN candidates \u2014 the bug being guarded is a dead token borrowing a sibling token's matches. Numbering is GLOBAL and contiguous across the sub-lists (1,2 then 3,4) because the numbers are the pick affordance, and each dym entry carries for_raw = its own source token plus for_canonical taken from the PARSER entity whose raw matches that token (looked up per token, not once)."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tapA",
+        "hint": "product",
+        "canonical_code": "CANON-A"
+       },
+       {
+        "raw": "tapB",
+        "hint": "category",
+        "canonical_code": "CANON-B"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tapA",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "A1",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uA1"
+        },
+        {
+         "canonical_code": "A2",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uA2"
+        }
+       ]
+      },
+      {
+       "token": "tapB",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "B1",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uB1"
+        },
+        {
+         "canonical_code": "B2",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uB2"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find some items:\n\n\"tapA\" \u2014 did you mean:\n  1. A1\n  2. A2\n\"tapB\" \u2014 did you mean:\n  3. B1\n  4. B2\n\nReply a number to pick, or 'yes' to escalate to customer_service.",
+    "suggest_quick_reply": "Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "A1",
+      "value": "A1",
+      "product": "A1",
+      "uuid": "uA1",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "A2",
+      "value": "A2",
+      "product": "A2",
+      "uuid": "uA2",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "B1",
+      "value": "B1",
+      "product": "B1",
+      "uuid": "uB1",
+      "entity_type": "product"
+     },
+     {
+      "idx": 4,
+      "label": "B2",
+      "value": "B2",
+      "product": "B2",
+      "uuid": "uB2",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "A1",
+      "uuid": "uA1",
+      "entity_type": "product",
+      "for_raw": "tapA",
+      "for_hint": "product",
+      "for_canonical": "CANON-A"
+     },
+     {
+      "code": "A2",
+      "uuid": "uA2",
+      "entity_type": "product",
+      "for_raw": "tapA",
+      "for_hint": "product",
+      "for_canonical": "CANON-A"
+     },
+     {
+      "code": "B1",
+      "uuid": "uB1",
+      "entity_type": "product",
+      "for_raw": "tapB",
+      "for_hint": "product",
+      "for_canonical": "CANON-B"
+     },
+     {
+      "code": "B2",
+      "uuid": "uB2",
+      "entity_type": "product",
+      "for_raw": "tapB",
+      "for_hint": "product",
+      "for_canonical": "CANON-B"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "A1",
+       "uuid": "uA1",
+       "entity_type": "product",
+       "for_raw": "tapA",
+       "for_hint": "product",
+       "for_canonical": "CANON-A"
+      },
+      {
+       "code": "A2",
+       "uuid": "uA2",
+       "entity_type": "product",
+       "for_raw": "tapA",
+       "for_hint": "product",
+       "for_canonical": "CANON-A"
+      },
+      {
+       "code": "B1",
+       "uuid": "uB1",
+       "entity_type": "product",
+       "for_raw": "tapB",
+       "for_hint": "product",
+       "for_canonical": "CANON-B"
+      },
+      {
+       "code": "B2",
+       "uuid": "uB2",
+       "entity_type": "product",
+       "for_raw": "tapB",
+       "for_hint": "product",
+       "for_canonical": "CANON-B"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

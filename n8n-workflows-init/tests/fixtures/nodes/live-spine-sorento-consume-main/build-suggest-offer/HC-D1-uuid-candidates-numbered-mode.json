@@ -1,0 +1,144 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "When any candidate is uuid-coded the offer switches to NUMBERED mode: human names in the text, digits as the buttons, and the pick round-trips through last_result_set[idx]. `value` must be the LABEL (never the uuid) while `product` keeps the canonical_code, and the dym map is keyed on the code \u2014 that split is what lets output_exchange resolve the pick without ever showing a uuid."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august promo",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "entity_type": "promotion",
+         "match_tier": "trigram",
+         "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "display": {
+          "description": "AUGUST PROMO"
+         }
+        },
+        {
+         "canonical_code": "7c1e2f90-1111-4222-8333-444455556666",
+         "entity_type": "promotion",
+         "match_tier": "trigram",
+         "uuid": "7c1e2f90-1111-4222-8333-444455556666",
+         "display": {
+          "description": "JULY PROMO"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't pin down \"august promo\". Here are the closest matches:\n1. AUGUST PROMO\n2. JULY PROMO\nReply with a number to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "1,2,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "AUGUST PROMO",
+      "value": "AUGUST PROMO",
+      "product": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "entity_type": "promotion"
+     },
+     {
+      "idx": 2,
+      "label": "JULY PROMO",
+      "value": "JULY PROMO",
+      "product": "7c1e2f90-1111-4222-8333-444455556666",
+      "uuid": "7c1e2f90-1111-4222-8333-444455556666",
+      "entity_type": "promotion"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "entity_type": "promotion",
+      "for_raw": "august promo",
+      "for_hint": "promotion",
+      "for_canonical": null
+     },
+     {
+      "code": "7c1e2f90-1111-4222-8333-444455556666",
+      "uuid": "7c1e2f90-1111-4222-8333-444455556666",
+      "entity_type": "promotion",
+      "for_raw": "august promo",
+      "for_hint": "promotion",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "promotion",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+       "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+       "entity_type": "promotion",
+       "for_raw": "august promo",
+       "for_hint": "promotion",
+       "for_canonical": null
+      },
+      {
+       "code": "7c1e2f90-1111-4222-8333-444455556666",
+       "uuid": "7c1e2f90-1111-4222-8333-444455556666",
+       "entity_type": "promotion",
+       "for_raw": "august promo",
+       "for_hint": "promotion",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

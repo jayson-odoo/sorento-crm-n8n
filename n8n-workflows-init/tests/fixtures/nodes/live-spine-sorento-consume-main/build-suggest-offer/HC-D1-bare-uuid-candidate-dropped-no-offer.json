@@ -1,0 +1,69 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A promotion's canonical_code IS its uuid, and the human name lives in display.description. A candidate with neither must be dropped rather than rendered \u2014 leaking a raw uuid to the customer is the bug this guard exists for. With the only candidate dropped there are no surviving tokens, so suggest_offer stays false and the turn falls through to escalate-only."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august promo",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "entity_type": "promotion",
+         "match_tier": "trigram",
+         "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

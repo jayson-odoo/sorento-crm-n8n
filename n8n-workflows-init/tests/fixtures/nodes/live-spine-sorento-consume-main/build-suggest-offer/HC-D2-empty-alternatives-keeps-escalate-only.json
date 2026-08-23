@@ -1,0 +1,69 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "An empty alternatives array is NOT an offer: the run scan only accepts a non-empty list, so `alts` stays null and the existing escalate? behaviour is preserved untouched."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "code": "SRTX",
+       "entity_type": "product"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

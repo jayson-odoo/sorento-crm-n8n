@@ -1,0 +1,106 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "TWIN CONTRACT. dym-transform and dym-transform-partial are byte-identical apart from the `promotion` DOMAIN_PROBE entry (and two comment rules), so every behaviour that is not promotion-specific MUST hold identically on both. Ported deliberately rather than left to the twin: this repo has been bitten before by a fork asserted to be identical that had quietly drifted, and a rule proven on only one copy is a rule the other copy is free to lose. Same inputs, same expected output as dym-transform/HC-allowed-lookup-is-honoured-by-the-census-too.json \u2014 if the two ever disagree, one of these two fixtures fails.\n\nBehaviour under test: The census applies the SAME allowed_lookup filter as the selection, and it must be the allowed types that are counted. Here one code carries two product uuids (genuinely cross-company, so it must be excluded) plus a promotion uuid the lookup forbids. Inverting the census filter would count only the forbidden entry, see a single uuid, and cheerfully probe a code that belongs to two different companies.",
+  "ported_from": "dym-transform/HC-allowed-lookup-is-honoured-by-the-census-too.json"
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        },
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4502",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        },
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+         "entity_type": "promotion",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "gate_debug": {
+      "allowed_lookup": [
+       "product"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [],
+    "dym_candidate_codes": [],
+    "dym_excluded_codes": [
+     {
+      "code": "SRTA",
+      "reason": "multi_uuid_code",
+      "uuid_count": 2
+     }
+    ],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": null,
+    "probe_noun": null,
+    "probe_predicate": null,
+    "probe_needed": false,
+    "probe_skip_reason": "multi_uuid_code",
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

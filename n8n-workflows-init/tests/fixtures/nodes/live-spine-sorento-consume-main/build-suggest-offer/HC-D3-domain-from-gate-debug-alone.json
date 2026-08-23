@@ -1,0 +1,129 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The incoming domain may be stated by the GATE rather than the parser (the gate resolves the domain when the parser hint is absent). Either source must arm D3 \u2014 this case has no parser domain_hint at all."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "entities": [
+       {
+        "raw": "SRTA",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "company_team": "cs_stock",
+     "gate_debug": {
+      "domain": "incoming"
+     },
+     "compatible_entities": [
+      {
+       "entity_type": "product",
+       "code": "SRTA",
+       "uuid": "ua"
+      }
+     ]
+    }
+   }
+  ],
+  "sibling-transform": [
+   {
+    "json": {
+     "siblings": [
+      {
+       "code": "SRTA",
+       "uuid": "ua"
+      },
+      {
+       "code": "SRTB",
+       "uuid": "ub"
+      },
+      {
+       "code": "SRTC",
+       "uuid": "uc"
+      },
+      {
+       "code": "srtb",
+       "uuid": "ub-dup"
+      }
+     ]
+    }
+   }
+  ],
+  "sibling-probe": [
+   {
+    "json": {
+     "answers": [
+      {
+       "title": "SRTC"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTC \u2014 has incoming\n2. SRTA \u2014 no incoming\n3. SRTB \u2014 no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs_stock team.",
+    "suggest_quick_reply": "Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTC",
+      "value": "SRTC",
+      "product": "SRTC",
+      "uuid": "uc",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "SRTB",
+      "value": "SRTB",
+      "product": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product"
+     }
+    ]
+   }
+  }
+ ]
+}

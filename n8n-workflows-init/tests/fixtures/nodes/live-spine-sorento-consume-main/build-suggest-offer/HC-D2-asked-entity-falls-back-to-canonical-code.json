@@ -1,0 +1,116 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "compatible_entities are written with `code` by the gate but with `canonical_code` by the resolver, and the asked-entity reader accepts either. The fallback arm was untested: with a first entity that carries only canonical_code (and a SECOND entity present, so reading the wrong slot is visible) the sentence, the dym linkage key and for_canonical must all still name SRTX. If this arm ever stops working the offer silently addresses 'that item' or, worse, some other entity from the same turn."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "canonical_code": "SRTX",
+       "entity_type": "product"
+      },
+      {
+       "canonical_code": "WRONG-ONE",
+       "entity_type": "promotion"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "SRTX1"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No stock for SRTX. Try: SRTX1. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "SRTX1,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTX1",
+      "value": "SRTX1",
+      "product": "SRTX1",
+      "display": "SRTX1",
+      "order_number": null
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTX1",
+      "uuid": null,
+      "entity_type": null,
+      "for_raw": "SRTX",
+      "for_hint": "product",
+      "for_canonical": "SRTX"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTX1",
+       "uuid": null,
+       "entity_type": null,
+       "for_raw": "SRTX",
+       "for_hint": "product",
+       "for_canonical": "SRTX"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

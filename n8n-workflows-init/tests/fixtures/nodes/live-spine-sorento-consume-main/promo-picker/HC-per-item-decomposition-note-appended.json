@@ -1,0 +1,144 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "#17, explicitly designed by the user: between PRODUCT tokens, the found product's promotions ARE half an answer, so the list stands and a note names the product that has none. The met token hints 'product', not 'brand', so the strict-miss collapse must NOT fire. The note is appended to `response` ONLY \u2014 `response_intro` and the attachments are deliberately untouched, and `_promo_broadened` carries the resolver's own fallback_applied flag."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "SRTBF11834",
+        "hint": "product"
+       },
+       {
+        "raw": "CBS212-WH",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "SRTBF11834",
+      "CBS212-WH"
+     ],
+     "fallback_applied": true,
+     "resolutions": [
+      {
+       "token": "SRTBF11834",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "SRTBF11834 PROMO"
+         }
+        }
+       ]
+      },
+      {
+       "token": "CBS212-WH",
+       "matches": []
+      }
+     ],
+     "intersection": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* SRTBF11834 PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "SRTBF11834 PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "SRTBF11834 PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "SRT.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* SRTBF11834 PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\nNo promotion found for CBS212-WH. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "SRTBF11834 PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "SRTBF11834 PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "SRT.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0
+     ]
+    },
+    "_promo_unmatched": [
+     "CBS212-WH"
+    ],
+    "_promo_broadened": true
+   }
+  }
+ ]
+}

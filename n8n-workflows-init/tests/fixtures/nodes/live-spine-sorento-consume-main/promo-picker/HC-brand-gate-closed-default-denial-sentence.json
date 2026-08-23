@@ -1,0 +1,104 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "D10 fails CLOSED in n8n, not on the CRM's empty-filter semantics. With brand_gate_empty true but NO access_notice to lead with, the denial must still be a complete sentence of its own ('You do not have access to the brand you asked about.') followed by the escalation offer \u2014 and the team falls back to the parser's routing when the gate names none. Every answer, every attachment and the whole roster are cleared before any other branch can leak a file."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "routing": {
+       "suggested_team": "sales_team"
+      },
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* ALPHA\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "You do not have access to the brand you asked about.\n\nWould you like me to escalate to sales_team team?",
+    "response_intro": "You do not have access to the brand you asked about.\n\nWould you like me to escalate to sales_team team?",
+    "answers": [],
+    "attachments": [],
+    "suggest_last_result_set": [],
+    "suggest_selection_context": null,
+    "_brand_gate_closed": true
+   }
+  }
+ ]
+}

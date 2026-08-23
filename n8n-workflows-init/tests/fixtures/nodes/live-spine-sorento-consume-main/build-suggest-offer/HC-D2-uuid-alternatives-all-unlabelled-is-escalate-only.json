@@ -1,0 +1,76 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "When every uuid alternative lacks a display name there is nothing renderable, so the node must return escalate-only rather than a 'closest matches' list of blanks."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "code": "9a0b1c2d-3333-4444-8555-666677778888",
+       "entity_type": "promotion"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "3b9d6b74-5d4a-4b9f-b2b6-110599485332"
+      },
+      {
+       "value": "7c1e2f90-1111-4222-8333-444455556666"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

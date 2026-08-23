@@ -1,0 +1,180 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A promotion row need not carry a `title`. Both the roster label and the unmet-token join fall back to the row's own 'Promotion' field, and a row with neither gets the ordinal placeholder 'promotion N' rather than an empty label the customer cannot refer to. The join is what is really under test: ALPHA is shown (so its token contributed and must NOT be reported unmet) while BETA is not \u2014 if the field fallback broke, NOTHING would look contributed, the miss would read as total, and the per-item note would silently disappear."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "ALPHA",
+        "hint": "product"
+       },
+       {
+        "raw": "BETA",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "ALPHA",
+      "BETA"
+     ],
+     "resolutions": [
+      {
+       "token": "ALPHA",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "ALPHA"
+         }
+        }
+       ]
+      },
+      {
+       "token": "BETA",
+       "matches": []
+      }
+     ],
+     "intersection": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* ALPHA\n*End Date:* 2026-09-30\n\n2. *End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "fields": [
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found 2 promotions for ALPHA. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA\n*End Date:* 2026-09-30\n\n2. *End Date:* 2026-09-30\n\nNo promotion found for BETA. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response_intro": "I found 2 promotions for ALPHA. I have attached the file(s) below.",
+    "answers": [
+     {
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "fields": [
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "ALPHA",
+      "value": "ALPHA",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "promotion 2",
+      "value": "promotion 2",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_picker": {
+     "count": 2,
+     "intro_swapped": true,
+     "rebuilt": false
+    },
+    "_promo_unmatched": [
+     "BETA"
+    ],
+    "_promo_broadened": false
+   }
+  }
+ ]
+}

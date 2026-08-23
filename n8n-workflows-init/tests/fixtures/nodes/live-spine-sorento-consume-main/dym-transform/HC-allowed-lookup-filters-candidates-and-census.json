@@ -1,0 +1,101 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The gate's allowed_lookup narrows which entity types may be offered at all. A promotion candidate under a product-only lookup is filtered out of BOTH tokenCandidates and the uuid census \u2014 if it survived only the census it would fabricate a cross-company ambiguity and suppress a perfectly good annotation."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        },
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4502",
+         "entity_type": "promotion",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "gate_debug": {
+      "allowed_lookup": [
+       "product"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+      "entity_type": "product",
+      "code": "SRTA"
+     }
+    ],
+    "dym_candidate_codes": [
+     "SRTA"
+    ],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_inventory_stock_balance_list",
+    "probe_noun": "stock details",
+    "probe_predicate": "qty_gt_zero",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

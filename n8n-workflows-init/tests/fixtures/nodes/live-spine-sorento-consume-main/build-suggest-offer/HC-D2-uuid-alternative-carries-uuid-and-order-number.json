@@ -1,0 +1,123 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A uuid-coded alternative can bring its own uuid and order_number, and both must survive into the roster \u2014 they are what the pick resolves on. The subject label also exercises the second link of the asked-label chain: compat[0]'s code is a uuid, so the human name comes from display.product_name. The asked entity here is written with `canonical_code` rather than `code` (the resolver's shape, not the gate's), and a SECOND compatible entity is present, so reading the wrong slot of that fallback is visible in both the sentence and the dym linkage."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "entity_type": "promotion",
+       "display": {
+        "product_name": "JULY PROMO"
+       },
+       "canonical_code": "9a0b1c2d-3333-4444-8555-666677778888"
+      },
+      {
+       "canonical_code": "WRONG-ONE",
+       "entity_type": "promotion"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+       "display": "AUGUST PROMO",
+       "uuid": "alt-uuid",
+       "order_number": "PO-77"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No promotion for JULY PROMO. Here are the closest matches:\n1. AUGUST PROMO\nReply with a number to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "1,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "AUGUST PROMO",
+      "value": "AUGUST PROMO",
+      "product": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "uuid": "alt-uuid",
+      "display": "AUGUST PROMO",
+      "order_number": "PO-77"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "uuid": "alt-uuid",
+      "entity_type": null,
+      "for_raw": "9a0b1c2d-3333-4444-8555-666677778888",
+      "for_hint": "promotion",
+      "for_canonical": "9a0b1c2d-3333-4444-8555-666677778888"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "promotion",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+       "uuid": "alt-uuid",
+       "entity_type": null,
+       "for_raw": "9a0b1c2d-3333-4444-8555-666677778888",
+       "for_hint": "promotion",
+       "for_canonical": "9a0b1c2d-3333-4444-8555-666677778888"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

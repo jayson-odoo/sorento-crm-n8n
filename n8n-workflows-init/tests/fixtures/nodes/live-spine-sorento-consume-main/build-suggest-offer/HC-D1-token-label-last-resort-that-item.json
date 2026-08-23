@@ -1,0 +1,102 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "End of the chain: no resolution token, no unresolved_tokens and no parser entities at all. The offer must still be grammatical \u2014 'that item' \u2014 rather than rendering undefined at the customer."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": []
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ua"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"that item\". Did you mean SRTA? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "SRTA,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product",
+      "for_raw": "that item",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTA",
+       "uuid": "ua",
+       "entity_type": "product",
+       "for_raw": "that item",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

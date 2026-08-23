@@ -1,0 +1,79 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "sibling-transform can run and still hand over no `siblings` array. D3 must fall through to the ordinary path instead of dereferencing it \u2014 inverting that guard throws and the customer gets nothing where they would have got an escalate offer."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "SRTA",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "company_team": "cs_stock",
+     "compatible_entities": [
+      {
+       "entity_type": "product",
+       "code": "SRTA",
+       "uuid": "ua"
+      }
+     ]
+    }
+   }
+  ],
+  "sibling-transform": [
+   {
+    "json": {}
+   }
+  ],
+  "sibling-probe": [
+   {
+    "json": {
+     "answers": [
+      {
+       "title": "SRTB"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

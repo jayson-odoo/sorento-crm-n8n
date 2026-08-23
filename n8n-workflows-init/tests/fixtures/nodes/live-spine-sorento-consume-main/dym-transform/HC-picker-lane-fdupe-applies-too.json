@@ -1,0 +1,115 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The F-DUPE rule is enforced on the picker lane with its own census over the option set: a code offered twice under different uuids is cross-company ambiguous there for exactly the same reason, so it is excluded and rendered bare while its sibling is probed."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": true,
+     "gate_clarification": "please choose:\n1. SRTA\n2. SRTB",
+     "compatible_entities": [
+      {
+       "code": "SRTA",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+       "entity_type": "product"
+      },
+      {
+       "code": "SRTA",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4502",
+       "entity_type": "product"
+      },
+      {
+       "code": "SRTB",
+       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+       "entity_type": "product"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+      "entity_type": "product",
+      "code": "SRTB"
+     }
+    ],
+    "dym_candidate_codes": [
+     "SRTB"
+    ],
+    "dym_excluded_codes": [
+     {
+      "code": "SRTA",
+      "reason": "multi_uuid_code",
+      "uuid_count": 2
+     }
+    ],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_inventory_stock_balance_list",
+    "probe_noun": "stock details",
+    "probe_predicate": "qty_gt_zero",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "picker",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

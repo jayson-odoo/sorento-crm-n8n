@@ -1,0 +1,184 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The annotated render is gated on at least one OFFERED code having actually been probed. When the probe succeeded but covered only codes that are not in this offer (capped, excluded or from another token), the whole annotation block must stay inert \u2014 plain humanList prose, no sort, no suffixes \u2014 rather than labelling every offered code 'no'."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ua"
+        },
+        {
+         "canonical_code": "SRTB",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ub"
+        },
+        {
+         "canonical_code": "SRTC",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uc"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ],
+  "dym-annotate": [
+   {
+    "json": {
+     "dym_available_codes": [
+      "ZZOTHER"
+     ],
+     "dym_probe_meta": {
+      "ok": true,
+      "probed": [
+       "ZZOTHER"
+      ],
+      "noun": "stock details"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"tap\". Did you mean SRTA, SRTB, or SRTC? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "SRTA,SRTB,SRTC,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTA",
+      "value": "SRTA",
+      "product": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "SRTB",
+      "value": "SRTB",
+      "product": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "SRTC",
+      "value": "SRTC",
+      "product": "SRTC",
+      "uuid": "uc",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTA",
+      "uuid": "ua",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTB",
+      "uuid": "ub",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "SRTC",
+      "uuid": "uc",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTA",
+       "uuid": "ua",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTB",
+       "uuid": "ub",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "SRTC",
+       "uuid": "uc",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

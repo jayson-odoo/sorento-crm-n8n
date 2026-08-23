@@ -1,0 +1,81 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The end of the chain: a uuid-coded candidate with no display at all has NO human label, so it must be dropped rather than rendered as a raw uuid. With nothing left there is no D1 survivor and no probe is planned."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august promo",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "entity_type": "promotion",
+         "match_tier": "trgm"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [],
+    "dym_candidate_codes": [],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": null,
+    "probe_noun": null,
+    "probe_predicate": null,
+    "probe_needed": false,
+    "probe_skip_reason": "no_d1_candidates",
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,88 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The require-specific numbered picker is rendered by disallowed-entity-gate into escalate_message, and D1 never fires on those turns \u2014 which is why the surface stayed bare while D1 annotated the very same codes. Only NUMBERED item lines are touched (the header and the trailing instruction must survive verbatim), a probed code gets has/no and an UNPROBED code stays BARE \u2014 never a misleading 'no'. The noun 'certs' normalises to 'certificate' for the customer-facing suffix."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "certs",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "SRTUB6503",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTUB6503-BL",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u1"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": true
+    }
+   }
+  ],
+  "dym-annotate": [
+   {
+    "json": {
+     "dym_available_codes": [
+      "SRTUB6503-BL"
+     ],
+     "dym_probe_meta": {
+      "ok": true,
+      "probed": [
+       "SRTUB6503-BL",
+       "SRTUB6503-WH"
+      ],
+      "noun": "certs"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "SRTUB6503 needs to be more specific. Please choose:\n1. SRTUB6503-BL\n2. SRTUB6503-WH\n3. SRTUB6503-GL\nReply with a number."
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "SRTUB6503 needs to be more specific. Please choose:\n1. SRTUB6503-BL - has certificate\n2. SRTUB6503-WH - no certificate\n3. SRTUB6503-GL\nReply with a number.",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The unrecognised-envelope guard exists to stop a fail-OPEN dump of EVERY file, so it suppresses only when there is more than one attachment. With exactly one file there is no list to get wrong: the attachment rides through and only the diagnostic key is stamped. This pins the `> 1` boundary that a `>= 1` mutation would silently widen into swallowing single-file answers."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": []
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here is the file.",
+    "response_intro": "Here is the file.",
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Here is the file.",
+    "response_intro": "Here is the file.",
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     }
+    ],
+    "_promo_picker_shape": "unrecognised"
+   }
+  }
+ ]
+}

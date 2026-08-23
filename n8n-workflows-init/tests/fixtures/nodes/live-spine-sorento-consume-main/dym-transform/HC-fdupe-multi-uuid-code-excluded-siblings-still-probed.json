@@ -1,0 +1,109 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "product_code is unique PER COMPANY, so one code behind two uuids is TWO COMPANIES' products. tokenCandidates dedupes by code and throws that evidence away, after which arrival order would silently decide whose product the rendered line describes \u2014 and because both probe tools are company-scoped the twin returns zero rows, printing '- no stock details' about someone else's product. The ambiguous code must therefore be EXCLUDED (rendered bare, never annotated) while its unambiguous sibling is still probed. The census counts exact-tier entries too: an exact twin still proves the code is cross-company ambiguous."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4501",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        },
+        {
+         "canonical_code": "SRTB",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+         "entity_type": "product",
+         "match_tier": "trgm"
+        }
+       ],
+       "alternatives": [
+        {
+         "canonical_code": "SRTA",
+         "uuid": "1439736c-20ca-4bba-b387-b242ff4a4502",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4503",
+      "entity_type": "product",
+      "code": "SRTB"
+     }
+    ],
+    "dym_candidate_codes": [
+     "SRTB"
+    ],
+    "dym_excluded_codes": [
+     {
+      "code": "SRTA",
+      "reason": "multi_uuid_code",
+      "uuid_count": 2
+     }
+    ],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_inventory_stock_balance_list",
+    "probe_noun": "stock details",
+    "probe_predicate": "qty_gt_zero",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

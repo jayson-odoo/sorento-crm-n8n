@@ -1,0 +1,77 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A vague/scope clarify prompt is already asking the customer a question; layering a did-you-mean on top would ask two at once. `is_clarification` on the incoming payload must suppress D1 entirely even though the resolver handed over perfectly good candidates."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "SRTA",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ua"
+        },
+        {
+         "canonical_code": "SRTB",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "ub"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "is_clarification": true
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "is_clarification": true,
+    "suggest_offer": false
+   }
+  }
+ ]
+}

@@ -1,0 +1,92 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "humanLabel is shared code and the promotion domain is the only thing this node does not have, so the label chain must be pinned here on a domain it DOES have. A candidate whose canonical_code is uuid-shaped has no human code, so the label comes from `display` \u2014 and a candidate with no label at all is dropped before it can be probed. This node mirrors build-suggest-offer's selection EXACTLY; if the two disagree about which candidates survive, the annotation lands on codes that were never rendered. Source tried first: display.description."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "august set",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august set",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "entity_type": "product",
+         "match_tier": "trgm",
+         "display": {
+          "description": "AUGUST SET"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find that. Would you like me to escalate?",
+    "is_clarification": false,
+    "found_summary": "",
+    "dym_probe_entities": [
+     {
+      "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "entity_type": "product",
+      "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332"
+     }
+    ],
+    "dym_candidate_codes": [
+     "3b9d6b74-5d4a-4b9f-b2b6-110599485332"
+    ],
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
+    "probe_tool": "crm_inventory_stock_balance_list",
+    "probe_noun": "stock details",
+    "probe_predicate": "qty_gt_zero",
+    "probe_needed": true,
+    "probe_skip_reason": null,
+    "probe_lane": "d1",
+    "_dym_probe_input": true
+   }
+  }
+ ]
+}

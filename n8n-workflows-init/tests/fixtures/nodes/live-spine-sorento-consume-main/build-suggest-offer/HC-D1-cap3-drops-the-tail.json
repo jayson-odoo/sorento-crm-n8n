@@ -1,0 +1,181 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "cap3 bounds a single token's offer at three candidates \u2014 the respond.io button budget. Five resolver candidates must yield exactly C1, C2, C3 in the text, the buttons, the roster AND the dym map; C4/C5 must appear in none of them."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product",
+        "canonical_code": null
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "C1",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uC1"
+        },
+        {
+         "canonical_code": "C2",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uC2"
+        },
+        {
+         "canonical_code": "C3",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uC3"
+        },
+        {
+         "canonical_code": "C4",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uC4"
+        },
+        {
+         "canonical_code": "C5",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "uC5"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"tap\". Did you mean C1, C2, or C3? Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "C1,C2,C3,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "C1",
+      "value": "C1",
+      "product": "C1",
+      "uuid": "uC1",
+      "entity_type": "product"
+     },
+     {
+      "idx": 2,
+      "label": "C2",
+      "value": "C2",
+      "product": "C2",
+      "uuid": "uC2",
+      "entity_type": "product"
+     },
+     {
+      "idx": 3,
+      "label": "C3",
+      "value": "C3",
+      "product": "C3",
+      "uuid": "uC3",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "C1",
+      "uuid": "uC1",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "C2",
+      "uuid": "uC2",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     },
+     {
+      "code": "C3",
+      "uuid": "uC3",
+      "entity_type": "product",
+      "for_raw": "tap",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "inventory",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "C1",
+       "uuid": "uC1",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "C2",
+       "uuid": "uC2",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "C3",
+       "uuid": "uC3",
+       "entity_type": "product",
+       "for_raw": "tap",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

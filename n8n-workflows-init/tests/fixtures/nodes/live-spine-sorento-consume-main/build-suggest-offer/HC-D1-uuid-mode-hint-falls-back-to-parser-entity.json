@@ -1,0 +1,111 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "On the numbered (uuid) lane the dym map's for_hint is the RESOLVED entity_type, falling back to the parser entity's own hint when the resolver returned none. Losing that fallback writes null into the linkage and the later pick cannot re-type the entity it is replacing."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "august promo",
+        "hint": "promotion",
+        "canonical_code": "CANON-P"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "august promo",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+         "match_tier": "trgm",
+         "display": {
+          "description": "AUGUST PROMO"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't pin down \"august promo\". Here are the closest matches:\n1. AUGUST PROMO\nReply with a number to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "1,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "AUGUST PROMO",
+      "value": "AUGUST PROMO",
+      "product": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "entity_type": null
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+      "entity_type": null,
+      "for_raw": "august promo",
+      "for_hint": "promotion",
+      "for_canonical": "CANON-P"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "promotion",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+       "uuid": "3b9d6b74-5d4a-4b9f-b2b6-110599485332",
+       "entity_type": null,
+       "for_raw": "august promo",
+       "for_hint": "promotion",
+       "for_canonical": "CANON-P"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

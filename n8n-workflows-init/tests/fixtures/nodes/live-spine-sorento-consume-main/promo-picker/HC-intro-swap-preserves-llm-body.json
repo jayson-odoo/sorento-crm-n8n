@@ -1,0 +1,221 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "When S4b does NOT reorder, the LLM's own rendering is still correct, so `reintro` swaps only the leading paragraph and every following line survives byte-for-byte \u2014 proven here by a body text that deliberately does NOT look like renderBlocks output. intro_swapped=true / rebuilt=false is the flag pair that distinguishes this from the rebuild above."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "entities": [
+       {
+        "raw": "bathroom furniture",
+        "hint": "category"
+       }
+      ],
+      "reference_positions": []
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "OLDINTRO\n\n1. BRAVO flyer (Jul-Oct)\n\n2. ALPHA flyer (Jun-Sep)\n\n3. CHARLIE flyer (May-Sep)",
+    "response_intro": "OLDINTRO",
+    "answers": [
+     {
+      "title": "BRAVO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-07-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-10-31"
+       }
+      ]
+     },
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-05-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found 3 promotions for bathroom furniture. I have attached the file(s) below.\n\n1. BRAVO flyer (Jul-Oct)\n\n2. ALPHA flyer (Jun-Sep)\n\n3. CHARLIE flyer (May-Sep)",
+    "response_intro": "I found 3 promotions for bathroom furniture. I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "BRAVO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-07-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-10-31"
+       }
+      ]
+     },
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "CHARLIE",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CHARLIE"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-05-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1,
+      2
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "BRAVO",
+      "value": "BRAVO",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "ALPHA",
+      "value": "ALPHA",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "idx": 3,
+      "label": "CHARLIE",
+      "value": "CHARLIE",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "CHARLIE.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_picker": {
+     "count": 3,
+     "intro_swapped": true,
+     "rebuilt": false
+    }
+   }
+  }
+ ]
+}

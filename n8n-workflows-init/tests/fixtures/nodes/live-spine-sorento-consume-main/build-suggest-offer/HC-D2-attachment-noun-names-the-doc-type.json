@@ -1,0 +1,116 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The attachment domain names the doc type the customer actually asked for instead of a generic word, taken from the parser entity hinted attachment_type. 'photo' must reach the sentence verbatim \u2014 this is the noun that overrides the per-domain NOUN table."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       },
+       {
+        "raw": "photo",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "code": "SRTX",
+       "entity_type": "product"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "SRTX1"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No photo for SRTX. Try: SRTX1. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "SRTX1,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "SRTX1",
+      "value": "SRTX1",
+      "product": "SRTX1",
+      "display": "SRTX1",
+      "order_number": null
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "SRTX1",
+      "uuid": null,
+      "entity_type": null,
+      "for_raw": "SRTX",
+      "for_hint": "product",
+      "for_canonical": "SRTX"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "product_attachment",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "SRTX1",
+       "uuid": null,
+       "entity_type": null,
+       "for_raw": "SRTX",
+       "for_hint": "product",
+       "for_canonical": "SRTX"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

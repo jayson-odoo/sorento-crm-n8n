@@ -1,0 +1,172 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The scope echo names what the customer typed, never a canonical code. A promotion-NAME scope yields a filename-length raw, and a half-printed promotion name reads as a DIFFERENT promotion \u2014 so past 60 characters the echo is dropped whole rather than truncated. The intro must then read 'I found 2 promotions.' with no ' for ...' clause at all."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "SORENTO UPDATED BATHROOM FURNITURE PROMOTION 11052026 (2) OFFICE COPY",
+        "hint": "promotion"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* ALPHA\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found 2 promotions. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "I found 2 promotions. I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "ALPHA",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "filename": "BRAVO.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "ALPHA",
+      "value": "ALPHA",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "BRAVO",
+      "value": "BRAVO",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_picker": {
+     "count": 2,
+     "intro_swapped": true,
+     "rebuilt": false
+    }
+   }
+  }
+ ]
+}

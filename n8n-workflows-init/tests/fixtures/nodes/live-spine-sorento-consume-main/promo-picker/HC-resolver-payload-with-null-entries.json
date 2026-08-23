@@ -1,0 +1,173 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "Every walk over the resolver payload is null-guarded because the CRM has been seen to emit sparse arrays. A null resolution, a null match and a null intersection row must all be skipped rather than dereferenced \u2014 the mutation that turns any of those guards into its opposite throws and takes the whole turn down, which on this lane means the customer gets nothing at all. The turn still reaches the correct disjoint verdict."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": [
+       {
+        "raw": "Cabana",
+        "hint": "brand"
+       },
+       {
+        "raw": "kitchen tap",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "Cabana",
+      "kitchen tap"
+     ],
+     "resolutions": [
+      null,
+      {
+       "token": "Cabana",
+       "matches": [
+        null,
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "CABANA PROMO"
+         }
+        }
+       ]
+      },
+      {
+       "token": "kitchen tap",
+       "matches": [
+        {
+         "entity_type": "promotion",
+         "display": {
+          "description": "TAP PROMO"
+         }
+        }
+       ]
+      }
+     ],
+     "intersection": [
+      null
+     ],
+     "by_entity_type": {
+      "promotion": [
+       null
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.\n\n1. *Promotion:* CABANA PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* TAP PROMO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "CABANA PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "CABANA PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "TAP PROMO",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "TAP PROMO"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "CABANA.pdf"
+     },
+     {
+      "filename": "TAP.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response_intro": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing_promotion_sorento team?",
+    "answers": [],
+    "attachments": [],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1
+     ]
+    },
+    "suggest_last_result_set": [],
+    "suggest_selection_context": null,
+    "_promo_picker": {
+     "count": 2,
+     "intro_swapped": true,
+     "rebuilt": false
+    },
+    "_promo_notfound": {
+     "tokens": [
+      "Cabana",
+      "kitchen tap"
+     ],
+     "words": [],
+     "reason": "disjoint"
+    },
+    "_promo_disjoint": [
+     "Cabana",
+     "kitchen tap"
+    ]
+   }
+  }
+ ]
+}

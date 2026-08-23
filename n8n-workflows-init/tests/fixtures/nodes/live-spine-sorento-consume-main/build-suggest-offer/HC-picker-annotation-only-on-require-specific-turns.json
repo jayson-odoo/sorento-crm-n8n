@@ -1,0 +1,79 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The escalate_message annotation belongs to the require-specific picker and nothing else. On an ordinary miss the message is whatever not-found-error-message wrote, and rewriting numbered lines in it would staple has/no suffixes onto text that is not a picker at all. With require_specific false the message must come through untouched even though the probe succeeded and both codes were probed."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory",
+      "entities": [
+       {
+        "raw": "tap",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "tap",
+       "resolved": true,
+       "matches": []
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ],
+  "dym-annotate": [
+   {
+    "json": {
+     "dym_available_codes": [
+      "SRTA"
+     ],
+     "dym_probe_meta": {
+      "ok": true,
+      "probed": [
+       "SRTA",
+       "SRTB"
+      ],
+      "noun": "stock details"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Please choose:\n1. SRTA\n2. SRTB\nReply with a number."
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Please choose:\n1. SRTA\n2. SRTB\nReply with a number.",
+    "suggest_offer": false
+   }
+  }
+ ]
+}

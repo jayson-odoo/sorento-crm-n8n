@@ -1,0 +1,170 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "cap3 bounds the alternatives at three here too, and an alternative's order_number is carried into the roster (the order lane's pick key) rather than being flattened away."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "SRTX",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {}
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "compatible_entities": [
+      {
+       "code": "SRTX",
+       "entity_type": "product"
+      }
+     ]
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "alternatives": [
+      {
+       "value": "A1",
+       "order_number": "PO-1"
+      },
+      {
+       "value": "A2"
+      },
+      {
+       "value": "A3"
+      },
+      {
+       "value": "A4"
+      }
+     ],
+     "relaxed_axis": "entity"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500001"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "No incoming stock (ETA) for SRTX. Try: A1, A2, A3. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_quick_reply": "A1,A2,A3,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "A1",
+      "value": "A1",
+      "product": "A1",
+      "display": "A1",
+      "order_number": "PO-1"
+     },
+     {
+      "idx": 2,
+      "label": "A2",
+      "value": "A2",
+      "product": "A2",
+      "display": "A2",
+      "order_number": null
+     },
+     {
+      "idx": 3,
+      "label": "A3",
+      "value": "A3",
+      "product": "A3",
+      "display": "A3",
+      "order_number": null
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "A1",
+      "uuid": null,
+      "entity_type": null,
+      "for_raw": "SRTX",
+      "for_hint": "product",
+      "for_canonical": "SRTX"
+     },
+     {
+      "code": "A2",
+      "uuid": null,
+      "entity_type": null,
+      "for_raw": "SRTX",
+      "for_hint": "product",
+      "for_canonical": "SRTX"
+     },
+     {
+      "code": "A3",
+      "uuid": null,
+      "entity_type": null,
+      "for_raw": "SRTX",
+      "for_hint": "product",
+      "for_canonical": "SRTX"
+     }
+    ],
+    "dym_offer": {
+     "id": "13500001",
+     "domain": "incoming",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "A1",
+       "uuid": null,
+       "entity_type": null,
+       "for_raw": "SRTX",
+       "for_hint": "product",
+       "for_canonical": "SRTX"
+      },
+      {
+       "code": "A2",
+       "uuid": null,
+       "entity_type": null,
+       "for_raw": "SRTX",
+       "for_hint": "product",
+       "for_canonical": "SRTX"
+      },
+      {
+       "code": "A3",
+       "uuid": null,
+       "entity_type": null,
+       "for_raw": "SRTX",
+       "for_hint": "product",
+       "for_canonical": "SRTX"
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

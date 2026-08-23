@@ -1,0 +1,163 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "answers[i] and attachments[i] are index-paired by contract. When the file sitting at the picked index does not match that row's label but a file with the right name exists, the node sends the NAMED file and RECORDS the drift \u2014 it never silently trusts the index. Attachments here are deliberately swapped relative to answers."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [
+       1
+      ],
+      "entities": [
+       {
+        "raw": "ALPHA.pdf",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "here you go",
+    "response_intro": "here you go",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "BRAVO.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "BRAVO.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "filename": "ALPHA.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I have attached the file(s) below.\n\n1. *Promotion:* ALPHA.pdf\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30",
+    "response_intro": "I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "ALPHA.pdf",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "ALPHA.pdf"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "ALPHA.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": [
+      0,
+      1
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "ALPHA.pdf",
+      "value": "ALPHA.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "BRAVO.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "BRAVO.pdf",
+      "value": "BRAVO.pdf",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "ALPHA.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_pick": {
+     "positions": [
+      1
+     ],
+     "matched": 1,
+     "files": 1,
+     "out_of_range": [],
+     "drift": [
+      {
+       "idx": 1,
+       "resolved_by": "name"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,63 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "A positional reply arriving on a turn whose result set came back EMPTY must not enter the pick lane at all. Entering it would emit 'There are only 0 promotions in that list, please reply with a number between 1 and 0' \u2014 a sentence that is both nonsense and a different situation from the one the customer is in. The zero-answer turn falls through untouched and the not-found path keeps ownership."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [
+       1
+      ],
+      "entities": [
+       {
+        "raw": "taps",
+        "hint": "category"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "No promotions found.",
+    "response_intro": "No promotions found.",
+    "answers": [],
+    "attachments": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "No promotions found.",
+    "response_intro": "No promotions found.",
+    "answers": [],
+    "attachments": [],
+    "_promo_sort": {
+     "reordered": false,
+     "pairable": true,
+     "order": []
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,216 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned": true,
+  "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "Three rows tie on end date, so the start date decides \u2014 and a row with NO start date must sink below one that has it, while the two undated rows keep the CRM's own order between them. This is the start-date leg's null arm specifically: without it the undated rows compare false-both-ways and the list silently reverts to arrival order."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "reference_positions": [],
+      "entities": []
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "access_notice": "",
+     "company_team": null,
+     "brand_gate_empty": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Here you go.",
+    "response_intro": "Here you go.",
+    "answers": [
+     {
+      "title": "PNULL",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "PNULL"
+       },
+       {
+        "label": "Start Date",
+        "value": ""
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "QDATED",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "QDATED"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "RNULL",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "RNULL"
+       },
+       {
+        "label": "Start Date",
+        "value": ""
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "P.pdf"
+     },
+     {
+      "filename": "Q.pdf"
+     },
+     {
+      "filename": "R.pdf"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "I found 3 promotions. I have attached the file(s) below.\n\n1. *Promotion:* QDATED\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* PNULL\n*Start Date:* \n*End Date:* 2026-09-30\n\n3. *Promotion:* RNULL\n*Start Date:* \n*End Date:* 2026-09-30",
+    "response_intro": "I found 3 promotions. I have attached the file(s) below.",
+    "answers": [
+     {
+      "title": "QDATED",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "QDATED"
+       },
+       {
+        "label": "Start Date",
+        "value": "2026-06-01"
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "PNULL",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "PNULL"
+       },
+       {
+        "label": "Start Date",
+        "value": ""
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     },
+     {
+      "title": "RNULL",
+      "fields": [
+       {
+        "label": "Promotion",
+        "value": "RNULL"
+       },
+       {
+        "label": "Start Date",
+        "value": ""
+       },
+       {
+        "label": "End Date",
+        "value": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "attachments": [
+     {
+      "filename": "Q.pdf"
+     },
+     {
+      "filename": "P.pdf"
+     },
+     {
+      "filename": "R.pdf"
+     }
+    ],
+    "_promo_sort": {
+     "reordered": true,
+     "pairable": true,
+     "order": [
+      1,
+      0,
+      2
+     ]
+    },
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "QDATED",
+      "value": "QDATED",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "Q.pdf"
+     },
+     {
+      "idx": 2,
+      "label": "PNULL",
+      "value": "PNULL",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "P.pdf"
+     },
+     {
+      "idx": 3,
+      "label": "RNULL",
+      "value": "RNULL",
+      "uuid": null,
+      "entity_type": "promotion",
+      "filename": "R.pdf"
+     }
+    ],
+    "suggest_selection_context": "suggest_offer",
+    "_promo_picker": {
+     "count": 3,
+     "intro_swapped": false,
+     "rebuilt": true
+    }
+   }
+  }
+ ]
+}
