@@ -3,7 +3,10 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "A miss with zero renderable candidates gets a plain not-found line and NO index \u2014 and with M = 0 the footer changes to 'Ask again with the correct code.', no dym_last_result_set key is emitted, no offer is armed and the compressed response carries no marker. That last part is what stops the parser believing a pick is available when the customer was given nothing to pick."
+  "rationale": "A miss with zero renderable candidates gets a plain not-found line and NO index \u2014 and with M = 0 the footer changes to 'Ask again with the correct code.', no dym_last_result_set key is emitted, no offer is armed and the compressed response carries no marker. That last part is what stops the parser believing a pick is available when the customer was given nothing to pick.",
+  "reasoned": true,
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -168,7 +171,7 @@
      "routing_company": null,
      "routing_companies": null
     },
-    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"IBKS9999\": not found.\n\nAsk again with the correct code."
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"IBKS9999\" (product): not found.\n\nAsk again with the correct code."
    }
   }
  ],

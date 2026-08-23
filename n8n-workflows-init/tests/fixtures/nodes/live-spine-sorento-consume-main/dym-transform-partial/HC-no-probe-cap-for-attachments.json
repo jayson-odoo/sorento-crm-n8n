@@ -4,8 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "TWIN CONTRACT. dym-transform and dym-transform-partial are byte-identical apart from the `promotion` DOMAIN_PROBE entry (and two comment rules), so every behaviour that is not promotion-specific MUST hold identically on both. Ported deliberately rather than left to the twin: this repo has been bitten before by a fork asserted to be identical that had quietly drifted, and a rule proven on only one copy is a rule the other copy is free to lose. Same inputs, same expected output as dym-transform/HC-probe-cap-eight-for-attachments.json \u2014 if the two ever disagree, one of these two fixtures fails.\n\nBehaviour under test: The attachment probe's cap is 8, not 3: it is additionally scoped by attachment_type_ids, and the measured grain is ~0.8-1.3 rows per candidate, so eight candidates use about ten of the backend's 50-row budget. Three tokens carrying three candidates each is nine \u2014 the ninth is capped away and renders bare. The two domains' caps were measured separately and must not be generalised from one another, which is what this pins.",
-  "ported_from": "dym-transform/HC-probe-cap-eight-for-attachments.json"
+  "rationale": "RE-PINNED at live df165492 (media-intake promote). CONTRACT INVERTED, not merely re-measured: `DOMAIN_PROBE.product_attachment` no longer declares a `probe_cap` at all (it was 8), so the cap loop's fail-OPEN guard (`Number(cfg.probe_cap)` non-finite => no cap) leaves every candidate in. Reasoned expected, not frozen: three tokens x cap3 = NINE candidates, so all nine are probed (dym_candidate_codes C1..C9), dym_capped_codes is empty and probe_cap_applied is false; the attachment_type scoping entity CERT still trails the candidate list in dym_probe_entities, now at index 9 instead of 8. The truncation risk the cap guarded is now carried by dym-annotate's `_PAGE_SATURATION = 50` suppress-all, which is fail-CLOSED (withholds every annotation on a full page, never invents a 'no'). The per-domain contrast this fixture used to pin is still pinned: `inventory`'s probe_cap of 3 is load-bearing and unchanged - see HC-probe-cap-three-inventory-overflow-renders-bare.json.",
+  "ported_from": "dym-transform/HC-probe-cap-eight-for-attachments.json",
+  "repinned_at_version": "df165492"
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -174,6 +175,11 @@
       "code": "C8"
      },
      {
+      "uuid": "1439736c-20ca-4bba-b387-b242ff4a4518",
+      "entity_type": "product",
+      "code": "C9"
+     },
+     {
       "uuid": "1439736c-20ca-4bba-b387-b242ff4a4590",
       "entity_type": "attachment_type",
       "code": "CERT"
@@ -187,13 +193,12 @@
      "C5",
      "C6",
      "C7",
-     "C8"
-    ],
-    "dym_excluded_codes": [],
-    "dym_capped_codes": [
+     "C8",
      "C9"
     ],
-    "probe_cap_applied": true,
+    "dym_excluded_codes": [],
+    "dym_capped_codes": [],
+    "probe_cap_applied": false,
     "probe_tool": "crm_master_product_attachments_list",
     "probe_noun": null,
     "probe_predicate": "row_present_with_type",

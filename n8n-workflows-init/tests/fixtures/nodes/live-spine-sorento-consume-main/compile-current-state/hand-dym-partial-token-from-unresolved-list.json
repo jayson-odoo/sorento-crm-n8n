@@ -3,7 +3,10 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "On the legacy arm the rendered token comes from unresolved_tokens[0] \u2014 NOT from the first parser entity, which here names a DIFFERENT product that resolved perfectly well. Getting that order wrong reports the wrong word back to the customer as missing."
+  "rationale": "On the legacy arm the rendered token comes from unresolved_tokens[0] \u2014 NOT from the first parser entity, which here names a DIFFERENT product that resolved perfectly well. Getting that order wrong reports the wrong word back to the customer as missing.",
+  "reasoned": true,
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -195,7 +198,7 @@
       }
      ]
     },
-    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"6047\", did you mean:\n  1. PROMO-6047-A\n\nReply a number to check it, or ask again."
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"6047\" (product), did you mean:\n  1. PROMO-6047-A\n\nReply a number to check it, or ask again."
    }
   }
  ],

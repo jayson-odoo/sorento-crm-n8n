@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "The bread-and-butter did-you-mean: a genuinely unresolved token with three trigram candidates. Pins the whole shape at once \u2014 the humanList Oxford form 'A, B, or C', the bare-code quick replies (the pick round-trips on that exact button string, so annotation must never reach it), the comma-stripped Yes/No labels, and the dym_candidate map keyed on the SOURCE token so a later pick replaces the right entity. `team` comes from the gate's company_team in preference to the parser's routing (#9: one turn must not name three teams)."
+  "rationale": "The bread-and-butter did-you-mean: a genuinely unresolved token with three trigram candidates. Pins the whole shape at once \u2014 the humanList Oxford form 'A, B, or C', the bare-code quick replies (the pick round-trips on that exact button string, so annotation must never reach it), the comma-stripped Yes/No labels, and the dym_candidate map keyed on the SOURCE token so a later pick replaces the right entity. `team` comes from the gate's company_team in preference to the parser's routing (#9: one turn must not name three teams).",
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -82,7 +84,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "Couldn't find \"SRTUB6503\". Did you mean SRTUB6503-BL, SRTUB6503-WH, or SRTUB6503-GL? Reply with a code to continue, or would you like me to escalate to cs_stock team?",
+    "suggest_response": "Couldn't find \"SRTUB6503\" (product). Did you mean SRTUB6503-BL, SRTUB6503-WH, or SRTUB6503-GL? Reply with a code to continue, or would you like me to escalate to cs_stock team?",
     "suggest_quick_reply": "SRTUB6503-BL,SRTUB6503-WH,SRTUB6503-GL,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

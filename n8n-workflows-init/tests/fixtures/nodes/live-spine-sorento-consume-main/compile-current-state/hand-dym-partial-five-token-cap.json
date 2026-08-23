@@ -3,7 +3,10 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Six genuine misses in one turn, five surfaced: the token cap keeps the reply readable, and the sixth is dropped silently rather than truncating mid-list. The index is GLOBAL and CONTIGUOUS across token blocks (1..5, one candidate each) because the roster and the offer are keyed on it \u2014 renumbering per token would break the pick round-trip. for_hint falls back to the MATCH's entity_type when the parser named no entity with that raw."
+  "rationale": "Six genuine misses in one turn, five surfaced: the token cap keeps the reply readable, and the sixth is dropped silently rather than truncating mid-list. The index is GLOBAL and CONTIGUOUS across token blocks (1..5, one candidate each) because the roster and the offer are keyed on it \u2014 renumbering per token would break the pick round-trip. for_hint falls back to the MATCH's entity_type when the parser named no entity with that raw.",
+  "reasoned": true,
+  "repinned_at_version": "df165492",
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -382,7 +385,7 @@
       }
      ]
     },
-    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"MISS1\", did you mean:\n  1. CODE-1\n\"MISS2\", did you mean:\n  2. CODE-2\n\"MISS3\", did you mean:\n  3. CODE-3\n\"MISS4\", did you mean:\n  4. CODE-4\n\"MISS5\", did you mean:\n  5. CODE-5\n\nReply a number to check it, or ask again."
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"MISS1\" (product), did you mean:\n  1. CODE-1\n\"MISS2\" (product), did you mean:\n  2. CODE-2\n\"MISS3\" (product), did you mean:\n  3. CODE-3\n\"MISS4\" (product), did you mean:\n  4. CODE-4\n\"MISS5\" (product), did you mean:\n  5. CODE-5\n\nReply a number to check it, or ask again."
    }
   }
  ],
