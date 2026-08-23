@@ -1,0 +1,386 @@
+{
+  "active": true,
+  "activeVersionId": "69b0b256-ecac-4d8b-9512-02f7dc07219a",
+  "connections": {
+    "ht-config-apply": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-config-audit",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-config-audit": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-write-timeout",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-config-echo": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Form Ending",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-config-form": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-config-apply",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-readback-enabled": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-readback-pilot",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-readback-pilot": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-config-echo",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-readback-timeout": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-readback-enabled",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-write-enabled": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-write-pilot",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-write-pilot": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-readback-timeout",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-write-timeout": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-write-enabled",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "description": null,
+  "id": "evLuDTO60DBlYkk0",
+  "meta": null,
+  "name": "ht-config-form",
+  "nodeGroups": [],
+  "nodes": [
+    {
+      "id": "73363898-8ded-4ee0-b197-7fc9dc0af1ed",
+      "name": "ht-config-form",
+      "parameters": {
+        "authentication": "n8nUserAuth",
+        "formDescription": "When a human agent replies, the AI is muted for this contact until the team goes quiet for the timeout below. Kill switch OFF disables the whole feature. Leave the pilot list EMPTY to apply it to every contact.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Timeout (minutes)",
+              "fieldType": "number",
+              "placeholder": "5",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Feature",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "on"
+                  },
+                  {
+                    "option": "off"
+                  }
+                ]
+              },
+              "fieldType": "dropdown",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Pilot contact IDs",
+              "fieldType": "text",
+              "placeholder": "437264483 (comma separated; empty = everyone)"
+            }
+          ]
+        },
+        "formTitle": "Human-intervention timeout",
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Apply",
+          "ignoreBots": true
+        },
+        "responseMode": "lastNode"
+      },
+      "position": [
+        -880,
+        300
+      ],
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "webhookId": "276c3f11-d3d4-44ae-8fa5-58b0d496af9d"
+    },
+    {
+      "id": "b95f3c50-d63b-41b0-b6ee-7d3c5fc075ce",
+      "name": "ht-config-apply",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-config-apply \u2500\u2500 S3 config form: normalise + validate one submission \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// The form is the only sanctioned way to move the three runtime knobs. It writes redis, so the\n// validation here is the whole safety story of S3:\n//\n//   timeout minutes \u2192 seconds, CLAMPED to a 60 s floor. UAC HT-15 submits 0; redis must never see\n//                     0 (a 0 s timeout would clear every flag on the next tick and blast a notice\n//                     to everyone in the pilot). Clamp + report, rather than reject, so the user\n//                     always gets a definite state back on the completion screen.\n//   kill switch     \u2192 the exact strings \"1\"/\"0\". `ht-gate` accepts ONLY \"1\" as on, so any other\n//                     spelling written here silently disables the feature \u2014 hence normalise once,\n//                     here, and echo what was written.\n//   pilot ids       \u2192 comma-separated string (see the plan's redis deviation note: the native Redis\n//                     node cannot maintain a real SET \u2014 its `set` writes a single scalar and there\n//                     is no SREM). Empty means EVERYONE, which is the announce flip and therefore\n//                     the highest-blast-radius value the form can write: it is echoed explicitly as\n//                     \"everyone\" rather than as an empty string.\n//\n// Non-numeric / negative / absent minutes do NOT fall back to \"whatever was there\" \u2014 they resolve\n// to the documented default (300 s), so the state after a submission is always fully determined by\n// that submission.\n\nconst FLOOR_SEC = 60;\nconst DEFAULT_SEC = 300;\n\nconst f = ($input.all()[0] && $input.all()[0].json) || {};\n\n// The n8n Form Trigger keys its output by FIELD LABEL. Accept the label and a couple of tolerant\n// aliases so a label tweak in the UI cannot silently produce a default-everything write.\nfunction pick(obj, names) {\n  for (const n of names) {\n    if (Object.prototype.hasOwnProperty.call(obj, n) && obj[n] !== undefined) return obj[n];\n  }\n  return undefined;\n}\n\nconst rawMinutes = pick(f, ['Timeout (minutes)', 'timeout_minutes', 'timeout']);\nconst rawKill = pick(f, ['Feature', 'kill_switch', 'enabled']);\nconst rawPilot = pick(f, ['Pilot contact IDs', 'pilot_contacts', 'pilot']);\n\nconst notes = [];\n\n// WHOLE MINUTES ONLY (finding #3, rev5). The form accepted fractional minutes \u2014 1.5 became 90 s \u2014 while\n// `ht-gate` renders the notice as `round(sec/60)`. A contact was therefore told \"inactive for 2 minutes\"\n// under a 90-second timeout: the reply the customer reads misstates the actual timeout by up to ~50%.\n// Rounding here rather than in the renderer keeps `ht:timeout-sec` a multiple of 60, so every consumer\n// (this notice, the sweeper cutoff, the completion echo) agrees by construction instead of by luck.\nconst rawMinutesNum = Number(String(rawMinutes == null ? '' : rawMinutes).trim());\nlet minutes = Number.isFinite(rawMinutesNum) ? Math.round(rawMinutesNum) : rawMinutesNum;\nlet timeout_sec;\nif (!Number.isFinite(minutes) || minutes <= 0) {\n  timeout_sec = DEFAULT_SEC;\n  notes.push(\n    `timeout ${JSON.stringify(rawMinutes)} is not a positive number \u2014 using the default ` +\n    `${DEFAULT_SEC / 60} minutes`\n  );\n} else {\n  if (Number.isFinite(rawMinutesNum) && rawMinutesNum !== minutes) {\n    notes.push(`timeout ${rawMinutesNum} min is not a whole number \u2014 rounded to ${minutes} minute(s), ` +\n               `so the notice text and the actual timeout cannot disagree`);\n  }\n  timeout_sec = minutes * 60;\n  if (timeout_sec < FLOOR_SEC) {\n    notes.push(`timeout ${minutes} min is below the ${FLOOR_SEC}s floor \u2014 clamped to 1 minute`);\n    timeout_sec = FLOOR_SEC;\n  }\n}\n\nconst killStr = String(rawKill == null ? '' : rawKill).trim().toLowerCase();\nconst KILL_ON = ['on', '1', 'true', 'enabled'];\nconst KILL_OFF = ['off', '0', 'false', 'disabled'];\nconst enabled = KILL_ON.indexOf(killStr) !== -1;\n// An UNRECOGNISED non-empty value used to write OFF with an EMPTY notes[] (finding #4, rev5) \u2014 the note\n// only fired on ''. So relabelling the dropdown option (say \"on\" -> \"Enabled \u2705\") silently disabled the\n// whole feature and the completion screen reported success with nothing to look at. Fail-closed is right;\n// fail-closed and SILENT is how a feature stays off for a month. Say what was seen and what was written.\nif (killStr === '') {\n  notes.push('kill switch not supplied \u2014 writing OFF (fail-closed)');\n} else if (KILL_ON.indexOf(killStr) === -1 && KILL_OFF.indexOf(killStr) === -1) {\n  notes.push(`kill switch value ${JSON.stringify(rawKill)} is not recognised \u2014 writing OFF ` +\n             `(fail-closed). Recognised as ON: ${KILL_ON.join('/')}; as OFF: ${KILL_OFF.join('/')}. ` +\n             `If the form's dropdown labels changed, the feature is now DISABLED.`);\n}\n\nconst pilot_ids = String(rawPilot == null ? '' : rawPilot)\n  .split(',')\n  .map((x) => x.trim())\n  .filter((x) => x.length > 0);\nconst nonNumeric = pilot_ids.filter((x) => !/^[0-9]+$/.test(x));\nif (nonNumeric.length) {\n  notes.push(`pilot ids that are not numeric respond.io ids: ${nonNumeric.join(', ')}`);\n}\n\nreturn [{\n  json: {\n    timeout_sec,\n    timeout_min: Math.max(1, Math.round(timeout_sec / 60)),\n    enabled,\n    enabled_value: enabled ? '1' : '0',\n    pilot_ids,\n    pilot_csv: pilot_ids.join(','),\n    pilot_scope: pilot_ids.length ? `${pilot_ids.length} pilot contact(s)` : 'EVERYONE',\n    clamped: timeout_sec === FLOOR_SEC && Number.isFinite(minutes) && minutes * 60 < FLOOR_SEC,\n    notes,\n    submitted_raw: f,\n  },\n}];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        -640,
+        300
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "f3178055-de03-4b70-949f-92ec0fc590de",
+      "name": "ht-config-audit",
+      "parameters": {
+        "list": "ht:config-audit",
+        "messageData": "={{ JSON.stringify($json) }}",
+        "operation": "push"
+      },
+      "position": [
+        -400,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "a4cf2be7-f151-4622-a63d-9ec2d1ba54b5",
+      "name": "ht-write-timeout",
+      "parameters": {
+        "key": "ht:timeout-sec",
+        "keyType": "string",
+        "operation": "set",
+        "value": "={{ $('ht-config-apply').first().json.timeout_sec }}"
+      },
+      "position": [
+        -160,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "ceb9a7d7-8817-40df-b3ab-f2c7b3b450e7",
+      "name": "ht-write-enabled",
+      "parameters": {
+        "key": "ht:enabled",
+        "keyType": "string",
+        "operation": "set",
+        "value": "={{ $('ht-config-apply').first().json.enabled_value }}"
+      },
+      "position": [
+        80,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "5388dc81-21eb-4cc5-9ef1-283302624871",
+      "name": "ht-write-pilot",
+      "parameters": {
+        "key": "ht:pilot-contacts",
+        "keyType": "string",
+        "operation": "set",
+        "value": "={{ $('ht-config-apply').first().json.pilot_csv }}"
+      },
+      "position": [
+        320,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "b83039dc-d307-4e41-a5bf-83052f0b83d0",
+      "name": "ht-readback-timeout",
+      "parameters": {
+        "key": "ht:timeout-sec",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "rb_timeout_sec"
+      },
+      "position": [
+        560,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "042a8e86-f0d2-4388-9bb2-578b05cd8045",
+      "name": "ht-readback-enabled",
+      "parameters": {
+        "key": "ht:enabled",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "rb_enabled"
+      },
+      "position": [
+        800,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "7a76f3a7-9dfd-4db5-b9a8-ad0946d8adf8",
+      "name": "ht-readback-pilot",
+      "parameters": {
+        "key": "ht:pilot-contacts",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "rb_pilot"
+      },
+      "position": [
+        1040,
+        300
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "4bbc9df2-9f3d-4b9e-b615-4a942e13a3ef",
+      "name": "ht-config-echo",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-config-echo \u2500\u2500 S3: build the completion screen from a READ-BACK, not from the submission \u2500\u2500\n//\n// The point of the echo is to be honest about what redis now holds, so it is composed from the three\n// `ht-readback-*` GETs rather than from `ht-config-apply`'s intentions. If a write silently failed,\n// the screen says so instead of cheerfully repeating what the user typed \u2014 the same reason a\n// zero-egress gate needs attribution rather than a count (UAC 0 S7).\nconst w = $('ht-config-apply').first().json;\nconst rbT = ($('ht-readback-timeout').first().json || {}).rb_timeout_sec;\nconst rbE = ($('ht-readback-enabled').first().json || {}).rb_enabled;\nconst rbP = ($('ht-readback-pilot').first().json || {}).rb_pilot;\n\nconst readback = {\n  timeout_sec: rbT === null || rbT === undefined ? null : Number(String(rbT).trim()),\n  enabled_value: rbE === null || rbE === undefined ? null : String(rbE).trim(),\n  pilot_csv: rbP === null || rbP === undefined ? '' : String(rbP).trim(),\n};\nconst mismatches = [];\nif (readback.timeout_sec !== w.timeout_sec) mismatches.push(`timeout-sec: wrote ${w.timeout_sec}, redis holds ${JSON.stringify(rbT)}`);\nif (readback.enabled_value !== w.enabled_value) mismatches.push(`enabled: wrote ${w.enabled_value}, redis holds ${JSON.stringify(rbE)}`);\nif (readback.pilot_csv !== w.pilot_csv) mismatches.push(`pilot-contacts: wrote ${JSON.stringify(w.pilot_csv)}, redis holds ${JSON.stringify(rbP)}`);\n\nconst minutes = readback.timeout_sec === null ? null : Math.max(1, Math.round(readback.timeout_sec / 60));\nconst scope = readback.pilot_csv === '' ? 'EVERY contact' : readback.pilot_csv.split(',').join(', ');\n\nconst lines = [\n  `Feature: ${readback.enabled_value === '1' ? 'ON' : 'OFF'}`,\n  `Timeout: ${minutes === null ? '(not set)' : minutes + ' minute(s)'}  [${readback.timeout_sec} s]`,\n  `Applies to: ${scope}`,\n  '',\n  `Namespace written: ht:*  (live \u2014 the harness build writes ht:*)`,\n];\nif (w.notes && w.notes.length) lines.push('', 'Adjustments made to your input:', ...w.notes.map((n) => '  - ' + n));\nif (mismatches.length) lines.push('', '!! READ-BACK MISMATCH \u2014 redis does NOT hold what was written:', ...mismatches.map((m) => '  - ' + m));\n\nreturn [{ json: {\n  echo_title: mismatches.length ? 'Saved WITH ERRORS \u2014 read the mismatch below' : 'Settings applied',\n  echo_message: lines.join('\\n'),\n  written: { timeout_sec: w.timeout_sec, enabled_value: w.enabled_value, pilot_csv: w.pilot_csv },\n  readback,\n  mismatches,\n  ok: mismatches.length === 0,\n} }];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1280,
+        300
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "5af29a94-64fc-40c9-a25f-e2db669da82c",
+      "name": "Form Ending",
+      "parameters": {
+        "completionMessage": "={{ $json.echo_message }}",
+        "completionTitle": "={{ $json.echo_title }}",
+        "operation": "completion",
+        "options": {},
+        "respondWith": "text"
+      },
+      "position": [
+        1520,
+        300
+      ],
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "webhookId": "e4a19a93-4c40-467e-8157-1a8157084a6a"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "versionId": "69b0b256-ecac-4d8b-9512-02f7dc07219a"
+}

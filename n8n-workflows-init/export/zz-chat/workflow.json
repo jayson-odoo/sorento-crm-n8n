@@ -1,0 +1,664 @@
+{
+  "active": true,
+  "activeVersionId": "7677e752-a612-4866-b461-4aeab031360b",
+  "connections": {
+    "build-item": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "clear-q",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "call-dispatch": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "read-list",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "chat": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "if-has-file",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "clear-lock": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "clear-ready",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "clear-q": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "clear-lock",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "clear-ready": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "clear-reply",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "clear-reply": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "push-queue",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "del-list": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "format-out",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "extract-audio-b64": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "prep-audio",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "extract-image-b64": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "prep-image",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "if-file-image": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "extract-image-b64",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "extract-audio-b64",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "if-has-file": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "if-file-image",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "build-item",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "prep-audio": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "store-audio",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "prep-image": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "store-image",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "push-queue": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "push-ready",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "push-ready": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "call-dispatch",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "read-list": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "del-list",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "store-audio": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "build-item",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "store-image": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "build-item",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "description": "Native n8n hosted chat page -> injects to clone queue, fires dispatcher, waits, reads chat:reply, returns bot reply to the widget. Live-safe (clone lane).",
+  "id": "oyYfVvZHRZpWubTy",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "zz-chat",
+  "nodeGroups": [],
+  "nodes": [
+    {
+      "id": "f1897c73-f2a0-4e03-a06e-1d3ebf907ef5",
+      "name": "chat",
+      "parameters": {
+        "initialMessages": "Sorento chat console (clone \u2014 no real WhatsApp egress).\nType a message to test the bot.",
+        "options": {
+          "allowFileUploads": true,
+          "allowedFilesMimeTypes": "audio/*,image/*",
+          "allowedOrigins": "http://localhost:8000,http://127.0.0.1:8000,https://automate-sorento.foundryx.my",
+          "customCss": ":root {\n  --chat--message--font-size: 0.8rem;\n  --chat--message-line-height: 1.55;\n  --chat--message--padding: 0.7rem 0.95rem;\n  --chat--spacing: 0.7rem;\n  --chat--body--background: #eaeef3;\n  --chat--message--bot--background: #ffffff;\n  --chat--message--bot--color: #1a1f26;\n  --chat--message--user--background: #2563eb;\n  --chat--message--user--color: #ffffff;\n  --chat--color-primary: #2563eb;\n  --chat--color-primary-shade-50: #1e50c0;\n  --chat--border-radius: 12px;\n  --chat--message--border-radius: 16px;\n}\n.chat-message.chat-message-from-bot {\n  background: #ffffff !important;\n  border: 1px solid #dde3ea;\n  box-shadow: 0 1px 2px rgba(16,24,40,0.06);\n  max-width: 88% !important;\n}\n.chat-message.chat-message-from-user {\n  max-width: 80% !important;\n}\n.chat-message-markdown p { margin: 0 0 0.4rem 0; }\n.chat-message-markdown p:last-child { margin-bottom: 0; }\n.chat-message-markdown ol, .chat-message-markdown ul { padding-left: 1.15rem; margin: 0.25rem 0; }\n.chat-message-markdown li { margin-bottom: 0.5rem; padding-left: 0.15rem; }\n.chat-message-markdown strong { font-weight: 600; }\n.chat-message-markdown code { white-space: pre-wrap; word-break: break-word; background: #f4f6f8; padding: 0.05rem 0.25rem; border-radius: 4px; }",
+          "inputPlaceholder": "Ask, or attach voice/image (\ud83d\udcce). Image \u2192 REAL CRM extractor.",
+          "responseMode": "lastNode",
+          "subtitle": "clone lane \u00b7 egress routed to chat, not WhatsApp",
+          "title": "Sorento Chat Console"
+        },
+        "public": true
+      },
+      "position": [
+        0,
+        -144
+      ],
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "webhookId": "58a0adb6-3c45-42cf-bf1c-bf09c430a142"
+    },
+    {
+      "id": "3b59fcd2-6503-4cd9-af84-ca462e9825b5",
+      "name": "build-item",
+      "parameters": {
+        "jsCode": "// Read the trigger explicitly: on the attachment lane this node is fed by\n// 'store-audio' or 'store-image' (via prep-audio/prep-image), whose output json no longer\n// carries chatInput/sessionId.\nconst trig = $('chat').first().json;\nlet raw = trig.chatInput || '';\nconst chatId = trig.sessionId || ('chat-' + Date.now());\nconst contactId = '437264483';\nconst runId = 'chatui-' + Date.now();\n\n// -- VOICE INPUT --------------------------------------------------------------\n// Three ways to drive a voice turn, because redis is NOT reachable from outside the\n// n8n host and the queue item is JSON-only (binary cannot ride it):\n//   (1) ATTACH/RECORD audio -> 'extract-audio-b64' -> 'prep-audio' -> 'store-audio' stage the\n//       bytes to redis chat:media:{chat_id} and hand the CRM worker a fetchable zz-media-serve\n//       url, exactly like the image lane -> REAL CRM /media/process call (production path).\n//   (2) /voiceurl <url>  -> spine downloads the url, REAL CRM call. (production path)\n//   (3) /voice <text>    -> mock lane: skips fetch+CRM entirely. 0 cost, deterministic.\n// Anything else is an ordinary text turn (unchanged).\nlet text = raw;\nlet attachment = { type: 'text', description: '' };\nlet mock_transcript = null;\n\n// -- VOICE ACCESS TOGGLE (test harness only) ----------------------------------\n// In production `is_allowed_voice` is a REAL respond.io custom field on the contact and the\n// spine's if-voice-allowed gate reads it (fail-closed: absent/false => voice refused).\n// The console fabricates its contact, so it defaults the field to true and lets you flip it\n// with a `/novoice` prefix to exercise the refusal path.\nlet allowVoice = 'true';\nconst mNoVoice = raw.match(/^\\/novoice\\s*([\\s\\S]*)$/i);\nif (mNoVoice) { allowVoice = 'false'; raw = mNoVoice[1].trim(); text = raw; }\n\n// -- AUDIO INPUT (record/attach; mirrors the image lane) -----------------------\n// prep-audio ran => the audio was stored to redis chat:media:{chat_id} and zz-media-serve\n// (D8pyepOH1vJSJzjG) exposes it as a public URL. scope stays 'chat-ui' so media-egress-gate\n// takes FALSE => REAL CRM /media/process call (prod contact_media_usage ledger write +\n// provider spend, dev contact 437264483) -- mirrors the image lane, captain decision 2026-08-22.\nconst fromAudio = (() => {\n  try { return $('prep-audio').isExecuted ? $('prep-audio').first() : null; }\n  catch (e) { return null; }\n})();\nif (fromAudio && fromAudio.json && fromAudio.json.media_url) {\n  const j = fromAudio.json;\n  // text stays = raw -> rides as the caption (detect-media reads E.text)\n  attachment = { type: 'audio', url: j.media_url, mimeType: j.audio_mime, fileName: j.audio_name, size: j.audio_bytes, description: '' };\n}\n\n// -- IMAGE INPUT (paste/attach; local console page or widget attach) ----------\n// prep-image ran => the image was stored to redis chat:media:{chat_id} and zz-media-serve\n// (D8pyepOH1vJSJzjG) exposes it as a public URL the CRM worker fetches. scope stays 'chat-ui'\n// so media-egress-gate takes FALSE => REAL CRM /media/process call (prod contact_media_usage\n// ledger write + provider spend, dev contact 437264483) -- user-approved 2026-08-22.\nconst fromImage = (() => {\n  try { return $('prep-image').isExecuted ? $('prep-image').first() : null; }\n  catch (e) { return null; }\n})();\nif (fromImage && fromImage.json && fromImage.json.media_url) {\n  const j = fromImage.json;\n  // text stays = raw -> rides as the caption (detect-media reads E.text)\n  attachment = { type: 'image', url: j.media_url, mimeType: j.image_mime, fileName: j.image_name, size: j.image_bytes, description: '' };\n}\n\n// /voiceurl and /voice only apply on a plain text turn (no attachment already staged).\nif (attachment.type === 'text') {\n  const mVoice = raw.match(/^\\/voice\\s+([\\s\\S]+)$/i);\n  const mUrl = raw.match(/^\\/voiceurl\\s+(\\S+)$/i);\n  if (mUrl) {\n    text = '';\n    attachment = { type: 'audio', url: mUrl[1], description: '' };\n  } else if (mVoice) {\n    text = '';\n    attachment = { type: 'audio', url: null, description: '' };\n    mock_transcript = mVoice[1].trim();\n  }\n}\n\nconst item = {\n  message: { message: { message: { text: text, type: attachment.type === 'audio' ? 'audio' : attachment.type === 'image' ? 'image' : 'text', attachment: attachment } }, replyTo: {} },\n  contact: { id: contactId, chat_id: chatId, phone: '60100000000', firstName: 'Jayson', lastName: 'Chat', custom_fields: [ { name: 'is_human_intervened', value: 'false' }, { name: 'is_allowed_stock', value: 'true' }, { name: 'is_allowed_voice', value: allowVoice } ], assignee: { id: null } },\n  messageId: runId, replyTo: null, test_run_id: runId, scope: 'chat-ui', mode: 'chat-stateful'\n};\nif (mock_transcript !== null) item.mock_transcript = mock_transcript;\n\nreturn [{ json: { chat_id: chatId, contact_id: contactId, test_run_id: runId, item } }];"
+      },
+      "position": [
+        224,
+        -144
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "edc2ab8b-89fe-451b-9499-d2c43bf8ea54",
+      "name": "push-queue",
+      "parameters": {
+        "list": "=test:q:{{ $('build-item').first().json.contact_id }}",
+        "messageData": "={{ JSON.stringify($('build-item').first().json.item) }}",
+        "operation": "push",
+        "tail": true
+      },
+      "position": [
+        1120,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "5b31fce9-0d7b-445a-b250-cf8f4f4d4f52",
+      "name": "push-ready",
+      "parameters": {
+        "list": "ready-contacts-test",
+        "messageData": "={{ $('build-item').first().json.contact_id }}",
+        "operation": "push",
+        "tail": true
+      },
+      "position": [
+        1344,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "123634cc-1115-4eb5-8da4-d0d208e029ca",
+      "name": "read-list",
+      "parameters": {
+        "key": "=chat:reply:{{ $('build-item').first().json.chat_id }}",
+        "keyType": "list",
+        "operation": "get",
+        "options": {},
+        "propertyName": "replies"
+      },
+      "position": [
+        1792,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "08e33a88-71ed-4f97-98d5-49d435041cbd",
+      "name": "del-list",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "key": "=chat:reply:{{ $('build-item').first().json.chat_id }}",
+        "operation": "delete"
+      },
+      "position": [
+        2016,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "87f264cd-1e2a-482a-a52b-9e65b067d4a4",
+      "name": "format-out",
+      "parameters": {
+        "jsCode": "const raw = $('read-list').first().json.replies;\nlet arr = Array.isArray(raw) ? raw : (raw !== undefined && raw !== null && raw !== '' ? [raw] : []);\nconst parts = arr.map((x) => { if (typeof x === 'string') { try { return JSON.parse(x); } catch (e) { return { type: 'text', text: x }; } } return x; });\nconst IMG = /\\.(png|jpe?g|gif|webp|bmp|svg)(\\?|$)/i;\nfunction conv(t){ if (t == null) return ''; return String(t).replace(/\\*(?=\\S)([^*\\n]+?)\\*/g, '**$1**'); }\n\n// The chat trigger renders ONE response, so N delivered messages would silently\n// merge into a single bubble and a multi-part turn would read as \"not chunked\".\n// Label each part instead: this is the console's stand-in for separate WhatsApp\n// messages. Console-only affordance \u2014 nothing here runs on the WhatsApp path.\n// Authoritative proof of real multi-message delivery is one row per part in\n// chat_histories sharing a turn_id: tests/verify-multipart-send.sql.\nconst blocks = parts.map((p) => {\n  if (!p) return '';\n  if (p.type === 'escalation') return '\u26a0\ufe0f ' + conv(p.text || '[escalated]');\n  if (p.type === 'attachment') {\n    const url = p.url || '';\n    const name = p.filename || 'attachment';\n    if (!url) return conv(p.text || '');\n    if (IMG.test(name) || IMG.test(url)) return '\ud83d\udcce **' + name + '**  \\n![' + name + '](' + url + ')';\n    return '\ud83d\udcce [' + name + '](' + url + ')';\n  }\n  const total = Number(p.total_parts) || 1;\n  const body = conv(p.text || '');\n  if (!body && !p.quick_reply) return '';\n  const bytes = new TextEncoder().encode(String(p.text || '')).length;\n  const head = total > 1\n    ? '\u2500\u2500\u2500\u2500\u2500 WhatsApp message ' + (p.part || '?') + ' of ' + total +\n      '  \u00b7  ' + String(p.text || '').length + ' chars / ' + bytes + ' bytes \u2500\u2500\u2500\u2500\u2500'\n    : '';\n  // Buttons are a property of ONE message; showing them makes it visible that they\n  // ride the last part only, which is what a customer's tap will quote.\n  const btns = p.quick_reply\n    ? '\\n\\n\ud83d\udd18 buttons on this message: ' +\n      String(p.quick_reply).split(',').map((s) => '[' + s.trim() + ']').join(' ')\n    : '';\n  return [head, body + btns].filter(Boolean).join('\\n');\n}).filter(Boolean);\n\nlet output = blocks.length ? blocks.join('\\n\\n') : '(no reply within 12s \u2014 try again)';\noutput = output.replace(/\\n(?!\\n)/g, '  \\n');\nreturn [{ json: { output } }];\n"
+      },
+      "position": [
+        2240,
+        -144
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "965fc7b4-02bc-487f-9a64-59a751a6e16c",
+      "name": "clear-q",
+      "parameters": {
+        "key": "=test:q:{{ $('build-item').first().json.contact_id }}",
+        "operation": "delete"
+      },
+      "position": [
+        448,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "4efc3eae-0621-4b42-ad09-7ccc4b68c1f9",
+      "name": "clear-lock",
+      "parameters": {
+        "key": "=test:lock:{{ $('build-item').first().json.contact_id }}",
+        "operation": "delete"
+      },
+      "position": [
+        672,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "71b8bb87-3be5-413d-b6ee-1954e3611bcd",
+      "name": "clear-ready",
+      "parameters": {
+        "key": "ready-contacts-test",
+        "operation": "delete"
+      },
+      "position": [
+        896,
+        -144
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "ebb6dec6-ce22-47ba-af1c-c4e814d6ad78",
+      "name": "call-dispatch",
+      "parameters": {
+        "options": {
+          "waitForSubWorkflow": true
+        },
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "zz-dispatcher-test",
+          "cachedResultUrl": "/workflow/2D0cw2Y1aPW2LOlU",
+          "mode": "list",
+          "value": "2D0cw2Y1aPW2LOlU"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [],
+          "value": {}
+        }
+      },
+      "position": [
+        1568,
+        -144
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "7268be00-7789-49b8-87cb-fd04a2fb58c2",
+      "name": "if-has-file",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "hf1",
+              "leftValue": "={{ Object.keys($binary || {}).length > 0 }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        96,
+        -144
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "72a53a81-eed4-457f-b25e-77403e4fa7a1",
+      "name": "extract-audio-b64",
+      "parameters": {
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "destinationKey": "audio_b64",
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "position": [
+        224,
+        -288
+      ],
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "c0ffee10-chat-4rep-0000-000000000010",
+      "name": "clear-reply",
+      "parameters": {
+        "key": "=chat:reply:{{ $('build-item').first().json.chat_id }}",
+        "operation": "delete"
+      },
+      "position": [
+        896,
+        -4
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "n-if-file-image",
+      "name": "if-file-image",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "fi1",
+              "leftValue": "={{ (Object.values($binary || {})[0]?.mimeType || '').startsWith('image/') }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        4,
+        -348
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "n-extract-image-b64",
+      "name": "extract-image-b64",
+      "parameters": {
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "destinationKey": "image_b64",
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "position": [
+        224,
+        -448
+      ],
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "n-prep-image",
+      "name": "prep-image",
+      "parameters": {
+        "jsCode": "// Stage the pasted/attached image for the CRM worker under a PER-MESSAGE key (fix\n// 2026-08-22: was chat:media:{chat_id}, shared across the whole session, so a second\n// attachment overwrote the first while a CRM job was still fetching it, and image/audio\n// could collide on the same key). The id is minted here and threaded straight into\n// media_url, so zz-media-serve (which just does GET chat:media:{query.id}, unchanged)\n// and this store always agree on the same per-message key.\nconst trig = $('chat').first().json;\nconst chatId = trig.sessionId || ('chat-' + Date.now());\nconst src = $input.first();\nconst bin = Object.values(src.binary || {})[0] || Object.values($('chat').first().binary || {})[0] || {};\nconst b64 = src.json.image_b64 || null;\nif (!b64) throw new Error('extract-image-b64 produced no image_b64');\nconst mime = bin.mimeType || 'image/png';\nconst name = bin.fileName || 'pasted.png';\nconst bytes = Math.floor(b64.length * 3 / 4);\nconst execId = ($execution && $execution.id) ? $execution.id : (Date.now() + '-' + Math.random().toString(36).slice(2, 8));\nconst mediaId = chatId + ':img:' + execId;\nreturn [{ json: {\n  media_key: 'chat:media:' + mediaId,\n  media_value: JSON.stringify({ b64: b64, mime: mime, name: name }),\n  image_mime: mime,\n  image_name: name,\n  image_bytes: bytes,\n  media_url: 'https://automate-sorento.foundryx.my/webhook/zz-media-serve?id=' + encodeURIComponent(mediaId)\n} }];"
+      },
+      "position": [
+        444,
+        -448
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "n-store-image",
+      "name": "store-image",
+      "parameters": {
+        "key": "={{ $json.media_key }}",
+        "keyType": "string",
+        "operation": "set",
+        "value": "={{ $json.media_value }}"
+      },
+      "position": [
+        664,
+        -448
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "n-prep-audio",
+      "name": "prep-audio",
+      "parameters": {
+        "jsCode": "// Stage the recorded/attached audio for the CRM worker under a PER-MESSAGE key (fix\n// 2026-08-22: was chat:media:{chat_id}, shared across the whole session, so a second\n// attachment overwrote the first while a CRM job was still fetching it, and image/audio\n// could collide on the same key). The id is minted here and threaded straight into\n// media_url, so zz-media-serve (which just does GET chat:media:{query.id}, unchanged)\n// and this store always agree on the same per-message key. Mirrors prep-image exactly\n// (same stored shape {b64,mime,name}), tagged 'aud' so it can never collide with an image\n// even in the same session.\nconst trig = $('chat').first().json;\nconst chatId = trig.sessionId || ('chat-' + Date.now());\nconst src = $input.first();\nconst bin = Object.values(src.binary || {})[0] || Object.values($('chat').first().binary || {})[0] || {};\nconst b64 = src.json.audio_b64 || null;\nif (!b64) throw new Error('extract-audio-b64 produced no audio_b64');\nconst mime = bin.mimeType || 'audio/webm';\nconst name = bin.fileName || ('voice.' + (bin.fileExtension || 'webm'));\nconst bytes = Math.floor(b64.length * 3 / 4);\nconst execId = ($execution && $execution.id) ? $execution.id : (Date.now() + '-' + Math.random().toString(36).slice(2, 8));\nconst mediaId = chatId + ':aud:' + execId;\nreturn [{ json: {\n  media_key: 'chat:media:' + mediaId,\n  media_value: JSON.stringify({ b64: b64, mime: mime, name: name }),\n  audio_mime: mime,\n  audio_name: name,\n  audio_bytes: bytes,\n  media_url: 'https://automate-sorento.foundryx.my/webhook/zz-media-serve?id=' + encodeURIComponent(mediaId)\n} }];"
+      },
+      "position": [
+        444,
+        -288
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "n-store-audio",
+      "name": "store-audio",
+      "parameters": {
+        "key": "={{ $json.media_key }}",
+        "keyType": "string",
+        "operation": "set",
+        "value": "={{ $json.media_value }}"
+      },
+      "position": [
+        664,
+        -288
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "versionId": "7677e752-a612-4866-b461-4aeab031360b"
+}

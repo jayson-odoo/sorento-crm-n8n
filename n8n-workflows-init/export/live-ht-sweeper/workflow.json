@@ -1,0 +1,810 @@
+{
+  "active": true,
+  "activeVersionId": "11c55d58-8c11-4195-9949-a0163f5d0ffc",
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-enabled",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-armed?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-timeout",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-idle",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-carry-clear": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-forget",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-carry-contact": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-recheck-stamp",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-classify": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-skip?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-clear-flag": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-carry-clear",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-findcontact": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-carry-contact",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-flag-still-true?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-clear-flag",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "ht-forget-silent",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-forget": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-timeout-notice",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-recheck-stamp": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-classify",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-skip?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-skip",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "ht-flag-still-true?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-armed": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-armed?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-census": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-fanout",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-enabled": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-armed",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-fanout": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-findcontact",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-keys": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-census",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-pilot": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-keys",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "ht-sweep-timeout": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "ht-sweep-pilot",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "description": null,
+  "id": "UmmjvYRl0h2GXd19",
+  "meta": null,
+  "name": "ht-sweeper",
+  "nodeGroups": [],
+  "nodes": [
+    {
+      "id": "daec1c03-b8af-4344-873a-7c3e83066342",
+      "name": "Schedule Trigger",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 30
+            }
+          ]
+        }
+      },
+      "position": [
+        -1120,
+        300
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "ac22f7d3-6b72-46e8-8ee3-24e376582ed1",
+      "name": "ht-sweep-enabled",
+      "parameters": {
+        "key": "ht:enabled",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_enabled"
+      },
+      "position": [
+        -640,
+        200
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "8e05d2a9-0629-4e57-b39d-b07252ddf179",
+      "name": "ht-sweep-armed",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-sweep-armed \u2500\u2500 S2: decide whether this tick may scan the keyspace AT ALL \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// FINDING #6 (rev5): the kill-switch was only consulted inside `ht-sweep-census`, which runs AFTER\n// `ht-sweep-keys`. So a dark-shipped feature \u2014 the intended state between the S4 promote and the flip,\n// potentially weeks \u2014 still paid the full cost every 30 seconds: a `KEYS ht:active:*` scan plus a GET per\n// matching key, on the SHARED PRODUCTION redis, to produce a census that was then discarded.\n//\n// That cost is not incidental. `KEYS` is O(total keyspace) on a single-threaded server (reviewer R6), so\n// it is a function of the whole prod keyspace \u2014 message lists, per-contact concurrency locks, the ttl:1\n// rate-limit counters \u2014 and is independent of how many contacts are in the pilot. Paying it for a feature\n// that is switched OFF is the worst version of the trade.\n//\n// This node gates the scan on the kill-switch. `ht-sweep-census` keeps its OWN check as defence in depth\n// (it also covers the per-candidate reasons), so removing this node degrades cost, never safety.\n//\n// FAIL-CLOSED IN THE COST DIRECTION TOO: a config read that FAILS does not scan. Same reasoning as the\n// allowlist fix \u2014 \"I could not read the kill-switch\" is not permission to hit prod redis every 30 s.\n//\n// \u26a0\ufe0f UAC IMPACT \u2014 HT-11's assertions change. With the kill-switch off, `ht-sweep-keys` and\n// `ht-sweep-census` no longer appear in runData at all, so HT-11 can no longer assert\n// \"census shows skip_reason: kill-switch-off\". Assert instead: `ht-armed?` took output 1, `ht-sweep-idle`\n// ran, and `ht-sweep-keys` / `ht-sweep-census` / `ht-findcontact` are ABSENT from runData \u2014 which is a\n// strictly stronger statement (nothing was even read) and is asserted on node presence, not a status.\n\nfunction readNode(nodeName, prop) {\n  let n;\n  try { n = $(nodeName); } catch (e) { return { ok: false, why: nodeName + ' is unreachable' }; }\n  if (!n) return { ok: false, why: nodeName + ' resolved to nothing' };\n  if (n.isExecuted === false) return { ok: false, why: nodeName + ' did not execute' };\n  let f;\n  try { f = n.first(); } catch (e) { return { ok: false, why: nodeName + ' produced no item' }; }\n  if (!f || !f.json) return { ok: false, why: nodeName + ' produced no json' };\n  if (!Object.prototype.hasOwnProperty.call(f.json, prop)) {\n    return { ok: false, why: nodeName + \" carried no '\" + prop + \"' property (propertyName drift?)\" };\n  }\n  return { ok: true, value: f.json[prop] };\n}\n\nconst r = readNode('ht-sweep-enabled', 'ht_enabled');\nconst ht_enabled = r.ok && r.value !== null && r.value !== undefined && String(r.value).trim() === '1';\nconst ht_armed = ht_enabled;\n\nreturn [{\n  json: {\n    ht_enabled,\n    ht_armed,\n    ht_not_armed_because: ht_armed ? null : (r.ok ? 'kill-switch-off' : 'config-read-failure: ' + r.why),\n    // what this tick declined to do, so a quiet tick is legible in runData rather than just absent\n    ht_skipped_work: ht_armed ? null : 'KEYS scan + per-key GETs on the shared redis',\n  },\n}];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        -520,
+        200
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "db033373-df7d-49d7-b974-cb3a39b1ce55",
+      "name": "ht-armed?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "f6abc846-9d69-53a7-8fe1-e315579c772c",
+              "leftValue": "={{ $json.ht_armed }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        -460,
+        200
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "a0e938e0-abf4-46b8-b778-12ff39a2abfb",
+      "name": "ht-sweep-idle",
+      "parameters": {},
+      "position": [
+        -460,
+        380
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "e0db2d12-aa51-4668-9bd0-efe75f4b2173",
+      "name": "ht-sweep-timeout",
+      "parameters": {
+        "key": "ht:timeout-sec",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_timeout_sec"
+      },
+      "position": [
+        -400,
+        200
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "3e5e2f2a-5af9-4164-b0fe-10cccb119806",
+      "name": "ht-sweep-pilot",
+      "parameters": {
+        "key": "ht:pilot-contacts",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_pilot"
+      },
+      "position": [
+        -160,
+        200
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "a423bf56-d04a-45bd-9149-46cdf6b341a2",
+      "name": "ht-sweep-keys",
+      "parameters": {
+        "getValues": true,
+        "keyPattern": "ht:active:*",
+        "operation": "keys"
+      },
+      "position": [
+        80,
+        200
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "bd27e0c7-64df-484c-bf7f-0e70b42f0312",
+      "name": "ht-sweep-census",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-sweep-census \u2500\u2500 S2 sweeper: the OBSERVABLE decision record for one tick \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// WHY THIS IS A SEPARATE NODE FROM THE FAN-OUT. A Code node that emits 0 items ends its branch \u2014\n// which is the correct runtime behaviour for a quiet tick, and a terrible instrument: \"no\n// downstream nodes ran\" is indistinguishable from \"the node never looked at anything\"\n// (LESSONS \u00a761b \u2014 never let empty checker output mean PASS; print the compared population).\n// So this node ALWAYS emits exactly ONE item carrying the full census \u2014 scanned count, cutoff,\n// every candidate with its age and its skip reason \u2014 and `ht-sweep-fanout` turns that into 0..N\n// action items. HT-10/11/12 assert against THIS item, not against downstream absence alone.\n//\n// INPUT. One item from `ht-sweep-keys` (Redis `keys`, getValues = true), whose json is a MAP of\n// `<prefix>active:<contact id>` -> stamp-in-ms-as-string. Non-matching keys are ignored and\n// counted, never guessed at.\n//\n// NOTE ON `keys`. The native Redis node has no sorted-set support at all (operations are\n// delete/get/incr/info/keys/llen/pop/publish/push/set), so the plan's ZSET contract is implemented\n// as one string key per contact. `keys` is O(keyspace); see the plan's deviation note.\n//\n// FAIL-CLOSED: kill-switch off \u21d2 zero candidates eligible, with the reason recorded on every row.\n\nconst DEFAULT_TIMEOUT_SEC = 300;\nconst FLOOR_TIMEOUT_SEC = 60;\nconst KEY_INFIX = 'active:';\n\n// A config read has THREE outcomes, not two. Collapsing them is finding #1 (rev5): `readNode` used to\n// return `undefined` both when the READ FAILED (node renamed, never executed, `propertyName` drift) and\n// when the VALUE was legitimately absent (redis GET on a missing key returns null). `parsePilot(undefined)`\n// is `[]`, and an empty allowlist means EVERYONE \u2014 so if only the pilot leg broke while `enabled` still\n// read \"1\", the pilot phase acted on every real contact. Measured: contact 999999 got\n// `ht_should_act: true` with the pilot node removed.\n//\n// The kill-switch already failed closed. The allowlist must too, and it is the one whose failure direction\n// is a real customer receiving a message. Note the asymmetry that has to be preserved: an empty-string\n// VALUE still means everyone \u2014 that is the announce flip, and it is deliberate \u2014 while a failed READ\n// means \"I do not know who is in the allowlist\", which is not a permission to act.\n//   { ok: true,  value }  the node ran and carried the property (value may legitimately be null)\n//   { ok: false, why   }  the read itself failed \u2014 never treat this as \"no allowlist\"\nfunction readNode(nodeName, prop) {\n  let n;\n  try { n = $(nodeName); } catch (e) { return { ok: false, why: nodeName + ' is unreachable' }; }\n  if (!n) return { ok: false, why: nodeName + ' resolved to nothing' };\n  if (n.isExecuted === false) return { ok: false, why: nodeName + ' did not execute' };\n  let f;\n  try { f = n.first(); } catch (e) { return { ok: false, why: nodeName + ' produced no item' }; }\n  if (!f || !f.json) return { ok: false, why: nodeName + ' produced no json' };\n  if (!Object.prototype.hasOwnProperty.call(f.json, prop)) {\n    return { ok: false, why: nodeName + \" carried no '\" + prop + \"' property (propertyName drift?)\" };\n  }\n  return { ok: true, value: f.json[prop] };\n}\n\nfunction parseEnabled(v) {\n  return v !== null && v !== undefined && String(v).trim() === '1';\n}\n\nfunction parseTimeoutSec(v) {\n  const n = Number(String(v == null ? '' : v).trim());\n  if (!Number.isFinite(n) || n <= 0) return DEFAULT_TIMEOUT_SEC;\n  return Math.max(FLOOR_TIMEOUT_SEC, Math.floor(n));\n}\n\nfunction parsePilot(v) {\n  if (v === null || v === undefined) return [];\n  const raw = Array.isArray(v) ? v : String(v).split(',');\n  return raw.map((x) => String(x).trim()).filter((x) => x.length > 0);\n}\n\nconst rEnabled = readNode('ht-sweep-enabled', 'ht_enabled');\nconst rTimeout = readNode('ht-sweep-timeout', 'ht_timeout_sec');\nconst rPilot = readNode('ht-sweep-pilot', 'ht_pilot');\nconst ht_config_read_failures = [rEnabled, rTimeout, rPilot].filter((r) => !r.ok).map((r) => r.why);\n\nconst ht_enabled = rEnabled.ok && parseEnabled(rEnabled.value);\nconst ht_timeout_sec = parseTimeoutSec(rTimeout.ok ? rTimeout.value : undefined);\nconst ht_pilot = rPilot.ok ? parsePilot(rPilot.value) : [];\nconst ht_pilot_active = ht_pilot.length > 0;\n\nconst NOW = typeof $now !== 'undefined' && $now && typeof $now.toMillis === 'function'\n  ? $now.toMillis()\n  : Date.now();\nconst cutoff_ms = NOW - ht_timeout_sec * 1000;\n\nconst raw = ($input.all()[0] && $input.all()[0].json) || {};\nconst candidates = [];\nlet malformed = 0;\n\nfor (const key of Object.keys(raw)) {\n  const at = key.lastIndexOf(KEY_INFIX);\n  if (at === -1) { malformed++; continue; }\n  const contact_id = key.slice(at + KEY_INFIX.length).trim();\n  if (!contact_id) { malformed++; continue; }\n  const scoreRaw = raw[key];\n  const score_ms = Number(String(scoreRaw == null ? '' : scoreRaw).trim());\n  if (!Number.isFinite(score_ms)) {\n    // NOT NEGOTIABLE: a stamp we cannot parse is not quietly treated as \"infinitely old\" \u2014 that would\n    // clear a live intervention on a typo. Recorded and skipped, so the tick stays visible and inert.\n    // Known residual (rev5): such a stamp is therefore never reaped either, because the recheck reads the\n    // same garbage and answers skip-vanished. Recorded in the manifest rather than half-fixed here.\n    candidates.push({\n      contact_id, key, score_ms: null, age_ms: null,\n      expired: false, eligible: false, skip_reason: 'unparseable-stamp',\n    });\n    continue;\n  }\n  // A zero / negative stamp IS parseable \u2014 epoch 0, i.e. infinitely old. It used to share the\n  // unparseable branch, which made it un-reapable forever while `ht-arm` treats 0 as a perfectly valid\n  // stamp: the two nodes disagreed about the same value (finding #5). A garbage-but-numeric stamp must\n  // not immortalise the flag, so it is expired and reapable. The flag check still gates the notice and\n  // the recheck still reads the same value, so this authorises nothing that any other expired stamp\n  // would not.\n  const expired = score_ms <= cutoff_ms;\n  let skip_reason = null;\n  if (ht_config_read_failures.length) skip_reason = 'config-read-failure';\n  else if (!ht_enabled) skip_reason = 'kill-switch-off';\n  else if (ht_pilot_active && ht_pilot.indexOf(contact_id) === -1) skip_reason = 'not-in-pilot-allowlist';\n  else if (!expired) skip_reason = 'not-expired';\n  candidates.push({\n    contact_id, key, score_ms, age_ms: NOW - score_ms,\n    expired, eligible: skip_reason === null, skip_reason,\n  });\n}\n\nreturn [{\n  json: {\n    ht_enabled,\n    ht_timeout_sec,\n    ht_pilot,\n    ht_pilot_active,\n    ht_config_read_failures,\n    now_ms: NOW,\n    cutoff_ms,\n    scanned: Object.keys(raw).length,\n    malformed_keys: malformed,\n    candidates,\n    eligible_count: candidates.filter((c) => c.eligible).length,\n    skipped_count: candidates.filter((c) => !c.eligible).length,\n  },\n}];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        320,
+        200
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "0a81b8f3-666b-4453-a8ff-df6172919ca6",
+      "name": "ht-sweep-fanout",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-sweep-fanout \u2500\u2500 S2 sweeper: turn the census into 0..N per-contact action items \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// Emits ONE item per ELIGIBLE candidate and nothing else. Zero items is the normal case and ends\n// the branch, which is why the census (always exactly one item) is the thing assertions read.\n// Deliberately dumb: every decision already happened in `ht-sweep-census`, so a mutation of the\n// expiry/allowlist logic shows up in exactly one place.\n\nconst c = ($input.all()[0] && $input.all()[0].json) || {};\nconst cutoff_ms = c.cutoff_ms;\nconst now_ms = c.now_ms;\n\nreturn (c.candidates || [])\n  .filter((x) => x && x.eligible === true)\n  .map((x) => ({\n    json: {\n      contact_id: x.contact_id,\n      key: x.key,\n      score_ms: x.score_ms,\n      age_ms: x.age_ms,\n      cutoff_ms,\n      now_ms,\n      ht_timeout_sec: c.ht_timeout_sec,\n    },\n  }));\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        560,
+        200
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "8d6c6db2-3d11-46a1-8440-c5931854facb",
+      "name": "ht-findcontact",
+      "parameters": {
+        "mode": "each",
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sorento-sub-respond-findcontact-respond",
+          "mode": "list",
+          "value": "D62_NHUOrugeULSFwfjEJ"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_identifer",
+              "id": "contact_identifer",
+              "required": false
+            }
+          ],
+          "value": {
+            "contact_identifer": "={{ $json.contact_id }}"
+          }
+        }
+      },
+      "position": [
+        800,
+        200
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "cf9785d5-ff63-4afb-8fd8-ac05a5d4e052",
+      "name": "ht-carry-contact",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-carry-contact \u2500\u2500 S2: pair each expired candidate with its contact lookup \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// EXISTS BECAUSE OF F-RECHECK (tester, 2026-08-12). `ht-recheck-stamp`'s key expression reads\n// `$json.contact_id`, but its former upstream `ht-findcontact` emits a respond.io CONTACT \u2014 whose id\n// field is `id`, never `contact_id`. Every recheck missed, `ht-classify` always answered\n// `skip-vanished`, and the clear/notify/forget path was structurally unreachable: flags never cleared.\n// Failed safe, but inert. `assert-built.py` C9 is the gate that now closes that class.\n//\n// REWRITTEN rev3 for reviewer R2 + R3, which turned out to be one defect wearing two hats:\n//\n//   R2 (fail-open guard). `if (fetchedId && fetchedId !== contact_id) throw` demanded a CONTRADICTION,\n//   not an identification: a payload with no `id` short-circuited the refusal and flowed on to\n//   `clear-and-notify`, authorising a flag write and a WhatsApp notice off a contact never positively\n//   identified. Measured. The header claimed the node \"owns the mis-attribution refusal\", which was\n//   stricter than the mechanism delivered \u2014 LESSONS \u00a770b, inverted.\n//\n//   R3 (stamp leak on not-found). On a hard not-found the findcontact sub returns ZERO items. Under the\n//   old INDEX-ALIGNED pairing that made this node THROW \u2014 so a single deleted or unknown contact did not\n//   merely leak its stamp, it **wedged the sweeper permanently**: every subsequent tick errored, and\n//   because the stamp is never removed the condition never cleared itself. Measured. The literal R2 fix\n//   (throw on an id-less payload) has the identical shape, so fixing R2 alone would have hardened a\n//   permanent-outage path.\n//\n// So pairing is now BY IDENTITY, not by index, with three outcomes and no unreachable arm:\n//\n//   paired            the lookup returned exactly this contact          \u2192 carry on to the recheck\n//   lookup_missing    no lookup came back for this candidate            \u2192 `forget-unknown`: the stamp is\n//                     (deleted contact, hard not-found, zero items)       REAPED, with ZERO flag write\n//                                                                         and ZERO notice\n//   THROW             a lookup came back for a contact NOBODY asked for \u2192 refuse the whole tick\n//\n// R2 is satisfied more strongly than by throwing: an unidentified payload cannot reach\n// `clear-and-notify` at all, and the tick survives. R3's reaper falls out for free \u2014 `forget-unknown`\n// routes to the existing `ht-forget-silent`, so no new wiring and no new egress surface. That also stops\n// feeding D1's `KEYS ht:active:*` cost, which R6 raises to a pre-ACTIVATION measurement.\n//\n// PROMOTE-SAFE. At S4 `ht-findcontact` becomes the real `executeWorkflow` call to\n// `sorento-sub-respond-findcontact-respond`, which returns the same raw shape (`id`, no `contact_id`) and\n// zero items on a miss. Identity pairing needs no `alwaysOutputData` and tolerates missing, extra or\n// reordered items, so it behaves the same on both. **S4 must promote this node** \u2014 without it the\n// promoted sweeper is the dead feature F-RECHECK described.\n//\n// NO `.first()`: a tick can carry several contacts and `.first()` is silently item 0 for every row\n// (assert-built.py C9 forbids it inside the per-item region).\n\nfunction nodeAll(name) {\n  let n;\n  try { n = $(name); } catch (e) {\n    throw new Error('ht-carry-contact: ' + name + ' is unreachable \u2014 refusing to pair');\n  }\n  if (!n || n.isExecuted === false) {\n    throw new Error('ht-carry-contact: ' + name + ' did not execute \u2014 refusing to pair');\n  }\n  return n.all();\n}\n\nconst candidates = nodeAll('ht-sweep-fanout');\nconst lookups = $input.all();\n\n// Index the lookups by the id they positively identify. An item with no usable id identifies nothing,\n// so it is counted and never matched \u2014 it can only ever produce a `lookup_missing` row.\nconst byId = new Map();\nlet unidentifiable = 0;\nfor (const it of lookups) {\n  const j = it.json || {};\n  const id = j.id === null || j.id === undefined ? '' : String(j.id).trim();\n  if (!id) { unidentifiable++; continue; }\n  if (byId.has(id)) {\n    throw new Error(\n      'ht-carry-contact: two lookups both claim contact ' + id + ' \u2014 ambiguous, refusing to pair. ' +\n      'A redis stamp key is unique per contact, so this should be unreachable.'\n    );\n  }\n  byId.set(id, j);\n}\n\nconst wanted = new Set();\nfor (const c of candidates) {\n  const cid = String((c.json || {}).contact_id == null ? '' : (c.json || {}).contact_id).trim();\n  if (!cid) throw new Error('ht-carry-contact: candidate carries no contact_id \u2014 refusing to pair');\n  wanted.add(cid);\n}\n// A contact nobody asked for is DROPPED, not thrown on (finding #2, rev5).\n//\n// Throwing here refused the ENTIRE tick, and the stamps survive an error \u2014 so a single mis-attributed\n// lookup recurred every 30 s forever and wedged the sweeper instance-wide. That is the exact R3 outage\n// shape this file's own header documents, reintroduced on the adjacent branch: the realistic trigger is a\n// respond.io CONTACT MERGE, where looking up a deleted id returns the surviving contact's id, and it is\n// permanent by construction because nothing ever removes the stamp that keeps re-triggering it.\n//\n// Dropping is also the semantically correct answer, not merely the safe one: if a lookup for candidate X\n// comes back as some other contact, then X is gone (merged or deleted). Its candidate now pairs with\n// nobody, so the existing `forget-unknown` path reaps X's stamp with ZERO egress \u2014 which is precisely\n// what should happen to a merged-away contact. No key is ever derived from the stranger.\nconst strangers = [];\nfor (const id of Array.from(byId.keys())) {\n  if (!wanted.has(id)) {\n    strangers.push(id);\n    byId.delete(id);\n  }\n}\n\nreturn candidates.map((c, i) => {\n  const src = c.json || {};\n  const contact_id = String(src.contact_id).trim();\n  const contact = byId.has(contact_id) ? byId.get(contact_id) : null;\n  return {\n    json: {\n      // `contact_id` is what `ht-recheck-stamp`'s key expression reads. It is always the CANDIDATE's\n      // id \u2014 the contact we decided to expire \u2014 never whatever a lookup happened to return.\n      contact_id,\n      contact,\n      lookup_missing: contact === null,\n      lookup_missing_reason: contact === null\n        ? (lookups.length === 0\n            ? 'the contact lookup returned no items at all (hard not-found)'\n            : (strangers.length\n                ? 'no lookup item identified this contact; the tick returned contact(s) nobody asked ' +\n                  'for (' + strangers.join(',') + ') \u2014 consistent with a merged or deleted contact'\n                : 'no lookup item positively identified this contact (' + unidentifiable +\n                  ' unidentifiable item(s) in this tick)'))\n        : null,\n      // surfaced per row so a merge shows up in runData instead of being inferred from a reap\n      lookup_strangers: strangers,\n      key: src.key === undefined ? null : src.key,\n      score_ms: src.score_ms === undefined ? null : src.score_ms,\n      age_ms: src.age_ms === undefined ? null : src.age_ms,\n      cutoff_ms: src.cutoff_ms === undefined ? null : src.cutoff_ms,\n      now_ms: src.now_ms === undefined ? null : src.now_ms,\n      ht_timeout_sec: src.ht_timeout_sec === undefined ? null : src.ht_timeout_sec,\n    },\n    pairedItem: { item: i },\n  };\n});\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        920,
+        200
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "6a3df55c-1640-4696-90f9-62a4704bf5e8",
+      "name": "ht-recheck-stamp",
+      "parameters": {
+        "key": "=ht:active:{{ $json.contact_id }}",
+        "keyType": "string",
+        "operation": "get",
+        "options": {},
+        "propertyName": "ht_recheck_ms"
+      },
+      "position": [
+        1040,
+        200
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "d2c6a002-30a5-4654-bee5-f540f0860fdc",
+      "name": "ht-classify",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-classify \u2500\u2500 S2 sweeper: decide, per expired contact, what may be done to it \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n//\n// This is the only node that authorises the two egress actions (`is_human_intervened: false` write\n// and the timeout WhatsApp notice), so it is written to REFUSE rather than guess.\n//\n// THREE OUTCOMES, and they are not the same shape as \"true/false\":\n//   clear-and-notify  the flag is still true and the stamp has not moved  \u2192 write + notify + forget\n//   forget-silent     the flag is already false (a human closed manually) \u2192 forget the stamp, ZERO\n//                     sends. This is the ghost-message gate (HT-9).\n//   forget-unknown    the contact lookup returned nothing for this        \u2192 forget the stamp, ZERO\n//                     candidate (deleted / unknown contact)                sends, ZERO flag write.\n//                     Added rev3 for reviewer R3: without it a hard not-found either leaked the stamp\n//                     forever or \u2014 under the old index-aligned pairing \u2014 THREW, wedging the sweeper\n//                     permanently. Routes to the existing `ht-forget-silent`, so no new wiring.\n//   skip-*            the stamp vanished or moved forward under us        \u2192 touch nothing at all\n//\n// WHY THE RE-READ. Plan \u00a7S2.5 lists a stamp re-read as an OPTIONAL tightening. It is implemented\n// (and recorded as an addition in the plan) because the failure it prevents is customer-visible:\n// a human replying while the tick is in flight would otherwise have their intervention cleared and\n// the contact told \"our team seems to be away\" mid-conversation. One redis GET, one predicate.\n//\n// ABSENT vs PRESENT-BUT-EMPTY (LESSONS \u00a764). Two different malformed shapes, two different\n// answers, neither of them a silent pass:\n//   - `custom_fields` not an array          \u2192 THROW. The payload is not a respond.io contact; a\n//                                             hand-built fixture that omits it must ERROR, not pass\n//                                             (UAC HT-FP4 exists to prove this).\n//   - `is_human_intervened` absent from the array \u2192 the contact genuinely has no such field \u21d2\n//                                             treat as not-intervened \u21d2 forget-silent.\n//   - value present but an unrecognised encoding   \u2192 THROW. respond.io stores this as the STRING\n//                                             \"true\"/\"false\" (verified against a real FIND_CONTACT\n//                                             payload, execution 12166204); anything else means the\n//                                             contract moved and guessing would clear real flags.\n//\n// WHY THE CANDIDATES ARE READ BY NAME AND NOT FROM `$input`. The node immediately upstream is\n// `ht-recheck-stamp`, a Redis `get` \u2014 and the Redis node's `get` emits a FRESH item (`{json:{}}` plus\n// the one property it was asked for) instead of passing its input through. So `$input.all()[i].json`\n// here is `{ht_recheck_ms: \u2026}` with NO contact_id and NO cutoff_ms. Reading the candidates from\n// `$input` would be a textbook \u00a763 wrong-object read: sound logic, correct-looking assertions,\n// pointed at the wrong payload. (It was written that way first and caught by re-deriving the wiring;\n// the offline harness had been stubbing `$input` with the fan-out items, so the suite would have gone\n// green against a body that throws in production.) Only `push`/`set`/`delete` are passthrough.\n//\n// INDEX ALIGNMENT. `ht-carry-contact` and `ht-recheck-stamp` each run once per fan-out item, so both\n// are index-aligned with each other. That is asserted, not assumed.\n//\n// The candidate and its contact arrive already paired from `ht-carry-contact` (added for F-RECHECK),\n// which also owns the mis-attribution refusal \u2014 deliberately upstream of here, because the redis key\n// `ht-recheck-stamp` reads is derived BEFORE this node runs, so a guard sitting here would fire after\n// the wrong key had already been read.\n\nconst TRUEY = ['true', '1', 'yes'];\nconst FALSEY = ['false', '0', 'no', ''];\n\nfunction nodeAll(nodeName) {\n  let n;\n  try { n = $(nodeName); } catch (e) {\n    throw new Error(`ht-classify: required node ${nodeName} is unreachable \u2014 refusing to classify`);\n  }\n  if (!n || n.isExecuted === false) {\n    throw new Error(`ht-classify: required node ${nodeName} did not execute \u2014 refusing to classify`);\n  }\n  return n.all();\n}\n\nfunction readFlag(contact) {\n  const cf = contact ? contact.custom_fields : undefined;\n  if (!Array.isArray(cf)) {\n    throw new Error(\n      'ht-classify: contact payload has no custom_fields array \u2014 not a respond.io contact. ' +\n      'Refusing to classify (a fixture missing custom_fields must fail loudly, not pass).'\n    );\n  }\n  const row = cf.find((x) => x && x.name === 'is_human_intervened');\n  if (!row) return { present: false, raw: null, flag: false };\n  const raw = row.value;\n  if (raw === null || raw === undefined) return { present: true, raw, flag: false };\n  if (typeof raw === 'boolean') return { present: true, raw, flag: raw };\n  const s = String(raw).trim().toLowerCase();\n  if (TRUEY.indexOf(s) !== -1) return { present: true, raw, flag: true };\n  if (FALSEY.indexOf(s) !== -1) return { present: true, raw, flag: false };\n  throw new Error(\n    `ht-classify: is_human_intervened has an unrecognised encoding ${JSON.stringify(raw)} \u2014 ` +\n    'refusing to guess. respond.io stores this as the string \"true\"/\"false\".'\n  );\n}\n\nconst items = nodeAll('ht-carry-contact');\nconst rechecks = nodeAll('ht-recheck-stamp');\n\nif (rechecks.length !== items.length) {\n  throw new Error(\n    `ht-classify: index misalignment \u2014 ${items.length} paired candidates but ` +\n    `${rechecks.length} stamp re-reads. Refusing to classify mis-attributed rows.`\n  );\n}\n\nreturn items.map((it, i) => {\n  const src = it.json || {};\n  const contact = src.contact === undefined ? null : src.contact;\n  const contact_id = String(src.contact_id == null ? '' : src.contact_id).trim();\n\n  const rj = (rechecks[i] && rechecks[i].json) || {};\n  const rescoreRaw = rj.ht_recheck_ms;\n  // `Number('') === 0`, so an ABSENT stamp used to be recorded as a re-read of epoch 0 rather than as no\n  // re-read at all (finding #5b) \u2014 a skip-vanished row claimed `recheck_ms: 0`, which reads as a real\n  // measurement. Track absence separately so the reported value can be null.\n  const rescoreAbsent = rescoreRaw === null || rescoreRaw === undefined ||\n                        String(rescoreRaw).trim() === '';\n  const rescore = rescoreAbsent ? NaN : Number(String(rescoreRaw).trim());\n  const cutoff_ms = Number(src.cutoff_ms);\n\n  let action;\n  let reason;\n  if (rescoreAbsent) {\n    action = 'skip-vanished';\n    reason = 'stamp disappeared between the census and now \u2014 someone else already handled it';\n  } else if (!Number.isFinite(rescore)) {\n    action = 'skip-vanished';\n    reason = 'stamp re-read is unparseable \u2014 refusing to act on it';\n  } else if (!Number.isFinite(cutoff_ms)) {\n    throw new Error('ht-classify: candidate carries no numeric cutoff_ms \u2014 refusing to classify');\n  } else if (rescore > cutoff_ms) {\n    action = 'skip-refreshed';\n    reason = 'a human replied after the cutoff while this tick was in flight';\n  } else if (src.lookup_missing === true) {\n    // No positively-identified contact came back for this candidate. Reap the stamp; authorise nothing.\n    // Deliberately NOT a throw: a throw here means one deleted contact errors every future tick, and\n    // because the stamp survives the error the condition never clears itself (reviewer R2+R3).\n    action = 'forget-unknown';\n    reason = src.lookup_missing_reason || 'the contact lookup returned nothing for this candidate';\n  } else {\n    const f = readFlag(contact);\n    if (f.flag) {\n      action = 'clear-and-notify';\n      reason = 'expired and still flagged as human-intervened';\n    } else {\n      action = 'forget-silent';\n      reason = f.present\n        ? 'flag already false \u2014 closed manually, nothing to announce'\n        : 'contact has no is_human_intervened field \u2014 nothing to clear';\n    }\n  }\n\n  const flagInfo = action === 'clear-and-notify' || action === 'forget-silent'\n    ? readFlag(contact)\n    : { present: null, raw: null, flag: null };   // forget-unknown has no contact to read\n\n  return {\n    json: {\n      contact_id,\n      action,\n      reason,\n      is_skip: action.indexOf('skip') === 0,\n      lookup_missing: src.lookup_missing === true,\n      flag: flagInfo.flag,\n      flag_present: flagInfo.present,\n      flag_raw: flagInfo.raw,\n      score_ms: src.score_ms === undefined ? null : src.score_ms,\n      recheck_ms: Number.isFinite(rescore) ? rescore : null,\n      cutoff_ms: Number.isFinite(cutoff_ms) ? cutoff_ms : null,\n      age_ms: src.age_ms === undefined ? null : src.age_ms,\n      key: src.key === undefined ? null : src.key,\n      ht_timeout_sec: src.ht_timeout_sec === undefined ? null : src.ht_timeout_sec,\n      ht_timeout_notice:\n        'Our team seems to be away at the moment. Our AI assistant is back to assist you.',\n    },\n    pairedItem: { item: i },\n  };\n});\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1280,
+        200
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "67ee5324-1a33-413c-a8e4-fd959dcd31d8",
+      "name": "ht-skip?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d7de90a3-174a-5ce6-a285-2b1927c80fac",
+              "leftValue": "={{ $json.is_skip }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1520,
+        200
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "e5da391b-d9ee-44a9-99d4-728b7cfe7c9c",
+      "name": "ht-skip",
+      "parameters": {},
+      "position": [
+        1760,
+        40
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    },
+    {
+      "id": "63fb9290-55d2-46f2-9cbd-d109c948f679",
+      "name": "ht-flag-still-true?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "b05700e9-b838-5eeb-a4a5-bb6b8226a371",
+              "leftValue": "={{ $json.action === 'clear-and-notify' }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1760,
+        320
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "respondIoApi": {
+          "id": "OiS59QkzpKfKSdaa",
+          "name": "sorento-api"
+        }
+      },
+      "id": "25872215-1a8a-495b-ad44-3519bf55a206",
+      "name": "ht-clear-flag",
+      "parameters": {
+        "contactId": "={{ $json.contact_id }}",
+        "customFields": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "is_human_intervened",
+              "id": "is_human_intervened",
+              "removed": false,
+              "required": false,
+              "type": "boolean"
+            }
+          ],
+          "value": {
+            "is_human_intervened": false
+          }
+        },
+        "operation": "UPDATE_CONTACT",
+        "resource": "CONTACTS"
+      },
+      "position": [
+        2000,
+        240
+      ],
+      "type": "@respond-io/n8n-nodes-respond-io.respondio",
+      "typeVersion": 1
+    },
+    {
+      "id": "7e472f2f-b800-4b78-827c-c967f759c514",
+      "name": "ht-carry-clear",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 ht-carry-clear \u2500\u2500 S2: re-attach the fields the DELETE and the SEND need, across the egress node \u2500\u2500\n//\n// EXISTS BECAUSE OF REVIEWER R1 \u2014 F-RECHECK's class recurring one node DOWNSTREAM, on the promote path,\n// invisible to every gate that already exists.\n//\n// `ht-forget.key` reads `$json.contact_id` and `ht-timeout-notice` reads `$json.contact_id` +\n// `$json.ht_timeout_notice`. On the BUILD those resolve, because `ht-clear-flag` is a Code stand-in that\n// deliberately re-forwards both and `ht-egress-log` is a redis `push` (a passthrough). At S4\n// `ht-clear-flag` becomes the real respondio CONTACTS/UPDATE_CONTACT node, whose real output \u2014 measured\n// on live `respond-send-user`, execution 12146305 \u2014 is exactly:\n//\n//     {\"contactId\": 423755030}\n//\n// `contactId` only. No `contact_id`, no notice text. So on live, unfixed: `ht-forget` would delete\n// `ht:active:` (empty suffix) and miss, and `ht-timeout-notice` would fire with an EMPTY RECIPIENT and an\n// EMPTY BODY \u2014 the customer-facing notice, the entire point of the feature, malformed on a real send path.\n//\n// This is LESSONS \u00a765 verbatim: before promoting a hunk verified on the clone, diff the clone's INBOUND\n// EDGES against live's, because a substituted upstream changes what `$json` means without changing a line\n// of the node you tested. `assert-built.py` C9 could not see it \u2014 C9 resolved against the STAND-IN's\n// fields, which are correct. C9 is now extended (the promote-shape pass) to resolve against each\n// converted node's REAL recorded output, and that pass was shown RED on the rev2 graph before this node\n// existed.\n//\n// WHY MATCH BY IDENTITY RATHER THAN INDEX. `ht-classify` emits a row for EVERY candidate \u2014 skips,\n// forget-silent, forget-unknown and clear-and-notify alike \u2014 while only the clear-and-notify subset\n// reaches here. So index alignment against `$('ht-classify')` is simply wrong, and the reviewer's\n// suggested `.item` paired-item walk is unavailable in a runOnceForAllItems node (and would be a lineage\n// walk through the egress node). Matching on the id the egress node itself reports is exact, needs no\n// lineage, and works identically on the stand-in and the real node \u2014 both emit `contactId`.\n//\n// It also RE-CHECKS AUTHORISATION. The notice may only fire for a row `ht-classify` decided was\n// `clear-and-notify`; anything else here means the graph is not the graph we think it is, and it is\n// refused rather than sent. Cheap, and it is the last gate before a real WhatsApp send at S4.\n\nfunction nodeAll(name) {\n  let n;\n  try { n = $(name); } catch (e) {\n    throw new Error('ht-carry-clear: ' + name + ' is unreachable \u2014 refusing to send or delete');\n  }\n  if (!n || n.isExecuted === false) {\n    throw new Error('ht-carry-clear: ' + name + ' did not execute \u2014 refusing to send or delete');\n  }\n  return n.all();\n}\n\nconst decisions = new Map();\nfor (const it of nodeAll('ht-classify')) {\n  const j = it.json || {};\n  const cid = String(j.contact_id == null ? '' : j.contact_id).trim();\n  if (!cid) continue;\n  if (decisions.has(cid)) {\n    throw new Error('ht-carry-clear: two decisions for contact ' + cid + ' \u2014 ambiguous, refusing');\n  }\n  decisions.set(cid, j);\n}\n\nreturn $input.all().map((it, i) => {\n  const j = it.json || {};\n  // The real respondio node reports `contactId`; the stand-in reports both. Read the real field first so\n  // this node is not quietly depending on the stand-in's extra one.\n  const raw = j.contactId !== undefined && j.contactId !== null ? j.contactId : j.contact_id;\n  const contact_id = String(raw == null ? '' : raw).trim();\n  if (!contact_id) {\n    throw new Error(\n      'ht-carry-clear: the contact update returned no contactId, so the contact whose flag was just ' +\n      'cleared cannot be identified. Refusing to derive a redis DELETE key or send a notice.'\n    );\n  }\n  const d = decisions.get(contact_id);\n  if (!d) {\n    throw new Error(\n      'ht-carry-clear: no ht-classify decision for contact ' + contact_id + ' \u2014 refusing to send a ' +\n      'notice to a contact this tick never authorised.'\n    );\n  }\n  if (d.action !== 'clear-and-notify') {\n    throw new Error(\n      'ht-carry-clear: contact ' + contact_id + ' reached the notify path with action ' +\n      JSON.stringify(d.action) + '. Only clear-and-notify authorises a send. Refusing.'\n    );\n  }\n  return {\n    json: {\n      contact_id,\n      contactId: Number(contact_id),\n      ht_timeout_notice: d.ht_timeout_notice,\n      action: d.action,\n      age_ms: d.age_ms === undefined ? null : d.age_ms,\n      flag_raw: d.flag_raw === undefined ? null : d.flag_raw,\n    },\n    pairedItem: { item: i },\n  };\n});\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        2360,
+        240
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "8229ca25-e0e2-4571-a19d-742838fd7de0",
+      "name": "ht-forget",
+      "parameters": {
+        "key": "=ht:active:{{ $json.contact_id }}",
+        "operation": "delete"
+      },
+      "position": [
+        2480,
+        240
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    },
+    {
+      "id": "fd41e547-10de-40ce-b942-84949853693e",
+      "name": "ht-timeout-notice",
+      "parameters": {
+        "mode": "each",
+        "options": {},
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "sorento-sub-respond-sendmsg-respond",
+          "mode": "list",
+          "value": "aoydkG1dbItXR5jXFEQsP"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact_identifer",
+              "id": "contact_identifer",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "message",
+              "id": "message",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "quick_reply",
+              "id": "quick_reply",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "input_message",
+              "id": "input_message",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "started_at",
+              "id": "started_at",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "contact",
+              "id": "contact",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "result_set",
+              "id": "result_set",
+              "required": false
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "turn_id",
+              "id": "turn_id",
+              "required": false
+            }
+          ],
+          "value": {
+            "contact_identifer": "={{ $json.contact_id }}",
+            "message": "={{ $json.ht_timeout_notice }}"
+          }
+        }
+      },
+      "position": [
+        2720,
+        240
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
+    },
+    {
+      "credentials": {
+        "redis": {
+          "id": "H5w6o7tptzTPMVdy",
+          "name": "sorento-redis"
+        }
+      },
+      "id": "8016e8a1-a561-4ba5-8d43-eea2e016bd18",
+      "name": "ht-forget-silent",
+      "parameters": {
+        "key": "=ht:active:{{ $json.contact_id }}",
+        "operation": "delete"
+      },
+      "position": [
+        2000,
+        460
+      ],
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "timeSavedMode": "fixed"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "versionId": "11c55d58-8c11-4195-9949-a0163f5d0ffc"
+}

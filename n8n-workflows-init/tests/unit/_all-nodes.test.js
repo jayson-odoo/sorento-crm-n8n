@@ -19,7 +19,7 @@ const { loadNodes, manifestOf } = require('../offline/node-source');
 const { runNode, loadFixtures, assertOutputEquals, FIXTURES_ROOT } = require('../harness/n8n-shim');
 const { buildWiring, diffWiring, WIRING_PATH } = require('../harness/pin-wiring');
 
-const SLUGS = ['live-spine-sorento-consume-main', 'sub-semantic-parser'];
+const SLUGS = ['live-spine-sorento-consume-main', 'sub-semantic-parser', 'clone-sorento-consume-main-TEST'];
 const REQUIRE_FULL_COVERAGE = process.env.REQUIRE_FULL_COVERAGE === '1';
 
 const summaryRows = [];      // {slug, node, fixtures, pass, fail, runData, bodyRun}
