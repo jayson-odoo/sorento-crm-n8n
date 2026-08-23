@@ -1,0 +1,118 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "getResultObj's third preference: with neither central-exchange nor validator executed the gate's own item IS the result envelope, and compatible_entities[] is accepted as the item list. On a require_specific turn that list is filtered to PRODUCTS only \u2014 the non-product rows the gate resolved straight through are not choosable \u2014 so the numbered roster is the two products, labelled from their `code`. selection_context is 'disambiguation', which is what tells the parser next turn that a bare number is a pick. Nothing rendered a customer reply on this lane, so `user_response` is absent while the compressed `response` is still written."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "routing": {
+       "suggested_team": "purchasing"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": true,
+     "compatible_entities": [
+      {
+       "uuid": "u1",
+       "entity_type": "product",
+       "code": "MHS1542-CR"
+      },
+      {
+       "uuid": "u2",
+       "entity_type": "product",
+       "code": "MHS1543-CR"
+      },
+      {
+       "uuid": "u3",
+       "entity_type": "attachment_type",
+       "code": "cert"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "inbound_shipment",
+       "category",
+       "brand"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "require_specific": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_incoming",
+     "domain_hint": "incoming",
+     "routing": {
+      "suggested_team": "purchasing"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Previous turn (incoming): returned 2 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": "u1",
+       "label": "MHS1542-CR",
+       "entity_type": "product",
+       "product": "MHS1542-CR",
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "uuid": "u2",
+       "label": "MHS1543-CR",
+       "entity_type": "product",
+       "product": "MHS1543-CR",
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": "disambiguation",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

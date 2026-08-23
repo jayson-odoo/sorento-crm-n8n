@@ -1,0 +1,152 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Two different incompatible types on one turn: the reason lists them de-duplicated and comma-joined, in first-seen order. That string is what the not-found renderer shows, so the separator is part of the contract, not formatting noise."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "cabana",
+      "sinks"
+     ],
+     "resolutions": [
+      {
+       "token": "cabana",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-b",
+         "entity_type": "brand",
+         "canonical_code": "CABANA"
+        }
+       ]
+      },
+      {
+       "token": "sinks",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-c",
+         "entity_type": "category",
+         "canonical_code": "SINKS"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "cabana",
+     "sinks"
+    ],
+    "resolutions": [
+     {
+      "token": "cabana",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-b",
+        "entity_type": "brand",
+        "canonical_code": "CABANA"
+       }
+      ]
+     },
+     {
+      "token": "sinks",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-c",
+        "entity_type": "category",
+        "canonical_code": "SINKS"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "cabana",
+     "sinks"
+    ],
+    "resolutions": [
+     {
+      "token": "cabana",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-b",
+        "entity_type": "brand",
+        "canonical_code": "CABANA"
+       }
+      ]
+     },
+     {
+      "token": "sinks",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-c",
+        "entity_type": "category",
+        "canonical_code": "SINKS"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": false,
+    "gate_reason": "types [brand, category] incompatible with 'order'",
+    "gate_clarification": "",
+    "compatible_entities": [],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

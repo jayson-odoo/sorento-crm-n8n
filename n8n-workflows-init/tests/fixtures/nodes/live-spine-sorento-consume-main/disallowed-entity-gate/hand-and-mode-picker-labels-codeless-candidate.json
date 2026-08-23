@@ -1,0 +1,138 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The AND-mode picker has its own label ladder and it must behave like the OR-mode one: a row with no canonical_code is offered under its display.product_name, never as a raw uuid."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "basin"
+     ],
+     "intersection": [
+      {
+       "uuid": "x1",
+       "entity_type": "product",
+       "canonical_code": null,
+       "match_tier": "and",
+       "display": {
+        "product_name": "Basin Mixer Chrome"
+       }
+      },
+      {
+       "uuid": "x2",
+       "entity_type": "product",
+       "canonical_code": "BASIN-9",
+       "match_tier": "and"
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "basin"
+    ],
+    "intersection": [
+     {
+      "uuid": "x1",
+      "entity_type": "product",
+      "canonical_code": null,
+      "match_tier": "and",
+      "display": {
+       "product_name": "Basin Mixer Chrome"
+      }
+     },
+     {
+      "uuid": "x2",
+      "entity_type": "product",
+      "canonical_code": "BASIN-9",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "basin"
+    ],
+    "intersection": [
+     {
+      "uuid": "x1",
+      "entity_type": "product",
+      "canonical_code": null,
+      "match_tier": "and",
+      "display": {
+       "product_name": "Basin Mixer Chrome"
+      }
+     },
+     {
+      "uuid": "x2",
+      "entity_type": "product",
+      "canonical_code": "BASIN-9",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. Basin Mixer Chrome\n2. BASIN-9",
+    "compatible_entities": [
+     {
+      "uuid": "x1",
+      "entity_type": "product",
+      "code": null
+     },
+     {
+      "uuid": "x2",
+      "entity_type": "product",
+      "code": "BASIN-9"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

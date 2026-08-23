@@ -1,0 +1,151 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "ONE non-exact product match for a token. It resolves (there is nothing to choose between) and \u2014 because a one-row set trivially shares one code \u2014 it goes through the same-code-collapse arm, so the token is stamped resolved_by 'same-code-collapse'. That stamp is what suppresses a did-you-mean for a token that WAS answered; the separate `products.length === 1` arm below it is unreachable for exactly this reason."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS1542-CR",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs1542-cr"
+     ],
+     "resolutions": [
+      {
+       "token": "MHS1542-CR",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u11a",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "prefix",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr"
+    ],
+    "resolutions": [
+     {
+      "token": "MHS1542-CR",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u11a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "prefix",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr"
+    ],
+    "resolutions": [
+     {
+      "token": "MHS1542-CR",
+      "resolved": true,
+      "ambiguous": false,
+      "matches": [
+       {
+        "uuid": "u11a",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "prefix",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ],
+      "resolved_by": "same-code-collapse"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "MHS1542-CR-DIY"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u11a",
+      "entity_type": "product",
+      "code": "MHS1542-CR-DIY"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

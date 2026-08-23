@@ -1,0 +1,318 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Every candidate filter in one turn: a SECOND row with the same canonical_code is de-duped, a row whose entity_type is not in the gate's allowed_lookup is dropped, a row with no code at all is dropped, an EXACT row arriving via alternatives[] is skipped (an exact match would have resolved, so offering it back is nonsense), and what survives is capped at 3 \u2014 the fourth valid code is not offered. Order is preserved: the cap takes the first three, never a re-sorted set."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product"
+       },
+       {
+        "raw": "IBKS9999",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "c1",
+         "canonical_code": "IBKS5245-NG-BL",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "cX",
+         "canonical_code": "IBKS5245-NG-BL",
+         "entity_type": "product",
+         "match_tier": "substring"
+        },
+        {
+         "uuid": "c9",
+         "canonical_code": "PROMO-1",
+         "entity_type": "promotion",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "c8",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "c2",
+         "canonical_code": "IBKS6245-NG-SS",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "c3",
+         "canonical_code": "IBKS7245-NG-GD",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "c4",
+         "canonical_code": "IBKS8245-NG-XX",
+         "entity_type": "product",
+         "match_tier": "prefix"
+        }
+       ],
+       "alternatives": [
+        {
+         "uuid": "alt1",
+         "canonical_code": "IBKS-EXACT",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "IBKS9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      },
+      {
+       "raw": "IBKS9999",
+       "hint": "product",
+       "canonical_code": "IBKS5245-NG-BL"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records [3 did-you-mean suggestions active]",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "test",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "IBKS5245-NG-BL",
+        "uuid": "c1",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "IBKS6245-NG-SS",
+        "uuid": "c2",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "IBKS7245-NG-GD",
+        "uuid": "c3",
+        "entity_type": "product",
+        "for_raw": "IBKS9999",
+        "for_hint": "product",
+        "for_canonical": null
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "IBKS5245-NG-BL",
+       "uuid": "c1",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "IBKS6245-NG-SS",
+       "uuid": "c2",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "code": "IBKS7245-NG-GD",
+       "uuid": "c3",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null,
+     "dym_last_result_set": [
+      {
+       "idx": 1,
+       "label": "IBKS5245-NG-BL",
+       "value": "IBKS5245-NG-BL",
+       "product": "IBKS5245-NG-BL",
+       "uuid": "c1",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 2,
+       "label": "IBKS6245-NG-SS",
+       "value": "IBKS6245-NG-SS",
+       "product": "IBKS6245-NG-SS",
+       "uuid": "c2",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      },
+      {
+       "idx": 3,
+       "label": "IBKS7245-NG-GD",
+       "value": "IBKS7245-NG-GD",
+       "product": "IBKS7245-NG-GD",
+       "uuid": "c3",
+       "entity_type": "product",
+       "for_raw": "IBKS9999",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ]
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"IBKS9999\", did you mean:\n  1. IBKS5245-NG-BL\n  2. IBKS6245-NG-SS\n  3. IBKS7245-NG-GD\n\nReply a number to check it, or ask again."
+   }
+  }
+ ],
+ "runIndex": 0
+}

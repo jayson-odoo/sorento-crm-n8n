@@ -1,0 +1,95 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The ideate arm sets manualResponse itself rather than trusting the upstream item, so even on a turn the parser typed as a business_query with results in the envelope, the relayed text is NOT rewritten into 'Previous turn (...)' and no roster is built. A relay that got compressed would send the customer a summary of a question they never asked."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "ideate",
+      "domain_hint": "inventory",
+      "routing": {
+       "suggested_team": "sales"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "build-ideate-reply": [
+   {
+    "json": {
+     "response": "Got it \u2014 what room is this for?",
+     "manualResponse": true,
+     "includeResponse": true,
+     "ideation": {
+      "draft_id": "d1"
+     },
+     "ideate_status": "collecting"
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Here's the product.",
+     "items": [
+      {
+       "title": "MHS1542-CR"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "ideate"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "ideate",
+     "domain_hint": "inventory",
+     "routing": {
+      "suggested_team": "sales"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Got it \u2014 what room is this for?",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": {
+      "draft_id": "d1"
+     },
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Got it \u2014 what room is this for?"
+   }
+  }
+ ],
+ "runIndex": 0
+}

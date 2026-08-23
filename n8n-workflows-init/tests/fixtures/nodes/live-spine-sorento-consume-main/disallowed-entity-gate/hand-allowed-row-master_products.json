@@ -1,0 +1,211 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Every entity type ALLOWED for 'master_products' resolved at once: all 3 survive the compatibility filter, so the gate passes with the full set. This pins the matrix ROW itself \u2014 dropping or renaming any single type in it would drop that entity from compatible_entities. This domain is not a REQUIRE_SPECIFIC domain, so compatible_entities is the plain type-filtered list."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "master_products"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mp-product",
+      "mp-category",
+      "mp-brand"
+     ],
+     "resolutions": [
+      {
+       "token": "mp-product",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "mp0",
+         "entity_type": "product",
+         "canonical_code": "MP-PRODUCT",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "mp-category",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "mp1",
+         "entity_type": "category",
+         "canonical_code": "MP-CATEGORY",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "mp-brand",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "mp2",
+         "entity_type": "brand",
+         "canonical_code": "MP-BRAND",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mp-product",
+     "mp-category",
+     "mp-brand"
+    ],
+    "resolutions": [
+     {
+      "token": "mp-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "mp0",
+        "entity_type": "product",
+        "canonical_code": "MP-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "mp-category",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "mp1",
+        "entity_type": "category",
+        "canonical_code": "MP-CATEGORY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "mp-brand",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "mp2",
+        "entity_type": "brand",
+        "canonical_code": "MP-BRAND",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mp-product",
+     "mp-category",
+     "mp-brand"
+    ],
+    "resolutions": [
+     {
+      "token": "mp-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "mp0",
+        "entity_type": "product",
+        "canonical_code": "MP-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "mp-category",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "mp1",
+        "entity_type": "category",
+        "canonical_code": "MP-CATEGORY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "mp-brand",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "mp2",
+        "entity_type": "brand",
+        "canonical_code": "MP-BRAND",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "mp0",
+      "entity_type": "product",
+      "code": "MP-PRODUCT"
+     },
+     {
+      "uuid": "mp1",
+      "entity_type": "category",
+      "code": "MP-CATEGORY"
+     },
+     {
+      "uuid": "mp2",
+      "entity_type": "brand",
+      "code": "MP-BRAND"
+     }
+    ],
+    "gate_debug": {
+     "domain": "master_products",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

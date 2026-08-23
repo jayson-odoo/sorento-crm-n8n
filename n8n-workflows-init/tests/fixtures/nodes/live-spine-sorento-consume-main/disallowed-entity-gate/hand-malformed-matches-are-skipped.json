@@ -1,0 +1,158 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The resolver's list can contain a null and a row with no uuid; both are skipped rather than dereferenced, so entities_count is 1 and the uuid-keyed map never grows a null/undefined key. Every later pass over `flat` (the routing rows, the brand scan) has to survive the same input."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "p-1"
+     ],
+     "resolutions": [
+      {
+       "token": "p-1",
+       "resolved": true,
+       "matches": [
+        null,
+        {
+         "uuid": null,
+         "canonical_code": "NOUUID-1",
+         "entity_type": "product"
+        },
+        {
+         "uuid": "u1",
+         "entity_type": "product",
+         "canonical_code": "P-1",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "p-1"
+    ],
+    "resolutions": [
+     {
+      "token": "p-1",
+      "resolved": true,
+      "matches": [
+       null,
+       {
+        "uuid": null,
+        "canonical_code": "NOUUID-1",
+        "entity_type": "product"
+       },
+       {
+        "uuid": "u1",
+        "entity_type": "product",
+        "canonical_code": "P-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "p-1"
+    ],
+    "resolutions": [
+     {
+      "token": "p-1",
+      "resolved": true,
+      "matches": [
+       null,
+       {
+        "uuid": null,
+        "canonical_code": "NOUUID-1",
+        "entity_type": "product"
+       },
+       {
+        "uuid": "u1",
+        "entity_type": "product",
+        "canonical_code": "P-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "P-1"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u1",
+      "entity_type": "product",
+      "code": "P-1"
+     }
+    ],
+    "gate_debug": {
+     "domain": "inventory",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

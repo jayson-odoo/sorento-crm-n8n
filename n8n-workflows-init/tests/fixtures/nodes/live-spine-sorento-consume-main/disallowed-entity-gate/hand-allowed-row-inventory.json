@@ -1,0 +1,211 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Every entity type ALLOWED for 'inventory' resolved at once: all 3 survive the compatibility filter, so the gate passes with the full set. This pins the matrix ROW itself \u2014 dropping or renaming any single type in it would drop that entity from compatible_entities. This domain is not a REQUIRE_SPECIFIC domain, so compatible_entities is the plain type-filtered list."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "inventory"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "inv-product",
+      "inv-category",
+      "inv-brand"
+     ],
+     "resolutions": [
+      {
+       "token": "inv-product",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "inv0",
+         "entity_type": "product",
+         "canonical_code": "INV-PRODUCT",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "inv-category",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "inv1",
+         "entity_type": "category",
+         "canonical_code": "INV-CATEGORY",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "inv-brand",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "inv2",
+         "entity_type": "brand",
+         "canonical_code": "INV-BRAND",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "inv-product",
+     "inv-category",
+     "inv-brand"
+    ],
+    "resolutions": [
+     {
+      "token": "inv-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "inv0",
+        "entity_type": "product",
+        "canonical_code": "INV-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "inv-category",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "inv1",
+        "entity_type": "category",
+        "canonical_code": "INV-CATEGORY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "inv-brand",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "inv2",
+        "entity_type": "brand",
+        "canonical_code": "INV-BRAND",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "inv-product",
+     "inv-category",
+     "inv-brand"
+    ],
+    "resolutions": [
+     {
+      "token": "inv-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "inv0",
+        "entity_type": "product",
+        "canonical_code": "INV-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "inv-category",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "inv1",
+        "entity_type": "category",
+        "canonical_code": "INV-CATEGORY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "inv-brand",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "inv2",
+        "entity_type": "brand",
+        "canonical_code": "INV-BRAND",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "inv0",
+      "entity_type": "product",
+      "code": "INV-PRODUCT"
+     },
+     {
+      "uuid": "inv1",
+      "entity_type": "category",
+      "code": "INV-CATEGORY"
+     },
+     {
+      "uuid": "inv2",
+      "entity_type": "brand",
+      "code": "INV-BRAND"
+     }
+    ],
+    "gate_debug": {
+     "domain": "inventory",
+     "allowed_lookup": [
+      "product",
+      "category",
+      "brand"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

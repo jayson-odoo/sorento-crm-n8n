@@ -1,0 +1,190 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "No product resolved, so the routing rows fall back to any COMPATIBLE row carrying a company \u2014 the promotion row. The incompatible order row is excluded from that fallback as well, which is why only one company is offered. With no brand on the row and exactly one company, that company inherits the brand the customer STATED (query_brands of one), so the roster is still narrowed."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "query_brands": [
+       "Cabana"
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "promo-1",
+      "so-2"
+     ],
+     "resolutions": [
+      {
+       "token": "promo-1",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-p",
+         "entity_type": "promotion",
+         "canonical_code": "PROMO-1",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      },
+      {
+       "token": "so-2",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-o",
+         "entity_type": "order",
+         "canonical_code": "SO-2",
+         "match_tier": "exact",
+         "company_id": "c2",
+         "company_name": "Mocha Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "promo-1",
+     "so-2"
+    ],
+    "resolutions": [
+     {
+      "token": "promo-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-p",
+        "entity_type": "promotion",
+        "canonical_code": "PROMO-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     {
+      "token": "so-2",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-o",
+        "entity_type": "order",
+        "canonical_code": "SO-2",
+        "match_tier": "exact",
+        "company_id": "c2",
+        "company_name": "Mocha Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "promo-1",
+     "so-2"
+    ],
+    "resolutions": [
+     {
+      "token": "promo-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-p",
+        "entity_type": "promotion",
+        "canonical_code": "PROMO-1",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     {
+      "token": "so-2",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-o",
+        "entity_type": "order",
+        "canonical_code": "SO-2",
+        "match_tier": "exact",
+        "company_id": "c2",
+        "company_name": "Mocha Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [
+     "sorento",
+     "mocha"
+    ],
+    "routing_brand": "cabana",
+    "routing_brand_source": "stated",
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": "cabana",
+      "codes": [
+       "PROMO-1"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-p",
+      "entity_type": "promotion",
+      "code": "PROMO-1"
+     }
+    ],
+    "gate_debug": {
+     "domain": "promotion",
+     "allowed_lookup": [
+      "product",
+      "promotion",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

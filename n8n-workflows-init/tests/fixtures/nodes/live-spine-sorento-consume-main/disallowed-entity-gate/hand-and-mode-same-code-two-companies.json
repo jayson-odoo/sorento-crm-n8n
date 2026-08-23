@@ -1,0 +1,197 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "AND-mode twin of the mc-label collapse: both rows are the typed code in two companies, so all uuids resolve and no picker is built. This one also exercises the brand axes with rows that DO carry display.brand: two distinct brand_codes means routing_brand stays null (ambiguous) while each routing_companies entry keeps its OWN brand_code \u2014 and _brandTok reads brand_name, so resolved_companies is ['sorento','mocha'] from the brand rather than the company."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mwc7625-sh-s10"
+     ],
+     "intersection": [
+      {
+       "uuid": "u20a",
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "match_tier": "and",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd",
+       "display": {
+        "brand": {
+         "brand_code": "SRT",
+         "brand_name": "Sorento"
+        }
+       }
+      },
+      {
+       "uuid": "u20b",
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "match_tier": "and",
+       "company_id": "c2",
+       "company_name": "Mocha Sdn Bhd",
+       "display": {
+        "brand": {
+         "brand_code": "MCH",
+         "brand_name": "Mocha"
+        }
+       }
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mwc7625-sh-s10"
+    ],
+    "intersection": [
+     {
+      "uuid": "u20a",
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "match_tier": "and",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "display": {
+       "brand": {
+        "brand_code": "SRT",
+        "brand_name": "Sorento"
+       }
+      }
+     },
+     {
+      "uuid": "u20b",
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "match_tier": "and",
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd",
+      "display": {
+       "brand": {
+        "brand_code": "MCH",
+        "brand_name": "Mocha"
+       }
+      }
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mwc7625-sh-s10"
+    ],
+    "intersection": [
+     {
+      "uuid": "u20a",
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "match_tier": "and",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "display": {
+       "brand": {
+        "brand_code": "SRT",
+        "brand_name": "Sorento"
+       }
+      }
+     },
+     {
+      "uuid": "u20b",
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "match_tier": "and",
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd",
+      "display": {
+       "brand": {
+        "brand_code": "MCH",
+        "brand_name": "Mocha"
+       }
+      }
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [
+     "sorento",
+     "mocha"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd",
+      "brand_code": "mch",
+      "codes": [
+       "MWC7625-SH-S10"
+      ]
+     },
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": "srt",
+      "codes": [
+       "MWC7625-SH-S10"
+      ]
+     }
+    ],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u20a",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     },
+     {
+      "uuid": "u20b",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

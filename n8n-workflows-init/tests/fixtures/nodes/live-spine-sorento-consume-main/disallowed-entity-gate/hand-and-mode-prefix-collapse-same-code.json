@@ -1,0 +1,161 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "AND-mode twin of mc-prefix-collapse: nothing matches a typed token exactly, but the rows are ONE code in two companies \u2014 one product, so both uuids resolve and no picker is built. Unlike the OR-mode arm there is no per-token stamp here, because the AND envelope has no resolutions[] to stamp."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs1542-cr"
+     ],
+     "intersection": [
+      {
+       "uuid": "u11c",
+       "entity_type": "product",
+       "canonical_code": "MHS1542-CR-DIY",
+       "match_tier": "and",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      },
+      {
+       "uuid": "u11b",
+       "entity_type": "product",
+       "canonical_code": "MHS1542-CR-DIY",
+       "match_tier": "and",
+       "company_id": "c2",
+       "company_name": "Mocha Sdn Bhd"
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr"
+    ],
+    "intersection": [
+     {
+      "uuid": "u11c",
+      "entity_type": "product",
+      "canonical_code": "MHS1542-CR-DIY",
+      "match_tier": "and",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd"
+     },
+     {
+      "uuid": "u11b",
+      "entity_type": "product",
+      "canonical_code": "MHS1542-CR-DIY",
+      "match_tier": "and",
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd"
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr"
+    ],
+    "intersection": [
+     {
+      "uuid": "u11c",
+      "entity_type": "product",
+      "canonical_code": "MHS1542-CR-DIY",
+      "match_tier": "and",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd"
+     },
+     {
+      "uuid": "u11b",
+      "entity_type": "product",
+      "canonical_code": "MHS1542-CR-DIY",
+      "match_tier": "and",
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [
+     "sorento",
+     "mocha"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "MHS1542-CR-DIY"
+      ]
+     },
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "MHS1542-CR-DIY"
+      ]
+     }
+    ],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u11c",
+      "entity_type": "product",
+      "code": "MHS1542-CR-DIY"
+     },
+     {
+      "uuid": "u11b",
+      "entity_type": "product",
+      "code": "MHS1542-CR-DIY"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,194 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "FIX A: a descriptor token ('diy') whose matches include a product ALREADY resolved exactly by its own token must not manufacture ambiguity. The exact uuid is dropped from the candidate list, one candidate remains \u2014 and one candidate still prompts, because the customer never named it. The 'Found:' header reports the code that did resolve, and compatible_entities is the single offered uuid."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS1542-CR-DIY",
+        "hint": "product"
+       },
+       {
+        "raw": "diy",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs1542-cr-diy",
+      "diy"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs1542-cr-diy",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u23",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "diy",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "u23",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "substring"
+        },
+        {
+         "uuid": "u23b",
+         "entity_type": "product",
+         "canonical_code": "MHS9-DIY",
+         "match_tier": "substring"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr-diy",
+     "diy"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u23",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "diy",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u23",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "substring"
+       },
+       {
+        "uuid": "u23b",
+        "entity_type": "product",
+        "canonical_code": "MHS9-DIY",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr-diy",
+     "diy"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u23",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "diy",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "u23",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "substring"
+       },
+       {
+        "uuid": "u23b",
+        "entity_type": "product",
+        "canonical_code": "MHS9-DIY",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "Found: MHS1542-CR-DIY.\nincoming search needs to be more specific. Multiple matches found. Please choose:\n1. MHS9-DIY",
+    "compatible_entities": [
+     {
+      "uuid": "u23b",
+      "entity_type": "product",
+      "code": "MHS9-DIY"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

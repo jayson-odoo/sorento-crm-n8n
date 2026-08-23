@@ -1,0 +1,132 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "domain_hint is not a key of ALLOWED (null here \u2014 a casual/unclassified turn), so `allowed === null` and the gate takes its pass-through arm: gate_passed stays true, the reason names the domain, and compatible_entities is the UNFILTERED entity set (there is no matrix row to filter against). gate_debug.allowed_lookup is undefined, so the key is absent from the JSON. The routing block still runs \u2014 one company_name containing 'sorento' makes resolved_company 'sorento' \u2014 but company_team stays null because it is promotion-only."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": null
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "so-1"
+     ],
+     "resolutions": [
+      {
+       "token": "so-1",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-ord",
+         "entity_type": "order",
+         "canonical_code": "SO-1",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "so-1"
+    ],
+    "resolutions": [
+     {
+      "token": "so-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-ord",
+        "entity_type": "order",
+        "canonical_code": "SO-1",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "so-1"
+    ],
+    "resolutions": [
+     {
+      "token": "so-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-ord",
+        "entity_type": "order",
+        "canonical_code": "SO-1",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "SO-1"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "domain 'null' not in matrix; passing through unscoped",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-ord",
+      "entity_type": "order",
+      "code": "SO-1"
+     }
+    ],
+    "gate_debug": {
+     "domain": null,
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

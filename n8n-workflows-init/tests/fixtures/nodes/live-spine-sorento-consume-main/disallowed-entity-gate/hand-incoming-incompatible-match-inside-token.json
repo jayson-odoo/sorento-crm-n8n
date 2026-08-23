@@ -1,0 +1,142 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "One token, two matches of different types. The require-specific block re-applies the SAME allowed-type filter before deciding anything, so the 'order' row is invisible to it and only the product resolves. Skipping that filter would let an incompatible row be resolved straight through as a 'non-product match' and carried to the CRM."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "so-1"
+     ],
+     "resolutions": [
+      {
+       "token": "so-1",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-ord",
+         "entity_type": "order",
+         "canonical_code": "SO-1",
+         "match_tier": "prefix"
+        },
+        {
+         "uuid": "u-pso",
+         "entity_type": "product",
+         "canonical_code": "SO-1",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "so-1"
+    ],
+    "resolutions": [
+     {
+      "token": "so-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-ord",
+        "entity_type": "order",
+        "canonical_code": "SO-1",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u-pso",
+        "entity_type": "product",
+        "canonical_code": "SO-1",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "so-1"
+    ],
+    "resolutions": [
+     {
+      "token": "so-1",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-ord",
+        "entity_type": "order",
+        "canonical_code": "SO-1",
+        "match_tier": "prefix"
+       },
+       {
+        "uuid": "u-pso",
+        "entity_type": "product",
+        "canonical_code": "SO-1",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-pso",
+      "entity_type": "product",
+      "code": "SO-1"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

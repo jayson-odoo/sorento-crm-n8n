@@ -1,0 +1,126 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "#3 dym-zerostock-itemize: on an answered inventory turn the products the customer named that returned ZERO rows are listed back, so a partial answer never reads as a complete one. It writes user_response ONLY \u2014 the compressed view is untouched \u2014 and it needs BOTH a non-empty returned_codes (otherwise the miss cannot be attributed) and a non-empty missing list."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "SRTBF11832-NEW",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "crossdomain-zeroset": [
+   {
+    "json": {
+     "_xd": {
+      "returned_codes": [
+       "MMC544-AL-BL"
+      ],
+      "missing": [
+       {
+        "code": "MMC545-AL-BL"
+       },
+       {
+        "code": "MMC546-AL-BL"
+       }
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "SRTBF11832-NEW",
+       "hint": "product"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nNo stock records found for: MMC545-AL-BL, MMC546-AL-BL."
+   }
+  }
+ ],
+ "runIndex": 0
+}

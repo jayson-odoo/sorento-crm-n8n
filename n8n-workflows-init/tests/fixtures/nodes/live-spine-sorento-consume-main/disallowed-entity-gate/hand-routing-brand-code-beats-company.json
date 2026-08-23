@@ -1,0 +1,159 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "#16 brand beats company: Cabana is a BRAND under the Sorento COMPANY, so routing a promotion by company_name sent every Cabana enquiry to the Sorento team. The row's own brand decides, and BOTH halves of the brand record are searched \u2014 here the match is on brand_code, with the other half naming nothing valid. company_team is derived from that brand, and routing_brand is the row's brand_code, sourced 'resolved'."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "cbs212-wh"
+     ],
+     "resolutions": [
+      {
+       "token": "cbs212-wh",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-pr",
+         "entity_type": "product",
+         "canonical_code": "CBS212-WH",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd",
+         "display": {
+          "brand": {
+           "brand_name": "House Line",
+           "brand_code": "MOCHA-01"
+          }
+         }
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "cbs212-wh"
+    ],
+    "resolutions": [
+     {
+      "token": "cbs212-wh",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-pr",
+        "entity_type": "product",
+        "canonical_code": "CBS212-WH",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd",
+        "display": {
+         "brand": {
+          "brand_name": "House Line",
+          "brand_code": "MOCHA-01"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "cbs212-wh"
+    ],
+    "resolutions": [
+     {
+      "token": "cbs212-wh",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-pr",
+        "entity_type": "product",
+        "canonical_code": "CBS212-WH",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd",
+        "display": {
+         "brand": {
+          "brand_name": "House Line",
+          "brand_code": "MOCHA-01"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "mocha",
+    "company_team": "marketing_promotion_mocha",
+    "resolved_companies": [
+     "mocha"
+    ],
+    "routing_brand": "mocha-01",
+    "routing_brand_source": "resolved",
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": "mocha-01",
+      "codes": [
+       "CBS212-WH"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-pr",
+      "entity_type": "product",
+      "code": "CBS212-WH"
+     }
+    ],
+    "gate_debug": {
+     "domain": "promotion",
+     "allowed_lookup": [
+      "product",
+      "promotion",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

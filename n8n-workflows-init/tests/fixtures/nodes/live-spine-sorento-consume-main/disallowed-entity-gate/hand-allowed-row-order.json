@@ -1,0 +1,301 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Every entity type ALLOWED for 'order' resolved at once: all 5 survive the compatibility filter, so the gate passes with the full set. This pins the matrix ROW itself \u2014 dropping or renaming any single type in it would drop that entity from compatible_entities. This domain is not a REQUIRE_SPECIFIC domain, so compatible_entities is the plain type-filtered list."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "ord-order",
+      "ord-customer_order",
+      "ord-transporter",
+      "ord-customer",
+      "ord-product"
+     ],
+     "resolutions": [
+      {
+       "token": "ord-order",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "ord0",
+         "entity_type": "order",
+         "canonical_code": "ORD-ORDER",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "ord-customer_order",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "ord1",
+         "entity_type": "customer_order",
+         "canonical_code": "ORD-CUSTOMER_ORDER",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "ord-transporter",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "ord2",
+         "entity_type": "transporter",
+         "canonical_code": "ORD-TRANSPORTER",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "ord-customer",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "ord3",
+         "entity_type": "customer",
+         "canonical_code": "ORD-CUSTOMER",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "ord-product",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "ord4",
+         "entity_type": "product",
+         "canonical_code": "ORD-PRODUCT",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "ord-order",
+     "ord-customer_order",
+     "ord-transporter",
+     "ord-customer",
+     "ord-product"
+    ],
+    "resolutions": [
+     {
+      "token": "ord-order",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord0",
+        "entity_type": "order",
+        "canonical_code": "ORD-ORDER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-customer_order",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord1",
+        "entity_type": "customer_order",
+        "canonical_code": "ORD-CUSTOMER_ORDER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-transporter",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord2",
+        "entity_type": "transporter",
+        "canonical_code": "ORD-TRANSPORTER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-customer",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord3",
+        "entity_type": "customer",
+        "canonical_code": "ORD-CUSTOMER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord4",
+        "entity_type": "product",
+        "canonical_code": "ORD-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "ord-order",
+     "ord-customer_order",
+     "ord-transporter",
+     "ord-customer",
+     "ord-product"
+    ],
+    "resolutions": [
+     {
+      "token": "ord-order",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord0",
+        "entity_type": "order",
+        "canonical_code": "ORD-ORDER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-customer_order",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord1",
+        "entity_type": "customer_order",
+        "canonical_code": "ORD-CUSTOMER_ORDER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-transporter",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord2",
+        "entity_type": "transporter",
+        "canonical_code": "ORD-TRANSPORTER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-customer",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord3",
+        "entity_type": "customer",
+        "canonical_code": "ORD-CUSTOMER",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "ord-product",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "ord4",
+        "entity_type": "product",
+        "canonical_code": "ORD-PRODUCT",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "ord0",
+      "entity_type": "order",
+      "code": "ORD-ORDER"
+     },
+     {
+      "uuid": "ord1",
+      "entity_type": "customer_order",
+      "code": "ORD-CUSTOMER_ORDER"
+     },
+     {
+      "uuid": "ord2",
+      "entity_type": "transporter",
+      "code": "ORD-TRANSPORTER"
+     },
+     {
+      "uuid": "ord3",
+      "entity_type": "customer",
+      "code": "ORD-CUSTOMER"
+     },
+     {
+      "uuid": "ord4",
+      "entity_type": "product",
+      "code": "ORD-PRODUCT"
+     }
+    ],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 5
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

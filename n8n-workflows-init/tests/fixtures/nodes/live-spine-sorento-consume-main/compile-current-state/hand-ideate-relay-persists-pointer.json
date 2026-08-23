@@ -1,0 +1,85 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The ideate branch is the highest-priority manual reply: build-ideate-reply's text goes out verbatim and its ideation POINTER is persisted, instead of the session carry-forward the other arm uses. manualResponse suppresses the compression block, so `response` stays the relayed text."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "ideation",
+      "intent_hint": "ideate",
+      "domain_hint": null,
+      "routing": {
+       "suggested_team": "sales"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "build-ideate-reply": [
+   {
+    "json": {
+     "response": "Got it \u2014 what room is this for?",
+     "manualResponse": true,
+     "includeResponse": true,
+     "ideation": {
+      "draft_id": "d1",
+      "status": "collecting"
+     },
+     "ideate_status": "collecting"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "ideate"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "ideation",
+     "intent_hint": "ideate",
+     "domain_hint": null,
+     "routing": {
+      "suggested_team": "sales"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Got it \u2014 what room is this for?",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": {
+      "draft_id": "d1",
+      "status": "collecting"
+     },
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Got it \u2014 what room is this for?"
+   }
+  }
+ ],
+ "runIndex": 0
+}

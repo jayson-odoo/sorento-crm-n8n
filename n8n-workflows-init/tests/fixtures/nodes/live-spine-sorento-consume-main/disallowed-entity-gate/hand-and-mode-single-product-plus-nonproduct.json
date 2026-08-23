@@ -1,0 +1,153 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "AND-mode, one product (not typed exactly) and one inbound_shipment. Both resolve, but the emitted ORDER is non-products first \u2014 compatible_entities is rebuilt from exact_entities, it is not the input order. Routing then keys on the PRODUCT rows only: routing_company is the product's company, not the shipment's, even though both carry one."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "basin"
+     ],
+     "intersection": [
+      {
+       "uuid": "u-b9",
+       "entity_type": "product",
+       "canonical_code": "BASIN-9",
+       "match_tier": "and",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      },
+      {
+       "uuid": "u-ib",
+       "entity_type": "inbound_shipment",
+       "canonical_code": "SHIP-1",
+       "match_tier": "and",
+       "company_id": "c2",
+       "company_name": "Mocha Sdn Bhd"
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "basin"
+    ],
+    "intersection": [
+     {
+      "uuid": "u-b9",
+      "entity_type": "product",
+      "canonical_code": "BASIN-9",
+      "match_tier": "and",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd"
+     },
+     {
+      "uuid": "u-ib",
+      "entity_type": "inbound_shipment",
+      "canonical_code": "SHIP-1",
+      "match_tier": "and",
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd"
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "basin"
+    ],
+    "intersection": [
+     {
+      "uuid": "u-b9",
+      "entity_type": "product",
+      "canonical_code": "BASIN-9",
+      "match_tier": "and",
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd"
+     },
+     {
+      "uuid": "u-ib",
+      "entity_type": "inbound_shipment",
+      "canonical_code": "SHIP-1",
+      "match_tier": "and",
+      "company_id": "c2",
+      "company_name": "Mocha Sdn Bhd"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [
+     "sorento",
+     "mocha"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "BASIN-9"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-ib",
+      "entity_type": "inbound_shipment",
+      "code": "SHIP-1"
+     },
+     {
+      "uuid": "u-b9",
+      "entity_type": "product",
+      "code": "BASIN-9"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,242 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "FIX A at full strength: a descriptor token ('diy') whose candidates are ALL products already resolved exactly by their own tokens contributes nothing \u2014 the group empties and is dropped, so no pick is required at all. Keeping an empty group would prompt the customer with a numbered list of nothing."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "MHS1542-CR-DIY",
+        "hint": "product"
+       },
+       {
+        "raw": "MHS9-DIY",
+        "hint": "product"
+       },
+       {
+        "raw": "diy",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs1542-cr-diy",
+      "mhs9-diy",
+      "diy"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs1542-cr-diy",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "uq1",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "mhs9-diy",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "uq2",
+         "entity_type": "product",
+         "canonical_code": "MHS9-DIY",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "diy",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "uuid": "uq1",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "substring"
+        },
+        {
+         "uuid": "uq2",
+         "entity_type": "product",
+         "canonical_code": "MHS9-DIY",
+         "match_tier": "substring"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr-diy",
+     "mhs9-diy",
+     "diy"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "uq1",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "mhs9-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "uq2",
+        "entity_type": "product",
+        "canonical_code": "MHS9-DIY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "diy",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "uq1",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "substring"
+       },
+       {
+        "uuid": "uq2",
+        "entity_type": "product",
+        "canonical_code": "MHS9-DIY",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs1542-cr-diy",
+     "mhs9-diy",
+     "diy"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "uq1",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "mhs9-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "uq2",
+        "entity_type": "product",
+        "canonical_code": "MHS9-DIY",
+        "match_tier": "exact"
+       }
+      ]
+     },
+     {
+      "token": "diy",
+      "resolved": false,
+      "ambiguous": true,
+      "matches": [
+       {
+        "uuid": "uq1",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "substring"
+       },
+       {
+        "uuid": "uq2",
+        "entity_type": "product",
+        "canonical_code": "MHS9-DIY",
+        "match_tier": "substring"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "uq1",
+      "entity_type": "product",
+      "code": "MHS1542-CR-DIY"
+     },
+     {
+      "uuid": "uq2",
+      "entity_type": "product",
+      "code": "MHS9-DIY"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

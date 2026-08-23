@@ -1,0 +1,132 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "Two DIFFERENT codes both typed and both exact: that is not one product in several companies, it is a genuine choice, so the picker is built. The collapse arm requires the exact set to share ONE canonical_code \u2014 dropping that condition would silently answer about both products at once."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "sink-a",
+      "sink-b"
+     ],
+     "intersection": [
+      {
+       "uuid": "u-sa",
+       "entity_type": "product",
+       "canonical_code": "SINK-A",
+       "match_tier": "and"
+      },
+      {
+       "uuid": "u-sb",
+       "entity_type": "product",
+       "canonical_code": "SINK-B",
+       "match_tier": "and"
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "sink-a",
+     "sink-b"
+    ],
+    "intersection": [
+     {
+      "uuid": "u-sa",
+      "entity_type": "product",
+      "canonical_code": "SINK-A",
+      "match_tier": "and"
+     },
+     {
+      "uuid": "u-sb",
+      "entity_type": "product",
+      "canonical_code": "SINK-B",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "sink-a",
+     "sink-b"
+    ],
+    "intersection": [
+     {
+      "uuid": "u-sa",
+      "entity_type": "product",
+      "canonical_code": "SINK-A",
+      "match_tier": "and"
+     },
+     {
+      "uuid": "u-sb",
+      "entity_type": "product",
+      "canonical_code": "SINK-B",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. SINK-A\n2. SINK-B",
+    "compatible_entities": [
+     {
+      "uuid": "u-sa",
+      "entity_type": "product",
+      "code": "SINK-A"
+     },
+     {
+      "uuid": "u-sb",
+      "entity_type": "product",
+      "code": "SINK-B"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,135 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The legacy AND envelope: no resolutions[], an intersection[] instead. Tier is uninformative there, so 'exact' means canonical_code EQUALS a typed token \u2014 neither does, two products remain, so the picker is built with the JOINED token list as its token. The candidate token-filter keeps both (each code contains the typed token). Same closed-gate contract as OR-mode."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming",
+      "entities": [
+       {
+        "raw": "sink",
+        "hint": "product"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "sink"
+     ],
+     "intersection": [
+      {
+       "uuid": "u18a",
+       "entity_type": "product",
+       "canonical_code": "SINK-A",
+       "match_tier": "and"
+      },
+      {
+       "uuid": "u18b",
+       "entity_type": "product",
+       "canonical_code": "SINK-B",
+       "match_tier": "and"
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "sink"
+    ],
+    "intersection": [
+     {
+      "uuid": "u18a",
+      "entity_type": "product",
+      "canonical_code": "SINK-A",
+      "match_tier": "and"
+     },
+     {
+      "uuid": "u18b",
+      "entity_type": "product",
+      "canonical_code": "SINK-B",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "sink"
+    ],
+    "intersection": [
+     {
+      "uuid": "u18a",
+      "entity_type": "product",
+      "canonical_code": "SINK-A",
+      "match_tier": "and"
+     },
+     {
+      "uuid": "u18b",
+      "entity_type": "product",
+      "canonical_code": "SINK-B",
+      "match_tier": "and"
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_reason": "'incoming' ambiguous (no single exact match); user must pick",
+    "gate_clarification": "incoming search needs to be more specific. Multiple matches found. Please choose:\n1. SINK-A\n2. SINK-B",
+    "compatible_entities": [
+     {
+      "uuid": "u18a",
+      "entity_type": "product",
+      "code": "SINK-A"
+     },
+     {
+      "uuid": "u18b",
+      "entity_type": "product",
+      "code": "SINK-B"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

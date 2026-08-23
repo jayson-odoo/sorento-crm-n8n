@@ -1,0 +1,129 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The third resolver envelope: neither resolutions[] nor intersection[], only by_entity_type. Its values feed both `flat` and AND-mode. The single product's canonical_code equals the typed token, so it counts as exact, resolves, and no picker is built \u2014 proving 'exact' in AND-mode is token equality and never match_tier (this row's tier is brand_access_fallback)."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "incoming"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mwc7625-sh-s10"
+     ],
+     "by_entity_type": {
+      "product": [
+       {
+        "uuid": "u19",
+        "entity_type": "product",
+        "canonical_code": "MWC7625-SH-S10",
+        "match_tier": "brand_access_fallback",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mwc7625-sh-s10"
+    ],
+    "by_entity_type": {
+     "product": [
+      {
+       "uuid": "u19",
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "match_tier": "brand_access_fallback",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      }
+     ]
+    },
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mwc7625-sh-s10"
+    ],
+    "by_entity_type": {
+     "product": [
+      {
+       "uuid": "u19",
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "match_tier": "brand_access_fallback",
+       "company_id": "c1",
+       "company_name": "Sorento Sdn Bhd"
+      }
+     ]
+    },
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "MWC7625-SH-S10"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u19",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

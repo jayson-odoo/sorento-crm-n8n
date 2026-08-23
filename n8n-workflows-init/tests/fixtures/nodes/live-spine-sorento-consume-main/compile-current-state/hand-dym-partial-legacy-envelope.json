@@ -1,0 +1,196 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The resolver's OTHER envelope: no resolutions[], just unresolved_tokens plus a flat alternatives[] blob. The whole resolver object is then treated as ONE resolution, the token comes from unresolved_tokens[0], and candidates are read from matches[] AND alternatives[]. Without this arm the legacy shape produced no did-you-mean at all."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "6047",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "6047"
+     ],
+     "unresolved_tokens": [
+      "6047"
+     ],
+     "alternatives": [
+      {
+       "uuid": "z1",
+       "canonical_code": "PROMO-6047-A",
+       "entity_type": "product",
+       "match_tier": "substring"
+      }
+     ],
+     "intersection": []
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "IBKS9999",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "6047",
+       "hint": "product"
+      }
+     ],
+     "response": "Previous turn (inventory): returned 1 records [1 did-you-mean suggestions active]",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "test",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "PROMO-6047-A",
+        "uuid": "z1",
+        "entity_type": "product",
+        "for_raw": "6047",
+        "for_hint": "product",
+        "for_canonical": null
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "PROMO-6047-A",
+       "uuid": "z1",
+       "entity_type": "product",
+       "for_raw": "6047",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null,
+     "dym_last_result_set": [
+      {
+       "idx": 1,
+       "label": "PROMO-6047-A",
+       "value": "PROMO-6047-A",
+       "product": "PROMO-6047-A",
+       "uuid": "z1",
+       "entity_type": "product",
+       "for_raw": "6047",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ]
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"6047\", did you mean:\n  1. PROMO-6047-A\n\nReply a number to check it, or ask again."
+   }
+  }
+ ],
+ "runIndex": 0
+}

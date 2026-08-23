@@ -1,0 +1,168 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "build-suggest-offer wins over the catalog: its message, its comma-joined quick replies, its roster as last_result_set and selection_context 'suggest_offer'. Dym lifecycle RULE 1 \u2014 a fresh offer REPLACES whatever was carried, and is always re-stamped ttl 3 / picked [] so a stale ttl on the incoming offer cannot shorten it. dym_candidates is the read-only legacy mirror of the offer's candidates."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "SRTBF11832-NEW",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "build-suggest-offer": [
+   {
+    "json": {
+     "suggest_offer": true,
+     "suggest_response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS",
+     "suggest_quick_reply": "IBKS5245-NG-BL,IBKS6245-NG-SS,Yes escalate,No it's okay",
+     "suggest_last_result_set": [
+      {
+       "idx": 1,
+       "label": "IBKS5245-NG-BL",
+       "value": "IBKS5245-NG-BL",
+       "uuid": "s1"
+      },
+      {
+       "idx": 2,
+       "label": "IBKS6245-NG-SS",
+       "value": "IBKS6245-NG-SS",
+       "uuid": "s2"
+      }
+     ],
+     "dym_offer": {
+      "id": "11",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "IBKS5245-NG-BL",
+        "uuid": "s1",
+        "entity_type": "product"
+       },
+       {
+        "code": "IBKS6245-NG-SS",
+        "uuid": "s2",
+        "entity_type": "product"
+       }
+      ],
+      "picked": []
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "not_found"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "SRTBF11832-NEW",
+       "hint": "product"
+      }
+     ],
+     "response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "IBKS5245-NG-BL",
+       "value": "IBKS5245-NG-BL",
+       "uuid": "s1"
+      },
+      {
+       "idx": 2,
+       "label": "IBKS6245-NG-SS",
+       "value": "IBKS6245-NG-SS",
+       "uuid": "s2"
+      }
+     ],
+     "selection_context": "suggest_offer",
+     "dym_offer": {
+      "id": "11",
+      "domain": "inventory",
+      "ttl": 3,
+      "candidates": [
+       {
+        "code": "IBKS5245-NG-BL",
+        "uuid": "s1",
+        "entity_type": "product"
+       },
+       {
+        "code": "IBKS6245-NG-SS",
+        "uuid": "s2",
+        "entity_type": "product"
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "IBKS5245-NG-BL",
+       "uuid": "s1",
+       "entity_type": "product"
+      },
+      {
+       "code": "IBKS6245-NG-SS",
+       "uuid": "s2",
+       "entity_type": "product"
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS",
+    "quick_reply": "IBKS5245-NG-BL,IBKS6245-NG-SS,Yes escalate,No it's okay"
+   }
+  }
+ ],
+ "runIndex": 0
+}

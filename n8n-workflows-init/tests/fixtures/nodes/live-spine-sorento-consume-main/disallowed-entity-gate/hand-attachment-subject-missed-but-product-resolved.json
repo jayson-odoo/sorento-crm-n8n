@@ -1,0 +1,210 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "One product token missed and ANOTHER resolved. B1 refuses to scope on carried entities only when NO product survived \u2014 here one did, so the turn proceeds and both entities are carried. Without that second condition every multi-product attachment ask with one typo would dead-end."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "MHS9999",
+        "hint": "product"
+       },
+       {
+        "raw": "MHS1542-CR-DIY",
+        "hint": "product"
+       },
+       {
+        "raw": "certificate",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs9999",
+      "mhs1542-cr-diy",
+      "certificate"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs1542-cr-diy",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-p6",
+         "entity_type": "product",
+         "canonical_code": "MHS1542-CR-DIY",
+         "match_tier": "exact",
+         "company_id": "c1",
+         "company_name": "Sorento Sdn Bhd"
+        }
+       ]
+      },
+      {
+       "token": "certificate",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-at8",
+         "entity_type": "attachment_type",
+         "canonical_code": "certificate",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "MHS9999"
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs9999",
+     "mhs1542-cr-diy",
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-p6",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     {
+      "token": "certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-at8",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [
+     "MHS9999"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs9999",
+     "mhs1542-cr-diy",
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs1542-cr-diy",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-p6",
+        "entity_type": "product",
+        "canonical_code": "MHS1542-CR-DIY",
+        "match_tier": "exact",
+        "company_id": "c1",
+        "company_name": "Sorento Sdn Bhd"
+       }
+      ]
+     },
+     {
+      "token": "certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-at8",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [
+     "MHS9999"
+    ],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": "sorento",
+    "company_team": null,
+    "resolved_companies": [
+     "sorento"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "c1",
+      "company_name": "Sorento Sdn Bhd",
+      "brand_code": null,
+      "codes": [
+       "MHS1542-CR-DIY"
+      ]
+     }
+    ],
+    "routing_company": "c1",
+    "gate_passed": true,
+    "require_specific": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-p6",
+      "entity_type": "product",
+      "code": "MHS1542-CR-DIY"
+     },
+     {
+      "uuid": "u-at8",
+      "entity_type": "attachment_type",
+      "code": "certificate"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

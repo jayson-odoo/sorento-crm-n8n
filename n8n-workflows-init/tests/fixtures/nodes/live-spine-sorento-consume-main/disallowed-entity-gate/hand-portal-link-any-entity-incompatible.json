@@ -1,0 +1,113 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "ALLOWED.portal_link is the EMPTY list, so any resolved entity is incompatible and the gate closes \u2014 a portal link answers nothing scoped. (Zero entities would instead pass, since ALLOWS_EMPTY.portal_link is true.) allowed_lookup is [] in gate_debug, which is what distinguishes 'empty row' from 'no row' (null domain)."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "portal_link"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "srtbf11832-new"
+     ],
+     "resolutions": [
+      {
+       "token": "srtbf11832-new",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u17",
+         "entity_type": "product",
+         "canonical_code": "SRTBF11832-NEW",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "srtbf11832-new"
+    ],
+    "resolutions": [
+     {
+      "token": "srtbf11832-new",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u17",
+        "entity_type": "product",
+        "canonical_code": "SRTBF11832-NEW",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": []
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "srtbf11832-new"
+    ],
+    "resolutions": [
+     {
+      "token": "srtbf11832-new",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u17",
+        "entity_type": "product",
+        "canonical_code": "SRTBF11832-NEW",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": false,
+    "gate_reason": "types [product] incompatible with 'portal_link'",
+    "gate_clarification": "",
+    "compatible_entities": [],
+    "gate_debug": {
+     "domain": "portal_link",
+     "allowed_lookup": [],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

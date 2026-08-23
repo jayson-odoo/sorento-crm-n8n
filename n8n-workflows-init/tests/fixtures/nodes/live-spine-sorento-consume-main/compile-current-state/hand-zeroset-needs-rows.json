@@ -1,0 +1,109 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The zero-stock line is an addendum to an answer: with an empty roster there is no answer to qualify, so it stays silent even though the zeroset node computed a miss."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "SRTBF11832-NEW",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "No stock found.",
+     "items": []
+    }
+   }
+  ],
+  "crossdomain-zeroset": [
+   {
+    "json": {
+     "_xd": {
+      "returned_codes": [
+       "MMC544-AL-BL"
+      ],
+      "missing": [
+       {
+        "code": "MMC545-AL-BL"
+       }
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "No stock found."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "match_mode": "or",
+     "entities": [
+      {
+       "raw": "SRTBF11832-NEW",
+       "hint": "product"
+      }
+     ],
+     "response": "Previous turn (inventory): no results.",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "No stock found."
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,115 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The other half of rule 2: a NULL domain_hint (a bare-code pick emits one) must NOT kill the offer \u2014 the rule needs BOTH sides present. The offer survives into rule 7 and decrements, which is what keeps a bare-code follow-up pickable."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": null,
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {}
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "response": "Would you like me to escalate to warehouse team?",
+     "manualResponse": true,
+     "includeResponse": true
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "session_vars": {
+      "variables": {
+       "dym_offer": {
+        "id": "11",
+        "domain": "inventory",
+        "ttl": 3,
+        "candidates": [
+         {
+          "code": "A",
+          "uuid": "a"
+         }
+        ],
+        "picked": []
+       }
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "escalate"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": null,
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "entities": [],
+     "response": "Would you like me to escalate to warehouse team?",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": {
+      "id": "11",
+      "domain": "inventory",
+      "ttl": 2,
+      "candidates": [
+       {
+        "code": "A",
+        "uuid": "a"
+       }
+      ],
+      "picked": []
+     },
+     "dym_candidates": [
+      {
+       "code": "A",
+       "uuid": "a"
+      }
+     ],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Would you like me to escalate to warehouse team?"
+   }
+  }
+ ],
+ "runIndex": 0
+}

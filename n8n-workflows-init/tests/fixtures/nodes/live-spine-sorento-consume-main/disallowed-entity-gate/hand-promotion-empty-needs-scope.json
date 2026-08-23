@@ -1,0 +1,86 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "The S1 promotion rule: ALLOWS_EMPTY.promotion is FALSE, so a scope-less promotion ask must NOT pass as a broad query \u2014 gate_passed false with the 'requires a scoping entity' reason, which is what routes it into not-found-error-message's needsScope arm. With no tier-gate and no Aggregate in ctx the Q23 block takes its legacy arm and claims nothing about access."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "promotion",
+      "access_levels": []
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "promo"
+     ],
+     "resolutions": [],
+     "unresolved_tokens": [
+      "promo"
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "promo"
+    ],
+    "resolutions": [],
+    "unresolved_tokens": [
+     "promo"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "promo"
+    ],
+    "resolutions": [],
+    "unresolved_tokens": [
+     "promo"
+    ],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": false,
+    "gate_reason": "no entities and 'promotion' requires a scoping entity",
+    "gate_clarification": "",
+    "compatible_entities": [],
+    "gate_debug": {
+     "domain": "promotion",
+     "allowed_lookup": [
+      "product",
+      "promotion",
+      "category",
+      "brand"
+     ],
+     "entities_count": 0
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}

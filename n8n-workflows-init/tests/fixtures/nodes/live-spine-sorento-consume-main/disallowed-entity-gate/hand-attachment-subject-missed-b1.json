@@ -1,0 +1,163 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "reasoned_from": "contract",
+  "rationale": "B1: the named subject product MISSED (its raw is in unresolved_tokens) and no product survived the compatibility filter, so a carried attachment_type must not scope the lookup on its own \u2014 the gate closes with the B1 reason and NO clarification (B1 writes gate_reason only). The REQUIRE_SPECIFIC block still resolves the non-product match straight through (never a choose-list option), so compatible_entities is that single attachment_type."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "MHS9999",
+        "hint": "product"
+       },
+       {
+        "raw": "certificate",
+        "hint": "attachment_type"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "mhs9999",
+      "certificate"
+     ],
+     "resolutions": [
+      {
+       "token": "mhs9999",
+       "resolved": false,
+       "ambiguous": false,
+       "matches": []
+      },
+      {
+       "token": "certificate",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-at8",
+         "entity_type": "attachment_type",
+         "canonical_code": "certificate",
+         "match_tier": "exact"
+        }
+       ]
+      }
+     ],
+     "unresolved_tokens": [
+      "MHS9999"
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mhs9999",
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs9999",
+      "resolved": false,
+      "ambiguous": false,
+      "matches": []
+     },
+     {
+      "token": "certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-at8",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [
+     "MHS9999"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mhs9999",
+     "certificate"
+    ],
+    "resolutions": [
+     {
+      "token": "mhs9999",
+      "resolved": false,
+      "ambiguous": false,
+      "matches": []
+     },
+     {
+      "token": "certificate",
+      "resolved": true,
+      "matches": [
+       {
+        "uuid": "u-at8",
+        "entity_type": "attachment_type",
+        "canonical_code": "certificate",
+        "match_tier": "exact"
+       }
+      ]
+     }
+    ],
+    "unresolved_tokens": [
+     "MHS9999"
+    ],
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "gate_passed": false,
+    "require_specific": false,
+    "gate_reason": "'product_attachment' subject product did not resolve; refusing to scope on carried entities",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "u-at8",
+      "entity_type": "attachment_type",
+      "code": "certificate"
+     }
+    ],
+    "gate_debug": {
+     "domain": "product_attachment",
+     "allowed_lookup": [
+      "product",
+      "attachment",
+      "attachment_type",
+      "category",
+      "brand",
+      "certificate"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ],
+ "runIndex": 0
+}
