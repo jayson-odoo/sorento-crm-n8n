@@ -124,7 +124,12 @@ asm = _load_module("assemble", "assemble.py")
 # the --i-know-this-is-live acknowledgment (e.g. a disposable dev-only workflow you just created for
 # a one-off experiment). Every real id in CLAUDE.md's "Key IDs" table — live or clone alike — stays
 # OFF this list; the clone still gets its own explicit guard below.
-UNPROTECTED = set()
+UNPROTECTED = {
+    # Scratch/throwaway targets ONLY. A workflow listed here can be PUT to with no
+    # --i-know-this-is-live and with --yes (non-interactive). Never add anything a
+    # customer message can reach: the entry must be INACTIVE and have no live caller.
+    "SEqUDO7tpmtNdeDb",  # zz-DEPLOY-SANDBOX sorento-consume-main (inactive, 0 callers, created 2026-08-23)
+}
 
 # Purely cosmetic — labels a few well-known ids in gate (d)'s message so an operator recognizes
 # what they're about to touch. Never used to decide allow/deny; that's UNPROTECTED (above) and
