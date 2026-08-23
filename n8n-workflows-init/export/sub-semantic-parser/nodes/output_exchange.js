@@ -200,6 +200,10 @@ if (output.output && !output.output.is_menu_label && output.output.contains_flye
 // numbered multi-select handler share ONE retention implementation. tryDymPick calls it with slot
 // matching ON (_useSlot=true) — byte-behaviour-identical to before. The numbered handler calls it with
 // slot matching OFF so multi-picks ACCUMULATE (R-v3-1 ADD-BOTH), threading the entity set per pick.
+// issue #30 (ADD-BOTH was last-wins): how many picks the NUMBERED path has already applied this turn.
+// Written and read ONLY under _useSlot===false, so the code-reply path (tryDymPick, one call per turn)
+// and the FIRST pick of a numbered turn both behave exactly as before. See the for_hint tier below.
+let _dymNumberedPicks = 0;
 function applyDymPick(_hit, _offer, _priorEnts, _useSlot){
   const norm = s => String(s ?? '').trim().toLowerCase();
   const _pv = parent_input.previous_conversation_state || {};
@@ -216,10 +220,18 @@ function applyDymPick(_hit, _offer, _priorEnts, _useSlot){
   if (_useSlot !== false && _slot != null) _idx = _prior.findIndex(e => e && e.dym_slot != null && norm(e.dym_slot) === norm(_slot));
   if (_idx < 0) _idx = _prior.findIndex(e => norm(e.raw) === norm(_hit.for_raw));
   if (_idx < 0 && _hit.for_canonical) _idx = _prior.findIndex(e => norm(e.canonical_code) === norm(_hit.for_canonical));
-  if (_idx < 0 && _hit.for_hint) {
+  // issue #30: for_hint is a SOURCE-TOKEN finder, and on the numbered path an earlier pick THIS TURN has
+  // already overwritten that source token's raw. The one same-hint entity left to find is then that
+  // earlier pick's OWN entity, so firing the tier replaces it and turns ADD-BOTH into last-wins. Skip the
+  // tier for the 2nd+ numbered pick of a turn -> _idx stays -1 -> append (ADD-BOTH), the same outcome the
+  // ambiguous-scope case already reaches. Untouched elsewhere: tryDymPick (_useSlot=true), the first pick
+  // of a numbered turn, and every later pick whose source token is still present (for_raw/for_canonical
+  // resolve above and never reach this tier).
+  if (_idx < 0 && _hit.for_hint && !(_useSlot === false && _dymNumberedPicks > 0)) {
     const _sameHint = _prior.filter(e => norm(e.hint) === norm(_hit.for_hint));
     if (_sameHint.length === 1) _idx = _prior.indexOf(_sameHint[0]);   // unambiguous single-hint fallback
   }
+  if (_useSlot === false) _dymNumberedPicks++;   // counted AFTER this pick's tier resolution (issue #30)
   // FORCE the type from the candidate record — entity_type is the PICKED candidate's resolved type;
   // for_hint describes the SOURCE token and only coincidentally matches. Never trust the LLM hint here.
   const _picked = { raw: _hit.code, hint: _hit.entity_type || _hit.for_hint || (_idx>=0 ? _prior[_idx].hint : null),
