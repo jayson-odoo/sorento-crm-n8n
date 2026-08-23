@@ -306,6 +306,7 @@ const _custBase = (m) => (_custName(m) || String((m && m.canonical_code) || ''))
   .replace(/[^A-Z0-9]+/g, ' ')
   .trim();
 
+let _custPinKept = false;
 if (!require_specific && (ALLOWED[domain] ?? []).includes('customer')) {
   const _pickApplied = parser.dym_pick_applied === true
     || Number(parser.dym_partial_pick) > 0
@@ -316,7 +317,22 @@ if (!require_specific && (ALLOWED[domain] ?? []).includes('customer')) {
     const b = _custBase(m);
     if (b && !_bases.has(b)) _bases.set(b, m);          // first row wins: resolver ranks by similarity
   }
-  if (!_pickApplied && _bases.size > 1) {
+  // R2 (captain journey, 2026-08-23): a customer the user ALREADY picked stays PINNED; re-ask only
+  // when they name a new one. Measured, exec 13633742: the carried entity was
+  // { raw:'DELUXE HOME CENTRE SDN BHD (SETAPAK)', uuid:'84011929-...', ordinal:1,
+  //   current_message:false } - an explicit pick from an earlier turn - and the picker re-opened
+  // anyway. Typing a PRODUCT was answered with "Which customer do you mean?", and the pick the
+  // user had already made was thrown away.
+  const _custPinned = (() => {
+    const ents = Array.isArray(parser.entities) ? parser.entities : [];
+    const _isCust = (e) => e && String(e.hint || '').toLowerCase() === 'customer';
+    // naming a customer THIS turn is a fresh question - re-asking is fair there
+    if (ents.some(e => _isCust(e) && e.current_message === true)) return false;
+    // carried AND already resolved to a specific account = settled
+    return ents.some(e => _isCust(e) && e.current_message !== true && (e.uuid || e.canonical_code));
+  })();
+  if (_custPinned) _custPinKept = true;   // diagnostic; emitted with the rest of `out` below
+  if (!_pickApplied && !_custPinned && _bases.size > 1) {
     const _reps = [..._bases.values()].slice(0, 8);     // cap the list; 8 lines is already a lot to read
     // FORWARD PROBE INPUT (captain, 2026-08-21): the picker is about to replace compatible_entities
     // with the customer options, which would drop the product/date scope the customer actually asked
@@ -543,9 +559,18 @@ if (_dcSoleUuid && Array.isArray(out.resolutions)) {
 //   - only tokens the USER typed. The resolver also keys a resolution on the whole query;
 //     that one is machine-made and must never block a turn (the same protection
 //     build-suggest-offer's F1 derived-token guard applies on the DYM side).
-//   - never on a picker turn: require_specific is already asking the user something.
-if (gate_passed && !require_specific) {
+//   - a picker turn still RECORDS the miss; it just does not need to set gate_passed, because the
+//     picker already blocks. Journey rule R3 (captain, 2026-08-23): when several things are wrong,
+//     say them in the SAME turn. Measured, exec 13633742: 'mfg6651-gm' matched nothing AND the
+//     carried customer was ambiguous; the picker won and the product was never mentioned, so the
+//     reply read as "why are you asking about the customer, I gave you a product".
+if (gate_passed || require_specific) {
   const _dfN = s => String(s ?? '').trim().toLowerCase();
+  // resolve-entity strips separators for product-hint tokens ("mfg6651-gm" -> "mfg6651gm"), so a
+  // literal comparison against the parser raw decides the user never typed it and the gate stays
+  // silent — on dashed product codes, i.e. most of them (measured, execs 13633742 / 13633783:
+  // mfg6651-gm resolved to ZERO candidates and the customer's whole order book came back instead).
+  const _dfS = s => _dfN(s).replace(/[^a-z0-9]+/g, '');
   const _dfTyped = (Array.isArray(parser.entities) ? parser.entities : []).map(e => _dfN(e.raw)).filter(Boolean);
   const _dfUnres = new Set((resolver.unresolved_tokens ?? []).map(_dfN));
   const _dfMissed = (Array.isArray(resolver.resolutions) ? resolver.resolutions : [])
@@ -553,7 +578,12 @@ if (gate_passed && !require_specific) {
       const t = _dfN(r && r.token);
       if (!t || !_dfUnres.has(t)) return false;
       if (Array.isArray(r.matches) && r.matches.length > 0) return false;   // has candidates -> DYM's job
-      return _dfTyped.some(raw => raw === t || raw.includes(t) || t.includes(raw));
+      const ts = _dfS(t);
+      return _dfTyped.some((raw) => {
+        if (raw === t || raw.includes(t) || t.includes(raw)) return true;
+        const rs = _dfS(raw);                      // separator-insensitive, both directions
+        return !!rs && !!ts && (rs === ts || rs.includes(ts) || ts.includes(rs));
+      });
     })
     .map(r => String(r.token));
   // A miss only matters if the FILTER was actually lost. When the same axis already carries a
@@ -565,9 +595,13 @@ if (gate_passed && !require_specific) {
   const _dfSatisfied = new Set((Array.isArray(compatible_entities) ? compatible_entities : [])
     .map(e => _dfN(e && e.entity_type)).filter(Boolean));
   const _dfHintOf = (tok) => {
-    const t = _dfN(tok);
+    const t = _dfN(tok), ts = _dfS(tok);
     const hit = (Array.isArray(parser.entities) ? parser.entities : [])
-      .find(e => { const r = _dfN(e.raw); return r === t || r.includes(t) || t.includes(r); });
+      .find(e => {
+        const r = _dfN(e.raw), rs = _dfS(e.raw);
+        return r === t || r.includes(t) || t.includes(r)
+            || (!!rs && !!ts && (rs === ts || rs.includes(ts) || ts.includes(rs)));
+      });
     return _dfN(hit && hit.hint);
   };
   const _dfLost = _dfMissed.filter(tok => {
@@ -575,11 +609,35 @@ if (gate_passed && !require_specific) {
     return !(h && _dfSatisfied.has(h));
   });
   if (_dfLost.length) {
-    gate_passed = false;
-    gate_reason = `named ${_dfLost.length > 1 ? 'entities that do not exist' : 'an entity that does not exist'}: ${_dfLost.join(', ')}`;
-    out.dropped_filter_tokens = _dfLost;   // diagnostic; the miss lane names them from unresolved_tokens
+    // recorded on EVERY lane, picker included, so the reply can name it (R3)
+    out.dropped_filter_tokens = _dfLost;
+    // R3: when a picker is ALREADY being shown, the miss must ride in the SAME message rather than
+    // wait for a turn that may never come. Rendered in the miss lane's own shape - the quoted raw
+    // the user typed (not the separator-stripped resolver token) plus its entity-type label.
+    if (gate_clarification) {
+      const _dfRawOf = (tok) => {
+        const t = _dfN(tok), ts = _dfS(tok);
+        const hit = (Array.isArray(parser.entities) ? parser.entities : []).find(e => {
+          const r = _dfN(e.raw), rs = _dfS(e.raw);
+          return r === t || r.includes(t) || t.includes(r)
+              || (!!rs && !!ts && (rs === ts || rs.includes(ts) || ts.includes(rs)));
+        });
+        return (hit && hit.raw) || tok;
+      };
+      const _dfLines = _dfLost.map((t) => {
+        const h = _dfHintOf(t);
+        return `"${_dfRawOf(t)}"${h ? ` (${h})` : ''}`;
+      });
+      gate_clarification = `Couldn't find: ${_dfLines.join(', ')}.\n\n${gate_clarification}`;
+      out.gate_clarification = gate_clarification;
+    }
+    if (gate_passed) {
+      gate_passed = false;
+      gate_reason = `named ${_dfLost.length > 1 ? 'entities that do not exist' : 'an entity that does not exist'}: ${_dfLost.join(', ')}`;
+    }
   }
 }
+if (_custPinKept) out.customer_pin_kept = true;
 out.gate_passed = gate_passed;
 out.require_specific = require_specific;
 // ── #9 multi-company routing ──────────────────────────────────────────────
