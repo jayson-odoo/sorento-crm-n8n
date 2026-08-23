@@ -67,6 +67,13 @@ npm run deploy      gate: unit+flow green + export verified + PR merged → REST
 - unit: 200 pass / 0 fail / 2 dead-skip, 38/40 Code nodes fixture-covered (2 dead: `Code in JavaScript`, `presign-fail-notice`); flow: 20/20, 5 lanes. Whole suite ~0.5 s.
 - `scripts/capture-fixtures.py`, `tests/harness/n8n-shim.js`, `tests/harness/run-lane.js`, `tests/unit/_all-nodes.test.js`, `tests/flow/*`, `.github/workflows/n8n-tests.yml`, `scripts/assemble.py` (21/21 slugs round-trip), `scripts/deploy.py` (gates a–i; PROTECTED live ids + clone-guard `txiPzSxy3Pclsz6v`; dry-run verified; gate (i) PUT never executed yet).
 - Known: first live deploy of spine shows 3 jsCode-sha "changes" = trailing-whitespace strip only (`central-exchange`, `construct-user-prompt`, `validator`). Fixtures 10 MB untracked — decide on committing.
+- **Step 2b (2026-08-23): the suite is now MEASURED, not asserted.** `npm run mutate`
+  (`tests/harness/mutate.js`) breaks each node body on purpose and reports how many mutants the
+  suite kills; today's numbers per node are recorded in `tests/MUTATION-BASELINE.md` so drift is
+  visible. Repo 35% → 37%; `output_exchange` 22% → 88% on a 100-mutant sample, via 72 hand-reasoned
+  fixtures. That file also carries the four defects the exercise surfaced in `output_exchange` —
+  one behavioural (numbered did-you-mean multi-select is last-wins, not ADD-BOTH), three dead-code.
+  `mutate` is NOT part of `npm test`: it takes ~25 min and is a metric, not a gate.
 - Next = step 6 on a FRESH clone (not media-intake).
 
 ## Build order (each step PR'd, nothing touches live until step 6)

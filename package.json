@@ -6,6 +6,7 @@
   "scripts": {
     "test:unit": "node --test n8n-workflows-init/tests/unit/*.test.js",
     "test:flow": "node --test n8n-workflows-init/tests/flow/*.test.js",
-    "test": "REQUIRE_FULL_COVERAGE=1 npm run test:unit && npm run test:flow"
+    "test": "REQUIRE_FULL_COVERAGE=1 npm run test:unit && npm run test:flow",
+    "mutate": "node n8n-workflows-init/tests/harness/mutate.js"
   }
 }
