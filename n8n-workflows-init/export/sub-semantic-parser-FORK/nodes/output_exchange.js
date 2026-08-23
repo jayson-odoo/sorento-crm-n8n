@@ -659,19 +659,6 @@ if (output.output && !output.output.is_menu_label) {
   }
 
   output.output.entities = finalEntities;
-  // Drop every entity sitting on the widened axis - that is the filter the user just removed.
-  // Done HERE, after the op executor, because 'reuse' re-applies the whole prior scope and
-  // replace_combine deliberately KEEPS prior axes the current turn did not name; either way the
-  // widened axis would otherwise survive the very message that asked to remove it.
-  {
-    const _ba = String(output.output.broaden_axis || '').toLowerCase();
-    if (_ba && _ba !== 'all' && _ba !== 'date') {
-      const _axis = _ceAxisFor({ hint: _ba }, domain);
-      const _before = finalEntities.length;
-      output.output.entities = finalEntities.filter(e => axisOf(e) !== _axis);
-      output.output.broaden_axis_dropped = _before - output.output.entities.length;   // diagnostic
-    }
-  }
   output.output.entity_op_applied = op;
 }
 // (A) A positional pick continues the PRIOR business query — the parser may have
@@ -1800,6 +1787,24 @@ if (!DATE_FILTER_DOMAINS.has(output.output.domain_hint)) {
   if (output.output._tier_pick_scope_reused !== true
       && (_ppResolvedPick || (_ppRosterPending && !_ppNamedNewScope))) {
     output.output._pending_pick = true;
+  }
+}
+
+// ── AXIS BROADEN, FINAL PASS: the widened filter must not come back ──────────────────────────
+// This drop used to sit right after the entity-op executor. The logic ran correctly there -
+// exec 13636691 reported broaden_axis 'product', broaden_axis_dropped 1, domain restored to
+// 'order' - and a LATER writer re-attached the product anyway, so "all products" still answered
+// scoped to srtwc286. output_exchange has ~47 sites that assign entities/domain_hint
+// (SIMPLIFY-spine-audit); being one of them is not enough, so this runs after all of them.
+// Placed immediately before the return, where `output.output.entities` is final by definition.
+{
+  const _ba = String(output.output?.broaden_axis || '').toLowerCase();
+  if (_ba && _ba !== 'all' && _ba !== 'date' && Array.isArray(output.output?.entities)) {
+    const _dom = output.output.domain_hint;
+    const _axis = _ceAxisFor({ hint: _ba }, _dom);
+    const _before = output.output.entities.length;
+    output.output.entities = output.output.entities.filter(e => _ceAxisFor(e, _dom) !== _axis);
+    output.output.broaden_axis_dropped = _before - output.output.entities.length;   // diagnostic
   }
 }
 

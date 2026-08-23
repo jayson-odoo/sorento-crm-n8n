@@ -1,0 +1,454 @@
+{
+  "source": {
+    "execution_id": "13636691",
+    "workflow_id": "wI5RkNGW3EOJfBdo",
+    "node": "output_exchange",
+    "captured_at": "2026-08-23T15:06:13+00:00",
+    "expected_from": "runData"
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "latest_user_message": "all products\n\n",
+          "contact_id": "900000001",
+          "previous_conversation_state": {
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "entities": [
+              {
+                "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                "hint": "customer",
+                "uuid": "84011929-b148-4b17-9278-d1811c7e6ced",
+                "ordinal": 1,
+                "canonical_code": "300-D059",
+                "current_message": true
+              },
+              {
+                "raw": "srtwc286",
+                "hint": "product",
+                "confident": true,
+                "canonical_code": "SRTWC286-SH-200",
+                "current_message": true
+              }
+            ],
+            "ideation": null,
+            "response": "Previous turn (order): returned 5 records",
+            "date_mode": null,
+            "dym_offer": null,
+            "user_goal": "trying to select the first result",
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "match_mode": "and",
+            "domain_hint": "order",
+            "intent_hint": "check_order",
+            "message_type": "business_query",
+            "query_brands": [],
+            "access_levels": [],
+            "picker_domain": "order",
+            "routing_brand": "sorento",
+            "contains_flyer": false,
+            "dym_candidates": [],
+            "date_filter_end": null,
+            "last_result_set": [
+              {
+                "idx": 1,
+                "uuid": "84011929-b148-4b17-9278-d1811c7e6ced",
+                "label": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                "product": "300-D059",
+                "filename": null,
+                "entity_type": "customer",
+                "attachment_type": null
+              },
+              {
+                "idx": 2,
+                "uuid": "cebc67a4-74c0-43a5-9b18-4247498736a6",
+                "label": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                "product": "300-D058",
+                "filename": null,
+                "entity_type": "customer",
+                "attachment_type": null
+              }
+            ],
+            "picker_families": {
+              "DELUXE HOME CENTRE": [
+                "84011929-b148-4b17-9278-d1811c7e6ced",
+                "0e066bdb-c97c-4762-9a71-b32ea6bbadc2",
+                "ffdd4143-da6b-4484-87c1-d76932d04519",
+                "d69fc206-98ae-4fee-b550-bf1938ebe867",
+                "0cbd9153-6661-42df-b220-4f403961aa75",
+                "95defcc3-9704-4ae7-9fcf-bc90eec64013",
+                "fff82580-e440-4bcb-91b1-aa68cdce4bad",
+                "ff7d5f06-8638-4316-ae42-3898658d892b",
+                "1aff9ef4-7685-4b0f-9caf-194dd39e1cac",
+                "229130f3-0a78-46f2-bc98-880a0b362cb5",
+                "1fd2f9a9-977e-4c85-b9fb-2abcb2da4f16",
+                "b53d0ae1-fd59-43a8-8fa6-9ce58abc7d77"
+              ],
+              "DELUXE HOME CENTRE ACC 2": [
+                "cebc67a4-74c0-43a5-9b18-4247498736a6",
+                "69008c7d-bd60-4b2b-ac6a-191956edbf01",
+                "d8fd649b-646f-403a-b3ea-a387b01d6e9e"
+              ]
+            },
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "date_filter_start": null,
+            "routing_companies": [
+              {
+                "codes": [
+                  "SRTWC286-SH-200"
+                ],
+                "brand_code": "sorento",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento"
+              }
+            ],
+            "selection_context": "disambiguation",
+            "routing_roster_plan": null,
+            "routing_brand_source": "resolved",
+            "picker_last_result_set": [
+              {
+                "idx": 1,
+                "uuid": "84011929-b148-4b17-9278-d1811c7e6ced",
+                "label": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                "product": "300-D059",
+                "filename": null,
+                "entity_type": "customer",
+                "attachment_type": null
+              },
+              {
+                "idx": 2,
+                "uuid": "cebc67a4-74c0-43a5-9b18-4247498736a6",
+                "label": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                "product": "300-D058",
+                "filename": null,
+                "entity_type": "customer",
+                "attachment_type": null
+              }
+            ]
+          },
+          "is_test": true
+        }
+      }
+    ],
+    "test-reformulator-bypass": [],
+    "OpenAI Chat Model": [],
+    "AI Agent": [
+      {
+        "json": {
+          "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_product\",\"domain_hint\":\"master_products\",\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"trying to view all products\",\"access_levels\":[],\"broaden_axis\":\"product\",\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"purchasing_product\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+        }
+      }
+    ],
+    "output_exchange": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": null,
+            "is_affirmative": null,
+            "user_goal": "trying to view all products",
+            "access_levels": [],
+            "broaden_axis": "product",
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                "hint": "customer",
+                "uuid": "84011929-b148-4b17-9278-d1811c7e6ced",
+                "ordinal": 1,
+                "canonical_code": "300-D059",
+                "current_message": false
+              },
+              {
+                "raw": "srtwc286",
+                "hint": "product",
+                "confident": true,
+                "canonical_code": "SRTWC286-SH-200",
+                "current_message": true
+              }
+            ],
+            "entity_op": "reuse",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "broaden_axis_domain_restored": true,
+            "broaden_axis_dropped": 1,
+            "entity_op_applied": "reuse",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_product",
+            "domain_hint": "master_products",
+            "scope_intent": null,
+            "is_affirmative": null,
+            "user_goal": "trying to view all products",
+            "access_levels": [],
+            "broaden_axis": "product",
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [],
+            "entity_op": "reuse",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "purchasing_product",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false,
+              "company_pick": null
+            }
+          }
+        }
+      }
+    ],
+    "suggest-follow-up": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": null,
+            "is_affirmative": null,
+            "user_goal": "trying to view all products",
+            "access_levels": [],
+            "broaden_axis": "product",
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                "hint": "customer",
+                "uuid": "84011929-b148-4b17-9278-d1811c7e6ced",
+                "ordinal": 1,
+                "canonical_code": "300-D059",
+                "current_message": false
+              },
+              {
+                "raw": "srtwc286",
+                "hint": "product",
+                "confident": true,
+                "canonical_code": "SRTWC286-SH-200",
+                "current_message": true
+              }
+            ],
+            "entity_op": "reuse",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "domain_signal_source": "intent_explicit",
+            "broaden_axis_domain_restored": true,
+            "broaden_axis_dropped": 1,
+            "entity_op_applied": "reuse",
+            "query_brands": [],
+            "entities_filtered": false,
+            "entities_emptied_by_filter": false
+          },
+          "_parser_raw": {
+            "message_type": "business_query",
+            "intent_hint": "check_product",
+            "domain_hint": "master_products",
+            "scope_intent": null,
+            "is_affirmative": null,
+            "user_goal": "trying to view all products",
+            "access_levels": [],
+            "broaden_axis": "product",
+            "date_mode": null,
+            "date_filter_start": null,
+            "date_filter_end": null,
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [],
+            "entity_op": "reuse",
+            "scope_exclusive": false,
+            "requested_attributes": [],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "purchasing_product",
+              "suggested_agent": "general_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false,
+              "company_pick": null
+            }
+          }
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_product\",\"domain_hint\":\"master_products\",\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"trying to view all products\",\"access_levels\":[],\"broaden_axis\":\"product\",\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"purchasing_product\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "output": {
+          "message_type": "business_query",
+          "intent_hint": "check_order",
+          "domain_hint": "order",
+          "scope_intent": null,
+          "is_affirmative": null,
+          "user_goal": "trying to view all products",
+          "access_levels": [],
+          "broaden_axis": "product",
+          "date_mode": null,
+          "date_filter_start": null,
+          "date_filter_end": null,
+          "match_mode": "and",
+          "demand_qty": null,
+          "entities": [
+            {
+              "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+              "hint": "customer",
+              "uuid": "84011929-b148-4b17-9278-d1811c7e6ced",
+              "ordinal": 1,
+              "canonical_code": "300-D059",
+              "current_message": false
+            },
+            {
+              "raw": "srtwc286",
+              "hint": "product",
+              "confident": true,
+              "canonical_code": "SRTWC286-SH-200",
+              "current_message": true
+            }
+          ],
+          "entity_op": "reuse",
+          "scope_exclusive": false,
+          "requested_attributes": [],
+          "contains_flyer": false,
+          "reference_positions": [],
+          "reference_target": null,
+          "person_mention": null,
+          "is_active": null,
+          "order_status": null,
+          "correction": false,
+          "routing": {
+            "suggested_team": "customer_service",
+            "suggested_agent": "order_enquiries"
+          },
+          "escalation": {
+            "is_escalation_confirmation": false
+          },
+          "domain_signal_source": "intent_explicit",
+          "broaden_axis_domain_restored": true,
+          "broaden_axis_dropped": 1,
+          "entity_op_applied": "reuse",
+          "query_brands": [],
+          "entities_filtered": false,
+          "entities_emptied_by_filter": false
+        },
+        "_parser_raw": {
+          "message_type": "business_query",
+          "intent_hint": "check_product",
+          "domain_hint": "master_products",
+          "scope_intent": null,
+          "is_affirmative": null,
+          "user_goal": "trying to view all products",
+          "access_levels": [],
+          "broaden_axis": "product",
+          "date_mode": null,
+          "date_filter_start": null,
+          "date_filter_end": null,
+          "match_mode": "and",
+          "demand_qty": null,
+          "entities": [],
+          "entity_op": "reuse",
+          "scope_exclusive": false,
+          "requested_attributes": [],
+          "contains_flyer": false,
+          "reference_positions": [],
+          "reference_target": null,
+          "person_mention": null,
+          "is_active": null,
+          "order_status": null,
+          "correction": false,
+          "routing": {
+            "suggested_team": "purchasing_product",
+            "suggested_agent": "general_enquiries"
+          },
+          "escalation": {
+            "is_escalation_confirmation": false,
+            "company_pick": null
+          }
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": {
+    "id": "13636691"
+  },
+  "ran": [
+    "When Executed by Another Workflow",
+    "test-reformulator-bypass",
+    "OpenAI Chat Model",
+    "AI Agent",
+    "output_exchange",
+    "suggest-follow-up"
+  ]
+}
