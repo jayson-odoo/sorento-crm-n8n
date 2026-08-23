@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "getResultObj's preference order is central-exchange > validator > disallowed-entity-gate > the node's own input, and it is FIRST-WINS, not merge. With validator executed its envelope is the result even though the gate also ran and says require_specific \u2014 so the roster is the validator's item, the product filter does NOT apply (the chosen envelope has no require_specific), and selection_context is null rather than 'disambiguation'. Reading the gate here instead would silently answer about a different result set."
  },

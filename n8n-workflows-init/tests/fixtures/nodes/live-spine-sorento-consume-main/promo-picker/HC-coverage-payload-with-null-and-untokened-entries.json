@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "token_coverage is walked with the same defensive guards as the rest of the resolver payload: a null entry and an entry with no token must both be skipped. Inverting that guard dereferences null and the customer gets nothing at all instead of a word-level miss. The real entry still produces the coverage verdict."

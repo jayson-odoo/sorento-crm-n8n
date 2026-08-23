@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The has-incoming set is built from rows that may be null, may have no title, and may have no fields at all. Each is skipped in turn; only the row that actually names SRTB contributes. If any of those guards inverts, the code set fills with junk and every sibling reads 'no incoming' \u2014 a confident wrong answer about stock the customer could have had."

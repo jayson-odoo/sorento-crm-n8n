@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "S4b orders by latest END DATE, then latest START DATE, then the CRM's own order. BRAVO ends 2026-10-31 so it leads; ALPHA and CHARLIE tie on 2026-09-30 and ALPHA's later start (2026-06-01 > 2026-05-01) puts it second. attachments are index-paired with answers, so the SAME permutation must be applied to both or a later pick sends the wrong PDF. Because the list was reordered the response body is REBUILT from the sorted rows (the LLM's rendering is keyed to the CRM order and is now stale) and the freshness stamp is carried across verbatim."

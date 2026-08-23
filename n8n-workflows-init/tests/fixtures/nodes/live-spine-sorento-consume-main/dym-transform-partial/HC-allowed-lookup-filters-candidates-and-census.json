@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "TWIN CONTRACT. dym-transform and dym-transform-partial are byte-identical apart from the `promotion` DOMAIN_PROBE entry (and two comment rules), so every behaviour that is not promotion-specific MUST hold identically on both. Ported deliberately rather than left to the twin: this repo has been bitten before by a fork asserted to be identical that had quietly drifted, and a rule proven on only one copy is a rule the other copy is free to lose. Same inputs, same expected output as dym-transform/HC-allowed-lookup-filters-candidates-and-census.json \u2014 if the two ever disagree, one of these two fixtures fails.\n\nBehaviour under test: The gate's allowed_lookup narrows which entity types may be offered at all. A promotion candidate under a product-only lookup is filtered out of BOTH tokenCandidates and the uuid census \u2014 if it survived only the census it would fabricate a cross-company ambiguity and suppress a perfectly good annotation.",

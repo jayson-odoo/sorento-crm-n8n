@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "THE ONE BEHAVIOURAL DIFFERENCE between this node and dym-transform: the partial twin's DOMAIN_PROBE has no `promotion` entry, because the partial lane comes off the RESULTS arm of If6 where a promotion miss cannot arrive. Byte-for-byte the same input that makes dym-transform plan a crm_marketing_promotions_list probe (see dym-transform/D1-promotion-miss-single-candidate.json) must here skip with `domain_not_enabled` and probe nothing. Copying the promotion entry across \u2014 the obvious 'they are twins, sync them' edit \u2014 is exactly what this pins."

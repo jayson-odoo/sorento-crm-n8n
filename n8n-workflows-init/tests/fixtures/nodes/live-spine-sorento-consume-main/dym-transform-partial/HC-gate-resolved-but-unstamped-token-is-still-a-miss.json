@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "TWIN CONTRACT. dym-transform and dym-transform-partial are byte-identical apart from the `promotion` DOMAIN_PROBE entry (and two comment rules), so every behaviour that is not promotion-specific MUST hold identically on both. Ported deliberately rather than left to the twin: this repo has been bitten before by a fork asserted to be identical that had quietly drifted, and a rule proven on only one copy is a rule the other copy is free to lose. Same inputs, same expected output as dym-transform/HC-gate-resolved-but-unstamped-token-is-still-a-miss.json \u2014 if the two ever disagree, one of these two fixtures fails.\n\nBehaviour under test: A gate resolution stamped with anything other than those two reasons must NOT suppress the miss, or a future stamp would silently start swallowing genuine did-you-means.",

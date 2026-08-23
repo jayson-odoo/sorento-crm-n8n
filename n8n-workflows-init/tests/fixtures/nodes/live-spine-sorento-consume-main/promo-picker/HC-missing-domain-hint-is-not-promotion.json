@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "`(parser.domain_hint ?? null) !== 'promotion'` \u2014 an ABSENT domain_hint is not a promotion turn, so the node must return its input completely untouched: no sort stamp, no roster, no rewritten response. Anything else means a non-promotion domain is being rewritten by the promotion picker."

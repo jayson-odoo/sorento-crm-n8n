@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "Three rows tie on end date, so the start date decides \u2014 and a row with NO start date must sink below one that has it, while the two undated rows keep the CRM's own order between them. This is the start-date leg's null arm specifically: without it the undated rows compare false-both-ways and the list silently reverts to arrival order."

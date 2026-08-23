@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The pre-`resolutions` resolver shape is still supported: with no resolutions array but a populated unresolved_tokens, the whole resolver object is treated as ONE resolution and the token label falls back through unresolved_tokens[0]. That shape also carries no entity_type, so entity_type comes out null and for_hint falls back to the PARSER entity's hint -- the two halves of the FINDING-2 fallback in one case. Dropping this branch would silently stop offering did-you-means on that shape rather than fail loudly."

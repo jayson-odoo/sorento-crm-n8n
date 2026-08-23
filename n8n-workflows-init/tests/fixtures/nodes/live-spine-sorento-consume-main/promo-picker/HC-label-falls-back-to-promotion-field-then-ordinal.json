@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "A promotion row need not carry a `title`. Both the roster label and the unmet-token join fall back to the row's own 'Promotion' field, and a row with neither gets the ordinal placeholder 'promotion N' rather than an empty label the customer cannot refer to. The join is what is really under test: ALPHA is shown (so its token contributed and must NOT be reported unmet) while BETA is not \u2014 if the field fallback broke, NOTHING would look contributed, the miss would read as total, and the per-item note would silently disappear."

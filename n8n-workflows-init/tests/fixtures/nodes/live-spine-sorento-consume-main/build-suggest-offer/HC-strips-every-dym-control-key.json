@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "dym-transform / dym-annotate pass the not-found payload through and APPEND their own control keys; this node must delete all fourteen so its output stays byte-identical to the pre-dym-probe shape on every un-annotated path. Each key is seeded with a sentinel here, so dropping any one of them from _DYM_CTRL_KEYS leaks a visible value. (Reviewer F-STRIP: dym_capped_codes / probe_cap_applied were the two that got missed the first time.)"

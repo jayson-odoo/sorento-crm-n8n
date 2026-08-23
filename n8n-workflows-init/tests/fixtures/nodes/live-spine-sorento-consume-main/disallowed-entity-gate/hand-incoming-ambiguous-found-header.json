@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "Two tokens: one resolves exactly, one stays ambiguous. mc-prefix-collapse's 'Found:' header names the codes that DID resolve (distinct product codes from exact_entities), on its own un-numbered line so downstream annotators keying on /^\\d+\\.\\s/ never read it as a pick. compatible_entities is then narrowed to the OFFERED uuids only \u2014 the cleanly-resolved product is deliberately NOT carried while a pick is pending. resolved_company still comes from `flat` (every match), so the exact row's company is reported even though it is not compatible."
  },

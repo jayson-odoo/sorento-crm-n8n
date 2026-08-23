@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "A brand entity on an 'order' turn. ALLOWED.order has no 'brand', so compatible_entities filters to empty while `entities` is non-empty \u2014 the 'types [...] incompatible' arm: gate_passed false, and the reason lists the DISTINCT types actually resolved. compatible_entities is the filtered (empty) list, not the raw one. Routing still reports resolved_company from the brand the PARSER named ('Cabana'), because _brands falls back to _parserBrand for every match \u2014 while routing_companies stays empty, since no COMPATIBLE entity carries a company."
  },

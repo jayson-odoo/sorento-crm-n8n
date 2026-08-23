@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "entity-ids-transformer can only turn a known entity_type into a narrowing *_ids filter, and crm_inventory_stock_balance_list documents 'ALL FILTERS OPTIONAL \u2014 call with none to span every product'. An unmappable type therefore contributes NO narrowing and would trigger a full-table prod read that labels every candidate 'has stock'. It must be dropped."

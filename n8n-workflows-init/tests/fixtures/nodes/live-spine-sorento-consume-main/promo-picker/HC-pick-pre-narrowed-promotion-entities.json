@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "When the parser resolved the pick into PROMOTION entities and did NOT reuse the previous scope, this turn's answers are ALREADY the picked rows; re-applying the positions would double-filter (the live bug where picking '3' narrowed to 1 row and then reported 'there is only 1 promotion'). The branch must pass answers through untouched, republish the FULL roster so a second 'all' still expands, and stamp pre_narrowed:true."

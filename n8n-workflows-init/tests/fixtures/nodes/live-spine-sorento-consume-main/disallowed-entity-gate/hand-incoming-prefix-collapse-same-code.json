@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "mc-prefix-collapse: no exact tier, but both prefix hits are ONE code in two companies \u2014 that is one product, not a choice. Both uuids resolve, no picker is built, and the token is STAMPED back onto the input's own resolutions (resolved true / ambiguous false / resolved_by 'same-code-collapse') so the downstream did-you-mean consumers stop treating it as a miss. Two companies means resolved_company is null (never collapse a mixed set to an arbitrary first match) while resolved_companies lists both, and routing_companies is sorted by company_name (Mocha before Sorento) with routing_company null."
  },
