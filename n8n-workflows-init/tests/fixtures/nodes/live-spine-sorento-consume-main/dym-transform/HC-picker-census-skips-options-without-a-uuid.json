@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The picker census counts an option only when it has BOTH a code and a UUID-shaped uuid. Requiring both to be missing instead would fold `undefined` into the uuid set, turn a perfectly ordinary duplicate line into a cross-company ambiguity, and silently unprobe the code. Here SRTA appears twice \u2014 once properly, once without a uuid \u2014 and must still be probed."

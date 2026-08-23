@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "The fallback arm for workflows without tier-gate: entitlement comes from Aggregate's `name` list, the stated levels come from parser.access_levels, and the comparison is case-insensitive on the ENTITLEMENT side ('Sorento Dealer' vs 'End User'). Nothing matches, so the stated levels are echoed verbatim in the notice. brand_gate_empty / brand_unheld are hard false on this arm \u2014 it knows nothing about brands."
  },

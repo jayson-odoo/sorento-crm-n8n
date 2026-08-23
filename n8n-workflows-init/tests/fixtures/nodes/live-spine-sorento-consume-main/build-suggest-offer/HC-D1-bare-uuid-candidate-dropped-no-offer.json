@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "A promotion's canonical_code IS its uuid, and the human name lives in display.description. A candidate with neither must be dropped rather than rendered \u2014 leaking a raw uuid to the customer is the bug this guard exists for. With the only candidate dropped there are no surviving tokens, so suggest_offer stays false and the turn falls through to escalate-only."

@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "dym-partial-disambiguation v3: some tokens resolved (stock answered) while another is a genuine miss. The miss is appended to the CUSTOMER text as a numbered did-you-mean with a contiguous global idx, the roster goes into a SEPARATE dym_last_result_set (last_result_set and selection_context are untouched, so the stock positional pick still works), and the single parser-visible marker '[M did-you-mean suggestions active]' is appended to the compressed response. The offer is armed with ttl 3 and the execution id, and each row keeps its OWN source token in for_raw/for_hint so a pick replaces the right entity. Exact-tier candidates are excluded (an exact match would have resolved) and for_canonical is null because the parser entity carried no canonical_code. Also pins reconcileEntities: the resolver's entity_type and canonical_code overwrite the parser's hint, taking matches[0] for a multi-match token."
  },

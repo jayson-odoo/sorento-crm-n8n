@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The gate can pass on a raw parser HINT with no uuid behind it. Probing crm_master_product_attachments_list without an attachment_type filter returns every attachment of every type, so a brochure-only product would be labelled 'has certificate'. With no UUID-shaped attachment_type/certificate entity anywhere the node must fail CLOSED: skip reason `no_scoping_entity` and an EMPTY dym_candidate_codes, even though a perfectly good product candidate was available."

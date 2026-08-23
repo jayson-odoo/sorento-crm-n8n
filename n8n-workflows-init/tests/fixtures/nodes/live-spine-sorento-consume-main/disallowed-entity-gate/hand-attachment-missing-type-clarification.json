@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "REQUIRED_TYPES.product_attachment = ['attachment_type']: the product resolved but no attachment_type did, in the resolver OR in the parser hints, so the gate closes AFTER the compatibility check and renders the attachment_type clarification, using the parser's product raw as the subject. The REQUIRE_SPECIFIC block still runs (product_attachment is in REQUIRE_SPECIFIC_DOMAINS) and resolves the single exact product, so compatible_entities is the exact_entities set \u2014 closing the gate does not stop that resolution."
  },

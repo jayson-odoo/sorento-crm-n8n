@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "crm_incoming_stock_list rows do not always carry the code as `title`; the same machinery as annotate-incoming-picker falls back to the 'Product Code' field, matched case-insensitively with optional whitespace. Same expected picker as the title-shaped case \u2014 if this fallback breaks, every sibling silently reads 'no incoming'."

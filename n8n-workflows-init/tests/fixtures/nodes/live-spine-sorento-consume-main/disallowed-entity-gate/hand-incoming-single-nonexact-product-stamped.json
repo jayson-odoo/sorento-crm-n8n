@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "ONE non-exact product match for a token. It resolves (there is nothing to choose between) and \u2014 because a one-row set trivially shares one code \u2014 it goes through the same-code-collapse arm, so the token is stamped resolved_by 'same-code-collapse'. That stamp is what suppresses a did-you-mean for a token that WAS answered; the separate `products.length === 1` arm below it is unreachable for exactly this reason."
  },

@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "On the pre-narrowed branch the notice is applied to `response` only when there IS one. An envelope carrying just `response_intro` must come out with no `response` key invented \u2014 widening that guard produces the literal string 'undefined' underneath the access notice, which is what the customer would then read."

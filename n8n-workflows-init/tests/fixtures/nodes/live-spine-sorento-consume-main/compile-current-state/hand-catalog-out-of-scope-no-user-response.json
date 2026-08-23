@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "escalate-catalog's out_of_scope arm sets includeResponse FALSE: the parser-facing `response` still carries the catalog line, but `user_response` is never assigned, so the key is absent and this node sends the customer nothing (the human takeover speaks instead). manualResponse also suppresses the compression block, so `response` survives verbatim rather than being rewritten to 'Previous turn (...)'."
  },

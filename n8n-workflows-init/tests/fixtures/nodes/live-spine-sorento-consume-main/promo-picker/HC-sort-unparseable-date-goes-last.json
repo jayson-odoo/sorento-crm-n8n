@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "A non-ISO end date yields a null sort key, and the comparator sends null LAST. A naive descending string compare would put the empty/garbage value at the TOP, so this pins the explicit null handling in both the end-date and start-date legs."

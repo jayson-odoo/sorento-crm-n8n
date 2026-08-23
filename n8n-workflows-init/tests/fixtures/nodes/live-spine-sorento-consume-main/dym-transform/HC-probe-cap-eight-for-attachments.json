@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The attachment probe's cap is 8, not 3: it is additionally scoped by attachment_type_ids, and the measured grain is ~0.8-1.3 rows per candidate, so eight candidates use about ten of the backend's 50-row budget. Three tokens carrying three candidates each is nine \u2014 the ninth is capped away and renders bare. The two domains' caps were measured separately and must not be generalised from one another, which is what this pins."

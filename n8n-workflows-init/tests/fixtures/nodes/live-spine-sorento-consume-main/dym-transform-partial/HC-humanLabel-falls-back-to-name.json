@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "humanLabel is shared code and the promotion domain is the only thing this node does not have, so the label chain must be pinned here on a domain it DOES have. A candidate whose canonical_code is uuid-shaped has no human code, so the label comes from `display` \u2014 and a candidate with no label at all is dropped before it can be probed. This node mirrors build-suggest-offer's selection EXACTLY; if the two disagree about which candidates survive, the annotation lands on codes that were never rendered. Third and last source: display.name."

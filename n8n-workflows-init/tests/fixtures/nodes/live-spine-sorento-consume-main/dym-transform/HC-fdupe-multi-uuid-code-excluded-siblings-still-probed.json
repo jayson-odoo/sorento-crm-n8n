@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "product_code is unique PER COMPANY, so one code behind two uuids is TWO COMPANIES' products. tokenCandidates dedupes by code and throws that evidence away, after which arrival order would silently decide whose product the rendered line describes \u2014 and because both probe tools are company-scoped the twin returns zero rows, printing '- no stock details' about someone else's product. The ambiguous code must therefore be EXCLUDED (rendered bare, never annotated) while its unambiguous sibling is still probed. The census counts exact-tier entries too: an exact twin still proves the code is cross-company ambiguous."

@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The strict miss fires when EITHER response field is present \u2014 the envelope is not guaranteed to carry both, and requiring both would leave a customer reading the original 'here are your results' text above rows the node has just decided do not answer the question. With only `response_intro` on the way in, both fields come out carrying the miss."

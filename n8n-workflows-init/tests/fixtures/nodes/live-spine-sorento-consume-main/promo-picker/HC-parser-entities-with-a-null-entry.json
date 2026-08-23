@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The parser entity list is walked twice \u2014 once for the scope echo and once to build the token-hint map that decides whether a strict miss collapses. Both walks null-guard the entry, and the hint map's guard is the one that throws if inverted. The turn must still reach the brand-only verdict."

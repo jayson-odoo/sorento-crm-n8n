@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "container-status S1: the resolver's word-tier fallback hands back two document classes. The parser already named the class it meant (an 'attachment' entity with canonical_code 'container status'), so the >1 attachment_type set is narrowed to the class that matches on code OR display.type_name; gate_reason gets the '; document-class narrowed to [...]' suffix. Because exactly ONE class survived, its token is also stamped resolved on the input's own resolutions with resolved_by 'document-class-narrowing' and matches pruned to the single hit \u2014 that is what stops compile-current-state offering the answer back as a did-you-mean. The other token is untouched: it keeps its own miss."
  },

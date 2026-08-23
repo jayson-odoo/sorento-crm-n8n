@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "Every candidate filter in one turn: a SECOND row with the same canonical_code is de-duped, a row whose entity_type is not in the gate's allowed_lookup is dropped, a row with no code at all is dropped, an EXACT row arriving via alternatives[] is skipped (an exact match would have resolved, so offering it back is nonsense), and what survives is capped at 3 \u2014 the fourth valid code is not offered. Order is preserved: the cap takes the first three, never a re-sorted set."
  },

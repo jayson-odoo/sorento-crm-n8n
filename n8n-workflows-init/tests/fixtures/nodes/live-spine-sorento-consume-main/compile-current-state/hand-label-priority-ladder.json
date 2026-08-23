@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "The label ladder, in its documented order: title > code > canonical_code > display.product_name > the 'Form Name' field > 'Promotion Name' > 'Product' > the FIRST field's value > the positional 'item N' fallback. It covers both envelope shapes (title/fields) and raw resolver shapes (code/canonical_code/display). `what` comes from the FIRST row's attachment_type only \u2014 'certificates' here \u2014 which is why the summary line reads 'returned 9 certificates' even though only row 1 is one. `product` prefers the 'Product' field, then it.product, then it.code, and uuid prefers it.uuid then it.id."
  },

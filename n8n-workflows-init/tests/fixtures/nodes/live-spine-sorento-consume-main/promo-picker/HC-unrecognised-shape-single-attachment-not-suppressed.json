@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The unrecognised-envelope guard exists to stop a fail-OPEN dump of EVERY file, so it suppresses only when there is more than one attachment. With exactly one file there is no list to get wrong: the attachment rides through and only the diagnostic key is stamped. This pins the `> 1` boundary that a `>= 1` mutation would silently widen into swallowing single-file answers."

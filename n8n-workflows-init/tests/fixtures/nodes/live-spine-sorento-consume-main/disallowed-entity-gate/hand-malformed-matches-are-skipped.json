@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "The resolver's list can contain a null and a row with no uuid; both are skipped rather than dereferenced, so entities_count is 1 and the uuid-keyed map never grows a null/undefined key. Every later pass over `flat` (the routing rows, the brand scan) has to survive the same input."
  },

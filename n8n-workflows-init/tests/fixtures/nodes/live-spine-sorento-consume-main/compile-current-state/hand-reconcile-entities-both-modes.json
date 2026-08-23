@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned_from": "contract",
   "rationale": "The resolver's entity_type overrides the parser's hint, by two different routes: the first entity matches an OR-mode resolution TOKEN (and once matched, the intersection is not consulted \u2014 the token match wins outright), the second matches an AND-mode row by its display.product_name rather than its code. Both come back with the resolver's type and its canonical_code attached; an unmatched entity would keep the parser's guess."
  },

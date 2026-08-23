@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The inventory probe_cap is a CORRECTNESS value, not a tuning value: the row grain is warehouse x system-location (measured 13 rows for ONE stocked candidate), so past three candidates the backend's default limit of 50 saturates and truncation is structurally undetectable. Two missed tokens carrying two candidates each is four; the fourth must land in dym_capped_codes and be absent from dym_candidate_codes, so it renders BARE downstream \u2014 the cap can withhold an annotation but must never invent one."

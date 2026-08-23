@@ -1,7 +1,7 @@
 {
  "source": {
   "hand_crafted": true,
-  "expected_from": "body-run",
+  "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The CRM can return a row with no `fields` at all. The date reader guards on Array.isArray(a.fields) before touching it, so such a row yields a null key and sorts LAST instead of throwing and taking the whole turn down. Also fixes the render: a fieldless row contributes an empty block rather than crashing renderBlocks."
