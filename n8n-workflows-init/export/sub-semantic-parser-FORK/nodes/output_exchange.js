@@ -1269,6 +1269,36 @@ if (output.output && !output.output.is_menu_label && _ceUnknownHints.size) {
   output.output.unknown_entity_hints = [..._ceUnknownHints].sort();
 }
 
+// ── BARE-TOKEN RE-HINT: keep the value the user actually typed (captain, 2026-08-23) ─────────
+// Carrying the domain is only half the fix. On a bare-token turn the HINT is guessed from the
+// code's shape too, and blocklist-apply (immediately below) deletes any entity whose hint is
+// blocked for the FINAL domain. Console retest 2026-08-23: "SRTWC8354-SH-200" came back
+// hint 'inbound_shipment'; _bareEntityTurn correctly carried domain 'inventory'; the entity was
+// then dropped for being a shipment hint in a stock enquiry, and the customer got
+// "A inventory enquiry can't be answered with a general search - please specify a product".
+// Losing the value is worse than mistyping it: a naked value in domain D IS D's subject, so
+// re-hint it instead of throwing it away. The resolver still decides the real entity type.
+// Mirrors DOMAIN_SUBJECT_HINT (declared in the pick-rehydration scope above) — keep in sync.
+if (_bareEntityTurn && output.output.domain_hint) {
+  const _BARE_SUBJECT_HINT = {
+    product_attachment: 'product', master_products: 'product', inventory: 'product',
+    incoming: 'product', resource_attachment: 'attachment', portal_link: 'form',
+    goods_receive: 'goods_receive', spo_allocation: 'spo', forms: 'form',
+    order: 'order', promotion: 'promotion',
+  };
+  const _subj = _BARE_SUBJECT_HINT[output.output.domain_hint] || null;
+  const _blockedNow = new Set(DOMAIN_BLOCKED_HINTS[output.output.domain_hint] || []);
+  if (_subj && !_blockedNow.has(_subj)) {
+    let _rehinted = 0;
+    for (const e of (Array.isArray(output.output.entities) ? output.output.entities : [])) {
+      if (!e || e.current_message !== true) continue;
+      if (!_blockedNow.has(String(e.hint || '').toLowerCase())) continue;   // already compatible
+      e.hint = _subj; _rehinted += 1;
+    }
+    if (_rehinted) output.output.bare_entity_rehinted = _rehinted;          // diagnostic
+  }
+}
+
 if (output.output?.entities && Array.isArray(output.output.entities)) {
   const domain = output.output.domain_hint;
   // A TIME-only or single-axis widening is not an entity-scope broaden: it keeps the customer

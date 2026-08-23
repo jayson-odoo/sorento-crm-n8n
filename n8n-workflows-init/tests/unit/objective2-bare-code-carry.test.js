@@ -48,4 +48,16 @@ test('bare product code after a stock turn stays in the stock domain', () => {
     `a bare entity value must continue the previous domain (${prevDomain}), got '${o.domain_hint}'`,
   );
   assert.notEqual(o.domain_hint, 'incoming', 'a bare product code must not be read as a shipment enquiry');
+
+  // Carrying the domain is not enough: the LLM's guessed hint ('inbound_shipment') is blocked for
+  // the carried domain, so blocklist-apply strips the entity and the turn degrades to
+  // "A inventory enquiry can't be answered with a general search" (console retest, 2026-08-23).
+  // The value the user typed must SURVIVE, carrying a hint the carried domain accepts.
+  const cur = (o.entities || []).filter((e) => e && e.current_message === true);
+  assert.ok(cur.length > 0, 'the typed value must survive as a current-message entity');
+  assert.ok(
+    cur.some((e) => String(e.raw || '').toLowerCase().includes('srtwc8354')),
+    'the code the user actually typed must still be there',
+  );
+  assert.equal(cur[0].hint, 'product', "in the inventory domain a bare code is the domain's subject: a product");
 });
