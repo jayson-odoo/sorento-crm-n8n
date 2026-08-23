@@ -1,0 +1,71 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; no live execution has ever reached the poll loop (see hand-poll-completed.json). Input shaped from the GET /media/jobs/{job_id} callback body documented in the node header.",
+    "rationale": "This is the reason the `failed` -> immediate poll (poll_wait_s: 0) exists at all in media-route: the synchronous POST response's `notices` were computed BEFORE the worker ran, so a worker-side refusal (unreadable audio, clip measured over the cap) is only on the ledger row and only the job GET carries it. The merge must therefore let `notices` through UNCHANGED on a failed job — media-route then renders notice[0].text instead of the generic fallback. `polledOk` is still true here (status is present and truthy; a non-null `error` alone does not falsify it, since the guard only fires when status AND job_id are both absent), so `error` passes through verbatim rather than being replaced by the transport string."
+  },
+  "ctx": {
+    "media-route": [
+      {
+        "json": {
+          "action": "poll",
+          "modality": "voice",
+          "rendered_text": null,
+          "confirmation_text": null,
+          "reply_text": null,
+          "poll_wait_s": 0,
+          "poll_n": 0,
+          "job_id": "job-failed-2",
+          "media_url": "https://cdn.example.invalid/voice-2.opus",
+          "message_id": "msg-2",
+          "reason": "failed"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "job_id": "job-failed-2",
+        "status": "failed",
+        "respond_io_id": "900000001",
+        "message_id": "msg-2",
+        "modality": "voice",
+        "turn_id": "13584319",
+        "context": { "source": "n8n-spine" },
+        "tier": null,
+        "result": null,
+        "notices": [
+          { "kind": "unreadable", "text": "I could not make out that voice note. Please send it again or type your message and I will help straight away.", "append": false }
+        ],
+        "error": "transcription_empty"
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-poll-failed" },
+  "expected": [
+    {
+      "json": {
+        "job_id": "job-failed-2",
+        "decision": "accepted",
+        "status": "failed",
+        "idempotent_replay": false,
+        "tier": null,
+        "quota": null,
+        "notices": [
+          { "kind": "unreadable", "text": "I could not make out that voice note. Please send it again or type your message and I will help straight away.", "append": false }
+        ],
+        "language_strategy": null,
+        "result": null,
+        "error": "transcription_empty",
+        "_polled": true,
+        "_poll_n": 1,
+        "_poll_ok": true,
+        "_mock": false
+      }
+    }
+  ]
+}

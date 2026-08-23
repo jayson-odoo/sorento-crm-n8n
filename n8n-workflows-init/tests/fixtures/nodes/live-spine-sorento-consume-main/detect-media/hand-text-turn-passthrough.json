@@ -1,0 +1,54 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only. The one live media turn to date (exec 13584318) is captured separately as exec-13584318.json; this case pins the OTHER 99% of traffic, an ordinary text turn, for which the node must be a no-op.",
+    "rationale": "detect-media sits on EVERY turn, immediately after redis-pop, so the regression that matters most is not the media branch at all: it is that a text turn comes out byte-identical apart from the added `_media`. modality stays null (no attachment -> t and mime are both ''), which sends if-media-in down the FALSE leg straight to tf-message. Two things are deliberately pinned as null here rather than as values: `attachment_type` and `mime_type` collapse '' -> null via `t || null`, and `message_id` is null because the queue item carries messageId at message.message.messageId, NOT at the A level the body reads (`item.messageId`) - see the note in this PR; the real capture shows the same null, so the fixture records live behaviour, not the intended contract."
+  },
+  "ctx": {},
+  "input": [
+    {
+      "json": {
+        "message": {
+          "contact": { "id": 900000001 },
+          "message": {
+            "message": {
+              "message": { "type": "text", "text": "price for SRTWC286" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-text-turn" },
+  "expected": [
+    {
+      "json": {
+        "message": {
+          "contact": { "id": 900000001 },
+          "message": {
+            "message": {
+              "message": { "type": "text", "text": "price for SRTWC286" }
+            }
+          }
+        },
+        "_media": {
+          "modality": null,
+          "attachment_type": null,
+          "media_url": null,
+          "mime_type": null,
+          "caption": "price for SRTWC286",
+          "bytes": null,
+          "duration_ms": null,
+          "duration_source": null,
+          "message_id": null,
+          "respond_io_id": "900000001",
+          "test_run_id": null,
+          "scope": null
+        }
+      }
+    }
+  ]
+}

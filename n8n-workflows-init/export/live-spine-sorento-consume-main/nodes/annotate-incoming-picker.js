@@ -22,7 +22,7 @@ const src = String(gate.gate_clarification || '');
 const annotated = src.split('\n').map(line => {
   const m = line.match(/^\s*\d+\.\s+(.+?)\s*$/);
   if (!m) return line;                                   // header / non-item line
-  const status = hasIncoming.has(norm(m[1])) ? ' — has incoming' : ' — no incoming';
+  const status = hasIncoming.has(norm(m[1])) ? ' - has incoming' : ' - no incoming';
   return line + status;
 }).join('\n');
 

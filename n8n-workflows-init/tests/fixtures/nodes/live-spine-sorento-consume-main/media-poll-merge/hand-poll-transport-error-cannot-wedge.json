@@ -1,0 +1,57 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only; no live execution has ever reached the poll loop (see hand-poll-completed.json). The input is the n8n error item media-poll-http emits under onError=continueRegularOutput.",
+    "rationale": "The 'can never wedge' claim in the node header. media-poll-http failed (timeout / 404), so the item carries only {error}, no status: `polledOk` is falsy, and the node must still emit ONE well-formed MediaProcessResponse-shaped item so media-route can fall to the CRM fallback copy instead of the turn dead-ending. With no status of its own the node inherits one from prev.reason: 'failed' here (the poll that was fired to fetch a worker refusal), which keeps media-route on the failed branch and, because resp._polled is now true, sends it to the fallback reply rather than round-tripping the same poll again. `error` is flattened from the n8n error object to its .message string; tier/result/notices collapse to null/null/[] because nothing was actually read."
+  },
+  "ctx": {
+    "media-route": [
+      {
+        "json": {
+          "action": "poll",
+          "modality": "voice",
+          "rendered_text": null,
+          "confirmation_text": null,
+          "reply_text": null,
+          "poll_wait_s": 0,
+          "poll_n": 0,
+          "job_id": "job-transport-4",
+          "media_url": "https://cdn.example.invalid/voice-4.opus",
+          "message_id": "msg-4",
+          "reason": "failed"
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "error": { "message": "connect ETIMEDOUT 10.0.0.1:443" }
+      }
+    }
+  ],
+  "runIndex": 1,
+  "execution": { "id": "hand-poll-transport" },
+  "expected": [
+    {
+      "json": {
+        "job_id": "job-transport-4",
+        "decision": "accepted",
+        "status": "failed",
+        "idempotent_replay": false,
+        "tier": null,
+        "quota": null,
+        "notices": [],
+        "language_strategy": null,
+        "result": null,
+        "error": "connect ETIMEDOUT 10.0.0.1:443",
+        "_polled": true,
+        "_poll_n": 2,
+        "_poll_ok": false,
+        "_mock": false
+      }
+    }
+  ]
+}

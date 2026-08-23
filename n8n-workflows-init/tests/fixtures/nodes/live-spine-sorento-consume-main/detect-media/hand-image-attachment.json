@@ -1,0 +1,78 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "reasoned": true,
+    "n8n_access": "read-only GET /executions only. No image turn has reached live yet (the single media turn, exec 13584318, was a voice note), so this is reasoned from the node's own contract and the CRM's MediaModality literal.",
+    "rationale": "The image half of the only routing signal the lane has. attachment.type 'image' selects modality 'image' before the mime check even matters, `bytes` is taken from attachment.size, and duration_ms/duration_source stay null because they are voice-only (`modality === 'voice' ? ... : null` on both). caption is null, not '': an empty E.text fails the `String(E.text).trim()` truthiness test and the ladder falls through description -> caption -> null, which is what lets the CRM decide the turn is captionless and ask for clarification instead of extracting from an empty string."
+  },
+  "ctx": {},
+  "input": [
+    {
+      "json": {
+        "message": {
+          "contact": { "id": 900000001 },
+          "message": {
+            "message": {
+              "message": {
+                "type": "attachment",
+                "text": "",
+                "attachment": {
+                  "type": "image",
+                  "url": "https://cdn.example.invalid/photo.jpg",
+                  "fileName": "photo.jpg",
+                  "mimeType": "image/jpeg",
+                  "ext": "jpg",
+                  "size": 204800,
+                  "isPending": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "runIndex": 0,
+  "execution": { "id": "hand-image-attachment" },
+  "expected": [
+    {
+      "json": {
+        "message": {
+          "contact": { "id": 900000001 },
+          "message": {
+            "message": {
+              "message": {
+                "type": "attachment",
+                "text": "",
+                "attachment": {
+                  "type": "image",
+                  "url": "https://cdn.example.invalid/photo.jpg",
+                  "fileName": "photo.jpg",
+                  "mimeType": "image/jpeg",
+                  "ext": "jpg",
+                  "size": 204800,
+                  "isPending": false
+                }
+              }
+            }
+          }
+        },
+        "_media": {
+          "modality": "image",
+          "attachment_type": "image",
+          "media_url": "https://cdn.example.invalid/photo.jpg",
+          "mime_type": "image/jpeg",
+          "caption": null,
+          "bytes": 204800,
+          "duration_ms": null,
+          "duration_source": null,
+          "message_id": null,
+          "respond_io_id": "900000001",
+          "test_run_id": null,
+          "scope": null
+        }
+      }
+    }
+  ]
+}

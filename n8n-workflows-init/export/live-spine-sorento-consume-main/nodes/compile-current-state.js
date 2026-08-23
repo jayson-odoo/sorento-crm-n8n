@@ -509,6 +509,17 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
   };
 
   const _entities = Array.isArray(qf.entities) ? qf.entities : [];
+  // entity-type-label helpers: normalized match key (resolve-entity's `token` is space/dash-
+  // stripped before it reaches the resolver, `entities[].raw` is not) and a display-prettifier
+  // for a snake_case/kebab-ish resolver entity_type (open vocabulary; a plain lowercase word
+  // passes through as-is). Mirrors the confirm-prefix IIFE below (normTok/prettify) byte-for-byte.
+  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+  const _prettifyType = (t) => {
+    const s = String(t ?? '').trim();
+    if (!s) return '';
+    if (!/[_-]/.test(s) && s === s.toLowerCase()) return s;
+    return s.replace(/[_-]+/g, ' ').trim().toLowerCase();
+  };
   let idx = 0;
   const _lines = [];
   const _numbered = [];   // -> dym_last_result_set rows (only when M >= 1)
@@ -516,10 +527,22 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
   for (const res of surfaced) {
     const token = res.token || unresolved[0] || (qf.entities?.[0]?.raw) || 'that item';
     const picks = cap3(tokenCandidates(res)).map(m => ({ m, label: humanLabel(m) })).filter(p => p.label);
+    // entity-type-label: annotate the miss/DYM line with what the bot thought this token was —
+    // resolver PRIMARY (this token's own res.matches[0].entity_type — open vocabulary,
+    // prettified only if snake_case/ugly), parser hint (qf.entities[].hint) FALLBACK when the
+    // resolver named nothing, bare when neither is known (byte-identical then). Matches the
+    // confirm-prefix IIFE's priority below so a token's type label never disagrees between the
+    // media-confirm line and this miss/DYM line. Uses its OWN source-entity lookup (_typeSrcEnt,
+    // dash/space-normalized) rather than the picks-branch's _srcEnt below (pick-linkage match,
+    // case-insensitive-trim) so restoring labels here cannot perturb that linkage's behavior.
+    const _typeSrcEnt = _entities.find(e => _typeNorm(e.raw) === _typeNorm(token));
+    const _rawType = (res && Array.isArray(res.matches) && res.matches[0] && res.matches[0].entity_type) || null;
+    const _typeLabel = _prettifyType(_rawType) || (_typeSrcEnt && _typeSrcEnt.hint) || '';
+    const _typeSfx = _typeLabel ? ` (${_typeLabel})` : '';
     if (picks.length) {
       // dym-candidate-map: each candidate keeps its OWN source token (per-token _srcEnt; no borrow).
       const _srcEnt = _entities.find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
-      _lines.push(`"${token}", did you mean:`);
+      _lines.push(`"${token}"${_typeSfx}, did you mean:`);
       for (const p of picks) {
         idx += 1;
         const isU = isUuid(p.m.canonical_code);
@@ -543,7 +566,7 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
         });
       }
     } else {
-      _lines.push(`"${token}": not found.`);   // zero renderable candidates -> plain line, no idx
+      _lines.push(`"${token}"${_typeSfx}: not found.`);   // zero renderable candidates -> plain line, no idx
     }
   }
   const M = _numbered.length;   // total numbered candidates across surfaced tokens
@@ -680,5 +703,196 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);
   output.variables.routing_companies    = _fresh ? _g.routing_companies              : (_sameTeam && Array.isArray(_prev.routing_companies) ? _prev.routing_companies : null);
 }
+// MI-D (2026-08-22, captain Option D): media confirm MERGED into the answer, not a separate
+// message. send-transcript-confirm is gated off (if-transcribed-confirm forced false - see
+// that node); this block prepends the CRM's photo/voice confirmation_text (question-stripped,
+// entity-type labeled) as the first line(s) of whatever this node ends up sending. Placed as
+// the LAST statement before `return output` so it applies exactly once regardless of which
+// internal branch (central-exchange happy path / escalate-catalog miss / build-suggest-offer
+// DYM / the multi-company clarify override above) produced `output.user_response`.
+// RESTORED 2026-08-22 (media-scope edit): an intervening publish reverted this workflow to a
+// pre-MI-D draft (versionId 8b576315 -> 91e57e21, ~11:54Z) and lost this block along with three
+// unrelated hunks (customer-picker roster extension, entity-type-label on miss/DYM lines, the
+// em-dash sanitizer) - those three are OUT OF SCOPE here and were NOT restored; only this block,
+// byte-identical to the pre-revert capture except for the media-scope filter/trim below, flagged
+// in the report. See docs/LESSONS.md #24 (revert landmine).
+(() => {
+  try {
+    if (!$('patch-transcript').isExecuted) return;                 // text turn - no media, no-op
+    const media = ($('patch-transcript').first().json.message || {})._media || {};
+    const rawFull = media.confirmation_text;
+    if (typeof rawFull !== 'string' || !rawFull.trim()) return;     // media turn but nothing to confirm
+    if (typeof output.user_response !== 'string' || !output.user_response.trim()) return;
+
+    // NOTICE SPLIT (2026-08-22, quote-strip fix): media-route now appends degraded-tier/other
+    // notices AFTER the confirmation sentence, joined with the lane's "\n\n" separator, so
+    // confirmation_text can arrive as "<confirmation>[.?]\n\n<notice...>". Split on the FIRST
+    // blank-line boundary: only the confirmation segment gets the interrogative-tail strip and
+    // the shape/label logic below; any notices are carried through verbatim, untouched, and
+    // re-spliced back between the (stripped) confirmation and the answer body.
+    const _blankIdx = rawFull.indexOf('\n\n');
+    const raw = _blankIdx === -1 ? rawFull : rawFull.slice(0, _blankIdx);
+    const noticesTail = _blankIdx === -1 ? '' : rawFull.slice(_blankIdx + 2);
+    const joinNotices = (s) => noticesTail ? `${s}\n\n${noticesTail}` : s;
+
+    // 1. strip the trailing confirmation question ("Is that right?" / any interrogative tail -
+    // a trailing clause with no internal sentence punctuation that ends in "?") - applied to
+    // the confirmation segment only, never to a notice.
+    const stripped = raw.replace(/\s*[^.!?]*\?\s*$/, '').trim();
+    let stmt = stripped || raw.replace(/\?+\s*$/, '').trim();
+
+    // CAPTAIN DECISION 2026-08-22 (media entity scope): on a media-derived turn only
+    // product/customer/order entities are meaningful; OCR noise the extractor reads off the
+    // image (sizes/dimensions, dates, loose furniture words the parser hints as category)
+    // must not become lookup entities and must not appear in this prefix.
+    // AMENDED 2026-08-22 (captain): promotion added to the allow-list too, so a promotion
+    // entity read off a flyer is both looked up (resolve-entity-http) and named here.
+    // The caption's own attachment_type entity (e.g. "photo"/"technical drawing") is the
+    // request's FILTER, never something read FROM the media - it is excluded from the prefix
+    // the same way it always was (never a printed clause), not by this allow-set.
+    const ALLOW_HINTS = new Set(['product', 'customer', 'order', 'promotion']);
+    // Attribute-kind clauses (self-describing, e.g. "size L580xW460xH400mm") never become
+    // entities - CRM `app/services/media_extract/wording.py` ATTRIBUTE_LABELS is the closed
+    // vocabulary: batch_number/barcode/box_dimension/product_size/quantity/document_number/
+    // document_date. All except document_number are dropped as noise; document_number is kept
+    // (order/document-number is the one attribute kind the captain named meaningful). FLAG: if
+    // "document date" ever turns out load-bearing on some turn, this one-line list is the revert.
+    const DROP_ATTR_LABELS = ['size', 'quantity', 'batch number', 'barcode', 'box dimension', 'document date'];
+
+    // 2. label source per token: resolve-entity matches[].entity_type PRIMARY (open vocabulary -
+    // whatever the resolver returns, prettified only if snake_case/ugly), reformulator `hint`
+    // FALLBACK for tokens the resolver didn't cover (or never ran), bare when neither classifies.
+    const qEnts = (() => {
+      try { return $('Call \'sub-query-reformulator\'').first().json.output.entities || []; }
+      catch (e) { return []; }
+    })();
+    const resolutions = (() => {
+      try {
+        if (!$('resolve-entity').isExecuted) return [];
+        const rj = $('resolve-entity').first().json || {};
+        return Array.isArray(rj.resolutions) ? rj.resolutions : [];
+      } catch (e) { return []; }
+    })();
+
+    const normTok = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+    const prettify = (t) => {
+      const s = String(t ?? '').trim();
+      if (!s) return '';
+      if (!/[_-]/.test(s) && s === s.toLowerCase()) return s;      // already a plain lowercase word
+      return s.replace(/[_-]+/g, ' ').trim().toLowerCase();
+    };
+
+    // resolve-entity's `token` is SPACE-STRIPPED before it ever reaches the resolver (dashes
+    // kept) - reformulator's `entities[].raw` is the UNSTRIPPED original spelling and is what
+    // actually appears in the CRM's confirmation_text (e.g. Whisper renders "SRT WC286SH" with
+    // the space; resolve-entity's token for the SAME entity is "SRTWC286SH"). Join the two by
+    // the normalized key so we search for the text as it ACTUALLY reads in confirmation_text,
+    // while still taking the entity_type from the resolver (the authoritative source).
+    const qByNorm = new Map();
+    for (const e of qEnts) { if (e && e.raw) qByNorm.set(normTok(e.raw), e); }
+
+    // labelFor: normTok(raw) -> { type, allowed }. `allowed` decides membership in the media
+    // prefix (Step 2B) and mirrors resolve-entity-http's own media-scope filter (Step 2A) so a
+    // token's verdict never disagrees between the resolve request and this prefix.
+    const labelFor = new Map();
+    for (const res of resolutions) {
+      const t = res && res.token;
+      if (!t) continue;
+      const m = [].concat(res.matches || [])[0];
+      if (!m || !m.entity_type) continue;
+      const key = normTok(t);
+      const qe = qByNorm.get(key);
+      // attachment_type is the request's FILTER (e.g. the caption "check product photo"),
+      // never something read FROM the image/voice - skip it by hint, not by token value.
+      if (qe && String(qe.hint || '').toLowerCase() === 'attachment_type') continue;
+      const hint = qe ? String(qe.hint || '').toLowerCase() : null;
+      const allowed = hint ? ALLOW_HINTS.has(hint) : ALLOW_HINTS.has(String(m.entity_type || '').toLowerCase());
+      labelFor.set(key, { type: String(m.entity_type), allowed });
+    }
+    for (const e of qEnts) {
+      if (!e || !e.raw || !e.hint) continue;
+      const key = normTok(e.raw);
+      if (String(e.hint).toLowerCase() === 'attachment_type') continue;   // same skip as above
+      if (labelFor.has(key)) continue;                                    // resolver already classified it
+      labelFor.set(key, { type: e.hint, allowed: ALLOW_HINTS.has(String(e.hint).toLowerCase()) });
+    }
+
+    // 3. wording.py `confirmation()`/`clarification()` both build this sentence as a fixed
+    // "I read <join_phrase(entity+attribute phrases)> from that photo[.<tail>]" shape (image
+    // only - voice's `voice_confirmation()` just quotes the transcript verbatim and has no item
+    // list, so this regex simply won't match a voice turn and stmt passes through unchanged,
+    // same as before this edit). `join_phrase`: ", ".join(items[:-1]) + " and " + items[-1].
+    const shape = /^(I read )(.+?)( from that photo\.)([\s\S]*)$/;
+    const sm = shape.exec(stmt);
+    if (sm) {
+      const lead = sm[1], itemsBlob = sm[2], tail = sm[3], rest = sm[4];
+      let items;
+      const commaParts = itemsBlob.split(', ');
+      if (commaParts.length > 1) {
+        const last = commaParts.pop();
+        const lastParts = last.split(' and ');
+        items = commaParts.concat(lastParts.length === 2 ? lastParts : [last]);
+      } else {
+        const twoParts = itemsBlob.split(' and ');
+        items = twoParts.length === 2 ? twoParts : [itemsBlob];
+      }
+
+      const kept = [];
+      for (const raw0 of items) {
+        const item = raw0.trim();
+        if (!item) continue;
+        const attrHit = DROP_ATTR_LABELS.some(lbl => item.toLowerCase().startsWith(lbl + ' '));
+        if (attrHit) continue;                              // drop: recognized noise attribute kind
+        const found = labelFor.get(normTok(item));
+        if (found) {
+          if (!found.allowed) continue;                      // drop: disallowed hint (e.g. category)
+          const label = prettify(found.type);
+          kept.push(label ? `${item} (${label})` : item);
+        } else {
+          kept.push(item);   // unrecognized clause (e.g. "document number ..."): keep bare, never guessed
+        }
+      }
+
+      if (kept.length) {
+        const joined = kept.length === 1 ? kept[0] : kept.slice(0, -1).join(', ') + ' and ' + kept[kept.length - 1];
+        stmt = `${lead}${joined}${tail}${rest}`;
+        output.user_response = `${joinNotices(stmt)}\n\n${output.user_response}`;
+      } else if (noticesTail) {
+        // kept.length === 0: nothing allow-set survived (every read item was noise) - skip the
+        // entity-confirmation prefix (never invent CRM-unsourced wording), but a notice still
+        // carries real information (e.g. degraded tier) and must still reach the customer.
+        output.user_response = `${noticesTail}\n\n${output.user_response}`;
+      }
+      // kept.length === 0 and no notices: nothing to prepend, the underlying answer sends
+      // unprefixed, exactly as before.
+      return;
+    }
+
+    // CAPTAIN DECISION 2026-08-22 (voice quote must stay verbatim): confirmation_text
+    // didn't match the known "I read ... from that photo." shape - this is the path every
+    // VOICE turn takes (voice_confirmation() just quotes the transcript verbatim, no item
+    // list to label). Pass the sentence through UNLABELED - no regex-splice label injection.
+    // The removed splice risked landing mid-word ("SRT (product)WC286SH") and put labels
+    // inside a quoted transcript, which the captain ruled out here. `stmt` already has the
+    // trailing interrogative tail stripped (step 1 above), so nothing further is needed.
+    output.user_response = `${joinNotices(stmt)}\n\n${output.user_response}`;
+  } catch (e) { /* never block the answer on a labeling bug - send it unlabeled/unprefixed */ }
+})();
+// EM-DASH SANITIZER (captain hard rule 2026-08-22): dynamic text (LLM/CRM/RAG sourced) must
+// never carry U+2014 to the customer. Deep-walk the final payload and fold every em-dash to a
+// hyphen -- covers user_response, quick_reply, and every persisted variables.* string, no
+// matter which arm produced it. Non-string / non-object values pass through untouched.
+(function _sanitizeEmDash(o) {
+  if (o && typeof o === 'object') {
+    for (const k of Object.keys(o)) {
+      const v = o[k];
+      if (typeof v === 'string') o[k] = v.replace(/\u2014/g, '-');
+      else if (v && typeof v === 'object') _sanitizeEmDash(v);
+    }
+  }
+  return o;
+})(output);
+
 return output;
+
 
