@@ -363,7 +363,7 @@ const _DECISIVE_INTENTS = new Set([
   // decisive intent and fall through the !_explicit gate below.
   'submit_idea',
 ]);
-const _explicit = _DECISIVE_INTENTS.has(output.output.intent_hint) && !!output.output.domain_hint;
+let _explicit = _DECISIVE_INTENTS.has(output.output.intent_hint) && !!output.output.domain_hint;
 output.output.domain_signal_source = _explicit ? 'intent_explicit' : 'intent_none';  // diagnostic
 
 // ── #6: deterministic domain-SWITCH word signal (this-turn-only) ──
@@ -393,6 +393,40 @@ const _SWITCH_FILLER = new Set([
   'check','get','show','give','tell','about','need','want','wanna','see','list','all',
   'ada','untuk','tolong','boleh','nak','saya','ni','tu','ke','yang','dan','ada?','pun','je','ya','ha',
 ]);
+// ── BARE-TOKEN TURN: a naked value is not evidence of intent (captain, 2026-08-23) ───────────
+// Measured across three real turns (fork 13629764 / 13631374, spine 13626771): when the message is
+// ONLY a code the LLM types it by SHAPE. "SRTWC8354-SH-200" straight after a STOCK turn came back
+// hint 'inbound_shipment' with intent_hint 'check_incoming'; 'check_incoming' is in
+// _DECISIVE_INTENTS, so _explicit was true, the entity-bearing continuity carry below stood down
+// by design, and the customer got container ETAs instead of stock. A different run of the same
+// shape produced a null domain and a clarify instead — same cause, different guess.
+//
+// A naked token carries NO linguistic evidence for any intent or hint; the model is guessing from
+// the code's shape, and it cannot be prompted into being reliably uncertain. So an intent inferred
+// from a bare token alone is not decisive: clear _explicit and let the deterministic carry decide.
+// The resolver settles the real entity type downstream regardless of the hint.
+//
+// NARROW: fires only when every content token of the message (filler removed) is part of a
+// current-message entity raw — i.e. the user typed values and nothing else. "check stock for X"
+// keeps a content word that is not in the entity, so it is unaffected and stays explicit.
+const _bareEntityTurn = (() => {
+  try {
+    const msg  = String(parent_input.latest_user_message ?? '').split(/\s*reply to:/i)[0].toLowerCase();
+    const toks = (msg.match(/[a-z0-9]+/g) || []).filter(t => !_SWITCH_FILLER.has(t));
+    if (!toks.length) return false;
+    const raws = (Array.isArray(output.output.entities) ? output.output.entities : [])
+      .filter(e => e && e.current_message === true)
+      .map(e => String(e.raw ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ''))
+      .filter(Boolean);
+    if (!raws.length) return false;
+    return toks.every(t => raws.some(r => r.includes(t)));
+  } catch (e) { return false; }
+})();
+if (_bareEntityTurn && _explicit) {
+  _explicit = false;
+  output.output.bare_entity_turn = true;          // diagnostic
+}
+
 let _switchDomain = null;
 if (!_explicit) {
   const _swMsg = String(parent_input.latest_user_message ?? '').split(/\s*reply to:/i)[0].toLowerCase();
@@ -1109,7 +1143,10 @@ if (output.output.message_type !== 'casual' && output.output.message_type !== 'r
                       .filter(e => e && e.current_message === true);
     if (prevDom && curEnts.length > 0) {
       const blockedForPrev = new Set(DOMAIN_BLOCKED_HINTS[prevDom] || []);   // hoist declaration — see note
-      const compatible = curEnts.every(e => !blockedForPrev.has(String(e.hint || '').toLowerCase()));
+      // On a bare-token turn the hint is guessed from the code's shape (see _bareEntityTurn), so it
+      // cannot be used to detect a topic switch — that is precisely the signal that is missing.
+      const compatible = _bareEntityTurn
+        || curEnts.every(e => !blockedForPrev.has(String(e.hint || '').toLowerCase()));
       if (compatible) {
         output.output.domain_hint  = prevDom;                                // OVERRIDE guessed domain
         output.output.intent_hint  = parent_input.previous_conversation_state?.intent_hint || output.output.intent_hint || null;
