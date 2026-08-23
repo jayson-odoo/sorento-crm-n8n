@@ -7,6 +7,8 @@
 // Shape (grounded, exec 9240705 / 12924778):
 //   redis-pop .json.message                 = the queue item (A)
 //   A.message                               = B  <- tf-message returns THIS
+//   B.message                               = D  { messageId, channelMessageId, contactId,
+//                                                  channelId, traffic, timestamp, message: E }
 //   B.message.message                       = E  { text, type, attachment }
 //   E.attachment                            = { type: image|audio|file|video|text, url, fileName,
 //                                               mimeType, mime, ext, size, isPending, description? }
@@ -21,6 +23,12 @@ const item = (src && src.message) || {};
 const B = item.message || {};
 const E = (B.message && B.message.message) || B.message || {};
 const att = (E && E.attachment) || {};
+// D = the respond.io message envelope that carries the ids (B.message; E is D.message). The ids
+// are NOT on A: `item.messageId` is undefined, which is how `message_id` reached the CRM as ""
+// and collapsed its idempotency key to (contact, modality, ordinal) — issue #35. This is the
+// same value the rest of the spine reads as `$('tf-message').first().json.message.messageId`
+// (tf-message returns B), so the media ledger stays joinable to chat_histories.
+const D = B.message || {};
 
 const t = String(att.type || '').toLowerCase();
 const mime = String(att.mimeType || att.mime || '').toLowerCase();
@@ -82,7 +90,13 @@ out._media = {
   bytes,
   duration_ms: modality === 'voice' ? duration_ms : null,
   duration_source: modality === 'voice' ? duration_source : null,
-  message_id: item.messageId != null ? String(item.messageId) : null,
+  // respond.io's own `messageId` first — the CRM field is documented as "Respond.io messageId"
+  // (app/schemas/external/media.py) and it is the id chat_histories and sub-human-intervention
+  // already log, so a ledger row can be joined back to the message. `channelMessageId` (the
+  // WhatsApp wamid) is the fallback for a channel that sends no respond.io id: anything is
+  // better than the empty string, which silently merges different messages into one key.
+  message_id: D.messageId != null ? String(D.messageId)
+    : D.channelMessageId != null ? String(D.channelMessageId) : null,
   respond_io_id: item.contact && item.contact.id != null ? String(item.contact.id) : null,
   // harness control (clone-only readers; inert on live)
   test_run_id: item.test_run_id || null,

@@ -5,7 +5,8 @@
     "node": "detect-media",
     "captured_at": "2026-08-23T05:30:11+00:00",
     "expected_from": "runData",
-    "dev_contact": true
+    "dev_contact": true,
+    "amended": "2026-08-23, issue #35: `expected._media.message_id` is the ONE field in this fixture that no longer matches the captured runData. Live emitted null because detect-media read `item.messageId` one level too shallow, so the CRM idempotency key (respond_io_id, message_id, modality, media_ordinal) collapsed to (contact, modality, ordinal) and a SECOND voice note from this contact could be served this one's cached transcript. The fixture was pinning that defect, so it is amended to the id this same envelope carries at message.message.message.messageId (1787461870000000 - the value this very execution already logged to chat_histories). Everything else is untouched runData."
   },
   "ctx": {
     "When Executed by Another Workflow": [
@@ -5024,7 +5025,7 @@
           "bytes": 10428,
           "duration_ms": 2607,
           "duration_source": "estimated_from_size_32kbps",
-          "message_id": null,
+          "message_id": "1787461870000000",
           "respond_io_id": "900000001",
           "test_run_id": null,
           "scope": null

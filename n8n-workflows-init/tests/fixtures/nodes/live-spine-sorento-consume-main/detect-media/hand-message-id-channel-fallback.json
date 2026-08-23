@@ -1,0 +1,88 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned": true,
+  "n8n_access": "read-only GET /executions only. Same envelope as hand-message-id-from-real-envelope.json with respond.io's own `messageId` removed - no live execution shows this yet, because every WhatsApp turn to date carries both ids.",
+  "rationale": "issue #35, the second rung of the ladder. `messageId` is respond.io's own id and is what the rest of the spine keys on, but it is not guaranteed for every channel/injection path, and a null there would put the empty string back into the CRM idempotency key - the exact defect this fix exists to remove. So `channelMessageId` (the WhatsApp wamid, stable per message) is the fallback rather than nothing. This case is what makes the ORDER of the ladder falsifiable: if the two arms were swapped, hand-message-id-from-real-envelope.json goes red; if the fallback arm were dropped, this one goes red."
+ },
+ "ctx": {},
+ "input": [
+  {
+   "json": {
+    "message": {
+     "message": {
+      "event_type": "message.received",
+      "message": {
+       "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQTdFQ0IyM0E0RTVDMTYzQzAwNQA=",
+       "traffic": "incoming",
+       "message": {
+        "type": "attachment",
+        "text": "what is this",
+        "attachment": {
+         "type": "audio",
+         "url": "https://cdn.chatapi.net/whatsapp_business/453209/900000001/audio.opus",
+         "isPending": false,
+         "fileName": "audio.opus",
+         "mimeType": "audio/ogg; codecs=opus",
+         "size": 10428
+        }
+       }
+      }
+     },
+     "contact": {
+      "id": 900000001
+     }
+    }
+   }
+  }
+ ],
+ "runIndex": 0,
+ "execution": {
+  "id": "hand-message-id-channel-fallback"
+ },
+ "expected": [
+  {
+   "json": {
+    "message": {
+     "message": {
+      "event_type": "message.received",
+      "message": {
+       "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQTdFQ0IyM0E0RTVDMTYzQzAwNQA=",
+       "traffic": "incoming",
+       "message": {
+        "type": "attachment",
+        "text": "what is this",
+        "attachment": {
+         "type": "audio",
+         "url": "https://cdn.chatapi.net/whatsapp_business/453209/900000001/audio.opus",
+         "isPending": false,
+         "fileName": "audio.opus",
+         "mimeType": "audio/ogg; codecs=opus",
+         "size": 10428
+        }
+       }
+      }
+     },
+     "contact": {
+      "id": 900000001
+     }
+    },
+    "_media": {
+     "modality": "voice",
+     "attachment_type": "audio",
+     "media_url": "https://cdn.chatapi.net/whatsapp_business/453209/900000001/audio.opus",
+     "mime_type": "audio/ogg; codecs=opus",
+     "caption": "what is this",
+     "bytes": 10428,
+     "duration_ms": 2607,
+     "duration_source": "estimated_from_size_32kbps",
+     "message_id": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQTdFQ0IyM0E0RTVDMTYzQzAwNQA=",
+     "respond_io_id": "900000001",
+     "test_run_id": null,
+     "scope": null
+    }
+   }
+  }
+ ]
+}
