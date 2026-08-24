@@ -19,15 +19,15 @@ function cleanDescription(text) {
       .join('\n')
       .replace(new RegExp(UUID_RE, 'gi'), '')
       .replace(/\n{3,}/g, '\n\n')
-      .trim(); 
+      .trim();
   }
-  
+
   let output;
 
   // 1. Parse the JSON safely
   if ($json.output && typeof $json.output === 'object') {
     output = $json.output;
-  } else {  
+  } else {
     let raw = String($json.output || '');
 
     // Strip markdown code fences if present.
@@ -36,7 +36,7 @@ function cleanDescription(text) {
     );
 
     const idx = raw.indexOf('{');
-    if (idx === -1) { 
+    if (idx === -1) {
       output = { response: raw };
       output.quick_reply = $json.quick_reply;
     } else {
@@ -106,40 +106,40 @@ function cleanDescription(text) {
     if (output.query_used) {
       finalMessage += `_Query: ${String(output.query_used).trim()}_\n\n`;
     }
-  
+
     if (Array.isArray(output.action_links) && output.action_links.length > 0) {
       output.action_links.forEach((link, index) => {
         finalMessage += `${index + 1}. *${link.label || 'Link'}:* ${link.url}\n`;
-      });   
+      });
       finalMessage += '\n';
     }
-  
+
     if (Array.isArray(output.answers) && output.answers.length > 0) {
         output.answers.forEach((ans, index) => {
         let desc = cleanDescription(ans.description);
         let extra = '';
-    
+
         if (ans.product) {
           extra += `\n*Product:* ${ans.product}`;
         }
-    
+
         if (ans.stock_qty !== undefined && ans.stock_qty !== null && ans.stock_qty !== '') {
           extra += `\n*Quantity:* ${ans.stock_qty}`;
         }
-    
+
         let line = `${index + 1}. ${desc}${extra}`;
-    
+
         if (ans.is_discontinued === true || ans.is_discontinued === 'true') {
           line += '  ⚠️  *(PRODUCT DISCONTINUED)*';
         }
-          
+
         if (ans.is_expired === true || ans.is_expired === 'true') {
           line += '  ⚠️  *(PROMO EXPIRED)*';
         }
-    
+
         finalMessage += line + '\n';
       });
-    
+
       finalMessage += '\n';
     }
 
