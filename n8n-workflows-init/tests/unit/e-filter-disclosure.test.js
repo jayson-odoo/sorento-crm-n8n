@@ -45,18 +45,30 @@ test('E2: an EMPTY result states the date scope too - that is when it matters mo
 test('D4: clearing every filter refuses in words the customer can act on', () => {
   const body = loadNodes(SLUG, ['not-found-error-message.js'])['not-found-error-message.js'];
   const fx = load('obj1-not-found-error-message.json');
-  // force the no-scope arm: strip every resolved entity from the gate's view
+  // Reproduce the state the last "all customers" turn arrives in: the gate refused for lack of
+  // scope (not for a token that missed), so nothing is unresolved and no entity survives. Every
+  // one of these is a needsScope precondition in the body - set them all, or a different arm
+  // answers and the assertions below silently test nothing.
   for (const item of fx.ctx['disallowed-entity-gate'] || []) {
+    item.json.gate_passed = false;
+    item.json.gate_reason = 'order requires a scoping entity';
+    item.json.unresolved_tokens = [];
     item.json.compatible_entities = [];
     item.json.require_specific = false;
   }
+  for (const item of fx.ctx['resolve-entity'] || []) item.json.unresolved_tokens = [];
   for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) item.json.output.entities = [];
   const out = runNode({ body, fixture: fx, slug: SLUG, nodeName: 'not-found-error-message' });
   const o = Array.isArray(out) ? out[0].json : out;
   const msg = String(o.escalate_message || o.response || '');
-  if (!/every |general search/i.test(msg)) return;   // a different arm answered; nothing to assert
+  assert.match(msg, /would search every/i, 'the unscoped-search arm must be the one that answered');
   assert.doesNotMatch(msg, /\bA order\b/, 'the broken article must be gone');
   assert.match(msg, /at least one filter/i, 'it must say that one filter is enough to continue');
   assert.doesNotMatch(msg, /customer_order|order_number|inbound_shipment|goods_receive/,
     'internal entity type names must not be offered to the customer as the remedy');
+  // The same defect one line over: the remedy sentence read "Give me a order number, transporter,
+  // or customer, or a date range" - broken article again, and two lists welded together.
+  assert.doesNotMatch(msg, /\ba\s+[aeiou]/i, 'the article must agree with the word that follows it');
+  assert.doesNotMatch(msg, /,\s*or\b[\s\S]*,\s*or\b/,
+    'one list with one "or" - the date range is another option, not an afterthought');
 });

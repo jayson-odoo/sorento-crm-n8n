@@ -69,10 +69,15 @@ if (missingAttachmentType) {
     const w = _HUMAN_SCOPE[String(t || '').toLowerCase()];
     if (w && !_asked.includes(w)) _asked.push(w);
   }
-  const _ask = _asked.length ? humanList(_asked.slice(0, 3)) : 'customer or product';
+  // The date range is one MORE option, so it belongs inside the list - appending it after a
+  // finished list produced "a order number, transporter, or customer, or a date range" (two ors,
+  // and the same broken article this arm was rewritten to remove). The article agrees with
+  // whatever word ends up first, which varies with the domain's allowed_lookup.
+  const _opts = (_asked.length ? _asked.slice(0, 3) : ['customer', 'product code']).concat('date range');
+  const _art = /^[aeiou]/i.test(_opts[0]) ? 'an' : 'a';
   escalate_message =
     `That would search every ${_scopeWord} we have - I need at least one filter to narrow it down. ` +
-    `Give me a ${_ask}, or a date range, and I can look it up.`;
+    `Give me ${_art} ${humanList(_opts)}, and I can look it up.`;
   is_clarification = true;
 
 } else {
