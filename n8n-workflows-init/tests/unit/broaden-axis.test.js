@@ -34,3 +34,22 @@ test('"all products" drops the product axis and keeps the customer', () => {
   assert.ok(!hints.includes('product'), `the product filter must be gone, got ${JSON.stringify(ents)}`);
   assert.ok(hints.includes('customer'), 'the customer the user is still asking about must remain');
 });
+
+// A bare product code after a customer pick must KEEP that customer (exec 13687305 / fork
+// 13687312). The LLM guessed domain 'master_products' for the naked code while the conversation was
+// in 'order'; the scope-carry policy read that as a domain change, cleared the carried scope
+// (scope_cleared_on_domain_change = 1), and the answer came back for a completely different
+// customer - DILOOMA SDN BHD. bare_entity_turn then restored 'order', so the domain change the
+// clear reacted to no longer existed by the end of the node.
+test('a bare code after a pick keeps the pinned customer', () => {
+  const body = loadNodes(SLUG, ['output_exchange.js'])['output_exchange.js'];
+  const entry = loadFixtures(SLUG, NODE).find(f => f.name.includes('bare-code-keeps-pinned-customer'));
+  assert.ok(entry, 'fixture bare-code-keeps-pinned-customer must exist');
+  const o = runNode({ body, fixture: entry.fixture, slug: SLUG, nodeName: NODE })[0].json.output;
+
+  assert.equal(o.domain_hint, 'order', 'the naked code does not move the conversation');
+  const hints = (o.entities || []).map(e => String(e.hint || '').toLowerCase());
+  assert.ok(hints.includes('product'), 'the code the user typed must be there');
+  assert.ok(hints.includes('customer'), `the picked customer must survive, got ${JSON.stringify(o.entities)}`);
+  assert.ok(!o.scope_cleared_on_domain_change, 'a domain change that gets undone is not a domain change');
+});

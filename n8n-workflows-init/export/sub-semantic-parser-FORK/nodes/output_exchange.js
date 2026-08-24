@@ -625,9 +625,17 @@ if (output.output && !output.output.is_menu_label) {
       // promotion for it") is exactly the cross-domain carry that must keep working, and is handled
       // by the case above, never here. A null current domain (a bare pick, a casual reply) is not a
       // change — the domain is inherited further down.
+      // A BARE-TOKEN TURN IS NOT A DOMAIN CHANGE. On such a turn the domain here is still the
+      // LLM's guess from the code's SHAPE, and the entity-bearing carry further down is about to
+      // replace it with the previous domain (_bareEntityTurn). Clearing scope on that guess throws
+      // away a pick the user made and never took back. Measured, exec 13687305 / fork 13687312:
+      // after picking DELUXE HOME CENTRE, the naked code "MFG6653-DIY" was guessed as
+      // master_products, this block cleared the carried customer, the carry then restored 'order',
+      // and the answer came back for DILOOMA SDN BHD - a customer never mentioned in the
+      // conversation. By the end of the node the domain change this reacted to did not exist.
       const _prevDom = parent_input.previous_conversation_state?.domain_hint || null;
       const _curDom  = output.output.domain_hint || null;
-      if (_prevDom && _curDom && _prevDom !== _curDom && current.length > 0) {
+      if (_prevDom && _curDom && _prevDom !== _curDom && current.length > 0 && !_bareEntityTurn) {
         if (keptPrior.length) output.output.scope_cleared_on_domain_change = keptPrior.length;   // diagnostic
         keptPrior = [];
       }
