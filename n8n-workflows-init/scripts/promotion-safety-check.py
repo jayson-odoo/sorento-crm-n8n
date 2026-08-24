@@ -621,26 +621,55 @@ def positive_summary(wf, slug, profile, body_note, counts, bindings, warnings):
 
 
 # ------------------------------------------------------------------- main ---
-def run(slug, profile):
-    wf, body_note = load_workflow(slug)
-    counts = inbound_counts(wf)
+def run_against(body, profile):
+    """THE IMPORTABLE ENTRY POINT. Runs all 10 checks against an ALREADY-ASSEMBLED workflow body
+    and returns (counts, bindings, violations, warnings).
+
+    `body` is any dict with `nodes` + `connections`. In particular it is the exact dict deploy.py
+    gate (f) hands to its PUT — {name, nodes, connections, settings} — which is the whole point:
+    a payload gate that re-derived the body from export/<slug>/ would be inspecting bytes that
+    are merely SIMILAR to the ones that ship. `run(slug, ...)` below is this function plus the
+    export/-tree load, so the CLI and deploy.py execute the identical checks.
+
+    Nothing here needs `id`, `versionId` or `pinData`; a PUT body carries none of them."""
+    counts = inbound_counts(body)
     bindings = []
-    for n in wf.get("nodes", []):
+    for n in body.get("nodes", []):
         for cred_type, cred in (n.get("credentials") or {}).items():
             bindings.append((n.get("name"), cred_type, (cred or {}).get("id"),
                              (cred or {}).get("name")))
 
     V, W = [], []
-    check_1_is_test(wf, profile, V)
-    check_2_tokens(wf, profile, V, W)
-    check_3_fork_ids(wf, profile, V, W)
-    check_4_test_db_cred(wf, V)
-    check_5_redis_queue(wf, profile, V)
-    check_6_egress_inbound(wf, profile, V, counts)
-    check_7_harness_nodes(wf, profile, V)
-    check_8_http_nodes(wf, profile, V)
-    check_9_credentials(wf, profile, V, bindings)
-    check_10_node_settings(wf, profile, V)
+    check_1_is_test(body, profile, V)
+    check_2_tokens(body, profile, V, W)
+    check_3_fork_ids(body, profile, V, W)
+    check_4_test_db_cred(body, V)
+    check_5_redis_queue(body, profile, V)
+    check_6_egress_inbound(body, profile, V, counts)
+    check_7_harness_nodes(body, profile, V)
+    check_8_http_nodes(body, profile, V)
+    check_9_credentials(body, profile, V, bindings)
+    check_10_node_settings(body, profile, V)
+    return counts, bindings, V, W
+
+
+def print_violations(violations, warnings):
+    """Every violation, never just the first — an operator fixing one at a time, re-running, and
+    finding another is how a gate gets bypassed. Shared by the CLI and deploy.py's gate (f2) so
+    the two read identically."""
+    for v in sorted(violations, key=lambda f: (f.check, f.node or "")):
+        print(v.render("FAIL"))
+        print()
+    by_check = collections.Counter(v.check for v in violations)
+    print("violations by check: " + ", ".join(
+        f"#{c}={by_check[c]}" for c in sorted(by_check)))
+    if warnings:
+        print(f"(plus {len(warnings)} warning(s), not counted above)")
+
+
+def run(slug, profile):
+    wf, body_note = load_workflow(slug)
+    counts, bindings, V, W = run_against(wf, profile)
     return wf, body_note, counts, bindings, V, W
 
 
@@ -666,14 +695,7 @@ def main():
         print(f"    body inspected: {body_note}")
         print(f"\nREFUSED - {len(violations)} violation(s). This payload is a TEST artifact, "
               f"not a production one.\n")
-        for v in sorted(violations, key=lambda f: (f.check, f.node or "")):
-            print(v.render("FAIL"))
-            print()
-        by_check = collections.Counter(v.check for v in violations)
-        print("violations by check: " + ", ".join(
-            f"#{c}={by_check[c]}" for c in sorted(by_check)))
-        if warnings:
-            print(f"(plus {len(warnings)} warning(s), not counted above)")
+        print_violations(violations, warnings)
         print("\nDo NOT promote. Fix every line above, or promote a different export.")
         return 1
 

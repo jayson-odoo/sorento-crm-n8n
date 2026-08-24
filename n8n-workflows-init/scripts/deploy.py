@@ -26,12 +26,26 @@ GATES (fail-closed, in order — first failure stops the run and exits 1):
   (f) assemble (via assemble.py) + build the PUT body: ONLY
       {name, nodes, connections, settings} — see NODE IDS / NAME / SETTINGS
       below for what is kept, dropped, or renamed and why.
+  (f2) payload safety: promotion-safety-check.py's 10 checks against the
+      body built in (f) — the exact bytes that ship. Refuses a payload still
+      carrying test scaffolding (is_test to a guarded live sub, test:q:/
+      test:egress:, the n8n_test db cred, fork ids, orphaned egress nodes,
+      NoOp-ed CRM reads, credential drift, lost node settings). Profile by
+      TARGET id; SKIPPED for the TEST clone and for UNPROTECTED scratch ids,
+      which legitimately carry that scaffolding. See payload_gate_profile().
   (g) credentials: passed through UNCHANGED. See CREDENTIALS below.
   (h) diff summary (added/removed/changed node names, jsCode sha deltas) vs
       the target's current body, then `--yes` or an interactive `y`.
   (i) PUT /api/v1/workflows/<id>. Only reached if NOT --dry-run and gate (h)
       was confirmed. Own-id deploys re-run export-workflows.py + --verify
-      afterwards; a rollback command is always printed.
+      FOR THAT ONE SLUG afterwards; a rollback command is always printed.
+
+--rollback runs a REDUCED gate set (d, e, h) by design, and deliberately does
+NOT run (f2). A rollback body is bytes n8n itself served from this target, saved
+by gate (e) — it restores a known-previous state, it cannot introduce anything
+new. It is also the remediation FOR a bad deploy, so gating it on the same check
+that let the bad deploy through is circular, and an outage is the worst possible
+time to discover a gate standing between you and the last good body.
 
 --dry-run performs (a)-(h) — including the real npm test run and the real
 backup GET+write (both read-only / local, never a workflow write) — prints
@@ -109,6 +123,7 @@ def _load_module(name, filename):
 
 ew = _load_module("export_workflows", "export-workflows.py")
 asm = _load_module("assemble", "assemble.py")
+psc = _load_module("promotion_safety_check", "promotion-safety-check.py")
 
 # S10b (reviewer): this used to be a DENYLIST (`PROTECTED = {known-live-id: label, ...}`) — and it
 # already omitted real live ids named in this repo's own CLAUDE.md "Key IDs" table
@@ -347,6 +362,60 @@ def build_put_body(assembled_wf, target_wf):
     return body, stripped
 
 
+# ----------------------------------------------------------------- gate f2 --
+# The PAYLOAD gate (scripts/promotion-safety-check.py, commit 27f8d06). Every other gate here asks
+# "is the operator allowed to write there, and is the export fresh?" — not one asks "is this thing
+# safe to BE live?". It is placed AFTER (f) because (f) is where assemble.py folds nodes/*.js in
+# and build_put_body strips settings, so this inspects the exact bytes that ship; and BEFORE (h)
+# because (h) is the interactive confirm, and a refusal must land before the operator is asked
+# anything.
+#
+# The profile is chosen by TARGET id, not by source slug: the question is "is this body safe to be
+# live AS <target>", and only the target knows what shape production has there.
+PAYLOAD_GATE_PROFILES = {
+    "9qVyfUxmRQqrpGRMDLRuz": "live-spine",
+    "XTODTw-dJcV0uRdC056hG": "live-parser",
+}
+
+
+def payload_gate_profile(to_id):
+    """The promotion-safety-check profile for this target, or None to SKIP the gate entirely.
+
+    THE INVERSION: a deploy ONTO the TEST clone must skip. The clone is legitimately full of test
+    scaffolding — that scaffolding IS its containment (LESSONS #16/#17: orphaned egress nodes,
+    is_test on every shared-sub call, the n8n_test session copy). Gating it would refuse the
+    clone's own routine redeploy with ~110 violations and make this tool unusable for daily work,
+    and a tool that must be bypassed daily teaches the operator to bypass it (LESSONS #82).
+
+    The skip set is the clone plus UNPROTECTED — read, never modified, so it cannot drift out of
+    step: UNPROTECTED is by definition "scratch/throwaway targets, inactive, no live caller", and
+    a scratch target added there later inherits the skip without anyone remembering to.
+
+    Everything else gets `generic`, which refuses only unambiguous scaffolding."""
+    if to_id == CLONE_GUARD_ID or to_id in UNPROTECTED:
+        return None
+    return PAYLOAD_GATE_PROFILES.get(to_id, "generic")
+
+
+def gate_f2(put_body, to_id):
+    """Returns (ok, message, violations, warnings). violations is empty unless ok is False."""
+    profile = payload_gate_profile(to_id)
+    if profile is None:
+        why = ("the TEST clone — its test scaffolding IS its containment"
+               if to_id == CLONE_GUARD_ID else "on the UNPROTECTED scratch allowlist")
+        return True, (f"(f2) SKIPPED — {to_id} is {why}; a payload gate here would refuse "
+                      f"its own routine redeploy."), [], []
+    _counts, bindings, violations, warnings = psc.run_against(put_body, profile)
+    if violations:
+        return False, (f"(f2) FAIL — {len(violations)} payload violation(s) under profile "
+                       f"'{profile}'. This body is a TEST artifact, not a production one."), \
+            violations, warnings
+    warn_note = f", {len(warnings)} warning(s)" if warnings else ""
+    return True, (f"(f2) OK — payload clean under profile '{profile}': all 10 checks pass "
+                  f"({len(put_body.get('nodes', []))} nodes, {len(bindings)} credential-bearing"
+                  f"{warn_note})."), [], warnings
+
+
 # ------------------------------------------------------------------ gate h --
 def compute_diff(assembled_nodes, target_nodes):
     a_by_name = {n["name"]: n for n in assembled_nodes}
@@ -458,6 +527,15 @@ def do_deploy(args):
           f"{len(put_body['nodes'])} nodes (ids pass through unchanged), "
           f"settings stripped: {stripped_settings or '(none)'}")
 
+    hr("gate (f2) payload safety")
+    ok, msg, violations, warnings = gate_f2(put_body, to_id)
+    print(f"  {msg}")
+    if not ok:
+        print()
+        psc.print_violations(violations, warnings)
+        print("\n  Do NOT promote. Fix every line above, or deploy a different export.")
+        sys.exit(1)
+
     hr("gate (g) credentials")
     print("  (g) OK — credentials passed through UNCHANGED "
           "(source and target are the same n8n instance; no remap needed)")
@@ -497,9 +575,18 @@ def do_deploy(args):
     status, resp = do_put(base, key, to_id, put_body)
     print(f"  PUT {to_id}: HTTP {status}")
     if to_id == src_id:
-        print("  re-running export-workflows.py + --verify for this slug ...")
-        subprocess.run([sys.executable, str(SCRIPT_DIR / "export-workflows.py")], cwd=REPO_ROOT)
-        subprocess.run([sys.executable, str(SCRIPT_DIR / "export-workflows.py"), "--verify"],
+        # The message always said "for this slug"; the invocation never passed one, so
+        # export-workflows.py iterated its whole TARGETS map and rewrote workflow.json,
+        # nodes/*.js, TOPOLOGY.md and MANIFEST.json for all 21 slugs from the bytes on live —
+        # overwriting any OTHER slug's staged, undeployed edits. It silently reverted work four
+        # times on 2026-08-24, twice into a commit (git scar dc8d5c7 "restore the axis split the
+        # clone re-export reverted"). Worst on a two-target promotion: deploy A, B's staged body
+        # is reverted before B is deployed, and gate (a) then reports a clean tree because the
+        # working copy matches live again. Name the slug — and only the slug.
+        print(f"  re-running export-workflows.py + --verify for {slug} ONLY ...")
+        subprocess.run([sys.executable, str(SCRIPT_DIR / "export-workflows.py"), slug],
+                        cwd=REPO_ROOT)
+        subprocess.run([sys.executable, str(SCRIPT_DIR / "export-workflows.py"), "--verify", slug],
                         cwd=REPO_ROOT)
     print(f"\nRollback command:\n  {rollback_command(backup_path, to_id)}")
 

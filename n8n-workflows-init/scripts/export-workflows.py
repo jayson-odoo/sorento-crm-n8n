@@ -20,10 +20,20 @@ THE STALENESS RULE (read this before trusting any exported file)
     So: never read an export without running `--verify` first. It is one cheap
     API call per workflow and it fails LOUDLY.
 
-        python3 scripts/export-workflows.py            # export
+        python3 scripts/export-workflows.py            # export EVERY target
+        python3 scripts/export-workflows.py <slug> …   # export ONLY these targets
         python3 scripts/export-workflows.py --verify   # is my export current?
 
     Run the export after every promote and every clone build.
+
+SCOPING TO ONE SLUG (added 2026-08-24)
+    A bare run rewrites workflow.json, nodes/*.js, TOPOLOGY.md and MANIFEST.json for ALL of
+    TARGETS from the bytes currently on live. That is right after a full re-sync and WRONG after a
+    single deploy: any OTHER slug carrying staged, undeployed edits is silently reverted to live.
+    It happened four times on 2026-08-24; twice it reached a commit — git scar dc8d5c7 "restore
+    the axis split the clone re-export reverted". So deploy.py now names the one slug it just
+    deployed, and only that slug is touched. An unknown slug exits 1 rather than quietly
+    exporting nothing.
 
 SAFETY
     - Refuses to write if anything secret-looking appears (see SECRET_PATTERNS).
@@ -212,9 +222,11 @@ def topology(wf):
     return "\n".join(L) + "\n"
 
 
-def do_export(base, key):
+def do_export(base, key, only=None):
     OUT.mkdir(exist_ok=True)
     for wid, slug in TARGETS.items():
+        if only and slug not in only:
+            continue
         try:
             wf = fetch(base, key, wid)
         except urllib.error.HTTPError as e:
@@ -260,10 +272,12 @@ def do_export(base, key):
               f"{len(wf['nodes']):3} nodes  {len(manifest['nodes']):2} code files{flag}")
 
 
-def do_verify(base, key):
+def do_verify(base, key, only=None):
     """Cheap freshness gate. Exit 1 if any export is stale — fail loud, never silent."""
     stale = []
     for wid, slug in TARGETS.items():
+        if only and slug not in only:
+            continue
         m = OUT / slug / "MANIFEST.json"
         if not m.exists():
             print(f"  ? {slug}: never exported")
@@ -289,11 +303,24 @@ def do_verify(base, key):
     return 0
 
 
+def selected(argv):
+    """Any non-flag argument is a slug filter. None = every target (the historical behaviour).
+    An unknown slug exits 1: a silent no-op export is how a caller believes it re-exported."""
+    only = [a for a in argv if not a.startswith("--")]
+    unknown = [s for s in only if s not in TARGETS.values()]
+    if unknown:
+        sys.exit(f"unknown slug(s): {', '.join(unknown)}\nknown: "
+                 + ", ".join(sorted(TARGETS.values())))
+    return set(only) or None
+
+
 if __name__ == "__main__":
     base, key = env()
+    only = selected(sys.argv[1:])
+    scope = f"  [only: {', '.join(sorted(only))}]" if only else "  [ALL targets]"
     if "--verify" in sys.argv:
-        sys.exit(do_verify(base, key))
-    print(f"exporting -> {OUT}")
-    do_export(base, key)
+        sys.exit(do_verify(base, key, only))
+    print(f"exporting -> {OUT}{scope}")
+    do_export(base, key, only)
     print("\nRun after every promote / clone build. Verify before trusting:"
           "\n  python3 n8n-workflows-init/scripts/export-workflows.py --verify")
