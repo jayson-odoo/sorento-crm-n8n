@@ -1,6 +1,6 @@
 # TOPOLOGY — sub-semantic-parser  (`XTODTw-dJcV0uRdC056hG`)
 
-- versionId **71367a75-ef55-47dd-90df-3550bfa276ff** · activeVersionId **71367a75-ef55-47dd-90df-3550bfa276ff** · DRAFT == ACTIVE
+- versionId **177c50a9-d6dd-4171-b7d7-33c9818d2817** · activeVersionId **177c50a9-d6dd-4171-b7d7-33c9818d2817** · DRAFT == ACTIVE
 - 7 nodes
 
 ## Edges
@@ -35,6 +35,6 @@ test-reformulator-bypass[1] -> AI Agent
 
 | node | lines |
 |---|---|
-| output_exchange | 1387 |
+| output_exchange | 1479 |
 | suggest-follow-up | 55 |
 | mock-reformulator-output | 2 |
