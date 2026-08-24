@@ -223,3 +223,95 @@ test('a replace_combine turn within the same domain still keeps a prior date win
   assert.equal(o.date_mode, 'range');
   assert.equal(o.date_cleared_on_domain_change, undefined, 'no domain change happened, so nothing should be flagged cleared');
 });
+
+// ── EVERY AXIS BEHAVES THE SAME (captain, 2026-08-24) ─────────────────────────────────────────
+// "all dimensions should behave the same, whatever we have done with customer, date and product,
+// it works, and it should work the same for the rest". A delivery-order search also filters on the
+// ORDER NUMBER and the TRANSPORTER, and those are independent filters too: naming a customer must
+// not evict an order number the customer pinned two turns ago.
+const DELIVERY_ORDER = { raw: '202608-3475', hint: 'customer_order', canonical_code: '202608-3475', current_message: false };
+const TRANSPORTER    = { raw: 'KTM LOGISTICS', hint: 'transporter', current_message: false };
+
+const rawsOf   = o => (o.entities || []).map(e => String(e.raw || '').toUpperCase());
+const hintsOf  = o => (o.entities || []).map(e => String(e.hint || '').toLowerCase());
+
+// fork exec 13747701 (spine 13747694). DO 202608-3475 pinned, then "any customer" (broaden, DO kept),
+// then "customer AT & E" - which the LLM returned with domain_hint NULL. The executor mapped axes
+// before the domain was inherited, so the flat fallback map decided, and there customer and
+// customer_order shared 'order_scope': naming a customer evicted the pinned delivery order.
+test('a customer named on a NULL-domain turn keeps the pinned order number (exec 13747701)', () => {
+  const fixture = makeFixture({
+    userMsg: 'customer AT & E',
+    prevEntities: [DELIVERY_ORDER],
+    curEntities: [{ raw: 'AT & E', hint: 'customer', current_message: true }],
+    curDomain: null,
+  });
+  const o = run(fixture);
+  assert.ok(hintsOf(o).includes('customer'), `the customer the user named must be there, got ${JSON.stringify(o.entities)}`);
+  assert.ok(rawsOf(o).includes('202608-3475'), `changing the customer must not drop the order number the customer pinned, got ${JSON.stringify(o.entities)}`);
+});
+
+// The same turn with the domain SPELLED OUT: proves the AXIS_BY_DOMAIN.order path, so the two maps
+// are shown to agree instead of one silently covering for the other.
+test('a customer named on an explicit order-domain turn keeps the pinned order number', () => {
+  const fixture = makeFixture({
+    userMsg: 'customer AT & E',
+    prevEntities: [DELIVERY_ORDER],
+    curEntities: [{ raw: 'AT & E', hint: 'customer', current_message: true }],
+    curDomain: 'order',
+  });
+  const o = run(fixture);
+  assert.ok(hintsOf(o).includes('customer'), `the customer the user named must be there, got ${JSON.stringify(o.entities)}`);
+  assert.ok(rawsOf(o).includes('202608-3475'), `changing the customer must not drop the order number the customer pinned, got ${JSON.stringify(o.entities)}`);
+});
+
+// order / order_number / customer_order are three names for ONE document, so they ARE one axis: a
+// newly named delivery order replaces the pinned one. The customer on its own axis still stands.
+test('a newly named order number replaces the prior one and leaves the customer standing', () => {
+  const fixture = makeFixture({
+    userMsg: 'delivery order 202609-9999',
+    prevEntities: [DELIVERY_ORDER, { raw: 'AT & E', hint: 'customer', current_message: false }],
+    curEntities: [{ raw: '202609-9999', hint: 'customer_order', current_message: true }],
+    curDomain: null,
+  });
+  const o = run(fixture);
+  assert.ok(rawsOf(o).includes('202609-9999'), `the order number the user named must be there, got ${JSON.stringify(o.entities)}`);
+  assert.ok(!rawsOf(o).includes('202608-3475'), `three names for one document are one axis, so the old order number must go, got ${JSON.stringify(o.entities)}`);
+  assert.ok(hintsOf(o).includes('customer'), `naming an order number must not drop the customer, got ${JSON.stringify(o.entities)}`);
+});
+
+// The transporter is the WHO-DELIVERS filter - its own axis, exactly like customer and product.
+test('a newly named transporter replaces the prior transporter and keeps customer, product and the order number', () => {
+  const fixture = makeFixture({
+    userMsg: 'transporter by sri jaya',
+    prevEntities: [
+      DELIVERY_ORDER,
+      TRANSPORTER,
+      { raw: 'AT & E', hint: 'customer', current_message: false },
+      { raw: 'WC286', hint: 'product', canonical_code: 'WC286', current_message: false },
+    ],
+    curEntities: [{ raw: 'SRI JAYA TRANSPORT', hint: 'transporter', current_message: true }],
+    curDomain: null,
+  });
+  const o = run(fixture);
+  assert.ok(rawsOf(o).includes('SRI JAYA TRANSPORT'), `the transporter the user named must be there, got ${JSON.stringify(o.entities)}`);
+  assert.ok(!rawsOf(o).includes('KTM LOGISTICS'), `a transporter replaces a transporter, got ${JSON.stringify(o.entities)}`);
+  assert.ok(hintsOf(o).includes('customer'), `naming a transporter must not drop the customer, got ${JSON.stringify(o.entities)}`);
+  assert.ok(hintsOf(o).includes('product'), `naming a transporter must not drop the product, got ${JSON.stringify(o.entities)}`);
+  assert.ok(rawsOf(o).includes('202608-3475'), `naming a transporter must not drop the order number, got ${JSON.stringify(o.entities)}`);
+});
+
+// Must not regress (exec 13747649): clearing an axis still needs an EXPLICIT broaden signal, and it
+// clears only the axis it names - "any customer" drops the customer and keeps the delivery order.
+test('broaden_axis "customer" drops only the customer and keeps the order number (exec 13747649)', () => {
+  const fixture = makeFixture({
+    userMsg: 'any customer',
+    prevEntities: [DELIVERY_ORDER, { raw: 'AT & E', hint: 'customer', current_message: false }],
+    curEntities: [],
+    entityOp: 'reuse',
+    broadenAxis: 'customer',
+  });
+  const o = run(fixture);
+  assert.ok(!hintsOf(o).includes('customer'), `an explicit broaden must drop the axis it names, got ${JSON.stringify(o.entities)}`);
+  assert.ok(rawsOf(o).includes('202608-3475'), `a broaden clears one axis, not every axis, got ${JSON.stringify(o.entities)}`);
+});
