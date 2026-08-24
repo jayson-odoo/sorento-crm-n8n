@@ -1366,9 +1366,17 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     if (isEscalateBranch) return;                                   // escalate / clarify copy, not a data answer
     if (!Array.isArray(last_result_set) || last_result_set.length === 0) return;
     if (typeof output.user_response !== 'string' || !output.user_response.trim()) return;
-    // Only domains the CRM actually date-filters. Elsewhere ("what is the spec of X") a date
-    // line is noise and would be the most prominent thing on an answer it does not apply to.
-    const _DATE_DOMAINS = new Set(['order', 'incoming', 'goods_receive', 'spo_allocation', 'promotion']);
+    // NARROWED (captain, 2026-08-24): this whole header - Customer, Product, the extra axis
+    // lines, and Dates - is a DELIVERY ORDER search-scope disclosure, not a general one. It used
+    // to gate on "domains the CRM date-filters", which let it fire on other domains where it is
+    // wrong, not just noisy: exec 13735530, an `incoming` answer (message "1", a pick off a
+    // shipment list), rendered "Customer: all customers" - meaningless for an inbound supplier
+    // shipment, a container has no customer - alongside "Dates: all dates", noise because
+    // customers do not date-filter incoming in practice. The rule is now: this header describes
+    // a delivery-order search specifically. See also not-found-error-message.js
+    // `_DATE_SCOPE_DOMAINS` (same rule, the miss-lane twin of this block, can't share code - two
+    // separate n8n nodes).
+    const _DATE_DOMAINS = new Set(['order']);
     if (!_DATE_DOMAINS.has(String(qf.domain_hint || '').toLowerCase())) return;
     // ISO -> DD/MM/YYYY, matching the row fields the CRM already renders ("Order Date: 17/08/2026").
     const _fmt = (v) => {

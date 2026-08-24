@@ -115,6 +115,45 @@ test('E2: an EMPTY result states the date scope too - that is when it matters mo
 // try, and it lands on "show me every delivery order". Refusing is correct - the wording was not:
 // "A order enquiry can't be answered with a general search", which has a broken article, names
 // internal entity types as the remedy, and never says that one filter is enough to continue.
+// captain decision 2026-08-24: the Customer/Product/Dates header is a DELIVERY ORDER search-scope
+// disclosure, not a general one - narrowed off `order` to nothing else. Measured on the `incoming`
+// domain (exec 13735530, message "1", a pick off a shipment list): "Customer: all customers" is
+// meaningless for an inbound supplier shipment (a container has no customer) and "Dates: all dates"
+// is noise (customers do not date-filter incoming in practice).
+test('captain 2026-08-24 / exec 13735530: an incoming answer prints none of the Customer/Product/Dates lines', () => {
+  const o = runMut('compile-current-state', 'pick-must-keep-missed-product--compile-current-state.json', (fx) => {
+    for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) item.json.output.domain_hint = 'incoming';
+  });
+  const msg = String(o.user_response || '');
+  assert.doesNotMatch(msg, /^Customer: /m, 'the customer line is a delivery-order concept, not incoming');
+  assert.doesNotMatch(msg, /^Product: /m, 'the product line is a delivery-order concept, not incoming');
+  assert.doesNotMatch(msg, /^Dates: /m, 'the date line is a delivery-order concept, not incoming');
+  assert.match(msg, /Here are the orders I found\./, 'the answer body itself must still be present');
+  assert.match(msg, /RMA-M2608-0067/, 'the answer body must be unharmed');
+});
+
+// exec 13735476, message "eta": an `incoming` MISS rendered "Dates: all dates" between the
+// found-bullets and the escalate offer - same rule, the not-found-error-message twin of the block
+// above.
+test('captain 2026-08-24 / exec 13735476: an incoming MISS prints no Dates line', () => {
+  const body = loadNodes(SLUG, ['not-found-error-message.js'])['not-found-error-message.js'];
+  const fx = load('obj1-not-found-error-message.json');
+  for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) item.json.output.domain_hint = 'incoming';
+  const out = runNode({ body, fixture: fx, slug: SLUG, nodeName: 'not-found-error-message' });
+  const o = Array.isArray(out) ? out[0].json : out;
+  const msg = String(o.escalate_message || o.response || '');
+  assert.doesNotMatch(msg, /Dates: /, 'incoming is not a delivery-order search - no date scope line');
+  assert.match(msg, /Couldn't find: /, 'the miss body itself must still be present');
+});
+
+// must-not-regress: the existing E2 case (a miss on the ORDER domain still states its date
+// scope) - re-asserted here by name so a future edit that breaks it fails loudly in this block too.
+test('must-not-regress E2: a miss on the ORDER domain still states its date scope', () => {
+  const o = run('not-found-error-message', 'obj1-not-found-error-message.json');
+  const msg = String(o.escalate_message || o.response || '');
+  assert.match(msg, /Dates: /, 'order is a delivery-order search - the date scope line must remain');
+});
+
 test('D4: clearing every filter refuses in words the customer can act on', () => {
   const body = loadNodes(SLUG, ['not-found-error-message.js'])['not-found-error-message.js'];
   const fx = load('obj1-not-found-error-message.json');

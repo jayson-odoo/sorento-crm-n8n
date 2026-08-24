@@ -108,7 +108,15 @@ if (missingAttachmentType) {
       : '';
   }
 
-  const _DATE_SCOPE_DOMAINS = new Set(['order', 'incoming', 'goods_receive', 'spo_allocation', 'promotion']);
+  // NARROWED (captain, 2026-08-24): the "Dates: ..." miss-lane line is a DELIVERY ORDER
+  // search-scope disclosure, not a general one. It used to gate on "domains the CRM
+  // date-filters", which let it fire on other domains where it is actively wrong, not just
+  // noisy: exec 13735476, an `incoming` MISS ("eta"), rendered "Dates: all dates" between the
+  // found-bullets and the escalate offer - customers do not date-filter incoming in practice.
+  // The rule is now: this line describes a delivery-order search specifically. See also
+  // compile-current-state.js `_DATE_DOMAINS` (same rule, the happy-path twin of this block,
+  // can't share code - two separate n8n nodes).
+  const _DATE_SCOPE_DOMAINS = new Set(['order']);
   const dateRange = (q.date_filter_start && q.date_filter_end)
     ? ` from ${q.date_filter_start} to ${q.date_filter_end}` : '';
   // S2 (promotion-picker): the spine now sends the contact's ENTITLEMENT UNION when the
