@@ -37,10 +37,11 @@ test('"all products" drops the product axis and keeps the customer', () => {
 
 // A bare product code after a customer pick must KEEP that customer (exec 13687305 / fork
 // 13687312). The LLM guessed domain 'master_products' for the naked code while the conversation was
-// in 'order'; the scope-carry policy read that as a domain change, cleared the carried scope
-// (scope_cleared_on_domain_change = 1), and the answer came back for a completely different
-// customer - DILOOMA SDN BHD. bare_entity_turn then restored 'order', so the domain change the
-// clear reacted to no longer existed by the end of the node.
+// in 'order'; the scope-carry policy correctly cleared the carried scope on what looked like a
+// domain change, and the answer came back for a completely different customer - DILOOMA SDN BHD.
+// Clearing scope on a domain change is RIGHT (captain, 2026-08-24) - the defect was that the domain
+// changed at all. The carry now happens before anything reads domain_hint, so this asserts the
+// scope-clear never fires here rather than that it was told to stand down.
 test('a bare code after a pick keeps the pinned customer', () => {
   const body = loadNodes(SLUG, ['output_exchange.js'])['output_exchange.js'];
   const entry = loadFixtures(SLUG, NODE).find(f => f.name.includes('bare-code-keeps-pinned-customer'));
