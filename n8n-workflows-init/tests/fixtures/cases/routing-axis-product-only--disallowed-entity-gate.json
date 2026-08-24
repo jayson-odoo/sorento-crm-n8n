@@ -1,0 +1,193 @@
+{
+  "source": {
+    "execution_id": "13743718",
+    "workflow_id": "txiPzSxy3Pclsz6v",
+    "node": "disallowed-entity-gate",
+    "expected_from": "reasoned",
+    "rationale": "product-only control: the case the products-first filter was written for."
+  },
+  "ctx": {
+    "Call 'sub-query-reformulator'": [
+      {
+        "json": {
+          "output": {
+            "message_type": "business_query",
+            "intent_hint": "check_order",
+            "domain_hint": "order",
+            "scope_intent": "specific",
+            "is_affirmative": null,
+            "user_goal": "trying to check deliveries for mastile klang",
+            "access_levels": [],
+            "broaden_axis": null,
+            "date_mode": "month",
+            "date_filter_start": "2026-08-01",
+            "date_filter_end": "2026-08-31",
+            "match_mode": "and",
+            "demand_qty": null,
+            "entities": [
+              {
+                "raw": "SRTKS7646",
+                "hint": "product",
+                "canonical_code": "SRTKS7646",
+                "current_message": false,
+                "confident": true
+              }
+            ],
+            "entity_op": "replace_combine",
+            "scope_exclusive": false,
+            "requested_attributes": [
+              "delivery"
+            ],
+            "contains_flyer": false,
+            "reference_positions": [],
+            "reference_target": null,
+            "person_mention": null,
+            "is_active": null,
+            "order_status": null,
+            "correction": false,
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "query_brands": []
+          }
+        }
+      }
+    ],
+    "resolve-entity": [
+      {
+        "json": {
+          "tokens": [
+            "srtks7646"
+          ],
+          "elapsed_ms": 1200.0,
+          "resolutions": [
+            {
+              "token": "srtks7646",
+              "resolved": true,
+              "ambiguous": false,
+              "matches": [
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTKS7646",
+                  "uuid": "p1111111-1111-1111-1111-111111111111",
+                  "match_field": "product_code",
+                  "match_tier": "prefix",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTKS7646",
+                    "is_active": true,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                },
+                {
+                  "entity_type": "product",
+                  "canonical_code": "SRTKS7646-NEW",
+                  "uuid": "p2222222-2222-2222-2222-222222222222",
+                  "match_field": "product_code",
+                  "match_tier": "prefix",
+                  "similarity": null,
+                  "company_id": "00000000-0000-0000-0000-000000000001",
+                  "company_name": "Sorento",
+                  "display": {
+                    "product_name": "SRTKS7646-NEW",
+                    "is_active": true,
+                    "brand": {
+                      "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                      "brand_code": "SORENTO",
+                      "brand_name": "SORENTO"
+                    }
+                  }
+                }
+              ],
+              "alternatives": []
+            }
+          ],
+          "unresolved_tokens": [],
+          "intersection": [],
+          "by_entity_type": {}
+        }
+      }
+    ],
+    "get-session-vars": [
+      {
+        "json": {
+          "respond_io_id": "900000001",
+          "session_vars": {
+            "variables": {}
+          }
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "tokens": [
+          "srtks7646"
+        ],
+        "elapsed_ms": 1200.0,
+        "resolutions": [
+          {
+            "token": "srtks7646",
+            "resolved": true,
+            "ambiguous": false,
+            "matches": [
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTKS7646",
+                "uuid": "p1111111-1111-1111-1111-111111111111",
+                "match_field": "product_code",
+                "match_tier": "prefix",
+                "similarity": null,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTKS7646",
+                  "is_active": true,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              },
+              {
+                "entity_type": "product",
+                "canonical_code": "SRTKS7646-NEW",
+                "uuid": "p2222222-2222-2222-2222-222222222222",
+                "match_field": "product_code",
+                "match_tier": "prefix",
+                "similarity": null,
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "display": {
+                  "product_name": "SRTKS7646-NEW",
+                  "is_active": true,
+                  "brand": {
+                    "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+                    "brand_code": "SORENTO",
+                    "brand_name": "SORENTO"
+                  }
+                }
+              }
+            ],
+            "alternatives": []
+          }
+        ],
+        "unresolved_tokens": [],
+        "intersection": [],
+        "by_entity_type": {}
+      }
+    }
+  ]
+}

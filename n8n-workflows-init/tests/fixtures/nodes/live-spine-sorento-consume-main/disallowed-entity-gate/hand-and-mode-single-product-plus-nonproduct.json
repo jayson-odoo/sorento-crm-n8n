@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "AND-mode, one product (not typed exactly) and one inbound_shipment. Both resolve, but the emitted ORDER is non-products first \u2014 compatible_entities is rebuilt from exact_entities, it is not the input order. Routing then keys on the PRODUCT rows only: routing_company is the product's company, not the shipment's, even though both carry one."
+  "rationale": "AND-mode, one product (not typed exactly) and one inbound_shipment. Both resolve, but the emitted ORDER is non-products first \u2014 compatible_entities is rebuilt from exact_entities, it is not the input order. Routing then keys on the PRODUCT rows only: routing_company is the product's company, not the shipment's, even though both carry one. SUPERSEDED ON THE CLONE (exec 13743718, 2026-08-24): the routing axis is now EVERY compatible row that carries a company_id, products and customers alike, minus brand/category - the same set not-found-error-message's `_searchedCos` claims to have searched, because a reply that says \"checked in Mocha and Sorento\" and then offers one company's team is a contradiction the customer reads. This fixture still pins the LIVE body, which keeps the products-first filter until the hunk is promoted. AT PROMOTION THIS EXPECTED VALUE CHANGES: both c1 (product) and c2 (inbound_shipment) become routing_companies and routing_company goes null. Re-pin it with the promotion, do not delete it - it is the record of the reversal."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [

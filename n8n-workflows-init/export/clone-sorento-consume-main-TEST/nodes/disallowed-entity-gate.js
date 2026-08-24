@@ -731,8 +731,24 @@ out.require_specific = require_specific;
   // ── brand-company-routing: routing axes for roster + assignment ──
   // company = the enquired ITEM's company (primary axis); brand = its brand row (secondary, narrows the pool)
   const _compat = new Set(compatible_entities.map(e => e.uuid));
-  let _rows = flat.filter(m => m && m.uuid && _compat.has(m.uuid) && m.entity_type === 'product');
-  if (!_rows.length) _rows = flat.filter(m => m && m.uuid && _compat.has(m.uuid) && m.company_id);
+  // WE OFFER THE TEAMS OF THE COMPANIES WE SAID WE SEARCHED (exec 13743718, "for mastile klang").
+  // Nine MASTILE KLANG accounts (Mocha) and two SRTKS7646 products (Sorento) were in scope, nothing
+  // matched, and the ONE reply contradicted itself: "no order ... matched these - checked in Mocha
+  // and Sorento. Would you like me to escalate to *Sorento* customer_service team?" A Mocha CS
+  // person never sees an escalation about a Mocha account. The cause was here: this filter took
+  // PRODUCTS outright and only consulted the customer's company when no product resolved, so the
+  // routing axis was a strict subset of what the reply claimed to have searched.
+  // The axis is now the SAME set not-found-error-message's `_searchedCos` renders - every compatible
+  // entity that becomes a tool id, products and customers alike - minus the two types that never do.
+  // `brand`/`category` pass the gate for compatibility but sub-get-results' entity-ids-transformer
+  // maps neither to an `*_ids` param and drops them as unmapped_types, so a brand resolved in one
+  // company beside a product in another names a company we never actually queried. Kept as a DENY
+  // list for the same reason that node states: a type the CRM later gives a tool param would make
+  // this UNDER-claim, and silence is recoverable where a false claim is not. The two lists must stay
+  // identical - change one, change the other, or the reply and the offer drift apart again.
+  const _NO_TOOL_ID = new Set(['brand', 'category']);
+  const _rows = flat.filter(m => m && m.uuid && _compat.has(m.uuid) && m.company_id
+    && !_NO_TOOL_ID.has(String((m && m.entity_type) ?? '')));
   const _bc = m => { const b = m && m.display && m.display.brand; const c = b && (typeof b === 'object' ? b.brand_code : b); return c ? String(c).trim().toLowerCase() : null; };
   // A CUSTOMER-FACING LABEL FOR EACH ROUTING SUBJECT (plan case F, 2026-08-24).
   // `codes` are canonical_code, which is exactly right for a product (MFG6653-DIY means something

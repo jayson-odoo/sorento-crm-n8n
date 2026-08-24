@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "No product resolved, so the routing rows fall back to any COMPATIBLE row carrying a company \u2014 the promotion row. The incompatible order row is excluded from that fallback as well, which is why only one company is offered. With no brand on the row and exactly one company, that company inherits the brand the customer STATED (query_brands of one), so the roster is still narrowed."
+  "rationale": "No product resolved, so the routing rows fall back to any COMPATIBLE row carrying a company \u2014 the promotion row. The incompatible order row is excluded from that fallback as well, which is why only one company is offered. With no brand on the row and exactly one company, that company inherits the brand the customer STATED (query_brands of one), so the roster is still narrowed. SUPERSEDED ON THE CLONE (exec 13743718, 2026-08-24): the routing axis is now EVERY compatible row that carries a company_id, products and customers alike, minus brand/category - the same set not-found-error-message's `_searchedCos` claims to have searched, because a reply that says \"checked in Mocha and Sorento\" and then offers one company's team is a contradiction the customer reads. This fixture still pins the LIVE body, which keeps the products-first filter until the hunk is promoted. The expected value is UNCHANGED by that reversal - there is no \"fallback\" any more, the promotion row is simply a searched row, and the incompatible order row is still excluded because it never entered compatible_entities."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [

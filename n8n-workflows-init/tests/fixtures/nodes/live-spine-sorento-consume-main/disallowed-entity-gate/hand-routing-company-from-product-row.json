@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "A product and a category resolve, in different companies. The routing axes are derived from the enquired ITEM \u2014 the product rows \u2014 so routing_company is the product's company and the category's is not offered; the non-product fallback only applies when NO product resolved. resolved_companies still lists both, because that scan is over every match."
+  "rationale": "A product and a category resolve, in different companies. The routing axes are derived from the enquired ITEM \u2014 the product rows \u2014 so routing_company is the product's company and the category's is not offered; the non-product fallback only applies when NO product resolved. resolved_companies still lists both, because that scan is over every match. SUPERSEDED ON THE CLONE (exec 13743718, 2026-08-24): the routing axis is now EVERY compatible row that carries a company_id, products and customers alike, minus brand/category - the same set not-found-error-message's `_searchedCos` claims to have searched, because a reply that says \"checked in Mocha and Sorento\" and then offers one company's team is a contradiction the customer reads. This fixture still pins the LIVE body, which keeps the products-first filter until the hunk is promoted. The expected value is UNCHANGED by that reversal: `category` carries no tool id in sub-get-results, so it is deny-listed out of the axis for the same reason it is excluded from `_searchedCos` - we never actually queried it."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
