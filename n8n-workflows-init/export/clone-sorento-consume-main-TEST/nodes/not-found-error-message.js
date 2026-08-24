@@ -285,6 +285,50 @@ if (missingAttachmentType) {
     return `${_label} is not available${_at}. Would you like me to escalate to ${team} team?`;
   })();
 
+  // Match key for "is this string the same thing the customer typed": separators and case dropped.
+  // resolve-entity strips dashes/spaces off product-hint tokens before it resolves them (2262a99b),
+  // so the customer's "SRT 2405-CR" reaches us as "srt2405cr" while the code reads "SRT2405-CR".
+  // Shared by the typed-code check below and the not-found token labels further down.
+  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+
+  // ── WHAT THE CUSTOMER TYPED vs WHAT THE RESOLVER EXPANDED TO (captain, 2026-08-24) ──────────
+  // "Incoming SRT 2405-CR, srt2405-GY" - two product codes, both typed out in full - came back as
+  // "• product: SRT2405-GY (+1 more)", and the same reply then printed stock detail for
+  // SRT2405-CR: the summary hid the very code the customer had asked for, and then contradicted
+  // itself further down. The cap below is NOT the bug and does not go away: "srtwc286" is ONE
+  // token that the RESOLVER expands into ten sibling codes, and ten codes in a WhatsApp bullet is
+  // not a summary any more (FIX 1, review 2, 2026-08-17 - that reason still holds).
+  // The rule is the one that fixed the miss-company and dropped-filter bugs earlier today: we may
+  // summarize our OWN expansions, we may never hide something the customer asked for by name.
+  // `resolutions` already maps each typed token to what it matched (the same mechanism `_axisWords`
+  // uses to label an axis in the customer's words), so a code counts as TYPED when the token IS
+  // that code (or the label it renders as) - not when the token is a fragment we grew into it.
+  // When `resolutions` is absent (older/other resolver modes return by_entity_type / intersection
+  // only) we cannot tell typed from expanded, so nothing is registered and every line falls back
+  // to today's exact output - fail toward the shorter line, never toward a wall of codes.
+  const _typedOrder = new Map();      // normalized label -> the position the customer typed it in
+  let _typedSeq = 0;
+  for (const res of (Array.isArray(r?.resolutions) ? r.resolutions : [])) {
+    const tok = _typeNorm(res && res.token);
+    if (!tok) continue;
+    const _hits = new Set();          // the DISTINCT things this one token names outright
+    for (const m of (Array.isArray(res && res.matches) ? res.matches : [])) {
+      if (!m || !_compatUuids.has(m.uuid)) continue;
+      // Same key the bullet groups on below, so a match registers as the group it will render as
+      // ("DO123 (Acme Sdn Bhd)", a promotion's description, a product's name).
+      const g = _typeNorm(_dispByUuid.get(m.uuid) || m.canonical_code || m.uuid);
+      if (g && (tok === _typeNorm(m.canonical_code) || tok === g)) _hits.add(g);
+    }
+    // ONE token naming SEVERAL distinct things is the resolver expanding, not the customer
+    // listing: measured on `display--not-found-error-message.json`, customer code "300-D059"
+    // carries three separate debtor accounts (SETAPAK / ACC 2 / DENHO), and naming all three is
+    // the wall of labels the cap exists to prevent. Only a token that lands on exactly one thing
+    // is a code the customer asked for by name.
+    if (_hits.size !== 1) continue;
+    const g = [..._hits][0];
+    if (!_typedOrder.has(g)) _typedOrder.set(g, _typedSeq++);
+  }
+
   const _foundLines = [];
   for (const [et, codes] of _byType) {
     // one representative per type + count; true ambiguity is handled by the gate (did-you-mean).
@@ -305,8 +349,16 @@ if (missingAttachmentType) {
       if (!_byCode.has(bare)) { _byCode.set(bare, []); _order.push(bare); }
       _byCode.get(bare).push(l);
     }
-    const extra = _order.length > 1 ? ` (+${_order.length - 1} more)` : '';
-    _foundLines.push(`• ${et}: ${_byCode.get(_order[0]).join(', ')}${extra}`);
+    // typed-codes (captain, 2026-08-24): every code the customer typed THIS TURN is named, in the
+    // order they typed it - `_compat` order is arbitrary, and the customer's own order is the only
+    // one that is theirs to recognise. Nothing typed => the single representative, exactly as
+    // before, and the count then covers the whole resolver expansion.
+    const _typed = _order
+      .filter(b => _typedOrder.has(_typeNorm(b)))
+      .sort((x, y) => _typedOrder.get(_typeNorm(x)) - _typedOrder.get(_typeNorm(y)));
+    const _named = _typed.length ? _typed : [_order[0]];
+    const extra = _order.length > _named.length ? ` (+${_order.length - _named.length} more)` : '';
+    _foundLines.push(`• ${et}: ${_named.map(b => _byCode.get(b).join(', ')).join(', ')}${extra}`);
   }
   _found_summary = _foundLines.join('\n');   // datemiss-summary: reused by build-suggest-offer
   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
@@ -319,8 +371,8 @@ if (missingAttachmentType) {
   // the old line then). Matches the confirm-prefix IIFE's priority in compile-current-state
   // so a token's type label never disagrees between the media-confirm line and this miss line.
   // Match key is space/dash-stripped + lowercased on BOTH sides: resolver tokens are stripped
-  // before they reach the resolver (2262a99b), parser `entities[].raw` is not.
-  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+  // before they reach the resolver (2262a99b), parser `entities[].raw` is not. That is `_typeNorm`,
+  // defined above the found-bullets because the typed-code check needs the same key.
   const _prettifyType = (t) => {
     const s = String(t ?? '').trim();
     if (!s) return '';
