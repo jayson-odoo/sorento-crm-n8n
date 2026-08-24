@@ -236,14 +236,22 @@ function applyDymPick(_hit, _offer, _priorEnts, _useSlot){
   // for_raw linkage; the slot id survives every subsequent pick (code-reply path only — see _useSlot).
   const _slot = (_offer && _offer.id != null) ? _offer.id : null;
   // find WHICH prior entity this suggestion was FOR — tier 0: the stamped dym_slot (survives raw
-  // overwrite), then for_raw / for_canonical / unambiguous single-for_hint. Slot-matching is SKIPPED
-  // (_useSlot=false) on the numbered multi-select path so a for_raw already consumed THIS turn falls to
-  // append (ADD-BOTH), instead of the shared offer id re-hitting the first pick's new entity.
+  // overwrite), then for_raw / for_canonical / unambiguous single-for_hint. BOTH the slot tier and the
+  // for_hint tier are SKIPPED (_useSlot=false) on the accumulating multi-pick paths, so a for_raw
+  // already consumed THIS turn falls to append (ADD-BOTH), instead of the shared offer id re-hitting
+  // the first pick's new entity or a type-only guess re-hitting an unrelated pinned one.
   let _idx = -1;
   if (_useSlot !== false && _slot != null) _idx = _prior.findIndex(e => e && e.dym_slot != null && norm(e.dym_slot) === norm(_slot));
   if (_idx < 0) _idx = _prior.findIndex(e => norm(e.raw) === norm(_hit.for_raw));
   if (_idx < 0 && _hit.for_canonical) _idx = _prior.findIndex(e => norm(e.canonical_code) === norm(_hit.for_canonical));
-  if (_idx < 0 && _hit.for_hint) {
+  // A hint is a TYPE, not an identity, so this last tier is a guess - and on a path whose whole
+  // contract is ADD-BOTH, a pick that cannot be tied to its own source token by for_raw or
+  // for_canonical must ADD, never guess whose token it was. FIXED 2026-08-24: with an unrelated
+  // product pinned beside the missed token, pick 2 of a two-alternative offer took this tier and
+  // REPLACED that unrelated product - the customer's own older filter silently dropped, and one of
+  // the two things they asked for never queried. Live never had this; it arrived with P3, whose
+  // exclusion below narrowed the ambiguity set until the guess the ambiguity used to block fired.
+  if (_idx < 0 && _useSlot !== false && _hit.for_hint) {
     // ADD-BOTH safety: an entity ALREADY minted by a pick THIS TURN is not a source token. Without
     // this exclusion the second candidate of a multi-pick (same for_raw, same for_hint) lands on the
     // first pick's own entity and overwrites it — measured, exec 13203346: merging both MASTILE KLANG

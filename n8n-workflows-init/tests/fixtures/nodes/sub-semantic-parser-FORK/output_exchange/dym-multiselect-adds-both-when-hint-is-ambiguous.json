@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "R-v3-1 ADD-BOTH, the case that used to be a pinned DEFECT. The customer picks 1 AND 2 off a did-you-mean list; both rows are alternatives for the SAME missed token 'ax', and the prior scope holds only that one token. Pick 1 replaces 'ax' with A-1. Pick 2's for_raw lookup then misses (pick 1 overwrote that raw) and used to fall to applyDymPick's for_hint tier, which found EXACTLY ONE product entity - pick 1's own freshly written one - and replaced it, silently losing A-1. P3 (fork exec 13203346, where merging both MASTILE KLANG accounts returned only the last one) excluded entities minted by a pick THIS TURN from that fallback: _ceDymPickedKeys already records every code applyDymPick minted, so pick 2 found no source token, APPENDED (dym_replace_unmatched) and BOTH alternatives survived. The previous expected - A-2 alone - was committed as a red anchor with exactly this instruction: 'when the for_hint tier is skipped on the numbered path, THIS expected must change to hold both A-1 and A-2'. 2026-08-24: that skip has now landed - applyDymPick does not consult for_hint at all when _useSlot === false - so this expected is UNCHANGED but no longer depends on P3's exclusion to hold. It is now the plainer statement it always should have been: a pick that for_raw and for_canonical cannot place APPENDS. The sibling fixture dym-multiselect-adds-both-when-hint-is-ambiguous is the case that forced the skip; read it for the measurement."
+  "rationale": "FIXED 2026-08-24 - the same ambiguous-hint case as the live-slug fixture of this name, run against the parser FORK the TEST clone calls (wI5RkNGW3EOJfBdo). It is here because the fork is what the harness exercises every day, so a defect that lives only there quietly shapes what we believe the bot does. The customer picks 1 AND 2 off a did-you-mean list; both rows are alternatives for the SAME missed token 'ax', and prior scope ALSO holds an unrelated resolved product ZZ-9. CORRECT behaviour, expected here: pick 1 replaces 'ax' with A-1, pick 2 cannot tie itself to a source token and APPENDS - all three survive. BEFORE the fix the fork returned [A-1, A-2]: pick 2 fell to applyDymPick's for_hint tier, which - with the this-turn pick excluded - saw exactly one product, ZZ-9, and replaced it. The fork carried this from the start; live only acquired it when P3 was ported (50dda0b), and live at 50dda0b~1 returned the correct [A-2, A-1, ZZ-9]. Fix: skip the for_hint tier outright when _useSlot === false. Expected differs from the live-slug fixture in ONE field - the fork emits no scope_exclusive_applied - which is why this is a separate file rather than a shared one."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -48,6 +48,12 @@
         "raw": "ax",
         "hint": "product",
         "canonical_code": null,
+        "current_message": true
+       },
+       {
+        "raw": "ZZ-9",
+        "hint": "product",
+        "canonical_code": "ZZ-9",
         "current_message": true
        }
       ]
@@ -98,6 +104,12 @@
        "uuid": "u1",
        "current_message": true,
        "dym_slot": "off-9"
+      },
+      {
+       "raw": "ZZ-9",
+       "hint": "product",
+       "canonical_code": "ZZ-9",
+       "current_message": true
       }
      ],
      "entity_op": "replace_combine",
@@ -118,16 +130,15 @@
       "is_escalation_confirmation": false
      },
      "domain_signal_source": "intent_explicit",
-     "scope_exclusive_applied": false,
      "entity_op_applied": "replace_combine",
      "query_brands": [],
      "dym_pick_applied": true,
      "dym_offer_pick_code": "A-2",
      "dym_pick_domain_forced": "inventory",
+     "dym_replace_unmatched": true,
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true,
-     "dym_replace_unmatched": true
+     "_pending_pick": true
     },
     "_parser_raw": {
      "message_type": "business_query",

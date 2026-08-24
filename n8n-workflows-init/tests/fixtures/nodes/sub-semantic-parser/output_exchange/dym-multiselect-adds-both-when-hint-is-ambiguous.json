@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "MEASURED SIDE EFFECT OF P3 - read this before touching the for_hint fallback again. The customer picks 1 AND 2 off a did-you-mean list; both rows are alternatives for the SAME missed token 'ax', and prior scope ALSO holds an unrelated resolved product ZZ-9. Pick 1 replaces 'ax' with A-1. Pick 2's for_raw no longer matches and for_canonical is null, so it falls to the for_hint tier. BEFORE P3 that tier saw TWO products (A-1 and ZZ-9), refused to guess, and appended - all three entities survived. AFTER P3 the this-turn-minted A-1 is excluded from that tier, which leaves EXACTLY ONE product - ZZ-9 - so the fallback now fires and A-2 REPLACES ZZ-9. Narrowing the ambiguity set re-enabled a guess the ambiguity used to block, and the customer's older pinned product is silently dropped. This is the fork's own behaviour (verified by running export/sub-semantic-parser-FORK/nodes/output_exchange.js against this fixture), so it is ported as reviewed rather than improvised on; the fixture is re-expected to what the code does and left here as the standing record. The follow-up this points at is the one the sibling fixture's original note already named: skip the for_hint tier outright when _useSlot === false, which fixes both cases - both alternatives survive AND ZZ-9 is untouched."
+  "rationale": "FIXED 2026-08-24 - a second pick ADDS, it does not replace. The customer picks 1 AND 2 off a did-you-mean list; both rows are alternatives for the SAME missed token 'ax', and prior scope ALSO holds an unrelated resolved product ZZ-9. CORRECT behaviour, now expected here: pick 1 replaces 'ax' with A-1, pick 2 cannot tie itself to a source token (pick 1 overwrote that raw, for_canonical is null) so it APPENDS - all three entities survive, ZZ-9 untouched, both alternatives queried. THE DEFECT this fixture used to pin: pick 2 fell to applyDymPick's for_hint tier, and P3's this-turn exclusion left EXACTLY ONE product in the ambiguity set - ZZ-9 - so the guess the ambiguity used to block fired and A-2 REPLACED the customer's older pinned product. Measured across three bodies before the fix: live at 50dda0b~1 gave [A-2, A-1, ZZ-9] (CORRECT - live never had the defect), the fork gave [A-1, A-2] and live at 50dda0b, which ported P3, gave [A-1, A-2] (ZZ-9 lost). The remedy both this fixture and its sibling named: skip the for_hint tier outright when _useSlot === false. A hint is a TYPE, not an identity, so that tier is a guess, and on the accumulating multi-pick paths - whose whole contract is ADD-BOTH - a pick that for_raw and for_canonical cannot place must append rather than guess whose token it was. Applied to BOTH the live parser and the fork the TEST clone calls, so what the harness says the bot does is what it does."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -90,6 +90,14 @@
      "demand_qty": null,
      "entities": [
       {
+       "raw": "A-2",
+       "hint": "product",
+       "canonical_code": "A-2",
+       "uuid": "u2",
+       "current_message": true,
+       "dym_slot": "off-9"
+      },
+      {
        "raw": "A-1",
        "hint": "product",
        "canonical_code": "A-1",
@@ -98,12 +106,10 @@
        "dym_slot": "off-9"
       },
       {
-       "raw": "A-2",
+       "raw": "ZZ-9",
        "hint": "product",
-       "canonical_code": "A-2",
-       "uuid": "u2",
-       "current_message": true,
-       "dym_slot": "off-9"
+       "canonical_code": "ZZ-9",
+       "current_message": true
       }
      ],
      "entity_op": "replace_combine",
@@ -130,6 +136,7 @@
      "dym_pick_applied": true,
      "dym_offer_pick_code": "A-2",
      "dym_pick_domain_forced": "inventory",
+     "dym_replace_unmatched": true,
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
      "_pending_pick": true
