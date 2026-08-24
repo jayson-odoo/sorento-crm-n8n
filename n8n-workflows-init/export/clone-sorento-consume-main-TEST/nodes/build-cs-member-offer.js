@@ -5,7 +5,8 @@
 // Empty roster → fall back to the catalog's generic offer (round-robin on a bare "yes").
 // brand-company-routing: cs-roster-plan emits ONE item per company; get-cs-members runs once per
 // item with fullResponse=true, so response i ↔ plan i by index. Multi-company ⇒ union of rosters,
-// every member labelled with its company, and the reply explains why the list is longer.
+// every member labelled with its company under a `*Company:*` group header (captain 2026-08-24:
+// no explanatory note - the grouped list already shows this on its own).
 // Single company ⇒ text byte-identical to the pre-change shape, except (miss-company-routing rev-3) the
 // escalate phrase names the company: `…escalate to *Sorento* customer_service team?`.
 const plan = (() => { try { return $('cs-roster-plan').all().map(i => i.json); } catch (e) { return []; } })();
@@ -79,30 +80,17 @@ if (!multi) {
   for (const nm of empty) lines.push(`[ ${nm}: no customer-service members are configured - omitted. ]`);
   numbered = lines.join('\n');
 }
-const codes = [...new Set(planItems.flatMap(p => Array.isArray(p.codes) ? p.codes : []))];
-// What to CALL the thing in the note. `codes` is canonical_code: right for a product, and an
-// internal debtor code for a customer ("Note: 300-D059 is carried by ...", exec 13687248).
-// disallowed-entity-gate now names each routing subject as the customer would recognise it and
-// cs-roster-plan carries it here, so this reads a label instead of guessing from the code's shape.
-const labels = [...new Set(planItems.flatMap(p => Array.isArray(p.labels) ? p.labels : []))];
 const names = planItems.map(p => p.company_name).filter(Boolean);
 // miss-company-routing rev-3: company names are WhatsApp-bold (`*Mocha*`) wherever the multi-company
-// text names them — the note and the closing sentence — matching the presenter's `*Company:*` style.
+// text names them - the closing sentence - matching the presenter's `*Company:*` style.
 const boldNames = names.map(n => `*${n}*`);
-const joinNames = boldNames.length > 1 ? `${boldNames.slice(0, -1).join(', ')} and ${boldNames[boldNames.length - 1]}` : (boldNames[0] || '');
-const subject = labels.length ? labels.join(', ')
-  : codes.length ? codes.join(', ')
-  : (cat.subject || cat.entity_label || 'This item');
-// The multi-company explanation is written ONCE here and exported on the item: compile-current-state's
-// Δ4 merge arm rebuilds its own picker and must say the same thing rather than a second wording.
-// miss-company-routing round-3 rev-2 (F-R3-5): the note names the ROUTING team (cs-offer-gate now also opens the
-// picker for purchasing/incoming), humanised `_`→`-`: customer_service ⇒ "customer-service" (orders text byte-identical),
-// purchasing ⇒ "purchasing". Fail-closed to the old literal when the parser output is unreadable.
-const teamLabel = (() => { try { const t = $('Call \'sub-query-reformulator\'').first().json.output.routing.suggested_team; return (typeof t === 'string' && t.trim()) ? t.trim().replace(/_/g, '-') : 'customer-service'; } catch (e) { return 'customer-service'; } })();
-const multiNote = multi
-  ? `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the ${teamLabel} team members from each of them - that is why there are more names than usual.`
-  : null;
-out.cs_multi_note = multiNote;
+// captain 2026-08-24: dropped the "Note: X is carried by more than one company (...)" sentence that
+// used to sit here (cs_multi_note). It was annoying, and it had gone false: once the routing axis
+// widened to search every company a subject is IN, not just the one the customer named (b5184e9),
+// each subject sits in exactly ONE company - it is the TURN that spans two. The grouped `*Mocha:*` /
+// `*Sorento:*` list below already shows that, unexplained. `codes`/`labels`/`subject` existed only
+// to word this sentence and go with it; `cs_multi_note` is deleted, not just unprinted - nothing else
+// read it (compile-current-state's Δ4 arm now derives multi-company from routing_companies.length).
 // miss-company-routing rev-3: on a MULTI-company offer a bare "yes" cannot assign (escalation-context
 // clarifies on multi_company_unpicked), so the closing sentence asks for the company instead. Written
 // ONCE here and exported (cs_multi_close) so the Δ4 merge arm cannot drift; names in the offer's own
@@ -126,7 +114,7 @@ const nameCompany = (txt) => (offerCompany && typeof txt === 'string')
 // then append the member picker — do NOT discard cat.response.
 out.response = multi
   ? `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
-    `${multiNote} Please choose who to route to (reply with the number):\n${numbered}\n\n` +
+    `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
     `${multiClose}`
   : `${nameCompany(cat.response || 'Would you like me to escalate to customer_service team?')}\n\n` +
     `Please choose who to route to (reply with the number):\n${numbered}\n\n` +

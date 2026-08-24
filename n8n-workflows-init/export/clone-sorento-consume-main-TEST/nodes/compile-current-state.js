@@ -60,22 +60,27 @@ if (_ideate) {
   isEscalateBranch = true;
 } else if (_merge) {
   // brand-company-routing: this arm rebuilds its own picker, so it must carry the SAME company labels
-  // and the SAME explanation build-cs-member-offer wrote (exported as cs_multi_note) — otherwise a
-  // two-company roster reaches the customer here as a bare list of names with no company at all.
-  // Multi-company is decided by the SAME signal build-cs-member-offer used — the presence of the note it
-  // wrote, i.e. companies QUERIED — so a company whose roster came back empty is disclosed on this path
-  // too instead of silently vanishing. Single-company output is unchanged.
+  // build-cs-member-offer wrote - otherwise a two-company roster reaches the customer here as a bare
+  // list of names with no company at all. Multi-company is decided by the SAME signal
+  // build-cs-member-offer used, i.e. companies QUERIED (routing_companies.length > 1) - so a company
+  // whose roster came back empty is disclosed on this path too instead of silently vanishing.
+  // Single-company output is unchanged.
   const _rows = Array.isArray(_mem.cs_last_result_set) ? _mem.cs_last_result_set : [];
   const _memCos = new Set();
   for (const m of _rows) {
     const _ids = (m && Array.isArray(m.company_ids) && m.company_ids.length) ? m.company_ids : [(m && m.company_id) || null];
     for (const _id of _ids) _memCos.add(_id || null);
   }
-  const _multiCo = !!_mem.cs_multi_note;
+  // captain 2026-08-24: was `!!_mem.cs_multi_note` (the multi-company NOTE build-cs-member-offer
+  // exported). The note is gone - annoying, and false once the routing axis widened to search every
+  // company a subject is IN (b5184e9): a subject sits in one company, the TURN spans two. The
+  // multi-company signal itself is unchanged, just read off routing_companies directly instead of a
+  // field that existed only to carry that sentence.
+  const _multiCo = Array.isArray(_mem.routing_companies) && _mem.routing_companies.length > 1;
   // miss-company-routing rev-3 (captain copy decisions): mirror build-cs-member-offer's rendering —
   // multi ⇒ members grouped under bold `*Company:*` headers (plan order, membership by company_ids, a
-  // shared member keeps ONE number under each group), plain `n. Name` lines (no per-member suffix), the
-  // exported bold note, and the exported closing sentence (cs_multi_close) so the wording cannot drift.
+  // shared member keeps ONE number under each group), plain `n. Name` lines (no per-member suffix), and
+  // the exported closing sentence (cs_multi_close) so the wording cannot drift.
   // Single ⇒ flat plain lines + the original "Or just reply 'yes'" close, unchanged.
   const _lines = [];
   if (_multiCo) {
@@ -96,7 +101,6 @@ if (_ideate) {
     for (const m of _rows) _lines.push(`${m.idx}. ${m.label}`);
   }
   const _picker = _lines.join('\n');
-  const _note = _multiCo ? `${_mem.cs_multi_note}\n\n` : '';
   const _close = (_multiCo && typeof _mem.cs_multi_close === 'string' && _mem.cs_multi_close)
     ? _mem.cs_multi_close
     : `Or just reply 'yes' and we'll assign automatically.`;
@@ -105,7 +109,7 @@ if (_ideate) {
   const _sugText = (typeof _mem.cs_offer_company === 'string' && _mem.cs_offer_company && typeof _sug.suggest_response === 'string')
     ? _sug.suggest_response.replace(/(would you like me to escalate to )(\S+ team\?)/i, (s, a, b) => `${a}*${_mem.cs_offer_company}* ${b}`)
     : _sug.suggest_response;
-  response = `${_sugText}\n\n${_note}To escalate, choose who to route to — reply the number or name:\n${_picker}\n\n${_close}`;
+  response = `${_sugText}\n\nTo escalate, choose who to route to — reply the number or name:\n${_picker}\n\n${_close}`;
   manualResponse  = true;
   includeResponse = true;
   isEscalateBranch = true;

@@ -82,12 +82,33 @@ test('exec 13743718: the offer names both companies instead of one', () => {
   const { offer } = lane('routing-axis-two-companies');
   assert.match(offer.response, /\*Mocha:\*/, 'the Mocha group header must be rendered');
   assert.match(offer.response, /\*Sorento:\*/, 'the Sorento group header must be rendered');
-  assert.match(offer.cs_multi_note || '', /carried by more than one company \(\*Mocha\* and \*Sorento\*\)/);
   assert.match(offer.cs_multi_close || '', /reply with the company name \(\*Mocha\* \/ \*Sorento\*\)/);
   assert.equal(offer.cs_offer_company, null,
     'no single company may be named in the escalate phrase when two were searched');
   assert.doesNotMatch(offer.response, /escalate to \*Sorento\* customer_service team/,
     'THE BUG: offering one company after saying we checked two');
+});
+
+// captain 2026-08-24: the multi-company NOTE ("Note: X is carried by more than one company (...)")
+// is removed - it was annoying, and the claim in it went false once the routing axis widened above
+// (each subject sits in exactly one company; it is the TURN that spans two). The grouped list is
+// left to explain itself. cs_multi_note is a deleted field, not merely an unprinted one.
+test('a two-company offer carries no multi-company note', () => {
+  const { offer } = lane('routing-axis-two-companies');
+  assert.doesNotMatch(offer.response, /carried by more than one company/i,
+    'the multi-company note sentence must not appear');
+  assert.doesNotMatch(offer.response, /Note:/,
+    'no "Note:" line of any kind must appear');
+  assert.equal(offer.cs_multi_note, undefined,
+    'cs_multi_note must be a deleted field, not an unprinted one');
+  // the grouped list still stands on its own: both headers, every member, the company-name close.
+  assert.match(offer.response, /\*Mocha:\*/);
+  assert.match(offer.response, /\*Sorento:\*/);
+  assert.match(offer.response, /Nadia/, 'the Mocha member must still be listed');
+  assert.match(offer.response, /Emily/, 'the first Sorento member must still be listed');
+  assert.match(offer.response, /Sandy/, 'the second Sorento member must still be listed');
+  assert.match(offer.response, /reply with the company name \(\*Mocha\* \/ \*Sorento\*\) and we'll assign accordingly\./,
+    'the closing sentence must still ask for the company');
 });
 
 // Frozen wording. Captured from the deployed bodies BEFORE the routing-axis change; a
@@ -112,7 +133,10 @@ test('a single-company turn renders byte-identical', () => {
   const r = lane('routing-axis-one-company');
   assert.deepStrictEqual(plain(r.gate.routing_companies.map((c) => c.company_name)), ['Sorento']);
   assert.equal(r.offer.cs_offer_company, 'Sorento');
-  assert.equal(r.offer.cs_multi_note, null);
+  // captain 2026-08-24: cs_multi_note is a deleted field (was `null` on single-company before the
+  // note existed at all, now `undefined` because nothing ever sets it) - same absence, exact shape
+  // changed by the deletion.
+  assert.equal(r.offer.cs_multi_note, undefined);
   assert.equal(r.offer.response, SINGLE_COMPANY_OFFER);
 });
 

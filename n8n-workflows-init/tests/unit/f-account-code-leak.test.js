@@ -2,8 +2,15 @@
 //
 // Plan case F. Exec 13687248 replied:
 //   "Note: 300-D059 is carried by more than one company (*Mocha* and *Sorento*) ..."
-// 300-D059 is an internal debtor code. The note prints the roster plan's `codes`, which is right
-// for a PRODUCT (MFG6653-DIY is meaningful to the customer) and wrong for a customer.
+// 300-D059 is an internal debtor code. The note used to print the roster plan's `codes`, which is
+// right for a PRODUCT (MFG6653-DIY is meaningful to the customer) and wrong for a customer.
+//
+// captain 2026-08-24: the multi-company note itself is gone (see build-cs-member-offer.js), so the
+// response text no longer prints codes or labels at all - the leak this file guards against cannot
+// reach the customer through that sentence any more. F1b now checks the note stayed gone AND that
+// the label data build-cs-member-offer still exports (routing_companies[].labels, evidence/debug
+// only) carries the customer's name rather than the debtor code, so the fix that produced the label
+// in the first place (disallowed-entity-gate) hasn't quietly regressed just because nothing prints it.
 //
 // The label is carried from where the codes are built - disallowed-entity-gate, which has the
 // resolver row and therefore its entity_type and display name - rather than looked up by name from
@@ -38,9 +45,9 @@ test('F1a: the gate labels each routing company with something a customer can re
   }
 });
 
-test('F1b: the multi-company note names the customer, never the account code', () => {
+test('F1b: no multi-company note, and no account code leaks into the exported labels', () => {
   const fx = load('f-leak--build-cs-member-offer.json');
-  // the plan this node reads comes from the gate; run the gate first so the note sees real labels
+  // the plan this node reads comes from the gate; run the gate first so the labels are real
   const gate = run('disallowed-entity-gate', load('f-leak--disallowed-entity-gate.json'));
   for (const item of fx.ctx['cs-roster-plan'] || []) {
     const match = (gate.routing_companies || []).find(c => c.company_id === item.json.company_id);
@@ -48,9 +55,17 @@ test('F1b: the multi-company note names the customer, never the account code', (
   }
   const o = run('build-cs-member-offer', fx);
   const msg = String(o.response || '');
-  assert.match(msg, /carried by more than one company/i, 'the note is still produced');
+  // captain 2026-08-24: the note is gone, so neither its wording nor a leaked code can be in the reply.
+  assert.doesNotMatch(msg, /carried by more than one company/i, 'the multi-company note was removed');
+  assert.doesNotMatch(msg, /Note:/, 'no leftover note line');
   assert.doesNotMatch(msg, /300-D059/, 'the internal account code must never reach the customer');
-  assert.match(msg, /DELUXE HOME CENTRE/i, 'the customer is named instead');
+  assert.equal(o.cs_multi_note, undefined, 'cs_multi_note is a deleted field, not merely an unprinted one');
+  // the label survives the roster-plan hop even though nothing prints it any more (evidence/debug).
+  const cos = o.routing_companies || [];
+  assert.ok(cos.length > 0, 'this turn still plans routing to more than one company');
+  const allLabels = cos.flatMap(c => Array.isArray(c.labels) ? c.labels : []);
+  assert.ok(allLabels.some(l => /DELUXE HOME CENTRE/i.test(l)), 'the customer label is still carried');
+  assert.ok(!allLabels.some(l => /300-D059/.test(l)), 'the internal account code must never be used as a label');
 });
 
 // The rule is "call it what the customer would call it", not "hide codes". A PRODUCT code IS what
