@@ -80,6 +80,7 @@ if (missingAttachmentType) {
       : '';
   }
 
+  const _DATE_SCOPE_DOMAINS = new Set(['order', 'incoming', 'goods_receive', 'spo_allocation', 'promotion']);
   const dateRange = (q.date_filter_start && q.date_filter_end)
     ? ` from ${q.date_filter_start} to ${q.date_filter_end}` : '';
   // S2 (promotion-picker): the spine now sends the contact's ENTITLEMENT UNION when the
@@ -324,6 +325,18 @@ if (missingAttachmentType) {
     const parts = [];
     if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
     if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
+    // THE DATE SCOPE, ALWAYS (captain plan E2, 2026-08-24). An empty result is exactly when the
+    // customer needs to know what was filtering, and the date is the one dimension that is
+    // invisible: `dateRange` above is the empty string whenever no window was set, so "no order
+    // matched these" never said whether it had looked at all dates or just this month. Only for
+    // domains the CRM date-filters; elsewhere it would be noise on an answer it does not apply to.
+    if (_DATE_SCOPE_DOMAINS.has(String(q.domain_hint || '').toLowerCase())) {
+      const _ds = q.date_filter_start || null, _de = q.date_filter_end || null;
+      const _fmtD = (v) => { const m = String(v ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v ?? ''); };
+      parts.push(`Dates: ${(!_ds && !_de) ? 'all dates'
+        : (_ds && _de && _ds === _de) ? _fmtD(_ds)
+        : `${_ds ? _fmtD(_ds) : 'earliest'} to ${_de ? _fmtD(_de) : 'today'}`}`);
+    }
     parts.push(_entitlementMiss
       || `But no${active_inactive} ${domainWord}${dateRange}${access} matched these${_coSuffix}. Would you like me to escalate to ${team} team?`);
     return parts.join('\n\n');

@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main TEST  (`txiPzSxy3Pclsz6v`)
 
-- versionId **1a1cd54f-6368-4d47-aa3d-fbd60432e97b** · activeVersionId **1a1cd54f-6368-4d47-aa3d-fbd60432e97b** · DRAFT == ACTIVE
+- versionId **f52736d0-57bf-4f1a-8676-d4f90086938b** · activeVersionId **f52736d0-57bf-4f1a-8676-d4f90086938b** · DRAFT == ACTIVE
 - 182 nodes
 
 ## Edges
@@ -365,7 +365,7 @@ wait-media-poll[0] -> media-poll-gate
 | node | lines |
 |---|---|
 | compile-current-state | 1546 |
-| disallowed-entity-gate | 803 |
+| disallowed-entity-gate | 816 |
 | build-suggest-offer | 651 |
 | promo-picker | 578 |
 | not-found-error-message | 443 |
@@ -375,9 +375,9 @@ wait-media-poll[0] -> media-poll-gate
 | crossdomain-render | 181 |
 | dym-annotate | 169 |
 | media-route | 151 |
+| build-cs-member-offer | 144 |
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
-| build-cs-member-offer | 137 |
 | build-miss-member-offer | 111 |
 | crossdomain-compose | 101 |
 | escalate-catalog | 99 |
@@ -402,7 +402,7 @@ wait-media-poll[0] -> media-poll-gate
 | media-poll-merge | 31 |
 | central-exchange | 28 |
 | construct-user-prompt | 25 |
-| cs-roster-plan | 21 |
+| cs-roster-plan | 23 |
 | media-poll-mock | 19 |
 | build-ideate-reply | 17 |
 | ideate-turn-mock | 12 |

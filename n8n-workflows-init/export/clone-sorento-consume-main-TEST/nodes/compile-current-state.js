@@ -1341,9 +1341,32 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     };
     const _s = qf.date_filter_start || null;
     const _e = qf.date_filter_end   || null;
-    const _line = (!_s && !_e)      ? 'Dates: all dates'
-                : (_s && _e && _s === _e) ? `Dates: ${_fmt(_s)}`
-                : `Dates: ${_s ? _fmt(_s) : 'earliest'} to ${_e ? _fmt(_e) : 'today'}`;
+    const _dates = (!_s && !_e)      ? 'all dates'
+                 : (_s && _e && _s === _e) ? _fmt(_s)
+                 : `${_s ? _fmt(_s) : 'earliest'} to ${_e ? _fmt(_e) : 'today'}`;
+    // ALL THREE DIMENSIONS, ALWAYS (captain plan E1/E2, 2026-08-24). A delivery-order search
+    // filters on customer, product and date. Naming only the date was what sent the captain
+    // hunting: an empty or surprising result gives no clue WHICH filter caused it. Each line names
+    // its dimension so the way to widen it is obvious ("all products"), and a dimension with no
+    // filter says so rather than vanishing - a line that appears only sometimes is one you stop
+    // reading.
+    const _ents = Array.isArray(qf.entities) ? qf.entities : [];
+    const _named = (hint) => {
+      const seen = new Set();
+      for (const e of _ents) {
+        if (!e || String(e.hint || '').toLowerCase() !== hint) continue;
+        const v = String(e.raw ?? '').trim();
+        if (v) seen.add(v);
+      }
+      return [...seen];
+    };
+    const _cust = _named('customer');
+    const _prod = _named('product');
+    const _line = [
+      `Customer: ${_cust.length ? _cust.join(', ') : 'all customers'}`,
+      `Product: ${_prod.length ? _prod.join(', ') : 'all products'}`,
+      `Dates: ${_dates}`,
+    ].join('\n');
     output.user_response = `${_line}\n\n${output.user_response}`;
   } catch (e) { /* a disclosure bug must never block the answer */ }
 })();
