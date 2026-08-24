@@ -32,6 +32,79 @@ test('E1/E4: an answer names all three dimensions, and an unset one reads as "al
   assert.match(msg, /Dates: all dates/, 'no window set reads as "all dates", not a missing line');
 });
 
+const runMut = (node, file, mutate) => {
+  const fx = load(file);
+  mutate(fx);
+  const body = loadNodes(SLUG, [`${node}.js`])[`${node}.js`];
+  const out = runNode({ body, fixture: fx, slug: SLUG, nodeName: node });
+  return Array.isArray(out) ? out[0].json : out;
+};
+
+// exec 13706881, message "2" (picking one delivery order off a numbered list): the parser
+// emitted a single {raw:"202608-3719", hint:"order"} entity and the gate scoped the search to
+// that ONE order (compatible_entities = [{entity_type:'customer_order', ...}]) - an axis the
+// old block, which only ever read Customer/Product off the parser's hints, could not see at
+// all. It printed "Customer: all customers / Product: all products / Dates: all dates" - i.e.
+// claimed nothing was filtered while everything was pinned to one order.
+test('BUG exec 13706881: a search scoped to one order must say so, not just "all customers / all products"', () => {
+  const o = runMut('compile-current-state', 'pick-must-keep-missed-product--compile-current-state.json', (fx) => {
+    for (const item of fx.ctx['disallowed-entity-gate'] || []) {
+      item.json.compatible_entities = [
+        { entity_type: 'customer_order', code: '202608-3719', uuid: 'ord-13706881-0001' },
+      ];
+    }
+    for (const item of fx.ctx['resolve-entity'] || []) item.json.resolutions = [];
+    for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) {
+      item.json.output.entities = [
+        { raw: '202608-3719', hint: 'order', current_message: true },
+      ];
+    }
+  });
+  const msg = String(o.user_response || '');
+  assert.match(msg, /^Order: 202608-3719$/m, 'the order the search was actually scoped to must be named');
+  assert.match(msg, /^Customer: all customers$/m, 'no customer was in scope, and that much of the old line was true');
+  assert.match(msg, /^Product: all products$/m, 'no product was in scope, and that much of the old line was true');
+});
+
+// exec 13707523 (reproduced fresh as 13708143), message "mastile klang srtwc286": the parser
+// hinted the bare code as {raw:"srtwc286", hint:"order"} - a defensible read when the domain is
+// order - but the RESOLVER matched it as 10 products and the gate's compatible_entities held
+// product:10 (+ customer:9). The CRM was queried with those product ids, so the search was
+// right; the old block, driven off the parser's hint instead of the gate's scope, printed
+// "Product: all products" - a straight lie about what the customer just got.
+test('BUG exec 13707523/13708143: a code the resolver matched to products must be named as Product, not "all products"', () => {
+  const o = runMut('compile-current-state', 'pick-must-keep-missed-product--compile-current-state.json', (fx) => {
+    for (const item of fx.ctx['disallowed-entity-gate'] || []) {
+      item.json.compatible_entities = [
+        { entity_type: 'product', code: 'SRTWC286-SH-200', uuid: 'prod-srtwc286-0001' },
+        { entity_type: 'product', code: 'SRTWC286-SH-P', uuid: 'prod-srtwc286-0002' },
+        { entity_type: 'customer', code: '300-D059', uuid: 'cust-srtwc286-0001' },
+        { entity_type: 'customer', code: '300-D060', uuid: 'cust-srtwc286-0002' },
+      ];
+    }
+    for (const item of fx.ctx['resolve-entity'] || []) {
+      item.json.resolutions = [{
+        token: 'srtwc286',
+        resolved: false,
+        ambiguous: true,
+        matches: [
+          { entity_type: 'product', canonical_code: 'SRTWC286-SH-200', uuid: 'prod-srtwc286-0001' },
+          { entity_type: 'product', canonical_code: 'SRTWC286-SH-P', uuid: 'prod-srtwc286-0002' },
+        ],
+      }];
+    }
+    for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) {
+      item.json.output.entities = [
+        { raw: 'srtwc286', hint: 'order', current_message: true },
+      ];
+    }
+  });
+  const msg = String(o.user_response || '');
+  assert.match(msg, /^Product: srtwc286$/m, 'the product line must name the code the customer typed, not vanish behind "all products"');
+  assert.doesNotMatch(msg, /^Product: all products$/m, 'the CRM was queried with 2 real products - the header must not claim none were used');
+  assert.doesNotMatch(msg, /^Order: /m, 'no order axis was ever put in scope - the parser\'s hint must not manufacture one');
+});
+
 test('E2: an EMPTY result states the date scope too - that is when it matters most', () => {
   const o = run('not-found-error-message', 'obj1-not-found-error-message.json');
   const msg = String(o.escalate_message || o.response || '');

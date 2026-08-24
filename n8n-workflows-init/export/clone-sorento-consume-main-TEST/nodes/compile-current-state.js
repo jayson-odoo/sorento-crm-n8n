@@ -1367,23 +1367,85 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // its dimension so the way to widen it is obvious ("all products"), and a dimension with no
     // filter says so rather than vanishing - a line that appears only sometimes is one you stop
     // reading.
+    //
+    // BUG FIX 2026-08-24: this used to render Customer/Product from the PARSER's hints - what the
+    // model guessed the words meant, not what was actually put in scope. Two measured executions:
+    //   exec 13706881, message "2" (picking one delivery order off a numbered list) - the parser
+    //   emitted a single {raw:"202608-3719", hint:"order"} entity and the gate scoped the search
+    //   to that ONE order, but the header read "Customer: all customers / Product: all products" -
+    //   it claimed nothing was filtered while everything was pinned to one order. An order number
+    //   is a filter axis the hint-driven block could not see at all.
+    //   exec 13707523 (reproduced fresh as 13708143), message "mastile klang srtwc286" - the
+    //   parser hinted the bare code as {raw:"srtwc286", hint:"order"}, a defensible read when the
+    //   domain is order, but the RESOLVER matched it to 10 products and the gate's
+    //   compatible_entities held product:10 (+ customer:9). The CRM was queried with those
+    //   product ids, so the search was right; the header still printed "Product: all products" -
+    //   a straight lie about what the customer just got.
+    //
+    // FIX: render from the gate's `compatible_entities` (each row {entity_type, code, uuid} - the
+    // axes actually put in scope), never from the parser's guess. Per axis, prefer the customer's
+    // own typed words: resolve-entity's `resolutions[].token` mapped to a match of that
+    // entity_type (exec 13707523: token "srtwc286" resolves to entity_type "product") -> fall
+    // back to the parser entity whose `hint` names the axis -> last resort, the compatible_entities
+    // row's own title/code (never a synthetic debtor code ahead of a real typed word). Customer,
+    // Product and Dates always print (unchanged E1/E4 shape); any other axis in scope adds its own
+    // line only when active, ordered Customer, Product, [extra axes], Dates last.
+    const _norm = (v) => String(v ?? '').trim().toLowerCase();
     const _ents = Array.isArray(qf.entities) ? qf.entities : [];
-    const _named = (hint) => {
-      const seen = new Set();
-      for (const e of _ents) {
-        if (!e || String(e.hint || '').toLowerCase() !== hint) continue;
-        const v = String(e.raw ?? '').trim();
-        if (v) seen.add(v);
+    const _gateEnts = (() => {
+      try {
+        const g = $('disallowed-entity-gate').isExecuted ? $('disallowed-entity-gate').first().json : null;
+        return g && Array.isArray(g.compatible_entities) ? g.compatible_entities : [];
+      } catch (e) { return []; }
+    })();
+    const _resolutions = (() => {
+      try {
+        const rj = $('resolve-entity').isExecuted ? $('resolve-entity').first().json : null;
+        return rj && Array.isArray(rj.resolutions) ? rj.resolutions : [];
+      } catch (e) { return []; }
+    })();
+    const _AXES = [
+      { label: 'Customer', types: ['customer'], hints: ['customer'], always: true, allText: 'all customers' },
+      { label: 'Product',  types: ['product'],  hints: ['product'],  always: true, allText: 'all products' },
+      { label: 'Order',       types: ['customer_order', 'order', 'order_number'], hints: ['order', 'customer_order', 'order_number'] },
+      { label: 'Transporter', types: ['transporter'], hints: ['transporter'] },
+      { label: 'Container',   types: ['inbound_shipment'], hints: ['inbound_shipment', 'container'] },
+      { label: 'Warehouse',   types: ['warehouse'], hints: ['warehouse'] },
+    ];
+    const _axisWords = (axis) => {
+      const typeSet = new Set(axis.types);
+      const rows = _gateEnts.filter(e => e && typeSet.has(_norm(e.entity_type)));
+      if (!rows.length) return null;                                     // axis never put in scope
+      const words = new Set();
+      for (const res of _resolutions) {                                  // 1. the customer's own typed token
+        const hitsAxis = (Array.isArray(res && res.matches) ? res.matches : [])
+          .some(m => m && typeSet.has(_norm(m.entity_type)));
+        const tok = String((res && res.token) ?? '').trim();
+        if (hitsAxis && tok) words.add(tok);
       }
-      return [...seen];
+      if (!words.size) {                                                 // 2. the parser's own hinted raw
+        for (const e of _ents) {
+          if (!e || !axis.hints.includes(_norm(e.hint))) continue;
+          const v = String(e.raw ?? '').trim();
+          if (v) words.add(v);
+        }
+      }
+      if (!words.size) {                                                 // 3. last resort: the gate's own label
+        for (const row of rows) {
+          const v = String((row && (row.title || row.code)) ?? '').trim();
+          if (v) words.add(v);
+        }
+      }
+      return [...words].join(', ');
     };
-    const _cust = _named('customer');
-    const _prod = _named('product');
-    const _line = [
-      `Customer: ${_cust.length ? _cust.join(', ') : 'all customers'}`,
-      `Product: ${_prod.length ? _prod.join(', ') : 'all products'}`,
-      `Dates: ${_dates}`,
-    ].join('\n');
+    const _lines = [];
+    for (const axis of _AXES) {
+      const words = _axisWords(axis);
+      if (axis.always) _lines.push(`${axis.label}: ${words || axis.allText}`);
+      else if (words) _lines.push(`${axis.label}: ${words}`);
+    }
+    _lines.push(`Dates: ${_dates}`);
+    const _line = _lines.join('\n');
     output.user_response = `${_line}\n\n${output.user_response}`;
   } catch (e) { /* a disclosure bug must never block the answer */ }
 })();
