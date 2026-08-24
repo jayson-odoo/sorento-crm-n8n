@@ -1806,6 +1806,45 @@ if (!DATE_FILTER_DOMAINS.has(output.output.domain_hint)) {
   }
 }
 
+// ── A CORRECTION RETIRES THE SPELLING IT CORRECTED (captain plan A4, 2026-08-24) ─────────────
+// Exec 13688567 / fork 13688574: the bot asked "Couldn't find WESRP10B. Did you mean WESERP10B?",
+// the customer answered with the exact code offered, and got the identical question back - for as
+// long as they cared to keep answering. The parser re-emits the superseded spelling as a
+// current-message entity, so it stays a live filter, keeps resolving to nothing, and keeps
+// re-triggering its own did-you-mean. There is no phrasing that escapes it.
+//
+// No words are matched to fix it. The model says THIS TURN ACCEPTS A CORRECTION
+// (dym_pick_applied), and the offer we made records which token each candidate was for
+// (dym_offer.candidates[].for_raw). Comparing a code the customer named against a code the
+// resolver returned is mechanical; nothing here interprets their sentence.
+// Runs in the final pass for the same reason as the axis drop below: mid-chain writers get undone.
+{
+  const _dymApplied = output.output?.dym_pick_applied === true;
+  const _dymCands = parent_input.previous_conversation_state?.dym_offer?.candidates;
+  if (_dymApplied && Array.isArray(_dymCands) && _dymCands.length && Array.isArray(output.output?.entities)) {
+    const _sn = (v) => String(v ?? '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
+    const _named = new Set();
+    for (const e of output.output.entities) {
+      if (!e) continue;
+      const r = _sn(e.raw); if (r) _named.add(r);
+      const c = _sn(e.canonical_code); if (c) _named.add(c);
+    }
+    const _superseded = new Set();
+    for (const cand of _dymCands) {
+      if (!cand) continue;
+      const _code = _sn(cand.code);
+      const _for  = _sn(cand.for_raw);
+      // only when the customer actually took THIS candidate, and never let a candidate retire itself
+      if (_code && _for && _for !== _code && _named.has(_code)) _superseded.add(_for);
+    }
+    if (_superseded.size) {
+      const _before = output.output.entities.length;
+      output.output.entities = output.output.entities.filter(e => !_superseded.has(_sn(e && e.raw)));
+      output.output.dym_superseded_dropped = _before - output.output.entities.length;   // diagnostic
+    }
+  }
+}
+
 // ── AXIS BROADEN, FINAL PASS: the widened filter must not come back ──────────────────────────
 // This drop used to sit right after the entity-op executor. The logic ran correctly there -
 // exec 13636691 reported broaden_axis 'product', broaden_axis_dropped 1, domain restored to
