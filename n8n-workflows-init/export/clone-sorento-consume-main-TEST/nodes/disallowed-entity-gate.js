@@ -389,7 +389,18 @@ if (!require_specific) {
   const _pins = (Array.isArray(parser.entities) ? parser.entities : [])
     .filter(e => e && e.current_message === true && e.uuid);
   const _pinUuids = new Set(_pins.map(e => String(e.uuid)));
-  if (_pinUuids.size) {
+  // Gate entry on carried pins too, not just this-turn ones. A customer picked two turns ago is
+  // re-sent by the parser with current_message:false ("carried"), and on exec 13705266 that meant
+  // _pinUuids (this-turn only) was empty, so the whole block below - re-seat AND family expansion -
+  // never ran. compatible_entities collapsed from the remembered 12-account family (set on the pick
+  // turn, exec 13705226) down to the 2 accounts the resolver could text-match from the carried
+  // label, and the CRM lookup for WESERP10B under only those 2 accounts came back "No matching
+  // results found" even though the product exists under the customer's other accounts. The RESTRICT
+  // filter further down stays keyed on _pins/_pinUuids (this-turn only) - see its own comment - so a
+  // carried row still cannot narrow a scope the customer just named fresh.
+  const _pinsAll = (Array.isArray(parser.entities) ? parser.entities : []).filter(e => e && e.uuid);
+  const _pinUuidsAll = new Set(_pinsAll.map(e => String(e.uuid)));
+  if (_pinUuidsAll.size) {
     // A PICK IS AUTHORITATIVE — DO NOT MAKE IT SURVIVE TEXT RE-RESOLUTION.
     // The roster row we ourselves rendered carries the uuid the customer chose, but the spine still
     // re-resolves its LABEL as text, and a label the CRM cannot match back ("YOO LIVING HOUSE
@@ -402,7 +413,7 @@ if (!require_specific) {
     // Re-seat CARRIED picks too (current_message false): a customer chosen two turns ago is just as
     // authoritative as one chosen now, and its label re-resolves no better. Only the RESTRICT filter
     // below stays keyed on this-turn pins, so a carried row can never narrow a freshly named scope.
-    const _pinsAll = (Array.isArray(parser.entities) ? parser.entities : []).filter(e => e && e.uuid);
+    // (_pinsAll/_pinUuidsAll defined above, at the block's entry-condition.)
     for (const _e of _pinsAll) {
       const _u = String(_e.uuid);
       if (compatible_entities.some(c => String(c.uuid) === _u)) continue;
@@ -418,7 +429,12 @@ if (!require_specific) {
         { uuid: _u, entity_type: _t, code: _label }];
     }
     const _pinTypes = new Set(_pins.map(e => String(e.hint || '').toLowerCase()).filter(Boolean));
-    const _allPresent = [..._pinUuids].every(u => compatible_entities.some(c => String(c.uuid) === u));
+    // Gated on ALL pins (carried included), not just _pinUuids: the re-seat loop above (_pinsAll)
+    // already put every pinned uuid - carried or fresh - back into compatible_entities, so checking
+    // the wider set is just confirming that loop did its job before the family widens. Narrowing this
+    // back to _pinUuids would silently skip family expansion whenever a carried pin's row hadn't
+    // resolved (rare, but the whole point of the re-seat is that it now has).
+    const _allPresent = [..._pinUuidsAll].every(u => compatible_entities.some(c => String(c.uuid) === u));
     if (_allPresent) {
       // A picked CUSTOMER selects its whole ACCOUNT FAMILY, never just the pinned row — the
       // captain's rule is that a pick answers the company. Picking "SIGNATURE BUILDING MATERIAL
@@ -434,7 +450,10 @@ if (!require_specific) {
       const _famAdded = new Set();
       if (_famMem) {
         const _have = new Set(compatible_entities.map(c => String(c && c.uuid)));
-        for (const _e of _pins) {
+        // Iterate _pinsAll (carried + this-turn), not _pins (this-turn only) - a carried customer
+        // pin must widen the family exactly like a fresh one (exec 13705266, see the block-entry
+        // comment above).
+        for (const _e of _pinsAll) {
           if (String(_e.hint || '').toLowerCase() !== 'customer') continue;
           const _b = _custBase({ display: {}, canonical_code: _e.raw || _e.canonical_code });
           const _fam = _famMem[_b];
