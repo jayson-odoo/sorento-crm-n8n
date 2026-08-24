@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "#16 brand beats company: Cabana is a BRAND under the Sorento COMPANY, so routing a promotion by company_name sent every Cabana enquiry to the Sorento team. The row's own brand decides, and BOTH halves of the brand record are searched \u2014 here the match is on brand_name, with the other half naming nothing valid. company_team is derived from that brand, and routing_brand is the row's brand_code, sourced 'resolved'."
+  "rationale": "#16 brand beats company: Cabana is a BRAND under the Sorento COMPANY, so routing a promotion by company_name sent every Cabana enquiry to the Sorento team. The row's own brand decides, and BOTH halves of the brand record are searched \u2014 here the match is on brand_name, with the other half naming nothing valid. company_team is derived from that brand, and routing_brand is the row's brand_code, sourced 'resolved'. F-R4-3 (2026-08-24): company_team collapsed to the base `marketing_promotion` - CRM migration 371 merged the brand-suffixed T1 rows, so marketing_promotion_<brand> resolves to no team. The brand is still carried on resolved_company / routing_brand; only the TEAM NAME lost its suffix. plan case F (2026-08-24): routing_companies entries also carry `labels[]` - the customer-facing name for each routing subject (display name for a customer, canonical_code for a product), so a debtor code like 300-D059 never has to stand in for an account in a reply. Additive; `codes` is untouched and nothing on this spine reads `labels` yet."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -109,12 +109,10 @@
      }
     ],
     "unresolved_tokens": [],
-    "access_denied_levels": [],
-    "access_notice": "",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": "cabana",
-    "company_team": "marketing_promotion_cabana",
+    "company_team": "marketing_promotion",
     "resolved_companies": [
      "cabana"
     ],
@@ -127,12 +125,17 @@
       "brand_code": "cbn",
       "codes": [
        "CBS212-WH"
+      ],
+      "labels": [
+       "CBS212-WH"
       ]
      }
     ],
     "routing_company": "c1",
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
     "gate_reason": "ok",
     "gate_clarification": "",
     "compatible_entities": [

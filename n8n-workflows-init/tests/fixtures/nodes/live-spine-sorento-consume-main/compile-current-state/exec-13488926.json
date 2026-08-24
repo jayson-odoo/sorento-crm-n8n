@@ -8,7 +8,8 @@
     "reasoned": true,
     "repinned_at_version": "df165492",
     "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged.",
-    "lane_golden_repin": "ctx[\"crossdomain-compose\"] doubles as the flow-tier lane golden (tests/flow/*.test.js compares the lane END output against it) and was re-pinned at live df165492 with the SAME derivation as `expected`: U+2014 folded to a plain hyphen, plus the entity-type suffix on a quoted miss token where the node renders one."
+    "lane_golden_repin": "ctx[\"crossdomain-compose\"] doubles as the flow-tier lane golden (tests/flow/*.test.js compares the lane END output against it) and was re-pinned at live df165492 with the SAME derivation as `expected`: U+2014 folded to a plain hyphen, plus the entity-type suffix on a quoted miss token where the node renders one.",
+    "rationale": "plan case F (2026-08-24): the captured disallowed-entity-gate output now also carries routing_companies[].labels - the customer-facing name for each routing subject. Additive and inert on this spine (nothing reads it yet); it rides through compile-current-state into the session vars, which is why this lane fixture moved. No reply text changed."
   },
   "ctx": {
     "When Executed by Another Workflow": [
@@ -756,6 +757,9 @@
               "brand_code": null,
               "codes": [
                 "MWC7625-SH-S10"
+              ],
+              "labels": [
+                "MWC7625-SH-S10"
               ]
             },
             {
@@ -763,6 +767,9 @@
               "company_name": "Sorento",
               "brand_code": "mocha",
               "codes": [
+                "MWC7625-SH-S10"
+              ],
+              "labels": [
                 "MWC7625-SH-S10"
               ]
             }
@@ -2001,6 +2008,9 @@
                 "brand_code": null,
                 "codes": [
                   "MWC7625-SH-S10"
+                ],
+                "labels": [
+                  "MWC7625-SH-S10"
                 ]
               },
               {
@@ -2008,6 +2018,9 @@
                 "company_name": "Sorento",
                 "brand_code": "mocha",
                 "codes": [
+                  "MWC7625-SH-S10"
+                ],
+                "labels": [
                   "MWC7625-SH-S10"
                 ]
               }
@@ -2180,6 +2193,9 @@
               "brand_code": null,
               "codes": [
                 "MWC7625-SH-S10"
+              ],
+              "labels": [
+                "MWC7625-SH-S10"
               ]
             },
             {
@@ -2187,6 +2203,9 @@
               "company_name": "Sorento",
               "brand_code": "mocha",
               "codes": [
+                "MWC7625-SH-S10"
+              ],
+              "labels": [
                 "MWC7625-SH-S10"
               ]
             }

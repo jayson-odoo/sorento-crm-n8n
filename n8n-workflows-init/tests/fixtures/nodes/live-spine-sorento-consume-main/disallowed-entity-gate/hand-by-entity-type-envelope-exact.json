@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The third resolver envelope: neither resolutions[] nor intersection[], only by_entity_type. Its values feed both `flat` and AND-mode. The single product's canonical_code equals the typed token, so it counts as exact, resolves, and no picker is built \u2014 proving 'exact' in AND-mode is token equality and never match_tier (this row's tier is brand_access_fallback)."
+  "rationale": "The third resolver envelope: neither resolutions[] nor intersection[], only by_entity_type. Its values feed both `flat` and AND-mode. The single product's canonical_code equals the typed token, so it counts as exact, resolves, and no picker is built \u2014 proving 'exact' in AND-mode is token equality and never match_tier (this row's tier is brand_access_fallback). plan case F (2026-08-24): routing_companies entries also carry `labels[]` - the customer-facing name for each routing subject (display name for a customer, canonical_code for a product), so a debtor code like 300-D059 never has to stand in for an account in a reply. Additive; `codes` is untouched and nothing on this spine reads `labels` yet."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -79,10 +79,8 @@
      ]
     },
     "unresolved_tokens": [],
-    "access_denied_levels": [],
-    "access_notice": "",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": "sorento",
     "company_team": null,
     "resolved_companies": [
@@ -97,12 +95,17 @@
       "brand_code": null,
       "codes": [
        "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
       ]
      }
     ],
     "routing_company": "c1",
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
     "gate_reason": "ok",
     "gate_clarification": "",
     "compatible_entities": [

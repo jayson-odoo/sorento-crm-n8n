@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Q23 on the tier-gate path: a stated tier the contact does not hold is named back with the TIER LABEL map, followed by 'Here's what you do have:' (the answer still renders under it). #16 brand-beats-company: promotion rows carry no brand and no company, so _brands falls back to the brand the CUSTOMER named ('Cabana') \u2014 one unambiguous brand on a promotion turn, so company_team is marketing_promotion_cabana rather than the sorento default. routing_brand is 'stated' because the single query_brand is the only brand signal."
+  "rationale": "Q23 on the tier-gate path: a stated tier the contact does not hold is named back with the TIER LABEL map, followed by 'Here's what you do have:' (the answer still renders under it). #16 brand-beats-company: promotion rows carry no brand and no company, so _brands falls back to the brand the CUSTOMER named ('Cabana') \u2014 one unambiguous brand on a promotion turn, so company_team is the single promotion team `marketing_promotion`. routing_brand is 'stated' because the single query_brand is the only brand signal. F-R4-3 (2026-08-24): company_team collapsed to the base `marketing_promotion` - CRM migration 371 merged the brand-suffixed T1 rows, so marketing_promotion_<brand> resolves to no team. The brand is still carried on resolved_company / routing_brand; only the TEAM NAME lost its suffix."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -118,14 +118,10 @@
      }
     ],
     "unresolved_tokens": [],
-    "access_denied_levels": [
-     "dealer"
-    ],
-    "access_notice": "You don't have access to dealer promotions. Here's what you do have:",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": "cabana",
-    "company_team": "marketing_promotion_cabana",
+    "company_team": "marketing_promotion",
     "resolved_companies": [
      "cabana"
     ],
@@ -133,8 +129,12 @@
     "routing_brand_source": "stated",
     "routing_companies": [],
     "routing_company": null,
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [
+     "dealer"
+    ],
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "access_notice": "You don't have access to dealer promotions. Here's what you do have:",
     "gate_reason": "ok",
     "gate_clarification": "",
     "compatible_entities": [

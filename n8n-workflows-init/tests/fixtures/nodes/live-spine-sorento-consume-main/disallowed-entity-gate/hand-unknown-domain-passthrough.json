@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "domain_hint is not a key of ALLOWED (null here \u2014 a casual/unclassified turn), so `allowed === null` and the gate takes its pass-through arm: gate_passed stays true, the reason names the domain, and compatible_entities is the UNFILTERED entity set (there is no matrix row to filter against). gate_debug.allowed_lookup is undefined, so the key is absent from the JSON. The routing block still runs \u2014 one company_name containing 'sorento' makes resolved_company 'sorento' \u2014 but company_team stays null because it is promotion-only."
+  "rationale": "domain_hint is not a key of ALLOWED (null here \u2014 a casual/unclassified turn), so `allowed === null` and the gate takes its pass-through arm: gate_passed stays true, the reason names the domain, and compatible_entities is the UNFILTERED entity set (there is no matrix row to filter against). gate_debug.allowed_lookup is undefined, so the key is absent from the JSON. The routing block still runs \u2014 one company_name containing 'sorento' makes resolved_company 'sorento' \u2014 but company_team stays null because it is promotion-only. plan case F (2026-08-24): routing_companies entries also carry `labels[]` - the customer-facing name for each routing subject (display name for a customer, canonical_code for a product), so a debtor code like 300-D059 never has to stand in for an account in a reply. Additive; `codes` is untouched and nothing on this spine reads `labels` yet."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -88,10 +88,8 @@
      }
     ],
     "unresolved_tokens": [],
-    "access_denied_levels": [],
-    "access_notice": "",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": "sorento",
     "company_team": null,
     "resolved_companies": [
@@ -106,12 +104,17 @@
       "brand_code": null,
       "codes": [
        "SO-1"
+      ],
+      "labels": [
+       "SO-1"
       ]
      }
     ],
     "routing_company": "c1",
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
     "gate_reason": "domain 'null' not in matrix; passing through unscoped",
     "gate_clarification": "",
     "compatible_entities": [

@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Two entities on an 'order' turn: one 'order' (allowed) and one 'brand' (not). Because at least one survives the filter the gate PASSES with reason 'ok', and compatible_entities is the FILTERED pair-down to the order row. Routing: only the compatible order row carries a company, so routing_companies has exactly that one entry (via the non-product fallback branch, since no product resolved) and routing_company is its id; brand_code is null because no row carries a brand and the customer stated none."
+  "rationale": "Two entities on an 'order' turn: one 'order' (allowed) and one 'brand' (not). Because at least one survives the filter the gate PASSES with reason 'ok', and compatible_entities is the FILTERED pair-down to the order row. Routing: only the compatible order row carries a company, so routing_companies has exactly that one entry (via the non-product fallback branch, since no product resolved) and routing_company is its id; brand_code is null because no row carries a brand and the customer stated none. plan case F (2026-08-24): routing_companies entries also carry `labels[]` - the customer-facing name for each routing subject (display name for a customer, canonical_code for a product), so a debtor code like 300-D059 never has to stand in for an account in a reply. Additive; `codes` is untouched and nothing on this spine reads `labels` yet."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -124,10 +124,8 @@
      }
     ],
     "unresolved_tokens": [],
-    "access_denied_levels": [],
-    "access_notice": "",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": "mocha",
     "company_team": null,
     "resolved_companies": [
@@ -142,12 +140,17 @@
       "brand_code": null,
       "codes": [
        "SO-9"
+      ],
+      "labels": [
+       "SO-9"
       ]
      }
     ],
     "routing_company": "c9",
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
     "gate_reason": "ok",
     "gate_clarification": "",
     "compatible_entities": [

@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The resolver's list can contain a null and a row with no uuid; both are skipped rather than dereferenced, so entities_count is 1 and the uuid-keyed map never grows a null/undefined key. Every later pass over `flat` (the routing rows, the brand scan) has to survive the same input."
+  "rationale": "The resolver's list can contain a null and a row with no uuid; both are skipped rather than dereferenced, so entities_count is 1 and the uuid-keyed map never grows a null/undefined key. Every later pass over `flat` (the routing rows, the brand scan) has to survive the same input. plan case F (2026-08-24): routing_companies entries also carry `labels[]` - the customer-facing name for each routing subject (display name for a customer, canonical_code for a product), so a debtor code like 300-D059 never has to stand in for an account in a reply. Additive; `codes` is untouched and nothing on this spine reads `labels` yet."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -109,10 +109,8 @@
      }
     ],
     "unresolved_tokens": [],
-    "access_denied_levels": [],
-    "access_notice": "",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": "sorento",
     "company_team": null,
     "resolved_companies": [
@@ -127,12 +125,17 @@
       "brand_code": null,
       "codes": [
        "P-1"
+      ],
+      "labels": [
+       "P-1"
       ]
      }
     ],
     "routing_company": "c1",
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
     "gate_reason": "ok",
     "gate_clarification": "",
     "compatible_entities": [

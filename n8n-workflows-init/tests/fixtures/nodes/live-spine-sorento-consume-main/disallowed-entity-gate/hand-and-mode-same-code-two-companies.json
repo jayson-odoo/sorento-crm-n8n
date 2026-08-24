@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "AND-mode twin of the mc-label collapse: both rows are the typed code in two companies, so all uuids resolve and no picker is built. This one also exercises the brand axes with rows that DO carry display.brand: two distinct brand_codes means routing_brand stays null (ambiguous) while each routing_companies entry keeps its OWN brand_code \u2014 and _brandTok reads brand_name, so resolved_companies is ['sorento','mocha'] from the brand rather than the company."
+  "rationale": "AND-mode twin of the mc-label collapse: both rows are the typed code in two companies, so all uuids resolve and no picker is built. This one also exercises the brand axes with rows that DO carry display.brand: two distinct brand_codes means routing_brand stays null (ambiguous) while each routing_companies entry keeps its OWN brand_code \u2014 and _brandTok reads brand_name, so resolved_companies is ['sorento','mocha'] from the brand rather than the company. plan case F (2026-08-24): routing_companies entries also carry `labels[]` - the customer-facing name for each routing subject (display name for a customer, canonical_code for a product), so a debtor code like 300-D059 never has to stand in for an account in a reply. Additive; `codes` is untouched and nothing on this spine reads `labels` yet."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -133,10 +133,8 @@
      }
     ],
     "unresolved_tokens": [],
-    "access_denied_levels": [],
-    "access_notice": "",
-    "brand_gate_empty": false,
-    "brand_unheld": false,
+    "gate_passed": true,
+    "require_specific": false,
     "resolved_company": null,
     "company_team": null,
     "resolved_companies": [
@@ -152,6 +150,9 @@
       "brand_code": "mch",
       "codes": [
        "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
       ]
      },
      {
@@ -160,12 +161,17 @@
       "brand_code": "srt",
       "codes": [
        "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
       ]
      }
     ],
     "routing_company": null,
-    "gate_passed": true,
-    "require_specific": false,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
     "gate_reason": "ok",
     "gate_clarification": "",
     "compatible_entities": [
