@@ -658,11 +658,23 @@ if (output.output && !output.output.is_menu_label) {
       // promotion for it") is exactly the cross-domain carry that must keep working, and is handled
       // by the case above, never here. A null current domain (a bare pick, a casual reply) is not a
       // change — the domain is inherited further down.
+      //
+      // The date window gets the same treatment (captain, 2026-08-24): carryDateWindow() above
+      // already restored it before this block runs, so a domain change silently carried the OLD
+      // subject's dates into the new one - a date set while asking about promotions would follow
+      // the customer into an order question with no way to see it happened. A new subject starts
+      // with an open window, same as it starts with no carried entities.
       const _prevDom = parent_input.previous_conversation_state?.domain_hint || null;
       const _curDom  = output.output.domain_hint || null;
       if (_prevDom && _curDom && _prevDom !== _curDom && current.length > 0) {
         if (keptPrior.length) output.output.scope_cleared_on_domain_change = keptPrior.length;   // diagnostic
         keptPrior = [];
+        if (output.output.date_filter_start || output.output.date_filter_end || output.output.date_mode) {
+          output.output.date_cleared_on_domain_change = true;   // diagnostic
+        }
+        output.output.date_filter_start = null;
+        output.output.date_filter_end   = null;
+        output.output.date_mode         = null;
       }
       // "NAMING A NEW ENTITY IS A NEW QUESTION" (captain, 2026-08-21) used to strip keptPrior down
       // to customer-only on the order domain whenever the turn named anything. Its own comment

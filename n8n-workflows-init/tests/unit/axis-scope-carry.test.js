@@ -80,7 +80,7 @@ const BASE_PARSER_OUTPUT = {
 const CUSTOMER = { raw: 'MASTILE KLANG SDN BHD', hint: 'customer', uuid: '11111111-1111-1111-1111-111111111111', canonical_code: 'DBR-001', current_message: true };
 const PRODUCT = { raw: 'WC286', hint: 'product', canonical_code: 'WC286', current_message: true };
 
-function makeFixture({ userMsg, prevEntities, prevDates = {}, curEntities, entityOp = 'replace_combine', scopeExclusive = false, broadenAxis = null, curDates = {} }) {
+function makeFixture({ userMsg, prevEntities, prevDates = {}, curEntities, entityOp = 'replace_combine', scopeExclusive = false, broadenAxis = null, curDates = {}, prevDomain = 'order', curDomain = 'order' }) {
   return {
     ctx: {
       'When Executed by Another Workflow': [{
@@ -90,6 +90,7 @@ function makeFixture({ userMsg, prevEntities, prevDates = {}, curEntities, entit
           previous_conversation_state: {
             ...BASE_PREV,
             entities: prevEntities,
+            domain_hint: prevDomain,
             date_filter_start: prevDates.start ?? null,
             date_filter_end: prevDates.end ?? null,
             date_mode: prevDates.mode ?? null,
@@ -106,6 +107,7 @@ function makeFixture({ userMsg, prevEntities, prevDates = {}, curEntities, entit
         // go through the parse-and-unwrap branch that lands them at output.output.
         output: JSON.stringify({
           ...BASE_PARSER_OUTPUT,
+          domain_hint: curDomain,
           entities: curEntities,
           entity_op: entityOp,
           scope_exclusive: scopeExclusive,
@@ -182,4 +184,42 @@ test('broaden_axis "date" still clears the window on a replace_combine turn', ()
   assert.equal(o.date_filter_start, null, 'an explicit widen must still clear the window');
   assert.equal(o.date_filter_end, null);
   assert.equal(o.date_mode, null);
+});
+
+// captain, 2026-08-24: a domain change is a new enquiry for the date window too, not just the
+// entities. carryDateWindow() runs before the domain-change block and would otherwise restore
+// the OLD subject's dates into the NEW one ("any promotion for srtwc286 in august" -> "customer
+// yoo living delivery" must not silently filter the delivery search by August).
+test('a replace_combine turn changing domain clears a prior date window (captain, 2026-08-24)', () => {
+  const fixture = makeFixture({
+    userMsg: 'customer yoo living delivery',
+    prevEntities: [PRODUCT],
+    prevDates: { start: '2026-08-01', end: '2026-08-31', mode: 'range' },
+    curEntities: [CUSTOMER],
+    prevDomain: 'promotion',
+    curDomain: 'order',
+  });
+  const o = run(fixture);
+  assert.equal(o.date_filter_start, null, 'a domain change must clear the date window, not just the entities');
+  assert.equal(o.date_filter_end, null);
+  assert.equal(o.date_mode, null);
+  assert.equal(o.date_cleared_on_domain_change, true, 'the clear should be visible as a diagnostic, same as scope_cleared_on_domain_change');
+});
+
+// Same-domain case must keep working exactly as before (exec 13707105, covered above): a
+// replace_combine turn that stays within one domain still carries the prior date window.
+test('a replace_combine turn within the same domain still keeps a prior date window (exec 13707105)', () => {
+  const fixture = makeFixture({
+    userMsg: 'only wc286',
+    prevEntities: [CUSTOMER],
+    prevDates: { start: '2026-08-01', end: '2026-08-31', mode: 'range' },
+    curEntities: [PRODUCT],
+    prevDomain: 'order',
+    curDomain: 'order',
+  });
+  const o = run(fixture);
+  assert.equal(o.date_filter_start, '2026-08-01', 'a same-domain turn must still carry the window');
+  assert.equal(o.date_filter_end, '2026-08-31');
+  assert.equal(o.date_mode, 'range');
+  assert.equal(o.date_cleared_on_domain_change, undefined, 'no domain change happened, so nothing should be flagged cleared');
 });
