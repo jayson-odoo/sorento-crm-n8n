@@ -167,16 +167,28 @@
     }
   }
 
-  // ── timeline field order: facts first, then the dates in chronological order ──────────
-  // (user 2026-08-09). A timeline should READ as a timeline. The CRM returns fields in its own
-  // semantic grouping, which puts Loading 30/05, ETC 31/05 and ETD 02/06 AFTER Collection 04/07 —
-  // correct data, unreadable as a sequence. In timeline mode only: non-date fields keep their
-  // original order at the TOP (product, container, liner, forwarders, consignee), then every
-  // date-valued field follows, ascending.
+  // ── timeline field order: dates chronological, sorted IN PLACE ───────────────────────
+  // (user 2026-08-09; rewritten 2026-08-18). A timeline should READ as a timeline. The CRM's
+  // `_CLEARANCE_PAIRS` order is NARRATIVE, not value-ordered — it lists Loading, ETC and ETD
+  // last though they happen BEFORE Collection, so 30/05, 31/05 and 02/06 printed after 04/07.
+  // Correct data, unreadable as a sequence. That is the bug this block exists to fix and it is
+  // still real: sorting the dates against each other stays.
+  //
+  // What changed: this used to re-emit `[...facts, ...dates]`, moving EVERY date to the bottom
+  // of the row. That silently overrode the CRM's own layout. sorento_crm PR #217 made the CRM
+  // lead with the container journey (identity -> ETA/CIDB/gatepass/... -> quantity/allocation),
+  // and this block dragged ETA back down below Incoming Quantity, so the merged change had no
+  // visible effect on any n8n answer. Field LAYOUT belongs to the CRM — it is the single place
+  // that knows the journey — and this node's job is only the SEQUENCE within the date block.
+  //
+  // So: collect the slots the date fields already occupy, order the dates among themselves,
+  // write them back into those same slots. Non-date fields never move. A row with fewer than
+  // two dates is untouched entirely, which is the common single-ETA case.
+  //
   // A field counts as a date by its VALUE, never by its key name — key names would be another
   // vocabulary to maintain, and `loc` / `stacked` / `free_days_available` are not dates despite
-  // sitting among them. Ties keep their original order, so Collection Informed and Collection on
-  // the same day stay in the CRM's sequence.
+  // sitting among them. `Array.prototype.sort` is stable (ES2019), so Collection Informed and
+  // Collection on the same day keep the CRM's sequence.
   if (_isTimeline) {
     const _DATE_RE = /^\d{4}-\d{2}-\d{2}/;
     const _dateOf = f => {
@@ -185,13 +197,14 @@
     };
     for (const it of (e.items || [])) {
       if (!it || !Array.isArray(it.fields)) continue;
-      const facts = [], dates = [];
-      it.fields.forEach((f, i) => (_dateOf(f) ? dates : facts).push([f, i]));
-      dates.sort((a, b) => {
-        const A = _dateOf(a[0]), B = _dateOf(b[0]);
-        return A === B ? a[1] - b[1] : (A < B ? -1 : 1);
+      const slots = [];
+      it.fields.forEach((f, i) => { if (_dateOf(f)) slots.push(i); });
+      if (slots.length < 2) continue;               // nothing to reorder — leave the row alone
+      const sorted = slots.map(i => it.fields[i]).sort((a, b) => {
+        const A = _dateOf(a), B = _dateOf(b);
+        return A === B ? 0 : (A < B ? -1 : 1);      // stable sort keeps CRM order on ties
       });
-      it.fields = [...facts.map(x => x[0]), ...dates.map(x => x[0])];
+      slots.forEach((slot, n) => { it.fields[slot] = sorted[n]; });
     }
   }
 

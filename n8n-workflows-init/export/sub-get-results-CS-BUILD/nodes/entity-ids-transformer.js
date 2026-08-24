@@ -106,6 +106,33 @@ const ORDER_TOOLS = new Set(['crm_order_management_orders_list', 'crm_order_mana
 if (ORDER_TOOLS.has(toolName) && (semantic_input?.order_status === 'outstanding' || semantic_input?.order_status === 'delivered')) {
   out.order_status = semantic_input.order_status;
 }
-out.contact_id = $input.first().json.contact_id.trim().toString()
-out.space_id = "364817"
+// ---- customer scope: coerce, THEN trim -------------------------------------------------------
+// ONE body, three workflows (sub-get-results / -TEST / -CS-BUILD). This node decides WHICH
+// customer a CRM read is scoped to, so it is the last place that should exist in three versions;
+// it did, and they disagreed. Unified 2026-08-24.
+//
+// `contact_id` arrives as BOTH types in production simultaneously - measured over 24 executions
+// on 2026-08-24: the live ANSWER got an int on 8 of 8 samples (exec 13754689), the live PROBES
+// alternated between a SPACE-PADDED string and an int in adjacent executions (exec 13744232
+// '487555417 ' / exec 13744212 487555417). The padding is not noise: five spine call sites write
+// the expression `{{ ... .json.id }} ` with a trailing space inside the template.
+//
+// So both the coercion and the trim are load-bearing, and the ORDER is the whole point: a number
+// has no `.trim`, so `String()` must come first. `.trim().toString()` - which one copy carried -
+// is `TypeError: contact_id.trim is not a function` on the int the answer path actually receives:
+// the same failure, in the same place, as the incident whose hotfix it was meant to be.
+//
+// `String(x ?? '')` handles int, string, padded string, null and undefined without knowing which
+// caller sent what. Deliberately NOT a typeof branch - a form that only works for the shapes
+// someone happened to sample is the bug, not the fix.
+//
+// The semantic_input fallback keeps the value the probes used before this line existed, for a
+// caller that passes no trigger field. With nothing available anywhere this lands on '' - a scope
+// that matches nothing - and never on `undefined`, which would drop the key from the MCP payload
+// and WIDEN the read to every customer.
+out.contact_id = String(($input.first()?.json?.contact_id ?? semantic_input?.contact_id) ?? '').trim();
+
+// Sorento is a single tenant and this hardcode is deliberate (confirmed 2026-08-24). It overrides
+// the semantic_input value assigned above, which carried the identical '364817' in all 24 samples.
+out.space_id = "364817";
 return out;
