@@ -1194,6 +1194,22 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     output.variables.last_result_set  = _cpSet;
     output.variables.selection_context = 'disambiguation';
   }
+  // THE FAMILY OUTLIVES THE ROSTER (captain, 2026-08-24). picker_families maps a picked candidate
+  // to the ACCOUNTS it stands for, and above it is kept only while the picker roster is alive. The
+  // PIN is not bound to that lifetime - an entity keeps its uuid for as long as the customer keeps
+  // talking about it. So the roster expires, the family map goes with it, and the pin degrades to a
+  // single account re-resolved by its debtor code, which is per-company and cannot reach the
+  // customer's accounts elsewhere. Measured: the pick covered 12 accounts (exec 13695546), the next
+  // turn covered 1 (exec 13695091), and a product from the customer's other company found nothing.
+  if (!output.variables.picker_families) {
+    const _famPinned = (Array.isArray(qf.entities) ? qf.entities : [])
+      .some(e => e && String(e.hint || '').toLowerCase() === 'customer' && e.uuid);
+    const _famKeep = _cpPrev && _cpPrev.picker_families;
+    if (_famPinned && _famKeep && Object.keys(_famKeep).length) {
+      output.variables.picker_families = _famKeep;
+      output.variables.picker_families_carried = true;   // diagnostic
+    }
+  }
 }
 // brand-company-routing: routing axes for the escalation turn (report §5.2; null-inert for replay norm)
 {
