@@ -578,6 +578,32 @@ if (output.output && !output.output.is_menu_label) {
     ? parent_input.previous_conversation_state?.entities.map(e => ({ ...e, current_message: false }))
     : [];
 
+  // ── DATE WINDOW CARRY (hoisted out of the `reuse` arm, change 4) ──────────────────────────
+  // A date_filter_start/end/mode the current turn did not set is, itself, an axis the turn did
+  // not name — the SAME rule as entity carry, just for a pair of scalar fields instead of an
+  // entity list. It used to run only on `reuse`, so a `replace_combine`/`modify` turn that named
+  // some OTHER value (a product, say) silently lost the window: the second half of the "only
+  // wc286" failure (exec 13707105) - a 01/08-31/08 window vanished on a turn that only meant to
+  // add a product filter. Shared by every op below instead of duplicated.
+  const carryDateWindow = () => {
+    const hasCurrentDate = output.output.date_filter_start || output.output.date_filter_end;
+    // broaden_axis "date" = the user explicitly asked to drop the window ("all time", "remove the
+    // date filter"). Such a turn names no date, so the carry below would silently restore the
+    // PREVIOUS window and answer the opposite of what was asked. Force the window open instead.
+    const _allTime = String(output.output.broaden_axis || '').toLowerCase() === 'date';
+    if (_allTime) {
+      output.output.date_filter_start = null;
+      output.output.date_filter_end   = null;
+      output.output.date_mode         = null;
+      return;
+    }
+    if (!hasCurrentDate) {
+      if (parent_input.previous_conversation_state?.date_filter_start) output.output.date_filter_start = parent_input.previous_conversation_state?.date_filter_start;
+      if (parent_input.previous_conversation_state?.date_filter_end)   output.output.date_filter_end   = parent_input.previous_conversation_state?.date_filter_end;
+      if (parent_input.previous_conversation_state?.date_mode)         output.output.date_mode         = parent_input.previous_conversation_state?.date_mode;
+    }
+  };
+
   let finalEntities;
   switch (op) {
     case 'clear':
@@ -585,22 +611,7 @@ if (output.output && !output.output.is_menu_label) {
       break;
     case 'reuse': {
       finalEntities = prior;
-      // date: only carry if THIS turn named no date
-      const hasCurrentDate = output.output.date_filter_start || output.output.date_filter_end;
-      // broaden_axis "date" = the user explicitly asked to drop the window ("all time", "remove the
-      // date filter"). Such a turn names no date, so the carry below would silently restore the
-      // PREVIOUS window and answer the opposite of what was asked. Force the window open instead.
-      const _allTime = String(output.output.broaden_axis || '').toLowerCase() === 'date';
-      if (_allTime) {
-        output.output.date_filter_start = null;
-        output.output.date_filter_end   = null;
-        output.output.date_mode         = null;
-      }
-      if (!hasCurrentDate && !_allTime) {
-        if (parent_input.previous_conversation_state?.date_filter_start) output.output.date_filter_start = parent_input.previous_conversation_state?.date_filter_start;
-        if (parent_input.previous_conversation_state?.date_filter_end)   output.output.date_filter_end   = parent_input.previous_conversation_state?.date_filter_end;
-        if (parent_input.previous_conversation_state?.date_mode)         output.output.date_mode         = parent_input.previous_conversation_state?.date_mode;
-      }
+      carryDateWindow();
 
       // is_active: only carry if THIS turn left it null (no status word)
       const curActive = norm(output.output.is_active);
@@ -621,22 +632,23 @@ if (output.output && !output.output.is_menu_label) {
     case 'modify':
     case 'replace_combine':
     default: {
+      // ── A TURN CHANGES ONLY THE AXIS IT NAMES (captain, 2026-08-24) ───────────────────────
+      // A delivery-order search filters on independent axes: customer, product, date, order
+      // number. Naming a value replaces THAT axis and leaves the others standing; "only X"
+      // restricts the axis X sits on, it does not wipe every axis. There is no separate
+      // `scope_exclusive` branch any more: the old one set `keptPrior = []` whenever the turn
+      // named ANY current entity, regardless of which axis it was on, which wiped the customer
+      // on "only wc286" (exec 13707105) and the product on "only mastile klang" (exec 13707173).
+      // Its `current.length === 0` half ("only [nothing]" -> keep everything) was already
+      // identical to the line below with an empty `currentAxes` - not a second behaviour to
+      // preserve, just the same rule holding trivially. So `scope_exclusive` no longer has any
+      // effect on entity carry; nothing downstream reads it (grepped export/ + compile-current-
+      // state.js), so there is nothing left worth flagging as a diagnostic either.
       const currentAxes = new Set(current.map(axisOf));
-      const exclusive = output.output.scope_exclusive === true;
+      let keptPrior = prior.filter(e => !currentAxes.has(axisOf(e)));
 
-      let keptPrior;
-      if (exclusive) {
-        if (current.length === 0) {
-          // "restrict to only [nothing]" is meaningless — the user named no new value.
-          // This is almost always a tier/attribute change, not an entity narrow. Keep prior.
-          keptPrior = prior;
-          output.output.exclusive_ignored_no_current = true;
-        } else {
-          keptPrior = [];   // genuine exclusive: current IS the full scope
-        }
-      } else {
-        keptPrior = prior.filter(e => !currentAxes.has(axisOf(e)));
-      }
+      carryDateWindow();
+
       // ── A DOMAIN CHANGE IS A NEW ENQUIRY (captain, 2026-08-21) ────────────────
       // Since customer/product stopped sharing one axis, scope that the turn did not name survives —
       // which is right for a follow-up inside one domain ("...and for yoo living?") but wrong across
@@ -652,29 +664,16 @@ if (output.output && !output.output.is_menu_label) {
         if (keptPrior.length) output.output.scope_cleared_on_domain_change = keptPrior.length;   // diagnostic
         keptPrior = [];
       }
-      // ── NAMING A NEW ENTITY IS A NEW QUESTION (captain, 2026-08-21) ───────────
-      // An unnamed filter that survives is INVISIBLE: the answer prints "Here are the orders I
-      // found" with no statement of scope, so a carried product silently narrows the result and a
-      // short list — or "No delivery in July" — reads as ground truth. That is more dangerous than
-      // the leak was, because nothing on screen shows it happened.
-      // Scope: the ORDER domain only, where it was measured. Other domains keep their carry
-      // semantics (product_attachment's "and the technical drawing?" must still reuse the product).
-      // EXCEPTION — the carried CUSTOMER survives: dropping it on a product-only follow-up
-      // ("what about srtwc8318") turns the turn into a product-only order query, which enumerates
-      // every customer who bought it. That is the exact exposure the If3 gate closed. A newly named
-      // customer still replaces it through the axis rule above.
-      // The LLM often returns a null domain for a short follow-up ("what about customer yoo living");
-      // the domain is inherited further down. Judge on the EFFECTIVE domain, or the rule silently
-      // never fires on exactly the turns it is meant to catch (measured, exec 13258638).
-      const _effDom = String(_curDom || _prevDom || '').toLowerCase();
-      if (_effDom === 'order' && current.length > 0 && keptPrior.length) {
-        const _kpBefore = keptPrior.length;
-        keptPrior = keptPrior.filter(e => String((e && e.hint) || '').toLowerCase() === 'customer');
-        if (keptPrior.length !== _kpBefore) output.output.scope_cleared_on_new_entity = _kpBefore - keptPrior.length;
-      }
+      // "NAMING A NEW ENTITY IS A NEW QUESTION" (captain, 2026-08-21) used to strip keptPrior down
+      // to customer-only on the order domain whenever the turn named anything. Its own comment
+      // gave the reason: an unnamed carried filter used to be INVISIBLE - the answer printed "Here
+      // are the orders I found" with no statement of scope, so a silently-narrowed result read as
+      // ground truth. That reason no longer holds: the E1/E2 disclosure (compile-current-state.js,
+      // captain plan, 2026-08-24) now prints every axis in scope - Customer / Product / Dates and
+      // any other named filter - on every answer. A carried axis is stated, not invisible, so the
+      // captain retired this strip; the axis rule above is what decides what survives now.
 
       finalEntities = [...current, ...keptPrior];
-      output.output.scope_exclusive_applied = exclusive;
       break;
     }
   }
