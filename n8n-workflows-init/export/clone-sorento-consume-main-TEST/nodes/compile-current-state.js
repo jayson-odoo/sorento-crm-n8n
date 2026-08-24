@@ -1194,6 +1194,23 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     output.variables.last_result_set  = _cpSet;
     output.variables.selection_context = 'disambiguation';
   }
+  // THE FAMILY OUTLIVES THE ROSTER (captain, 2026-08-24). picker_families maps a picked candidate to
+  // the ACCOUNTS it stands for. Above it is kept only while the picker roster is alive, but the PIN
+  // is not bound to that lifetime - an entity keeps its uuid for as long as the customer keeps
+  // talking about it. So the roster expired, the family went with it, and the pick covered 1 account
+  // instead of the 12 the picker had measured (exec 13695546 vs 13695091).
+  // Safe to carry only now that a pinned customer re-resolves by NAME: the first attempt at this
+  // was reverted because re-resolution by debtor code let DENHO HARDWARE - a different company's
+  // customer sharing code 300-D059 - into the scope alongside the family.
+  if (!output.variables.picker_families) {
+    const _famPinned = (Array.isArray(qf.entities) ? qf.entities : [])
+      .some(e => e && String(e.hint || '').toLowerCase() === 'customer' && e.uuid);
+    const _famKeep = _cpPrev && _cpPrev.picker_families;
+    if (_famPinned && _famKeep && Object.keys(_famKeep).length) {
+      output.variables.picker_families = _famKeep;
+      output.variables.picker_families_carried = true;   // diagnostic
+    }
+  }
 }
 // brand-company-routing: routing axes for the escalation turn (report §5.2; null-inert for replay norm)
 {

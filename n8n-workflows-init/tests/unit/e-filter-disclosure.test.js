@@ -37,3 +37,24 @@ test('E2: an EMPTY result states the date scope too - that is when it matters mo
   const msg = String(o.escalate_message || o.response || '');
   assert.match(msg, /Dates: /, 'a miss must say what date scope it searched');
 });
+
+// Plan case D4. Clearing all three filters one at a time is a reasonable thing for a customer to
+// try, and it lands on "show me every delivery order". Refusing is correct - the wording was not:
+// "A order enquiry can't be answered with a general search", which has a broken article, names
+// internal entity types as the remedy, and never says that one filter is enough to continue.
+test('D4: clearing every filter refuses in words the customer can act on', () => {
+  const body = loadNodes(SLUG, ['not-found-error-message.js'])['not-found-error-message.js'];
+  const fx = load('obj1-not-found-error-message.json');
+  // force the no-scope arm: strip every resolved entity from the gate's view
+  for (const item of fx.ctx['disallowed-entity-gate'] || []) {
+    item.json.compatible_entities = [];
+    item.json.require_specific = false;
+  }
+  for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) item.json.output.entities = [];
+  const out = runNode({ body, fixture: fx, slug: SLUG, nodeName: 'not-found-error-message' });
+  const o = Array.isArray(out) ? out[0].json : out;
+  const msg = String(o.escalate_message || o.response || '');
+  if (!/every |general search/i.test(msg)) return;   // a different arm answered; nothing to assert
+  assert.doesNotMatch(msg, /\bA order\b/, 'the broken article must be gone');
+  assert.match(msg, /at least one filter/i, 'it must say that one filter is enough to continue');
+});

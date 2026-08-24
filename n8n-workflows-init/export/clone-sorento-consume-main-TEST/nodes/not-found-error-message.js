@@ -47,9 +47,18 @@ if (missingAttachmentType) {
   is_clarification = true;
 
 } else if (needsScope) {
+  // The customer reaches this by CLEARING every filter one at a time - "all products", then
+  // "all time", then "all customers" - which is a reasonable thing to try and lands on a request
+  // for every delivery order ever. Refusing is right; the old wording was not: it read
+  // "A order enquiry can't be answered with a general search" (broken article, exec 13696xxx),
+  // named the internal entity types as the fix, and never said the one useful thing - that a
+  // single filter is enough to continue. Say what to do, in the customer's own vocabulary.
+  const _scopeWord = ({ order: 'delivery order', incoming: 'incoming shipment',
+    inventory: 'stock', promotion: 'promotion', goods_receive: 'goods receipt',
+    master_products: 'product' })[String(q.domain_hint || '').toLowerCase()] || String(q.domain_hint || 'that');
   escalate_message =
-    `A ${q.domain_hint} enquiry can't be answered with a general search - ` +
-    `please specify a ${humanList(allowedTypes)} so I can look it up.`;
+    `That would search every ${_scopeWord} we have - I need at least one filter to narrow it down. ` +
+    `Tell me a ${humanList(allowedTypes)}, or a date range, and I can look it up.`;
   is_clarification = true;
 
 } else {
