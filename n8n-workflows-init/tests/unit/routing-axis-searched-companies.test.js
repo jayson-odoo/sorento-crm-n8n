@@ -113,12 +113,18 @@ test('a two-company offer carries no multi-company note', () => {
 
 // Frozen wording. Captured from the deployed bodies BEFORE the routing-axis change; a
 // single-company turn must render byte for byte the same afterwards.
+// AMENDED 2026-08-24 (captain, exec 13746945): a MISS now opens with the same Customer/Product/
+// Dates header an answer does, so the standalone `Dates:` line moved up into it. Everything the
+// routing-axis change froze - the bullets, the "checked in"/company-named escalate sentence, the
+// picker - is unchanged below; only the header is new.
 const SINGLE_COMPANY_OFFER = [
+  'Customer: mastile klang',
+  'Product: srtks7646',
+  'Dates: 01/08/2026 to 31/08/2026',
+  '',
   "Here's what you want:",
   '• customer: MASTILE KLANG SDN BHD (+1 more)',
   '• product: SRTKS7646 (+1 more)',
-  '',
-  'Dates: 01/08/2026 to 31/08/2026',
   '',
   'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to *Sorento* customer_service team?',
   '',
@@ -140,11 +146,16 @@ test('a single-company turn renders byte-identical', () => {
   assert.equal(r.offer.response, SINGLE_COMPANY_OFFER);
 });
 
+// AMENDED 2026-08-24 (captain, exec 13746945): same header as above. This turn is the exact shape
+// that sent the captain hunting - a product in scope and NOTHING else, i.e. every customer was
+// searched - and "Customer: all customers" is now the line that says so.
 const PRODUCT_ONLY_OFFER = [
+  'Customer: all customers',
+  'Product: srtks7646',
+  'Dates: 01/08/2026 to 31/08/2026',
+  '',
   "Here's what you want:",
   '• product: SRTKS7646 (+1 more)',
-  '',
-  'Dates: 01/08/2026 to 31/08/2026',
   '',
   'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to *Sorento* customer_service team?',
   '',

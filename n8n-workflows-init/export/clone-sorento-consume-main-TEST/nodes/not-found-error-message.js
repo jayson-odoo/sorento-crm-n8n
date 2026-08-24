@@ -108,14 +108,15 @@ if (missingAttachmentType) {
       : '';
   }
 
-  // NARROWED (captain, 2026-08-24): the "Dates: ..." miss-lane line is a DELIVERY ORDER
-  // search-scope disclosure, not a general one. It used to gate on "domains the CRM
-  // date-filters", which let it fire on other domains where it is actively wrong, not just
-  // noisy: exec 13735476, an `incoming` MISS ("eta"), rendered "Dates: all dates" between the
-  // found-bullets and the escalate offer - customers do not date-filter incoming in practice.
-  // The rule is now: this line describes a delivery-order search specifically. See also
-  // compile-current-state.js `_DATE_DOMAINS` (same rule, the happy-path twin of this block,
-  // can't share code - two separate n8n nodes).
+  // NARROWED (captain, 2026-08-24): the miss-lane search-scope header - Customer, Product, any
+  // extra axis in scope, and Dates - is a DELIVERY ORDER disclosure, not a general one. It used
+  // to gate on "domains the CRM date-filters", which let it fire on other domains where it is
+  // actively wrong, not just noisy: exec 13735476, an `incoming` MISS ("eta"), rendered
+  // "Dates: all dates" between the found-bullets and the escalate offer - customers do not
+  // date-filter incoming in practice, and a container has no customer. The rule is now: this
+  // header describes a delivery-order search specifically. See also compile-current-state.js
+  // `_DATE_DOMAINS` (same rule, the happy-path twin of this block, can't share code - two
+  // separate n8n nodes).
   const _DATE_SCOPE_DOMAINS = new Set(['order']);
   const dateRange = (q.date_filter_start && q.date_filter_end)
     ? ` from ${q.date_filter_start} to ${q.date_filter_end}` : '';
@@ -356,23 +357,84 @@ if (missingAttachmentType) {
   // sentence byte-identical there. `_entitlementMiss` deliberately does not take it — that arm is
   // about a promotion being withheld from this contact, not about where we looked.
   const _coSuffix = _multiCo ? ` - checked in ${_andList(_searchedCos)}` : '';
+  // ── THE SEARCH SCOPE, ALWAYS (captain plan E2, 2026-08-24) ──────────────────────────────────
+  // exec 13746945, "any delivery for SRTWB2805-BL": the gate scope was `{product: 1}` and nothing
+  // else, so the search really was every delivery order, for ANY customer, over ANY date. The
+  // reply named the one thing that resolved ("• product: SRTWB2805-BL"), said "no order matched
+  // these", and the customer had to come back and ask "did it search all customers?" - because
+  // nothing said so. The found-bullets structurally cannot answer that: they name what RESOLVED,
+  // and an axis nobody filled resolves to nothing, so an open axis is invisible on exactly the
+  // turn where it decided the result. That is the captain's E2 requirement word for word - "an
+  // EMPTY result states them too - that is the entire point". So a miss now OPENS with the same
+  // three-line header an answer does (Customer / Product / Dates, extra axes between Product and
+  // Dates when in scope), then the found-bullets, then the escalate offer: one shape to learn.
+  //
+  // ⚠ DELIBERATE DUPLICATE - KEEP IN LOCKSTEP with compile-current-state.js's "SEARCH SCOPE
+  // DISCLOSURE" IIFE (the happy-path twin: same axis list, same label priority, same date
+  // formatting, same `order`-only gate). They are two separate n8n Code nodes and cannot import
+  // from each other, exactly as `_DATE_SCOPE_DOMAINS` / `_DATE_DOMAINS` already are. CHANGE BOTH
+  // TOGETHER or the answer and the miss start disclosing the same search in two different shapes.
+  //
+  // Which axes are active comes from the GATE (`compatible_entities`: entity_type + code), never
+  // from the parser's hints - a bare code is often hinted `order` and matched by the resolver as a
+  // product, and rendering from hints is the bug commit 70bb1e3 fixed on the happy path.
+  const _AXES = [
+    { label: 'Customer', types: ['customer'], hints: ['customer'], always: true, allText: 'all customers' },
+    { label: 'Product',  types: ['product'],  hints: ['product'],  always: true, allText: 'all products' },
+    { label: 'Order',       types: ['customer_order', 'order', 'order_number'], hints: ['order', 'customer_order', 'order_number'] },
+    { label: 'Transporter', types: ['transporter'], hints: ['transporter'] },
+    { label: 'Container',   types: ['inbound_shipment'], hints: ['inbound_shipment', 'container'] },
+    { label: 'Warehouse',   types: ['warehouse'], hints: ['warehouse'] },
+  ];
+  const _axisWords = (axis) => {
+    const typeSet = new Set(axis.types);
+    const rows = _compat.filter(e => e && typeSet.has(normRaw(e.entity_type)));
+    if (!rows.length) return null;                                     // axis never put in scope
+    const words = new Set();
+    for (const res of (Array.isArray(r?.resolutions) ? r.resolutions : [])) {   // 1. the customer's own typed token
+      const hitsAxis = (Array.isArray(res && res.matches) ? res.matches : [])
+        .some(m => m && typeSet.has(normRaw(m.entity_type)));
+      const tok = String((res && res.token) ?? '').trim();
+      if (hitsAxis && tok) words.add(tok);
+    }
+    if (!words.size) {                                                 // 2. the parser's own hinted raw
+      for (const e of allEnts) {
+        if (!e || !axis.hints.includes(normRaw(e.hint))) continue;
+        const v = String(e.raw ?? '').trim();
+        if (v) words.add(v);
+      }
+    }
+    if (!words.size) {                                                 // 3. last resort: the gate's own label
+      for (const row of rows) {
+        const v = String((row && (row.title || row.code)) ?? '').trim();
+        if (v) words.add(v);
+      }
+    }
+    return [...words].join(', ');
+  };
   const buildBreakdownMsg = (domainWord, notFoundRaw) => {
     const nf = (notFoundRaw ?? _notFoundRaw).map(_labelTok);
     const parts = [];
-    if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
-    if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
-    // THE DATE SCOPE, ALWAYS (captain plan E2, 2026-08-24). An empty result is exactly when the
-    // customer needs to know what was filtering, and the date is the one dimension that is
-    // invisible: `dateRange` above is the empty string whenever no window was set, so "no order
-    // matched these" never said whether it had looked at all dates or just this month. Only for
-    // domains the CRM date-filters; elsewhere it would be noise on an answer it does not apply to.
+    // Only for a delivery-order search; elsewhere this is noise on an answer it does not apply to.
     if (_DATE_SCOPE_DOMAINS.has(String(q.domain_hint || '').toLowerCase())) {
       const _ds = q.date_filter_start || null, _de = q.date_filter_end || null;
       const _fmtD = (v) => { const m = String(v ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v ?? ''); };
-      parts.push(`Dates: ${(!_ds && !_de) ? 'all dates'
+      const _head = [];
+      for (const axis of _AXES) {
+        const words = _axisWords(axis);
+        if (axis.always) _head.push(`${axis.label}: ${words || axis.allText}`);
+        else if (words) _head.push(`${axis.label}: ${words}`);
+      }
+      // Dates last, and stated even when no window was set: `dateRange` below is the empty string
+      // whenever the customer named no dates, so "no order matched these" never said whether it
+      // had looked at all dates or just this month.
+      _head.push(`Dates: ${(!_ds && !_de) ? 'all dates'
         : (_ds && _de && _ds === _de) ? _fmtD(_ds)
         : `${_ds ? _fmtD(_ds) : 'earliest'} to ${_de ? _fmtD(_de) : 'today'}`}`);
+      parts.push(_head.join('\n'));
     }
+    if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
+    if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
     parts.push(_entitlementMiss
       || `But no${active_inactive} ${domainWord}${dateRange}${access} matched these${_coSuffix}. Would you like me to escalate to ${team} team?`);
     return parts.join('\n\n');

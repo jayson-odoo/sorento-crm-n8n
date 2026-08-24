@@ -1413,6 +1413,16 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // a delivery-order search specifically. See also not-found-error-message.js
     // `_DATE_SCOPE_DOMAINS` (same rule, the miss-lane twin of this block, can't share code - two
     // separate n8n nodes).
+    //
+    // ⚠ DELIBERATE DUPLICATE - KEEP IN LOCKSTEP with not-found-error-message.js's
+    // `_AXES` / `_axisWords` / `buildBreakdownMsg` header (captain, 2026-08-24: a MISS opens with
+    // this same three-line header, because exec 13746945 searched every customer and said so
+    // nowhere - E2, "an EMPTY result states them too"). Same axis list, same label priority, same
+    // date formatting, same `order`-only gate. Two separate n8n Code nodes, no imports between
+    // them: CHANGE BOTH TOGETHER or the answer and the miss disclose the same search in two
+    // different shapes. The two never both fire on one turn - this block early-returns on
+    // `isEscalateBranch`, and every path out of not-found-error-message reaches this node through
+    // escalate-catalog or build-suggest-offer, both of which set it true.
     const _DATE_DOMAINS = new Set(['order']);
     if (!_DATE_DOMAINS.has(String(qf.domain_hint || '').toLowerCase())) return;
     // ISO -> DD/MM/YYYY, matching the row fields the CRM already renders ("Order Date: 17/08/2026").

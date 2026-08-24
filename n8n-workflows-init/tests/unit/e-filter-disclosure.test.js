@@ -154,6 +154,102 @@ test('must-not-regress E2: a miss on the ORDER domain still states its date scop
   assert.match(msg, /Dates: /, 'order is a delivery-order search - the date scope line must remain');
 });
 
+// ── exec 13746945, "any delivery for SRTWB2805-BL" ────────────────────────────────────────────
+// The gate scoped the search to {product: 1} and NOTHING else, so the search really was: any
+// delivery order, ANY customer, ANY date. The reply named the one thing that resolved
+// ("• product: SRTWB2805-BL"), said "no order matched these", and the customer had to ask "did it
+// search all customers?" - because nothing said so. The found-bullets cannot answer that: they
+// name what RESOLVED, and an axis nobody filled resolves to nothing, so an open axis is invisible
+// exactly on the turn where it decides the result. Captain E2, verbatim: "an EMPTY result states
+// them too - that is the entire point."
+const missOn13746945 = () => {
+  const fx = load('obj1-not-found-error-message.json');
+  for (const item of fx.ctx['disallowed-entity-gate'] || []) {
+    item.json.compatible_entities = [
+      { entity_type: 'product', code: 'SRTWB2805-BL', uuid: 'prod-13746945-0001' },
+    ];
+  }
+  for (const item of fx.ctx['resolve-entity'] || []) {
+    item.json.resolutions = [];
+    item.json.unresolved_tokens = [];
+    item.json.tokens = ['srtwb2805bl'];
+  }
+  for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) {
+    // the parser hinted the bare code as an ORDER (a defensible read on the order domain); the
+    // resolver matched it as a PRODUCT and that is what the gate put in scope. Rendering from the
+    // hint is the bug commit 70bb1e3 fixed on the happy path - the miss lane must not reopen it.
+    item.json.output.entities = [
+      { raw: 'SRTWB2805-BL', hint: 'order', canonical_code: null, current_message: true, confident: true },
+    ];
+  }
+  return fx;
+};
+
+const runFx = (node, fx) => {
+  const body = loadNodes(SLUG, [`${node}.js`])[`${node}.js`];
+  const out = runNode({ body, fixture: fx, slug: SLUG, nodeName: node });
+  return Array.isArray(out) ? out[0].json : out;
+};
+
+test('exec 13746945: an order MISS states every filter it searched with, not only the one that resolved', () => {
+  const o = runFx('not-found-error-message', missOn13746945());
+  const msg = String(o.escalate_message || o.response || '');
+  assert.match(msg, /^Customer: all customers$/m,
+    'no customer was in scope and the search covered all of them - that was the customer\'s question');
+  assert.match(msg, /^Product: SRTWB2805-BL$/m, 'the one axis that WAS in scope must be named');
+  assert.match(msg, /^Dates: all dates$/m, 'no window was set - say so rather than let the line vanish');
+  assert.doesNotMatch(msg, /^Order: /m,
+    'the parser hinted the bare code as an order, the resolver matched a product - render the gate scope, never the hint');
+  // the same shape an answer uses: header, then the found-bullets, then the escalate offer
+  const iHead = msg.indexOf('Customer: all customers');
+  const iBullets = msg.indexOf("Here's what you want:");
+  const iOffer = msg.search(/But no .*matched these/);
+  assert.ok(iHead === 0, `the header must OPEN the miss: ${JSON.stringify(msg)}`);
+  assert.ok(iBullets > iHead, `the found-bullets come after the header: ${JSON.stringify(msg)}`);
+  assert.ok(iOffer > iBullets, `the escalate offer stays last: ${JSON.stringify(msg)}`);
+  assert.match(msg, /• product: SRTWB2805-BL/, 'the existing found-bullets must survive');
+});
+
+// The double-prepend is the whole risk in this change: compile-current-state renders its own copy
+// of this header. It early-returns on `isEscalateBranch`, and EVERY path out of
+// not-found-error-message reaches compile-current-state through escalate-catalog (_cat) or
+// build-suggest-offer (_sug), both of which set isEscalateBranch = true. Prove it, don't assume it.
+test('a miss carries exactly ONE header - compile-current-state must not prepend a second', () => {
+  const missMsg = String(runFx('not-found-error-message', missOn13746945()).escalate_message || '');
+  const fx = load('product-miss-plus-customer-ambiguity--compile-current-state.json');
+  for (const item of fx.ctx['escalate-catalog'] || []) item.json.response = missMsg;
+  const o = runFx('compile-current-state', fx);
+  const msg = String(o.user_response || '');
+  assert.strictEqual((msg.match(/^Customer: /gm) || []).length, 1,
+    `exactly one Customer line reaches the customer: ${JSON.stringify(msg)}`);
+  assert.strictEqual((msg.match(/^Product: /gm) || []).length, 1,
+    `exactly one Product line reaches the customer: ${JSON.stringify(msg)}`);
+  assert.strictEqual((msg.match(/^Dates: /gm) || []).length, 1,
+    `exactly one Dates line reaches the customer: ${JSON.stringify(msg)}`);
+});
+
+// The refusal arm is the case where NOTHING was in scope - it is why we refused. A
+// "Customer: all customers / Product: all products" preamble on it would be absurd: it would
+// disclose the very search we just told the customer we would not run.
+test('the unscoped-search refusal gains no header - nothing was in scope, which is the point of refusing', () => {
+  const fx = load('obj1-not-found-error-message.json');
+  for (const item of fx.ctx['disallowed-entity-gate'] || []) {
+    item.json.gate_passed = false;
+    item.json.gate_reason = 'order requires a scoping entity';
+    item.json.unresolved_tokens = [];
+    item.json.compatible_entities = [];
+    item.json.require_specific = false;
+  }
+  for (const item of fx.ctx['resolve-entity'] || []) item.json.unresolved_tokens = [];
+  for (const item of fx.ctx["Call 'sub-query-reformulator'"] || []) item.json.output.entities = [];
+  const o = runFx('not-found-error-message', fx);
+  const msg = String(o.escalate_message || o.response || '');
+  assert.match(msg, /would search every/i, 'the unscoped-search arm must be the one that answered');
+  assert.doesNotMatch(msg, /^Customer: /m, 'no header on the arm that refused to search at all');
+  assert.doesNotMatch(msg, /^Product: /m, 'no header on the arm that refused to search at all');
+  assert.doesNotMatch(msg, /^Dates: /m, 'no header on the arm that refused to search at all');
+});
+
 test('D4: clearing every filter refuses in words the customer can act on', () => {
   const body = loadNodes(SLUG, ['not-found-error-message.js'])['not-found-error-message.js'];
   const fx = load('obj1-not-found-error-message.json');
