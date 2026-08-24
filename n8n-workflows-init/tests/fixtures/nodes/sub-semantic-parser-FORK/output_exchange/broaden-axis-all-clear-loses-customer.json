@@ -1,0 +1,73 @@
+{
+  "source": {
+    "execution_id": "13728314",
+    "workflow_id": "wI5RkNGW3EOJfBdo",
+    "sub_execution_id": "13728320",
+    "node": "output_exchange",
+    "captured_at": "2026-08-24T00:00:00+00:00",
+    "expected_from": "hand-built from the exec 13728314 report - see broaden-axis.test.js",
+    "rationale": "'all products' on an order-in-progress (customer A CRAFT IDEA SDN BHD + product WC286 pinned). The model wandered to domain_hint master_products / intent_hint check_product with entity_op 'clear', broaden_axis 'all' and scope_intent the STRING 'null' (not JSON null) - it read the phrase as a catalogue request, not as widening one axis of the order question already in play. The existing domain-restore block put domain_hint back to 'order' but left entity_op 'clear' alone, so the entity executor wiped the customer along with the product and the turn ended in the unscoped-search refusal."
+  },
+  "ctx": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "latest_user_message": "all products",
+          "contact_id": "900000002",
+          "previous_conversation_state": {
+            "routing": {
+              "suggested_team": "customer_service",
+              "suggested_agent": "order_enquiries"
+            },
+            "entities": [
+              {
+                "raw": "A CRAFT IDEA SDN BHD (SRT)",
+                "hint": "customer",
+                "uuid": "b1a2c3d4-0000-0000-0000-000000000001",
+                "canonical_code": "300-A001",
+                "current_message": false
+              },
+              {
+                "raw": "WC286",
+                "hint": "product",
+                "confident": true,
+                "canonical_code": "SRTWC286-SH-200",
+                "current_message": false
+              }
+            ],
+            "ideation": null,
+            "response": "Previous turn (order): returned 3 records for A CRAFT IDEA SDN BHD (SRT) / WC286",
+            "date_mode": null,
+            "dym_offer": null,
+            "user_goal": "trying to check the order for this customer and product",
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "match_mode": "and",
+            "domain_hint": "order",
+            "intent_hint": "check_order",
+            "message_type": "business_query",
+            "query_brands": [],
+            "access_levels": [],
+            "routing_brand": "sorento",
+            "contains_flyer": false,
+            "dym_candidates": [],
+            "date_filter_end": null,
+            "date_filter_start": null,
+            "last_result_set": [],
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "selection_context": null
+          },
+          "is_test": true
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_product\",\"domain_hint\":\"master_products\",\"scope_intent\":\"null\",\"is_affirmative\":null,\"user_goal\":\"trying to view all products\",\"access_levels\":[],\"broaden_axis\":\"all\",\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"clear\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":\"purchasing_product\",\"suggested_agent\":\"general_enquiries\"},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+      }
+    }
+  ]
+}

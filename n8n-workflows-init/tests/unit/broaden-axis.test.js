@@ -87,3 +87,39 @@ test('widening any axis keeps the domain, including a whole-scope broaden', () =
   assert.equal(o.broaden_axis, 'all', 'this run classified it as a whole-scope broaden');
   assert.equal(o.domain_hint, 'order', 'broadening does not move the conversation to the catalogue');
 });
+
+// Must-not-regress companion to the test above: a GENUINE "show me everything" (scope_intent
+// "broaden", the model's real everything-signal per the prompt's SCOPE INTENT section) must still
+// clear every entity. The fix below only rescues a MISREAD "all products" (scope_intent left
+// null/"null") - it must never soften an actual broaden-everything turn.
+test('a genuine whole-scope broaden still clears every entity', () => {
+  const body = loadNodes(SLUG, ['output_exchange.js'])['output_exchange.js'];
+  const entry = loadFixtures(SLUG, NODE).find(f => f.name.includes('broaden-all-keeps-domain'));
+  assert.ok(entry, 'fixture broaden-all-keeps-domain must exist');
+  const o = runNode({ body, fixture: entry.fixture, slug: SLUG, nodeName: NODE })[0].json.output;
+  assert.equal(o.scope_intent, 'broaden', 'sanity: this fixture is the genuine everything-broaden');
+  assert.equal(o.entity_op_applied, 'clear', 'a real broaden-everything still clears, entity_op must not be rewritten to reuse');
+  assert.deepEqual(o.entities, [], `every entity must be gone on a genuine broaden, got ${JSON.stringify(o.entities)}`);
+});
+
+// exec 13728314: "all products" on an order-in-progress (customer A CRAFT IDEA SDN BHD (SRT) +
+// product WC286 both pinned) came back domain_hint master_products / entity_op "clear" /
+// broaden_axis "all" / scope_intent the STRING "null" - the model misread one axis being widened
+// as a request for the product catalogue. The existing domain-restore fixed the domain but left
+// entity_op "clear" standing, so the entity executor wiped the customer along with the product and
+// the turn ended in the unscoped-search refusal ("A order enquiry can't be answered with a general
+// search") instead of answering the customer's real ask: drop the product, keep the customer.
+test('exec 13728314: "all products" clears only the product, the pinned customer survives', () => {
+  const body = loadNodes(SLUG, ['output_exchange.js'])['output_exchange.js'];
+  const entry = loadFixtures(SLUG, NODE).find(f => f.name.includes('broaden-axis-all-clear-loses-customer'));
+  assert.ok(entry, 'fixture broaden-axis-all-clear-loses-customer must exist');
+  const o = runNode({ body, fixture: entry.fixture, slug: SLUG, nodeName: NODE })[0].json.output;
+
+  assert.equal(o.domain_hint, 'order', 'naming a KIND of thing is not a domain switch');
+  assert.equal(o.entity_op_applied, 'reuse', 'a widening turn keeps the rest of the scope standing');
+
+  const ents = Array.isArray(o.entities) ? o.entities : [];
+  const hints = ents.map(e => String(e.hint || '').toLowerCase());
+  assert.ok(!hints.includes('product'), `the product filter must be gone, got ${JSON.stringify(ents)}`);
+  assert.ok(hints.includes('customer'), `the customer the user is still asking about must survive, got ${JSON.stringify(ents)}`);
+});

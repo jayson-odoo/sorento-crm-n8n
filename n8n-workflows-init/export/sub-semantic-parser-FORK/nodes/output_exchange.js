@@ -531,6 +531,19 @@ const DOMAIN_SUBJECT_AXIS = {
   order: 'order_scope', spo_allocation: 'order_scope',
   goods_receive: 'doc', forms: 'doc', portal_link: 'doc',
 };
+
+// Domain -> the entity HINT that names that domain's own subject ("master_products" enquiries are
+// about a "product", "order" enquiries are about an "order", ...). Hoisted to module scope (was
+// two byte-identical local copies, `DOMAIN_SUBJECT_HINT` in the reference-positions block and
+// `_BARE_SUBJECT_HINT` in the bare-token re-hint block below - their own comments already flagged
+// them as required to stay in sync) so the AXIS BROADEN restore above can reuse the SAME map
+// instead of hand-writing a third one.
+const DOMAIN_SUBJECT_HINT = {
+  product_attachment: 'product', master_products: 'product', inventory: 'product',
+  incoming: 'product', resource_attachment: 'attachment', portal_link: 'form',
+  goods_receive: 'goods_receive', spo_allocation: 'spo', forms: 'form',
+  order: 'order', promotion: 'promotion',
+};
 // Diagnostic so the RESIDUAL unrecognised class is MEASURABLE in production instead of assumed
 // empty. Emitted only when non-empty ⇒ drop-when-absent in the replay norm() (LESSONS §40).
 const _ceUnknownHints = new Set();
@@ -556,10 +569,45 @@ const _ceAxisFor = (e, domain) => {
   // answered "A master_products enquiry can't be answered with a general search".
   const _ba = String(output.output.broaden_axis || '').toLowerCase();
   const _prevDom0 = parent_input.previous_conversation_state?.domain_hint || null;
+  const _wanderedDom0 = output.output.domain_hint || null;   // capture BEFORE the restore below overwrites it
   if (_ba && _prevDom0) {
     output.output.domain_hint = _prevDom0;
     output.output.intent_hint = parent_input.previous_conversation_state?.intent_hint || output.output.intent_hint || null;
     output.output.broaden_axis_domain_restored = true;   // diagnostic
+
+    // exec 13728314: "all products" on an order in progress (customer + product both pinned) came
+    // back domain_hint master_products / entity_op "clear" / broaden_axis "all" / scope_intent the
+    // STRING "null" - the model misread ONE axis being widened as a request for the whole product
+    // catalogue. The restore above fixes only the domain; it leaves entity_op "clear" standing, so
+    // the executor below still wipes EVERY entity, taking the customer out with the product, and
+    // the gate then has nothing left to scope 'order' on. The prompt's own BROADEN AXIS section
+    // gives the contract for a widened axis: "entity_op = 'reuse': the rest of the scope stands.
+    // Deterministic code drops the widened axis; do NOT try to hand-prune entities yourself." -
+    // that contract still applies when the model named "all" instead of the specific axis.
+    //
+    // scope_intent "broaden" is the model's real everything-signal (its own SCOPE INTENT section:
+    // "scope_intent means the user broadened EVERY axis at once. Widening ONE axis is not that").
+    // A genuine broaden-everything turn must still clear - only a MISREAD "all" gets rescued here.
+    // The model emitted the STRING "null" in this exec, not a JSON null, so compare defensively.
+    const _scopeIntent = String(output.output.scope_intent ?? '').toLowerCase();
+    if (_ba === 'all' && _scopeIntent !== 'broaden') {
+      if (output.output.entity_op === 'clear') {
+        output.output.entity_op = 'reuse';
+        output.output.broaden_axis_clear_rescued = true;   // diagnostic
+      }
+
+      // The domain the model wandered TO names the axis it actually meant: it answered
+      // "master_products" because it thought the subject was products, so the product axis is the
+      // one being dropped, not every axis. DOMAIN_SUBJECT_HINT is the SAME domain -> entity-hint
+      // map the pick-rehydration and bare-token paths already use - reused here instead of a
+      // fourth guess at what "master_products" means.
+      const _wanderedHint = _wanderedDom0 ? DOMAIN_SUBJECT_HINT[_wanderedDom0] : null;
+      if (_wanderedHint) {
+        output.output.broaden_axis = _wanderedHint;
+        output.output.broaden_axis_resolved_from_domain = _wanderedDom0;   // diagnostic
+      }
+      // an unmapped wandered domain leaves broaden_axis as "all" - fail open, never guess.
+    }
   }
 }
 
@@ -1010,12 +1058,8 @@ if (output.output && !output.output.is_menu_label &&
   // The legacy `|| 'promotion'` tail is DROPPED, not preserved: it is itself an instance of this
   // same defect (a pick on an unknown domain became a *promotion* entity). Every real promotion
   // turn keeps its hint byte-identical via DOMAIN_SUBJECT_HINT.promotion.
-  const DOMAIN_SUBJECT_HINT = {
-    product_attachment: 'product', master_products: 'product', inventory: 'product',
-    incoming: 'product', resource_attachment: 'attachment', portal_link: 'form',
-    goods_receive: 'goods_receive', spo_allocation: 'spo', forms: 'form',
-    order: 'order', promotion: 'promotion',
-  };
+  // (DOMAIN_SUBJECT_HINT itself is hoisted to module scope, near AXIS_BY_DOMAIN - the AXIS
+  // BROADEN restore above needs the same domain -> subject-hint map.)
   const KNOWN_ENTITY_HINTS = new Set([
     'product','promotion','customer','transporter','inbound_shipment','warehouse','attachment',
     'form','order','category','brand','attachment_type','certificate','flyer','order_number',
@@ -1297,15 +1341,10 @@ if (output.output && !output.output.is_menu_label && _ceUnknownHints.size) {
 // "A inventory enquiry can't be answered with a general search - please specify a product".
 // Losing the value is worse than mistyping it: a naked value in domain D IS D's subject, so
 // re-hint it instead of throwing it away. The resolver still decides the real entity type.
-// Mirrors DOMAIN_SUBJECT_HINT (declared in the pick-rehydration scope above) — keep in sync.
+// Uses the same module-scope DOMAIN_SUBJECT_HINT as the pick-rehydration block and the AXIS
+// BROADEN restore above - one map, no more "keep in sync" duplicates.
 if (_bareEntityTurn && output.output.domain_hint) {
-  const _BARE_SUBJECT_HINT = {
-    product_attachment: 'product', master_products: 'product', inventory: 'product',
-    incoming: 'product', resource_attachment: 'attachment', portal_link: 'form',
-    goods_receive: 'goods_receive', spo_allocation: 'spo', forms: 'form',
-    order: 'order', promotion: 'promotion',
-  };
-  const _subj = _BARE_SUBJECT_HINT[output.output.domain_hint] || null;
+  const _subj = DOMAIN_SUBJECT_HINT[output.output.domain_hint] || null;
   const _blockedNow = new Set(DOMAIN_BLOCKED_HINTS[output.output.domain_hint] || []);
   if (_subj && !_blockedNow.has(_subj)) {
     let _rehinted = 0;
