@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main TEST  (`txiPzSxy3Pclsz6v`)
 
-- versionId **8e177808-7962-4e6f-85b1-c3b6e5e05497** · activeVersionId **8e177808-7962-4e6f-85b1-c3b6e5e05497** · DRAFT == ACTIVE
+- versionId **2c116057-805f-49fe-96e0-fe9b041ed7c5** · activeVersionId **2c116057-805f-49fe-96e0-fe9b041ed7c5** · DRAFT == ACTIVE
 - 182 nodes
 
 ## Edges
@@ -364,7 +364,7 @@ wait-media-poll[0] -> media-poll-gate
 
 | node | lines |
 |---|---|
-| compile-current-state | 1708 |
+| compile-current-state | 1712 |
 | disallowed-entity-gate | 851 |
 | build-suggest-offer | 651 |
 | promo-picker | 578 |
@@ -375,9 +375,9 @@ wait-media-poll[0] -> media-poll-gate
 | crossdomain-render | 181 |
 | dym-annotate | 169 |
 | media-route | 151 |
-| build-cs-member-offer | 144 |
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
+| build-cs-member-offer | 132 |
 | build-miss-member-offer | 111 |
 | crossdomain-compose | 101 |
 | escalate-catalog | 99 |
