@@ -250,6 +250,69 @@ drive(["clone-sorento-consume-main-TEST", "--to", "txiPzSxy3Pclsz6v", "--target-
 });
 
 // -----------------------------------------------------------------------------------------------
+// 5. PAYLOAD_GATE_SKIP: a test-artifact FORK skips (f2) but NOT (d) — separate from UNPROTECTED,
+//    which governs both. 2026-08-24: gate (f2) refused the parser FORK wI5RkNGW3EOJfBdo with 8
+//    violations for scaffolding that IS its containment, exactly like the clone's. The fix is a
+//    skip set used ONLY by (f2); UNPROTECTED (and the clone's --target-override) must not widen.
+// -----------------------------------------------------------------------------------------------
+test('a deploy targeting the parser FORK SKIPS gate (f2) and names it a test artifact', () => {
+  const r = py(`drive(["sub-semantic-parser-FORK", "--to", "wI5RkNGW3EOJfBdo",
+                       "--dry-run", "--i-know-this-is-live"])`);
+  assert.equal(r.rc, 0, `the fork's own body must not be refused:\n${r.out}`);
+  assert.match(r.out, /\(f2\) SKIPPED/);
+  assert.match(r.out, /wI5RkNGW3EOJfBdo is a[\s\S]{0,80}test artifact/,
+    'the skip message must name the fork as a test artifact, not just say SKIPPED');
+  assert.doesNotMatch(r.out, /\(f2\) FAIL/);
+});
+
+test('the LIVE parser (not the fork) still RUNS gate (f2) — the skip is narrow', () => {
+  const r = py(`drive(["sub-semantic-parser", "--to", "XTODTw-dJcV0uRdC056hG",
+                       "--dry-run", "--i-know-this-is-live"])`);
+  assert.equal(r.rc, 0, `the live parser's own body must pass its own gate:\n${r.out}`);
+  assert.match(r.out, /gate \(f2\) payload safety/);
+  assert.match(r.out, /\(f2\) OK[\s\S]*?live-parser/);
+  assert.doesNotMatch(r.out, /\(f2\) SKIPPED/,
+    'only the fork id is in PAYLOAD_GATE_SKIP, not the live sub it forks from');
+});
+
+test('the LIVE spine still RUNS gate (f2) — the skip does not leak to other live ids', () => {
+  const r = py(`drive(["live-spine-sorento-consume-main", "--to", "9qVyfUxmRQqrpGRMDLRuz",
+                       "--dry-run", "--i-know-this-is-live"])`);
+  assert.equal(r.rc, 0, r.out);
+  assert.match(r.out, /\(f2\) OK[\s\S]*?live-spine/);
+  assert.doesNotMatch(r.out, /\(f2\) SKIPPED/);
+});
+
+test('the fork is NOT in UNPROTECTED: --yes is still refused for it', () => {
+  const r = py(`drive(["sub-semantic-parser-FORK", "--to", "wI5RkNGW3EOJfBdo",
+                       "--i-know-this-is-live", "--yes"])`);
+  assert.equal(r.rc, 1, `--yes must still be refused for a non-UNPROTECTED target:\n${r.out}`);
+  assert.match(r.out, /\(d\) FAIL[\s\S]*not in UNPROTECTED[\s\S]*--yes[\s\S]*refused/);
+  assert.deepEqual(r.puts, [], 'nothing may be PUT when gate (d) refuses --yes');
+});
+
+test('the fork still demands gate (d)\'s interactive confirm at (h)', () => {
+  const r = py(`drive(["sub-semantic-parser-FORK", "--to", "wI5RkNGW3EOJfBdo",
+                       "--i-know-this-is-live"])`);
+  assert.equal(r.rc, 0, r.out);
+  assert.match(r.out, /REACHED-GATE-H-CONFIRM/,
+    'PAYLOAD_GATE_SKIP must not also skip the interactive confirm gate (h) demands via (d)');
+  assert.deepEqual(r.puts, ['wI5RkNGW3EOJfBdo']);
+});
+
+test('PAYLOAD_GATE_SKIP is disjoint from UNPROTECTED (the whole point of a separate set)', () => {
+  const r = py(`
+print("DISJOINT=" + str(d.PAYLOAD_GATE_SKIP.keys().isdisjoint(d.UNPROTECTED)))
+print("FORK_NOT_UNPROTECTED=" + str("wI5RkNGW3EOJfBdo" not in d.UNPROTECTED))
+print("RC=0")
+print("CALLS=[]")
+print("PUTS=[]")
+`);
+  assert.match(r.out, /DISJOINT=True/);
+  assert.match(r.out, /FORK_NOT_UNPROTECTED=True/);
+});
+
+// -----------------------------------------------------------------------------------------------
 // 4. --rollback keeps its reduced gate set (d, e, h). A gate that blocks a rollback is a hazard.
 // -----------------------------------------------------------------------------------------------
 test('--rollback does not run the payload gate', () => {

@@ -31,8 +31,12 @@ GATES (fail-closed, in order — first failure stops the run and exits 1):
       carrying test scaffolding (is_test to a guarded live sub, test:q:/
       test:egress:, the n8n_test db cred, fork ids, orphaned egress nodes,
       NoOp-ed CRM reads, credential drift, lost node settings). Profile by
-      TARGET id; SKIPPED for the TEST clone and for UNPROTECTED scratch ids,
-      which legitimately carry that scaffolding. See payload_gate_profile().
+      TARGET id; SKIPPED for the TEST clone, for UNPROTECTED scratch ids, and
+      for PAYLOAD_GATE_SKIP verified test-artifact forks — all three
+      legitimately carry that scaffolding. PAYLOAD_GATE_SKIP is deliberately
+      NOT part of UNPROTECTED: it skips (f2) only, never gate (d)'s
+      --i-know-this-is-live requirement or its interactive confirm, and
+      --yes stays refused for it. See payload_gate_profile().
   (g) credentials: passed through UNCHANGED. See CREDENTIALS below.
   (h) diff summary (added/removed/changed node names, jsCode sha deltas) vs
       the target's current body, then `--yes` or an interactive `y`.
@@ -163,6 +167,54 @@ KNOWN_ID_LABELS = {
 # Never PUT here without --target-override (another person's active build).
 CLONE_GUARD_ID = "txiPzSxy3Pclsz6v"
 CLONE_GUARD_NAME = "clone-sorento-consume-main-TEST (someone else's active build)"
+
+# --- PAYLOAD_GATE_SKIP (captain's decision, 2026-08-24) -----------------------------------------
+# Gate (f2) started refusing the parser FORK wI5RkNGW3EOJfBdo with 8 violations (is_test on 2
+# nodes, mock_reformulator_output on 3, n8n_test plus the n8n_test-db credential on Postgres Chat
+# Memory, and the mock-reformulator-output node name) — every one of them correct and intended,
+# because the fork's scaffolding IS its containment, exactly like the clone's. But it isn't the
+# clone, and it isn't a scratch/throwaway either, so neither existing skip fit it.
+#
+# This is a SEPARATE set from UNPROTECTED, not an addition to it, because UNPROTECTED also governs
+# gate (d): an id there gets BOTH no --i-know-this-is-live requirement AND a working --yes
+# (non-interactive PUT). Putting a fork here would have quietly handed it unattended writes too.
+# PAYLOAD_GATE_SKIP affects gate (f2) ONLY (see payload_gate_profile() below) — every id in it
+# still needs --i-know-this-is-live at gate (d) and still gets gate (d)'s interactive "y" at (h);
+# --yes is still refused for it. It stops being asked, at (f2) only, to prove it carries no test
+# scaffolding — because carrying it is the entire reason it exists.
+#
+# ADMISSION CRITERIA — all three, checked against export/<slug>/workflow.json (never the live API,
+# so the answer can't drift from the bytes actually being deployed):
+#   1. it is a FORK / TEST-rebase of a shared sub (its own export legitimately fails the generic
+#      profile on is_test / mock_* / n8n_test-db scaffolding that IS its containment — the same
+#      reasoning as the CLONE_GUARD_ID skip above, LESSONS #16/#17), not a slug anyone publishes,
+#      monitors, or treats as production;
+#   2. EVERY caller of it — found by grepping every export/*/workflow.json for its id — is itself a
+#      test artifact (the TEST clone, another fork, a disposable throwaway), never the live spine
+#      and never an id PAYLOAD_GATE_PROFILES treats as live;
+#   3. it currently FAILS the generic gate (f2) profile. If it already passes clean there is
+#      nothing here to skip, and adding it anyway would only widen the blind spot for no benefit.
+PAYLOAD_GATE_SKIP = {
+    # sub-semantic-parser FORK domain-continuity-carry. Callers (export/*/workflow.json, grepped
+    # for this id): the TEST clone (txiPzSxy3Pclsz6v) and zz-THROWAWAY-dym-probe-fail (DISPOSABLE,
+    # Es4WwjMHOEy9j62V — not exported, no live workflow calls it). Fails generic today with 8
+    # violations (is_test x2, mock_reformulator_output x3, n8n_test + n8n_test-db credential on
+    # Postgres Chat Memory, mock-reformulator-output node name) — see the fix commit for the run.
+    "wI5RkNGW3EOJfBdo": "sub-semantic-parser FORK domain-continuity-carry",
+    # sub-human-intervention TEST (delta3). Callers (export/*/workflow.json, grepped for this id):
+    # the TEST clone, fork-promo-picker-spine (RnpxEnAV3g20MmKj — itself a fork, not live), and the
+    # disposable throwaway. Fails generic today with 3 violations: is_test on 2 nodes (When
+    # Executed by Another Workflow, test-guard) and the test:egress: token on test-guard-record.
+    "vUfFUDjLAuMaeQE6": "sub-human-intervention FORK (delta3)",
+}
+# NOT added: t4QvrtrPnTwRU6br (sub-get-results CS-BUILD). Callers verified the same way — the TEST
+# clone and fork-promo-picker-spine, same test-only shape as the two above — but it currently
+# PASSES the generic profile with 0 violations (confirmed by running promotion-safety-check.py
+# against export/sub-get-results-CS-BUILD/: 1 credential-bearing node, its own openAiApi cred,
+# no is_test/mock/n8n_test hits). Criterion 3 fails: there is nothing failing to skip today, so
+# admitting it would only remove a check that currently costs it nothing and might catch something
+# real later. If a future edit gives it genuine test scaffolding, let gate (f2) name the specific
+# violations when that happens, and reconsider adding it then — same as the two above were added.
 
 SETTINGS_STRIP_KEYS = {"binaryMode", "timeSavedMode"}  # LESSONS #55
 
@@ -391,8 +443,14 @@ def payload_gate_profile(to_id):
     step: UNPROTECTED is by definition "scratch/throwaway targets, inactive, no live caller", and
     a scratch target added there later inherits the skip without anyone remembering to.
 
+    A THIRD, separate skip applies here too: PAYLOAD_GATE_SKIP (above). Unlike UNPROTECTED it does
+    NOT touch gate (d) — an id there still needs --i-know-this-is-live and still gets gate (d)'s
+    interactive confirm; --yes is still refused for it. It is a verified test-artifact FORK (see
+    PAYLOAD_GATE_SKIP's admission criteria) that is legitimately full of the same kind of
+    scaffolding as the clone, just not the clone itself and not a throwaway scratch id.
+
     Everything else gets `generic`, which refuses only unambiguous scaffolding."""
-    if to_id == CLONE_GUARD_ID or to_id in UNPROTECTED:
+    if to_id == CLONE_GUARD_ID or to_id in UNPROTECTED or to_id in PAYLOAD_GATE_SKIP:
         return None
     return PAYLOAD_GATE_PROFILES.get(to_id, "generic")
 
@@ -401,8 +459,14 @@ def gate_f2(put_body, to_id):
     """Returns (ok, message, violations, warnings). violations is empty unless ok is False."""
     profile = payload_gate_profile(to_id)
     if profile is None:
-        why = ("the TEST clone — its test scaffolding IS its containment"
-               if to_id == CLONE_GUARD_ID else "on the UNPROTECTED scratch allowlist")
+        if to_id == CLONE_GUARD_ID:
+            why = "the TEST clone — its test scaffolding IS its containment"
+        elif to_id in PAYLOAD_GATE_SKIP:
+            why = (f"a verified test artifact ({PAYLOAD_GATE_SKIP[to_id]}) — its test scaffolding "
+                   f"IS its containment, same as the TEST clone (see PAYLOAD_GATE_SKIP); gate (d) "
+                   f"still applies in full, this only skips (f2)")
+        else:
+            why = "on the UNPROTECTED scratch allowlist"
         return True, (f"(f2) SKIPPED — {to_id} is {why}; a payload gate here would refuse "
                       f"its own routine redeploy."), [], []
     _counts, bindings, violations, warnings = psc.run_against(put_body, profile)
