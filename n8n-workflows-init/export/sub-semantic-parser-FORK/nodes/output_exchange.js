@@ -549,9 +549,14 @@ const _ceAxisFor = (e, domain) => {
 // AND dropped the customer the user was still asking about. Restore the domain BEFORE the executor
 // so axis mapping and the drop below both run against the domain the user is actually in.
 {
+  // ANY widening keeps the subject. "all products", "all time" and "show me everything" all ask
+  // for MORE of the same question - none of them changes what is being asked about. The axis the
+  // model picks must not decide this: the same words came back broaden_axis 'product' on one run
+  // and 'all' on the next (fork 13692500), and when only the first carried the domain, the second
+  // answered "A master_products enquiry can't be answered with a general search".
   const _ba = String(output.output.broaden_axis || '').toLowerCase();
   const _prevDom0 = parent_input.previous_conversation_state?.domain_hint || null;
-  if (_ba && _ba !== 'all' && _ba !== 'date' && _prevDom0) {
+  if (_ba && _prevDom0) {
     output.output.domain_hint = _prevDom0;
     output.output.intent_hint = parent_input.previous_conversation_state?.intent_hint || output.output.intent_hint || null;
     output.output.broaden_axis_domain_restored = true;   // diagnostic

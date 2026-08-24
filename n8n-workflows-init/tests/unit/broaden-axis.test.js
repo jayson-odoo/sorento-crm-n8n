@@ -54,3 +54,36 @@ test('a bare code after a pick keeps the pinned customer', () => {
   assert.ok(hints.includes('customer'), `the picked customer must survive, got ${JSON.stringify(o.entities)}`);
   assert.ok(!o.scope_cleared_on_domain_change, 'a domain change that gets undone is not a domain change');
 });
+
+// Plan case D3, the symmetry test. Customer, product and date must all be clearable the same way.
+// The plan predicted this would fail - clearing the customer looked likely to collide with the pin
+// that keeps a chosen account, and with the blocklist that strips customer hints on a broadening
+// turn. It does not: the axis machinery generalised without special-casing, and the pin lives in
+// the gate (it only governs whether the PICKER re-opens), so an entity the parser has already
+// dropped never reaches it. Locked here so that stays true.
+test('D3: "all customers" clears the customer and keeps the product', () => {
+  const body = loadNodes(SLUG, ['output_exchange.js'])['output_exchange.js'];
+  const entry = loadFixtures(SLUG, NODE).find(f => f.name.includes('d3-clear-customer'));
+  assert.ok(entry, 'fixture d3-clear-customer must exist');
+  const o = runNode({ body, fixture: entry.fixture, slug: SLUG, nodeName: NODE })[0].json.output;
+
+  assert.equal(o.broaden_axis, 'customer', 'the model named the axis being widened');
+  assert.equal(o.domain_hint, 'order', 'widening one axis is not a change of subject');
+  const hints = (o.entities || []).map(e => String(e.hint || '').toLowerCase());
+  assert.ok(!hints.includes('customer'), `the customer filter must be gone, got ${JSON.stringify(o.entities)}`);
+  assert.ok(hints.includes('product'), 'the product the user is still asking about must remain');
+});
+
+// Widening a filter is never a change of subject - true for "all", for a date, and for any entity
+// axis. The same phrase "all products" came back broaden_axis 'product' on one run and 'all' on
+// another (fork 13692500), and only the first was carrying the domain, so the second answered
+// "A master_products enquiry can't be answered with a general search". The customer said the same
+// words both times. The rule below does not depend on which of the two the model picks.
+test('widening any axis keeps the domain, including a whole-scope broaden', () => {
+  const body = loadNodes(SLUG, ['output_exchange.js'])['output_exchange.js'];
+  const entry = loadFixtures(SLUG, NODE).find(f => f.name.includes('broaden-all-keeps-domain'));
+  assert.ok(entry, 'fixture broaden-all-keeps-domain must exist');
+  const o = runNode({ body, fixture: entry.fixture, slug: SLUG, nodeName: NODE })[0].json.output;
+  assert.equal(o.broaden_axis, 'all', 'this run classified it as a whole-scope broaden');
+  assert.equal(o.domain_hint, 'order', 'broadening does not move the conversation to the catalogue');
+});
