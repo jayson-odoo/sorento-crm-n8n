@@ -715,8 +715,21 @@ out.require_specific = require_specific;
   let _rows = flat.filter(m => m && m.uuid && _compat.has(m.uuid) && m.entity_type === 'product');
   if (!_rows.length) _rows = flat.filter(m => m && m.uuid && _compat.has(m.uuid) && m.company_id);
   const _bc = m => { const b = m && m.display && m.display.brand; const c = b && (typeof b === 'object' ? b.brand_code : b); return c ? String(c).trim().toLowerCase() : null; };
+  // A CUSTOMER-FACING LABEL FOR EACH ROUTING SUBJECT (plan case F, 2026-08-24).
+  // `codes` are canonical_code, which is exactly right for a product (MFG6653-DIY means something
+  // to the person reading it) and wrong for a customer, where it is an internal debtor code:
+  // "Note: 300-D059 is carried by more than one company" (exec 13687248). Build the label HERE,
+  // where the resolver row is - it has entity_type and the display name - so the message builder
+  // downstream never has to reach into another node to find out what to call things.
+  const _coLabel = (m) => {
+    const d = (m && m.display) || {};
+    if (String(m && m.entity_type).toLowerCase() === 'customer') {
+      return String(d.customer_name || d.debtor_name || '').trim() || String(m.canonical_code || '');
+    }
+    return String((m && m.canonical_code) || '');
+  };
   const _byCo = new Map();
-  for (const m of _rows) { if (!m.company_id) continue; const g = _byCo.get(m.company_id) || { company_id: m.company_id, company_name: m.company_name || null, brands: new Set(), codes: new Set() }; const b = _bc(m); if (b) g.brands.add(b); if (m.canonical_code) g.codes.add(m.canonical_code); _byCo.set(m.company_id, g); }
+  for (const m of _rows) { if (!m.company_id) continue; const g = _byCo.get(m.company_id) || { company_id: m.company_id, company_name: m.company_name || null, brands: new Set(), codes: new Set(), labels: new Set() }; const b = _bc(m); if (b) g.brands.add(b); if (m.canonical_code) g.codes.add(m.canonical_code); const _l = _coLabel(m); if (_l) g.labels.add(_l); _byCo.set(m.company_id, g); }
   const _allBrands = [...new Set(_rows.map(_bc).filter(Boolean))];
   // brand unknown stays unknown: the resolved rows' brand only when unambiguous, else the customer's
   // OWN stated brand only when they named exactly one. No access-level guess — a null brand makes the
@@ -727,7 +740,7 @@ out.require_specific = require_specific;
   // per-company brand = that company's OWN row brand (unambiguous) — the global routing_brand is only
   // inherited when there is a single company (multi-company entries never borrow another company's brand)
   const _cos = [..._byCo.values()];
-  out.routing_companies = _cos.map(g => ({ company_id: g.company_id, company_name: g.company_name, brand_code: g.brands.size === 1 ? [...g.brands][0] : (_cos.length === 1 ? (out.routing_brand || null) : null), codes: [...g.codes] })).sort((a, b) => String(a.company_name).localeCompare(String(b.company_name)));
+  out.routing_companies = _cos.map(g => ({ company_id: g.company_id, company_name: g.company_name, brand_code: g.brands.size === 1 ? [...g.brands][0] : (_cos.length === 1 ? (out.routing_brand || null) : null), codes: [...g.codes], labels: [...g.labels] })).sort((a, b) => String(a.company_name).localeCompare(String(b.company_name)));
   out.routing_company = out.routing_companies.length === 1 ? out.routing_companies[0].company_id : null;
 }
 

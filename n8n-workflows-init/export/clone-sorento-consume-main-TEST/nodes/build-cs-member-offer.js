@@ -80,12 +80,19 @@ if (!multi) {
   numbered = lines.join('\n');
 }
 const codes = [...new Set(planItems.flatMap(p => Array.isArray(p.codes) ? p.codes : []))];
+// What to CALL the thing in the note. `codes` is canonical_code: right for a product, and an
+// internal debtor code for a customer ("Note: 300-D059 is carried by ...", exec 13687248).
+// disallowed-entity-gate now names each routing subject as the customer would recognise it and
+// cs-roster-plan carries it here, so this reads a label instead of guessing from the code's shape.
+const labels = [...new Set(planItems.flatMap(p => Array.isArray(p.labels) ? p.labels : []))];
 const names = planItems.map(p => p.company_name).filter(Boolean);
 // miss-company-routing rev-3: company names are WhatsApp-bold (`*Mocha*`) wherever the multi-company
 // text names them — the note and the closing sentence — matching the presenter's `*Company:*` style.
 const boldNames = names.map(n => `*${n}*`);
 const joinNames = boldNames.length > 1 ? `${boldNames.slice(0, -1).join(', ')} and ${boldNames[boldNames.length - 1]}` : (boldNames[0] || '');
-const subject = codes.length ? codes.join(', ') : (cat.subject || cat.entity_label || 'This item');
+const subject = labels.length ? labels.join(', ')
+  : codes.length ? codes.join(', ')
+  : (cat.subject || cat.entity_label || 'This item');
 // The multi-company explanation is written ONCE here and exported on the item: compile-current-state's
 // Δ4 merge arm rebuilds its own picker and must say the same thing rather than a second wording.
 // miss-company-routing round-3 rev-2 (F-R3-5): the note names the ROUTING team (cs-offer-gate now also opens the

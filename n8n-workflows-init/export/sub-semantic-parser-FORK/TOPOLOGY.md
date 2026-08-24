@@ -1,6 +1,6 @@
 # TOPOLOGY — sub-semantic-parser FORK domain-continuity-carry  (`wI5RkNGW3EOJfBdo`)
 
-- versionId **00f1c894-a4c0-4cbe-8982-b31e103a939f** · activeVersionId **00f1c894-a4c0-4cbe-8982-b31e103a939f** · DRAFT == ACTIVE
+- versionId **102a5057-7eed-400e-ac52-d0ef985e1a21** · activeVersionId **102a5057-7eed-400e-ac52-d0ef985e1a21** · DRAFT == ACTIVE
 - 8 nodes
 
 ## Edges
@@ -37,6 +37,6 @@ test-reformulator-bypass[1] -> AI Agent
 
 | node | lines |
 |---|---|
-| output_exchange | 1828 |
+| output_exchange | 1867 |
 | suggest-follow-up | 34 |
 | mock-reformulator-output | 2 |

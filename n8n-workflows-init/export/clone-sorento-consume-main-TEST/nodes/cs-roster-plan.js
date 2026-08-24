@@ -16,6 +16,8 @@ return cos.map((c, i) => ({ json: {
   company_name: c.company_name || null,
   brand_code: c.brand_code || null,
   codes: Array.isArray(c.codes) ? c.codes : [],
+  // customer-facing names for those codes (plan case F) - the note must never print a debtor code
+  labels: Array.isArray(c.labels) ? c.labels : [],
   multi_company: cos.length > 1,
   companies: cos.map(x => x.company_name).filter(Boolean),
 } }));
