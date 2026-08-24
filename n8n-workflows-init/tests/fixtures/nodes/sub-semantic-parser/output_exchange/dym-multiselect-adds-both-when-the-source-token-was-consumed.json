@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "⚠️ THIS FIXTURE PINS A DEFECT, NOT A CONTRACT. Same numbered multi-select as the fixture above, but the prior scope holds only the ONE missed token. Documented intent (the block's own comment, R-v3-1) is ADD-BOTH: 'two alternatives for ONE missed token are both ADDED (never last-wins)'. What the body actually does is last-wins. Pick 1 replaces 'ax' with A-1. Pick 2's for_raw lookup misses, so it falls to applyDymPick's for_hint tier - which finds EXACTLY ONE product entity, namely pick 1's own freshly written entity - and replaces it. A-1 is silently lost. _useSlot=false only disables the tier-0 dym_slot lookup; it does not disable the for_hint fallback, so the shared offer re-hits the first pick's new entity by another route - the exact failure the _useSlot flag was introduced to prevent. The sibling fixture above only passes because two prior products make that fallback ambiguous. Committed so the fix has a red anchor: when the for_hint tier is skipped on the numbered path, THIS expected must change to hold both A-1 and A-2."
+  "rationale": "R-v3-1 ADD-BOTH, the case that used to be a pinned DEFECT. The customer picks 1 AND 2 off a did-you-mean list; both rows are alternatives for the SAME missed token 'ax', and the prior scope holds only that one token. Pick 1 replaces 'ax' with A-1. Pick 2's for_raw lookup then misses (pick 1 overwrote that raw) and used to fall to applyDymPick's for_hint tier, which found EXACTLY ONE product entity - pick 1's own freshly written one - and replaced it, silently losing A-1. P3 (fork exec 13203346, where merging both MASTILE KLANG accounts returned only the last one) excludes entities minted by a pick THIS TURN from that fallback: _ceDymPickedKeys already records every code applyDymPick minted, so pick 2 finds no source token, APPENDS (dym_replace_unmatched) and BOTH alternatives survive. The previous expected - A-2 alone - was committed as a red anchor with exactly this instruction: 'when the for_hint tier is skipped on the numbered path, THIS expected must change to hold both A-1 and A-2'."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -90,6 +90,14 @@
        "uuid": "u2",
        "current_message": true,
        "dym_slot": "off-9"
+      },
+      {
+       "raw": "A-1",
+       "hint": "product",
+       "canonical_code": "A-1",
+       "uuid": "u1",
+       "current_message": true,
+       "dym_slot": "off-9"
       }
      ],
      "entity_op": "replace_combine",
@@ -118,7 +126,8 @@
      "dym_pick_domain_forced": "inventory",
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_replace_unmatched": true
     },
     "_parser_raw": {
      "message_type": "business_query",

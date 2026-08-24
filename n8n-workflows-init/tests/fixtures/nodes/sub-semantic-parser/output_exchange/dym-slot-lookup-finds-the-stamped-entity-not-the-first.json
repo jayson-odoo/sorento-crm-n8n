@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "Tier 0 of applyDymPick's source lookup has to find the entity STAMPED with this offer's slot, wherever it sits. Here the stamped entity is at index 1 and an unrelated product sits at index 0, so a lookup that returned the first entity instead would overwrite the wrong one. The second bare-code reply must replace A-1 (the previous pick from this same offer) and leave ZZ-9 untouched."
+  "rationale": "Tier 0 of applyDymPick's source lookup has to find the entity STAMPED with this offer's slot, wherever it sits. Here the stamped entity is at index 1 and an unrelated product sits at index 0, so a lookup that returned the first entity instead would overwrite the wrong one. The second bare-code reply must replace A-1 (the previous pick from this same offer) and leave ZZ-9 untouched. A4/P22 addendum: dym_superseded_dropped is 0 here because the pick DID identify its source token and replaced it in place, so the offer records a supersession but there is nothing left to retire. The key is emitted whenever a supersession is detected at all, zero included - the one place this port deviates from the repo's drop-when-absent diagnostic convention (LESSONS 40), kept because the block is ported verbatim from the reviewed fork."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -121,7 +121,8 @@
      "query_brands": [],
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_superseded_dropped": 0
     },
     "_parser_raw": {
      "message_type": "business_query",

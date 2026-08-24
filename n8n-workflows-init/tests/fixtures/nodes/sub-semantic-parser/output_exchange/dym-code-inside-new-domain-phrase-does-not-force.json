@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "R-DC-1, the strict half of #5 domain-carry and the key regression guard. The SAME offer and the SAME code, but the customer wrote 'promotions for ABC-123'. tryDymPick still fires (the code matches a current-message entity even though it is not the whole message), so the pick is applied - but _isBareCode is FALSE and _viaNumbered is FALSE, so the offer's domain is NOT forced: the parser's own 'promotion' classification survives and dym_pick_domain_forced is absent. Without this fixture the `(_isBareCode || _viaNumbered)` gate is unkillable, because the bare-code fixture alone passes with the gate removed entirely."
+  "rationale": "R-DC-1, the strict half of #5 domain-carry and the key regression guard. The SAME offer and the SAME code, but the customer wrote 'promotions for ABC-123'. tryDymPick still fires (the code matches a current-message entity even though it is not the whole message), so the pick is applied - but _isBareCode is FALSE and _viaNumbered is FALSE, so the offer's domain is NOT forced: the parser's own 'promotion' classification survives and dym_pick_domain_forced is absent. Without this fixture the `(_isBareCode || _viaNumbered)` gate is unkillable, because the bare-code fixture alone passes with the gate removed entirely. A4/P22 addendum: dym_superseded_dropped is 0 here because the pick DID identify its source token and replaced it in place, so the offer records a supersession but there is nothing left to retire. The key is emitted whenever a supersession is detected at all, zero included - the one place this port deviates from the repo's drop-when-absent diagnostic convention (LESSONS 40), kept because the block is ported verbatim from the reviewed fork."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -106,7 +106,8 @@
      "query_brands": [],
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_superseded_dropped": 0
     },
     "_parser_raw": {
      "message_type": "business_query",

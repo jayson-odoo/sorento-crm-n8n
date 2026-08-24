@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "dym-single-use-fix, tier 0. The customer already picked A-1 from this offer, so the prior entity carries dym_slot 'off-1' and its raw is no longer the missed token - for_raw can never match again. On the CODE-REPLY path (_useSlot true) the stamped slot is the stable handle back to the offer, so the second bare code A-2 resolves to the SAME entity and replaces it in place rather than appending: one missed token, one answer. dym_replace_unmatched must be absent, which is what proves the slot tier fired rather than the append fallback."
+  "rationale": "dym-single-use-fix, tier 0. The customer already picked A-1 from this offer, so the prior entity carries dym_slot 'off-1' and its raw is no longer the missed token - for_raw can never match again. On the CODE-REPLY path (_useSlot true) the stamped slot is the stable handle back to the offer, so the second bare code A-2 resolves to the SAME entity and replaces it in place rather than appending: one missed token, one answer. dym_replace_unmatched must be absent, which is what proves the slot tier fired rather than the append fallback. A4/P22 addendum: dym_superseded_dropped is 0 here because the pick DID identify its source token and replaced it in place, so the offer records a supersession but there is nothing left to retire. The key is emitted whenever a supersession is detected at all, zero included - the one place this port deviates from the repo's drop-when-absent diagnostic convention (LESSONS 40), kept because the block is ported verbatim from the reviewed fork."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -117,7 +117,8 @@
      "query_brands": [],
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_superseded_dropped": 0
     },
     "_parser_raw": {
      "message_type": "business_query",

@@ -1,0 +1,154 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "rationale": "P20, the _pos digit-in-entity guard. Execs 13045880 / 13206773: '4 smart delivery status' on a 4-member offer. _extract's loose arm - any bare-digit word in a <=4-word reply - read the '4' of the CUSTOMER NAME '4 SMART' as position 4 and confirmed an escalation to that member, i.e. a real staff assignment off a delivery question. The guard keeps that best-effort arm only when the LLM did NOT read the turn as a new business query: here domain_hint is 'order' and a current-message entity CONTAINS the digit token, so the digit is part of a name, not a position. Before the fix escalation.is_escalation_confirmation is true with preferred_assignee_id; after it the offer is abandoned as a new query and no escalation is confirmed. The strict arms (bare '4', '#4', 'option 4', '4th') and _forcePick are untouched - LESSON 39's wrong-assign guarantee stands."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "4 smart delivery status",
+     "contact_id": 900000003,
+     "previous_conversation_state": {
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "selection_context": "member_offer",
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "response": "To escalate, choose who to route to - reply the number or name:\n1. Person 1\n2. Person 2\n3. Person 3\n4. Person 4",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "m-1",
+        "label": "Person 1",
+        "respond_user_id": "1001"
+       },
+       {
+        "idx": 2,
+        "uuid": "m-2",
+        "label": "Person 2",
+        "respond_user_id": "1002"
+       },
+       {
+        "idx": 3,
+        "uuid": "m-3",
+        "label": "Person 3",
+        "respond_user_id": "1003"
+       },
+       {
+        "idx": 4,
+        "uuid": "m-4",
+        "label": "Person 4",
+        "respond_user_id": "1004"
+       }
+      ],
+      "entities": []
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\": \"business_query\", \"intent_hint\": \"check_order\", \"domain_hint\": \"order\", \"scope_intent\": \"specific\", \"is_affirmative\": null, \"user_goal\": \"delivery status for 4 SMART\", \"access_levels\": [], \"date_mode\": null, \"date_filter_start\": null, \"date_filter_end\": null, \"match_mode\": \"and\", \"demand_qty\": null, \"entities\": [{\"raw\": \"4 SMART\", \"hint\": \"customer\", \"canonical_code\": null, \"current_message\": true}], \"entity_op\": \"replace_combine\", \"scope_exclusive\": false, \"requested_attributes\": [], \"contains_flyer\": false, \"reference_positions\": [], \"reference_target\": null, \"person_mention\": null, \"is_active\": null, \"order_status\": null, \"correction\": false, \"routing\": {\"suggested_team\": null, \"suggested_agent\": null}, \"escalation\": {\"is_escalation_confirmation\": false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": "specific",
+     "is_affirmative": null,
+     "user_goal": "delivery status for 4 SMART",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "4 SMART",
+       "hint": "customer",
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_explicit",
+     "scope_exclusive_applied": false,
+     "entity_op_applied": "replace_combine",
+     "query_brands": [],
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": "specific",
+     "is_affirmative": null,
+     "user_goal": "delivery status for 4 SMART",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "4 SMART",
+       "hint": "customer",
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}

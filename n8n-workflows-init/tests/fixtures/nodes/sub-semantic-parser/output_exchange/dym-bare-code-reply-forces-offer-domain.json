@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "The modal did-you-mean turn. The customer types back a code that IS one of the offered candidates. tryDymPick finds it (bare-code match on the message), applyDymPick replaces the SOURCE token's entity in place (for_raw 'abc12' -> index 0) with the candidate's own entity_type (never the LLM's hint), stamps dym_slot from the offer id so a SECOND pick can still find it, carries the prior date window, and - because the whole message IS the code (_isBareCode) and the offer stored a domain - FORCES domain_hint back to the offer's 'incoming', overriding the LLM's master_products guess, and realigns intent_hint from prior state. scope_exclusive is forced false regardless of what the LLM said. The retained 'ACME' customer entity is then dropped by the incoming blocklist, and the carried date is stripped again by the date gate (incoming is not whitelisted) leaving date_filter_gated. dym_pick_applied is one of D11's resolved-pick signals, so _pending_pick is true."
+  "rationale": "The modal did-you-mean turn. The customer types back a code that IS one of the offered candidates. tryDymPick finds it (bare-code match on the message), applyDymPick replaces the SOURCE token's entity in place (for_raw 'abc12' -> index 0) with the candidate's own entity_type (never the LLM's hint), stamps dym_slot from the offer id so a SECOND pick can still find it, carries the prior date window, and - because the whole message IS the code (_isBareCode) and the offer stored a domain - FORCES domain_hint back to the offer's 'incoming', overriding the LLM's master_products guess, and realigns intent_hint from prior state. scope_exclusive is forced false regardless of what the LLM said. The retained 'ACME' customer entity is then dropped by the incoming blocklist, and the carried date is stripped again by the date gate (incoming is not whitelisted) leaving date_filter_gated. dym_pick_applied is one of D11's resolved-pick signals, so _pending_pick is true. A4/P22 addendum: dym_superseded_dropped is 0 here because the pick DID identify its source token and replaced it in place, so the offer records a supersession but there is nothing left to retire. The key is emitted whenever a supersession is detected at all, zero included - the one place this port deviates from the repo's drop-when-absent diagnostic convention (LESSONS 40), kept because the block is ported verbatim from the reviewed fork."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -118,7 +118,8 @@
       "customer:ACME"
      ],
      "date_filter_gated": "incoming",
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_superseded_dropped": 0
     },
     "_parser_raw": {
      "message_type": "business_query",

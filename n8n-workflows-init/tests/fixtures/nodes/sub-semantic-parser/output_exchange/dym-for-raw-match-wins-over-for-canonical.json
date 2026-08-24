@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "applyDymPick's lookup is TIERED and stops at the first hit: slot, then for_raw, then for_canonical, then an unambiguous single for_hint. Here for_raw matches the entity at index 0 while for_canonical would match a DIFFERENT entity at index 1, so the tiers are separable: the pick must land on index 0 and leave index 1 alone. A lookup that let the later tier run anyway would silently rewrite the wrong entity."
+  "rationale": "applyDymPick's lookup is TIERED and stops at the first hit: slot, then for_raw, then for_canonical, then an unambiguous single for_hint. Here for_raw matches the entity at index 0 while for_canonical would match a DIFFERENT entity at index 1, so the tiers are separable: the pick must land on index 0 and leave index 1 alone. A lookup that let the later tier run anyway would silently rewrite the wrong entity. A4/P22 addendum: dym_superseded_dropped is 0 here because the pick DID identify its source token and replaced it in place, so the offer records a supersession but there is nothing left to retire. The key is emitted whenever a supersession is detected at all, zero included - the one place this port deviates from the repo's drop-when-absent diagnostic convention (LESSONS 40), kept because the block is ported verbatim from the reviewed fork."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -119,7 +119,8 @@
      "query_brands": [],
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_superseded_dropped": 0
     },
     "_parser_raw": {
      "message_type": "business_query",

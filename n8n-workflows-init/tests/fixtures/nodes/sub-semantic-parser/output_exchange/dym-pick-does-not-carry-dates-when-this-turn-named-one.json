@@ -2,7 +2,7 @@
  "source": {
   "hand_crafted": true,
   "expected_from": "reasoned",
-  "rationale": "applyDymPick carries the prior date window only when THIS turn named NO date at all - either bound counts. Here the customer's turn names a start and no end, so the carry must not fire and the prior window must not overwrite it: date_filter_start stays 2026-09-01, end stays null, mode stays the LLM's 'from'. The offer's domain is promotion, which IS date-whitelisted, so the gate leaves the window alone and the carry decision is actually observable."
+  "rationale": "applyDymPick carries the prior date window only when THIS turn named NO date at all - either bound counts. Here the customer's turn names a start and no end, so the carry must not fire and the prior window must not overwrite it: date_filter_start stays 2026-09-01, end stays null, mode stays the LLM's 'from'. The offer's domain is promotion, which IS date-whitelisted, so the gate leaves the window alone and the carry decision is actually observable. A4/P22 addendum: dym_superseded_dropped is 0 here because the pick DID identify its source token and replaced it in place, so the offer records a supersession but there is nothing left to retire. The key is emitted whenever a supersession is detected at all, zero included - the one place this port deviates from the repo's drop-when-absent diagnostic convention (LESSONS 40), kept because the block is ported verbatim from the reviewed fork."
  },
  "ctx": {
   "When Executed by Another Workflow": [
@@ -110,7 +110,8 @@
      "query_brands": [],
      "entities_filtered": false,
      "entities_emptied_by_filter": false,
-     "_pending_pick": true
+     "_pending_pick": true,
+     "dym_superseded_dropped": 0
     },
     "_parser_raw": {
      "message_type": "business_query",

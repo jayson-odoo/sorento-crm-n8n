@@ -1,0 +1,177 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "derived_from": {
+   "slug": "sub-semantic-parser-FORK",
+   "execution_id": "13688574",
+   "note": "Same defect, re-grounded on a path the LIVE body can actually reach. The fork execution's own shape does NOT reproduce here: on the fork the superseded token is re-attached after the pick by block (C) ('a customer pick narrows WHO, not WHAT'), which live does not have, and live's coarser order-domain axis map (product and customer both on order_scope) makes the entity-op executor evict it. The live-reachable route is applyDymPick's PREPEND arm - dym_replace_unmatched."
+  },
+  "rationale": "P22 / captain plan A4. Exec 13688567 (fork 13688574): the bot asked \"Couldn't find WESRP10B. Did you mean WESERP10B?\", the customer answered with the exact code offered, and got the identical question back - for as long as they cared to keep answering, because the superseded spelling stayed a live filter, kept resolving to nothing, and kept re-triggering its own did-you-mean. Here the offer records for_raw as the customer originally spaced it ('WESRP 10B') while the entity in state carries the hyphenated form, so applyDymPick's for_raw tier misses, for_canonical is null, and the for_hint tier sees TWO products - ambiguous - so the pick is PREPENDED and the dead spelling survives alongside it (dym_replace_unmatched). That spacing gap is exactly why the A4 block compares on alphanumerics only. No words are matched: dym_pick_applied says the turn accepts a correction, dym_offer.candidates[].for_raw says which token that candidate was for, and WESRP-10B is retired only because the customer named the code that supersedes it. ABC-1, which no candidate corrects, is untouched."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "WESERP10B",
+     "contact_id": 900000003,
+     "previous_conversation_state": {
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "response": "Couldn't find \"WESRP 10B\" (product). Did you mean WESERP10B? Reply with a code to continue.",
+      "dym_offer": {
+       "id": "off-1",
+       "ttl": 3,
+       "domain": "order",
+       "picked": [],
+       "candidates": [
+        {
+         "code": "WESERP10B",
+         "uuid": "u-1",
+         "for_raw": "WESRP 10B",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        }
+       ]
+      },
+      "entities": [
+       {
+        "raw": "WESRP-10B",
+        "hint": "product",
+        "canonical_code": null,
+        "current_message": true
+       },
+       {
+        "raw": "ABC-1",
+        "hint": "product",
+        "canonical_code": "ABC-1",
+        "uuid": "u-abc",
+        "current_message": true
+       }
+      ]
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\": \"business_query\", \"intent_hint\": \"check_order\", \"domain_hint\": \"order\", \"scope_intent\": \"specific\", \"is_affirmative\": null, \"user_goal\": \"WESERP10B\", \"access_levels\": [], \"date_mode\": null, \"date_filter_start\": null, \"date_filter_end\": null, \"match_mode\": \"and\", \"demand_qty\": null, \"entities\": [{\"raw\": \"WESERP10B\", \"hint\": \"product\", \"canonical_code\": null, \"current_message\": true}], \"entity_op\": \"replace_combine\", \"scope_exclusive\": false, \"requested_attributes\": [], \"contains_flyer\": false, \"reference_positions\": [], \"reference_target\": null, \"person_mention\": null, \"is_active\": null, \"order_status\": null, \"correction\": false, \"routing\": {\"suggested_team\": null, \"suggested_agent\": null}, \"escalation\": {\"is_escalation_confirmation\": false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": "specific",
+     "is_affirmative": null,
+     "user_goal": "WESERP10B",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "WESERP10B",
+       "hint": "product",
+       "canonical_code": "WESERP10B",
+       "uuid": "u-1",
+       "current_message": true,
+       "dym_slot": "off-1"
+      },
+      {
+       "raw": "ABC-1",
+       "hint": "product",
+       "canonical_code": "ABC-1",
+       "uuid": "u-abc",
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "dym_replace_unmatched": true,
+     "dym_pick_applied": true,
+     "dym_offer_pick_code": "WESERP10B",
+     "dym_pick_domain_forced": "order",
+     "domain_signal_source": "intent_explicit",
+     "scope_exclusive_applied": false,
+     "entity_op_applied": "replace_combine",
+     "query_brands": [],
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false,
+     "_pending_pick": true,
+     "dym_superseded_dropped": 1
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": "specific",
+     "is_affirmative": null,
+     "user_goal": "WESERP10B",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "WESERP10B",
+       "hint": "product",
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}

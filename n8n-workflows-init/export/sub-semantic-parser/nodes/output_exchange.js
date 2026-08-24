@@ -99,6 +99,27 @@ const _cePriorKeys = new Set(
     ? parent_input.previous_conversation_state.entities : []).map(_ceKey));
 const _ceLlmKeys = new Set(
   (Array.isArray(_parser_raw_snapshot?.entities) ? _parser_raw_snapshot.entities : []).map(_ceKey));
+// ── the carried-vs-renamed test must not hinge on WHICH key an entity happens to carry ──
+// _ceKey collapses to `canonical_code || raw`, so the SAME entity keys differently depending on
+// whether it has been resolved yet: prior state holds the picked customer as
+// `customer|dbr-59e57de1b7` while the LLM re-emits it as `customer|yoo living house [a/c iii] -
+// pricetag`. The sets then never intersect, the entity looks un-renamed, and the eviction pass
+// drops it — retyping "customer yoo living delivery status for srtwc286" lost the customer and
+// answered 20 orders across other companies (fork exec 13246777 -> spine exec 13246769).
+// Compare on BOTH forms instead, so an entity counts as re-named when the LLM names EITHER its
+// code or its raw text. _ceKey itself is untouched (the pick-provenance sets key on it).
+const _ceKeysOf = (e) => {
+  const _h = _ceNorm(e && e.hint) + '|';
+  const _out = [];
+  if (e && e.canonical_code) _out.push(_h + _ceNorm(e.canonical_code));
+  if (e && e.raw) _out.push(_h + _ceNorm(e.raw));
+  return _out.length ? _out : [_ceKey(e)];
+};
+const _cePriorKeysAny = new Set(
+  (Array.isArray(parent_input.previous_conversation_state?.entities)
+    ? parent_input.previous_conversation_state.entities : []).flatMap(_ceKeysOf));
+const _ceLlmKeysAny = new Set(
+  (Array.isArray(_parser_raw_snapshot?.entities) ? _parser_raw_snapshot.entities : []).flatMap(_ceKeysOf));
 // Codes minted by applyDymPick THIS TURN are genuine this-turn choices (the customer picked them), so
 // they are recorded rather than inferred — a picked code that happens to collide with a prior entity
 // key must still count as a contribution. Local variable only: no new output key, no replay-diff noise.
@@ -114,7 +135,8 @@ const _ceIsCarried = (e) => {
   if (_ceRefPickedKeys.has(_ceKey(e))) return false;   // M2: reference-position pick MINTED THIS TURN
   const _k = _ceKey(e);
   if (_ceDymPickedKeys.has(_k)) return false;     // did-you-mean pick = this-turn selection
-  return _cePriorKeys.has(_k) && !_ceLlmKeys.has(_k);
+  const _ks = _ceKeysOf(e);
+  return _ks.some(k => _cePriorKeysAny.has(k)) && !_ks.some(k => _ceLlmKeysAny.has(k));
 };
 
 // ── §10 follow-up (3) — hoist raw LLM signals + coerce string-"null" hints ──
@@ -217,7 +239,12 @@ function applyDymPick(_hit, _offer, _priorEnts, _useSlot){
   if (_idx < 0) _idx = _prior.findIndex(e => norm(e.raw) === norm(_hit.for_raw));
   if (_idx < 0 && _hit.for_canonical) _idx = _prior.findIndex(e => norm(e.canonical_code) === norm(_hit.for_canonical));
   if (_idx < 0 && _hit.for_hint) {
-    const _sameHint = _prior.filter(e => norm(e.hint) === norm(_hit.for_hint));
+    // ADD-BOTH safety: an entity ALREADY minted by a pick THIS TURN is not a source token. Without
+    // this exclusion the second candidate of a multi-pick (same for_raw, same for_hint) lands on the
+    // first pick's own entity and overwrites it — measured, exec 13203346: merging both MASTILE KLANG
+    // accounts returned only the last one. _ceDymPickedKeys already records every code applyDymPick
+    // minted this turn, so the guard needs no new state.
+    const _sameHint = _prior.filter(e => norm(e.hint) === norm(_hit.for_hint) && !_ceDymPickedKeys.has(_ceKey(e)));
     if (_sameHint.length === 1) _idx = _prior.indexOf(_sameHint[0]);   // unambiguous single-hint fallback
   }
   // FORCE the type from the candidate record — entity_type is the PICKED candidate's resolved type;
@@ -1258,7 +1285,25 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
 
   // ── entry-gate precedence: 1 retarget → 2 pick → 3 new-query abandon → 4 junk reprompt ──
   const _priorTeam = norm(priorRouting.suggested_team) || 'customer_service';
-  const _pos = _extract(parent_input.latest_user_message, output.output.reference_positions);
+  // exec 13045880 / 13206773 ("4 smart delivery status" on a 4-member offer): the loose "any bare-digit
+  // word in a <=4-word reply" arm of _extract read the customer NAME "4 smart" as pick #4 and escalated
+  // a delivery question. That arm is a best-effort guess, not a pick the customer typed (bare "4", "#4",
+  // "option 4", "4th" are still matched by the strict arms). Keep the guess ONLY when the LLM did not
+  // read the turn as a new business query; a business_query carrying a current-message entity that
+  // CONTAINS the digit token is the name, not a position. _forcePick (whole reply is a number / a member
+  // name) is untouched, so LESSON 39's wrong-assign guarantee stands.
+  let _pos = _extract(parent_input.latest_user_message, output.output.reference_positions);
+  {
+    const _t = String(parent_input.latest_user_message || '').split(/\s*reply to:/i)[0].trim().toLowerCase();
+    const _strict = (Array.isArray(output.output.reference_positions) && output.output.reference_positions.length)
+      || /^#?\s*\d+$/.test(_t)
+      || Object.keys(_ORD).some(w => new RegExp('\\b' + w + '\\b').test(_t))
+      || /\b(?:option|number|no\.?|choice)\s*#?\s*\d+/.test(_t);
+    const _llmNewQuery = (!!_o.domain_hint || _o.message_type === 'business_query') && _o.is_affirmative !== true;
+    const _digitInEntity = (Array.isArray(_o.entities) ? _o.entities : []).some(e => e && e.current_message
+      && _pos.some(n => new RegExp('(^|\\D)' + n + '(\\D|$)').test(String(e.raw || ''))));
+    if (!_strict && _pos.length && _llmNewQuery && _digitInEntity) _pos = [];
+  }
   // §1.1 fix: key ONLY on an actual extracted person name. The old `: _rawReply` fallback made this
   // arm truthy for EVERY worded reply → it shadowed the affirmative (yes/no) arms below.
   const _pm = (typeof _o.person_mention === 'string' && _o.person_mention.trim()) ? _o.person_mention.trim() : '';
@@ -1380,6 +1425,45 @@ if (!DATE_FILTER_DOMAINS.has(output.output.domain_hint)) {
   if (output.output._tier_pick_scope_reused !== true
       && (_ppResolvedPick || (_ppRosterPending && !_ppNamedNewScope))) {
     output.output._pending_pick = true;
+  }
+}
+
+// ── A CORRECTION RETIRES THE SPELLING IT CORRECTED (captain plan A4, 2026-08-24) ─────────────
+// Exec 13688567 / fork 13688574: the bot asked "Couldn't find WESRP10B. Did you mean WESERP10B?",
+// the customer answered with the exact code offered, and got the identical question back - for as
+// long as they cared to keep answering. The parser re-emits the superseded spelling as a
+// current-message entity, so it stays a live filter, keeps resolving to nothing, and keeps
+// re-triggering its own did-you-mean. There is no phrasing that escapes it.
+//
+// No words are matched to fix it. The model says THIS TURN ACCEPTS A CORRECTION
+// (dym_pick_applied), and the offer we made records which token each candidate was for
+// (dym_offer.candidates[].for_raw). Comparing a code the customer named against a code the
+// resolver returned is mechanical; nothing here interprets their sentence.
+// Runs in the final pass because mid-chain writers get undone.
+{
+  const _dymApplied = output.output?.dym_pick_applied === true;
+  const _dymCands = parent_input.previous_conversation_state?.dym_offer?.candidates;
+  if (_dymApplied && Array.isArray(_dymCands) && _dymCands.length && Array.isArray(output.output?.entities)) {
+    const _sn = (v) => String(v ?? '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
+    const _named = new Set();
+    for (const e of output.output.entities) {
+      if (!e) continue;
+      const r = _sn(e.raw); if (r) _named.add(r);
+      const c = _sn(e.canonical_code); if (c) _named.add(c);
+    }
+    const _superseded = new Set();
+    for (const cand of _dymCands) {
+      if (!cand) continue;
+      const _code = _sn(cand.code);
+      const _for  = _sn(cand.for_raw);
+      // only when the customer actually took THIS candidate, and never let a candidate retire itself
+      if (_code && _for && _for !== _code && _named.has(_code)) _superseded.add(_for);
+    }
+    if (_superseded.size) {
+      const _before = output.output.entities.length;
+      output.output.entities = output.output.entities.filter(e => !_superseded.has(_sn(e && e.raw)));
+      output.output.dym_superseded_dropped = _before - output.output.entities.length;   // diagnostic
+    }
   }
 }
 
