@@ -5,7 +5,8 @@
 // Empty roster → fall back to the catalog's generic offer (round-robin on a bare "yes").
 // brand-company-routing: cs-roster-plan emits ONE item per company; get-cs-members runs once per
 // item with fullResponse=true, so response i ↔ plan i by index. Multi-company ⇒ union of rosters,
-// every member labelled with its company, and the reply explains why the list is longer.
+// every member labelled with its company under a `Company:` group header (captain 2026-08-24:
+// no explanatory note - the grouped list already shows this on its own).
 // Single company ⇒ text byte-identical to the pre-change shape.
 const plan = (() => { try { return $('cs-roster-plan').all().map(i => i.json); } catch (e) { return []; } })();
 const resp = $('get-cs-members').all().map(i => i.json);
@@ -75,25 +76,24 @@ if (!multi) {
   for (const nm of empty) lines.push(`[ ${nm}: no customer-service members are configured — omitted. ]`);
   numbered = lines.join('\n');
 }
-const codes = [...new Set(planItems.flatMap(p => Array.isArray(p.codes) ? p.codes : []))];
-const names = planItems.map(p => p.company_name).filter(Boolean);
-const joinNames = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : (names[0] || '');
-const subject = codes.length ? codes.join(', ') : (cat.subject || cat.entity_label || 'This item');
-// The multi-company explanation is written ONCE here and exported on the item: compile-current-state's
-// Δ4 merge arm rebuilds its own picker and must say the same thing rather than a second wording.
-const multiNote = multi
-  ? `Note: ${subject} ${codes.length > 1 ? 'are' : 'is'} carried by more than one company (${joinNames}), so I am listing the customer-service team members from each of them — that is why there are more names than usual.`
-  : null;
-out.cs_multi_note = multiNote;
+// captain 2026-08-24: dropped the "Note: X is carried by more than one company (...)" sentence that
+// used to sit here (cs_multi_note). It was annoying, and it had gone false: once the routing axis
+// widened to search every company a subject is IN, not just the one the customer named (the gate's
+// _NO_TOOL_ID hunk), each subject sits in exactly ONE company - it is the TURN that spans two. It
+// was also the one place a customer ever saw an internal DEBTOR CODE, because `subject` printed the
+// roster plan's `codes` and for a customer that is 300-D059 (exec 13687248). `codes`/`names`/
+// `joinNames`/`subject` existed only to word this sentence and go with it; `cs_multi_note` is
+// deleted, not just unprinted - nothing else reads it (compile-current-state's Δ4 arm now derives
+// multi-company from routing_companies.length). The `Mocha:` / `Sorento:` grouped list below is
+// left to explain itself.
 // Preserve the not-found preamble from the catalog ("Could not find X for Y. Would you like me to escalate...?")
 // then append the member picker — do NOT discard cat.response.
-out.response = multi
-  ? `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
-    `${multiNote} Please choose who to route to (reply with the number):\n${numbered}\n\n` +
-    `If you have no preference, just reply 'yes' and we'll assign automatically.`
-  : `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
-    `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
-    `If you have no preference, just reply 'yes' and we'll assign automatically.`;
+// The multi and single arms became the SAME text when the note went - the only thing that still
+// differs between them is `numbered` (grouped-with-headers vs flat), built above. Written once here
+// rather than as a ternary whose two branches are byte-identical.
+out.response = `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
+  `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
+  `If you have no preference, just reply 'yes' and we'll assign automatically.`;
 out.member_offer = true;
 out.selection_context = 'member_offer';
 out.cs_last_result_set = members.map((m, i) => ({

@@ -9,13 +9,19 @@
 // still has its entity_type and its display name, so no downstream message builder has to reach
 // into another node to find out what to call things.
 //
-// ⚠️ INERT ON THIS SPINE TODAY, DELIBERATELY. Nothing in the live spine reads `.labels`:
-// cs-roster-plan drops the field on its way through and build-cs-member-offer still renders
-// `codes`. So the leak above is STILL OPEN on live and this file says so out loud, in
-// `the leak is still open until cs-roster-plan carries the label` below. The field is ported ahead
-// of its consumer so that promoting cs-roster-plan is a one-node change rather than a two-node one.
-// When that promotion happens, the inertness test is the one that must be re-expected - and its
-// failure is the reminder that the note itself has to be dealt with at the same time.
+// ⚠️ STILL INERT ON THIS SPINE - nothing reads `.labels`, cs-roster-plan drops the field on its way
+// through - BUT THE LEAK IS NOW CLOSED, by the other route this file's old header anticipated.
+//
+// 🔁 REPURPOSED 2026-08-24, SAY IT OUT LOUD. The last test in this file used to assert the OPPOSITE
+// of what it asserts now: `assert.match(offer.response, /Note: 300-D059 is carried by more than one
+// company/)`, i.e. "the leak is still open, porting the label into the gate changes no reply today".
+// That was true and honest when it was written. The captain then deleted the note outright rather
+// than promoting cs-roster-plan to carry the label into it ("the note is quite annoying, i prefer to
+// remove the note, we should keep the list cause it really spans two"), so the sentence that leaked
+// 300-D059 no longer exists on any path. The old assertion could only be kept by keeping the leak.
+// The flip is deliberate, not an assertion bent to fit a red test: the file's own header predicted
+// this moment and said the inertness test is the one to re-expect when the note is dealt with.
+// What is UNCHANGED is the reason the label exists at all - see the two halves of that test below.
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert');
@@ -96,14 +102,23 @@ test('labels is ADDITIVE - codes is untouched', () => {
 });
 
 // ── the honest part ───────────────────────────────────────────────────────────────────────────
-test('INERT: the leak is still open until cs-roster-plan carries the label', () => {
+test('INERT downstream, but exec 13687248 no longer reaches the customer', () => {
   const { plan, offer } = lane('f-leak');
   assert.ok(plan.length > 0);
   for (const p of plan) {
     assert.equal(p.labels, undefined,
       'live cs-roster-plan does not forward labels yet - when it does, this line is the one to change');
   }
-  assert.match(offer.response, /Note: 300-D059 is carried by more than one company/,
-    'exec 13687248 is NOT fixed by this block alone: build-cs-member-offer still renders codes. ' +
-    'Porting the label into the gate changes no reply on this spine today.');
+  // The half that FLIPPED (see the repurpose note in this file's header): the note that printed
+  // `codes` to the customer is deleted, so the debtor code cannot reach anyone through it.
+  assert.doesNotMatch(offer.response, /300-D059/,
+    'exec 13687248: the internal debtor code must never reach the customer');
+  assert.doesNotMatch(offer.response, /carried by more than one company/i,
+    'the note that leaked it is deleted, not merely re-worded');
+  // The half that did NOT change: the label is still built here, and still names the customer.
+  // That is the whole point of block G7 and it must survive the note's removal - a future builder
+  // that wants to name the routing subject has something true to name it with.
+  const byName = Object.fromEntries(lane('f-leak').gate.routing_companies.map((c) => [c.company_name, c.labels]));
+  assert.ok(byName.Mocha.some((l) => /DELUXE HOME CENTRE/i.test(l)),
+    'the customer label is still carried even though nothing prints it');
 });

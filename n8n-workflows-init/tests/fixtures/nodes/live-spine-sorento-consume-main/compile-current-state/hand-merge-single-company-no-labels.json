@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The single-company merge: multi-company is decided by the PRESENCE of build-cs-member-offer's own note, not by counting routing_companies \u2014 so with no note the picker is bare names, no note paragraph is inserted, and no 'omitted' line is emitted even though a second company is listed in routing_companies. Single-company output must stay byte-identical to what it was before multi-company existed."
+  "rationale": "The single-company merge: the picker is bare names, no note paragraph is inserted, and no 'omitted' line is emitted. Single-company output must stay byte-identical to what it was before multi-company existed. INPUT AMENDED 2026-08-24, SAY IT OUT LOUD: routing_companies used to list TWO companies here (c1 Sorento + c2 Mocha) while carrying no cs_multi_note, because the old rationale was 'multi-company is decided by the PRESENCE of build-cs-member-offer's own note, not by counting routing_companies'. Deleting the note (captain 2026-08-24) forced compile-current-state to read the count instead - and that exposed the shape as UNREACHABLE: in build-cs-member-offer, multi (hence the note) is `planItems.length > 1` and routing_companies IS planItems, so note-present and count>1 were never two signals, only two readings of one. A fixture pinning a state its producer cannot produce proves nothing, so the INPUT is corrected to one company rather than the EXPECTED being bent to fit the new body - the expected output below is unchanged, byte for byte, which is the assertion this fixture exists to make. The two-companies-one-empty-roster case it accidentally also covered is pinned properly by hand-merge-suggest-plus-member-multicompany, which carries the reachable shape."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -73,10 +73,6 @@
       {
        "company_id": "c1",
        "company_name": "Sorento"
-      },
-      {
-       "company_id": "c2",
-       "company_name": "Mocha"
       }
      ]
     }

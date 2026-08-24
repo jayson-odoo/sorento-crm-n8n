@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The merge arm on master_products: it is an escalate branch, so the catalogue disclaimer is NOT appended even though the roster is non-empty. It also exercises the company-label fallback \u2014 a row with an EMPTY companies[] falls back to its company_name, which is what keeps a two-company roster labelled when only one row carries the list form."
+  "rationale": "The merge arm on master_products: it is an escalate branch, so the catalogue disclaimer is NOT appended even though the roster is non-empty. It also exercises the company-label fallback \u2014 a row with an EMPTY companies[] falls back to its company_name, which is what keeps a two-company roster labelled when only one row carries the list form. NOTE FIELD DELETED 2026-08-24 (captain: the multi-company note was annoying, and the routing-axis widening made its claim false - it is the TURN that spans two companies, not any one subject). The `cs_multi_note` this fixture used to carry in build-cs-member-offer's output is gone from the INPUT too, because the producer no longer writes the key at all; the multi-company signal is now read straight off routing_companies.length, which is the same signal the note was ever evidence of (multi = planItems.length > 1, and routing_companies IS planItems). Everything else this fixture pins - the per-company labels, the omitted-line for a queried company with an empty roster, selection_context - is unchanged, and that is the point: only the note paragraph left the expected text."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -67,7 +67,6 @@
        ]
       }
      ],
-     "cs_multi_note": "Members are listed per company.",
      "routing_companies": [
       {
        "company_id": "c1",
@@ -101,7 +100,7 @@
      },
      "escalation": {},
      "entities": [],
-     "response": "Did you mean:\n1. MHS1543-CR\n\nMembers are listed per company.\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Mocha)\n\nOr just reply 'yes' and we'll assign automatically.",
+     "response": "Did you mean:\n1. MHS1543-CR\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Mocha)\n\nOr just reply 'yes' and we'll assign automatically.",
      "last_result_set": [
       {
        "idx": 1,
@@ -129,7 +128,7 @@
      "routing_company": null,
      "routing_companies": null
     },
-    "user_response": "Did you mean:\n1. MHS1543-CR\n\nMembers are listed per company.\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Mocha)\n\nOr just reply 'yes' and we'll assign automatically.",
+    "user_response": "Did you mean:\n1. MHS1543-CR\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Mocha)\n\nOr just reply 'yes' and we'll assign automatically.",
     "quick_reply": "MHS1543-CR,Yes escalate,No it's okay"
    }
   }
