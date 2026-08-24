@@ -56,9 +56,23 @@ if (missingAttachmentType) {
   const _scopeWord = ({ order: 'delivery order', incoming: 'incoming shipment',
     inventory: 'stock', promotion: 'promotion', goods_receive: 'goods receipt',
     master_products: 'product' })[String(q.domain_hint || '').toLowerCase()] || String(q.domain_hint || 'that');
+  // allowedTypes are the resolver's INTERNAL entity types (order, customer_order, order_number,
+  // transporter, spo ...). Printing them raw asks the customer to speak our schema, and several
+  // are the same thing to them. Fold to the words a person would use, keep the order stable, drop
+  // duplicates, and cap it - a list of seven is not a prompt, it is a wall.
+  const _HUMAN_SCOPE = { order: 'order number', order_number: 'order number',
+    customer_order: 'order number', spo: 'SPO number', customer: 'customer',
+    transporter: 'transporter', product: 'product code', warehouse: 'warehouse',
+    inbound_shipment: 'container', goods_receive: 'goods receipt' };
+  const _asked = [];
+  for (const t of (Array.isArray(allowedTypes) ? allowedTypes : [])) {
+    const w = _HUMAN_SCOPE[String(t || '').toLowerCase()];
+    if (w && !_asked.includes(w)) _asked.push(w);
+  }
+  const _ask = _asked.length ? humanList(_asked.slice(0, 3)) : 'customer or product';
   escalate_message =
     `That would search every ${_scopeWord} we have - I need at least one filter to narrow it down. ` +
-    `Tell me a ${humanList(allowedTypes)}, or a date range, and I can look it up.`;
+    `Give me a ${_ask}, or a date range, and I can look it up.`;
   is_clarification = true;
 
 } else {

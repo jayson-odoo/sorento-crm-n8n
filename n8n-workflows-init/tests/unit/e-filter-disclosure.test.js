@@ -57,4 +57,6 @@ test('D4: clearing every filter refuses in words the customer can act on', () =>
   if (!/every |general search/i.test(msg)) return;   // a different arm answered; nothing to assert
   assert.doesNotMatch(msg, /\bA order\b/, 'the broken article must be gone');
   assert.match(msg, /at least one filter/i, 'it must say that one filter is enough to continue');
+  assert.doesNotMatch(msg, /customer_order|order_number|inbound_shipment|goods_receive/,
+    'internal entity type names must not be offered to the customer as the remedy');
 });
