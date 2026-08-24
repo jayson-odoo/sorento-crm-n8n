@@ -1155,7 +1155,7 @@ output = {
 // (absent on every no-dym turn -> output byte-identical to live).
 if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
 
-// ── A PICKER ROSTER SURVIVES THE ANSWER (captain, 2026-08-20) ───────────────
+// ── AN OPEN OFFER SURVIVES THE ANSWER (captain, 2026-08-20; generalized 2026-08-24) ──────────
 // "I choose 4 5 6 7 8, then I want to choose 4 — cannot. I prefer the list to persist, like the
 // tier ask, until the next enquiry or domain change."  Measured (execs 13212372/407/465): the
 // picker turn persists the 8-customer roster correctly, the pick works and multi-select works,
@@ -1167,10 +1167,30 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
 // alive re-seat it as last_result_set so the EXISTING positional machinery keeps resolving picks
 // against customers. No parser change, no new lane.
 //
-// Lifetime — exactly what the captain asked for: born on the picker turn; carried while the
-// domain is unchanged and the turn named no freshly-typed entity; dropped on a new enquiry
-// (a current_message entity with no pick provenance — picked rows carry `ordinal`/`dym_slot`)
-// or on a domain change.
+// EVERY OPEN OFFER IS STICKY (captain, 2026-08-24). Two limits were reversed on that date.
+//
+// (1) The carry used to require `picker_domain === qf.domain_hint`, so asking about something
+//     else abandoned an offer the customer had never answered. The captain's rule now: a NEW
+//     QUESTION abandons an offer, a change of SUBJECT does not. The domain condition is gone;
+//     `picker_domain` is still persisted, as a diagnostic and as the axis the roster was born on.
+// (2) It only covered `require_specific` pickers, so the CS member offer and the promotion tier
+//     ask - which build their rosters on their own lanes (`cs_last_result_set` /
+//     `tier_last_result_set`) - were wiped by the next answer. They are offers like any other and
+//     ride the same carry now.
+//
+// THE OFFER KIND IS PART OF THE OFFER. The parser routes a reply on `selection_context`:
+// 'member_offer' opens output_exchange's Δ3 member arm, 'tier_offer' opens tierOfferPick (keyed
+// STRICTLY, TA-14), 'disambiguation' opens the positional/"all" arms. Re-seating a carried member
+// or tier offer as 'disambiguation' would answer the customer's "2" in the wrong arm, so the kind
+// is persisted beside the roster and it is the kind that gets re-seated.
+//
+// NOT the suggest/did-you-mean offer: that one already has a lifecycle of its own directly above
+// (`dym_offer` with a TTL, plus `dym_last_result_set`), and two managers for one offer is how an
+// offer ends up outliving both.
+//
+// Lifetime: born on the offer turn; carried while the turn named no freshly-typed entity; dropped
+// on a new enquiry (a current_message entity with no pick provenance - picked rows carry
+// `ordinal`/`dym_slot`), or replaced outright by a newer offer.
 {
   const _cpPrev = (() => { try { const s = $('get-session-vars').first().json;
     return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
@@ -1182,6 +1202,16 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   const _cpBornNow = !!(_cpGate && _cpGate.require_specific === true
     && Array.isArray(_cpGate.compatible_entities) && _cpGate.compatible_entities.length > 0
     && Array.isArray(last_result_set) && last_result_set.length > 0);
+  // The offer born THIS turn, whichever lane built it: {set, kind, fam}. The picker lane is first
+  // because only it has a families map to carry; the member and tier lanes have already put their
+  // own roster on `last_result_set` and their own kind on `selection_context` (see the roster
+  // precedence ladder ~L270-302), so reading those two is enough to know an offer was made.
+  const _cpBorn = _cpBornNow
+    ? { set: last_result_set, kind: 'disambiguation', fam: (_cpGate && _cpGate.picker_families) || null }
+    : (['member_offer', 'tier_offer'].includes(selection_context)
+        && Array.isArray(last_result_set) && last_result_set.length > 0)
+      ? { set: last_result_set, kind: selection_context, fam: null }
+      : null;
   // Freshness is judged on what the CUSTOMER actually typed — the LLM's OWN entity list — not the
   // post-processed one. output_exchange re-attaches the prior scope on a pick (its block C) as
   // current_message with no ordinal, and the old test read that as a new enquiry and dropped the
@@ -1196,22 +1226,25 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     ? _cpRawEnts.some(e => e && e.current_message === true)
     : (Array.isArray(qf.entities) ? qf.entities : [])
         .some(e => e && e.current_message === true && e.ordinal == null && e.dym_slot == null);
-  const _cpCarried = (!_cpBornNow
+  const _cpCarried = (!_cpBorn
     && Array.isArray(_cpPrev.picker_last_result_set) && _cpPrev.picker_last_result_set.length > 0
-    && _cpPrev.picker_domain === qf.domain_hint
     && !_cpFreshTyped)
       ? _cpPrev.picker_last_result_set : null;
-  const _cpSet = _cpBornNow ? last_result_set : _cpCarried;
+  const _cpSet = _cpBorn ? _cpBorn.set : _cpCarried;
   if (_cpSet) {
     output.variables.picker_last_result_set = _cpSet;
     // the candidate -> account-family map the gate built for this picker, so the PICK turn can cover
     // exactly the accounts the picker's probe counted (see disallowed-entity-gate, picker_families)
-    const _cpFam = _cpBornNow ? ((_cpGate && _cpGate.picker_families) || null) : (_cpPrev.picker_families || null);
+    const _cpFam = _cpBorn ? _cpBorn.fam : (_cpPrev.picker_families || null);
     if (_cpFam && Object.keys(_cpFam).length) output.variables.picker_families = _cpFam;
-    output.variables.picker_domain     = _cpBornNow ? (qf.domain_hint ?? null) : _cpPrev.picker_domain;
-    // re-seat: the next positional reply resolves against the CUSTOMER list, not the answer rows
+    output.variables.picker_domain     = _cpBorn ? (qf.domain_hint ?? null) : _cpPrev.picker_domain;
+    // the kind rides with the roster. A session written before 2026-08-24 carries a roster and no
+    // kind, and every one of those is a require_specific picker - hence the default.
+    const _cpKind = _cpBorn ? _cpBorn.kind : (_cpPrev.picker_selection_context || 'disambiguation');
+    output.variables.picker_selection_context = _cpKind;
+    // re-seat: the next positional reply resolves against the OFFER, not the answer rows
     output.variables.last_result_set  = _cpSet;
-    output.variables.selection_context = 'disambiguation';
+    output.variables.selection_context = _cpKind;
   }
   // THE FAMILY OUTLIVES THE ROSTER (captain, 2026-08-24). picker_families maps a picked candidate to
   // the ACCOUNTS it stands for. Above it is kept only while the picker roster is alive, but the PIN
