@@ -47,9 +47,37 @@ if (missingAttachmentType) {
   is_clarification = true;
 
 } else if (needsScope) {
+  // The customer reaches this by CLEARING every filter one at a time - "all products", then
+  // "all time", then "all customers" - which is a reasonable thing to try and lands on a request
+  // for every delivery order ever. Refusing is right; the old wording was not: it read
+  // "A order enquiry can't be answered with a general search" (broken article, exec 13696xxx),
+  // named the internal entity types as the fix, and never said the one useful thing - that a
+  // single filter is enough to continue. Say what to do, in the customer's own vocabulary.
+  const _scopeWord = ({ order: 'delivery order', incoming: 'incoming shipment',
+    inventory: 'stock', promotion: 'promotion', goods_receive: 'goods receipt',
+    master_products: 'product' })[String(q.domain_hint || '').toLowerCase()] || String(q.domain_hint || 'that');
+  // allowedTypes are the resolver's INTERNAL entity types (order, customer_order, order_number,
+  // transporter, spo ...). Printing them raw asks the customer to speak our schema, and several
+  // are the same thing to them. Fold to the words a person would use, keep the order stable, drop
+  // duplicates, and cap it - a list of seven is not a prompt, it is a wall.
+  const _HUMAN_SCOPE = { order: 'order number', order_number: 'order number',
+    customer_order: 'order number', spo: 'SPO number', customer: 'customer',
+    transporter: 'transporter', product: 'product code', warehouse: 'warehouse',
+    inbound_shipment: 'container', goods_receive: 'goods receipt' };
+  const _asked = [];
+  for (const t of (Array.isArray(allowedTypes) ? allowedTypes : [])) {
+    const w = _HUMAN_SCOPE[String(t || '').toLowerCase()];
+    if (w && !_asked.includes(w)) _asked.push(w);
+  }
+  // The date range is one MORE option, so it belongs inside the list - appending it after a
+  // finished list produced "a order number, transporter, or customer, or a date range" (two ors,
+  // and the same broken article this arm was rewritten to remove). The article agrees with
+  // whatever word ends up first, which varies with the domain's allowed_lookup.
+  const _opts = (_asked.length ? _asked.slice(0, 3) : ['customer', 'product code']).concat('date range');
+  const _art = /^[aeiou]/i.test(_opts[0]) ? 'an' : 'a';
   escalate_message =
-    `A ${q.domain_hint} enquiry can't be answered with a general search - ` +
-    `please specify a ${humanList(allowedTypes)} so I can look it up.`;
+    `That would search every ${_scopeWord} we have - I need at least one filter to narrow it down. ` +
+    `Give me ${_art} ${humanList(_opts)}, and I can look it up.`;
   is_clarification = true;
 
 } else {
@@ -80,6 +108,16 @@ if (missingAttachmentType) {
       : '';
   }
 
+  // NARROWED (captain, 2026-08-24): the miss-lane search-scope header - Customer, Product, any
+  // extra axis in scope, and Dates - is a DELIVERY ORDER disclosure, not a general one. It used
+  // to gate on "domains the CRM date-filters", which let it fire on other domains where it is
+  // actively wrong, not just noisy: exec 13735476, an `incoming` MISS ("eta"), rendered
+  // "Dates: all dates" between the found-bullets and the escalate offer - customers do not
+  // date-filter incoming in practice, and a container has no customer. The rule is now: this
+  // header describes a delivery-order search specifically. See also compile-current-state.js
+  // `_DATE_DOMAINS` (same rule, the happy-path twin of this block, can't share code - two
+  // separate n8n nodes).
+  const _DATE_SCOPE_DOMAINS = new Set(['order']);
   const dateRange = (q.date_filter_start && q.date_filter_end)
     ? ` from ${q.date_filter_start} to ${q.date_filter_end}` : '';
   // S2 (promotion-picker): the spine now sends the contact's ENTITLEMENT UNION when the
@@ -203,7 +241,7 @@ if (missingAttachmentType) {
     const i = arr.findIndex(l => _tokSet.has(_bareLabel(l).trim().toLowerCase()));
     if (i > 0) arr.unshift(arr.splice(i, 1)[0]);
   }
-  // ── entitlement miss ≠ data miss ─────────────────────────────────────────
+  // ── entitlement miss ≠ data miss ─────────────────────────────────────────────
   // "Here's what you want: • promotion: X … But no promotion matched these." names a promotion
   // and then denies it in the same breath. Measured (exec 11917052): the resolver DID resolve
   // `SORENTO PP PROMO COMBINE_29072026.pdf` this turn via promotion_membership, display.is_active
@@ -247,6 +285,50 @@ if (missingAttachmentType) {
     return `${_label} is not available${_at}. Would you like me to escalate to ${team} team?`;
   })();
 
+  // Match key for "is this string the same thing the customer typed": separators and case dropped.
+  // resolve-entity strips dashes/spaces off product-hint tokens before it resolves them (2262a99b),
+  // so the customer's "SRT 2405-CR" reaches us as "srt2405cr" while the code reads "SRT2405-CR".
+  // Shared by the typed-code check below and the not-found token labels further down.
+  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+
+  // ── WHAT THE CUSTOMER TYPED vs WHAT THE RESOLVER EXPANDED TO (captain, 2026-08-24) ──────────
+  // "Incoming SRT 2405-CR, srt2405-GY" - two product codes, both typed out in full - came back as
+  // "• product: SRT2405-GY (+1 more)", and the same reply then printed stock detail for
+  // SRT2405-CR: the summary hid the very code the customer had asked for, and then contradicted
+  // itself further down. The cap below is NOT the bug and does not go away: "srtwc286" is ONE
+  // token that the RESOLVER expands into ten sibling codes, and ten codes in a WhatsApp bullet is
+  // not a summary any more (FIX 1, review 2, 2026-08-17 - that reason still holds).
+  // The rule is the one that fixed the miss-company and dropped-filter bugs earlier today: we may
+  // summarize our OWN expansions, we may never hide something the customer asked for by name.
+  // `resolutions` already maps each typed token to what it matched (the same mechanism `_axisWords`
+  // uses to label an axis in the customer's words), so a code counts as TYPED when the token IS
+  // that code (or the label it renders as) - not when the token is a fragment we grew into it.
+  // When `resolutions` is absent (older/other resolver modes return by_entity_type / intersection
+  // only) we cannot tell typed from expanded, so nothing is registered and every line falls back
+  // to today's exact output - fail toward the shorter line, never toward a wall of codes.
+  const _typedOrder = new Map();      // normalized label -> the position the customer typed it in
+  let _typedSeq = 0;
+  for (const res of (Array.isArray(r?.resolutions) ? r.resolutions : [])) {
+    const tok = _typeNorm(res && res.token);
+    if (!tok) continue;
+    const _hits = new Set();          // the DISTINCT things this one token names outright
+    for (const m of (Array.isArray(res && res.matches) ? res.matches : [])) {
+      if (!m || !_compatUuids.has(m.uuid)) continue;
+      // Same key the bullet groups on below, so a match registers as the group it will render as
+      // ("DO123 (Acme Sdn Bhd)", a promotion's description, a product's name).
+      const g = _typeNorm(_dispByUuid.get(m.uuid) || m.canonical_code || m.uuid);
+      if (g && (tok === _typeNorm(m.canonical_code) || tok === g)) _hits.add(g);
+    }
+    // ONE token naming SEVERAL distinct things is the resolver expanding, not the customer
+    // listing: measured on `display--not-found-error-message.json`, customer code "300-D059"
+    // carries three separate debtor accounts (SETAPAK / ACC 2 / DENHO), and naming all three is
+    // the wall of labels the cap exists to prevent. Only a token that lands on exactly one thing
+    // is a code the customer asked for by name.
+    if (_hits.size !== 1) continue;
+    const g = [..._hits][0];
+    if (!_typedOrder.has(g)) _typedOrder.set(g, _typedSeq++);
+  }
+
   const _foundLines = [];
   for (const [et, codes] of _byType) {
     // one representative per type + count; true ambiguity is handled by the gate (did-you-mean).
@@ -267,8 +349,16 @@ if (missingAttachmentType) {
       if (!_byCode.has(bare)) { _byCode.set(bare, []); _order.push(bare); }
       _byCode.get(bare).push(l);
     }
-    const extra = _order.length > 1 ? ` (+${_order.length - 1} more)` : '';
-    _foundLines.push(`• ${et}: ${_byCode.get(_order[0]).join(', ')}${extra}`);
+    // typed-codes (captain, 2026-08-24): every code the customer typed THIS TURN is named, in the
+    // order they typed it - `_compat` order is arbitrary, and the customer's own order is the only
+    // one that is theirs to recognise. Nothing typed => the single representative, exactly as
+    // before, and the count then covers the whole resolver expansion.
+    const _typed = _order
+      .filter(b => _typedOrder.has(_typeNorm(b)))
+      .sort((x, y) => _typedOrder.get(_typeNorm(x)) - _typedOrder.get(_typeNorm(y)));
+    const _named = _typed.length ? _typed : [_order[0]];
+    const extra = _order.length > _named.length ? ` (+${_order.length - _named.length} more)` : '';
+    _foundLines.push(`• ${et}: ${_named.map(b => _byCode.get(b).join(', ')).join(', ')}${extra}`);
   }
   _found_summary = _foundLines.join('\n');   // datemiss-summary: reused by build-suggest-offer
   // tokens the user gave that resolved to NOTHING (exclude those that resolved via fallback tiers)
@@ -281,8 +371,8 @@ if (missingAttachmentType) {
   // the old line then). Matches the confirm-prefix IIFE's priority in compile-current-state
   // so a token's type label never disagrees between the media-confirm line and this miss line.
   // Match key is space/dash-stripped + lowercased on BOTH sides: resolver tokens are stripped
-  // before they reach the resolver (2262a99b), parser `entities[].raw` is not.
-  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+  // before they reach the resolver (2262a99b), parser `entities[].raw` is not. That is `_typeNorm`,
+  // defined above the found-bullets because the typed-code check needs the same key.
   const _prettifyType = (t) => {
     const s = String(t ?? '').trim();
     if (!s) return '';
@@ -306,7 +396,12 @@ if (missingAttachmentType) {
     const hint = _byRawStripped.get(_typeNorm(t))?.hint;
     return hint ? String(hint) : '';
   };
-  const _labelTok = (t) => { const tl = _typeOfToken(t); return `"${t}"${tl ? ` (${tl})` : ''}`; };
+  // Quote what the CUSTOMER typed. resolve-entity strips separators for product-hint tokens, so the
+  // resolver token is "mfg6651gm" while the person wrote "mfg6651-gm" — echoing the stripped form
+  // back reads like we mangled their input (console retest, exec 13635810). _byRawStripped is keyed
+  // on exactly that normalization, so the original raw is one lookup away.
+  const _rawOfTok = (t) => _byRawStripped.get(_typeNorm(t))?.raw || t;
+  const _labelTok = (t) => { const tl = _typeOfToken(t); return `"${_rawOfTok(t)}"${tl ? ` (${tl})` : ''}`; };
   // notFoundRaw override lets a branch fold some unresolved tokens into the searched noun
   // instead of listing them as "couldn't find" (e.g. attachment qualifiers like "SPAN").
   // mc-label: state the SEARCH SCOPE, so "nothing matched" cannot be read as "nothing matched in
@@ -314,9 +409,82 @@ if (missingAttachmentType) {
   // sentence byte-identical there. `_entitlementMiss` deliberately does not take it — that arm is
   // about a promotion being withheld from this contact, not about where we looked.
   const _coSuffix = _multiCo ? ` - checked in ${_andList(_searchedCos)}` : '';
+  // ── THE SEARCH SCOPE, ALWAYS (captain plan E2, 2026-08-24) ──────────────────────────────────
+  // exec 13746945, "any delivery for SRTWB2805-BL": the gate scope was `{product: 1}` and nothing
+  // else, so the search really was every delivery order, for ANY customer, over ANY date. The
+  // reply named the one thing that resolved ("• product: SRTWB2805-BL"), said "no order matched
+  // these", and the customer had to come back and ask "did it search all customers?" - because
+  // nothing said so. The found-bullets structurally cannot answer that: they name what RESOLVED,
+  // and an axis nobody filled resolves to nothing, so an open axis is invisible on exactly the
+  // turn where it decided the result. That is the captain's E2 requirement word for word - "an
+  // EMPTY result states them too - that is the entire point". So a miss now OPENS with the same
+  // three-line header an answer does (Customer / Product / Dates, extra axes between Product and
+  // Dates when in scope), then the found-bullets, then the escalate offer: one shape to learn.
+  //
+  // ⚠ DELIBERATE DUPLICATE - KEEP IN LOCKSTEP with compile-current-state.js's "SEARCH SCOPE
+  // DISCLOSURE" IIFE (the happy-path twin: same axis list, same label priority, same date
+  // formatting, same `order`-only gate). They are two separate n8n Code nodes and cannot import
+  // from each other, exactly as `_DATE_SCOPE_DOMAINS` / `_DATE_DOMAINS` already are. CHANGE BOTH
+  // TOGETHER or the answer and the miss start disclosing the same search in two different shapes.
+  //
+  // Which axes are active comes from the GATE (`compatible_entities`: entity_type + code), never
+  // from the parser's hints - a bare code is often hinted `order` and matched by the resolver as a
+  // product, and rendering from hints is the bug commit 70bb1e3 fixed on the happy path.
+  const _AXES = [
+    { label: 'Customer', types: ['customer'], hints: ['customer'], always: true, allText: 'all customers' },
+    { label: 'Product',  types: ['product'],  hints: ['product'],  always: true, allText: 'all products' },
+    { label: 'Order',       types: ['customer_order', 'order', 'order_number'], hints: ['order', 'customer_order', 'order_number'] },
+    { label: 'Transporter', types: ['transporter'], hints: ['transporter'] },
+    { label: 'Container',   types: ['inbound_shipment'], hints: ['inbound_shipment', 'container'] },
+    { label: 'Warehouse',   types: ['warehouse'], hints: ['warehouse'] },
+  ];
+  const _axisWords = (axis) => {
+    const typeSet = new Set(axis.types);
+    const rows = _compat.filter(e => e && typeSet.has(normRaw(e.entity_type)));
+    if (!rows.length) return null;                                     // axis never put in scope
+    const words = new Set();
+    for (const res of (Array.isArray(r?.resolutions) ? r.resolutions : [])) {   // 1. the customer's own typed token
+      const hitsAxis = (Array.isArray(res && res.matches) ? res.matches : [])
+        .some(m => m && typeSet.has(normRaw(m.entity_type)));
+      const tok = String((res && res.token) ?? '').trim();
+      if (hitsAxis && tok) words.add(tok);
+    }
+    if (!words.size) {                                                 // 2. the parser's own hinted raw
+      for (const e of allEnts) {
+        if (!e || !axis.hints.includes(normRaw(e.hint))) continue;
+        const v = String(e.raw ?? '').trim();
+        if (v) words.add(v);
+      }
+    }
+    if (!words.size) {                                                 // 3. last resort: the gate's own label
+      for (const row of rows) {
+        const v = String((row && (row.title || row.code)) ?? '').trim();
+        if (v) words.add(v);
+      }
+    }
+    return [...words].join(', ');
+  };
   const buildBreakdownMsg = (domainWord, notFoundRaw) => {
     const nf = (notFoundRaw ?? _notFoundRaw).map(_labelTok);
     const parts = [];
+    // Only for a delivery-order search; elsewhere this is noise on an answer it does not apply to.
+    if (_DATE_SCOPE_DOMAINS.has(String(q.domain_hint || '').toLowerCase())) {
+      const _ds = q.date_filter_start || null, _de = q.date_filter_end || null;
+      const _fmtD = (v) => { const m = String(v ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v ?? ''); };
+      const _head = [];
+      for (const axis of _AXES) {
+        const words = _axisWords(axis);
+        if (axis.always) _head.push(`${axis.label}: ${words || axis.allText}`);
+        else if (words) _head.push(`${axis.label}: ${words}`);
+      }
+      // Dates last, and stated even when no window was set: `dateRange` below is the empty string
+      // whenever the customer named no dates, so "no order matched these" never said whether it
+      // had looked at all dates or just this month.
+      _head.push(`Dates: ${(!_ds && !_de) ? 'all dates'
+        : (_ds && _de && _ds === _de) ? _fmtD(_ds)
+        : `${_ds ? _fmtD(_ds) : 'earliest'} to ${_de ? _fmtD(_de) : 'today'}`}`);
+      parts.push(_head.join('\n'));
+    }
     if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
     if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
     parts.push(_entitlementMiss
@@ -433,4 +601,6 @@ out.escalate_message = escalate_message;
 out.is_clarification = is_clarification;
 out.found_summary = _found_summary;   // datemiss-summary: resolved-entity bullets for the date arm
 return out;
+
+
 
