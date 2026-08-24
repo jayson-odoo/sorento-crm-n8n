@@ -9,7 +9,7 @@ if (input.output && typeof input.output === 'object') {
     raw = raw.replace(/```[\s\S]*?```/g, match =>
       match.replace(/```json?|\```/g, '')
     );
-  
+
     const idx = raw.indexOf('{');
     if (idx === -1) {
       output = raw;
