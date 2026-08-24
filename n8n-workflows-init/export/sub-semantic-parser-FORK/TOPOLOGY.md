@@ -1,6 +1,6 @@
 # TOPOLOGY — sub-semantic-parser FORK domain-continuity-carry  (`wI5RkNGW3EOJfBdo`)
 
-- versionId **780316b4-e75f-402a-a146-5a3366d012c0** · activeVersionId **780316b4-e75f-402a-a146-5a3366d012c0** · DRAFT == ACTIVE
+- versionId **65c798eb-8046-4d51-a0fb-9b74a2d07e9e** · activeVersionId **780316b4-e75f-402a-a146-5a3366d012c0** · ⚠️ DRAFT != ACTIVE
 - 8 nodes
 
 ## Edges
@@ -30,7 +30,7 @@ test-reformulator-bypass[1] -> AI Agent
 
 | node | type | credential |
 |---|---|---|
-| OpenAI Chat Model | openAiApi | sorento-openai |
+| OpenAI Chat Model | openAiApi | sorento-n8n-ai-agent |
 | Postgres Chat Memory | postgres | n8n_test-db |
 
 ## Code nodes (bodies exported to `nodes/`)

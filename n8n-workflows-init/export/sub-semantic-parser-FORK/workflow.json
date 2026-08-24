@@ -121,8 +121,8 @@
     {
       "credentials": {
         "openAiApi": {
-          "id": "o130We0PEJ77Z1lH",
-          "name": "sorento-openai"
+          "id": "sc2KO49qsL4UdgKT",
+          "name": "sorento-n8n-ai-agent"
         }
       },
       "id": "0978e365-a3fc-4722-94c4-d6b90780fa20",
@@ -270,12 +270,182 @@
       "typeVersion": 2
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "contact_id": "437264483",
+          "is_test": true,
+          "latest_user_message": "customer a craft delivery order\n\n",
+          "previous_conversation_state": {
+            "access_levels": [],
+            "contains_flyer": false,
+            "date_filter_end": null,
+            "date_filter_start": null,
+            "date_mode": null,
+            "domain_hint": "order",
+            "dym_candidates": [],
+            "dym_offer": null,
+            "entities": [
+              {
+                "canonical_code": "300-M012",
+                "confident": true,
+                "current_message": false,
+                "hint": "customer",
+                "raw": "mastile klang"
+              },
+              {
+                "canonical_code": "SRTWC286-SH-200",
+                "confident": true,
+                "current_message": false,
+                "hint": "product",
+                "raw": "WC286"
+              }
+            ],
+            "escalation": {
+              "is_escalation_confirmation": false
+            },
+            "ideation": null,
+            "intent_hint": "check_order",
+            "last_result_set": [
+              {
+                "brand_code": "sorento",
+                "companies": [
+                  "Sorento"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "company_name": "Sorento",
+                "idx": 1,
+                "label": "Maryam Ariffin",
+                "respond_user_id": "1144607",
+                "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182"
+              },
+              {
+                "brand_code": "sorento",
+                "companies": [
+                  "Sorento"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "company_name": "Sorento",
+                "idx": 2,
+                "label": "Cyndi",
+                "respond_user_id": "1144556",
+                "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9"
+              },
+              {
+                "brand_code": "sorento",
+                "companies": [
+                  "Sorento"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "company_name": "Sorento",
+                "idx": 3,
+                "label": "Aisyah",
+                "respond_user_id": "1144561",
+                "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b"
+              },
+              {
+                "brand_code": "sorento",
+                "companies": [
+                  "Sorento"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "company_name": "Sorento",
+                "idx": 4,
+                "label": "Balqis",
+                "respond_user_id": "1144558",
+                "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06"
+              },
+              {
+                "brand_code": "sorento",
+                "companies": [
+                  "Sorento"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "company_name": "Sorento",
+                "idx": 5,
+                "label": "Niki",
+                "respond_user_id": "1144554",
+                "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd"
+              },
+              {
+                "brand_code": "sorento",
+                "companies": [
+                  "Sorento"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_ids": [
+                  "00000000-0000-0000-0000-000000000001"
+                ],
+                "company_name": "Sorento",
+                "idx": 6,
+                "label": "Nurain",
+                "respond_user_id": "1144604",
+                "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75"
+              }
+            ],
+            "match_mode": "and",
+            "message_type": "business_query",
+            "query_brands": [],
+            "response": "Here's what you want:\n\u2022 customer: MASTILE KLANG SDN BHD - [IBORN] (Mocha) (+7 more)\n\u2022 product: SRTWC286-SH-200 (Sorento)\n\nDates: all dates\n\nBut no order matched these - checked in Mocha and Sorento. Would you like me to escalate to *Sorento* customer_service team?\n\nPlease choose who to route to (reply with the number):\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+            "routing": {
+              "suggested_agent": "order_enquiries",
+              "suggested_team": "customer_service"
+            },
+            "routing_brand": "sorento",
+            "routing_brand_source": "resolved",
+            "routing_companies": [
+              {
+                "brand_code": "sorento",
+                "codes": [
+                  "SRTWC286-SH-200"
+                ],
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "labels": [
+                  "SRTWC286-SH-200"
+                ]
+              }
+            ],
+            "routing_company": "00000000-0000-0000-0000-000000000001",
+            "routing_roster_plan": [
+              {
+                "brand_code": "sorento",
+                "company_id": "00000000-0000-0000-0000-000000000001",
+                "company_name": "Sorento",
+                "plan_idx": 0
+              }
+            ],
+            "selection_context": "member_offer",
+            "user_goal": "trying to widen the date filter to all dates"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
   "settings": {
     "availableInMCP": true,
     "binaryMode": "separate",
     "executionOrder": "v1"
   },
   "staticData": null,
-  "versionId": "780316b4-e75f-402a-a146-5a3366d012c0"
+  "versionId": "65c798eb-8046-4d51-a0fb-9b74a2d07e9e"
 }
