@@ -223,13 +223,22 @@ function reconcileEntities(parserEntities, resolverJson) {
   return parserEntities.map(pe => {
     const raw = norm(pe.raw);
     let match = null;
+    let familyCount = 0;   // exec 13733614: how many the OR-mode token actually named
 
     // OR-mode: by token
     const res = resolutions.find(r => norm(r.token || r.query) === raw);
-    if (res?.matches?.length) match = res.matches[0];
+    if (res?.matches?.length) {
+      familyCount = res.matches.length;
+      // A token that named ONE thing may be pinned to it below. A token that named several
+      // (exec 13733614: "srtwc286" -> 10 products) is still a FAMILY, not a pick - taking
+      // matches[0] here is what carried a single variant's canonical_code into the next turn
+      // (exec 13733666), silently narrowing a whole-family search to one member the customer
+      // never chose. Only an unambiguous resolution may narrow raw -> code.
+      match = familyCount === 1 ? res.matches[0] : null;
+    }
 
     // AND-mode (or OR-mode that didn't token-match): by the record's own value
-    if (!match && intersection.length) {
+    if (!match && !familyCount && intersection.length) {
       match = intersection.find(m =>
         norm(m.canonical_code) === raw ||
         norm(m.display?.product_name) === raw
@@ -238,6 +247,16 @@ function reconcileEntities(parserEntities, resolverJson) {
 
     if (match?.entity_type) {
       return { ...pe, hint: match.entity_type, canonical_code: match.canonical_code };
+    }
+    if (familyCount > 1) {
+      // Same failure family, different question: entity_type is safe to take even when the
+      // code isn't, IF every match agrees. When they disagree (e.g. a code that names both a
+      // product and a customer), guessing which one the resolver "meant" is exactly the same
+      // silent-narrowing mistake the code fix above exists to stop - leave the parser's own
+      // hint alone rather than pick a side.
+      const types = new Set(res.matches.map(m => m && m.entity_type).filter(Boolean));
+      const hint = types.size === 1 ? [...types][0] : pe.hint;
+      return { ...pe, hint, canonical_code: null, family_match_count: familyCount };
     }
     return pe;   // unresolved → keep parser's guess
   });
