@@ -501,13 +501,7 @@ const HINT_AXIS_DEFAULT = {
   brand: 'promo_scope', category: 'promo_scope', promotion: 'promo_scope', flyer: 'promo_scope',
   product: 'product_scope', attachment_type: 'attachment_scope',
   certificate: 'attachment_scope', attachment: 'attachment_scope',   // B2' part 1
-  // Mirrors AXIS_BY_DOMAIN.order above, for the same reason its comment gives: WHO / WHAT /
-  // WHO-DELIVERS are INDEPENDENT filters - they AND together in the query, so they cannot share one
-  // axis. This map had all five order hints on 'order_scope', so naming a customer evicted an order
-  // number the customer had pinned two turns earlier (fork exec 13747701 -> spine 13747694).
-  // order / order_number / customer_order stay together: three names for ONE document, one axis.
-  customer: 'customer_scope', transporter: 'transporter_scope',
-  order: 'order_scope', order_number: 'order_scope', customer_order: 'order_scope',
+  customer: 'order_scope', transporter: 'order_scope', order: 'order_scope', order_number: 'order_scope', customer_order: 'order_scope',
   warehouse: 'location', goods_receive: 'doc', spo: 'doc', form: 'doc',
   inbound_shipment: 'incoming_scope',   // C1: mapped under `incoming` only; fell to __ elsewhere
   grn:              'doc',              // C1: sibling of goods_receive/spo, was unmapped
@@ -562,12 +556,6 @@ const _ceAxisFor = (e, domain) => {
   return DOMAIN_SUBJECT_AXIS[domain] || 'unscoped_scope';
 };
 
-// The domain the conversation was already in. Hoisted out of the AXIS BROADEN block below (it was
-// `_prevDom0` there) so the entity-op executor can resolve the EFFECTIVE domain from the same value
-// instead of reading previous_conversation_state a third time. parent_input is never written to, so
-// reading it earlier is the same read.
-const _prevStateDomain = parent_input.previous_conversation_state?.domain_hint || null;
-
 // ── AXIS BROADEN: naming a KIND of thing widens one filter, it does not change the subject ──
 // Measured (exec 13624889): after "srt59-cr for mastile klang" in the order domain, "all products"
 // came back domain_hint=master_products, entity_op=clear, entities=[] - it jumped to the catalogue
@@ -580,7 +568,7 @@ const _prevStateDomain = parent_input.previous_conversation_state?.domain_hint |
   // and 'all' on the next (fork 13692500), and when only the first carried the domain, the second
   // answered "A master_products enquiry can't be answered with a general search".
   const _ba = String(output.output.broaden_axis || '').toLowerCase();
-  const _prevDom0 = _prevStateDomain;
+  const _prevDom0 = parent_input.previous_conversation_state?.domain_hint || null;
   const _wanderedDom0 = output.output.domain_hint || null;   // capture BEFORE the restore below overwrites it
   if (_ba && _prevDom0) {
     output.output.domain_hint = _prevDom0;
@@ -625,16 +613,7 @@ const _prevStateDomain = parent_input.previous_conversation_state?.domain_hint |
 
 // ── ENTITY OPERATION EXECUTOR (op + axis-aware replace/combine) ──
 if (output.output && !output.output.is_menu_label) {
-    // AXES ARE MAPPED AGAINST THE EFFECTIVE DOMAIN, not the LLM's blank. On a short follow-up
-    // ("customer AT & E") the model returns domain_hint null and the domain is only inherited
-    // hundreds of lines further down, so AXIS_BY_DOMAIN was never consulted on exactly the turns
-    // that need it and the flat fallback map decided instead. Same principle as e8cfd44 ("fix the
-    // domain before anything reads it, not after") and the same _curDom || _prevDom form the
-    // retired new-entity strip used. Measured, fork exec 13747701 -> spine 13747694: with delivery
-    // order 202608-3475 pinned, "customer AT & E" came back with a null domain and the order number
-    // was evicted by the customer. This chooses which MAP the axis lookup reads and nothing else -
-    // what gets written to output.output.domain_hint is left to the inheritance blocks below.
-    const domain = output.output.domain_hint || _prevStateDomain;
+    const domain = output.output.domain_hint;
     const axisOf = (e) => _ceAxisFor(e, domain);
 
   const op = output.output.entity_op || 'replace_combine';
