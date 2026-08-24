@@ -1,6 +1,6 @@
 # TOPOLOGY — sub-get-results  (`Fss5aAaXthJSWpZCgKiKR`)
 
-- versionId **59df7a96-06ea-425e-b8a6-7fc2817cc0e6** · activeVersionId **59df7a96-06ea-425e-b8a6-7fc2817cc0e6** · DRAFT == ACTIVE
+- versionId **a2d2d4ca-e900-4932-8094-0ee5463c14d0** · activeVersionId **a2d2d4ca-e900-4932-8094-0ee5463c14d0** · DRAFT == ACTIVE
 - 8 nodes
 
 ## Edges
@@ -37,6 +37,6 @@ entity-ids-transformer[0] -> MCP Client1
 
 | node | lines |
 |---|---|
-| output-structurer | 390 |
+| output-structurer | 403 |
 | output_exchange | 177 |
-| entity-ids-transformer | 109 |
+| entity-ids-transformer | 138 |
