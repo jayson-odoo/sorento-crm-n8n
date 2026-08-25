@@ -1,0 +1,131 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "rationale": "Plan §9 cpick-open-offer-no-rows / the rev-4 open-offer block — the case that closes C4's no-roster gap. No member_offer context (no rosters came back), but the persisted response still carries the frozen offer phrase and routing_companies holds the two searched companies. 'mocha' with no domain_hint engages the offer scoped to Mocha: confirmation + company_pick + member_pick_context."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "mocha",
+     "contact_id": 900000003,
+     "previous_conversation_state": {
+      "selection_context": null,
+      "routing": {
+       "suggested_team": "purchasing_enquiries",
+       "suggested_agent": "general_enquiries"
+      },
+      "response": "But no incoming matched these — checked in Mocha and Sorento. Would you like me to escalate to purchasing team?",
+      "entities": [],
+      "last_result_set": [],
+      "routing_roster_plan": null,
+      "routing_companies": [
+       {
+        "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "company_name": "Mocha",
+        "brand_code": null,
+        "codes": []
+       },
+       {
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento",
+        "brand_code": "sorento",
+        "codes": []
+       }
+      ]
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"casual\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"mocha\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "casual",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "mocha",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "purchasing_enquiries",
+      "suggested_agent": "general_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": true,
+      "company_pick": "Mocha"
+     },
+     "domain_signal_source": "intent_none",
+     "scope_exclusive_applied": false,
+     "entity_op_applied": "replace_combine",
+     "query_brands": [
+      "mocha"
+     ],
+     "member_pick_context": true,
+     "_pending_pick": true
+    },
+    "_parser_raw": {
+     "message_type": "casual",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "mocha",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}

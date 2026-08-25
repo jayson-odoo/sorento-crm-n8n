@@ -85,6 +85,11 @@ if ($json.output && typeof $json.output === 'object') {
 const _parser_raw_snapshot = (() => {
   try { return JSON.parse(JSON.stringify(output.output ?? null)); } catch (e) { return null; }
 })();
+// miss-company-routing rev-3: the LLM may now emit escalation.company_pick (semantic fallback). It is
+// read ONLY from the frozen snapshot inside the Δ3 member-offer arm, where it is validated against the
+// persisted company pool; strip the raw key here so an unvalidated / null value never rides the live
+// escalation object (and never diffs golden turns — Lesson 40).
+try { if (output.output && output.output.escalation && typeof output.output.escalation === 'object' && 'company_pick' in output.output.escalation) delete output.output.escalation.company_pick; } catch (e) {}
 // ── B2' (carried-certificate-dump) — CARRIED-ENTITY PROVENANCE (plan §3.6 part 3) ─────────────
 // "Carried" is derived from PROVENANCE, never from `current_message`. That flag is a proven-corrupted
 // signal: applyDymPick re-maps EVERY prior entity to `current_message: true` before the executor runs,
@@ -1260,6 +1265,116 @@ if (/^marketing_promotion_(sorento|cabana|mocha)$/.test(String(output.output.rou
 
 
 
+// ── miss-company-routing: company-pick resolver (shared by the Δ3 member-offer arm and the
+// rev-4 open-offer arm below) ──────────────────────────────────────────────────────────────
+// The offer (or the clarify ask after a bare "yes" on a multi-company offer) names companies; a
+// SHORT reply that word-boundary-matches exactly ONE company of the OFFERED pool — and matches no
+// member row — is a pool pick, not a new query. Emitted as escalation.company_pick (the CANONICAL
+// company_name from state, NO preferred_assignee_id): the spine's escalation-context resolves it
+// against the same persisted pool. Member tiers outrank it (see the Δ3 arm). >1 company matched ⇒
+// ambiguous ⇒ no pick (the reprompt/clarify arms handle it).
+// rev-3: confirmation / filler tokens are stripped word-level (case-insensitive,
+// punctuation-insensitive) BEFORE matching, so "yes mocha" / "mocha please" / "ok the mocha one" all
+// reduce to "mocha"; a reply that strips to NOTHING ("yes", "ok pls") is a plain confirmation.
+// rev-4 (captain console 2026-08-18, clone execs 12910551 / 12910575 / 12910616):
+//  (A) POOL = the companies actually OFFERED: routing_roster_plan when the plan is non-empty (those
+//      are the rosters shown), routing_companies ONLY when no plan exists (no roster offered — the
+//      photo/marketing case). Never the union: on a Sorento-only partial-miss offer "yes mocha" must
+//      NOT route to Mocha (Mocha was never offered) — it degrades to whatever the reply is without the
+//      company word (a plain "yes" ⇒ the single offered pool, per the offer text).
+//  (B) company CODES + aliases resolve as picks — the offer state only carries names, but customers
+//      reply with the CRM company code ("srt", "yes please escalate to srt team"). No upstream code
+//      source exists on the offer turn (resolve-entity matches and get-results' lookup_companies carry
+//      {company_id, company_name} only), so _CO_ALIASES is a STOPGAP kept byte-identical here and in
+//      the spine's escalation-context; the real source would be the CRM companies.code column threaded
+//      resolve-entity match → disallowed-entity-gate.routing_companies[].company_code → the persisted
+//      plan rows — pool rows carrying company_code/code are already honoured below. Match order per
+//      company: name → code → alias, case-insensitive, word-boundary; exactly ONE company may hit.
+//  (C) bound: the deterministic tier runs on (i) a reply of ≤4 words (rev-3 rule, unchanged), or (ii)
+//      a LONGER reply whose filler-stripped remainder is ≤6 words AND carries no product-code-like
+//      token, no current-message entity, and was not classified as a domain query by the LLM — so "yes
+//      please escalate to srt team" / "can you route this to the sorento team please" resolve, while
+//      "any mocha promotions this month" (domain promotion) and "check stock MUB6201 sorento" (product
+//      code) stay new queries (LESSON 39). Any product-code-like token refuses the pick on BOTH paths.
+//      rev-5 (F5): the ≤4-word path applies the SAME entity/domain guard once the stripped remainder has
+//      ≥2 tokens ("mocha promotions", "show sorento orders" ⇒ answered); a single token stays unguarded.
+//  (D) a negator anywhere in the reply ("no", "not mocha", "don't want sorento") refuses the pick —
+//      never assign against a stated negative; the decline / reprompt arms handle it.
+//  (E) `multi` = the offered pool has >1 company (routing_roster_plan.length > 1 — the same criterion
+//      escalation-context uses for multi_company_unpicked): an unresolved reply on a MULTI pool must
+//      not drop the offer (live: the spine's offer-hold-gate fires on member_reprompt; the
+//      fork's offer_hold emission was deliberately NOT ported — company-pick plan §5.2).
+const _CO_ALIASES = { sorento: ['sorento', 'srt'], mocha: ['mocha', 'mch'], cabana: ['cabana', 'cbn'] };   // STOPGAP — mirror of escalation-context; real source = CRM companies.code
+const _coFillers = new Set(['yes','ya','yeah','yep','yup','ok','okay','okie','oki','k','sure','please','pls','plz','pl','kindly','team','the','a','an','to','for','of','on','at','in','route','assign','escalate','escalation','pass','send','forward','transfer','connect','pick','choose','select','prefer','handle','help','one','lah','la','leh','lor','ah','go','with','it','that','this','then','can','could','would','like','want','need','you','me','my','us','i','ill','id','company','side','instead','guys','ppl','people','staff','department','dept','group','thanks','thank','ty','tq']);
+const _coNegators = new Set(['no','not','nope','nah','never','dont','neither','nor','none','without','except','cancel','stop']);
+const _coTok = w => String(w || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function _coCompanyPick(o) {
+  const st = parent_input.previous_conversation_state || {};
+  const rp = Array.isArray(st.routing_roster_plan) ? st.routing_roster_plan : [];
+  const src = rp.length ? rp : (Array.isArray(st.routing_companies) ? st.routing_companies : []);   // (A) offered pool
+  const pool = new Map();   // lower(company_name) -> { name (canonical, as persisted), keys: Set(name|code|alias) }
+  for (const c of src) {
+    if (!c || !c.company_name) continue;
+    const name = String(c.company_name); const nk = name.toLowerCase().trim();
+    const ent = pool.get(nk) || { name, keys: new Set() };
+    ent.keys.add(nk);
+    for (const ck of [c.company_code, c.code]) if (typeof ck === 'string' && ck.trim()) ent.keys.add(ck.toLowerCase().trim());   // (B) code, when a source ever carries it
+    for (const a of (_CO_ALIASES[nk] || [])) ent.keys.add(a);                                                              // (B) alias stopgap
+    pool.set(nk, ent);
+  }
+  const rawReply = String(parent_input.latest_user_message || '').split(/\s*reply to:/i)[0].trim();
+  const words = rawReply.split(/\s+/).filter(Boolean);
+  const kept = words.filter(w => !_coFillers.has(_coTok(w)));                                            // reply minus fillers (any length)
+  const hasNeg = words.some(w => _coNegators.has(_coTok(w)));                                            // (D)
+  const prodTok = words.some(w => /^[a-z]{2,}[a-z0-9-]*\d/i.test(String(w).replace(/[^a-z0-9-]/gi, '')));   // (C) MUB6201 / SRTKT72SS / MWCX7608-SH-S10
+  const curEnt = (Array.isArray(o.entities) ? o.entities : []).some(e => e && e.current_message === true);
+  const domainQ = (!!o.domain_hint || o.message_type === 'business_query' || o.message_type === 'clarification') && o.is_affirmative !== true;   // == the Δ3 arm's _isNewQuery (kept in lockstep)
+  // rev-5 (reviewer F5): the SHORT path (≤4 words) is unguarded ONLY while the filler-stripped remainder is a
+  // single token ("srt", "mocha", "yes mocha team please" ⇒ ["mocha"]); a ≥2-token remainder ("mocha promotions",
+  // "sorento stock MUB", "show sorento orders", "mocha promotions this month") must ALSO carry no current-message
+  // entity and not be a domain query — the same guard as the long path — so a short new query naming an offered
+  // company right after an offer is answered, not turned into a company-scoped escalation (LESSON 39).
+  const shortOk = words.length > 0 && words.length <= 4 && (kept.length < 2 || (!curEnt && !domainQ));
+  const longOk  = words.length > 4 && kept.length > 0 && kept.length <= 6 && !curEnt && !domainQ;
+  const hits = (texts) => {   // exactly-one company, word-boundary on ANY of its keys, across the given lower-cased texts
+    const h = new Set();
+    for (const ent of pool.values()) {
+      for (const k of ent.keys) {
+        const re = new RegExp('(^|[^a-z0-9])' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)');
+        if (texts.some(t => re.test(t))) { h.add(ent.name); break; }
+      }
+    }
+    return h.size === 1 ? [...h][0] : null;
+  };
+  const pick = (() => {   // deterministic tier
+    if (!pool.size || hasNeg || prodTok) return null;
+    const texts = [];
+    if ((shortOk || longOk) && kept.length) texts.push(kept.join(' ').toLowerCase());
+    const pmRaw = (typeof o.person_mention === 'string' && o.person_mention.trim()) ? o.person_mention.trim().toLowerCase() : '';
+    if (pmRaw) texts.push(pmRaw);
+    if (!texts.length) return null;
+    return hits(texts);
+  })();
+  // rev-3 semantic fallback: the LLM may name the picked company (escalation.company_pick, read from the
+  // frozen raw snapshot — the live key was stripped at the top). ACCEPTED only after validation: exactly
+  // one OFFERED company matches it (case-insensitive name/code/alias, else word-boundary exactly-one) AND
+  // the reply is not a bare confirmation (strips to nothing ⇒ a hallucinated pick on "yes" is refused)
+  // AND (rev-4) no negator, and the LLM did not classify the turn as a domain query. Deterministic wins.
+  const pickLlm = (() => {
+    try {
+      if (!pool.size || !kept.length || hasNeg || domainQ) return null;
+      const raw = _parser_raw_snapshot && _parser_raw_snapshot.escalation ? _parser_raw_snapshot.escalation.company_pick : null;
+      if (typeof raw !== 'string' || !raw.trim()) return null;
+      const k = raw.toLowerCase().trim();
+      const direct = [...pool.values()].filter(ent => ent.keys.has(k));
+      if (direct.length === 1) return direct[0].name;
+      if (direct.length > 1) return null;
+      return hits([k]);
+    } catch (e) { return null; }
+  })();
+  return { pool, pick, pickLlm, any: pick || pickLlm, multi: rp.length > 1, hasNeg, kept, words };
+}
+
 // ── Δ3: CS member-pick override (final say; v2 robust extractor) ──
 const _selCtx = (parent_input.previous_conversation_state || {}).selection_context;
 if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
@@ -1290,6 +1405,10 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
     return a && b && (a === b || a.split(' ').some(t => t && t === b) || b.split(' ').some(t => t && t === a) || a.includes(b) || b.includes(a));
   });
   const _forcePick = _replyIsNumber || _replyMatchesMember;
+
+  // ── miss-company-routing §2 / rev-4: company pick (resolver hoisted above this arm: _coCompanyPick) ──
+  const _co = _coCompanyPick(_o);
+  const _coPickAny = _co.any;
 
   // ── entry-gate precedence: 1 retarget → 2 pick → 3 new-query abandon → 4 junk reprompt ──
   const _priorTeam = norm(priorRouting.suggested_team) || 'customer_service';
@@ -1360,12 +1479,28 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
       } else if (_m.length > 1) {
         output.output.escalation = { is_escalation_confirmation: false, member_reprompt: 'multi' };
         output.output.correction = true;   // ambiguity gate: reprompt, NEVER auto-pick
+      } else if (_coPickAny) {
+        // miss-company-routing: the person-extractor surfaced a company name; no member matched →
+        // it is the company pick, not an unknown person.
+        output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPickAny };
+        output.output.entities = [];
       } else {
         output.output.escalation = { is_escalation_confirmation: false, member_reprompt: 'out_of_range' };
         output.output.correction = true;   // 0 match -> reprompt the member list
       }
     } else if (_o.is_affirmative === true) {
-      output.output.escalation = { is_escalation_confirmation: true };   // no preferred -> round-robin
+      // rev-3: "yes mocha" — the LLM reads it as an affirmative, which used to land here as a bare
+      // confirmation (⇒ re-clarify on a multi-company pool). No member resolved on this arm, so a
+      // validated company pick rides the confirmation; without one it is the plain round-robin yes.
+      output.output.escalation = _coPickAny
+        ? { is_escalation_confirmation: true, company_pick: _coPickAny }
+        : { is_escalation_confirmation: true };   // no preferred -> round-robin
+    } else if (_o.is_affirmative === false && _coPickAny) {
+      // rev-4: the LLM read a decline but the reply names exactly ONE offered company with no
+      // negator ("nah just sorento" is refused by the negator rule — see _coCompanyPick (D); this
+      // arm is reached e.g. when is_affirmative=false was inferred from tone) → company pick.
+      output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPickAny };
+      output.output.entities = [];
     } else if (_o.is_affirmative === false) {
       // §10 Part 2 — plain decline (no position/person_mention pick, no named-team retarget;
       // Tier 1 already consumed request_for_help + team != prior). Emit a DETERMINISTIC decline
@@ -1375,6 +1510,13 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
       output.output.message_type = 'casual';
     }
     output.output.member_pick_context = true;
+  } else if (_coPickAny) {
+    // Tier 2.5 — COMPANY PICK (miss-company-routing): no member/number/yes-no signal, but the
+    // short reply (deterministic, filler-stripped) or the validated LLM company_pick names exactly
+    // one persisted company → confirm the escalation scoped to it.
+    output.output.escalation = { is_escalation_confirmation: true, company_pick: _coPickAny };
+    output.output.entities = [];
+    output.output.member_pick_context = true;
   } else if (_isNewQuery) {
     // Tier 3 — NEW QUERY: abandon the offer. Do NOT set member_pick_context and do NOT touch
     // routing/escalation/entities — normal downstream processing answers it.
@@ -1383,6 +1525,29 @@ if (_selCtx === 'member_offer' && output.output.dym_pick_applied !== true) {
     output.output.escalation = { is_escalation_confirmation: false, member_reprompt: 'out_of_range' };
     output.output.correction = true;
     output.output.member_pick_context = true;
+  }
+}
+// ── rev-4: company pick on an OPEN offer WITHOUT member-pick context ──
+// The Δ3 arm is entry-gated on selection_context === 'member_offer'. An escalation offer can be
+// open without it (a multi-company offer whose rosters all came back empty; a persisted plan with
+// no rows): a reply naming exactly ONE offered company still engages the offer. "Open" = the FROZEN
+// phrase is in the persisted previous response (the offer was the last bot message; a decline
+// "Escalation declined." or any other reply clears it) — deliberately NOT the persisted roster plan,
+// which the spine carries forward across same-team turns (incl. a decline) and would re-open a
+// closed offer. Only the company tiers run here (there are no member rows to resolve against); a
+// retarget to a different named team (Tier 1 semantics) still wins; a reply carrying a concrete
+// domain_hint is a new query and is left untouched; everything else is byte-identical to before.
+if (_selCtx !== 'member_offer' && output.output.dym_pick_applied !== true) {
+  const _stO = parent_input.previous_conversation_state || {};
+  const _openO = /would you like me to escalate/i.test(String(_stO.response || ''));
+  if (_openO && !output.output.domain_hint) {
+    const _coO = _coCompanyPick(output.output);
+    const _retargetO = _reqHelp && _llmTeamN && _llmTeamN !== (norm(priorRouting.suggested_team) || 'customer_service');
+    if (_coO.any && !_retargetO) {
+      output.output.escalation = { is_escalation_confirmation: true, company_pick: _coO.any };
+      output.output.entities = [];
+      output.output.member_pick_context = true;
+    }
   }
 }
 

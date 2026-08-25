@@ -1,0 +1,160 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "rationale": "Plan §9 cpick-negated / rev-4(D). 'not sorento' carries a negator, which refuses the pick outright — never assign against a stated negative — so the is_affirmative===false && _coPickAny arm cannot fire and the turn lands on the plain-decline arm: escalation_declined, message_type casual, no company_pick anywhere."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "not sorento",
+     "contact_id": 900000003,
+     "previous_conversation_state": {
+      "selection_context": "member_offer",
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "general_enquiries"
+      },
+      "response": "No results for that. Would you like me to escalate to the customer service team? Reply a number or a name: 1. Aisyah Binti Ali 2. Nur Hidayah 3. Ravi Kumar",
+      "entities": [],
+      "last_result_set": [
+       {
+        "idx": 1,
+        "label": "Aisyah Binti Ali",
+        "uuid": "m1"
+       },
+       {
+        "idx": 2,
+        "label": "Nur Hidayah",
+        "uuid": "m2"
+       },
+       {
+        "idx": 3,
+        "label": "Ravi Kumar",
+        "uuid": "m3"
+       }
+      ],
+      "routing_roster_plan": [
+       {
+        "plan_idx": 0,
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento",
+        "brand_code": "sorento"
+       },
+       {
+        "plan_idx": 1,
+        "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "company_name": "Mocha",
+        "brand_code": null
+       }
+      ],
+      "routing_companies": [
+       {
+        "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "company_name": "Mocha",
+        "brand_code": null,
+        "codes": []
+       },
+       {
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento",
+        "brand_code": "sorento",
+        "codes": []
+       }
+      ]
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"casual\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":null,\"is_affirmative\":false,\"user_goal\":\"decline\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "casual",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": false,
+     "user_goal": "decline",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "general_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false,
+      "escalation_declined": true
+     },
+     "domain_signal_source": "intent_none",
+     "scope_exclusive_applied": false,
+     "entity_op_applied": "replace_combine",
+     "query_brands": [
+      "sorento"
+     ],
+     "member_pick_context": true,
+     "_pending_pick": true
+    },
+    "_parser_raw": {
+     "message_type": "casual",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": false,
+     "user_goal": "decline",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}

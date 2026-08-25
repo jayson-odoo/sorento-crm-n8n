@@ -1,18 +1,26 @@
 // ── company-pick-consumer-inert.test.js ──────────────────────────────────────────────────────
 //
 // `escalation-context` now carries the CONSUMER half of the miss-company company-pick contract:
-// `_CO_ALIASES`, the `cpickRow` IIFE, and one `} else if (cpickRow) {` arm. The PRODUCER half is
-// not on live. The live parser `sub-semantic-parser` (XTODTw @ 177c50a9) has ZERO occurrences of
-// `company_pick`, so `escalation.company_pick` is never set, `cpick` is always null, `cpickRow` is
-// always null, and the arm is unreachable. That is deliberate: shipping the customer-facing copy
-// first would tell customers to reply with a company name that live cannot parse, and the bot would
-// re-print the same ask forever. The consumer lands first, inert, so the copy has somewhere to land.
+// `_CO_ALIASES`, the `cpickRow` IIFE, and one `} else if (cpickRow) {` arm. When the consumer
+// landed (2026-08-25, live @ 997e3891) the PRODUCER half did not exist: the live parser
+// (XTODTw @ 177c50a9) had ZERO occurrences of `company_pick`, so the arm was unreachable by
+// construction. That ordering was deliberate: consumer first, inert; then the parser; then the
+// customer-facing copy, so the bot never asks for a reply it cannot parse.
 //
-// "Inert" is a claim about behaviour, so this file measures it rather than asserting it:
+// 2026-08-25, later the same day: the producer half landed in the EXPORT (plans/
+// company-pick-parser.md, scope deterministic - `_coCompanyPick` in output_exchange.js, prompt
+// untouched; promotion is captain-gated as ever). A1 below therefore asserts the producer's
+// SHAPE rather than its absence. Everything else this file measures is still live truth: without
+// a validated pick the arm must not fire (B, C, C2), and with one it must resolve exactly the
+// offered row (D, D2, D3) - those tests were the forward-compatibility proof, and they are now
+// simply the contract.
 //
-//   A. SOURCE. The live parser export contains no `company_pick` at all, and `escalation-context`
+// "Inert without a pick" is a claim about behaviour, so this file measures it:
+//
+//   A. SOURCE. The producer lives ONLY in the parser's output_exchange.js (deterministic tier +
+//      the C1 strip of the raw LLM key); the prompt teaches nothing about it. `escalation-context`
 //      is the only live-spine node with an EXECUTABLE reference to it (four other nodes name it,
-//      all in comments explaining that live cannot honour it).
+//      all in comments explaining the ordering).
 //   B. STRUCTURE. No identifier the hunk introduces is visible outside it, and every declaration
 //      in it is `const`, so nothing below the hunk can be reading a name the hunk shadowed.
 //   C. BEHAVIOUR - the real proof. Excise the hunk from the shipped body by anchor, and every
@@ -83,23 +91,49 @@ function run(body, fixture) {
   )));
 }
 
-// ── A. the producer half is not on live ───────────────────────────────────────────────────────
-test('A1: the live parser export has zero occurrences of company_pick', () => {
+// ── A. the producer half: deterministic-only, exactly where it should be ─────────────────────
+// (This test asserted zero occurrences until 2026-08-25; the deterministic port flipped it. It
+// now pins the producer's shape so anything BEYOND that shape - a prompt mention, a second node
+// touching the field - fails loudly and gets re-argued rather than re-pinned.)
+test('A1: the parser export carries company_pick only in output_exchange.js, and the prompt is clean', () => {
   const man = manifestOf(PARSER_SLUG);
   const dir = path.join(EXPORT_ROOT, PARSER_SLUG, 'nodes');
   const hits = [];
   for (const f of fs.readdirSync(dir).filter((n) => n.endsWith('.js'))) {
     const n = (fs.readFileSync(path.join(dir, f), 'utf8').match(/company_pick/g) || []).length;
-    if (n) hits.push(`${f} x${n}`);
+    if (n) hits.push(f);
   }
-  // the whole deployed artifact, not just the Code bodies - an If expression could set it too
-  const wf = fs.readFileSync(path.join(EXPORT_ROOT, PARSER_SLUG, 'workflow.json'), 'utf8');
-  assert.deepStrictEqual(hits, [],
-    `the parser now emits company_pick (${hits.join(', ')}) - the arm below is no longer dead, and ` +
-    `this file's inertness claim must be re-argued rather than re-pinned`);
-  assert.equal((wf.match(/company_pick/g) || []).length, 0,
-    'company_pick appears in the parser workflow.json outside a Code body');
+  assert.deepStrictEqual(hits, ['output_exchange.js'],
+    'the producer must live in output_exchange.js and nowhere else in the parser export');
+  const body = fs.readFileSync(path.join(dir, 'output_exchange.js'), 'utf8');
+  assert.ok(body.includes('function _coCompanyPick('), 'the deterministic resolver is missing');
+  assert.ok(/'company_pick' in output\.output\.escalation\) delete output\.output\.escalation\.company_pick/.test(body),
+    'the C1 strip of the raw LLM key is the SAFETY half of the producer - it must never be dropped');
+  // the whole deployed artifact, not just the Code bodies - an If expression or the prompt could
+  // carry it too. Blank the folded jsCode bodies out and require zero occurrences anywhere else.
+  const wf = JSON.parse(fs.readFileSync(path.join(EXPORT_ROOT, PARSER_SLUG, 'workflow.json'), 'utf8'));
+  for (const n of wf.nodes) {
+    if (n.parameters && typeof n.parameters.jsCode === 'string') n.parameters.jsCode = '';
+  }
+  assert.equal((JSON.stringify(wf).match(/company_pick/g) || []).length, 0,
+    'company_pick appears in the parser workflow.json outside a Code body - if that is the ' +
+    'systemMessage, the plan\'s Stage 2 (scope: parser) just shipped and must be reviewed as such');
   assert.equal(man.id, 'XTODTw-dJcV0uRdC056hG', 'the parser slug no longer points at the live parser');
+});
+
+// T5 of the plan: the alias STOPGAP is duplicated by design (parser + spine consumer), and the
+// contract only holds while the two copies are byte-identical. A drift here is a customer whose
+// code resolves on one side and not the other.
+test('A1b: _CO_ALIASES is byte-identical between the parser and escalation-context', () => {
+  const aliasLine = (src, where) => {
+    const m = src.match(/^const _CO_ALIASES = (\{.*?\});/m);
+    assert.ok(m, `_CO_ALIASES is no longer a single-line object literal in ${where}`);
+    return m[1];
+  };
+  const parser = fs.readFileSync(path.join(EXPORT_ROOT, PARSER_SLUG, 'nodes', 'output_exchange.js'), 'utf8');
+  const spine = fs.readFileSync(path.join(EXPORT_ROOT, SLUG, 'nodes', 'escalation-context.js'), 'utf8');
+  assert.equal(aliasLine(parser, 'the parser'), aliasLine(spine, 'escalation-context'),
+    'the two _CO_ALIASES copies drifted - a company code now resolves on one side only');
 });
 
 test('A2: escalation-context is the only live-spine node with an executable company_pick reference', () => {

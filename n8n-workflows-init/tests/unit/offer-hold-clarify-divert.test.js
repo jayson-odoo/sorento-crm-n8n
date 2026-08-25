@@ -11,9 +11,12 @@
 //      mirrored fixtures under both nodes would happily go green on two DIFFERENT bodies.
 //   2. NO COMPANY AFFORDANCE (C2/C5). A fixture proves the copy is byte-exact today. It does not
 //      say WHY that string is the string, so the next person to "improve" it re-pins the fixture
-//      and ships the regression. The reason is external: the LIVE parser has no company_pick
-//      handler (0 occurrences in export/sub-semantic-parser), so a company-name reply comes back as
-//      Tier-4 junk and the bot re-prints the same ask forever. Assert the property, not the bytes.
+//      and ships the regression. The reason WAS external: the live parser had no company_pick
+//      handler, so a company-name reply came back as Tier-4 junk. 2026-08-25 (company-pick plan,
+//      scope deterministic): the parser export now carries the handler (_coCompanyPick in
+//      output_exchange.js) - but the copy STILL must not offer a company until part 3 ships the
+//      new ask deliberately, in one commit with this assertion's retirement. Until then the
+//      property stands: copy and parser move together, never by accident.
 //   3. THE CASE B RE-PERSIST (compile-current-state). Its fixtures deep-equal a whole ~20-key
 //      `variables` object. That passes just as green if the six offer fields happen to be right for
 //      the wrong reason. Assert them AGAINST the fixture's own `get-session-vars`, which is the
@@ -62,9 +65,10 @@ test('C2/C5: no reply fixture offers a company the live parser cannot parse', ()
       const text = fixture.expected[0].json.clarify_text;
       assert.equal(typeof text, 'string', `${node}/${name}: no clarify_text`);
       assert.doesNotMatch(text, /company/i,
-        `${node}/${name}: the ask names "company". The LIVE parser (export/sub-semantic-parser) has ` +
-        `NO company_pick handler, so a company-name reply is Tier-4 junk and the customer gets this ` +
-        `same ask back, forever. Ship the parser half first, then the copy.`);
+        `${node}/${name}: the ask names "company". The parser half (deterministic _coCompanyPick) ` +
+        `is in the export now, but offering a company in the ask is part 3's move: it ships the new ` +
+        `copy AND retires this assertion in the same commit, after the parser half is PROMOTED. An ` +
+        `ask that offers a company before the deployed parser can parse one re-prints itself forever.`);
       assert.match(text, /reply a number or a name/,
         `${node}/${name}: both upstream gates require an OPEN member picker, so a number or a name ` +
         `is what always resolves - the ask has to offer exactly that`);
@@ -76,16 +80,29 @@ test('C2/C5: no reply fixture offers a company the live parser cannot parse', ()
   assert.equal(checked, 10, 'five contract cases mirrored onto both nodes');
 });
 
-// The claim above is only worth anything if the parser really has no handler. Check the export
-// rather than trusting the comment - this is the fact the whole copy decision rests on.
-test('the fact C2/C5 rests on: the live parser exports no company_pick handler', () => {
+// The claim above is only worth anything while the parser-vs-copy state is what we think it is.
+// This test used to assert the parser exports NO company_pick handler - the fact the copy's
+// "never say company" rule rested on. 2026-08-25 the deterministic handler shipped into the export
+// (plans/company-pick-parser.md, scope deterministic), so the test now asserts the NEW true
+// contract instead: the handler exists, it is code-only (_coCompanyPick in output_exchange.js),
+// and the PROMPT is still clean - the LLM was never taught to emit company_pick, so the only
+// producer is the deterministic tier validating against the persisted pool. If the prompt half
+// (plan Stage 2) ever ships, this goes red again and must be re-argued, not re-pinned.
+test('the fact C2/C5 rests on, updated: the handler is deterministic-only and the prompt is untouched', () => {
   const dir = path.resolve(__dirname, '../../export/sub-semantic-parser/nodes');
   const hits = fs.readdirSync(dir)
     .filter((f) => f.endsWith('.js'))
     .filter((f) => fs.readFileSync(path.join(dir, f), 'utf8').includes('company_pick'));
-  assert.deepStrictEqual(hits, [],
-    'sub-semantic-parser now mentions company_pick. If the handler really shipped, the clarify copy ' +
-    'may offer a company again - but that is a deliberate change to make together, not a surprise.');
+  assert.deepStrictEqual(hits, ['output_exchange.js'],
+    'company_pick must live in output_exchange.js and NOWHERE else in the parser export');
+  const body = fs.readFileSync(path.join(dir, 'output_exchange.js'), 'utf8');
+  assert.ok(body.includes('function _coCompanyPick('), 'the deterministic resolver is the handler');
+  const wf = JSON.parse(fs.readFileSync(
+    path.resolve(__dirname, '../../export/sub-semantic-parser/workflow.json'), 'utf8'));
+  const agent = wf.nodes.find((n) => n.name === 'AI Agent');
+  assert.equal((agent.parameters.options.systemMessage.match(/company_pick/g) || []).length, 0,
+    'the systemMessage now teaches company_pick - that is the plan\'s Stage 2 (scope: parser), ' +
+    'a separate measured change, not something to ride in with a code edit');
 });
 
 // ── 3. the Case B re-persist, asserted against the session it claims to restore ───────────────
