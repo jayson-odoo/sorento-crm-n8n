@@ -423,9 +423,10 @@ if (missingAttachmentType) {
   //
   // ⚠ DELIBERATE DUPLICATE - KEEP IN LOCKSTEP with compile-current-state.js's "SEARCH SCOPE
   // DISCLOSURE" IIFE (the happy-path twin: same axis list, same label priority, same date
-  // formatting, same `order`-only gate). They are two separate n8n Code nodes and cannot import
-  // from each other, exactly as `_DATE_SCOPE_DOMAINS` / `_DATE_DOMAINS` already are. CHANGE BOTH
-  // TOGETHER or the answer and the miss start disclosing the same search in two different shapes.
+  // formatting, same `order`-only gate, and since 2026-08-25 the same customer's-spelling rule on
+  // path 1). They are two separate n8n Code nodes and cannot import from each other, exactly as
+  // `_DATE_SCOPE_DOMAINS` / `_DATE_DOMAINS` already are. CHANGE BOTH TOGETHER or the answer and
+  // the miss start disclosing the same search in two different shapes.
   //
   // Which axes are active comes from the GATE (`compatible_entities`: entity_type + code), never
   // from the parser's hints - a bare code is often hinted `order` and matched by the resolver as a
@@ -447,7 +448,13 @@ if (missingAttachmentType) {
       const hitsAxis = (Array.isArray(res && res.matches) ? res.matches : [])
         .some(m => m && typeSet.has(normRaw(m.entity_type)));
       const tok = String((res && res.token) ?? '').trim();
-      if (hitsAxis && tok) words.add(tok);
+      // `res.token` is the RESOLVER's echo, not the customer's spelling - resolve-entity is sent
+      // `canonical_code ?? raw`, strips `[-\s]+` on a product hint, and the CRM lowercases what it
+      // returns, so the header read `Product: srtks7646` above a bullet reading `SRTKS7646`.
+      // `_rawOfTok` is the same lookup the not-found list already quotes through (`_byRawStripped`,
+      // stripped+lowercased key, first-wins), so the header, the bullets and the miss list all name
+      // a token the one way. Unmatched token => returned unchanged, i.e. today's behaviour.
+      if (hitsAxis && tok) words.add(_rawOfTok(tok));
     }
     if (!words.size) {                                                 // 2. the parser's own hinted raw
       for (const e of allEnts) {

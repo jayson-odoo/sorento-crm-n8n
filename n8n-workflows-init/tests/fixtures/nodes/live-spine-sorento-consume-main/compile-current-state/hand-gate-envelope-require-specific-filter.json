@@ -3,7 +3,8 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "getResultObj's third preference: with neither central-exchange nor validator executed the gate's own item IS the result envelope, and compatible_entities[] is accepted as the item list. On a require_specific turn that list is filtered to PRODUCTS only \u2014 the non-product rows the gate resolved straight through are not choosable \u2014 so the numbered roster is the two products, labelled from their `code`. selection_context is 'disambiguation', which is what tells the parser next turn that a bare number is a pick. Nothing rendered a customer reply on this lane, so `user_response` is absent while the compressed `response` is still written."
+  "rationale": "getResultObj's third preference: with neither central-exchange nor validator executed the gate's own item IS the result envelope, and compatible_entities[] is accepted as the item list. On a require_specific turn that list is filtered to PRODUCTS only \u2014 the non-product rows the gate resolved straight through are not choosable \u2014 so the numbered roster is the two products, labelled from their `code`. selection_context is 'disambiguation', which is what tells the parser next turn that a bare number is a pick. Nothing rendered a customer reply on this lane, so `user_response` is absent while the compressed `response` is still written.",
+  "repin_rationale": "RE-PINNED 2026-08-25 (open-offer carry). The gate IS the result envelope on this lane - neither central-exchange nor validator executed - so `require_specific` with a non-empty `compatible_entities` makes this a disambiguation PICKER turn, and a picker the customer has been shown now persists in its own `picker_*` fields: the next bare number resolves against the roster instead of against whatever the following answer leaves in `last_result_set` (captain 2026-08-20, execs 13212372 / 13212407 / 13212465). This fixture froze the output from before any `picker_*` key existed, so it was red for a FEATURE it predates, not for a defect. The kind is 'disambiguation', the only kind ever born into this carry: the CS member offer and the tier ask are excluded on purpose, because `selection_context: 'member_offer'` re-arms the parser's assign path and would fire a real CS assignment - staff email and WhatsApp - for a customer who had already declined. `last_result_set` and `selection_context` are unchanged, because the re-seat writes back the same roster the disambiguation lane had already produced. The set is also now born through `_isDisambig` (getResultObj's precedence chain) rather than off $('disallowed-entity-gate') directly, which is what `hand-validator-envelope-beats-gate` pins; on this lane both agree, which is why only the picker keys move."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -109,7 +110,29 @@
      "routing_brand": null,
      "routing_brand_source": null,
      "routing_company": null,
-     "routing_companies": null
+     "routing_companies": null,
+     "picker_last_result_set": [
+      {
+       "idx": 1,
+       "uuid": "u1",
+       "label": "MHS1542-CR",
+       "entity_type": "product",
+       "product": "MHS1542-CR",
+       "attachment_type": null,
+       "filename": null
+      },
+      {
+       "idx": 2,
+       "uuid": "u2",
+       "label": "MHS1543-CR",
+       "entity_type": "product",
+       "product": "MHS1543-CR",
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "picker_domain": "incoming",
+     "picker_selection_context": "disambiguation"
     }
    }
   }

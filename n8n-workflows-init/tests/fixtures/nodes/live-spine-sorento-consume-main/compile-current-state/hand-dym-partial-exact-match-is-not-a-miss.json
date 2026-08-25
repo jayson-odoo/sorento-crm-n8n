@@ -3,7 +3,8 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The resolver said resolved:false, but one of the token's matches is EXACT-tier \u2014 that token was answerable and must not be reported as a miss. (The same rule drops exact rows from the candidate list: an exact match would have resolved, so offering it back is nonsense.)"
+  "rationale": "The resolver said resolved:false, but one of the token's matches is EXACT-tier \u2014 that token was answerable and must not be reported as a miss. (The same rule drops exact rows from the candidate list: an exact match would have resolved, so offering it back is nonsense.)",
+  "repin_rationale": "RE-PINNED 2026-08-25 (B2 family-narrowing fix, measured on live execs 13733614 -> 13733666). \"IBKS9999\" is a PREFIX token that names TWO products, so it is a FAMILY, not a pick. reconcileEntities used to take matches[0] regardless and persist that one variant's canonical_code into session_vars, which silently narrowed a whole-family search to a member the customer never chose on the following turn (live answered \"SRTWC286-SH-200 (+9 more)\" and then searched only SRTWC286-SH-200). Only an unambiguous resolution may narrow raw -> code, so the multi-match arm now keeps the PARSER's own canonical_code, and this entity has none: null. The entity_type reconciliation is untouched - both matches agree on \"product\", so the hint still resolves. `family_match_count`, which an earlier draft of this arm also emitted, is deliberately NOT here: zero readers repo-wide, and it would have been written into every affected customer's session_vars and handed to the clarification LLM as noise."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -157,7 +158,7 @@
       {
        "raw": "IBKS9999",
        "hint": "product",
-       "canonical_code": "IBKS5245-NG-BL"
+       "canonical_code": null
       }
      ],
      "response": "Previous turn (inventory): returned 1 records",

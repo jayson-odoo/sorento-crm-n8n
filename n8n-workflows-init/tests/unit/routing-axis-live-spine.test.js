@@ -173,7 +173,22 @@ test('exec 13743718: the offer lists both companies teams, and still no note', (
 // Captured from the deployed bodies BEFORE either change. A single-company turn must render byte
 // for byte the same afterwards - the escalate phrase in particular is frozen wording the parser
 // has a prefix-regex contract on (/would you like me to escalate/i).
+//
+// RE-PINNED 2026-08-25, and ONLY by the three-line search-scope header being prepended. That
+// header is the whole point of the change these two guards sit beside (a miss opens with the same
+// Customer / Product / Dates disclosure an answer does), so freezing its absence was freezing the
+// old behaviour, not protecting the new one. Everything BELOW the blank line after `Dates:` is
+// unchanged, byte for byte, which is what these two still assert: the bullets, the escalate
+// sentence the parser regex depends on, the picker prompt, the numbering and the close.
+//
+// `Product: SRTKS7646`, not `srtks7646`: the header prints the CUSTOMER's spelling. `res.token` is
+// the CRM's echo, lower-cased and (for a product hint) separator-stripped, so before the casing fix
+// this line read `Product: srtks7646` directly above a bullet reading `• product: SRTKS7646`.
 const SINGLE_COMPANY_OFFER = [
+  'Customer: mastile klang',
+  'Product: SRTKS7646',
+  'Dates: 01/08/2026 to 31/08/2026',
+  '',
   "Here's what you want:",
   '• customer: MASTILE KLANG SDN BHD (+1 more)',
   '• product: SRTKS7646 (+1 more)',
@@ -199,7 +214,14 @@ test('a single-company turn renders byte-identical', () => {
   assert.equal(r.offer.response, SINGLE_COMPANY_OFFER);
 });
 
+// Same re-pin, and the reason the customer axis reads `all customers` here: no customer row is in
+// the gate scope on a product-only turn, so the axis says so out loud instead of vanishing - which
+// is exactly the E1/E2 requirement ("an EMPTY result states them too").
 const PRODUCT_ONLY_OFFER = [
+  'Customer: all customers',
+  'Product: SRTKS7646',
+  'Dates: 01/08/2026 to 31/08/2026',
+  '',
   "Here's what you want:",
   '• product: SRTKS7646 (+1 more)',
   '',

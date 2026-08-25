@@ -77,28 +77,21 @@ if (_ideate) {
   // multi-company signal itself is unchanged, just read off routing_companies directly instead of a
   // field that existed only to carry that sentence.
   const _multiCo = Array.isArray(_mem.routing_companies) && _mem.routing_companies.length > 1;
-  // miss-company-routing rev-3 (captain copy decisions): mirror build-cs-member-offer's rendering —
-  // multi ⇒ members grouped under bold `*Company:*` headers (plan order, membership by company_ids, a
-  // shared member keeps ONE number under each group), plain `n. Name` lines (no per-member suffix), and
-  // the exported closing sentence (cs_multi_close) so the wording cannot drift.
-  // Single ⇒ flat plain lines + the original "Or just reply 'yes'" close, unchanged.
-  const _lines = [];
+  // EVERY ROW PRINTS, UNCONDITIONALLY. This is live's own rendering and it stays live's: one line per
+  // roster row, in roster order, with the company named inline when the turn spans more than one.
+  // The grouped-by-`*Company:*`-header form this replaced was a fragment of the miss-company-routing
+  // rev-3 bundle that was reverted off live on 2026-08-18 and is still held for a captain decision -
+  // and it dropped rows: a member matching no plan item was placed under no header and vanished from
+  // the printed list while KEEPING its number in `last_result_set`, so the customer was invited to
+  // pick a number they were never shown (its `_placed` counter only caught the all-zero case).
+  const _lines = _rows.map(m => {
+    const _lbl = (Array.isArray(m.companies) && m.companies.length) ? m.companies : (m.company_name ? [m.company_name] : []);
+    return (_multiCo && _lbl.length) ? `${m.idx}. ${m.label} (${_lbl.join(' / ')})` : `${m.idx}. ${m.label}`;
+  });
   if (_multiCo) {
-    const _plan = Array.isArray(_mem.routing_companies) ? _mem.routing_companies : [];
-    const _inCo = (m, p) => ((m && Array.isArray(m.company_ids) && m.company_ids.length) ? m.company_ids : [(m && m.company_id) || null]).some(id => (id || null) === ((p && p.company_id) || null));
-    let _placed = 0;
-    for (const p of _plan) {
-      const _group = _rows.filter(m => _inCo(m, p));
-      if (!_group.length) continue;
-      _lines.push(`*${(p && p.company_name) || 'Other'}:*`);
-      for (const m of _group) { _lines.push(`${m.idx}. ${m.label}`); _placed++; }
-    }
-    if (!_placed) for (const m of _rows) _lines.push(`${m.idx}. ${m.label}`);   // no plan rows to group by ⇒ flat list, still plain
-    for (const p of _plan) {
+    for (const p of (Array.isArray(_mem.routing_companies) ? _mem.routing_companies : [])) {
       if (p && p.company_name && !_memCos.has(p.company_id || null)) _lines.push(`[ ${p.company_name}: no customer-service members are configured — omitted. ]`);
     }
-  } else {
-    for (const m of _rows) _lines.push(`${m.idx}. ${m.label}`);
   }
   const _picker = _lines.join('\n');
   const _close = (_multiCo && typeof _mem.cs_multi_close === 'string' && _mem.cs_multi_close)
@@ -260,7 +253,12 @@ function reconcileEntities(parserEntities, resolverJson) {
       // hint alone rather than pick a side.
       const types = new Set(res.matches.map(m => m && m.entity_type).filter(Boolean));
       const hint = types.size === 1 ? [...types][0] : pe.hint;
-      return { ...pe, hint, canonical_code: null, family_match_count: familyCount };
+      // `pe.canonical_code ?? null`, never a bare null: the RESOLVER's code is what must not be
+      // pinned here, but the PARSER authors one of its own on some entities (attachment_type:
+      // "gambar" -> "photo") and output_exchange:1237 rewrites `e.raw` from it before the resolver
+      // ever sees the token. An unconditional null destroyed that too. `?? null` keeps the
+      // LLM-authored code and still normalises "absent" to an explicit null.
+      return { ...pe, hint, canonical_code: pe.canonical_code ?? null };
     }
     return pe;   // unresolved → keep parser's guess
   });
@@ -889,38 +887,37 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
       && [m && m.uuid, m && m.canonical_code]
         .some(v => { const k = String(v ?? '').trim().toLowerCase(); return k && _answerCodes.has(k); }));
   })();
-  const _tokenReachedSpecSearch = (tok) => _specSearchAnswered && _notCodeShaped([{ raw: tok }]).length > 0;
-  // ── F1 · the CRM's own QUERY-KEYED resolution is NOT a customer token ────────────────
-  // Since spec-raw-text-migration `query` IS the customer's whole sentence, the resolution
-  // the CRM appends for it comes back with `token` == that sentence (MEASURED, exec 12597847:
-  // `resolutions[2].token === "SRTWC286 and wall hung basin"`). Every renderer that groups
-  // misses BY TOKEN then prints the customer's own question back at them as a failed search
-  // term (MEASURED at the customer boundary, exec 12597815). It is not a customer entity:
-  // n8n never sent it.
-  //
-  // Keyed on WHAT WE SENT. `resolve-entity-http` builds its `tokens` from exactly
-  // `qf.entities[].raw`, so the sent set is decidable HERE without trusting anything the CRM
-  // echoes back — and every CRM-derived probe token (the appended query resolution, and any
-  // `_synthesize_alpha_tokens` split of the sentence) falls outside it by construction.
-  //
-  // FAIL-OPEN, deliberately (UAC SR-U5: a genuine miss must never be silenced). When we sent
-  // NO tokens at all the set cannot discriminate, so the rule narrows to the raw turn text
-  // itself; and when neither the entity set nor the turn text is available, nothing is
-  // suppressed.
-  const _sentTokens = (() => {
-    const s = new Set();
-    for (const e of (Array.isArray(qf.entities) ? qf.entities : [])) {
-      const k = String((e && e.raw) ?? '').trim().toLowerCase();
-      if (k) s.add(k);
-    }
-    return s;
-  })();
-  const _rawTurn = String((() => { try { const _j = $('tf-message').first().json; return String((_j && _j.message && _j.message.message && (_j.message.message.text || (_j.message.message.attachment && _j.message.message.attachment.description))) || ''); } catch (_err) { return ''; } })() ?? '').trim().toLowerCase();
-  const _isDerivedQueryToken = (tok) => {
-    const k = String(tok ?? '').trim().toLowerCase();
-    if (!k) return false;
-    if (_sentTokens.size) return !_sentTokens.has(k);
-    return !!_rawTurn && k === _rawTurn;
+  const _isSpecRow = (m) => String((m && m.match_tier) ?? '').toLowerCase() === 'spec_search';
+  // Takes the whole RESOLUTION, not just its token, because it answers two halves of one question -
+  // "has spec search already spoken for this row?" - and the half that used to live apart from it
+  // (F1, below) was written as a guess precisely because it could not see the matches.
+  const _tokenReachedSpecSearch = (res) => {
+    // ── (a) F1 · the CRM's own QUERY-KEYED resolution is NOT a customer token ──────────────
+    // Since spec-raw-text-migration `query` IS the customer's whole sentence, the resolution the
+    // CRM appends for it comes back with `token` == that sentence (MEASURED, exec 12597847:
+    // `resolutions[2].token === "SRTWC286 and wall hung basin"`; clone 13489292: `token ===
+    // "provide technical spec: SRTBF31417, SRTWB1160, MIRROR, SHELF, SRTWT7202-BL, SRTW2600"`,
+    // five matches, every one `match_tier: "spec_search"`). Every renderer that groups misses BY
+    // TOKEN then prints the customer's own question back at them as a failed search term (MEASURED
+    // at the customer boundary, exec 12597815).
+    //
+    // IDENTIFIED POSITIVELY, by the spec_search tier that resolution's OWN matches carry -
+    // `references.py` `_emit_spec_matches` builds it out of exactly those rows and nothing else.
+    // The rule this replaced was the NEGATIVE "the token is not one we sent", keyed on
+    // `qf.entities[].raw`. That equality does not hold and never did: resolve-entity sends
+    // `canonical_code ?? raw` and strips `[-\s]+` when `hint === 'product'`, and the CRM rewrites
+    // what it echoes back (sent "Warehouse Bukit Raja", echoed "Bukit Raja"). MEASURED across the
+    // whole live retention window, it silenced 13 of 313 genuine miss resolutions (4.2%); clone
+    // 13498401 lost `RMA-SRT2608-011` outright the day the product strip landed. The true statement
+    // about `token` is the one already made at `_typeNorm` below.
+    //
+    // FAIL-OPEN, deliberately (UAC SR-U5: a genuine miss must never be silenced). A resolution with
+    // no matches at all identifies nothing, so it is REPORTED, not suppressed.
+    const _ms = Array.isArray(res && res.matches) ? res.matches : [];
+    if (_ms.length && _ms.every(_isSpecRow)) return true;
+    // ── (b) the customer's OWN descriptive words, answered BY spec search ──────────────────
+    // Outcome-keyed, not mechanism-keyed; a code-shaped token is never cleared this way.
+    return _specSearchAnswered && _notCodeShaped([{ raw: res && res.token }]).length > 0;
   };
   // ── one miss, one voice (2026-08-11) ─────────────────────────────────────────
   // promo-picker now renders its own miss for promotion turns ("No promotion found for …").
@@ -947,8 +944,7 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
     missResolutions = r.resolutions.filter(res => res && res.resolved !== true
       && !(Array.isArray(res.matches) && res.matches.some(isExact))
       && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
-      && !_isDerivedQueryToken(res.token)
-      && !_tokenReachedSpecSearch(res.token)
+      && !_tokenReachedSpecSearch(res)
       && !_pickerReported.has(String(res.token ?? '').trim().toLowerCase())
       && !_tokenWasAnswered(res));
   } else if (unresolved.length && !_tokenWasAnswered(r)
@@ -1028,7 +1024,7 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
     if (picks.length) {
       // dym-candidate-map: each candidate keeps its OWN source token (per-token _srcEnt; no borrow).
       const _srcEnt = _entities.find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
-      _lines.push(`"${token}"${_typeSfx} - did you mean:`);
+      _lines.push(`"${token}"${_typeSfx}, did you mean:`);
       for (const p of picks) {
         idx += 1;
         const isU = isUuid(p.m.canonical_code);
@@ -1052,7 +1048,7 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
         });
       }
     } else {
-      _lines.push(`"${token}"${_typeSfx} - not found.`);   // zero renderable candidates -> plain line, no idx
+      _lines.push(`"${token}"${_typeSfx}: not found.`);   // zero renderable candidates -> plain line, no idx
     }
   }
   const M = _numbered.length;   // total numbered candidates across surfaced tokens
@@ -1171,22 +1167,20 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
 // alive re-seat it as last_result_set so the EXISTING positional machinery keeps resolving picks
 // against customers. No parser change, no new lane.
 //
-// EVERY OPEN OFFER IS STICKY (captain, 2026-08-24). Two limits were reversed on that date.
+// THE STICKINESS IS THE DISAMBIGUATION PICKER'S ALONE (captain, 2026-08-24). The carry used to
+// require `picker_domain === qf.domain_hint`, so asking about something else abandoned an offer the
+// customer had never answered. The captain's rule now: a NEW QUESTION abandons an offer, a change of
+// SUBJECT does not. The domain condition is gone; `picker_domain` is still persisted, as a
+// diagnostic and as the axis the roster was born on.
 //
-// (1) The carry used to require `picker_domain === qf.domain_hint`, so asking about something
-//     else abandoned an offer the customer had never answered. The captain's rule now: a NEW
-//     QUESTION abandons an offer, a change of SUBJECT does not. The domain condition is gone;
-//     `picker_domain` is still persisted, as a diagnostic and as the axis the roster was born on.
-// (2) It only covered `require_specific` pickers, so the CS member offer and the promotion tier
-//     ask - which build their rosters on their own lanes (`cs_last_result_set` /
-//     `tier_last_result_set`) - were wiped by the next answer. They are offers like any other and
-//     ride the same carry now.
-//
-// THE OFFER KIND IS PART OF THE OFFER. The parser routes a reply on `selection_context`:
-// 'member_offer' opens output_exchange's Δ3 member arm, 'tier_offer' opens tierOfferPick (keyed
-// STRICTLY, TA-14), 'disambiguation' opens the positional/"all" arms. Re-seating a carried member
-// or tier offer as 'disambiguation' would answer the customer's "2" in the wrong arm, so the kind
-// is persisted beside the roster and it is the kind that gets re-seated.
+// THE CS MEMBER OFFER AND THE TIER ASK ARE NOT CARRIED, AND THAT IS THE SAFETY PROPERTY. The parser
+// routes a reply on `selection_context`: 'member_offer' opens output_exchange's Δ3 member arm, which
+// can emit `is_escalation_confirmation` / `preferred_assignee_id` and fire a real CS assignment
+// (staff email + WhatsApp); 'tier_offer' opens tierOfferPick (keyed STRICTLY, TA-14) and is
+// deliberately one round-trip only (D4). Persisting either kind here would re-arm a path the
+// customer cannot see, so only the 'disambiguation' kind is ever born into this carry - see
+// `_cpBorn` below. The kind still rides WITH the roster, because a session written before
+// 2026-08-24 may carry one and it must not be re-seated into the wrong arm.
 //
 // NOT the suggest/did-you-mean offer: that one already has a lifecycle of its own directly above
 // (`dym_offer` with a TTL, plus `dym_last_result_set`), and two managers for one offer is how an
@@ -1203,19 +1197,28 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   // list stays until a new enquiry or a domain change, and that applies equally to the incoming
   // and product_attachment choose-lists ("Multiple matches found. Please choose: 1. SRTWC286-SH-200
   // …"), which until now were also wiped by their own answer.
-  const _cpBornNow = !!(_cpGate && _cpGate.require_specific === true
-    && Array.isArray(_cpGate.compatible_entities) && _cpGate.compatible_entities.length > 0
-    && Array.isArray(last_result_set) && last_result_set.length > 0);
-  // The offer born THIS turn, whichever lane built it: {set, kind, fam}. The picker lane is first
-  // because only it has a families map to carry; the member and tier lanes have already put their
-  // own roster on `last_result_set` and their own kind on `selection_context` (see the roster
-  // precedence ladder ~L270-302), so reading those two is enough to know an offer was made.
+  //
+  // READ THROUGH `_isDisambig`, NEVER OFF THE GATE DIRECTLY. getResultObj's precedence chain is
+  // central-exchange > validator > gate > $input, and `hand-validator-envelope-beats-gate` pins
+  // exactly that, in its own words: "Reading the gate here instead would silently answer about a
+  // different result set." `_isDisambig` (declared with the roster ladder above) asks the same
+  // question THROUGH that chain, so the roster this block persists is always the roster the rest of
+  // the node decided the customer was shown.
+  const _cpBornNow = _isDisambig && Array.isArray(last_result_set) && last_result_set.length > 0;
+  // The offer born THIS turn: {set, kind, fam}. ONLY the require_specific picker lane.
+  //
+  // THE MEMBER AND TIER OFFERS ARE DELIBERATELY NOT CARRIED. `selection_context: 'member_offer'` is
+  // not a roster label, it is the arming pin on the CS-assign path: the parser's output_exchange
+  // opens its Δ3 member arm on it and can emit `is_escalation_confirmation: true` +
+  // `preferred_assignee_id`, which is a REAL assignment with the staff email/WhatsApp ripple. Live
+  // kills the offer the moment the customer declines (neither `_mem` nor `_sug` runs on that turn,
+  // so `selection_context` falls to null); a carry re-seats it INVISIBLY - the customer sees no
+  // roster - and the next bare "yes" two turns later assigns a human to someone who already said no.
+  // `tier_offer` is excluded for the documented D4 reason stated at the `_tier` block above: the
+  // tier roster is persisted "only for this one round-trip".
   const _cpBorn = _cpBornNow
     ? { set: last_result_set, kind: 'disambiguation', fam: (_cpGate && _cpGate.picker_families) || null }
-    : (['member_offer', 'tier_offer'].includes(selection_context)
-        && Array.isArray(last_result_set) && last_result_set.length > 0)
-      ? { set: last_result_set, kind: selection_context, fam: null }
-      : null;
+    : null;
   // Freshness is judged on what the CUSTOMER actually typed — the LLM's OWN entity list — not the
   // post-processed one. output_exchange re-attaches the prior scope on a pick (its block C) as
   // current_message with no ordinal, and the old test read that as a new enquiry and dropped the
@@ -1249,23 +1252,6 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // re-seat: the next positional reply resolves against the OFFER, not the answer rows
     output.variables.last_result_set  = _cpSet;
     output.variables.selection_context = _cpKind;
-  }
-  // THE FAMILY OUTLIVES THE ROSTER (captain, 2026-08-24). picker_families maps a picked candidate to
-  // the ACCOUNTS it stands for. Above it is kept only while the picker roster is alive, but the PIN
-  // is not bound to that lifetime - an entity keeps its uuid for as long as the customer keeps
-  // talking about it. So the roster expired, the family went with it, and the pick covered 1 account
-  // instead of the 12 the picker had measured (exec 13695546 vs 13695091).
-  // Safe to carry only now that a pinned customer re-resolves by NAME: the first attempt at this
-  // was reverted because re-resolution by debtor code let DENHO HARDWARE - a different company's
-  // customer sharing code 300-D059 - into the scope alongside the family.
-  if (!output.variables.picker_families) {
-    const _famPinned = (Array.isArray(qf.entities) ? qf.entities : [])
-      .some(e => e && String(e.hint || '').toLowerCase() === 'customer' && e.uuid);
-    const _famKeep = _cpPrev && _cpPrev.picker_families;
-    if (_famPinned && _famKeep && Object.keys(_famKeep).length) {
-      output.variables.picker_families = _famKeep;
-      output.variables.picker_families_carried = true;   // diagnostic
-    }
   }
 }
 // brand-company-routing: routing axes for the escalation turn (report §5.2; null-inert for replay norm)
@@ -1395,6 +1381,28 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
       { label: 'Container',   types: ['inbound_shipment'], hints: ['inbound_shipment', 'container'] },
       { label: 'Warehouse',   types: ['warehouse'], hints: ['warehouse'] },
     ];
+    // ── PRINT THE CUSTOMER'S SPELLING, NOT THE RESOLVER'S ECHO ────────────────────────────────
+    // `res.token` is not what the customer typed. resolve-entity is sent `canonical_code ?? raw`,
+    // strips `[-\s]+` when `hint === 'product'`, and the CRM lowercases what it echoes back - so
+    // path 1 rendered `Product: srtks7646` one line above a body reading `• product: SRTKS7646`
+    // (captured real-traffic fixtures: mhs15/MHS15, cabana/Cabana, mhs1542/MHS1542,
+    // srtks7646/SRTKS7646), and with the strip a customer who typed `MMC544-AL-BL` was told
+    // `Product: mmc544albl`. A header whose whole job is "this is what was searched, widen it if
+    // it is wrong" cannot hand the code back mangled - it reads as a second, different product.
+    //
+    // Map the resolved token back to the entity it was built from and print THAT. Key: separators
+    // stripped + lowercased on BOTH sides, FIRST-wins on a collision - the same key and the same
+    // tie-break as not-found-error-message.js's `_byRawStripped` / `_rawOfTok`, so the answer and
+    // the miss can never name one token two ways. Nothing matches (a CRM-side rewrite: sent
+    // "Warehouse Bukit Raja", echoed "Bukit Raja") => the token prints unchanged, which is exactly
+    // today's behaviour, so this can only ever improve the line.
+    const _tokKey = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+    const _rawByTok = new Map();
+    for (const e of _ents) {
+      const _k = _tokKey(e && e.raw);
+      if (_k && !_rawByTok.has(_k)) _rawByTok.set(_k, e.raw);
+    }
+    const _rawOfTok = (t) => _rawByTok.get(_tokKey(t)) || t;
     const _axisWords = (axis) => {
       const typeSet = new Set(axis.types);
       const rows = _gateEnts.filter(e => e && typeSet.has(_norm(e.entity_type)));
@@ -1404,7 +1412,7 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
         const hitsAxis = (Array.isArray(res && res.matches) ? res.matches : [])
           .some(m => m && typeSet.has(_norm(m.entity_type)));
         const tok = String((res && res.token) ?? '').trim();
-        if (hitsAxis && tok) words.add(tok);
+        if (hitsAxis && tok) words.add(_rawOfTok(tok));
       }
       if (!words.size) {                                                 // 2. the parser's own hinted raw
         for (const e of _ents) {

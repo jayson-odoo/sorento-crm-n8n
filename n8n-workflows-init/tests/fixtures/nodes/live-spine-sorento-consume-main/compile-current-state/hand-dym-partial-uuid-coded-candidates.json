@@ -6,7 +6,7 @@
   "rationale": "A candidate whose canonical_code is a bare UUID is never shown as one: it is labelled from display.description, and because the label is not the code, the roster's `value` becomes the LABEL while `product`/the offer keep the real code. A uuid-coded candidate with no display name at all has no renderable label and is dropped entirely rather than shown as a uuid.",
   "reasoned": true,
   "repinned_at_version": "df165492",
-  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged.\n\nRE-PINNED 2026-08-25 (B2 family-narrowing fix, measured on live execs 13733614 -> 13733666). \"IBKS9999\" is a PREFIX token that names TWO products, both uuid-coded, so it is a FAMILY, not a pick. reconcileEntities used to take matches[0] regardless and persist that one variant's canonical_code into session_vars, which silently narrowed a whole-family search to a member the customer never chose on the following turn (live answered \"SRTWC286-SH-200 (+9 more)\" and then searched only SRTWC286-SH-200). Only an unambiguous resolution may narrow raw -> code, so the multi-match arm now keeps the PARSER's own canonical_code, and this entity has none: null. The entity_type reconciliation is untouched - both matches agree on \"product\", so the hint still resolves. `family_match_count`, which an earlier draft of this arm also emitted, is deliberately NOT here: zero readers repo-wide, and it would have been written into every affected customer's session_vars and handed to the clarification LLM as noise."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -163,7 +163,7 @@
       {
        "raw": "IBKS9999",
        "hint": "product",
-       "canonical_code": "3f2a1b4c-5d6e-4f70-8a91-b2c3d4e5f607"
+       "canonical_code": null
       }
      ],
      "response": "Previous turn (inventory): returned 1 records [1 did-you-mean suggestions active]",

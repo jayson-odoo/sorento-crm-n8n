@@ -6,7 +6,7 @@
   "rationale": "dym-candidate-map: each candidate keeps the source token's OWN entity \u2014 matched on raw, so a second parser entity cannot lend its canonical_code \u2014 and the hint is the MATCH's entity_type when it has one, falling back to the source entity's hint only when it does not. Here the match says 'product' while the parser guessed 'category', and the second candidate (no entity_type at all) shows the fallback.",
   "reasoned": true,
   "repinned_at_version": "df165492",
-  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
+  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged.\n\nRE-PINNED 2026-08-25 (B2 family-narrowing fix, and specifically its hardening). \"IBKS9999\" names TWO products, so the resolver's matches[0] may no longer be pinned to it - see the sibling dym-partial fixtures for that half and the live execs behind it. What THIS fixture pins is the other half: the arm writes `pe.canonical_code ?? null`, never a bare null, so the parser's OWN code survives. It matters because the parser authors codes of its own (attachment_type \"gambar\" -> \"photo\") and output_exchange rewrites `raw` from that code before the resolver ever sees the token, so an unconditional null destroyed a value the resolver depends on. Here the parser wrote \"IBKS-CANON\", and it is kept."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -161,7 +161,7 @@
       {
        "raw": "IBKS9999",
        "hint": "product",
-       "canonical_code": "IBKS5245-NG-BL"
+       "canonical_code": "IBKS-CANON"
       }
      ],
      "response": "Previous turn (inventory): returned 1 records [2 did-you-mean suggestions active]",

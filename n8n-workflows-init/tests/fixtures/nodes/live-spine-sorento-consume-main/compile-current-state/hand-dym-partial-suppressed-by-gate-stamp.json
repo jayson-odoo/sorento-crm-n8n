@@ -3,7 +3,8 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The raw resolver still says the token missed, but the GATE resolved it (same-code collapse across companies) and stamped resolved_by on its own copy of resolutions. This block honours that stamp, so nothing is appended and the turn is byte-identical to a no-dym turn \u2014 the fix for the customer being handed the right answer and 'did you mean ...' for it underneath."
+  "rationale": "The raw resolver still says the token missed, but the GATE resolved it (same-code collapse across companies) and stamped resolved_by on its own copy of resolutions. This block honours that stamp, so nothing is appended and the turn is byte-identical to a no-dym turn \u2014 the fix for the customer being handed the right answer and 'did you mean ...' for it underneath.",
+  "repin_rationale": "RE-PINNED 2026-08-25 (B2 family-narrowing fix, measured on live execs 13733614 -> 13733666). \"IBKS9999\" is a PREFIX token that names TWO products, so it is a FAMILY, not a pick. reconcileEntities used to take matches[0] regardless and persist that one variant's canonical_code into session_vars, which silently narrowed a whole-family search to a member the customer never chose on the following turn (live answered \"SRTWC286-SH-200 (+9 more)\" and then searched only SRTWC286-SH-200). Only an unambiguous resolution may narrow raw -> code, so the multi-match arm now keeps the PARSER's own canonical_code, and this entity has none: null. The entity_type reconciliation is untouched - both matches agree on \"product\", so the hint still resolves. `family_match_count`, which an earlier draft of this arm also emitted, is deliberately NOT here: zero readers repo-wide, and it would have been written into every affected customer's session_vars and handed to the clarification LLM as noise."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -158,7 +159,7 @@
       {
        "raw": "IBKS9999",
        "hint": "product",
-       "canonical_code": "IBKS5245-NG-BL"
+       "canonical_code": null
       }
      ],
      "response": "Previous turn (inventory): returned 1 records",
