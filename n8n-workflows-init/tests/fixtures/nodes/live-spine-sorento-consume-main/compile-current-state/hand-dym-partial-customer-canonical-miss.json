@@ -1,0 +1,184 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "reasoned": true,
+  "n8n_access": "none - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The DYM/MISS RENDERER on the answered lane, hit with the exec-13868196 shape: a canonical-coded customer (raw `DELUXE HOME CENTRE SDN BHD (SETAPAK)`, canonical 300-D059) whose resolver token - the debtor code, because resolve-entity is sent `canonical_code ?? raw` - resolves to NOTHING while a product answers. The renderer already quotes through the node-scope _rawOfTok (hand-dym-partial-quotes-customer-spelling pins the product/dash cases), but that map was keyed on raws only, so this token fell through and the plain miss line would have read `\"300-D059\" (customer): not found.` - an internal debtor code, quoted at the customer as if they typed it. With the map now keyed under canonical_code too, the line must read `\"DELUXE HOME CENTRE SDN BHD (SETAPAK)\" (customer): not found.` - their own words, with the type label from the parser hint. Reasoned before running: (1) that exact miss line; (2) no /\\b300-D\\d+\\b/ anywhere in user_response (the code stays session data in `variables`, never copy); (3) the answered stock line above is untouched. The run confirmed all three. Reachable in principle whenever a session-pinned canonical stops resolving (deactivated or merged debtor account) on a turn where another token answers."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_stock",
+      "domain_hint": "inventory",
+      "user_goal": "check stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MMC544-AL-BL",
+        "hint": "product"
+       },
+       {
+        "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+        "hint": "customer",
+        "ordinal": 1,
+        "current_message": true,
+        "uuid": "aaaaaaaa-1111-2222-3333-444444444444",
+        "canonical_code": "300-D059"
+       }
+      ],
+      "routing": {
+       "suggested_team": "warehouse"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Stock for MMC544-AL-BL: 12.",
+     "items": [
+      {
+       "title": "MMC544-AL-BL"
+      }
+     ]
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "u-a",
+         "canonical_code": "MMC544-AL-BL",
+         "entity_type": "product",
+         "match_tier": "exact"
+        }
+       ]
+      },
+      {
+       "token": "300-D059",
+       "resolved": false,
+       "matches": []
+      }
+     ],
+     "unresolved_tokens": [
+      "300-D059"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "u-a",
+       "entity_type": "product",
+       "code": "MMC544-AL-BL"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "product",
+       "category",
+       "brand"
+      ]
+     },
+     "resolutions": [
+      {
+       "token": "MMC544-AL-BL",
+       "resolved": true
+      },
+      {
+       "token": "300-D059",
+       "resolved": false
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Stock for MMC544-AL-BL: 12."
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "user_goal": "check stock",
+     "query_scope": "specific",
+     "entities": [
+      {
+       "raw": "MMC544-AL-BL",
+       "hint": "product",
+       "canonical_code": "MMC544-AL-BL"
+      },
+      {
+       "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+       "hint": "customer",
+       "ordinal": 1,
+       "current_message": true,
+       "uuid": "aaaaaaaa-1111-2222-3333-444444444444",
+       "canonical_code": "300-D059"
+      }
+     ],
+     "routing": {
+      "suggested_team": "warehouse"
+     },
+     "escalation": {},
+     "response": "Previous turn (inventory): returned 1 records",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MMC544-AL-BL",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "match_mode": "or",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Stock for MMC544-AL-BL: 12.\n\nCouldn't find these:\n\"DELUXE HOME CENTRE SDN BHD (SETAPAK)\" (customer): not found.\n\nAsk again with the correct code."
+   }
+  }
+ ]
+}

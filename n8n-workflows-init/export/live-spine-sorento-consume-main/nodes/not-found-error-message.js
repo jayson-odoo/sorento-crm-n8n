@@ -389,10 +389,21 @@ if (missingAttachmentType) {
   // FIRST-wins on a normalized-key collision (agrees with compile-current-state's
   // .find(), which also keeps the first match). A plain Map(...map()) would keep the
   // LAST entity instead, letting the two nodes disagree on which entity a token names.
+  //
+  // Keyed under BOTH `raw` AND `canonical_code` (when present), mirroring what resolve-entity is
+  // SENT: `canonical_code ?? raw`. A picked customer's resolver token is its debtor code
+  // (live exec 13868196: token `300-D059`, raw `DELUXE HOME CENTRE SDN BHD (SETAPAK)`), so a
+  // raw-only map let the code fall through to the customer. Raw before canonical within each
+  // entity, entities in order (first-wins unchanged). ONE stripped key per value suffices even
+  // though resolve-entity strips `[-\s]+` only for `hint === 'product'`: lookups also go through
+  // `_typeNorm`, so the unstripped customer canonical and any stripped echo hit the same slot.
+  // SAME shape as compile-current-state's `_entByTok` - change both together.
   const _byRawStripped = new Map();
   for (const e of allEnts) {
     const _k = _typeNorm(e.raw);
     if (!_byRawStripped.has(_k)) _byRawStripped.set(_k, e);
+    const _kCode = _typeNorm(e.canonical_code);
+    if (_kCode && !_byRawStripped.has(_kCode)) _byRawStripped.set(_kCode, e);
   }
   const _typeOfToken = (t) => {
     try {

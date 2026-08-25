@@ -768,11 +768,25 @@ const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_
 // answer and the miss can never name one token two ways. Nothing matches (a CRM-side rewrite:
 // sent "Warehouse Bukit Raja", echoed "Bukit Raja" - exec 12777712) => the token is returned
 // UNCHANGED, i.e. exactly today's behaviour, so this can only ever improve a line, never invent one.
+//
+// Each entity is keyed under BOTH its `raw` AND its `canonical_code` (when present), because the
+// map's job is to mirror what resolve-entity was SENT: `canonical_code ?? raw`. A picked customer
+// carries its debtor code as canonical, so its resolver token is `300-D059` while its raw is the
+// company name - keyed on raw alone, that token fell through and the header printed the internal
+// code to the customer (live exec 13868196: `Customer: 300-D059, 300-D058`). Raw is inserted
+// before canonical within each entity, entities in order, so first-wins still prefers an entity's
+// own raw over a later entity's canonical on a key collision. ONE stripped key per value is
+// enough even though resolve-entity strips `[-\s]+` ONLY for `hint === 'product'` (verified in
+// its jsonBody): every lookup goes through `_tokKey` too, so the unstripped customer canonical
+// the resolver echoes (`300-D059`) and any stripped/lower-cased CRM echo (`300d059`) both land on
+// the same `_tokKey(canonical_code)` slot - an unstripped second key would be unreachable.
 const _tokKey = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
 const _entByTok = new Map();
 for (const _ent of (Array.isArray(qf.entities) ? qf.entities : [])) {
   const _entKey = _tokKey(_ent && _ent.raw);
   if (_entKey && !_entByTok.has(_entKey)) _entByTok.set(_entKey, _ent);
+  const _entCodeKey = _tokKey(_ent && _ent.canonical_code);
+  if (_entCodeKey && !_entByTok.has(_entCodeKey)) _entByTok.set(_entCodeKey, _ent);
 }
 const _entOfTok = (t) => _entByTok.get(_tokKey(t));
 const _rawOfTok = (t) => { const _e = _entOfTok(t); return (_e && _e.raw) || t; };

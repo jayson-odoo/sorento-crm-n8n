@@ -1,0 +1,126 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "reasoned": true,
+  "n8n_access": "none - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The MISS-LANE TWIN of compile-current-state/exec-13868196: a picked customer carries its debtor code as canonical_code, so resolve-entity is sent (and echoes) `300-D059` while the parser raw is the company name. On a delivery-order miss the search-scope header (_axisWords path 1) quotes that token through _rawOfTok - whose _byRawStripped map was keyed on each entity's RAW only, so the debtor code fell through and would have printed `Customer: 300-D059` in customer copy, the exact leak live exec 13868196 shipped on the answer lane. The map is now keyed under BOTH raw and canonical_code (first-wins, raw first, same normalization), so the header reads the customer's own name. Reasoned expectations, decided before the body ran: (1) the header opens `Customer: DELUXE HOME CENTRE SDN BHD (SETAPAK)` - the entity raw, never 300-D059; (2) the found-bullet names the resolved customer; (3) the not-found line quotes the product raw `\"SRTXX-9999\"` (dash intact), not the resolver echo SRTXX9999; (4) NO string matching /\\b300-D\\d+\\b/ appears anywhere in escalate_message. The run confirmed all four."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "user_goal": "check delivery order",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+        "hint": "customer",
+        "ordinal": 1,
+        "current_message": true,
+        "uuid": "aaaaaaaa-1111-2222-3333-444444444444",
+        "canonical_code": "300-D059"
+       },
+       {
+        "raw": "SRTXX-9999",
+        "hint": "product",
+        "ordinal": 2,
+        "current_message": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "customer_service"
+      },
+      "escalation": {},
+      "match_mode": "and"
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "300-D059",
+       "resolved": true,
+       "matches": [
+        {
+         "uuid": "cu-1",
+         "canonical_code": "300-D059",
+         "entity_type": "customer",
+         "match_tier": "exact",
+         "display": {
+          "customer_name": "DELUXE HOME CENTRE SDN BHD (SETAPAK)"
+         }
+        }
+       ]
+      },
+      {
+       "token": "SRTXX9999",
+       "resolved": false,
+       "matches": []
+      }
+     ],
+     "unresolved_tokens": [
+      "SRTXX9999"
+     ],
+     "tokens": [
+      "300-D059",
+      "SRTXX9999"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": false,
+     "compatible_entities": [
+      {
+       "uuid": "cu-1",
+       "entity_type": "customer",
+       "code": "300-D059"
+      }
+     ],
+     "gate_debug": {
+      "allowed_lookup": [
+       "customer",
+       "product",
+       "order",
+       "customer_order",
+       "order_number",
+       "transporter"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response_intro": [
+     "No matching results found."
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response_intro": [
+     "No matching results found."
+    ],
+    "escalate_message": "Customer: DELUXE HOME CENTRE SDN BHD (SETAPAK)\nProduct: all products\nDates: all dates\n\nHere's what you want:\n• customer: DELUXE HOME CENTRE SDN BHD (SETAPAK)\n\nCouldn't find: \"SRTXX-9999\" (product).\n\nBut no order matched these. Would you like me to escalate to customer service team?",
+    "is_clarification": false,
+    "found_summary": "• customer: DELUXE HOME CENTRE SDN BHD (SETAPAK)"
+   }
+  }
+ ]
+}
