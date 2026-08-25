@@ -1346,6 +1346,97 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   output.variables.routing_company      = _fresh ? (_g.routing_company ?? null)      : (_sameTeam ? (_prev.routing_company ?? null) : null);
   output.variables.routing_companies    = _fresh ? _g.routing_companies              : (_sameTeam && Array.isArray(_prev.routing_companies) ? _prev.routing_companies : null);
 }
+// ── miss-company-routing: result-aware escalation scoping (plan §1) ─────────
+// Placed LAST, after every user_response appender AND after the brand-company-routing axes block
+// above, because both arms below must have the final word on what is sent and what is persisted.
+// Case A (miss offer): build-miss-member-offer ran on the happy lane (between central-exchange
+// and dym-transform-partial) and produced member rows for the MISS company/companies — append the
+// FROZEN escalation phrase (parser regex contract: /would you like me to escalate/i, in BOTH the
+// customer text and persisted variables.response) + the picker, extend last_result_set with the
+// member rows (idx already continues the reply's numbering), arm the Δ3 pick context, and persist
+// the MISS pool identity (single miss company ⇒ that pair verbatim, so the existing bare-"yes"
+// arm routes there with no further change).
+// Case B follow-up (clarify): clarify-company-reply ran (the HI call was diverted on
+// multi_company_unpicked — no assignment happened) — replace the parser's confirmation text with
+// the clarify ask on the same send path and RE-persist the prior offer state so the next reply
+// (number / member name / company name) still resolves.
+// rev-4 (captain console, exec 12910575: "srt" → parser out_of_range on a multi pool → casual →
+// clarification LLM → "Hi there!" persisted, selection_context/last_result_set LOST): the SAME arm
+// now also fires when `offer-hold-reply` ran (offer-hold-gate: parser stayed in the offer but
+// resolved nothing on a MULTI pool) — same clarify text, same re-persist. Every unresolved path out
+// of an open multi-company offer therefore keeps selection_context, last_result_set, the roster plan,
+// routing_companies and the frozen phrase; only an explicit decline (escalation_declined) or a
+// brand-new business query (parser Tier 3, no member_pick_context) clears them.
+// Both arms fail closed: any missing signal leaves the turn byte-identical. The two cannot
+// co-occur (the miss lane rides the happy path, the clarify rides the escalation divert / hold).
+{
+  const _mcPrev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
+  const _mcClar = (() => {
+    for (const _n of ['clarify-company-reply', 'offer-hold-reply']) {
+      try { const n = $(_n); if (n.isExecuted) { const j = n.first().json; if (j && typeof j.clarify_text === 'string' && j.clarify_text.trim()) return j; } } catch (e) {}
+    }
+    return null;
+  })();
+  const _mcMem  = (() => { try { const n = $('build-miss-member-offer'); return n.isExecuted ? n.first().json : null; } catch (e) { return null; } })();
+  const _mcRows = (_mcMem && _mcMem.miss_member_offer === true && Array.isArray(_mcMem.miss_member_rows)) ? _mcMem.miss_member_rows : [];
+  // rev-3 (§V3): plain-offer plan (incoming/stock miss — members:false lanes; NO picker was shown).
+  const _mcPlainPlan = (_mcMem && _mcMem.miss_plain_offer === true && Array.isArray(_mcMem.miss_roster_plan))
+    ? _mcMem.miss_roster_plan.map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }))
+    : [];
+  if (_mcClar && typeof _mcClar.clarify_text === 'string' && _mcClar.clarify_text.trim()) {
+    output.user_response = _mcClar.clarify_text;
+    if (typeof _mcPrev.response === 'string' && _mcPrev.response) output.variables.response = _mcPrev.response;
+    if (Array.isArray(_mcPrev.last_result_set)) output.variables.last_result_set = _mcPrev.last_result_set;
+    if (_mcPrev.selection_context) output.variables.selection_context = _mcPrev.selection_context;
+    if (Array.isArray(_mcPrev.routing_roster_plan)) output.variables.routing_roster_plan = _mcPrev.routing_roster_plan;
+    if (_mcPrev.routing_company !== undefined) output.variables.routing_company = _mcPrev.routing_company;
+    if (_mcPrev.routing_brand !== undefined) output.variables.routing_brand = _mcPrev.routing_brand;
+    if (Array.isArray(_mcPrev.routing_companies)) output.variables.routing_companies = _mcPrev.routing_companies;
+  } else if (_mcRows.length
+      && !_ideate && !_sug && !_mem && !_dymLastResultSet
+      && typeof output.user_response === 'string' && output.user_response.trim().length
+      && typeof _mcMem.miss_offer_text === 'string' && _mcMem.miss_offer_text.trim().length) {
+    const _mcTeam = (qf.routing && qf.routing.suggested_team) || 'customer_service';
+    const _mcPlan = (Array.isArray(_mcMem.miss_roster_plan) ? _mcMem.miss_roster_plan : [])
+      .map((p, i) => ({ plan_idx: (p && p.plan_idx != null) ? p.plan_idx : i, company_id: (p && p.company_id) || null, company_name: (p && p.company_name) || null, brand_code: (p && p.brand_code) || null }));
+    // rev-3 (captain copy decision): ONE miss company ⇒ the phrase names it, bold, after "to" —
+    // `Would you like me to escalate to *Sorento* customer_service team?`. The parser contract is the
+    // PREFIX regex /would you like me to escalate/i, so the prefix wording stays byte-exact and the same
+    // string goes to BOTH the visible reply and persisted variables.response. Multi ⇒ plain phrase.
+    const _mcCo = (_mcPlan.length === 1 && _mcPlan[0].company_name) ? `*${_mcPlan[0].company_name}* ` : '';
+    const _mcPhrase = `Would you like me to escalate to ${_mcCo}${_mcTeam} team?`;   // FROZEN prefix wording — do not reword
+    output.user_response += `\n\n${_mcPhrase}\n\n${_mcMem.miss_offer_text}`;
+    output.variables.response = `${typeof output.variables.response === 'string' ? output.variables.response : ''}\n\n${_mcPhrase}`.trim();
+    const _mcBase = Array.isArray(output.variables.last_result_set) ? output.variables.last_result_set : [];
+    output.variables.last_result_set = _mcBase.concat(_mcRows);
+    output.variables.selection_context = 'member_offer';   // the parser's Δ3 arm resolves number/name/company replies
+    if (_mcPlan.length) {
+      output.variables.routing_roster_plan = _mcPlan;   // MISS pool identity overrides the axes block above
+      output.variables.routing_company = _mcPlan.length === 1 ? (_mcPlan[0].company_id || null) : null;
+      output.variables.routing_brand   = _mcPlan.length === 1 ? (_mcPlan[0].brand_code || null) : null;
+    }
+  } else if (_mcPlainPlan.length
+      && !_ideate && !_sug && !_mem && !_dymLastResultSet
+      && typeof output.user_response === 'string' && output.user_response.trim().length) {
+    // rev-3 PLAIN arm (§V3, captain corrections 1+2): incoming/stock miss — the FROZEN phrase ONLY
+    // (single miss names the company bold; the phrase names the team HI will route to — from the
+    // plan/lane, == the parser's suggested_team, gate-enforced lockstep; parser prefix-regex
+    // contract /would you like me to escalate/i in BOTH the visible reply and persisted
+    // variables.response). NO picker text, NO last_result_set extension, NO selection_context
+    // change (stays null — the Δ3 member arm must NOT open: a later "yes" rides the confirmation
+    // arm off the persisted phrase; a company-name reply rides the parser's rev-4 open-offer
+    // company_pick arm). Persist the MISS pool identity: the roster plan + the single pair on
+    // single-miss, nulls on multi (both-miss → multi_company_unpicked → company clarify).
+    const _mcTeamP = (() => { const t = (_mcMem.miss_roster_plan[0] || {}).team; return (typeof t === 'string' && t.trim()) ? t.trim() : ((qf.routing && qf.routing.suggested_team) || 'customer_service'); })();
+    const _mcCoP = (_mcPlainPlan.length === 1 && _mcPlainPlan[0].company_name) ? `*${_mcPlainPlan[0].company_name}* ` : '';
+    const _mcPhraseP = `Would you like me to escalate to ${_mcCoP}${_mcTeamP} team?`;   // FROZEN prefix wording — do not reword
+    output.user_response += `\n\n${_mcPhraseP}`;
+    output.variables.response = `${typeof output.variables.response === 'string' ? output.variables.response : ''}\n\n${_mcPhraseP}`.trim();
+    output.variables.routing_roster_plan = _mcPlainPlan;   // MISS pool identity overrides the axes block above
+    output.variables.routing_company = _mcPlainPlan.length === 1 ? (_mcPlainPlan[0].company_id || null) : null;
+    output.variables.routing_brand   = _mcPlainPlan.length === 1 ? (_mcPlainPlan[0].brand_code || null) : null;
+  }
+}
 // ── SEARCH SCOPE DISCLOSURE: say WHICH DATES the answer covers (captain, 2026-08-23) ──
 // An answer that does not state its date window is ambiguous: "1 order" reads equally as
 // "1 order ever" and "1 order this month", and the customer cannot tell which. Measured
