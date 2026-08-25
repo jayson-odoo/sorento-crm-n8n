@@ -1,0 +1,177 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "rationale": "Live execs 13880902 -> 13880933: turn 1 'delivery to customer chin chun, product WESERP10B' opened the customer picker and persisted BOTH entities plus a 3-row customer last_result_set under selection_context 'disambiguation'. Turn 2 '1' resolved position 1, and the REFERENCE POSITIONS -> ENTITIES block's `entities = [...resolved]` replaced the WHOLE set with the picked customer - the product was stripped and the answer covered every product. The fork's (C) block (built 2026-08-20 for the identical exec 13214595) re-attaches every prior NON-customer entity after a customer positional pick; the stale raw customer entity is deliberately NOT carried (replacing it is the entire point of the pick). Reasoned decision fields: entities = [picked customer 300-C043 (ordinal 1, uuid 060f4eaf...), carried product WESERP10B (current_message true)]; exactly ONE customer entity; match_mode stays 'and' (single position picked)."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "1",
+     "contact_id": 900000013,
+     "previous_conversation_state": {
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "match_mode": "and",
+      "selection_context": "disambiguation",
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "general_enquiries"
+      },
+      "response": "Which customer do you mean?",
+      "entities": [
+       {
+        "raw": "customer chin chun",
+        "hint": "customer",
+        "canonical_code": null,
+        "current_message": true,
+        "confident": true
+       },
+       {
+        "raw": "WESERP10B",
+        "hint": "product",
+        "canonical_code": "WESERP10B",
+        "current_message": true,
+        "confident": true
+       }
+      ],
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "060f4eaf-88ca-486a-a203-b0b61eeb9cd8",
+        "label": "CHIN CHUN HARDWARE SDN BHD",
+        "entity_type": "customer",
+        "product": "300-C043"
+       },
+       {
+        "idx": 2,
+        "uuid": "13eb525b-985c-44a5-abc4-4be5c7db6cd6",
+        "label": "CHIN CHUN HOMEMART SDN BHD",
+        "entity_type": "customer",
+        "product": "300-C124"
+       },
+       {
+        "idx": 3,
+        "uuid": "fa32b334-fc47-4bec-96db-f0f59a4bcb0f",
+        "label": "CHIN CHUN HARDWARE AND TIMBER TRADING",
+        "entity_type": "customer",
+        "product": "300-C001"
+       }
+      ]
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":\"specific\",\"is_affirmative\":null,\"user_goal\":\"\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[1],\"reference_target\":\"result\",\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": "specific",
+     "is_affirmative": null,
+     "user_goal": "",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "CHIN CHUN HARDWARE SDN BHD",
+       "hint": "customer",
+       "ordinal": 1,
+       "current_message": true,
+       "uuid": "060f4eaf-88ca-486a-a203-b0b61eeb9cd8",
+       "canonical_code": "300-C043"
+      },
+      {
+       "raw": "WESERP10B",
+       "hint": "product",
+       "canonical_code": "WESERP10B",
+       "current_message": true,
+       "confident": true
+      }
+     ],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [
+      1
+     ],
+     "reference_target": "result",
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_none",
+     "domain_reused_entityless": true,
+     "entity_op_applied": "reuse",
+     "query_brands": [],
+     "positions_resolved": 1,
+     "positions_out_of_range": [],
+     "domain_inherited_compatible": true,
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false,
+     "_pending_pick": true
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": "specific",
+     "is_affirmative": null,
+     "user_goal": "",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [
+      1
+     ],
+     "reference_target": "result",
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}
