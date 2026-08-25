@@ -150,7 +150,12 @@ test('flow: customer-picker (disallowed-entity-gate -> cs-offer-gate FALSE -> co
     assert.equal(typeof reply, 'string', 'compile-current-state must produce a reply');
     assert.ok(reply.includes('Which customer do you mean?'), 'the picker must reach the customer: ' + JSON.stringify(reply));
     assert.ok(reply.includes('1. 4 SMART PLUS SDN BHD - has delivery'), 'the probed company is annotated: ' + JSON.stringify(reply));
-    assert.ok(reply.includes('2. SB SMART CONCEPT SDN BHD - no delivery'), 'the unprobed-negative company is annotated: ' + JSON.stringify(reply));
+    // PARSER above carries no date bounds, so the probe ran under its injected 90-day default
+    // window and the miss suffix must NAME that window - a bare "- no delivery" would be a false
+    // universal (the probe never looked further back than 90 days). The dated-turn arm, where the
+    // short suffix IS the honest one, is pinned by the unit fixture
+    // hand-annotate-customer-dated-window.json.
+    assert.ok(reply.includes('2. SB SMART CONCEPT SDN BHD - no delivery in the last 90 days'), 'the unprobed-negative company is annotated with the probed window: ' + JSON.stringify(reply));
     // Captain hard rule 2026-08-22. Asserted on what the CUSTOMER receives, not on the producing
     // node — the annotation is computed in annotate-customer-picker, spread through
     // build-suggest-offer, and re-sourced BY NAME by escalate-catalog, so only the end of the lane

@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The zero-hit close. An empty (but successful) probe is a MEASURED zero, not a failure, so the node is entitled to say so - and it says it once, in a sentence, instead of leaving the customer to read three '- no delivery' suffixes and infer it. Distinguishing this from hand-annotate-probe-failed-renders-bare is the entire reason D2 exists: same rendered shape upstream, opposite entitlement to make a claim. customer_probe_hits is 0 here and null there. RETUNED 2026-08-25 (90-day probe window): the probe now always sends a delivery-date window - the parser's own bounds, else an injected last-90-days default - so the miss suffix and the zero-hit close are scoped to that window ('- no delivery in the last 90 days'); a bare '- no delivery' would be a false universal, the probe never looked further back. The parser ctx entry here carries NEITHER date bound, which is exactly the defaulted-window case; hand-annotate-customer-dated-window.json pins the other arm. customer_probe_window_days is the diagnostic mirror of that rule (90 = defaulted window, null = the customer's own dates)."
+  "rationale": "The OTHER arm of the window rule: the customer named their own dates (parser carries date_filter_start/end), so the probe passed THOSE bounds through and did NOT inject the 90-day default - and the suffix must not name a window the probe did not use. '- no delivery in the last 90 days' here would be a lie in both directions: the probe searched June, not the last 90 days. The short '- no delivery' is honest on a dated turn because the ask itself named the window the claim reads against (conversational scope), and the same goes for the zero-hit close ('matching delivery', pinned in hand-annotate-none-have-delivery's windowed twin). customer_probe_window_days is null - the diagnostic mirror that says the customer's own dates, not the default, scoped this claim. Guards this being 'simplified' into an unconditional windowed suffix, which would break every customer-dated picker turn."
  },
  "ctx": {
   "disallowed-entity-gate": [
@@ -55,7 +55,34 @@
   "probe-customer-orders": [
    {
     "json": {
-     "answers": []
+     "answers": [
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "MASTILE KLANG SDN BHD [A/C I]"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      }
+     ]
     }
    }
   ],
@@ -63,8 +90,8 @@
    {
     "json": {
      "output": {
-      "date_filter_start": null,
-      "date_filter_end": null
+      "date_filter_start": "2026-06-01",
+      "date_filter_end": "2026-06-30"
      }
     }
    }
@@ -119,10 +146,10 @@
      }
     ],
     "is_clarification": false,
-    "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD - no delivery in the last 90 days\n2. MASTILE KLANG SDN BHD - no delivery in the last 90 days\n3. YOO LIVING HOUSE SDN BHD - no delivery in the last 90 days\n\nNone of these have a delivery in the last 90 days.",
-    "customer_probe_hits": 0,
+    "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD - has delivery\n2. MASTILE KLANG SDN BHD - has delivery\n3. YOO LIVING HOUSE SDN BHD - no delivery",
+    "customer_probe_hits": 2,
     "customer_probe_skip_reason": null,
-    "customer_probe_window_days": 90
+    "customer_probe_window_days": null
    }
   }
  ]

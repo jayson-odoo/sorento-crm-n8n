@@ -1,12 +1,25 @@
 const gate  = $('disallowed-entity-gate').first().json ?? {};
 const probe = (() => { try { return $('probe-customer-orders').first().json ?? {}; } catch (e) { return {}; } })();
 
+// WHICH WINDOW WAS PROBED (2026-08-25). probe-customer-orders now always sends a delivery-date
+// window: the parser's own bounds when the customer named one, else an injected default of the
+// last 90 days ($now - 90d, computed in the probe's semantic_input expression). This mirror of
+// that exact rule - "defaulted iff the parser supplied NEITHER bound" - is what keeps the suffix
+// wording honest: on a defaulted probe the miss claim is scoped to "the last 90 days" (the only
+// window that was actually measured), on a customer-dated turn the ask itself named the window,
+// so the shorter "- no delivery" reads against it. The two rules are two halves of one sentence;
+// change the probe's default without changing this and the customer is told the wrong window.
+const parserOut = (() => { try { return $("Call 'sub-query-reformulator'").first().json.output ?? {}; } catch (e) { return {}; } })();
+const probeWindowed = (parserOut.date_filter_start ?? null) === null
+                   && (parserOut.date_filter_end   ?? null) === null;
+
 // Which CANDIDATES actually have a matching delivery, under the same product/date filters the
 // customer asked with (probe-customer-orders queried customer_probe_entities, not just the names).
 // Mirrors annotate-incoming-picker: display-only, the roster the next-turn pick resolves against
 // (compatible_entities) is untouched, and line order / numbering are preserved byte-for-byte.
 const out = gate;                                       // clean roster item, order intact
 out.is_clarification = false;                           // parity with the not-found require_specific branch
+out.customer_probe_window_days = probeWindowed ? 90 : null;  // diagnostic: which window the claim is scoped to
 
 // THE BARE PICKER. `not-found-error-message` renders a require_specific turn as
 // `escalate_message = gate.gate_clarification`, verbatim (not-found-error-message.js:548) - so this
@@ -30,20 +43,23 @@ if (rows === null) {
   return out;
 }
 
-// F - PAGE SATURATION, the same defence dym-annotate applies (`_PAGE_SATURATION`, dym-annotate.js:36)
-// and for the same reason: nothing in the envelope reports truncation, so a full page is the only
-// signal available that rows were cut, and an attribution built on a truncated page is wrong in the
-// one direction that matters - a candidate whose rows fell off the page reads as "no".
-// The cap is 20, and it is SOURCED, not guessed: the CRM route caps an external/agent order list at
-// `_EXTERNAL_ORDERS_LIST_LIMIT_CAP = 20` when no date filter is given
-// (sorento_crm_backend/app/api/v1/order_management/orders.py:22, and the MCP server says the same at
-// server.py:123 - "no date filter -> top-20 by latest delivery; date filter -> the full window").
-// MEASURED, exec 13590613: all 20 rows came back for ONE busy customer (A CRAFT IDEA), so the other
-// five candidates were never reached and would have rendered "- no delivery" on no evidence at all.
-// A date-scoped question lifts the backend cap to 1000, so a date-scoped answer of exactly 20 rows
-// loses its annotation here for nothing. That is the deliberate direction to be wrong in: a
-// saturated page withholds the annotation and renders the bare picker, and it can NEVER invent one.
-const _PAGE_SATURATION = 20;
+// F - PAGE SATURATION, retuned to the WINDOWED page (2026-08-25). The defence itself is unchanged
+// from dym-annotate's `_PAGE_SATURATION` (dym-annotate.js:36) and exists for the same reason:
+// nothing in the envelope reports truncation, so a page that comes back AT the server's hard limit
+// is the only available signal that rows were cut, and an attribution built on a truncated page is
+// wrong in the one direction that matters - a candidate whose rows fell off the page reads as "no".
+// What changed is the limit the page can hit. The probe now ALWAYS sends a delivery-date window
+// (see above), and ANY date filter lifts the CRM's external top-20 cap
+// (_EXTERNAL_ORDERS_LIST_LIMIT_CAP, orders.py:22) to the full window, hard-limited at
+// _EXTERNAL_ORDERS_DATE_SCOPED_LIMIT = 1000 (orders.py:41,60-61) - the same 1000 the route itself
+// enforces (`limit: int = Query(50, ge=1, le=1000)`, orders.py:291; the MCP layer slims fields but
+// cuts no rows, server.py _slim_orders_list_response). SOURCED, not guessed, like the 20 was.
+// At 20 this guard fired on exactly the busy customers the feature exists for - MEASURED, exec
+// 13863242: one customer family filled all 20 unwindowed rows, every suffix was suppressed, and the
+// picker shipped bare. At 1000 it fires only when one window really returns 1000+ rows, and the
+// deliberate direction to be wrong in is preserved: a saturated page withholds the annotation and
+// renders the bare picker, and it can NEVER invent one.
+const _PAGE_SATURATION = 1000;
 if (rows.length >= _PAGE_SATURATION) {
   out.escalate_message = bare;
   out.customer_probe_hits = null;                       // diagnostic: null = not measured
@@ -78,15 +94,24 @@ for (const r of rows) {
 // NO reordering, no renumbering - the numbers are the pick affordance. Suffixes only, and the plain
 // hyphen, never an em-dash (captain hard rule 2026-08-22; the sibling annotate-incoming-picker
 // already uses "- has incoming"). A hardcoded literal must not rely on a downstream sanitizer.
+// The miss suffix names the 90-day window on a defaulted probe because the window is
+// customer-visible semantics: a hit is a hit whenever it happened inside the probed window, but
+// "no delivery" with no window would be a false universal - the probe never looked further back.
+const SUFFIX_HIT  = ' - has delivery';
+const SUFFIX_MISS = probeWindowed ? ' - no delivery in the last 90 days' : ' - no delivery';
 const annotated = bare.split('\n').map(line => {
   const m = line.match(/^\s*\d+\.\s+(.+?)\s*$/);
   if (!m) return line;                                  // header / non-item line
   const b = base(m[1]);
-  return line + (withDelivery.has(b) ? ' - has delivery' : ' - no delivery');
+  return line + (withDelivery.has(b) ? SUFFIX_HIT : SUFFIX_MISS);
 }).join('\n');
 
 let msg = annotated;
-if (withDelivery.size === 0) msg += '\n\nNone of these have a matching delivery.';
+if (withDelivery.size === 0) {
+  msg += probeWindowed
+    ? '\n\nNone of these have a delivery in the last 90 days.'
+    : '\n\nNone of these have a matching delivery.';
+}
 
 out.escalate_message   = msg;
 out.customer_probe_hits = withDelivery.size;            // diagnostic

@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "D2. probe-customer-orders now carries onError: continueRegularOutput (D1), because after the splice this lane runs an LLM + MCP round-trip where today it is pure code that cannot fail - and a transient failure must not drop a turn that currently always answers. The cost of D1 is that the failure arrives here as an ordinary item, indistinguishable from 'we looked and found nothing' unless something checks. Neither `answers` nor `items` being an array is that check. On a failure the node must render the BARE picker - byte-identical to what not-found-error-message produces today (escalate_message = gate.gate_clarification) - and NOT the confident '- no delivery' on every line, and NOT the 'None of these have a matching delivery.' close, which is the same false claim in one sentence instead of three."
+  "rationale": "D2. probe-customer-orders now carries onError: continueRegularOutput (D1), because after the splice this lane runs an LLM + MCP round-trip where today it is pure code that cannot fail - and a transient failure must not drop a turn that currently always answers. The cost of D1 is that the failure arrives here as an ordinary item, indistinguishable from 'we looked and found nothing' unless something checks. Neither `answers` nor `items` being an array is that check. On a failure the node must render the BARE picker - byte-identical to what not-found-error-message produces today (escalate_message = gate.gate_clarification) - and NOT the confident '- no delivery' on every line, and NOT the 'None of these have a matching delivery.' close, which is the same false claim in one sentence instead of three. RETUNED 2026-08-25: unchanged in substance - a failed probe still renders the BARE picker. customer_probe_window_days is 90 because the probe was ASKED with the defaulted window; customer_probe_hits stays null because nothing came back to measure."
  },
  "ctx": {
   "disallowed-entity-gate": [
@@ -59,6 +59,16 @@
      "message": "timeout"
     }
    }
+  ],
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "date_filter_start": null,
+      "date_filter_end": null
+     }
+    }
+   }
   ]
  },
  "input": [
@@ -112,7 +122,8 @@
     "is_clarification": false,
     "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD\n2. MASTILE KLANG SDN BHD\n3. YOO LIVING HOUSE SDN BHD",
     "customer_probe_hits": null,
-    "customer_probe_skip_reason": "probe_unavailable"
+    "customer_probe_skip_reason": "probe_unavailable",
+    "customer_probe_window_days": 90
    }
   }
  ]
