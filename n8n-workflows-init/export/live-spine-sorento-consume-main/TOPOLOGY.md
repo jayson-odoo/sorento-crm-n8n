@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **704c68dc-1445-467b-88e6-e661d7b5eea8** · activeVersionId **704c68dc-1445-467b-88e6-e661d7b5eea8** · DRAFT == ACTIVE
+- versionId **997e3891-9877-4c90-9207-d02464d06135** · activeVersionId **997e3891-9877-4c90-9207-d02464d06135** · DRAFT == ACTIVE
 - 145 nodes
 
 ## Edges
@@ -325,10 +325,10 @@ wait-media-poll[0] -> media-poll-http
 | access-level-choice-message | 95 |
 | annotate-customer-picker | 94 |
 | detect-media | 91 |
+| escalation-context | 89 |
 | presign-fail-notice | 62 |
 | tool-filter | 59 |
 | attach-merge | 51 |
-| escalation-context | 51 |
 | sibling-transform | 47 |
 | tier-probe-collect | 47 |
 | validator | 46 |
