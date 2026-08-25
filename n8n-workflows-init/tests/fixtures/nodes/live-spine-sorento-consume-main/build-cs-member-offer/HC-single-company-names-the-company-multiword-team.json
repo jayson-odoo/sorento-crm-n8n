@@ -2,7 +2,7 @@
   "source": {
     "hand_crafted": true,
     "expected_from": "reasoned",
-    "rationale": "miss-company-routing rev-3, single-company half + the nameCompany regex fix (2026-08-25). Reasoned before running: a single-company offer names the company inside the escalate phrase - `escalate to *Sorento* purchasing certification team?` - and exports cs_offer_company for compile-current-state's Delta4 arm. The team here is deliberately MULTI-WORD: since the team display prettifier landed, every multi-word team renders with spaces, and the clone's `\\S+ team\\?` regex cannot cross a space, so on the clone the company label silently vanished on every multi-word team. The widened class `(?:[a-z0-9-]+ )*[a-z0-9-]+ team\\?` (byte-identical to the one compile-current-state ships at its own rewrite) is what makes this expected text reachable; this fixture goes red if anyone reverts to the clone form. The frozen parser prefix `Would you like me to escalate` sits before the insertion, untouched."
+    "rationale": "miss-company-routing rev-3, single-company half + the nameCompany regex fix (2026-08-25). Reasoned before running: a single-company offer names the company inside the escalate phrase - `escalate to *Sorento* purchasing certification team?` - and exports cs_offer_company for compile-current-state's Delta4 arm. The team here is deliberately MULTI-WORD: since the team display prettifier landed, every multi-word team renders with spaces, and the clone's `\\S+ team\\?` regex cannot cross a space, so on the clone the company label silently vanished on every multi-word team. The widened class `(?:[a-z0-9-]+ )*[a-z0-9-]+ team\\?` (byte-identical to the one compile-current-state ships at its own rewrite) is what makes this expected text reachable; this fixture goes red if anyone reverts to the clone form. The frozen parser prefix `Would you like me to escalate` sits before the insertion, untouched. AMENDED for company-pick part 3 (2026-08-25): cs_multi_close is exported null on a single-company offer - the yes-close stays byte-identical and compile-current-state's Delta4 _close keeps its fallback."
   },
   "ctx": {
     "cs-roster-plan": [
@@ -84,6 +84,7 @@
           }
         ],
         "cs_offer_company": "Sorento",
+        "cs_multi_close": null,
         "member_offer": true,
         "selection_context": "member_offer",
         "cs_last_result_set": [

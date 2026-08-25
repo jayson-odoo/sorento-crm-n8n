@@ -2,7 +2,7 @@
   "source": {
     "hand_crafted": true,
     "expected_from": "reasoned",
-    "rationale": "miss-company-routing rev-3 grouping port (2026-08-25). Pins the three copy decisions of the multi-company presenter AND the omission gate, reasoned from the body contract before running it: (1) bold presenter headers `*Mocha:*` with plain `n. Name` member lines - the company is said once by the header; (2) a member two rosters returned (Alex) keeps ONE global number and prints under EACH group it belongs to, so every idx in cs_last_result_set appears in the printed list - the row-drop defect class the reverted rev-3 bundle had is pinned closed; (3) a planned company whose roster returned nobody (Zen) gets the bracket line, with a plain hyphen (captain no-em-dash rule), never a silent omission. THE OMISSION: cs_multi_close is NOT exported and the closing sentence stays today's \"just reply 'yes'\" - the \"reply with the company name\" ask ships only when the parser's company_pick half is live end to end. cs_offer_company is null on multi: no single company may be named in the escalate phrase when several were searched."
+    "rationale": "miss-company-routing rev-3 grouping port (2026-08-25). Pins the three copy decisions of the multi-company presenter AND the omission gate, reasoned from the body contract before running it: (1) bold presenter headers `*Mocha:*` with plain `n. Name` member lines - the company is said once by the header; (2) a member two rosters returned (Alex) keeps ONE global number and prints under EACH group it belongs to, so every idx in cs_last_result_set appears in the printed list - the row-drop defect class the reverted rev-3 bundle had is pinned closed; (3) a planned company whose roster returned nobody (Zen) gets the bracket line, with a plain hyphen (captain no-em-dash rule), never a silent omission. THE OMISSION: cs_multi_close is NOT exported and the closing sentence stays today's \"just reply 'yes'\" - the \"reply with the company name\" ask ships only when the parser's company_pick half is live end to end. cs_offer_company is null on multi: no single company may be named in the escalate phrase when several were searched. AMENDED for company-pick part 3 (2026-08-25): the multi-company close is now the company ask, written once and exported as cs_multi_close (names in plan order, bold) so compile-current-state's Delta4 _close cannot drift; the parser's deterministic company_pick arm (XTODTw @ 8717de6b) resolves the invited names against the persisted plan. Zen is invited too: the pool key is the plan row's company_name, so an empty-roster company still resolves as a company_pick and escalation-context scopes the assign to it (round-robin on that team - the same fallback an empty roster already takes on a single-company offer)."
   },
   "ctx": {
     "cs-roster-plan": [
@@ -122,7 +122,7 @@
   "expected": [
     {
       "json": {
-        "response": "Couldn't find: \"300-D059\". Would you like me to escalate to customer service team?\n\nPlease choose who to route to (reply with the number):\n*Mocha:*\n1. Nadia\n2. Alex\n*Sorento:*\n2. Alex\n3. Emily\n[ Zen: no customer-service members are configured - omitted. ]\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "response": "Couldn't find: \"300-D059\". Would you like me to escalate to customer service team?\n\nPlease choose who to route to (reply with the number):\n*Mocha:*\n1. Nadia\n2. Alex\n*Sorento:*\n2. Alex\n3. Emily\n[ Zen: no customer-service members are configured - omitted. ]\n\nIf you have no preference, reply with the company name (*Mocha* / *Sorento* / *Zen*) and we'll assign accordingly.",
         "is_escalate_offer": true,
         "routing_companies": [
           {
@@ -177,6 +177,7 @@
           }
         ],
         "cs_offer_company": null,
+        "cs_multi_close": "If you have no preference, reply with the company name (*Mocha* / *Sorento* / *Zen*) and we'll assign accordingly.",
         "member_offer": true,
         "selection_context": "member_offer",
         "cs_last_result_set": [

@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Three companies: the `Both` lead is 2-only, so this takes the Oxford-less `A, B and C teams are listed` form. Same single ask. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
+  "rationale": "Three companies: the `Both` lead is 2-only, so this takes the Oxford-less `A, B and C teams are listed` form. Same single ask, company parenthetical carries all three names (all three resolve: name keys plus the SRT/MCH/CBN aliases in the parser's _CO_ALIASES). clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
  },
  "ctx": {
   "get-session-vars": [
@@ -86,7 +86,7 @@
     "routing_source": "multi_company_unpicked",
     "team": "customer_service",
     "clarify_company": true,
-    "clarify_text": "*Sorento*, *Mocha* and *Cabana* teams are listed - reply a number or a name and I'll assign automatically."
+    "clarify_text": "*Sorento*, *Mocha* and *Cabana* teams are listed - reply a number, a name, or the company (*Sorento* / *Mocha* / *Cabana*) and I'll assign automatically."
    }
   }
  ],

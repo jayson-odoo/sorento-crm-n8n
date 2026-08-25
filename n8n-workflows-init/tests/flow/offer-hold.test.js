@@ -30,7 +30,7 @@ const GATE = 'offer-hold-gate';
 const SORENTO = '00000000-0000-0000-0000-000000000001';
 const MOCHA = '38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2';
 const CLARIFY =
-  "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically.";
+  "Both *Sorento* and *Mocha* teams are listed - reply a number, a name, or the company (*Sorento* / *Mocha*) and I'll assign automatically.";
 
 const ROWS = [
   { idx: 1, uuid: 'cs-0001', label: 'Aisyah Rahman', company_id: SORENTO, company_name: 'Sorento' },

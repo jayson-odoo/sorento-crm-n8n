@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "THE C2/C5 REGRESSION GUARD. The clone body branched on prev.selection_context and emitted `reply with the company (Sorento / Mocha)` here - an affordance the LIVE parser cannot parse (company_pick: 0 occurrences in sub-semantic-parser XTODTw @ 177c50a9), so the customer was livelocked. There is now ONE string and no company branch. Unreachable in production anyway: both gates upstream require selection_context === 'member_offer'. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
+  "rationale": "ONE STRING, NO selection_context BRANCH (the clone's company-only variant stays retired). With the parser's company_pick arm live (XTODTw @ 8717de6b) the single member-branch ask now names the company too; on this no-picker state a company reply still resolves via the parser's open-offer block (frozen phrase in prev response + routing pool present). Unreachable in production anyway: both gates upstream require selection_context === 'member_offer'. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
  },
  "ctx": {
   "get-session-vars": [
@@ -58,7 +58,7 @@
     "routing_source": "multi_company_unpicked",
     "team": "customer_service",
     "clarify_company": true,
-    "clarify_text": "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically."
+    "clarify_text": "Both *Sorento* and *Mocha* teams are listed - reply a number, a name, or the company (*Sorento* / *Mocha*) and I'll assign automatically."
    }
   }
  ],

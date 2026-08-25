@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Delta-4: a date/code suggestion AND a CS roster in the same turn are shown TOGETHER, and this arm rebuilds the picker itself \u2014 so it must carry the same company labels and the same company labels build-cs-member-offer wrote, or a two-company roster reaches the customer as a bare list of names. A company that was QUERIED but returned no members (present in routing_companies, absent from the rows) is disclosed with the omitted-line rather than silently vanishing. selection_context is 'member_offer' (a number picks a person, not a code) while the quick replies still come from the suggestion. NOTE FIELD DELETED 2026-08-24 (captain: the multi-company note was annoying, and the routing-axis widening made its claim false - it is the TURN that spans two companies, not any one subject). The `cs_multi_note` this fixture used to carry in build-cs-member-offer's output is gone from the INPUT too, because the producer no longer writes the key at all; the multi-company signal is now read straight off routing_companies.length, which is the same signal the note was ever evidence of (multi = planItems.length > 1, and routing_companies IS planItems). Everything else this fixture pins - the per-company labels, the omitted-line for a queried company with an empty roster, selection_context - is unchanged, and that is the point: only the note paragraph left the expected text. AMENDED for company-pick part 3 (2026-08-25): build-cs-member-offer now exports cs_multi_close on every multi-company offer, so THIS fixture (key absent from ctx) pins the Delta4 _close FALLBACK - the path a persisted offer from before part 3 shipped still takes. The producer-fed multi close is pinned by hand-merge-multicompany-close-from-producer.",
+  "rationale": "Delta-4 close, END-TO-END with the producer (company-pick part 3, 2026-08-25). build-cs-member-offer now writes the multi-company close ONCE and exports it as cs_multi_close (bold names in plan order); this arm must render that exact string instead of its own fallback, so the merge turn and the plain member-offer turn ask the customer for the same thing - a COMPANY reply, which the live parser's deterministic company_pick arm (XTODTw @ 8717de6b) resolves against the persisted pool. Same ctx as hand-merge-suggest-plus-member-multicompany apart from the cs_multi_close key; single-company offers export cs_multi_close null and keep the fallback (pinned by hand-merge-single-company-no-labels).",
   "reasoned": true,
   "repinned_at_version": "df165492",
   "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes, both re-derived from the new contract: (1) a final em-dash sanitizer deep-walks the returned payload, so every U+2014 in user_response / variables.* folds to a plain hyphen; (2) miss/DYM lines now carry an entity-type suffix ` (<type>)` on the quoted token - resolver PRIMARY (that token's resolution matches[0].entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. The new MI-D media-confirm prefix is inert on these fixtures (patch-transcript not executed). Numbering, dym_last_result_set and dym candidates are unchanged."
@@ -97,7 +97,8 @@
        "company_id": "c2",
        "company_name": "Mocha"
       }
-     ]
+     ],
+     "cs_multi_close": "If you have no preference, reply with the company name (*Sorento* / *Mocha*) and we'll assign accordingly."
     }
    }
   ]
@@ -129,7 +130,7 @@
        "hint": "product"
       }
      ],
-     "response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Sorento)\n[ Mocha: no customer-service members are configured - omitted. ]\n\nOr just reply 'yes' and we'll assign automatically.",
+     "response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Sorento)\n[ Mocha: no customer-service members are configured - omitted. ]\n\nIf you have no preference, reply with the company name (*Sorento* / *Mocha*) and we'll assign accordingly.",
      "last_result_set": [
       {
        "idx": 1,
@@ -158,7 +159,7 @@
      "routing_company": null,
      "routing_companies": null
     },
-    "user_response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Sorento)\n[ Mocha: no customer-service members are configured - omitted. ]\n\nOr just reply 'yes' and we'll assign automatically.",
+    "user_response": "Couldn't find \"Ibks6245-bl-ng\". Did you mean:\n1. IBKS5245-NG-BL\n2. IBKS6245-NG-SS\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Person 1 (Sorento)\n2. Person 2 (Sorento)\n[ Mocha: no customer-service members are configured - omitted. ]\n\nIf you have no preference, reply with the company name (*Sorento* / *Mocha*) and we'll assign accordingly.",
     "quick_reply": "IBKS5245-NG-BL,IBKS6245-NG-SS,Yes escalate,No it's okay"
    }
   }

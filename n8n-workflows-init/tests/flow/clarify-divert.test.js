@@ -16,11 +16,14 @@
 //   * rp.length > 1 (the roster-plan arm) — a member picker is open and `last_result_set` holds the
 //     rows, so a number or a name resolves the follow-up. Diverting is strictly better: the customer
 //     is asked once and then assigned to someone they chose.
-//   * cos.length > 1 (the routing_companies arm) — NO member rows. Nothing numeric resolves, and the
-//     only affordance clarify copy could offer is a company name, which the LIVE parser has no
-//     handler for (company_pick: 0 occurrences in sub-semantic-parser XTODTw @ 177c50a9). Diverting
-//     THAT arm livelocks the customer: they answer, the parser drops it to Tier 4, the same ask
-//     comes back, forever, and they never reach a human. Live's imperfect assignment is BETTER.
+//   * cos.length > 1 (the routing_companies arm) — NO member rows. Nothing numeric resolves; the
+//     only affordance clarify copy could offer is a company name. When the gate landed the LIVE
+//     parser had no handler for that (company_pick: 0 occurrences @ 177c50a9) and diverting THAT
+//     arm livelocked the customer. 2026-08-25 (company-pick part 3) the parser CAN now resolve a
+//     company on this state (the open-offer _coCompanyPick block, XTODTw @ 8717de6b) — but
+//     widening the gate to divert the no-rows arm is a separate measured change with its own
+//     livelock analysis, NOT something to ride in with the copy. The gate stays narrow; live's
+//     imperfect assignment remains the no-rows behaviour.
 // So the gate does not key on routing_source alone. It requires persisted state that can actually
 // resolve the next reply: an open `member_offer` with a non-empty `last_result_set`. Case (e) below
 // is the proof that landed — it FAILS against the naive `routing_source === 'multi_company_unpicked'`
@@ -40,7 +43,7 @@ const HI = "Call 'sub-human-intervention'";
 const SORENTO = '00000000-0000-0000-0000-000000000001';
 const MOCHA = '38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2';
 const CLARIFY =
-  "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically.";
+  "Both *Sorento* and *Mocha* teams are listed - reply a number, a name, or the company (*Sorento* / *Mocha*) and I'll assign automatically.";
 
 const ROWS = [
   { idx: 1, uuid: 'cs-0001', label: 'Aisyah Rahman', company_id: SORENTO, company_name: 'Sorento' },
@@ -136,8 +139,12 @@ test('flow: (a) rp.length > 1 with an OPEN picker diverts to the clarify reply, 
   const reply = jsonNormalize(res.end)[0].json;
   assert.equal(reply.clarify_company, true);
   assert.equal(reply.clarify_text, CLARIFY);
-  assert.doesNotMatch(reply.clarify_text, /company/i,
-    'C2/C5: the ask must not offer an affordance the live parser cannot parse');
+  // C2/C5 flipped 2026-08-25 (company-pick part 3): the ask now offers the company too - the live
+  // parser's deterministic _coCompanyPick arm (XTODTw @ 8717de6b) resolves the invited names
+  // against this same persisted pool. tests/unit/offer-hold-clarify-divert.test.js cross-checks
+  // every invited name against the parser source.
+  assert.match(reply.clarify_text, /or the company \(\*Sorento\* \/ \*Mocha\*\)/,
+    'the ask must invite exactly the offered pool, bold, in pool order');
 });
 
 // ── (b)-(e) every path that must still reach a human ─────────────────────────────────────────
@@ -177,9 +184,10 @@ test('C4 proof: the naive routing_source-only gate WOULD have diverted case (e),
   assert.equal(ec.routing_source, 'multi_company_unpicked',
     'the naive gate `$json.routing_source === "multi_company_unpicked"` is TRUE here');
   assert.equal(gateSays(ctx, [{ json: ec }]), false,
-    'C4: with no member rows nothing the customer can type resolves, and the copy cannot offer a ' +
-    'company (the live parser has no company_pick), so diverting would livelock them. This gate ' +
-    'requires an open member_offer with rows before it takes the assignment away.');
+    'C4: with no member rows nothing numeric resolves. The parser CAN now resolve a company here ' +
+    '(part 3, open-offer _coCompanyPick), but widening this gate to divert the no-rows arm is a ' +
+    'separate measured change - until it is made, the gate must keep requiring an open ' +
+    'member_offer with rows before it takes the assignment away.');
 });
 
 // ── structure ────────────────────────────────────────────────────────────────────────────────

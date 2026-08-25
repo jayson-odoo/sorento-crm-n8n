@@ -16,11 +16,13 @@
 //   (b) even with (a) bypassed, `$input` here is miss-roster-plan's OWN items, not http
 //       fullResponse items — `rosterAt()` finds neither `body` array nor a bare array, yields zero
 //       members, and the `!members.length` guard returns the untouched envelope.
-// It matters that this stays unreachable, not merely unused: its multi-company close asks the
-// customer to "reply with the company name", which the LIVE parser cannot honour (no `company_pick`
-// arm), and compile-current-state's Case A — the only `last_result_set` CONCATENATION on live —
-// keys on the `miss_member_offer` flag this arm alone sets. The arm is kept rather than deleted so
-// the members half promotes as a wiring + flag change, with the rendering already reviewed.
+// It matters that this stays unreachable, not merely unused: compile-current-state's Case A — the
+// only `last_result_set` CONCATENATION on live — keys on the `miss_member_offer` flag this arm
+// alone sets, and the arm's wiring half (get-cs-members-miss + miss-members-gate) is not deployed.
+// Its multi-company close ("reply with the company name") became parseable 2026-08-25 — the live
+// parser's deterministic company_pick arm shipped (company-pick part 3) — so the COPY is no longer
+// a barrier; reachability still is, until Piece 2 ships the wiring + flag deliberately. The arm is
+// kept rather than deleted so that promotion is a wiring + flag change, rendering already reviewed.
 //
 // Mirrors build-cs-member-offer's roster parsing / dedupe / row shape (cs_last_result_set-shaped
 // rows incl. company_id/company_name/brand_code/company_ids/companies) so the parser's Δ3 pick arm

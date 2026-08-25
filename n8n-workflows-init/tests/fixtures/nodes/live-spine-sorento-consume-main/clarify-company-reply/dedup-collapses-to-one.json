@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Two pool entries, ONE company name: the Set dedupe collapses them, so names[] is length 1 and the `Both` lead does not fire. Also covers the routing_companies fallback - routing_roster_plan is present but empty, so `pools` falls through to routing_companies. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
+  "rationale": "Two pool entries, ONE company name: the Set dedupe collapses them, so names[] is length 1, the `Both` lead does not fire, and the company parenthetical invites the ONE deduped name (D5 - which still resolves: the parser pools by lowercased name, so both rows are one pool key). Also covers the routing_companies fallback - routing_roster_plan is present but empty, so `pools` falls through to routing_companies. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
  },
  "ctx": {
   "get-session-vars": [
@@ -71,7 +71,7 @@
     "routing_source": "multi_company_unpicked",
     "team": "customer_service",
     "clarify_company": true,
-    "clarify_text": "*Sorento* teams are listed - reply a number or a name and I'll assign automatically."
+    "clarify_text": "*Sorento* teams are listed - reply a number, a name, or the company (*Sorento*) and I'll assign automatically."
    }
   }
  ],

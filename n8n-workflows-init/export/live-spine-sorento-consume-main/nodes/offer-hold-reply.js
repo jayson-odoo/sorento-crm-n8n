@@ -17,22 +17,34 @@
 // + roster plan + companies + selection_context) so the NEXT reply still resolves against the same
 // offer. Only an explicit decline or a brand-new business query clears it.
 //
-// COPY — the ask offers a NUMBER or a NAME, never a company. The company names are bold in the lead
-// (WhatsApp single *asterisks*) so the customer can see which pools are in play, but they are not an
-// affordance: the LIVE parser (sub-semantic-parser XTODTw @ 177c50a9) has NO company_pick handler —
-// grepped, 0 occurrences — so a company-name reply comes back as Tier-4 junk and the bot re-prints
-// this same ask, forever. Both gates upstream require an OPEN member picker before this node can run
-// (offer-hold-gate: selection_context === 'member_offer'; clarify-company-gate: that PLUS a
-// non-empty last_result_set), so a number or a name always has something to resolve against.
-// Re-open the company affordance only in the same change that ships a parser which parses it.
+// COPY — the ask offers a NUMBER, a NAME, or the COMPANY (company-pick part 3, restored 2026-08-25).
+// The affordance was stripped while the LIVE parser had no company_pick handler (a company-name
+// reply came back as Tier-4 junk and this ask re-printed forever); the parser now carries the
+// deterministic _coCompanyPick arm (sub-semantic-parser XTODTw @ 8717de6b, live), which resolves a
+// bare company name, a *bold* copy of it, or a company code/alias (SRT / MCH / CBN) against the
+// SAME persisted pool this node prints (routing_roster_plan, else routing_companies),
+// case-insensitively and word-boundary, and emits a validated escalation.company_pick that
+// escalation-context's cpickRow consumes. A name outside the offered pool — or a reply naming two —
+// resolves to nothing and re-prints this ask: fail-closed, never a wrong assign. When the pool
+// carries NO names at all (degraded state) the parser has nothing to match (_coCompanyPick refuses
+// every pick on an empty pool), so the ask degrades to number/name only — never invite a reply that
+// cannot resolve. Company names are bold in the lead AND in the parenthetical (WhatsApp single
+// *asterisks*); D5 dedup: two pool rows sharing one company_name collapse to ONE printed name, and
+// that single-name parenthetical still resolves (the pool keys are per-name). Both gates upstream
+// require an OPEN member picker before this node can run (offer-hold-gate: selection_context ===
+// 'member_offer'; clarify-company-gate: that PLUS a non-empty last_result_set), so a number or a
+// name always has something to resolve against.
 const prev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
 const pools = (Array.isArray(prev.routing_roster_plan) && prev.routing_roster_plan.length)
   ? prev.routing_roster_plan
   : (Array.isArray(prev.routing_companies) ? prev.routing_companies : []);
 const names = [...new Set(pools.map(p => p && p.company_name).filter(Boolean))];
 const bold = names.map(n => `*${n}*`);
+const list = bold.join(' / ');
 const joinedBold = bold.length > 1 ? `${bold.slice(0, -1).join(', ')} and ${bold[bold.length - 1]}` : (bold[0] || '');
 const lead = names.length === 2 ? `Both ${joinedBold} teams are listed`
   : (joinedBold ? `${joinedBold} teams are listed` : `More than one team is listed`);
-const clarify_text = `${lead} - reply a number or a name and I'll assign automatically.`;
+const clarify_text = names.length
+  ? `${lead} - reply a number, a name, or the company (${list}) and I'll assign automatically.`
+  : `${lead} - reply a number or a name and I'll assign automatically.`;
 return [{ json: { ...$input.first().json, clarify_company: true, clarify_text } }];

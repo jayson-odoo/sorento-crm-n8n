@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "Neither pool source survived in session. Fail-soft: the lead degrades to the company-free `More than one team is listed` rather than emitting `*undefined*` or throwing - the picker rows are still on the wire, so a number or a name still resolves. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
+  "rationale": "Neither pool source survived in session. Fail-soft: the lead degrades to the company-free `More than one team is listed` AND the ask stays number/name-only - with an empty pool the parser's _coCompanyPick can resolve NO company reply (pool.size === 0), so the copy must not invite one. The picker rows are still on the wire, so a number or a name still resolves. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
  },
  "ctx": {
   "get-session-vars": [

@@ -12,9 +12,11 @@
 //      keys on, and Case A is the only `last_result_set` CONCATENATION on live — it can renumber a
 //      picker and send a later numeric reply to the wrong row. No LANE row says members:true, and
 //      even if one did, $input on this wiring carries plan items rather than http rosters.
-//   B. The multi-company close ("reply with the company name") cannot be emitted. The live parser
-//      has no `company_pick` arm, so a customer told to reply with a company name would not be
-//      understood.
+//   B. The multi-company close ("reply with the company name") cannot be emitted. It is MEMBERS-arm
+//      copy (build-miss-member-offer's picker rendering, Piece 2, not deployed), and the plain lane
+//      is capped to ONE company by miss-roster-plan anyway - there is no multi pool to pick from.
+//      (The string itself became parseable 2026-08-25 - company-pick part 3 - but that changes
+//      nothing here: the close still ships only when the members arm does.)
 //   C. compile-current-state's Case A' appends the FROZEN phrase, byte-exact, to BOTH the visible
 //      reply and `variables.response` (the parser reads the persisted copy), leaves
 //      `selection_context` null, and leaves `last_result_set` exactly as the no-offer turn had it.
@@ -88,7 +90,7 @@ test('A2 + B: build-miss-member-offer never emits miss_member_offer or the compa
     assert.equal(j.miss_member_rows, undefined, `${name}: miss_member_rows is set`);
     assert.equal(j.miss_offer_text, undefined, `${name}: miss_offer_text is set`);
     assert.doesNotMatch(JSON.stringify(j), /reply with the company name/i,
-      `${name}: the multi-company close reached the output — the live parser has no company_pick arm to honour it`);
+      `${name}: the multi-company close reached the output — that is members-arm copy (Piece 2, not deployed) and the plain lane has no multi pool to pick from`);
   }
 });
 

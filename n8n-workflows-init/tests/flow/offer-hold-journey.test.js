@@ -33,7 +33,7 @@ const CCS = 'compile-current-state';
 const SORENTO = '00000000-0000-0000-0000-000000000001';
 const MOCHA = '38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2';
 const CLARIFY =
-  "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically.";
+  "Both *Sorento* and *Mocha* teams are listed - reply a number, a name, or the company (*Sorento* / *Mocha*) and I'll assign automatically.";
 
 const CONTACT = [{ json: { id: 900000013 } }];
 const ccsBody = () => loadNodes(SLUG, [`${CCS}.js`])[`${CCS}.js`];
@@ -76,11 +76,13 @@ const T1_CTX = {
   ],
   // Shaped exactly as export/.../nodes/build-cs-member-offer.js's own final assignment builds it:
   // the catalog's escalate-offer line (carrying the FROZEN /would you like me to escalate/i prefix
-  // the parser's confirmation arm keys on), then the numbered picker, then the 'yes' fallback.
+  // the parser's confirmation arm keys on), then the numbered picker, then (company-pick part 3)
+  // the multi-company company-ask close, exported once as cs_multi_close.
   'build-cs-member-offer': [{ json: {
     response: 'I am sorry the provided answer does not meet your requirements. Would you like me to escalate to customer_service team?\n\n'
       + 'Please choose who to route to (reply with the number):\n1. Aisyah Rahman (Sorento)\n2. Wong Mei Ling (Mocha)\n\n'
-      + "If you have no preference, just reply 'yes' and we'll assign automatically.",
+      + "If you have no preference, reply with the company name (*Sorento* / *Mocha*) and we'll assign accordingly.",
+    cs_multi_close: "If you have no preference, reply with the company name (*Sorento* / *Mocha*) and we'll assign accordingly.",
     manualResponse: true,
     includeResponse: true,
     member_offer: true,

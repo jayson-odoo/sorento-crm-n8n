@@ -110,14 +110,19 @@ test('a two-company offer carries no multi-company note', () => {
     assert.match(offer.response, new RegExp(`^${row.idx}\\. `, 'm'),
       `row ${row.idx} (${row.label}) is pickable but was never printed`);
   }
-  assert.match(offer.response, /If you have no preference, just reply 'yes' and we'll assign automatically\.$/,
-    'the closing sentence must still be there');
-  // cs_multi_close is DELIBERATELY NOT PORTED with the rev-3 grouping: its "reply with the company
-  // name" ask needs the parser's company_pick half live end to end before the bot may ask for it.
-  assert.ok(!('cs_multi_close' in offer),
-    'cs_multi_close must not be exported until the company-reply lane is live end to end');
-  assert.doesNotMatch(offer.response, /reply with the company name/i,
-    'the bot must not ask for a reply the live parser cannot parse');
+  // FLIPPED 2026-08-25 (company-pick part 3): cs_multi_close IS ported now. The "reply with the
+  // company name" ask was held back until the parser's company_pick half was live end to end;
+  // the deterministic _coCompanyPick arm shipped (XTODTw @ 8717de6b), so a MULTI-company offer
+  // closes by asking for the company - the one reply that resolves where a bare "yes" cannot
+  // assign (escalation-context clarifies on multi_company_unpicked). Bold names in plan order,
+  // written once and exported so compile-current-state's Δ4 _close cannot drift.
+  assert.equal(offer.cs_multi_close,
+    "If you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly.",
+    'the multi-company close must be exported for compile-current-state\'s Δ4 arm');
+  assert.match(offer.response, /If you have no preference, reply with the company name \(\*Mocha\* \/ \*Sorento\*\) and we'll assign accordingly\.$/,
+    'the multi-company offer must close by asking for the company, names in plan order');
+  assert.doesNotMatch(offer.response, /just reply 'yes'/,
+    'the round-robin yes-close must not appear on a multi-company offer - a bare "yes" cannot assign here');
 });
 
 // MIND THE JOIN. The note used to sit between the escalate phrase and the picker prompt, ending
@@ -244,6 +249,8 @@ test('a single-company turn renders byte-identical', () => {
     'cs_multi_note must be a deleted field, not an unprinted one');
   assert.equal(r.offer.cs_offer_company, 'Sorento',
     'the single offered company is exported for compile-current-state\'s Δ4 arm (already live, reading exactly this key)');
+  assert.equal(r.offer.cs_multi_close, null,
+    'part 3: cs_multi_close is exported null on a single-company offer - the Δ4 _close guard keeps its yes-fallback');
   assert.equal(r.offer.response, SINGLE_COMPANY_OFFER);
 });
 

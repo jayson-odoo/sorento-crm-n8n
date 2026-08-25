@@ -110,15 +110,29 @@ if (!multi) {
 // out.response) carry the same text. Exported as cs_offer_company (null on multi / unnamed) so
 // compile-current-state's Δ4 merge arm (already live, reading exactly this key) applies the SAME
 // rewrite to its own phrase.
-// DELIBERATE DIVERGENCES from the clone's rev-3 body:
-//   * cs_multi_close is NOT ported. Its "reply with the company name (…)" sentence asks for a reply
-//     the live parser cannot parse until the company_pick half lands; the multi arm keeps today's
-//     closing sentence, and compile's Δ4 `_close` keeps its own fallback because the key is absent.
+// miss-company-routing rev-3, MULTI-company half (company-pick part 3, restored 2026-08-25 — the
+// "cs_multi_close is NOT ported" divergence is retired): on a MULTI-company offer a bare "yes"
+// cannot assign (escalation-context clarifies on multi_company_unpicked), so the closing sentence
+// asks for the COMPANY instead — a reply the live parser now honours (the deterministic
+// _coCompanyPick arm, sub-semantic-parser XTODTw @ 8717de6b, resolves a company name or code/alias
+// against the persisted routing_roster_plan and emits a validated escalation.company_pick).
+// Written ONCE here and exported (cs_multi_close) so compile-current-state's Δ4 merge arm cannot
+// drift (its `_close` falls back only when the key is absent/null — e.g. an offer persisted before
+// this shipped). Names in the offer's own order, N companies supported, WhatsApp-bold to match the
+// `*Company:*` group headers. Single company keeps the original yes-sentence byte-for-byte
+// (cs_multi_close = null).
+// DELIBERATE DIVERGENCE from the clone's rev-3 body (kept):
 //   * the rewrite regex spans a MULTI-WORD team — `(?:[a-z0-9-]+ )*[a-z0-9-]+`, the exact form
 //     compile-current-state already ships. The clone's `\S+ team\?` cannot cross a space, and since
 //     the team display prettifier landed every multi-word team renders with spaces
 //     (`customer service team`), so the clone form silently matched nothing and dropped the label.
 //     Still a no-op on a string already carrying `*Company*` after "to": `*` is outside the class.
+const names = planItems.map(p => p.company_name).filter(Boolean);
+const boldNames = names.map(n => `*${n}*`);
+const multiClose = multi
+  ? `If you have no preference, reply with the company name (${boldNames.join(' / ')}) and we'll assign accordingly.`
+  : null;
+out.cs_multi_close = multiClose;
 const offerCompany = (!multi && planItems[0] && planItems[0].company_name) ? String(planItems[0].company_name) : null;
 out.cs_offer_company = offerCompany;
 const nameCompany = (txt) => (offerCompany && typeof txt === 'string')
@@ -127,14 +141,15 @@ const nameCompany = (txt) => (offerCompany && typeof txt === 'string')
 // Preserve the not-found preamble from the catalog ("Could not find X for Y. Would you like me to escalate...?")
 // then append the member picker — do NOT discard cat.response.
 // The multi and single arms are the SAME text apart from `numbered` (grouped-with-headers vs flat,
-// built above) and the single-arm company rewrite — nameCompany is a no-op when offerCompany is
-// null, i.e. on every multi turn, so this stays written once rather than as a ternary.
+// built above), the single-arm company rewrite — nameCompany is a no-op when offerCompany is
+// null, i.e. on every multi turn — and the closing sentence (multiClose on multi, the original
+// yes-sentence on single), so this stays written once rather than as a ternary.
 // The fallback literal names the team the way the rest of the copy now does: spaces, not the
 // internal slug (captain 2026-08-24 - live was emitting `marketing_promotion_sorento team` at a
 // customer). Prefix `Would you like me to escalate` is byte-identical, so the parser contract holds.
 out.response = `${nameCompany(cat.response || 'Would you like me to escalate to customer service team?')}\n\n` +
   `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
-  `If you have no preference, just reply 'yes' and we'll assign automatically.`;
+  `${multiClose || `If you have no preference, just reply 'yes' and we'll assign automatically.`}`;
 out.member_offer = true;
 out.selection_context = 'member_offer';
 out.cs_last_result_set = members.map((m, i) => ({
