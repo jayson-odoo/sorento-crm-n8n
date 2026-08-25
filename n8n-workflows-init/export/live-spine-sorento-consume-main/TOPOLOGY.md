@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **3d43de63-b8e2-4bf8-abad-8cae21ec61b8** · activeVersionId **3d43de63-b8e2-4bf8-abad-8cae21ec61b8** · DRAFT == ACTIVE
+- versionId **83f62f90-d9c9-4b63-b970-c7d53002cfe1** · activeVersionId **83f62f90-d9c9-4b63-b970-c7d53002cfe1** · DRAFT == ACTIVE
 - 145 nodes
 
 ## Edges
@@ -314,11 +314,11 @@ wait-media-poll[0] -> media-poll-http
 | tier-gate | 195 |
 | crossdomain-render | 181 |
 | dym-annotate | 169 |
+| build-cs-member-offer | 163 |
 | media-route | 151 |
-| build-cs-member-offer | 148 |
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
-| build-miss-member-offer | 137 |
+| build-miss-member-offer | 139 |
 | escalate-catalog | 104 |
 | crossdomain-compose | 101 |
 | miss-roster-plan | 97 |
@@ -329,12 +329,12 @@ wait-media-poll[0] -> media-poll-http
 | presign-fail-notice | 62 |
 | tool-filter | 59 |
 | attach-merge | 51 |
+| offer-hold-reply | 50 |
+| clarify-company-reply | 50 |
 | sibling-transform | 47 |
 | tier-probe-collect | 47 |
 | validator | 46 |
 | patch-transcript | 43 |
-| offer-hold-reply | 38 |
-| clarify-company-reply | 38 |
 | promo-dym-plan | 37 |
 | annotate-incoming-picker | 35 |
 | tier-probe-plan | 33 |
