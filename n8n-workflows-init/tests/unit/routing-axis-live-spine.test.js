@@ -96,13 +96,28 @@ test('a two-company offer carries no multi-company note', () => {
   assert.ok(!('cs_multi_note' in offer),
     'cs_multi_note must be a deleted field, not an unprinted one');
   // the grouped list still stands on its own: both headers, every member, the close.
-  assert.match(offer.response, /^Mocha:$/m, 'the Mocha group header must survive');
-  assert.match(offer.response, /^Sorento:$/m, 'the Sorento group header must survive');
-  assert.match(offer.response, /^1\. Nadia \(Mocha\)$/m, 'the Mocha member must still be listed');
-  assert.match(offer.response, /^2\. Emily \(Sorento\)$/m, 'the first Sorento member must still be listed');
-  assert.match(offer.response, /^3\. Sandy \(Sorento\)$/m, 'the second Sorento member must still be listed');
+  // RE-PINNED 2026-08-25 (miss-company-routing rev-3 grouping port): the group header is now
+  // WhatsApp-bold presenter style (`*Mocha:*`) and the member lines are plain `n. Name` - the
+  // company is said once, by the header, not repeated per member. Numbering is still global
+  // (idx in cs_last_result_set), so a shared member keeps ONE number across groups.
+  assert.match(offer.response, /^\*Mocha:\*$/m, 'the Mocha group header must survive');
+  assert.match(offer.response, /^\*Sorento:\*$/m, 'the Sorento group header must survive');
+  assert.match(offer.response, /^1\. Nadia$/m, 'the Mocha member must still be listed');
+  assert.match(offer.response, /^2\. Emily$/m, 'the first Sorento member must still be listed');
+  assert.match(offer.response, /^3\. Sandy$/m, 'the second Sorento member must still be listed');
+  // every persisted row prints: a number the customer can pick must have been SHOWN to them
+  for (const row of offer.cs_last_result_set) {
+    assert.match(offer.response, new RegExp(`^${row.idx}\\. `, 'm'),
+      `row ${row.idx} (${row.label}) is pickable but was never printed`);
+  }
   assert.match(offer.response, /If you have no preference, just reply 'yes' and we'll assign automatically\.$/,
     'the closing sentence must still be there');
+  // cs_multi_close is DELIBERATELY NOT PORTED with the rev-3 grouping: its "reply with the company
+  // name" ask needs the parser's company_pick half live end to end before the bot may ask for it.
+  assert.ok(!('cs_multi_close' in offer),
+    'cs_multi_close must not be exported until the company-reply lane is live end to end');
+  assert.doesNotMatch(offer.response, /reply with the company name/i,
+    'the bot must not ask for a reply the live parser cannot parse');
 });
 
 // MIND THE JOIN. The note used to sit between the escalate phrase and the picker prompt, ending
@@ -111,7 +126,7 @@ test('a two-company offer carries no multi-company note', () => {
 test('deleting the note leaves the escalate phrase and the picker prompt correctly joined', () => {
   const { offer } = lane('f-leak');
   assert.match(offer.response,
-    /Would you like me to escalate to customer_service team\?\n\nPlease choose who to route to \(reply with the number\):\nMocha:/,
+    /Would you like me to escalate to customer_service team\?\n\nPlease choose who to route to \(reply with the number\):\n\*Mocha:\*/,
     'exactly one blank line between the escalate phrase and the picker prompt');
   assert.doesNotMatch(offer.response, /\n\n\n/, 'no doubled blank line anywhere in the reply');
 });
@@ -159,8 +174,8 @@ test('exec 13743718: a Mocha customer and a Sorento product route to BOTH teams'
 
 test('exec 13743718: the offer lists both companies teams, and still no note', () => {
   const { offer } = lane('routing-axis-two-companies');
-  assert.match(offer.response, /^Mocha:$/m, 'the Mocha group header must be rendered');
-  assert.match(offer.response, /^Sorento:$/m, 'the Sorento group header must be rendered');
+  assert.match(offer.response, /^\*Mocha:\*$/m, 'the Mocha group header must be rendered');
+  assert.match(offer.response, /^\*Sorento:\*$/m, 'the Sorento group header must be rendered');
   assert.match(offer.response, /Nadia/, 'THE BUG: a Mocha CS person never saw a Mocha account escalation');
   assert.match(offer.response, /Emily/);
   assert.match(offer.response, /Sandy/);
@@ -192,6 +207,14 @@ test('exec 13743718: the offer lists both companies teams, and still no note', (
 // this expectation moves by exactly one character in each block. Everything else - the header, the
 // bullets, the frozen `Would you like me to escalate` prefix the parser matches, the picker, the
 // numbering, the close - is byte-identical, which is still what "renders byte-identical" asserts.
+//
+// RE-PINNED again 2026-08-25 (miss-company-routing rev-3, single-company half), and ONLY on the
+// company label inside the escalate sentence: `escalate to customer service team?` -> `escalate to
+// *Sorento* customer service team?`. A single-company offer now names the company it will route to,
+// via build-cs-member-offer's nameCompany rewrite - whose regex spans a MULTI-WORD team
+// (`(?:[a-z0-9-]+ )*[a-z0-9-]+ team\?`, the same form compile-current-state ships), because the
+// prettified `customer service` has a space the clone's `\S+` could never cross. The frozen
+// `Would you like me to escalate` prefix the parser matches sits BEFORE the insertion, untouched.
 const SINGLE_COMPANY_OFFER = [
   'Customer: mastile klang',
   'Product: SRTKS7646',
@@ -201,7 +224,7 @@ const SINGLE_COMPANY_OFFER = [
   '• customer: MASTILE KLANG SDN BHD (+1 more)',
   '• product: SRTKS7646 (+1 more)',
   '',
-  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to customer service team?',
+  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to *Sorento* customer service team?',
   '',
   'Please choose who to route to (reply with the number):',
   '1. Emily',
@@ -219,6 +242,8 @@ test('a single-company turn renders byte-identical', () => {
   // needs to be strict about.
   assert.ok(!('cs_multi_note' in r.offer),
     'cs_multi_note must be a deleted field, not an unprinted one');
+  assert.equal(r.offer.cs_offer_company, 'Sorento',
+    'the single offered company is exported for compile-current-state\'s Δ4 arm (already live, reading exactly this key)');
   assert.equal(r.offer.response, SINGLE_COMPANY_OFFER);
 });
 
@@ -233,7 +258,7 @@ const PRODUCT_ONLY_OFFER = [
   "Here's what you want:",
   '• product: SRTKS7646 (+1 more)',
   '',
-  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to customer service team?',
+  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to *Sorento* customer service team?',
   '',
   'Please choose who to route to (reply with the number):',
   '1. Emily',

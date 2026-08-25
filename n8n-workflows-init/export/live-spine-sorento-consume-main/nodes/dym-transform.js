@@ -1,4 +1,4 @@
-// ── dym-transform (dym-probe-before-offer) ───────────────────────────────────────
+// ── dym-transform (dym-probe-before-offer) ─────────────────────────────────────
 // PURE planner for the "did you mean … — has/no <thing>" probe. Sits between
 // sibling-gate[1] and build-suggest-offer. It mirrors build-suggest-offer's D1
 // candidate selection EXACTLY (missResolutions + tokenCandidates + humanLabel
@@ -42,6 +42,11 @@ const DOMAIN_PROBE = {
     // additionally scoped by attachment_type_ids. 8 candidates ⇒ ~10 of the 50-row budget, so this
     // is safe with a large margin and is CONFIRMED at 8. Contrast `inventory` below, where the
     // measured grain was 3x worse than estimated — do not generalise between the two domains.
+    // probe_cap REMOVED 2026-08-22 (captain). Was 8. Product pickers routinely exceed 8 and every
+    // code past the cap rendered BARE, which reads worse than the truncation risk it guarded.
+    // Sole net is now dym-annotate's _PAGE_SATURATION = 50 suppress-all (fail closed: can withhold
+    // an annotation, never invent one). RESTORED after a stale-draft publish reverted it.
+    // Contrast `inventory` below: its cap stays load bearing, do NOT remove or raise it.
   },
   promotion: {
     tool:      'crm_marketing_promotions_list',
@@ -210,7 +215,7 @@ const _survivors = d1s
 // single-token limit, never the looser one.
 const _isPartialLane = (() => { try { return $('central-exchange').isExecuted === true; } catch (e) { return false; } })();
 
-// ── decide ─────────────────────────────────────────────────────────────────────
+// ── decide ────────────────────────────────────────────────────────────────────
 const domain = (gate && gate.gate_debug && gate.gate_debug.domain) || q?.domain_hint || null;
 const cfg    = DOMAIN_PROBE[domain] || null;
 

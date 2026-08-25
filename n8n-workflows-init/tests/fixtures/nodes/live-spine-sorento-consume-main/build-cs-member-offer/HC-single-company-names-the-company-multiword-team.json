@@ -1,0 +1,126 @@
+{
+  "source": {
+    "hand_crafted": true,
+    "expected_from": "reasoned",
+    "rationale": "miss-company-routing rev-3, single-company half + the nameCompany regex fix (2026-08-25). Reasoned before running: a single-company offer names the company inside the escalate phrase - `escalate to *Sorento* purchasing certification team?` - and exports cs_offer_company for compile-current-state's Delta4 arm. The team here is deliberately MULTI-WORD: since the team display prettifier landed, every multi-word team renders with spaces, and the clone's `\\S+ team\\?` regex cannot cross a space, so on the clone the company label silently vanished on every multi-word team. The widened class `(?:[a-z0-9-]+ )*[a-z0-9-]+ team\\?` (byte-identical to the one compile-current-state ships at its own rewrite) is what makes this expected text reachable; this fixture goes red if anyone reverts to the clone form. The frozen parser prefix `Would you like me to escalate` sits before the insertion, untouched."
+  },
+  "ctx": {
+    "cs-roster-plan": [
+      {
+        "json": {
+          "plan_idx": 0,
+          "company_id": "00000000-0000-0000-0000-000000000001",
+          "company_name": "Sorento",
+          "brand_code": "sorento",
+          "codes": [
+            "SRTKS7646"
+          ],
+          "labels": [
+            "SRTKS7646"
+          ],
+          "multi_company": false,
+          "companies": [
+            "Sorento"
+          ]
+        }
+      }
+    ],
+    "get-cs-members": [
+      {
+        "json": {
+          "body": [
+            {
+              "user_id": "u-sor-1",
+              "name": "Emily",
+              "respond_user_id": "r-2"
+            },
+            {
+              "user_id": "u-sor-2",
+              "name": "Sandy",
+              "respond_user_id": "r-3"
+            }
+          ]
+        }
+      }
+    ],
+    "escalate-catalog": [
+      {
+        "json": {
+          "response": "Couldn't find: \"srtks\". Would you like me to escalate to purchasing certification team?",
+          "is_escalate_offer": true
+        }
+      }
+    ]
+  },
+  "input": [
+    {
+      "json": {
+        "response": "Couldn't find: \"srtks\". Would you like me to escalate to purchasing certification team?",
+        "is_escalate_offer": true
+      }
+    }
+  ],
+  "expected": [
+    {
+      "json": {
+        "response": "Couldn't find: \"srtks\". Would you like me to escalate to *Sorento* purchasing certification team?\n\nPlease choose who to route to (reply with the number):\n1. Emily\n2. Sandy\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+        "is_escalate_offer": true,
+        "routing_companies": [
+          {
+            "plan_idx": 0,
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "sorento",
+            "codes": [
+              "SRTKS7646"
+            ],
+            "labels": [
+              "SRTKS7646"
+            ],
+            "multi_company": false,
+            "companies": [
+              "Sorento"
+            ]
+          }
+        ],
+        "cs_offer_company": "Sorento",
+        "member_offer": true,
+        "selection_context": "member_offer",
+        "cs_last_result_set": [
+          {
+            "idx": 1,
+            "label": "Emily",
+            "uuid": "u-sor-1",
+            "respond_user_id": "r-2",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "sorento",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          },
+          {
+            "idx": 2,
+            "label": "Sandy",
+            "uuid": "u-sor-2",
+            "respond_user_id": "r-3",
+            "company_id": "00000000-0000-0000-0000-000000000001",
+            "company_name": "Sorento",
+            "brand_code": "sorento",
+            "company_ids": [
+              "00000000-0000-0000-0000-000000000001"
+            ],
+            "companies": [
+              "Sorento"
+            ]
+          }
+        ],
+        "manualResponse": true,
+        "includeResponse": true
+      }
+    }
+  ]
+}

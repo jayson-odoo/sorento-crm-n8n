@@ -4,7 +4,8 @@
     "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
     "node": "cs-roster-plan",
     "captured_at": "2026-08-22T12:01:54+00:00",
-    "expected_from": "runData"
+    "expected_from": "runData",
+    "repin_note": "labels added to `expected` 2026-08-25 (clone-ahead port, plan case F): plan rows now carry `labels: Array.isArray(c.labels) ? c.labels : []` - customer-facing names for the debtor codes, so a future note can never print a raw code. These captures' upstream company objects carry no `labels`, so the tolerant read pins the fallback `[]`; every other field is byte-identical to the runData. The capture under ctx/ is untouched; only the assertion is re-pinned."
   },
   "ctx": {
     "When Executed by Another Workflow": [
@@ -1868,7 +1869,8 @@
         "multi_company": false,
         "companies": [
           "Sorento"
-        ]
+        ],
+        "labels": []
       }
     }
   ],

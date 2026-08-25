@@ -5,7 +5,7 @@
     "node": "build-cs-member-offer",
     "captured_at": "2026-08-22T12:01:54+00:00",
     "expected_from": "runData",
-    "repin_note": "cs_multi_note deleted from `expected` 2026-08-24. The captured runData above was a SINGLE-company offer, where the field was always the literal null - the note itself never rendered on any of these turns and their `response` text is byte-identical before and after. What changed is that build-cs-member-offer no longer writes the key at all (captain: drop the multi-company note), so `null` became absent. The capture under ctx/ is left exactly as live emitted it - that is the historical record; only the assertion is re-pinned."
+    "repin_note": "cs_multi_note deleted from `expected` 2026-08-24. The captured runData above was a SINGLE-company offer, where the field was always the literal null - the note itself never rendered on any of these turns and their `response` text is byte-identical before and after. What changed is that build-cs-member-offer no longer writes the key at all (captain: drop the multi-company note), so `null` became absent. The capture under ctx/ is left exactly as live emitted it - that is the historical record; only the assertion is re-pinned. | cs_offer_company added to `expected` 2026-08-25 (miss-company-routing rev-3, single-company half): the node now exports the offered company name (null on multi/unnamed) for compile-current-state's Delta4 arm, which already ships reading exactly this key. `response` is byte-identical on all three captures: these predate the team display prettifier, so their cat.response still says `customer_service team?` and the company rewrite regex ([a-z0-9-] words only, the same form compile-current-state ships) correctly does not touch an underscore slug. The rewrite firing on prettified copy is pinned by HC-single-company-names-the-company-multiword-team. ctx/ untouched; only the assertion is re-pinned."
   },
   "ctx": {
     "When Executed by Another Workflow": [
@@ -2031,7 +2031,8 @@
               "Sorento"
             ]
           }
-        ]
+        ],
+        "cs_offer_company": "Sorento"
       }
     }
   ],

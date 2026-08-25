@@ -1,4 +1,4 @@
-// ── crossdomain-render ────────────────────────────────────────────────────────────────────
+// ── crossdomain-render ────────────────────────────────────────────────────────────────────────
 // Turns the cross-probe result into the customer-facing block.
 //
 // FORMAT PARITY (user decision 2026-08-03): renders each row with the SAME labelled fields the normal

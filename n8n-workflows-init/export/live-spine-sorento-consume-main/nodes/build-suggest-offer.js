@@ -165,14 +165,23 @@ function tokenCandidates(res) {
   const acc = [];
   if (Array.isArray(res?.matches)) acc.push(...res.matches);
   if (Array.isArray(res?.alternatives)) acc.push(...res.alternatives);
+  // customer rows arrive multiply-coded (same account as debtor NAME, debtor CODE and a
+  // DBR-hash canonical_code — measured, exec 13186947), so code-keyed dedup rendered one
+  // customer as three "codes". Key customers on their display name instead; resolver
+  // similarity order keeps the name-coded row first, so the kept candidate labels as the name.
+  const _custKey = (m) => {
+    const d = (m && m.display) || {};
+    return 'cust:' + String(d.debtor_name || d.customer_name || m.canonical_code || '').trim().toLowerCase();
+  };
   const seen = new Set(); const keep = [];
   for (const m of acc) {
     const code = m && m.canonical_code;
     if (!code) continue;
     if (isExact(m)) continue;                                                  // exact would have resolved
     if (allowedTypes && m.entity_type && !allowedTypes.includes(m.entity_type)) continue;
-    if (seen.has(code)) continue;
-    seen.add(code); keep.push(m);   // API ranks variants-first / by similarity → keep order
+    const key = String(m.entity_type || '').toLowerCase() === 'customer' ? _custKey(m) : code;
+    if (seen.has(key)) continue;
+    seen.add(key); keep.push(m);   // API ranks variants-first / by similarity → keep order
   }
   return keep;
 }

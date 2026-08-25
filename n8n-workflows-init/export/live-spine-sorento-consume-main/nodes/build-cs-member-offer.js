@@ -5,9 +5,10 @@
 // Empty roster → fall back to the catalog's generic offer (round-robin on a bare "yes").
 // brand-company-routing: cs-roster-plan emits ONE item per company; get-cs-members runs once per
 // item with fullResponse=true, so response i ↔ plan i by index. Multi-company ⇒ union of rosters,
-// every member labelled with its company under a `Company:` group header (captain 2026-08-24:
+// every member listed plain (`n. Name`) under a bold `*Company:*` group header (captain 2026-08-24:
 // no explanatory note - the grouped list already shows this on its own).
-// Single company ⇒ text byte-identical to the pre-change shape.
+// Single company ⇒ text byte-identical to the pre-change shape, except (miss-company-routing rev-3)
+// the escalate phrase names the company: `…escalate to *Sorento* customer service team?`.
 const plan = (() => { try { return $('cs-roster-plan').all().map(i => i.json); } catch (e) { return []; } })();
 const resp = $('get-cs-members').all().map(i => i.json);
 const rosterAt = (i) => {
@@ -67,13 +68,28 @@ if (!multi) {
 } else {
   const lines = [];
   const empty = [];
+  // miss-company-routing rev-3 (captain copy decisions): the group header carries the company — bold,
+  // presenter style `*Company:*` — and the member lines are plain `n. Name` (no per-member suffix).
+  // A shared member (rev-6) keeps ONE number and appears under each group it belongs to.
+  const _printed = new Set();
   for (const p of planItems) {
     const group = members.map((m, i) => ({ m, n: i + 1 })).filter(x => inCo(x.m, p));
     if (!group.length) { if (p.company_name) empty.push(p.company_name); continue; }
-    lines.push(`${p.company_name || 'Other'}:`);
-    for (const g of group) { lines.push(`${g.n}. ${g.m.name} (${(g.m.companies && g.m.companies.length ? g.m.companies : [g.m.company_name || p.company_name || '']).join(' / ')})`); }
+    lines.push(`*${p.company_name || 'Other'}:*`);
+    for (const g of group) { lines.push(`${g.n}. ${g.m.name}`); _printed.add(g.n); }
   }
-  for (const nm of empty) lines.push(`[ ${nm}: no customer-service members are configured — omitted. ]`);
+  // EVERY ROW PRINTS. A member row placed under no header would vanish from the printed list while
+  // KEEPING its number in cs_last_result_set — the customer is invited to pick a number they were
+  // never shown (the exact row-drop defect compile-current-state's Δ4 renderer documents from the
+  // reverted rev-3 bundle). Unreachable today BY CONSTRUCTION — every members row's company_ids[0]
+  // is the plan item that contributed it, so inCo(m, its own origin p) is always true — but the
+  // property is load-bearing enough to hold by code, not by inference about upstream shapes.
+  members.forEach((m, i) => {
+    if (_printed.has(i + 1)) return;
+    const _lbl = (Array.isArray(m.companies) && m.companies.length) ? m.companies : (m.company_name ? [m.company_name] : []);
+    lines.push(_lbl.length ? `${i + 1}. ${m.name} (${_lbl.join(' / ')})` : `${i + 1}. ${m.name}`);
+  });
+  for (const nm of empty) lines.push(`[ ${nm}: no customer-service members are configured - omitted. ]`);
   numbered = lines.join('\n');
 }
 // captain 2026-08-24: dropped the "Note: X is carried by more than one company (...)" sentence that
@@ -86,15 +102,37 @@ if (!multi) {
 // deleted, not just unprinted - nothing else reads it (compile-current-state's Δ4 arm now derives
 // multi-company from routing_companies.length). The `Mocha:` / `Sorento:` grouped list below is
 // left to explain itself.
+// miss-company-routing rev-3, SINGLE-company half only: the offer names the company inside the
+// escalate phrase — `Would you like me to escalate to *Sorento* customer service team?`. The parser
+// contract is the PREFIX regex /would you like me to escalate/i, so the insertion after "to" is
+// contract-safe; the phrase is rewritten in place inside cat.response (first occurrence,
+// case-insensitive on the lead) so the visible reply and the persisted variables.response (both =
+// out.response) carry the same text. Exported as cs_offer_company (null on multi / unnamed) so
+// compile-current-state's Δ4 merge arm (already live, reading exactly this key) applies the SAME
+// rewrite to its own phrase.
+// DELIBERATE DIVERGENCES from the clone's rev-3 body:
+//   * cs_multi_close is NOT ported. Its "reply with the company name (…)" sentence asks for a reply
+//     the live parser cannot parse until the company_pick half lands; the multi arm keeps today's
+//     closing sentence, and compile's Δ4 `_close` keeps its own fallback because the key is absent.
+//   * the rewrite regex spans a MULTI-WORD team — `(?:[a-z0-9-]+ )*[a-z0-9-]+`, the exact form
+//     compile-current-state already ships. The clone's `\S+ team\?` cannot cross a space, and since
+//     the team display prettifier landed every multi-word team renders with spaces
+//     (`customer service team`), so the clone form silently matched nothing and dropped the label.
+//     Still a no-op on a string already carrying `*Company*` after "to": `*` is outside the class.
+const offerCompany = (!multi && planItems[0] && planItems[0].company_name) ? String(planItems[0].company_name) : null;
+out.cs_offer_company = offerCompany;
+const nameCompany = (txt) => (offerCompany && typeof txt === 'string')
+  ? txt.replace(/(would you like me to escalate to )((?:[a-z0-9-]+ )*[a-z0-9-]+ team\?)/i, (s, a, b) => `${a}*${offerCompany}* ${b}`)
+  : txt;
 // Preserve the not-found preamble from the catalog ("Could not find X for Y. Would you like me to escalate...?")
 // then append the member picker — do NOT discard cat.response.
-// The multi and single arms became the SAME text when the note went - the only thing that still
-// differs between them is `numbered` (grouped-with-headers vs flat), built above. Written once here
-// rather than as a ternary whose two branches are byte-identical.
+// The multi and single arms are the SAME text apart from `numbered` (grouped-with-headers vs flat,
+// built above) and the single-arm company rewrite — nameCompany is a no-op when offerCompany is
+// null, i.e. on every multi turn, so this stays written once rather than as a ternary.
 // The fallback literal names the team the way the rest of the copy now does: spaces, not the
 // internal slug (captain 2026-08-24 - live was emitting `marketing_promotion_sorento team` at a
 // customer). Prefix `Would you like me to escalate` is byte-identical, so the parser contract holds.
-out.response = `${cat.response || 'Would you like me to escalate to customer service team?'}\n\n` +
+out.response = `${nameCompany(cat.response || 'Would you like me to escalate to customer service team?')}\n\n` +
   `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
   `If you have no preference, just reply 'yes' and we'll assign automatically.`;
 out.member_offer = true;

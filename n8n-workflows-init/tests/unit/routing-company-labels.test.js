@@ -103,11 +103,18 @@ test('labels is ADDITIVE - codes is untouched', () => {
 
 // ── the honest part ───────────────────────────────────────────────────────────────────────────
 test('INERT downstream, but exec 13687248 no longer reaches the customer', () => {
-  const { plan, offer } = lane('f-leak');
+  const { plan, offer, gate } = lane('f-leak');
   assert.ok(plan.length > 0);
+  // FLIPPED 2026-08-25 exactly as the old line here said to: cs-roster-plan now forwards the
+  // gate's customer-facing labels[] (clone-ahead port, plan case F), so a future note/renderer
+  // has something true to name a routing subject with that is never a debtor code.
+  const gateLabels = Object.fromEntries(gate.routing_companies.map((c) => [c.company_name, c.labels]));
   for (const p of plan) {
-    assert.equal(p.labels, undefined,
-      'live cs-roster-plan does not forward labels yet - when it does, this line is the one to change');
+    assert.deepStrictEqual(p.labels, gateLabels[p.company_name],
+      `${p.company_name}: cs-roster-plan must forward the gate's labels verbatim`);
+    for (const l of p.labels) {
+      assert.doesNotMatch(l, /^\d{3}-[A-Z]\d+$/, `${l} is a debtor code, not a customer-facing label`);
+    }
   }
   // The half that FLIPPED (see the repurpose note in this file's header): the note that printed
   // `codes` to the customer is deleted, so the debtor code cannot reach anyone through it.

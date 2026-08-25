@@ -59,4 +59,4 @@ const notice = (total > failed)
 // Dead-end branch: emits a fresh item and mutates nothing. It never touches
 // `crossdomain-compose`'s item (on live that item is the body of the session PUT — review F2),
 // and writes no key into `last_result_set` / `selection_context`.
-return [{ json: { notice, presign_failed: true, failed, total } }];
+return [{ json: { notice: String(notice || '').replace(/\u2014/g, '-'), presign_failed: true, failed, total } }];
