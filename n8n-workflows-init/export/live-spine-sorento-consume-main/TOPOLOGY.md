@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **3abd118b-7265-4119-975d-2691d2a1131c** · activeVersionId **3abd118b-7265-4119-975d-2691d2a1131c** · DRAFT == ACTIVE
+- versionId **c27f5c2e-63c6-4157-9fdb-3007dc744ddc** · activeVersionId **c27f5c2e-63c6-4157-9fdb-3007dc744ddc** · DRAFT == ACTIVE
 - 145 nodes
 
 ## Edges
@@ -306,8 +306,8 @@ wait-media-poll[0] -> media-poll-http
 |---|---|
 | compile-current-state | 1844 |
 | disallowed-entity-gate | 925 |
-| not-found-error-message | 643 |
-| build-suggest-offer | 633 |
+| build-suggest-offer | 673 |
+| not-found-error-message | 667 |
 | promo-picker | 583 |
 | dym-transform | 421 |
 | dym-transform-partial | 409 |
