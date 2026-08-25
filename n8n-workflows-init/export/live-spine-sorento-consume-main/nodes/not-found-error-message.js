@@ -393,8 +393,13 @@ if (missingAttachmentType) {
       const m0 = res && Array.isArray(res.matches) && res.matches[0];
       if (m0 && m0.entity_type) return _prettifyType(m0.entity_type);
     } catch (e) { /* no resolutions -> fall through to parser hint */ }
+    // PRETTIFIED, same as the resolver branch above. The fallback used to return the hint raw, so
+    // a token the resolver named nothing for printed `(attachment_type)` / `(inbound_shipment)`
+    // while the identical vocabulary reaching compile-current-state's media-confirm prefix printed
+    // `attachment type`. `_prettifyType` leaves a plain lowercase word untouched, so every hint the
+    // parser actually emits today except the snake_case ones is byte-identical.
     const hint = _byRawStripped.get(_typeNorm(t))?.hint;
-    return hint ? String(hint) : '';
+    return hint ? _prettifyType(String(hint)) : '';
   };
   // Quote what the CUSTOMER typed. resolve-entity strips separators for product-hint tokens, so the
   // resolver token is "mfg6651gm" while the person wrote "mfg6651-gm" — echoing the stripped form
@@ -427,6 +432,12 @@ if (missingAttachmentType) {
   // path 1). They are two separate n8n Code nodes and cannot import from each other, exactly as
   // `_DATE_SCOPE_DOMAINS` / `_DATE_DOMAINS` already are. CHANGE BOTH TOGETHER or the answer and
   // the miss start disclosing the same search in two different shapes.
+  //
+  // The spelling map is shared WITHIN each node, not just between them. Here `_byRawStripped` /
+  // `_rawOfTok` (defined above the found-bullets) already backs both `_labelTok`, which quotes the
+  // not-found tokens, and this header's path 1. compile-current-state now matches: its map was
+  // hoisted out of the header IIFE to node scope on 2026-08-25 so its miss / did-you-mean lines
+  // quote through the same one definition instead of printing the resolver's stripped echo.
   //
   // Which axes are active comes from the GATE (`compatible_entities`: entity_type + code), never
   // from the parser's hints - a bare code is often hinted `order` and matched by the resolver as a

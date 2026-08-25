@@ -742,6 +742,36 @@ const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_
   userResponse += `\n\nNo ${_noun} records found for: ${shown.join(', ')}.`;
 })();
 
+// ── THE CUSTOMER'S SPELLING: ONE token -> entity map for the whole node ──────────────────────
+// `resolutions[].token` is NOT what the customer typed. resolve-entity is sent `canonical_code ??
+// raw`, strips `[-\s]+` when `hint === 'product'`, and the CRM lowercases (and sometimes rewrites)
+// what it echoes back. Every renderer below that QUOTES a token back at the customer - the
+// miss / did-you-mean lines further down, and the search-scope header near the end - has to map it
+// to the entity it was built from and print THAT, or the reply hands the customer a code they
+// never wrote: `"RMASRT2608011"` for the `RMA-SRT2608-011` they actually typed (clone 13498401).
+//
+// HOISTED to node scope DELIBERATELY. The two consumers sit ~350 lines apart inside separate
+// IIFEs, and the first version of this map lived in the header block only, out of scope for the
+// miss renderer - so the miss renderer went on quoting the resolver's echo while the header one
+// screenful later quoted the customer. A second copy is a second thing to drift; there is exactly
+// one here, and `_entOfTok` is also what tells a renderer which PARSER ENTITY a resolver token
+// came from (its `hint`), which is the only trustworthy way to ask what kind of thing it was -
+// the resolver's own echoed `entity_type` is exactly what these findings show is unreliable.
+//
+// Key: separators stripped + lower-cased on BOTH sides, FIRST-wins on a collision - the same key
+// and the same tie-break as not-found-error-message.js's `_byRawStripped` / `_rawOfTok`, so the
+// answer and the miss can never name one token two ways. Nothing matches (a CRM-side rewrite:
+// sent "Warehouse Bukit Raja", echoed "Bukit Raja" - exec 12777712) => the token is returned
+// UNCHANGED, i.e. exactly today's behaviour, so this can only ever improve a line, never invent one.
+const _tokKey = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+const _entByTok = new Map();
+for (const _ent of (Array.isArray(qf.entities) ? qf.entities : [])) {
+  const _entKey = _tokKey(_ent && _ent.raw);
+  if (_entKey && !_entByTok.has(_entKey)) _entByTok.set(_entKey, _ent);
+}
+const _entOfTok = (t) => _entByTok.get(_tokKey(t));
+const _rawOfTok = (t) => { const _e = _entOfTok(t); return (_e && _e.raw) || t; };
+
 // ── dym-partial-disambiguation v3 §2.1: surface genuine-miss tokens on the ANSWERED happy path ──
 // When SOME tokens resolved (stock answered) and OTHERS are genuine misses, the misses vanish today
 // (build-suggest-offer is downstream of not-found and never runs on the If3-proceeds path). This block
@@ -909,7 +939,8 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
     // what it echoes back (sent "Warehouse Bukit Raja", echoed "Bukit Raja"). MEASURED across the
     // whole live retention window, it silenced 13 of 313 genuine miss resolutions (4.2%); clone
     // 13498401 lost `RMA-SRT2608-011` outright the day the product strip landed. The true statement
-    // about `token` is the one already made at `_typeNorm` below.
+    // about `token` is the one made at the node-scope `_tokKey` / `_rawOfTok` map above, which is
+    // also what puts the customer's own spelling back into the lines this block feeds.
     //
     // FAIL-OPEN, deliberately (UAC SR-U5: a genuine miss must never be silenced). A resolution with
     // no matches at all identifies nothing, so it is REPORTED, not suppressed.
@@ -939,6 +970,29 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
     } catch (e) { /* node absent -> empty set */ }
     return s2;
   })();
+  // ── a FILTER is not a thing the customer asked us to FIND (attachment-filter-not-a-miss) ─────
+  // `attachment_type` is how the parser narrows WHICH documents to return - "gambar" -> "photo",
+  // "technical drawing". It is sent to the resolver like any other entity, it resolves to nothing
+  // (there is no attachment-type record to match), and until the broken `_sentTokens` equality was
+  // removed it was hidden only by accident. Measured on clone 13489292 with that equality gone: a
+  // reply that DID attach the technical drawings closed with
+  //   "technicaldrawing" (attachment_type): not found.
+  // - a flat false statement, printed underneath the very files it claims we could not find.
+  //
+  // Keyed on the ORIGINATING PARSER ENTITY's `hint`, via `_entOfTok`, never on the resolver's
+  // echoed `entity_type`: the echo is precisely what these findings show cannot be trusted (and on
+  // a filter token there are no matches to echo an entity_type from anyway). A token that cannot
+  // be linked back to an entity FAILS OPEN and is reported - UAC SR-U5, a genuine miss must never
+  // be silenced, and an unlinkable token is by definition one we cannot classify.
+  //
+  // Scoped to the `resolutions[]` arm only. The legacy single-envelope arm below has no per-token
+  // resolution to link, and failing open there is the SR-U5-correct default; every
+  // product_attachment turn measured returns the modern per-token shape.
+  const _FILTER_HINTS = new Set(['attachment_type']);
+  const _isFilterToken = (tok) => {
+    const _e = _entOfTok(tok);
+    return !!(_e && _FILTER_HINTS.has(String(_e.hint ?? '').trim().toLowerCase()));
+  };
   let missResolutions = [];
   if (Array.isArray(r?.resolutions)) {
     missResolutions = r.resolutions.filter(res => res && res.resolved !== true
@@ -946,6 +1000,7 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
       && !_gateResolvedTokens.has(String(res.token ?? '').trim().toLowerCase())
       && !_tokenReachedSpecSearch(res)
       && !_pickerReported.has(String(res.token ?? '').trim().toLowerCase())
+      && !_isFilterToken(res.token)
       && !_tokenWasAnswered(res));
   } else if (unresolved.length && !_tokenWasAnswered(r)
       && !unresolved.every(t => _pickerReported.has(String(t ?? '').trim().toLowerCase()))) {
@@ -991,11 +1046,10 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
   };
 
   const _entities = Array.isArray(qf.entities) ? qf.entities : [];
-  // entity-type-label helpers: normalized match key (resolve-entity's `token` is space/dash-
-  // stripped before it reaches the resolver, `entities[].raw` is not) and a display-prettifier
-  // for a snake_case/kebab-ish resolver entity_type (open vocabulary; a plain lowercase word
-  // passes through as-is). Mirrors the confirm-prefix IIFE below (normTok/prettify) byte-for-byte.
-  const _typeNorm = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
+  // entity-type-label helper: a display-prettifier for a snake_case/kebab-ish entity type (open
+  // vocabulary; a plain lowercase word passes through as-is). Mirrors the confirm-prefix IIFE
+  // below (prettify) byte-for-byte. The normalized match key it used to sit beside is now the
+  // node-scope `_tokKey` / `_entOfTok` hoisted above - one definition, shared with the header.
   const _prettifyType = (t) => {
     const s = String(t ?? '').trim();
     if (!s) return '';
@@ -1014,17 +1068,24 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
     // prettified only if snake_case/ugly), parser hint (qf.entities[].hint) FALLBACK when the
     // resolver named nothing, bare when neither is known (byte-identical then). Matches the
     // confirm-prefix IIFE's priority below so a token's type label never disagrees between the
-    // media-confirm line and this miss/DYM line. Uses its OWN source-entity lookup (_typeSrcEnt,
-    // dash/space-normalized) rather than the picks-branch's _srcEnt below (pick-linkage match,
-    // case-insensitive-trim) so restoring labels here cannot perturb that linkage's behavior.
-    const _typeSrcEnt = _entities.find(e => _typeNorm(e.raw) === _typeNorm(token));
+    // media-confirm line and this miss/DYM line. Uses the node-scope _entOfTok lookup
+    // (dash/space-normalized, first-wins) rather than the picks-branch's _srcEnt below
+    // (pick-linkage match, case-insensitive-trim) so labels here cannot perturb that linkage.
+    // BOTH sources are prettified. The hint fallback used to print raw, so a token the resolver
+    // named nothing for came out as `(attachment_type)` / `(inbound_shipment)` while the same hint
+    // reaching the media-confirm prefix one screenful below came out as `attachment type` - one
+    // vocabulary, two spellings, in the same reply.
+    const _typeSrcEnt = _entOfTok(token);
     const _rawType = (res && Array.isArray(res.matches) && res.matches[0] && res.matches[0].entity_type) || null;
-    const _typeLabel = _prettifyType(_rawType) || (_typeSrcEnt && _typeSrcEnt.hint) || '';
+    const _typeLabel = _prettifyType(_rawType) || _prettifyType(_typeSrcEnt && _typeSrcEnt.hint) || '';
     const _typeSfx = _typeLabel ? ` (${_typeLabel})` : '';
     if (picks.length) {
       // dym-candidate-map: each candidate keeps its OWN source token (per-token _srcEnt; no borrow).
       const _srcEnt = _entities.find(e => String(e.raw || '').toLowerCase().trim() === String(token || '').toLowerCase().trim());
-      _lines.push(`"${token}"${_typeSfx}, did you mean:`);
+      // QUOTE THE CUSTOMER'S SPELLING, not the resolver's echo (node-scope `_rawOfTok`, hoisted
+      // above; unmatched token returns unchanged). `_forRaw` below deliberately stays the RESOLVER
+      // token - it is pick-linkage data for output_exchange's numbered-DYM handler, not copy.
+      _lines.push(`"${_rawOfTok(token)}"${_typeSfx}, did you mean:`);
       for (const p of picks) {
         idx += 1;
         const isU = isUuid(p.m.canonical_code);
@@ -1048,7 +1109,7 @@ let _partialOffer = null;       // feeds the _newOffer slot so the offer survive
         });
       }
     } else {
-      _lines.push(`"${token}"${_typeSfx}: not found.`);   // zero renderable candidates -> plain line, no idx
+      _lines.push(`"${_rawOfTok(token)}"${_typeSfx}: not found.`);   // zero renderable candidates -> plain line, no idx
     }
   }
   const M = _numbered.length;   // total numbered candidates across surfaced tokens
@@ -1313,11 +1374,15 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // `_AXES` / `_axisWords` / `buildBreakdownMsg` header (captain, 2026-08-24: a MISS opens with
     // this same three-line header, because exec 13746945 searched every customer and said so
     // nowhere - E2, "an EMPTY result states them too"). Same axis list, same label priority, same
-    // date formatting, same `order`-only gate. Two separate n8n Code nodes, no imports between
-    // them: CHANGE BOTH TOGETHER or the answer and the miss disclose the same search in two
-    // different shapes. The two never both fire on one turn - this block early-returns on
-    // `isEscalateBranch`, and every path out of not-found-error-message reaches this node through
-    // escalate-catalog or build-suggest-offer, both of which set it true.
+    // date formatting, same `order`-only gate, and the same customer's-spelling rule on path 1:
+    // `_rawOfTok` over a stripped+lower-cased first-wins token->entity map. In THIS node that map
+    // is hoisted to node scope so the miss / did-you-mean lines quote through it too; in
+    // not-found-error-message it is `_byRawStripped`, shared by `_labelTok` and `_axisWords`. One
+    // token, one spelling, in both nodes and on both lanes. Two separate n8n Code nodes, no
+    // imports between them: CHANGE BOTH TOGETHER or the answer and the miss disclose the same
+    // search in two different shapes. The two never both fire on one turn - this block
+    // early-returns on `isEscalateBranch`, and every path out of not-found-error-message reaches
+    // this node through escalate-catalog or build-suggest-offer, both of which set it true.
     const _DATE_DOMAINS = new Set(['order']);
     if (!_DATE_DOMAINS.has(String(qf.domain_hint || '').toLowerCase())) return;
     // ISO -> DD/MM/YYYY, matching the row fields the CRM already renders ("Order Date: 17/08/2026").
@@ -1390,19 +1455,11 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // `Product: mmc544albl`. A header whose whole job is "this is what was searched, widen it if
     // it is wrong" cannot hand the code back mangled - it reads as a second, different product.
     //
-    // Map the resolved token back to the entity it was built from and print THAT. Key: separators
-    // stripped + lowercased on BOTH sides, FIRST-wins on a collision - the same key and the same
-    // tie-break as not-found-error-message.js's `_byRawStripped` / `_rawOfTok`, so the answer and
-    // the miss can never name one token two ways. Nothing matches (a CRM-side rewrite: sent
-    // "Warehouse Bukit Raja", echoed "Bukit Raja") => the token prints unchanged, which is exactly
-    // today's behaviour, so this can only ever improve the line.
-    const _tokKey = (s) => String(s ?? '').replace(/[-\s]+/g, '').toLowerCase();
-    const _rawByTok = new Map();
-    for (const e of _ents) {
-      const _k = _tokKey(e && e.raw);
-      if (_k && !_rawByTok.has(_k)) _rawByTok.set(_k, e.raw);
-    }
-    const _rawOfTok = (t) => _rawByTok.get(_tokKey(t)) || t;
+    // `_rawOfTok` maps the resolved token back to the entity it was built from. It is defined ONCE
+    // at node scope (see "THE CUSTOMER'S SPELLING" above), because the miss / did-you-mean lines
+    // ~350 lines up quote through the same map and had to be brought under it: the map used to
+    // live here, inside this IIFE, so the miss renderer could not see it and went on printing the
+    // echo. Unmatched token => returned unchanged, i.e. today's behaviour.
     const _axisWords = (axis) => {
       const typeSet = new Set(axis.types);
       const rows = _gateEnts.filter(e => e && typeSet.has(_norm(e.entity_type)));
