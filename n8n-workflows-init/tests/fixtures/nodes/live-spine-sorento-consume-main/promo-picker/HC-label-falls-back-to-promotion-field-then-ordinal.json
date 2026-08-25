@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "A promotion row need not carry a `title`. Both the roster label and the unmet-token join fall back to the row's own 'Promotion' field, and a row with neither gets the ordinal placeholder 'promotion N' rather than an empty label the customer cannot refer to. The join is what is really under test: ALPHA is shown (so its token contributed and must NOT be reported unmet) while BETA is not \u2014 if the field fallback broke, NOTHING would look contributed, the miss would read as total, and the per-item note would silently disappear."
+  "rationale": "A promotion row need not carry a `title`. Both the roster label and the unmet-token join fall back to the row's own 'Promotion' field, and a row with neither gets the ordinal placeholder 'promotion N' rather than an empty label the customer cannot refer to. The join is what is really under test: ALPHA is shown (so its token contributed and must NOT be reported unmet) while BETA is not \u2014 if the field fallback broke, NOTHING would look contributed, the miss would read as total, and the per-item note would silently disappear.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 2 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -106,7 +108,7 @@
  "expected": [
   {
    "json": {
-    "response": "I found 2 promotions for ALPHA. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA\n*End Date:* 2026-09-30\n\n2. *End Date:* 2026-09-30\n\nNo promotion found for BETA. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response": "I found 2 promotions for ALPHA. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA\n*End Date:* 2026-09-30\n\n2. *End Date:* 2026-09-30\n\nNo promotion found for BETA. Would you like me to escalate to marketing promotion sorento team?",
     "response_intro": "I found 2 promotions for ALPHA. I have attached the file(s) below.",
     "answers": [
      {

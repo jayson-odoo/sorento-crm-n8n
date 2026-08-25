@@ -26,7 +26,17 @@ out.suggest_offer = false;
 
 // #9: prefer the resolved entity's company team, so the offer text, the not-found text and
 // the actual escalation cannot name three different teams in one turn.
-const team = (gate && gate.company_team) || q?.routing?.suggested_team || 'customer_service';
+// DISPLAY ONLY: underscores to spaces, so the customer reads "purchasing certification team"
+// instead of the internal slug "purchasing_certification team" (measured on live: 4 real turns
+// said "marketing_promotion_sorento team"). Same convention as compile-current-state's
+// `_prettyKey`; lowercase, no title-casing - that is what the surrounding copy uses. Safe to do
+// at the derivation because `team` is read by NOTHING but the eight offer strings below: the raw
+// slug reaches routing and persistence through `gate.company_team` (spread onto `out` upstream)
+// and `q.routing.suggested_team` (persisted verbatim by compile-current-state as
+// `variables.routing`), neither of which is touched here. The single-word teams that carry 37 of
+// 42 firings - `warehouse`, `purchasing` - are unchanged byte-for-byte.
+const _prettyTeam = (_t) => String(_t == null ? '' : _t).replace(/_/g, ' ').trim();
+const team = _prettyTeam((gate && gate.company_team) || q?.routing?.suggested_team || 'customer_service');
 const YES  = 'Yes, escalate';
 const NO   = "No, it's okay";
 const cap3 = (a) => (Array.isArray(a) ? a.slice(0, 3) : []);

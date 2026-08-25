@@ -184,6 +184,14 @@ test('exec 13743718: the offer lists both companies teams, and still no note', (
 // `Product: SRTKS7646`, not `srtks7646`: the header prints the CUSTOMER's spelling. `res.token` is
 // the CRM's echo, lower-cased and (for a product hint) separator-stripped, so before the casing fix
 // this line read `Product: srtks7646` directly above a bullet reading `• product: SRTKS7646`.
+//
+// RE-PINNED again 2026-08-24, and ONLY on the team name inside the escalate sentence:
+// `customer_service team?` -> `customer service team?`. The team name is an INTERNAL SLUG and was
+// being read out to the customer verbatim; live has been saying `marketing_promotion_sorento team`
+// to real people (4 turns in 8 days). Underscores now render as spaces at the interpolation, so
+// this expectation moves by exactly one character in each block. Everything else - the header, the
+// bullets, the frozen `Would you like me to escalate` prefix the parser matches, the picker, the
+// numbering, the close - is byte-identical, which is still what "renders byte-identical" asserts.
 const SINGLE_COMPANY_OFFER = [
   'Customer: mastile klang',
   'Product: SRTKS7646',
@@ -193,7 +201,7 @@ const SINGLE_COMPANY_OFFER = [
   '• customer: MASTILE KLANG SDN BHD (+1 more)',
   '• product: SRTKS7646 (+1 more)',
   '',
-  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to customer_service team?',
+  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to customer service team?',
   '',
   'Please choose who to route to (reply with the number):',
   '1. Emily',
@@ -225,7 +233,7 @@ const PRODUCT_ONLY_OFFER = [
   "Here's what you want:",
   '• product: SRTKS7646 (+1 more)',
   '',
-  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to customer_service team?',
+  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to customer service team?',
   '',
   'Please choose who to route to (reply with the number):',
   '1. Emily',

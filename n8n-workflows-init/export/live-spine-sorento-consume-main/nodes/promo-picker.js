@@ -33,13 +33,21 @@ const withNotice = t => _notice ? `${_notice}\n\n${t}` : t;
 // HOISTED (D10): the escalation team was derived further down, but the brand-gate guard below
 // has to render an offer BEFORE any exit path, including the unrecognised-shape one. Pure move,
 // same expression, same fallbacks — the strict-not-found block still reads this one binding.
-const _escTeam = (() => {
+// DISPLAY ONLY (captain 2026-08-24). This binding feeds three customer-visible offer strings and
+// nothing else, and its own default is `marketing_promotion_sorento` - the exact slug live was
+// measured emitting at 4 real customers in 8 days. Underscores to spaces; lowercase, no
+// title-caser, the same convention as compile-current-state's `_prettyKey`. The raw slug is
+// untouched where it matters: `disallowed-entity-gate.company_team` and
+// `parser.routing.suggested_team` are read again downstream for routing and are persisted
+// verbatim by compile-current-state as `variables.routing`.
+const _prettyTeam = (_t) => String(_t == null ? '' : _t).replace(/_/g, ' ').trim();
+const _escTeam = _prettyTeam((() => {
   try {
     const g = $('disallowed-entity-gate');
     if (g.isExecuted && g.first().json.company_team) return g.first().json.company_team;
   } catch (e) { /* fall through */ }
   return (parser.routing && parser.routing.suggested_team) || 'marketing_promotion_sorento';
-})();
+})());
 
 if ((parser.domain_hint ?? null) !== 'promotion') return j;
 

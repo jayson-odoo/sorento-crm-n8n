@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "The subject of the sentence and the dym linkage key are both taken from the FIRST compatible entity \u2014 the thing the customer asked about \u2014 and not from any other slot in that list. With two compatible entities present, reading the wrong one names a product the customer never mentioned and links every alternative to it."
+  "rationale": "The subject of the sentence and the dym linkage key are both taken from the FIRST compatible entity \u2014 the thing the customer asked about \u2014 and not from any other slot in that list. With two compatible entities present, reading the wrong one names a product the customer never mentioned and links every alternative to it.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -72,7 +74,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No stock for SRTX. Try: SRTX1. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_response": "No stock for SRTX. Try: SRTX1. Reply with a code to continue, or would you like me to escalate to customer service team?",
     "suggest_quick_reply": "SRTX1,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

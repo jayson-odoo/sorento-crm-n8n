@@ -99,8 +99,13 @@ if (_ideate) {
     : `Or just reply 'yes' and we'll assign automatically.`;
   // rev-3: single-company ⇒ the escalate phrase inside the date-suggest text names the company, the SAME
   // rewrite build-cs-member-offer applies to its own phrase (cs_offer_company; null ⇒ no-op).
+  // The team half is MULTI-WORD since the display prettifier landed (captain 2026-08-24:
+  // `purchasing_certification` now renders `purchasing certification`). The old `\S+ team\?`
+  // could not span the space, so the whole match failed and the company label was silently
+  // dropped from this arm's copy - allow one or more words. Still a no-op on a string that
+  // already carries `*Company*` after "to", because `*` is outside the class.
   const _sugText = (typeof _mem.cs_offer_company === 'string' && _mem.cs_offer_company && typeof _sug.suggest_response === 'string')
-    ? _sug.suggest_response.replace(/(would you like me to escalate to )(\S+ team\?)/i, (s, a, b) => `${a}*${_mem.cs_offer_company}* ${b}`)
+    ? _sug.suggest_response.replace(/(would you like me to escalate to )((?:[a-z0-9-]+ )*[a-z0-9-]+ team\?)/i, (s, a, b) => `${a}*${_mem.cs_offer_company}* ${b}`)
     : _sug.suggest_response;
   response = `${_sugText}\n\nTo escalate, choose who to route to. Reply the number or name:\n${_picker}\n\n${_close}`;
   manualResponse  = true;
@@ -1370,6 +1375,15 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
 // Both arms fail closed: any missing signal leaves the turn byte-identical. The two cannot
 // co-occur (the miss lane rides the happy path, the clarify rides the escalation divert / hold).
 {
+  // DISPLAY ONLY (captain 2026-08-24). The team names below are internal slugs
+  // (`purchasing_certification`, `marketing_promotion_sorento`) and were rendered verbatim into
+  // customer WhatsApp copy - already visible on live, 4 real turns in 8 days. Underscores to
+  // spaces at the INTERPOLATION, never at the source: `_mcMem.miss_roster_plan[].team` and
+  // `qf.routing.suggested_team` keep the raw slug, so `variables.routing` (persisted below at the
+  // `"routing": qf.routing` key) and everything sub-human-intervention routes on are untouched.
+  // Same rule as `_prettyKey` further up this node - lowercase with spaces, no title-caser, which
+  // is what the surrounding copy uses. `warehouse` / `purchasing` are unchanged.
+  const _prettyTeam = (_t) => String(_t == null ? '' : _t).replace(/_/g, ' ').trim();
   const _mcPrev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
   const _mcClar = (() => {
     for (const _n of ['clarify-company-reply', 'offer-hold-reply']) {
@@ -1404,7 +1418,7 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // PREFIX regex /would you like me to escalate/i, so the prefix wording stays byte-exact and the same
     // string goes to BOTH the visible reply and persisted variables.response. Multi ⇒ plain phrase.
     const _mcCo = (_mcPlan.length === 1 && _mcPlan[0].company_name) ? `*${_mcPlan[0].company_name}* ` : '';
-    const _mcPhrase = `Would you like me to escalate to ${_mcCo}${_mcTeam} team?`;   // FROZEN prefix wording — do not reword
+    const _mcPhrase = `Would you like me to escalate to ${_mcCo}${_prettyTeam(_mcTeam)} team?`;   // FROZEN prefix wording — do not reword
     output.user_response += `\n\n${_mcPhrase}\n\n${_mcMem.miss_offer_text}`;
     output.variables.response = `${typeof output.variables.response === 'string' ? output.variables.response : ''}\n\n${_mcPhrase}`.trim();
     const _mcBase = Array.isArray(output.variables.last_result_set) ? output.variables.last_result_set : [];
@@ -1429,7 +1443,7 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // single-miss, nulls on multi (both-miss → multi_company_unpicked → company clarify).
     const _mcTeamP = (() => { const t = (_mcMem.miss_roster_plan[0] || {}).team; return (typeof t === 'string' && t.trim()) ? t.trim() : ((qf.routing && qf.routing.suggested_team) || 'customer_service'); })();
     const _mcCoP = (_mcPlainPlan.length === 1 && _mcPlainPlan[0].company_name) ? `*${_mcPlainPlan[0].company_name}* ` : '';
-    const _mcPhraseP = `Would you like me to escalate to ${_mcCoP}${_mcTeamP} team?`;   // FROZEN prefix wording — do not reword
+    const _mcPhraseP = `Would you like me to escalate to ${_mcCoP}${_prettyTeam(_mcTeamP)} team?`;   // FROZEN prefix wording — do not reword
     output.user_response += `\n\n${_mcPhraseP}`;
     output.variables.response = `${typeof output.variables.response === 'string' ? output.variables.response : ''}\n\n${_mcPhraseP}`.trim();
     output.variables.routing_roster_plan = _mcPlainPlan;   // MISS pool identity overrides the axes block above

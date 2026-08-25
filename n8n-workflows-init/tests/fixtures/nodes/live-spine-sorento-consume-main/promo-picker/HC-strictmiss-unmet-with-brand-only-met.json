@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "'bathtub' contributed nothing while the only token that did contribute is the BRAND arm. A brand-only list is not an answer to '<brand> <category>', so this collapses to the plain not-found \u2014 and the disjoint rule must NOT claim it (a token with zero matches is the per-item case, which is more specific). Reason must read `unmet_brand_only` and the unmet token is echoed in `_promo_unmatched`; the ask line names BOTH tokens."
+  "rationale": "'bathtub' contributed nothing while the only token that did contribute is the BRAND arm. A brand-only list is not an answer to '<brand> <category>', so this collapses to the plain not-found \u2014 and the disjoint rule must NOT claim it (a token with zero matches is the per-item case, which is more specific). Reason must read `unmet_brand_only` and the unmet token is echoed in `_promo_unmatched`; the ask line names BOTH tokens.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 4 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -100,8 +102,8 @@
  "expected": [
   {
    "json": {
-    "response": "No promotion found for Cabana bathtub. Would you like me to escalate to marketing_promotion_sorento team?",
-    "response_intro": "No promotion found for Cabana bathtub. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response": "No promotion found for Cabana bathtub. Would you like me to escalate to marketing promotion sorento team?",
+    "response_intro": "No promotion found for Cabana bathtub. Would you like me to escalate to marketing promotion sorento team?",
     "answers": [],
     "attachments": [],
     "_promo_sort": {

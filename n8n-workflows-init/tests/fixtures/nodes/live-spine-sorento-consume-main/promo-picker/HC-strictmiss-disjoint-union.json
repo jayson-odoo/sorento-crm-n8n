@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "Every named token matched promotions of its own, yet the resolver's `intersection` is EMPTY \u2014 so no single row satisfies the whole ask and the list shown is a union of disjoint per-token sets. The user's ruling is a plain not-found: no 'closest matches'. Everything must be cleared (answers, attachments AND the roster, so a stray '1' cannot pick an invisible row) and the escalation team named. `_promo_unmatched` must be ABSENT, not empty: both tokens did contribute, so the per-item note does not apply."
+  "rationale": "Every named token matched promotions of its own, yet the resolver's `intersection` is EMPTY \u2014 so no single row satisfies the whole ask and the list shown is a union of disjoint per-token sets. The user's ruling is a plain not-found: no 'closest matches'. Everything must be cleared (answers, attachments AND the roster, so a stray '1' cannot pick an invisible row) and the escalation team named. `_promo_unmatched` must be ABSENT, not empty: both tokens did contribute, so the per-item note does not apply.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 4 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -127,8 +129,8 @@
  "expected": [
   {
    "json": {
-    "response": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing_promotion_sorento team?",
-    "response_intro": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing promotion sorento team?",
+    "response_intro": "No promotion found for Cabana kitchen tap. Would you like me to escalate to marketing promotion sorento team?",
     "answers": [],
     "attachments": [],
     "_promo_sort": {

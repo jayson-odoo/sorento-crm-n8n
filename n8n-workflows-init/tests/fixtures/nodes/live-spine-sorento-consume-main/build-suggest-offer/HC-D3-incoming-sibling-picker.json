@@ -5,8 +5,8 @@
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "D3 fires only when sibling-gate routed the miss through sibling-transform AND sibling-probe on an `incoming` turn. The family is deduped case-insensitively by code (srtb is the same product as SRTB), the EXACTLY-resolved code is what the 'No incoming stock (ETA) found for ...' line names, and the list is sorted has-incoming first then by code \u2014 collapsing to plain code order when nobody has any. There is NO cap and therefore NO per-sibling buttons (respond.io's button budget): numbers are typed and only Yes/No are offered. Note the exact code itself STAYS in the numbered list; it is excluded only from the 'is there anything more to offer' test.",
-  "repinned_at_version": "df165492",
-  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -95,7 +95,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTC - has incoming\n2. SRTA - no incoming\n3. SRTB - no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs_stock team.",
+    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTC - has incoming\n2. SRTA - no incoming\n3. SRTB - no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs stock team.",
     "suggest_quick_reply": "Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

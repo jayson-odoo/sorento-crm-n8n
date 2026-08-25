@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "Never echo a scope the list does not answer for: 'I found 2 promotions for SRTBF11834, CBS212-WH' above a list with no CBS212-WH in it is the headline asserting the very thing the note below retracts. The unmet token is dropped from the echo and named in the appended note instead \u2014 both surfaces are asserted here in one turn."
+  "rationale": "Never echo a scope the list does not answer for: 'I found 2 promotions for SRTBF11834, CBS212-WH' above a list with no CBS212-WH in it is the headline asserting the very thing the note below retracts. The unmet token is dropped from the echo and named in the appended note instead \u2014 both surfaces are asserted here in one turn.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 2 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -126,7 +128,7 @@
  "expected": [
   {
    "json": {
-    "response": "I found 2 promotions for SRTBF11834. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\nNo promotion found for CBS212-WH. Would you like me to escalate to marketing_promotion_sorento team?",
+    "response": "I found 2 promotions for SRTBF11834. I have attached the file(s) below.\n\n1. *Promotion:* ALPHA\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\n2. *Promotion:* BRAVO\n*Start Date:* 2026-06-01\n*End Date:* 2026-09-30\n\nNo promotion found for CBS212-WH. Would you like me to escalate to marketing promotion sorento team?",
     "response_intro": "I found 2 promotions for SRTBF11834. I have attached the file(s) below.",
     "answers": [
      {

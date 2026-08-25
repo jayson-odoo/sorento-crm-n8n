@@ -91,7 +91,10 @@ if (!multi) {
 // The multi and single arms became the SAME text when the note went - the only thing that still
 // differs between them is `numbered` (grouped-with-headers vs flat), built above. Written once here
 // rather than as a ternary whose two branches are byte-identical.
-out.response = `${cat.response || 'Would you like me to escalate to customer_service team?'}\n\n` +
+// The fallback literal names the team the way the rest of the copy now does: spaces, not the
+// internal slug (captain 2026-08-24 - live was emitting `marketing_promotion_sorento team` at a
+// customer). Prefix `Would you like me to escalate` is byte-identical, so the parser contract holds.
+out.response = `${cat.response || 'Would you like me to escalate to customer service team?'}\n\n` +
   `Please choose who to route to (reply with the number):\n${numbered}\n\n` +
   `If you have no preference, just reply 'yes' and we'll assign automatically.`;
 out.member_offer = true;

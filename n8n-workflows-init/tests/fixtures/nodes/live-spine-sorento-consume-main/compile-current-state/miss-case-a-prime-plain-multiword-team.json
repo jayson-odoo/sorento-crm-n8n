@@ -1,0 +1,252 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "The MULTI-WORD-TEAM twin of miss-case-a-prime-plain, and the guard that the team-name display fix (captain 2026-08-24) is applied in the right place. Same arm, same wiring, same single-miss plan; the only difference is that the team is `purchasing_certification` instead of `purchasing` - a real LANE pairing (crm_certificates_list -> purchasing_certification in miss-roster-plan), chosen because `purchasing` and `warehouse` are single words and cannot tell a working prettifier from a missing one. Decision fields derived from the contract BEFORE running the body: (1) the appended sentence reads `Would you like me to escalate to *Sorento* purchasing certification team?` - underscores rendered as SPACES - in BOTH `user_response` and the persisted `variables.response`, byte-identical to each other; (2) the frozen parser prefix `Would you like me to escalate` is untouched, so /would you like me to escalate/i still matches both copies; (3) `variables.routing.suggested_team` still carries the RAW slug `purchasing_certification` - this is the value the next turn's `_sameTeam` comparison and sub-human-intervention route on, and it is the assertion that catches the transform being put at the derivation instead of the interpolation; (4) `routing_roster_plan[0]` carries no `team` key at all - the existing mapping in compile-current-state projects only plan_idx/company_id/company_name/brand_code, so there is no persisted team to prettify by accident (pre-existing behaviour, unchanged by this fix); (5) selection_context stays null and last_result_set is untouched, exactly as on the single-word twin."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_attachment",
+      "domain_hint": "product_attachment",
+      "user_goal": "check the SPAN certificate",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MUB6201",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing_certification",
+       "suggested_agent": "general_enquiries"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Certificates found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Document:* SPAN certificate\n\n*Sorento:* no certificates for MUB6201.",
+     "response_intro": "Certificates found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "document_type",
+         "label": "Document",
+         "value": "SPAN certificate"
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "build-miss-member-offer": [
+   {
+    "json": {
+     "response": "Certificates found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Document:* SPAN certificate\n\n*Sorento:* no certificates for MUB6201.",
+     "response_intro": "Certificates found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "document_type",
+         "label": "Document",
+         "value": "SPAN certificate"
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true,
+     "miss_plain_offer": true,
+     "miss_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "team": "purchasing_certification"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Certificates found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Document:* SPAN certificate\n\n*Sorento:* no certificates for MUB6201.",
+    "response_intro": "Certificates found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "document_type",
+        "label": "Document",
+        "value": "SPAN certificate"
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true,
+    "miss_plain_offer": true,
+    "miss_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "team": "purchasing_certification"
+     }
+    ]
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_attachment",
+     "domain_hint": "product_attachment",
+     "user_goal": "check the SPAN certificate",
+     "query_scope": "specific",
+     "entities": [
+      {
+       "raw": "MUB6201",
+       "hint": "product"
+      }
+     ],
+     "routing": {
+      "suggested_team": "purchasing_certification",
+      "suggested_agent": "general_enquiries"
+     },
+     "escalation": {},
+     "response": "Previous turn (product_attachment): returned 1 records\n\nWould you like me to escalate to *Sorento* purchasing certification team?",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MUB6201",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "match_mode": "or",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento"
+      }
+     ],
+     "routing_brand": "sorento",
+     "routing_brand_source": null,
+     "routing_company": "00000000-0000-0000-0000-000000000001",
+     "routing_companies": null
+    },
+    "user_response": "Certificates found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Document:* SPAN certificate\n\n*Sorento:* no certificates for MUB6201.\n\nWould you like me to escalate to *Sorento* purchasing certification team?"
+   }
+  }
+ ]
+}

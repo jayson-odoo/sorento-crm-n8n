@@ -5,8 +5,8 @@
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The number of MISSED TOKENS shown is capped at five (with cap3 per token that keeps the numbered list at 15 or fewer). Six missed tokens must render five blocks numbered 1-5; the sixth appears in no surface at all.",
-  "repinned_at_version": "df165492",
-  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -121,7 +121,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "Couldn't find some items:\n\n\"t1\" (product) - did you mean:\n  1. C1\n\"t2\" (product) - did you mean:\n  2. C2\n\"t3\" (product) - did you mean:\n  3. C3\n\"t4\" (product) - did you mean:\n  4. C4\n\"t5\" (product) - did you mean:\n  5. C5\n\nReply a number to pick, or 'yes' to escalate to customer_service.",
+    "suggest_response": "Couldn't find some items:\n\n\"t1\" (product) - did you mean:\n  1. C1\n\"t2\" (product) - did you mean:\n  2. C2\n\"t3\" (product) - did you mean:\n  3. C3\n\"t4\" (product) - did you mean:\n  4. C4\n\"t5\" (product) - did you mean:\n  5. C5\n\nReply a number to pick, or 'yes' to escalate to customer service.",
     "suggest_quick_reply": "Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

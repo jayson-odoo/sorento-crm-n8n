@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "The other date arm: a start that differs from the end renders as a RANGE, and with no customer entity in the parse the sentence falls back to 'This customer' rather than printing undefined. Off the cs/order route the Yes/No buttons come back, so escalation stays reachable."
+  "rationale": "The other date arm: a start that differs from the end renders as a RANGE, and with no customer entity in the parse the sentence falls back to 'This customer' rather than printing undefined. Off the cs/order route the Yes/No buttons come back, so escalation stays reachable.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -67,7 +69,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No delivery on 2026-08-01 to 2026-08-07. This customer has delivery on 2026-08-12. Reply with a date to continue, or would you like me to escalate to sales_team team?",
+    "suggest_response": "No delivery on 2026-08-01 to 2026-08-07. This customer has delivery on 2026-08-12. Reply with a date to continue, or would you like me to escalate to sales team team?",
     "suggest_quick_reply": "2026-08-12,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

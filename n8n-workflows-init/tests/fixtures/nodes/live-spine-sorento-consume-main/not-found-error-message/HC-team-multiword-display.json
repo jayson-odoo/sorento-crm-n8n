@@ -1,0 +1,66 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned": true,
+  "n8n_access": "none - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The MULTI-WORD-TEAM guard for the miss copy (captain 2026-08-24). The five captured fixtures for this node all route to 'purchasing' or 'warehouse', which are single words and therefore blind to whether the display prettifier runs at all. This one is a certificates miss routed to 'purchasing_certification' - the LANE pairing miss-roster-plan uses for crm_certificates_list. Derived from the contract before running the body: the product token does not resolve, no result rows exist, so the node lands on its 'Could not find <subject>' arm and must render 'Would you like me to escalate to purchasing certification team?' - SPACES, no underscore anywhere in the customer text. The subject is worded from the parser's product entity ('attachments for product CERT-SPAN-991'), and the frozen prefix 'Would you like me to escalate' is byte-exact, so the parser's /would you like me to escalate/i contract is untouched. is_clarification stays false (this is an offer, not a reprompt) and found_summary is empty (nothing resolved, so there are no bullets to carry to the date arm)."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [
+       {
+        "raw": "CERT-SPAN-991",
+        "hint": "product",
+        "current_message": true
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing_certification",
+       "suggested_agent": "general_enquiries"
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "unresolved_tokens": [
+      "CERT-SPAN-991"
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {}
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response_intro": [
+     "No matching results found."
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response_intro": [
+     "No matching results found."
+    ],
+    "escalate_message": "Could not find attachments for product CERT-SPAN-991. Would you like me to escalate to purchasing certification team?",
+    "is_clarification": false,
+    "found_summary": ""
+   }
+  }
+ ]
+}

@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "Promotions have no product code, so both the CANDIDATES and the SUBJECT of the sentence can be raw uuids \u2014 the original guard covered only the candidates and the customer was shown 'No promotion for 3b9d6b74-...'. Here the asked entity resolves to its display description instead, a uuid alternative WITH a display name renders as a numbered human name, and a uuid alternative with NO display name is dropped entirely rather than leaked."
+  "rationale": "Promotions have no product code, so both the CANDIDATES and the SUBJECT of the sentence can be raw uuids \u2014 the original guard covered only the candidates and the customer was shown 'No promotion for 3b9d6b74-...'. Here the asked entity resolves to its display description instead, a uuid alternative WITH a display name renders as a numbered human name, and a uuid alternative with NO display name is dropped entirely rather than leaked.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -75,7 +77,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No promotion for JULY PROMO. Here are the closest matches:\n1. AUGUST PROMO\nReply with a number to continue, or would you like me to escalate to customer_service team?",
+    "suggest_response": "No promotion for JULY PROMO. Here are the closest matches:\n1. AUGUST PROMO\nReply with a number to continue, or would you like me to escalate to customer service team?",
     "suggest_quick_reply": "1,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

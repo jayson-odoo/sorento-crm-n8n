@@ -102,8 +102,15 @@ test('the escalate sentence names a team the CRM can resolve', () => {
     nodeName: 'build-suggest-offer',
   }));
   const text = String(plain(out[0].json).suggest_response || '');
-  assert.match(text, /escalate to marketing_promotion team\?/,
+  // RE-PINNED (team-name display fix, captain 2026-08-24): the sentence names the COLLAPSED team,
+  // as before - the only change is that the customer now reads it with spaces instead of the
+  // internal slug's underscores. Both halves of the original claim survive verbatim in meaning:
+  // the collapsed name is there, and no brand-suffixed variant is (checked in BOTH spellings, so
+  // this cannot pass just because the underscore form stopped appearing).
+  assert.match(text, /escalate to marketing promotion team\?/,
     'the offer must name the collapsed team');
-  assert.doesNotMatch(text, /marketing_promotion_(sorento|cabana|mocha)/,
+  assert.doesNotMatch(text, /marketing[_ ]promotion[_ ](sorento|cabana|mocha)/,
     'THE BUG: asking the customer to agree to an escalation to a team that does not exist');
+  assert.doesNotMatch(text, /_/,
+    'an internal team slug is showing through to the customer');
 });

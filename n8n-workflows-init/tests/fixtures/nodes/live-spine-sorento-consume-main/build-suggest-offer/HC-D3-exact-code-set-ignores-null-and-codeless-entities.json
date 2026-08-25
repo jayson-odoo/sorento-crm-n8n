@@ -5,8 +5,8 @@
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
   "rationale": "The 'what did the customer actually ask for' set is filtered to product entities that HAVE a code, skipping nulls and codeless rows. A codeless entity slipping through would put 'undefined' in the exact-code set, so the real code would look like an extra sibling and the headline would name the wrong product.",
-  "repinned_at_version": "df165492",
-  "repin_rationale": "RE-PINNED at live df165492 (media-intake promote). Two changes to the offer text, both re-derived from the new contract rather than frozen off a run: (1) U+2014 folded to a plain hyphen (repo hard rule: no em-dash in customer output); (2) a quoted miss token now carries an entity-type suffix ` (<type>)` - resolver PRIMARY (the token's own first renderable candidate's entity_type, prettified only when snake_case/kebab), parser `hint` FALLBACK, bare when neither classifies. Candidate selection, ordering, quick_reply, last_result_set and dym_candidates are unchanged (verified: suggest_response is the ONLY field that moved)."
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -92,7 +92,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTB - has incoming\n2. SRTA - no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs_stock team.",
+    "suggest_response": "No incoming stock (ETA) found for SRTA. Related products:\n1. SRTB - has incoming\n2. SRTA - no incoming\nReply with a number to check its incoming, or reply 'yes' to escalate to cs stock team.",
     "suggest_quick_reply": "Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

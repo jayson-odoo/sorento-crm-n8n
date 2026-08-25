@@ -126,7 +126,14 @@ if (missingAttachmentType) {
   // End User matched these"). Name a level only when the customer actually named one.
   const access = (q.intent_hint === 'check_promotion' && Array.isArray(q.access_levels) && q.access_levels.length)
     ? ` for ${q.access_levels.join(', ')}` : '';
-  const team = q.routing?.suggested_team || 'customer_service';
+  // DISPLAY ONLY: underscores to spaces, so the customer reads "purchasing certification team"
+  // rather than the internal slug. Same convention as compile-current-state's `_prettyKey`;
+  // lowercase, no title-casing. Applied at the derivation because `team` feeds NOTHING but the
+  // eight miss/offer strings below - the raw slug still reaches routing and persistence via
+  // `q.routing.suggested_team`, which compile-current-state persists verbatim as
+  // `variables.routing`. `warehouse` / `purchasing` render unchanged.
+  const _prettyTeam = (_t) => String(_t == null ? '' : _t).replace(/_/g, ' ').trim();
+  const team = _prettyTeam(q.routing?.suggested_team || 'customer_service');
   const active_inactive = q.is_active == true ? " active" : (q.is_active == false ? " inactive" : "")
   const allEnts = Array.isArray(q?.entities) ? q.entities : [];
   const normRaw = s => String(s ?? '').trim().toLowerCase();

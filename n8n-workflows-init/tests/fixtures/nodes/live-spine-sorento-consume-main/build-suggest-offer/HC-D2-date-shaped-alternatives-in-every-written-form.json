@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "isDateLike has to recognise a date however the CRM wrote it, because anything it misses becomes a dym entry that a later date reply can hijack. Three forms are offered here \u2014 unpadded ISO (2026-8-5), slash ISO (2026/08/05) and day-first (5/8/26) \u2014 alongside one real code. Only the code may reach dym_candidates; all four stay in the roster and the buttons, which is where the customer needs them."
+  "rationale": "isDateLike has to recognise a date however the CRM wrote it, because anything it misses becomes a dym entry that a later date reply can hijack. Three forms are offered here \u2014 unpadded ISO (2026-8-5), slash ISO (2026/08/05) and day-first (5/8/26) \u2014 alongside one real code. Only the code may reach dym_candidates; all four stay in the roster and the buttons, which is where the customer needs them.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 1 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -77,7 +79,7 @@
     "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
     "suggest_offer": true,
     "suggest_selection_context": "suggest_offer",
-    "suggest_response": "No stock for SRTX. Try: 2026-8-5, 2026/08/05, 5/8/26. Reply with a code to continue, or would you like me to escalate to customer_service team?",
+    "suggest_response": "No stock for SRTX. Try: 2026-8-5, 2026/08/05, 5/8/26. Reply with a code to continue, or would you like me to escalate to customer service team?",
     "suggest_quick_reply": "2026-8-5,2026/08/05,5/8/26,Yes escalate,No it's okay",
     "suggest_last_result_set": [
      {

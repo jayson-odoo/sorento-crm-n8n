@@ -81,7 +81,12 @@ test('promo-picker: D10 brand gate suppresses answers/attachments/roster even on
   assert.deepStrictEqual(o.answers, []);
   assert.deepStrictEqual(o.attachments, []);
   assert.strictEqual(o._brand_gate_closed, true);
-  assert.match(o.response, /Would you like me to escalate to marketing_promotion_cabana team\?/);
+  // RE-PINNED (team-name display fix, captain 2026-08-24): the offer still names THIS team and no
+  // other - what changed is that the internal slug's underscores render as spaces for the customer.
+  // The claim under test (the brand gate closes and the offer names the gate's company_team) is
+  // unchanged; only its surface spelling is.
+  assert.match(o.response, /Would you like me to escalate to marketing promotion cabana team\?/);
+  assert.doesNotMatch(o.response, /_/, 'an internal team slug is showing through to the customer');
 });
 
 test('promo-picker: dym-picked reference_target is NOT re-applied as a roster position', () => {

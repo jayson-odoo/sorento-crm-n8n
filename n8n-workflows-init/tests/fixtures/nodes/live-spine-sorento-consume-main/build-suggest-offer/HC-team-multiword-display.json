@@ -1,0 +1,109 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned": true,
+  "n8n_access": "none - inputs are hand-built from the node's own contract, not captured traffic",
+  "rationale": "The MULTI-WORD-TEAM guard for the offer copy (captain 2026-08-24: live emitted 'escalate to marketing_promotion_sorento team' at 4 real customers in 8 days). Every other build-suggest-offer fixture uses 'customer_service', which is one word once the underscore is a space, so none of them can tell a working prettifier from a missing one. Here the gate hands down 'purchasing_certification' - the real LANE pairing for a certificates lookup (crm_certificates_list -> purchasing_certification in miss-roster-plan). Two claims, derived from the contract before the body was run: (1) the offer sentence names the team with SPACES - 'escalate to purchasing certification team?' - and carries no underscore anywhere in the customer text; (2) the gate's company_team still WINS over the parser's routing.suggested_team ('marketing_product' here, deliberately different), so the prettifier sits after the preference ladder and did not flatten it. The frozen prefix 'would you like me to escalate' is byte-exact, so the parser's regex contract is untouched. Candidate selection, quick_reply, last_result_set and dym_offer are the ordinary single-candidate shapes and are asserted unchanged."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "product_attachment",
+      "entities": [],
+      "routing": {
+       "suggested_team": "marketing_product",
+       "suggested_agent": "general_enquiries"
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "resolutions": [
+      {
+       "token": "CERTSPAN991",
+       "resolved": false,
+       "matches": [
+        {
+         "canonical_code": "CERT-SPAN-991",
+         "entity_type": "product",
+         "match_tier": "trigram",
+         "uuid": "u1"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "company_team": "purchasing_certification"
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": "Could not find attachments for product CERTSPAN991. Would you like me to escalate to purchasing certification team?"
+   }
+  }
+ ],
+ "execution": {
+  "id": "13500002"
+ },
+ "expected": [
+  {
+   "json": {
+    "escalate_message": "Could not find attachments for product CERTSPAN991. Would you like me to escalate to purchasing certification team?",
+    "suggest_offer": true,
+    "suggest_selection_context": "suggest_offer",
+    "suggest_response": "Couldn't find \"CERTSPAN991\" (product). Did you mean CERT-SPAN-991? Reply with a code to continue, or would you like me to escalate to purchasing certification team?",
+    "suggest_quick_reply": "CERT-SPAN-991,Yes escalate,No it's okay",
+    "suggest_last_result_set": [
+     {
+      "idx": 1,
+      "label": "CERT-SPAN-991",
+      "value": "CERT-SPAN-991",
+      "product": "CERT-SPAN-991",
+      "uuid": "u1",
+      "entity_type": "product"
+     }
+    ],
+    "dym_candidates": [
+     {
+      "code": "CERT-SPAN-991",
+      "uuid": "u1",
+      "entity_type": "product",
+      "for_raw": "CERTSPAN991",
+      "for_hint": "product",
+      "for_canonical": null
+     }
+    ],
+    "dym_offer": {
+     "id": "13500002",
+     "domain": "product_attachment",
+     "ttl": 3,
+     "candidates": [
+      {
+       "code": "CERT-SPAN-991",
+       "uuid": "u1",
+       "entity_type": "product",
+       "for_raw": "CERTSPAN991",
+       "for_hint": "product",
+       "for_canonical": null
+      }
+     ],
+     "picked": []
+    }
+   }
+  }
+ ]
+}

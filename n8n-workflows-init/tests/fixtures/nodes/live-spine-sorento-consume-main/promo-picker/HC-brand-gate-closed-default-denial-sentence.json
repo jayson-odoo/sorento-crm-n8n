@@ -4,7 +4,9 @@
   "expected_from": "reasoned",
   "reasoned": true,
   "n8n_access": "none (execution retention expired) - inputs are hand-built from the node's own contract, not captured traffic",
-  "rationale": "D10 fails CLOSED in n8n, not on the CRM's empty-filter semantics. With brand_gate_empty true but NO access_notice to lead with, the denial must still be a complete sentence of its own ('You do not have access to the brand you asked about.') followed by the escalation offer \u2014 and the team falls back to the parser's routing when the gate names none. Every answer, every attachment and the whole roster are cleared before any other branch can leak a file."
+  "rationale": "D10 fails CLOSED in n8n, not on the CRM's empty-filter semantics. With brand_gate_empty true but NO access_notice to lead with, the denial must still be a complete sentence of its own ('You do not have access to the brand you asked about.') followed by the escalation offer \u2014 and the team falls back to the parser's routing when the gate names none. Every answer, every attachment and the whole roster are cleared before any other branch can leak a file.",
+  "repinned_at_version": "05c58410+team-display",
+  "repin_rationale": "RE-PINNED for the team-name DISPLAY fix (captain 2026-08-24). An internal team slug was rendered verbatim into customer WhatsApp copy (\"escalate to purchasing_certification team?\"); live has been emitting \"marketing_promotion_sorento team\" at real customers for 4 turns in 8 days. Underscores now render as spaces at the interpolation. The ONLY difference in this expectation is 2 '_' becoming ' ' inside the team token of an escalate sentence - checked character by character (same length, same offsets, every flipped byte between \"escalate to\" and \" team\"); no other field, key or value moved. The raw slug is unchanged wherever it is routed on or persisted."
  },
  "ctx": {
   "Call 'sub-query-reformulator'": [
@@ -91,8 +93,8 @@
  "expected": [
   {
    "json": {
-    "response": "You do not have access to the brand you asked about.\n\nWould you like me to escalate to sales_team team?",
-    "response_intro": "You do not have access to the brand you asked about.\n\nWould you like me to escalate to sales_team team?",
+    "response": "You do not have access to the brand you asked about.\n\nWould you like me to escalate to sales team team?",
+    "response_intro": "You do not have access to the brand you asked about.\n\nWould you like me to escalate to sales team team?",
     "answers": [],
     "attachments": [],
     "suggest_last_result_set": [],

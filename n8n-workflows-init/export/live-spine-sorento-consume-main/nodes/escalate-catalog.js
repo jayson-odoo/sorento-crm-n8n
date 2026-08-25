@@ -8,6 +8,12 @@ const qf  = $('Call \'sub-query-reformulator\'').first().json.output;
 const out = $input.first().json;
 const kind = out.branch_kind;
 
+// DISPLAY ONLY (captain 2026-08-24): team names are internal slugs and were reaching customer
+// WhatsApp copy verbatim. Underscores to spaces at the interpolation only - `qf.routing.
+// suggested_team` and `disallowed-entity-gate.company_team` keep the raw slug for routing and
+// persistence. Same convention as compile-current-state's `_prettyKey`. `warehouse`/`purchasing`
+// are unchanged.
+const _prettyTeam = (_t) => String(_t == null ? '' : _t).replace(/_/g, ' ').trim();
 let response = '';
 let manualResponse = false;
 let includeResponse = true;
@@ -64,7 +70,7 @@ switch (kind) {
   case 'escalate_offer': {
     // #9: prefer the resolved entity's company team over the parser's access-level guess.
     const _ct = (() => { try { const g2 = $('disallowed-entity-gate'); return g2.isExecuted ? (g2.first().json.company_team || null) : null; } catch (e) { return null; } })();
-    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${_ct || qf.routing.suggested_team} team?`;
+    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${_prettyTeam(_ct || qf.routing.suggested_team)} team?`;
   }
     manualResponse = true;
     is_escalate_offer = true;
