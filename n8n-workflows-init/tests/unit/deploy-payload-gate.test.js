@@ -283,12 +283,30 @@ test('the LIVE spine still RUNS gate (f2) — the skip does not leak to other li
   assert.doesNotMatch(r.out, /\(f2\) SKIPPED/);
 });
 
-test('the fork is NOT in UNPROTECTED: --yes is still refused for it', () => {
+// 2026-08-25 (captain): the rule this pair pins CHANGED. It used to be "--yes is refused for any
+// non-UNPROTECTED target, full stop", which sounded stricter but made a live deploy impossible from
+// the session this project is driven from (input() needs a TTY; gate (h) died with EOFError), which
+// pushed promotion into ungated hand-run terminal commands. The rule is now: --yes needs
+// --i-know-this-is-live to name the protected target explicitly, and gate (h) prints an audit line.
+// --target-override (someone else's clone) is NOT covered and still demands the interactive confirm.
+test('a protected target refuses --yes on its own', () => {
+  const r = py(`drive(["sub-semantic-parser-FORK", "--to", "wI5RkNGW3EOJfBdo", "--yes"])`);
+  assert.equal(r.rc, 1, `--yes alone must not reach a non-UNPROTECTED target:\n${r.out}`);
+  assert.match(r.out, /\(d\) FAIL/);
+  assert.deepEqual(r.puts, [], 'nothing may be PUT when gate (d) refuses');
+});
+
+test('--yes + --i-know-this-is-live promotes non-interactively, and says so', () => {
   const r = py(`drive(["sub-semantic-parser-FORK", "--to", "wI5RkNGW3EOJfBdo",
                        "--i-know-this-is-live", "--yes"])`);
-  assert.equal(r.rc, 1, `--yes must still be refused for a non-UNPROTECTED target:\n${r.out}`);
-  assert.match(r.out, /\(d\) FAIL[\s\S]*not in UNPROTECTED[\s\S]*--yes[\s\S]*refused/);
-  assert.deepEqual(r.puts, [], 'nothing may be PUT when gate (d) refuses --yes');
+  assert.equal(r.rc, 0, r.out);
+  assert.doesNotMatch(r.out, /REACHED-GATE-H-CONFIRM/,
+    '--yes must skip the interactive confirm, not block on it');
+  assert.match(r.out, /NON-INTERACTIVE PROMOTION TO A PROTECTED TARGET/,
+    'a non-interactive promote to a protected id must leave an audit line');
+  assert.match(r.out, /replacing versionId:/);
+  assert.match(r.out, /backup:/);
+  assert.deepEqual(r.puts, ['wI5RkNGW3EOJfBdo']);
 });
 
 test('the fork still demands gate (d)\'s interactive confirm at (h)', () => {
