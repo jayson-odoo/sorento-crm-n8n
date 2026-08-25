@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **d7956e1f-de32-46ca-84ce-64106ab2c436** · activeVersionId **d7956e1f-de32-46ca-84ce-64106ab2c436** · DRAFT == ACTIVE
+- versionId **704c68dc-1445-467b-88e6-e661d7b5eea8** · activeVersionId **704c68dc-1445-467b-88e6-e661d7b5eea8** · DRAFT == ACTIVE
 - 145 nodes
 
 ## Edges
