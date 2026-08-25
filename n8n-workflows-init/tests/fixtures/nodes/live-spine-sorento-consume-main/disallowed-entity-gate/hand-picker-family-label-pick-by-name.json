@@ -1,0 +1,133 @@
+{
+    "source": {
+        "hand_crafted": true,
+        "expected_from": "reasoned",
+        "reasoned_from": "contract",
+        "rationale": "Pick-by-name round trip for the 2026-08-25 family label: the customer replies with the PRINTED family line 'DELUXE HOME CENTRE SDN BHD' (roster title == printed text, so a name reply re-enters as this exact raw). The resolver text-matches the shared name to the family's sibling accounts - every row carries the same base 'DELUXE HOME CENTRE' (_custBase strips '(SETAPAK)' / '[A/C I]' / '- [IBORN]' exactly as it stripped them when grouping the picker) - and G-A's own rule that accounts of the SAME company are NOT ambiguity holds: _bases.size == 1, NO re-ask, gate passes, and all three family accounts stay in compatible_entities to answer together. This is 'resolves to family 1': the family name the picker printed selects the family it named."
+    },
+    "ctx": {
+        "Call 'sub-query-reformulator'": [
+            {
+                "json": {
+                    "output": {
+                        "domain_hint": "order",
+                        "entities": [
+                            {
+                                "raw": "DELUXE HOME CENTRE SDN BHD",
+                                "hint": "customer",
+                                "current_message": true
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "resolve-entity": [
+            {
+                "json": {
+                    "match_mode": "or",
+                    "tokens": [
+                        "deluxe home centre sdn bhd"
+                    ],
+                    "unresolved_tokens": [],
+                    "resolutions": [
+                        {
+                            "token": "deluxe home centre sdn bhd",
+                            "resolved": true,
+                            "matches": [
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-setapak",
+                                    "canonical_code": "300-D059",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD (SETAPAK)"
+                                    }
+                                },
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-aci",
+                                    "canonical_code": "300-D060",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD [A/C I]"
+                                    }
+                                },
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-iborn",
+                                    "canonical_code": "300-D061",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD - [IBORN]"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "input": [
+        {
+            "json": {
+                "tokens": [
+                    "deluxe home centre sdn bhd"
+                ]
+            }
+        }
+    ],
+    "expected": [
+        {
+            "json": {
+                "tokens": [
+                    "deluxe home centre sdn bhd"
+                ],
+                "gate_passed": true,
+                "require_specific": false,
+                "resolved_company": null,
+                "company_team": null,
+                "resolved_companies": [],
+                "routing_brand": null,
+                "routing_brand_source": null,
+                "routing_companies": [],
+                "routing_company": null,
+                "access_denied_levels": [],
+                "access_notice": "",
+                "brand_gate_empty": false,
+                "brand_unheld": false,
+                "gate_reason": "ok",
+                "gate_clarification": "",
+                "compatible_entities": [
+                    {
+                        "uuid": "cu-setapak",
+                        "entity_type": "customer",
+                        "code": "300-D059"
+                    },
+                    {
+                        "uuid": "cu-aci",
+                        "entity_type": "customer",
+                        "code": "300-D060"
+                    },
+                    {
+                        "uuid": "cu-iborn",
+                        "entity_type": "customer",
+                        "code": "300-D061"
+                    }
+                ],
+                "gate_debug": {
+                    "domain": "order",
+                    "allowed_lookup": [
+                        "order",
+                        "customer_order",
+                        "transporter",
+                        "customer",
+                        "product"
+                    ],
+                    "entities_count": 3
+                }
+            }
+        }
+    ]
+}

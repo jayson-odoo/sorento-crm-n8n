@@ -1,0 +1,177 @@
+{
+    "source": {
+        "hand_crafted": true,
+        "expected_from": "reasoned",
+        "reasoned_from": "contract",
+        "rationale": "The dash-strip half of the 6th resolver-token != raw instance, on the MULTI-TOKEN block (the same '\"${token}\"' quoting bug lived at the multi-block header too, not only the three single-token sites). resolve-entity strips [-\\s]+ on product-hint tokens (2262a99b), so the resolver echoes 'mfg6651gm' / 'srtwc8605rl' for the MFG6651-GM / SRTWC8605-RL the customer actually typed, and the old body's block headers quoted the mangled echoes back (console retest exec 13635810 is the single-token twin). Through the two-key map both headers quote the tokens as typed. Everything else - numbering, labels, for_raw (still the stripped resolver token, the pick round-trip's key), quick replies - is byte-identical to the pre-change render of this shape."
+    },
+    "ctx": {
+        "Call 'sub-query-reformulator'": [
+            {
+                "json": {
+                    "output": {
+                        "domain_hint": "inventory",
+                        "entities": [
+                            {
+                                "raw": "MFG6651-GM",
+                                "hint": "product"
+                            },
+                            {
+                                "raw": "SRTWC8605-RL",
+                                "hint": "product"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "resolve-entity": [
+            {
+                "json": {
+                    "resolutions": [
+                        {
+                            "token": "mfg6651gm",
+                            "resolved": false,
+                            "matches": [
+                                {
+                                    "canonical_code": "MFG6651-GM-L",
+                                    "uuid": "ua",
+                                    "entity_type": "product",
+                                    "match_tier": "trigram"
+                                },
+                                {
+                                    "canonical_code": "MFG6651-GM-S",
+                                    "uuid": "ub",
+                                    "entity_type": "product",
+                                    "match_tier": "trigram"
+                                }
+                            ]
+                        },
+                        {
+                            "token": "srtwc8605rl",
+                            "resolved": false,
+                            "matches": [
+                                {
+                                    "canonical_code": "SRTWC8605-RL-S10",
+                                    "uuid": "uc",
+                                    "entity_type": "product",
+                                    "match_tier": "trigram"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "disallowed-entity-gate": [
+            {
+                "json": {}
+            }
+        ]
+    },
+    "input": [
+        {
+            "json": {
+                "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+            }
+        }
+    ],
+    "execution": {
+        "id": "hc-dashed-multi"
+    },
+    "expected": [
+        {
+            "json": {
+                "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+                "suggest_offer": true,
+                "suggest_last_result_set": [
+                    {
+                        "idx": 1,
+                        "label": "MFG6651-GM-L",
+                        "value": "MFG6651-GM-L",
+                        "product": "MFG6651-GM-L",
+                        "uuid": "ua",
+                        "entity_type": "product"
+                    },
+                    {
+                        "idx": 2,
+                        "label": "MFG6651-GM-S",
+                        "value": "MFG6651-GM-S",
+                        "product": "MFG6651-GM-S",
+                        "uuid": "ub",
+                        "entity_type": "product"
+                    },
+                    {
+                        "idx": 3,
+                        "label": "SRTWC8605-RL-S10",
+                        "value": "SRTWC8605-RL-S10",
+                        "product": "SRTWC8605-RL-S10",
+                        "uuid": "uc",
+                        "entity_type": "product"
+                    }
+                ],
+                "dym_candidates": [
+                    {
+                        "code": "MFG6651-GM-L",
+                        "uuid": "ua",
+                        "entity_type": "product",
+                        "for_raw": "mfg6651gm",
+                        "for_hint": "product",
+                        "for_canonical": null
+                    },
+                    {
+                        "code": "MFG6651-GM-S",
+                        "uuid": "ub",
+                        "entity_type": "product",
+                        "for_raw": "mfg6651gm",
+                        "for_hint": "product",
+                        "for_canonical": null
+                    },
+                    {
+                        "code": "SRTWC8605-RL-S10",
+                        "uuid": "uc",
+                        "entity_type": "product",
+                        "for_raw": "srtwc8605rl",
+                        "for_hint": "product",
+                        "for_canonical": null
+                    }
+                ],
+                "suggest_selection_context": "suggest_offer",
+                "suggest_response": "Couldn't find some items:\n\n\"MFG6651-GM\" (product) - did you mean:\n  1. MFG6651-GM-L\n  2. MFG6651-GM-S\n\"SRTWC8605-RL\" (product) - did you mean:\n  3. SRTWC8605-RL-S10\n\nReply a number to pick, or 'yes' to escalate to customer service.",
+                "suggest_quick_reply": "Yes escalate,No it's okay",
+                "dym_offer": {
+                    "id": "hc-dashed-multi",
+                    "domain": "inventory",
+                    "ttl": 3,
+                    "candidates": [
+                        {
+                            "code": "MFG6651-GM-L",
+                            "uuid": "ua",
+                            "entity_type": "product",
+                            "for_raw": "mfg6651gm",
+                            "for_hint": "product",
+                            "for_canonical": null
+                        },
+                        {
+                            "code": "MFG6651-GM-S",
+                            "uuid": "ub",
+                            "entity_type": "product",
+                            "for_raw": "mfg6651gm",
+                            "for_hint": "product",
+                            "for_canonical": null
+                        },
+                        {
+                            "code": "SRTWC8605-RL-S10",
+                            "uuid": "uc",
+                            "entity_type": "product",
+                            "for_raw": "srtwc8605rl",
+                            "for_hint": "product",
+                            "for_canonical": null
+                        }
+                    ],
+                    "picked": []
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,146 @@
+{
+    "source": {
+        "hand_crafted": true,
+        "expected_from": "reasoned",
+        "reasoned_from": "contract",
+        "rationale": "6th resolver-token != entities[].raw instance (found during the 2026-08-25 header fix; same class as live exec 13868196, where resolutions[].token WAS the picked customer's debtor code because resolve-entity is sent canonical_code ?? raw). Here that carried pick's code 300-D059 fails to resolve and reaches D1: the old body quoted d1.token verbatim, so the customer read 'Couldn't find \"300-D059\"' - an internal debtor code as the thing THEY asked for. The two-key spelling map (raw + canonical_code, _typeNorm-normalized, first-wins - the same THREE-node lockstep map as compile-current-state's _entByTok and not-found-error-message's _byRawStripped) inverts what resolve-entity was sent, so the offer line quotes the customer's own words: 'Couldn't find \"DELUXE HOME CENTRE SDN BHD\" (customer)'. No 300- pattern anywhere in suggest_response. The map also backs _srcEnt now, so for_canonical carries 300-D059 (the raw-only .find() returned undefined for a canonical-coded token and the pick round-trip lost the slot); for_raw deliberately STAYS the resolver token - the pick machinery matches on it. Candidate lines were already name-labelled by the dym-customer-dedup (name-coded row kept first)."
+    },
+    "ctx": {
+        "Call 'sub-query-reformulator'": [
+            {
+                "json": {
+                    "output": {
+                        "domain_hint": "order",
+                        "entities": [
+                            {
+                                "raw": "DELUXE HOME CENTRE SDN BHD",
+                                "hint": "customer",
+                                "canonical_code": "300-D059",
+                                "current_message": false,
+                                "uuid": "cu-00000000-0000-0000-0000-000000000001"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "resolve-entity": [
+            {
+                "json": {
+                    "resolutions": [
+                        {
+                            "token": "300-D059",
+                            "resolved": false,
+                            "matches": [
+                                {
+                                    "canonical_code": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                                    "uuid": "cu-00000000-0000-0000-0000-000000000001",
+                                    "entity_type": "customer",
+                                    "match_tier": "trgm",
+                                    "display": {
+                                        "debtor_name": "DELUXE HOME CENTRE SDN BHD (SETAPAK)"
+                                    }
+                                },
+                                {
+                                    "canonical_code": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                                    "uuid": "cu-00000000-0000-0000-0000-000000000002",
+                                    "entity_type": "customer",
+                                    "match_tier": "trgm",
+                                    "display": {
+                                        "debtor_name": "DELUXE HOME CENTRE SDN BHD - ACC 2"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "disallowed-entity-gate": [
+            {
+                "json": {}
+            }
+        ]
+    },
+    "input": [
+        {
+            "json": {
+                "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?"
+            }
+        }
+    ],
+    "execution": {
+        "id": "hc-cust-canonical-miss"
+    },
+    "expected": [
+        {
+            "json": {
+                "escalate_message": "Sorry, I couldn't find that. Would you like me to escalate?",
+                "suggest_offer": true,
+                "suggest_selection_context": "suggest_offer",
+                "suggest_response": "Couldn't find \"DELUXE HOME CENTRE SDN BHD\" (customer). Did you mean DELUXE HOME CENTRE SDN BHD (SETAPAK), or DELUXE HOME CENTRE SDN BHD - ACC 2? Reply with a code to continue, or would you like me to escalate to customer service team?",
+                "suggest_quick_reply": "DELUXE HOME CENTRE SDN BHD (SETAPAK),DELUXE HOME CENTRE SDN BHD - ACC 2,Yes escalate,No it's okay",
+                "suggest_last_result_set": [
+                    {
+                        "idx": 1,
+                        "label": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                        "value": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                        "product": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                        "uuid": "cu-00000000-0000-0000-0000-000000000001",
+                        "entity_type": "customer"
+                    },
+                    {
+                        "idx": 2,
+                        "label": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                        "value": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                        "product": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                        "uuid": "cu-00000000-0000-0000-0000-000000000002",
+                        "entity_type": "customer"
+                    }
+                ],
+                "dym_candidates": [
+                    {
+                        "code": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                        "uuid": "cu-00000000-0000-0000-0000-000000000001",
+                        "entity_type": "customer",
+                        "for_raw": "300-D059",
+                        "for_hint": "customer",
+                        "for_canonical": "300-D059"
+                    },
+                    {
+                        "code": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                        "uuid": "cu-00000000-0000-0000-0000-000000000002",
+                        "entity_type": "customer",
+                        "for_raw": "300-D059",
+                        "for_hint": "customer",
+                        "for_canonical": "300-D059"
+                    }
+                ],
+                "dym_offer": {
+                    "id": "hc-cust-canonical-miss",
+                    "domain": "order",
+                    "ttl": 3,
+                    "candidates": [
+                        {
+                            "code": "DELUXE HOME CENTRE SDN BHD (SETAPAK)",
+                            "uuid": "cu-00000000-0000-0000-0000-000000000001",
+                            "entity_type": "customer",
+                            "for_raw": "300-D059",
+                            "for_hint": "customer",
+                            "for_canonical": "300-D059"
+                        },
+                        {
+                            "code": "DELUXE HOME CENTRE SDN BHD - ACC 2",
+                            "uuid": "cu-00000000-0000-0000-0000-000000000002",
+                            "entity_type": "customer",
+                            "for_raw": "300-D059",
+                            "for_hint": "customer",
+                            "for_canonical": "300-D059"
+                        }
+                    ],
+                    "picked": []
+                }
+            }
+        }
+    ]
+}

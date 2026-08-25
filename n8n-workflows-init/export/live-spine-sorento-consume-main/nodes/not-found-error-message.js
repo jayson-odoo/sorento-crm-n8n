@@ -397,7 +397,8 @@ if (missingAttachmentType) {
   // entity, entities in order (first-wins unchanged). ONE stripped key per value suffices even
   // though resolve-entity strips `[-\s]+` only for `hint === 'product'`: lookups also go through
   // `_typeNorm`, so the unstripped customer canonical and any stripped echo hit the same slot.
-  // SAME shape as compile-current-state's `_entByTok` - change both together.
+  // SAME shape as compile-current-state's `_entByTok` and build-suggest-offer's `_entByTok`
+  // (THREE lockstep copies) - change all together.
   const _byRawStripped = new Map();
   for (const e of allEnts) {
     const _k = _typeNorm(e.raw);

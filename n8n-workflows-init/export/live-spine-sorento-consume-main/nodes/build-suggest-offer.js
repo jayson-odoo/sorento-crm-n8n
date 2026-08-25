@@ -286,6 +286,30 @@ const _prettifyType = (t) => {
   return s.replace(/[_-]+/g, ' ').trim().toLowerCase();
 };
 
+// ── THE CUSTOMER'S SPELLING (6th resolver-token != entities[].raw instance, 2026-08-25) ───────
+// d1.token is the RESOLVER's echo, not what the customer typed: resolve-entity is sent
+// `canonical_code ?? raw` and strips `[-\s]+` on a product hint, so a canonical-coded customer
+// miss reaching this node printed the debtor code (`Couldn't find "300-D059"`) and a dashed
+// product token printed mangled (`"mfg6651gm"` for the `MFG6651-GM` the person wrote). Same bug,
+// same fix as the header nodes: map each resolver token back to the parser entity it was built
+// from and quote THAT entity's raw.
+// Key: separators stripped + lower-cased on BOTH sides (`_typeNorm` above is byte-identical to
+// their key fns), each entity keyed under BOTH its `raw` AND its `canonical_code` (mirroring what
+// resolve-entity is SENT), raw before canonical within each entity, entities in order, FIRST-wins
+// on a collision. Nothing matches (a CRM-side rewrite) => the token falls through UNCHANGED, i.e.
+// today's behaviour - this can only ever improve a quoted line, never invent one.
+// LOCKSTEP: same shape as compile-current-state's `_tokKey`/`_entByTok` and
+// not-found-error-message's `_typeNorm`/`_byRawStripped` - THREE copies now, change all together.
+const _entByTok = new Map();
+for (const _ent of (Array.isArray(q?.entities) ? q.entities : [])) {
+  const _entKey = _typeNorm(_ent && _ent.raw);
+  if (_entKey && !_entByTok.has(_entKey)) _entByTok.set(_entKey, _ent);
+  const _entCodeKey = _typeNorm(_ent && _ent.canonical_code);
+  if (_entCodeKey && !_entByTok.has(_entCodeKey)) _entByTok.set(_entCodeKey, _ent);
+}
+const _entOfTok = (t) => _entByTok.get(_typeNorm(t));
+const _rawOfTok = (t) => { const _e = _entOfTok(t); return (_e && _e.raw) || t; };
+
 // Renderable survivors: a token whose candidates ALL drop via humanLabel (bare uuid, no display
 // name) is skipped entirely — not shown, and its idx range is never consumed.
 const _survivors = d1s
@@ -308,9 +332,10 @@ if (_survivors.length > 1) {
   for (const s of _survivors) {
     const token = s.block.token;
     // dym-candidate-map: each candidate keeps its OWN source token so a code pick replaces the
-    // right entity. _srcEnt looked up PER token (parser entity whose raw === this token).
-    const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
-      .find(e => _typeNorm(e.raw) === _typeNorm(token));
+    // right entity. _srcEnt looked up PER token through the two-key spelling map above, so a
+    // canonical-coded token (a picked customer's debtor code) still finds its entity - the old
+    // raw-only .find() returned undefined for those, losing the hint fallback and for_canonical.
+    const _srcEnt = _entOfTok(token);
     // entity-type-label: resolver PRIMARY (this token's own best non-exact candidate's
     // entity_type — open vocabulary, prettified only if snake_case/ugly), parser hint FALLBACK
     // when the resolver named nothing, bare when neither. Matches the confirm-prefix IIFE's
@@ -347,7 +372,10 @@ if (_survivors.length > 1) {
         for_canonical: (_srcEnt && _srcEnt.canonical_code) || null,
       });
     }
-    blocks.push(`"${token}"${_typeSfx} - did you mean:\n` + candLines.join('\n'));
+    // QUOTE THE CUSTOMER'S SPELLING, never the resolver's echo (see the two-key map above).
+    // for_raw in dym_candidates above stays the RESOLVER token - the pick round-trip matches on
+    // it; only the rendered text changes.
+    blocks.push(`"${_rawOfTok(token)}"${_typeSfx} - did you mean:\n` + candLines.join('\n'));
   }
   out.suggest_offer = true;
   out.suggest_selection_context = 'suggest_offer';
@@ -368,10 +396,10 @@ if (d1) {
     .filter(p => p.label);
   if (picks.length) {
     const anyUuid = picks.some(p => isUuid(p.m.canonical_code));
-    // dym-candidate-map: the source token that produced this did-you-mean, matched to the
-    // parser entity whose raw == d1.token (for_hint/for_canonical fallback matchers).
-    const _srcEnt = (Array.isArray(q?.entities) ? q.entities : [])
-      .find(e => _typeNorm(e.raw) === _typeNorm(d1.token));
+    // dym-candidate-map: the source token that produced this did-you-mean, matched through the
+    // two-key spelling map above (for_hint/for_canonical fallback matchers) - a canonical-coded
+    // token still finds its entity where the old raw-only .find() returned undefined.
+    const _srcEnt = _entOfTok(d1.token);
     // entity-type-label: resolver PRIMARY (d1's own best non-exact candidate's entity_type —
     // open vocabulary, prettified only if snake_case/ugly), parser hint FALLBACK when the
     // resolver named nothing, bare when neither. Matches the confirm-prefix IIFE's priority in
@@ -386,8 +414,9 @@ if (d1) {
       // names listed in the message text. Numbers are 1 char (safe under every respond.io
       // button/list interpretation) and the pick round-trips by last_result_set[idx].uuid.
       const numbered = picks.map((p, i) => `${i + 1}. ${p.label}`).join('\n');
+      // QUOTE THE CUSTOMER'S SPELLING, never the resolver's echo (see the two-key map above).
       out.suggest_response =
-        `Couldn't pin down "${d1.token}"${_d1TypeSfx}. Here are the closest matches:\n${numbered}\n` +
+        `Couldn't pin down "${_rawOfTok(d1.token)}"${_d1TypeSfx}. Here are the closest matches:\n${numbered}\n` +
         `Reply with a number to continue, or would you like me to escalate to ${team} team?`;
       const nums = picks.map((_, i) => String(i + 1));
       out.suggest_quick_reply = [...nums, YES, NO].map(s => String(s).replace(/,/g, '')).join(',');
@@ -434,12 +463,13 @@ if (d1) {
           const sfx = _dymProbed.has(k) ? (_dymHas.has(k) ? ` - has ${_dymNoun}` : ` - no ${_dymNoun}`) : '';
           return `${i + 1}. ${c}${sfx}`;
         }).join('\n');
+        // QUOTE THE CUSTOMER'S SPELLING, never the resolver's echo (see the two-key map above).
         out.suggest_response =
-          `Couldn't find "${d1.token}"${_d1TypeSfx}. Did you mean:\n${_dymLines}\n` +
+          `Couldn't find "${_rawOfTok(d1.token)}"${_d1TypeSfx}. Did you mean:\n${_dymLines}\n` +
           `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
       } else {
         out.suggest_response =
-          `Couldn't find "${d1.token}"${_d1TypeSfx}. Did you mean ${humanList(codes)}? ` +
+          `Couldn't find "${_rawOfTok(d1.token)}"${_d1TypeSfx}. Did you mean ${humanList(codes)}? ` +
           `Reply with a code to continue, or would you like me to escalate to ${team} team?`;
       }
       out.suggest_quick_reply = [...codes,  YES, NO].map(s => String(s).replace(/,/g, '')).join(',');

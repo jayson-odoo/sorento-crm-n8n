@@ -1,0 +1,172 @@
+{
+    "source": {
+        "hand_crafted": true,
+        "expected_from": "reasoned",
+        "reasoned_from": "contract",
+        "rationale": "G-A picker labels name WHAT THE PICK COVERS (captain, 2026-08-25; measured live execs 13863242 / 13868466: 'deluxe home delivery' offered '1. DELUXE HOME CENTRE SDN BHD (SETAPAK)' although option 1 stood for the whole DELUXE HOME CENTRE family, and the customer who picked 1 got siblings and zero SETAPAK rows). Contract: an option whose base groups MULTIPLE resolved accounts renders the FAMILY name - the representative's name minus exactly the marker classes _custBase strips ('(SETAPAK)' goes), real casing and the legal form kept ('SDN BHD' stays) - so line 1 must read 'DELUXE HOME CENTRE SDN BHD'; the '- ACC 2' base is a true base distinction (never a marker) and its single-account option keeps its exact label 'DELUXE HOME CENTRE SDN BHD - ACC 2'. Invariants pinned here: printed line text == roster title byte-for-byte (same _repLabels array, same index); picker_families keys stay the _custBase keys ('DELUXE HOME CENTRE' carrying setapak+aci+iborn, 'DELUXE HOME CENTRE ACC 2' carrying acc2) - the label strip deletes only what _custBase deletes, so _custBase(label) still lands on the family key on the pick turn; numbering i+1 in resolver order; customer_probe_entities still the WHOLE family, reps first."
+    },
+    "ctx": {
+        "Call 'sub-query-reformulator'": [
+            {
+                "json": {
+                    "output": {
+                        "domain_hint": "order",
+                        "entities": [
+                            {
+                                "raw": "deluxe home",
+                                "hint": "customer",
+                                "current_message": true
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "resolve-entity": [
+            {
+                "json": {
+                    "match_mode": "or",
+                    "tokens": [
+                        "deluxe home"
+                    ],
+                    "unresolved_tokens": [],
+                    "resolutions": [
+                        {
+                            "token": "deluxe home",
+                            "resolved": false,
+                            "ambiguous": true,
+                            "matches": [
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-setapak",
+                                    "canonical_code": "300-D059",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD (SETAPAK)"
+                                    }
+                                },
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-acc2",
+                                    "canonical_code": "300-D058",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD - ACC 2"
+                                    }
+                                },
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-aci",
+                                    "canonical_code": "300-D060",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD [A/C I]"
+                                    }
+                                },
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-iborn",
+                                    "canonical_code": "300-D061",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "DELUXE HOME CENTRE SDN BHD - [IBORN]"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "input": [
+        {
+            "json": {
+                "tokens": [
+                    "deluxe home"
+                ]
+            }
+        }
+    ],
+    "expected": [
+        {
+            "json": {
+                "tokens": [
+                    "deluxe home"
+                ],
+                "gate_passed": false,
+                "require_specific": true,
+                "resolved_company": null,
+                "company_team": null,
+                "resolved_companies": [],
+                "routing_brand": null,
+                "routing_brand_source": null,
+                "routing_companies": [],
+                "routing_company": null,
+                "access_denied_levels": [],
+                "access_notice": "",
+                "brand_gate_empty": false,
+                "brand_unheld": false,
+                "gate_reason": "'order' customer token matches 2 different companies; user must pick",
+                "gate_clarification": "Which customer do you mean? Please choose:\n1. DELUXE HOME CENTRE SDN BHD\n2. DELUXE HOME CENTRE SDN BHD - ACC 2",
+                "compatible_entities": [
+                    {
+                        "uuid": "cu-setapak",
+                        "entity_type": "customer",
+                        "code": "300-D059",
+                        "title": "DELUXE HOME CENTRE SDN BHD"
+                    },
+                    {
+                        "uuid": "cu-acc2",
+                        "entity_type": "customer",
+                        "code": "300-D058",
+                        "title": "DELUXE HOME CENTRE SDN BHD - ACC 2"
+                    }
+                ],
+                "customer_probe_entities": [
+                    {
+                        "uuid": "cu-setapak",
+                        "entity_type": "customer",
+                        "code": "300-D059"
+                    },
+                    {
+                        "uuid": "cu-acc2",
+                        "entity_type": "customer",
+                        "code": "300-D058"
+                    },
+                    {
+                        "uuid": "cu-aci",
+                        "entity_type": "customer",
+                        "code": "300-D060"
+                    },
+                    {
+                        "uuid": "cu-iborn",
+                        "entity_type": "customer",
+                        "code": "300-D061"
+                    }
+                ],
+                "picker_families": {
+                    "DELUXE HOME CENTRE": [
+                        "cu-setapak",
+                        "cu-aci",
+                        "cu-iborn"
+                    ],
+                    "DELUXE HOME CENTRE ACC 2": [
+                        "cu-acc2"
+                    ]
+                },
+                "gate_debug": {
+                    "domain": "order",
+                    "allowed_lookup": [
+                        "order",
+                        "customer_order",
+                        "transporter",
+                        "customer",
+                        "product"
+                    ],
+                    "entities_count": 4
+                }
+            }
+        }
+    ]
+}

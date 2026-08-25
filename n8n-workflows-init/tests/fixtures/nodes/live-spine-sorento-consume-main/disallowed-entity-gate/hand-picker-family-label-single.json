@@ -1,0 +1,142 @@
+{
+    "source": {
+        "hand_crafted": true,
+        "expected_from": "reasoned",
+        "reasoned_from": "contract",
+        "rationale": "The single-account arm of the 2026-08-25 label rule: when a base groups exactly ONE resolved account, the option keeps its EXACT account label - there the marker IS the identity, so 'MASTILE KLANG SDN BHD - [IBORN]' prints with its marker (the pre-change render stripped every trailing bracket marker via _custName and would have shown 'MASTILE KLANG SDN BHD', claiming a wider family than the pick covers - this fixture is red on that body). The unmarked single 'KL BUILDING MATERIALS SDN BHD' is byte-identical before and after. title == printed line for both, and picker_families still keys each base to its one uuid: _custBase deletes the bracket marker either way, so the exact label and the family key stay linked."
+    },
+    "ctx": {
+        "Call 'sub-query-reformulator'": [
+            {
+                "json": {
+                    "output": {
+                        "domain_hint": "order",
+                        "entities": [
+                            {
+                                "raw": "building",
+                                "hint": "customer",
+                                "current_message": true
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "resolve-entity": [
+            {
+                "json": {
+                    "match_mode": "or",
+                    "tokens": [
+                        "building"
+                    ],
+                    "unresolved_tokens": [],
+                    "resolutions": [
+                        {
+                            "token": "building",
+                            "resolved": false,
+                            "ambiguous": true,
+                            "matches": [
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-mk",
+                                    "canonical_code": "300-M100",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "MASTILE KLANG SDN BHD - [IBORN]"
+                                    }
+                                },
+                                {
+                                    "entity_type": "customer",
+                                    "uuid": "cu-kb",
+                                    "canonical_code": "300-K200",
+                                    "match_tier": "fuzzy",
+                                    "display": {
+                                        "customer_name": "KL BUILDING MATERIALS SDN BHD"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "input": [
+        {
+            "json": {
+                "tokens": [
+                    "building"
+                ]
+            }
+        }
+    ],
+    "expected": [
+        {
+            "json": {
+                "tokens": [
+                    "building"
+                ],
+                "gate_passed": false,
+                "require_specific": true,
+                "resolved_company": null,
+                "company_team": null,
+                "resolved_companies": [],
+                "routing_brand": null,
+                "routing_brand_source": null,
+                "routing_companies": [],
+                "routing_company": null,
+                "access_denied_levels": [],
+                "access_notice": "",
+                "brand_gate_empty": false,
+                "brand_unheld": false,
+                "gate_reason": "'order' customer token matches 2 different companies; user must pick",
+                "gate_clarification": "Which customer do you mean? Please choose:\n1. MASTILE KLANG SDN BHD - [IBORN]\n2. KL BUILDING MATERIALS SDN BHD",
+                "compatible_entities": [
+                    {
+                        "uuid": "cu-mk",
+                        "entity_type": "customer",
+                        "code": "300-M100",
+                        "title": "MASTILE KLANG SDN BHD - [IBORN]"
+                    },
+                    {
+                        "uuid": "cu-kb",
+                        "entity_type": "customer",
+                        "code": "300-K200",
+                        "title": "KL BUILDING MATERIALS SDN BHD"
+                    }
+                ],
+                "customer_probe_entities": [
+                    {
+                        "uuid": "cu-mk",
+                        "entity_type": "customer",
+                        "code": "300-M100"
+                    },
+                    {
+                        "uuid": "cu-kb",
+                        "entity_type": "customer",
+                        "code": "300-K200"
+                    }
+                ],
+                "picker_families": {
+                    "MASTILE KLANG": [
+                        "cu-mk"
+                    ],
+                    "KL BUILDING MATERIALS": [
+                        "cu-kb"
+                    ]
+                },
+                "gate_debug": {
+                    "domain": "order",
+                    "allowed_lookup": [
+                        "order",
+                        "customer_order",
+                        "transporter",
+                        "customer",
+                        "product"
+                    ],
+                    "entities_count": 2
+                }
+            }
+        }
+    ]
+}

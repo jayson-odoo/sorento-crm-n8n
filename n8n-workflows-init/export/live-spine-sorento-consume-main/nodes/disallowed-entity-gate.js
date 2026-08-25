@@ -363,17 +363,63 @@ if (!require_specific && (ALLOWED[domain] ?? []).includes('customer')) {
                  .map(m => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code })),
       ...compatible_entities.filter(c => String(c && c.entity_type).toLowerCase() !== 'customer'),
     ];
+    // ── the option label names WHAT THE PICK COVERS (captain, 2026-08-25) ────────────────────
+    // MEASURED, live execs 13863242 / 13868466: "deluxe home delivery" rendered
+    //   1. DELUXE HOME CENTRE SDN BHD (SETAPAK)
+    //   2. DELUXE HOME CENTRE SDN BHD - ACC 2
+    // Option 1 stood for the whole DELUXE HOME CENTRE family ([A/C I]/[III]/[IV], IBORN, PUCHONG,
+    // KEPONG, ...) - a pick expands through picker_families to every account of the base - so the
+    // customer who picked 1 got an answer full of siblings with zero SETAPAK rows. A label naming
+    // one branch misdescribes a pick that covers the company. Therefore:
+    //   * a MULTI-account option renders the FAMILY name: the representative's name minus exactly
+    //     the marker classes _custBase deletes to group the family - bracketed "[A/C I]"-style
+    //     markers anywhere, a trailing parenthesised branch like "(SETAPAK)" - while KEEPING the
+    //     real casing and the legal form (SDN BHD) that _custBase merely normalizes for KEYING.
+    //     _custBase's own output is a grouping key ("DELUXE HOME CENTRE"), not customer copy.
+    //     A mid-name parenthesis ("(M) SDN BHD") is part of the legal name and stays.
+    //   * a SINGLE-account option keeps its exact account label - there the marker IS the
+    //     identity, and "DELUXE HOME CENTRE SDN BHD - ACC 2" style base distinctions were never
+    //     markers to begin with.
+    // SAFETY OF THE DERIVATION: every substring the label strip deletes (bracket groups, trailing
+    // paren groups, separators, whitespace) is a substring _custBase deletes wholesale too, so
+    // _custBase(label) === _custBase(rep name) on every arm (single = identity; the canonical_code
+    // fallback mirrors _custBase's own fallback). That equality is (a) the picker_families linkage
+    // - the pick turn re-derives the family key FROM THIS LABEL via _custBase({canonical_code:
+    // raw}) in the family-expansion block below, and annotate-customer-picker re-keys its
+    // delivery suffixes through the same base() - and (b) the collision proof: two byte-equal
+    // lines from two DIFFERENT families would force _custBase-equal labels, hence equal bases,
+    // hence one _bases entry, i.e. one rep. Unreachable, so no disambiguation arm exists.
+    const _famSizeOf = (m) => {
+      const _f = _custFamilies[_custBase(m)];
+      return Array.isArray(_f) ? new Set(_f).size : 0;
+    };
+    const _repLabel = (m) => {
+      const _n = _custName(m);
+      if (!_n) return String((m && m.canonical_code) || '');     // same fallback as before
+      if (_famSizeOf(m) <= 1) {
+        const _d = (m && m.display) || {};
+        return String(_d.customer_name || _d.debtor_name || '').trim() || _n;  // exact account label
+      }
+      let _s = _n.replace(/\[[^\]]*\]/g, ' ');                   // [A/C I]-style markers, anywhere
+      let _prev;
+      do { _prev = _s; _s = _s.replace(/\s*-?\s*\([^)]*\)\s*$/, ''); } while (_s !== _prev); // trailing "(SETAPAK)"
+      _s = _s.replace(/\s+/g, ' ').replace(/[\s-]+$/, '').trim();
+      return _s || _n;                                           // defensive; unreachable for a rep (base would be empty)
+    };
+    // computed ONCE and indexed by i in BOTH renders below, so the printed line and the roster
+    // `title` are byte-equal by construction - pick-by-name resolves against exactly what was shown.
+    const _repLabels = _reps.map(_repLabel);
     require_specific   = true;
     gate_passed        = false;
     gate_reason        = `'${domain}' customer token matches ${_bases.size} different companies; user must pick`;
     gate_clarification = 'Which customer do you mean? Please choose:\n'
-      + _reps.map((m, i) => `${i + 1}. ${_custName(m) || m.canonical_code}`).join('\n');
+      + _reps.map((m, i) => `${i + 1}. ${_repLabels[i]}`).join('\n');
     // the roster compile-current-state persists comes from compatible_entities, so it must be the
     // SAME rows in the SAME order as the numbered lines above or the positional pick misresolves.
     // `title` is what compile-current-state labels the roster row with (its priority is
     // title -> code -> canonical_code), so the persisted rows read as company NAMES and a reply
     // by name resolves as well as a reply by number. `code` stays the canonical debtor code.
-    compatible_entities = _reps.map(m => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code, title: _custName(m) || m.canonical_code }));
+    compatible_entities = _reps.map((m, i) => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code, title: _repLabels[i] }));
   }
 }
 

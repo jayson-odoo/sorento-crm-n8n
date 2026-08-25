@@ -764,8 +764,9 @@ const selection_context = _merge ? 'member_offer' : (_sug ? 'suggest_offer' : (_
 // the resolver's own echoed `entity_type` is exactly what these findings show is unreliable.
 //
 // Key: separators stripped + lower-cased on BOTH sides, FIRST-wins on a collision - the same key
-// and the same tie-break as not-found-error-message.js's `_byRawStripped` / `_rawOfTok`, so the
-// answer and the miss can never name one token two ways. Nothing matches (a CRM-side rewrite:
+// and the same tie-break as not-found-error-message.js's `_byRawStripped` / `_rawOfTok` AND
+// build-suggest-offer.js's `_entByTok` / `_rawOfTok` (THREE lockstep copies - change all
+// together), so the answer, the miss and the did-you-mean can never name one token two ways. Nothing matches (a CRM-side rewrite:
 // sent "Warehouse Bukit Raja", echoed "Bukit Raja" - exec 12777712) => the token is returned
 // UNCHANGED, i.e. exactly today's behaviour, so this can only ever improve a line, never invent one.
 //
