@@ -1,0 +1,92 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "Three companies: the `Both` lead is 2-only, so this takes the Oxford-less `A, B and C teams are listed` form. Same single ask. offer-hold-gate is a pass-through If: the item is whatever walked If5 -> If2 -> If-ideate on a member_reprompt turn. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
+ },
+ "ctx": {
+  "get-session-vars": [
+   {
+    "json": {
+     "respond_io_id": "900000013",
+     "session_vars": {
+      "variables": {
+       "response": "Would you like me to escalate to customer_service team?",
+       "last_result_set": [
+        {
+         "idx": 1,
+         "uuid": "cs-0001",
+         "label": "Aisyah Rahman",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento"
+        },
+        {
+         "idx": 2,
+         "uuid": "cs-0002",
+         "label": "Wong Mei Ling",
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha"
+        },
+        {
+         "idx": 3,
+         "uuid": "cs-0003",
+         "label": "Tan Wei Jie",
+         "company_id": "7c1f0f88-2f1a-4a4e-9d6a-5b0a1f2c3d4e",
+         "company_name": "Cabana"
+        }
+       ],
+       "selection_context": "member_offer",
+       "routing_roster_plan": [
+        {
+         "plan_idx": 0,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "plan_idx": 1,
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        },
+        {
+         "plan_idx": 2,
+         "company_id": "7c1f0f88-2f1a-4a4e-9d6a-5b0a1f2c3d4e",
+         "company_name": "Cabana",
+         "brand_code": "cabana"
+        }
+       ],
+       "routing_company": null,
+       "routing_brand": null,
+       "routing_companies": null
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "escalate_message": null,
+    "require_specific": false,
+    "is_clarification": false,
+    "correction": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "escalate_message": null,
+    "require_specific": false,
+    "is_clarification": false,
+    "correction": true,
+    "clarify_company": true,
+    "clarify_text": "*Sorento*, *Mocha* and *Cabana* teams are listed - reply a number or a name and I'll assign automatically."
+   }
+  }
+ ],
+ "runIndex": 0
+}

@@ -1,0 +1,66 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "THE C2/C5 REGRESSION GUARD. The clone body branched on prev.selection_context and emitted `reply with the company (Sorento / Mocha)` here - an affordance the LIVE parser cannot parse (company_pick: 0 occurrences in sub-semantic-parser XTODTw @ 177c50a9), so the customer was livelocked. There is now ONE string and no company branch. Unreachable in production anyway: both gates upstream require selection_context === 'member_offer'. clarify-company-gate is a pass-through If: the item is escalation-context's output, which is where routing_source === 'multi_company_unpicked' was decided. offer-hold-reply and clarify-company-reply run the SAME body (asserted byte-identical by tests/unit/offer-hold-clarify-copy.test.js), so this case is mirrored onto both."
+ },
+ "ctx": {
+  "get-session-vars": [
+   {
+    "json": {
+     "respond_io_id": "900000013",
+     "session_vars": {
+      "variables": {
+       "response": "Would you like me to escalate to customer_service team?",
+       "last_result_set": [],
+       "selection_context": null,
+       "routing_roster_plan": [
+        {
+         "plan_idx": 0,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "plan_idx": 1,
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ],
+       "routing_company": null,
+       "routing_brand": null,
+       "routing_companies": null
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "brand_code": null,
+    "company_id": null,
+    "company_name": null,
+    "routing_source": "multi_company_unpicked",
+    "team": "customer_service"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "brand_code": null,
+    "company_id": null,
+    "company_name": null,
+    "routing_source": "multi_company_unpicked",
+    "team": "customer_service",
+    "clarify_company": true,
+    "clarify_text": "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically."
+   }
+  }
+ ],
+ "runIndex": 0
+}

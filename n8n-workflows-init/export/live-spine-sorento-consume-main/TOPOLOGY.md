@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
 - versionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · activeVersionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · DRAFT == ACTIVE
-- 137 nodes
+- 142 nodes
 
 ## Edges
-_164 edge groups_
+_170 edge groups_
 
 ```
 Aggregate[0] -> tier-gate
@@ -23,7 +23,7 @@ Execute 'sub-get-rag'[0] -> tool-filter
 If[0] -> get-access-types
 If[1] -> If7
 If-ideate[0] -> ideate-turn-http
-If-ideate[1] -> If10
+If-ideate[1] -> offer-hold-gate
 If-incoming-picker[0] -> probe-incoming
 If-incoming-picker[1] -> not-found-error-message
 If1[0] -> tag-clarify-menu
@@ -64,6 +64,8 @@ build-miss-member-offer[0] -> dym-transform-partial
 build-suggest-offer[0] -> tag-not-found
 central-exchange[0] -> miss-roster-gate
 check-access[0] -> If5
+clarify-company-gate[0] -> clarify-company-reply
+clarify-company-gate[1] -> Call 'sub-human-intervention'
 compile-current-state[0] -> crossdomain-compose
 construct-user-prompt[0] -> Basic LLM Chain
 crossdomain-compose[0] -> save-session-vars, sorento-sub-respond-sendmsg-respond2
@@ -90,7 +92,7 @@ dym-probe-partial[0] -> dym-annotate-partial
 dym-transform[0] -> dym-gate
 dym-transform-partial[0] -> dym-gate-partial
 escalate-catalog[0] -> cs-offer-gate
-escalation-context[0] -> Call 'sub-human-intervention'
+escalation-context[0] -> clarify-company-gate
 family-fetch[0] -> sibling-transform
 get-access-types[0] -> Aggregate
 get-cs-members[0] -> build-cs-member-offer
@@ -128,6 +130,9 @@ miss-roster-plan[0] -> build-miss-member-offer
 not-found-error-message[0] -> sibling-gate
 not-supported-domain[0] -> tag-not-supported
 not-supported-domain[1] -> If
+offer-hold-gate[0] -> offer-hold-reply
+offer-hold-gate[1] -> If10
+offer-hold-reply[0] -> tag-offer-hold
 patch-transcript[0] -> tf-message
 presign-fail-notice[0] -> sorento-sub-respond-sendmsg-presign-fail
 probe-incoming[0] -> annotate-incoming-picker
@@ -162,6 +167,7 @@ tag-escalate-offer[0] -> escalate-catalog
 tag-escalation-declined[0] -> escalate-catalog
 tag-not-found[0] -> escalate-catalog
 tag-not-supported[0] -> escalate-catalog
+tag-offer-hold[0] -> escalate-catalog
 tag-out-of-scope[0] -> escalate-catalog
 tf-message[0] -> sorento-sub-respond-findcontact-respond
 tier-gate[0] -> If4
@@ -204,12 +210,13 @@ wait-media-poll[0] -> media-poll-http
 - **escalate-catalog** ← build-cs-member-offer, compile-current-state, cs-offer-gate
 - **escalation-context** ← Call 'sub-human-intervention'
 - **get-cs-members** ← build-cs-member-offer
-- **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, compile-current-state, construct-user-prompt, crossdomain-zeroset, escalation-context, ideate-turn-http
+- **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, clarify-company-gate, clarify-company-reply, compile-current-state, construct-user-prompt, crossdomain-zeroset, escalation-context, ideate-turn-http, offer-hold-gate, offer-hold-reply
 - **ideate-turn-http** ← build-ideate-reply
 - **is-human-intervened** ← transcribed-message
 - **media-route** ← media-poll-merge
 - **miss-roster-plan** ← build-miss-member-offer
 - **not-found-error-message** ← escalate-catalog
+- **offer-hold-reply** ← escalate-catalog
 - **patch-transcript** ← compile-current-state, resolve-entity, send-transcript-confirm
 - **probe-incoming** ← annotate-incoming-picker
 - **promo-picker** ← compile-current-state, miss-roster-gate
@@ -307,10 +314,10 @@ wait-media-poll[0] -> media-poll-http
 | build-miss-member-offer | 137 |
 | build-cs-member-offer | 107 |
 | crossdomain-compose | 101 |
+| escalate-catalog | 98 |
 | miss-roster-plan | 97 |
 | access-level-choice-message | 95 |
 | detect-media | 91 |
-| escalate-catalog | 89 |
 | presign-fail-notice | 62 |
 | tool-filter | 59 |
 | attach-merge | 51 |
@@ -319,6 +326,8 @@ wait-media-poll[0] -> media-poll-http
 | tier-probe-collect | 47 |
 | validator | 46 |
 | patch-transcript | 43 |
+| offer-hold-reply | 38 |
+| clarify-company-reply | 38 |
 | promo-dym-plan | 37 |
 | annotate-incoming-picker | 35 |
 | tier-probe-plan | 33 |

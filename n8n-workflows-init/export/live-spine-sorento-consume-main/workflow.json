@@ -163,7 +163,7 @@
         [
           {
             "index": 0,
-            "node": "If10",
+            "node": "offer-hold-gate",
             "type": "main"
           }
         ]
@@ -574,6 +574,24 @@
         ]
       ]
     },
+    "clarify-company-gate": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "clarify-company-reply",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Call 'sub-human-intervention'",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "compile-current-state": {
       "main": [
         [
@@ -855,7 +873,7 @@
         [
           {
             "index": 0,
-            "node": "Call 'sub-human-intervention'",
+            "node": "clarify-company-gate",
             "type": "main"
           }
         ]
@@ -1240,6 +1258,35 @@
         ]
       ]
     },
+    "offer-hold-gate": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "offer-hold-reply",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "If10",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "offer-hold-reply": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "tag-offer-hold",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "patch-transcript": {
       "main": [
         [
@@ -1594,6 +1641,17 @@
       ]
     },
     "tag-not-supported": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "escalate-catalog",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "tag-offer-hold": {
       "main": [
         [
           {
@@ -4538,7 +4596,7 @@
       "id": "7a9e9295-f252-4f88-9984-a36f73e74361",
       "name": "escalate-catalog",
       "parameters": {
-        "jsCode": "// \u2500\u2500 escalate-catalog \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Single source of truth for escalation/error messages + their behavior flags.\n// Each upstream branch sets ONE field `branch_kind`; this node maps it to the\n// message + flags that compile-current-state used to derive via a 7-arm ladder.\n// Dynamic kinds (not_found, access_choice) pull their message by reference from\n// the upstream Code node that computed it.\nconst qf  = $('Call \\'sub-query-reformulator\\'').first().json.output;\nconst out = $input.first().json;\nconst kind = out.branch_kind;\n\nlet response = '';\nlet manualResponse = false;\nlet includeResponse = true;\nlet is_escalate_offer = false;\n\nswitch (kind) {\n  case 'not_found': {\n    // Normal not-found path uses not-found-error-message. The incoming-picker\n    // availability branch bypasses it (annotate-incoming-picker computes the same\n    // escalate_message/require_specific/is_clarification), so fall back to that node.\n    // dym-probe-before-offer (rev 6): PREFER THE ANNOTATED COPY.\n    // build-suggest-offer is the annotation authority for the require-specific picker; it\n    // SPREADS rather than mutates, so reading not-found-error-message by name here returns\n    // the PRE-annotation string and silently discards the suffixes \u2014 computed correctly,\n    // rendered bare. This is the same by-name landmine the annotate-incoming-picker\n    // fallback below was added for; the suffix is NOT recomputed here.\n    // Source order: build-suggest-offer (annotated) -> not-found-error-message ->\n    // annotate-incoming-picker. Every source carries escalate_message, require_specific and\n    // is_clarification on the SAME object, so the flags below stay coherent with the text\n    // regardless of which one wins. Fail-open by construction: a missing, unexecuted or\n    // malformed preferred source falls through to exactly today's behaviour.\n    const _annotated = (() => {\n      try {\n        const n = $('build-suggest-offer');\n        if (!n.isExecuted) return null;\n        const j = n.first().json;\n        return (j && typeof j.escalate_message === 'string' && j.escalate_message) ? j : null;\n      } catch (e) { return null; }\n    })();\n    const nfNode = $('not-found-error-message');\n    const nf = _annotated\n            || (nfNode.isExecuted ? nfNode.first().json : $('annotate-incoming-picker').first().json);\n    response       = nf.escalate_message;\n    manualResponse = !nf.require_specific;\n    is_escalate_offer = !nf.is_clarification;   // offer only when it's not a clarification prompt\n    break;\n  }\n  case 'access_choice':\n    response       = $('access-level-choice-message').first().json.escalate_message;\n    manualResponse = true;\n    break;\n  case 'demand_qty':\n    response       = 'Please specify your demand quantity';\n    manualResponse = true;\n    break;\n  case 'not_supported':\n    response       = \"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\";\n    manualResponse = true;\n    break;\n  case 'clarify_menu':\n    response       = `I see you're ${qf.user_goal}, Let me understand more.\\n\\nAre you asking about any of these?\\n\\n- Product (List Price, Dimension)\\n- Photos, Technical Specs, Cert\\n- Promotion\\n- Forms\\n- Stock\\n- Delivery order\\n- Incoming\\n- Catalogue, Warranty\\n\\nI can help with the topics listed above.`;\n    manualResponse = true;\n    break;\n  case 'escalate_offer': {\n    // #9: prefer the resolved entity's company team over the parser's access-level guess.\n    const _ct = (() => { try { const g2 = $('disallowed-entity-gate'); return g2.isExecuted ? (g2.first().json.company_team || null) : null; } catch (e) { return null; } })();\n    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${_ct || qf.routing.suggested_team} team?`;\n  }\n    manualResponse = true;\n    is_escalate_offer = true;\n    break;\n  case 'out_of_scope':\n    response        = `Informed the user that request is out of scope and will proceed to escalate to the ${qf.routing.suggested_team} team`;\n    manualResponse  = true;\n    includeResponse = false;\n    break;\n  case 'escalation_declined':\n    response          = 'Escalation declined.';   // FIXED canned reply \u2014 no LLM shaping\n    manualResponse    = true;\n    includeResponse   = true;\n    is_escalate_offer = false;                     // \u2192 cs-offer-gate FALSE \u2192 straight to compile-current-state\n    break;\n}\n\nout.response          = response;\nout.manualResponse    = manualResponse;\nout.includeResponse   = includeResponse;\nout.is_escalate_offer = is_escalate_offer;\nreturn out;\n"
+        "jsCode": "// \u2500\u2500 escalate-catalog \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Single source of truth for escalation/error messages + their behavior flags.\n// Each upstream branch sets ONE field `branch_kind`; this node maps it to the\n// message + flags that compile-current-state used to derive via a 7-arm ladder.\n// Dynamic kinds (not_found, access_choice) pull their message by reference from\n// the upstream Code node that computed it.\nconst qf  = $('Call \\'sub-query-reformulator\\'').first().json.output;\nconst out = $input.first().json;\nconst kind = out.branch_kind;\n\nlet response = '';\nlet manualResponse = false;\nlet includeResponse = true;\nlet is_escalate_offer = false;\n\nswitch (kind) {\n  case 'not_found': {\n    // Normal not-found path uses not-found-error-message. The incoming-picker\n    // availability branch bypasses it (annotate-incoming-picker computes the same\n    // escalate_message/require_specific/is_clarification), so fall back to that node.\n    // dym-probe-before-offer (rev 6): PREFER THE ANNOTATED COPY.\n    // build-suggest-offer is the annotation authority for the require-specific picker; it\n    // SPREADS rather than mutates, so reading not-found-error-message by name here returns\n    // the PRE-annotation string and silently discards the suffixes \u2014 computed correctly,\n    // rendered bare. This is the same by-name landmine the annotate-incoming-picker\n    // fallback below was added for; the suffix is NOT recomputed here.\n    // Source order: build-suggest-offer (annotated) -> not-found-error-message ->\n    // annotate-incoming-picker. Every source carries escalate_message, require_specific and\n    // is_clarification on the SAME object, so the flags below stay coherent with the text\n    // regardless of which one wins. Fail-open by construction: a missing, unexecuted or\n    // malformed preferred source falls through to exactly today's behaviour.\n    const _annotated = (() => {\n      try {\n        const n = $('build-suggest-offer');\n        if (!n.isExecuted) return null;\n        const j = n.first().json;\n        return (j && typeof j.escalate_message === 'string' && j.escalate_message) ? j : null;\n      } catch (e) { return null; }\n    })();\n    const nfNode = $('not-found-error-message');\n    const nf = _annotated\n            || (nfNode.isExecuted ? nfNode.first().json : $('annotate-incoming-picker').first().json);\n    response       = nf.escalate_message;\n    manualResponse = !nf.require_specific;\n    is_escalate_offer = !nf.is_clarification;   // offer only when it's not a clarification prompt\n    break;\n  }\n  case 'access_choice':\n    response       = $('access-level-choice-message').first().json.escalate_message;\n    manualResponse = true;\n    break;\n  case 'demand_qty':\n    response       = 'Please specify your demand quantity';\n    manualResponse = true;\n    break;\n  case 'not_supported':\n    response       = \"Sorry, we don't support direct goods receive & SPO at the moment. You may ask about incoming stock for a specific product or container\";\n    manualResponse = true;\n    break;\n  case 'clarify_menu':\n    response       = `I see you're ${qf.user_goal}, Let me understand more.\\n\\nAre you asking about any of these?\\n\\n- Product (List Price, Dimension)\\n- Photos, Technical Specs, Cert\\n- Promotion\\n- Forms\\n- Stock\\n- Delivery order\\n- Incoming\\n- Catalogue, Warranty\\n\\nI can help with the topics listed above.`;\n    manualResponse = true;\n    break;\n  case 'escalate_offer': {\n    // #9: prefer the resolved entity's company team over the parser's access-level guess.\n    const _ct = (() => { try { const g2 = $('disallowed-entity-gate'); return g2.isExecuted ? (g2.first().json.company_team || null) : null; } catch (e) { return null; } })();\n    response       = `I am sorry the provided answer does not meet your requirements. Would you like me to escalate to ${_ct || qf.routing.suggested_team} team?`;\n  }\n    manualResponse = true;\n    is_escalate_offer = true;\n    break;\n  case 'out_of_scope':\n    response        = `Informed the user that request is out of scope and will proceed to escalate to the ${qf.routing.suggested_team} team`;\n    manualResponse  = true;\n    includeResponse = false;\n    break;\n  case 'escalation_declined':\n    response          = 'Escalation declined.';   // FIXED canned reply \u2014 no LLM shaping\n    manualResponse    = true;\n    includeResponse   = true;\n    is_escalate_offer = false;                     // \u2192 cs-offer-gate FALSE \u2192 straight to compile-current-state\n    break;\n  case 'offer_hold':\n    // miss-company-routing rev-4: an unresolved reply on an open MULTI-company offer. The clarify ask\n    // was composed upstream by offer-hold-reply (same body as clarify-company-reply); pull it by\n    // reference \u2014 no LLM, no roster refetch, and compile-current-state re-persists the offer state.\n    response          = (() => { try { const n = $('offer-hold-reply'); return n.isExecuted ? String(n.first().json.clarify_text || '') : ''; } catch (e) { return ''; } })();\n    manualResponse    = true;\n    includeResponse   = true;\n    is_escalate_offer = false;                     // \u2192 cs-offer-gate FALSE \u2192 straight to compile-current-state\n    break;\n}\n\nout.response          = response;\nout.manualResponse    = manualResponse;\nout.includeResponse   = includeResponse;\nout.is_escalate_offer = is_escalate_offer;\nreturn out;\n"
       },
       "position": [
         10736,
@@ -5109,6 +5167,76 @@
       ],
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3
+    },
+    {
+      "id": "offer-hold-gate-node",
+      "name": "offer-hold-gate",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "offer-hold-gate-cond-1",
+              "leftValue": "={{ (() => { try {\n  /* miss-company-routing rev-4 \u2014 offer-hold-gate (sits between If-ideate[false] and If10).\n     TRUE only when: the parser stayed in an open member offer (member_pick_context) but resolved\n     nothing (offer_hold / member_reprompt) \u2014 not a confirmation, not a decline, not a retarget \u2014\n     AND the persisted offer is a MULTI-company pool (routing_roster_plan.length > 1, the same\n     criterion escalation-context uses for multi_company_unpicked). Fail-closed: any missing\n     signal or throw => false => the original If10 path, byte-identical to before. */\n  const o = $('Call \\'sub-query-reformulator\\'').first().json.output || {};\n  const e = o.escalation || {};\n  if (e.is_escalation_confirmation === true || e.escalation_declined === true || e.retarget_team === true) return false;\n  if (o.member_pick_context !== true) return false;\n  if (e.offer_hold !== true && typeof e.member_reprompt !== 'string') return false;\n  const s = $('get-session-vars').first().json;\n  const prev = (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {};\n  if (prev.selection_context !== 'member_offer') return false;\n  const rp = Array.isArray(prev.routing_roster_plan) ? prev.routing_roster_plan : [];\n  return rp.length > 1;\n} catch (err) { return false; } })() }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1760,
+        4000
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "offer-hold-reply-node",
+      "name": "offer-hold-reply",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 offer-hold-reply / clarify-company-reply (ONE body deployed to BOTH nodes) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// A MULTI-company offer is open and this reply did not resolve it. Two lanes arrive here:\n//   * clarify-company-reply \u2014 a bare \"yes\": escalation-context resolved\n//     routing_source === 'multi_company_unpicked' and clarify-company-gate diverted the\n//     human-intervention call here, because silently assigning would round-robin a pool the\n//     customer never chose (the open live bug this node closes).\n//   * offer-hold-reply \u2014 the parser stayed in the offer but resolved nothing\n//     (escalation.member_reprompt 'out_of_range'/'multi', or escalation.offer_hold on a parser that\n//     emits it): junk, an out-of-range number, an ambiguous name, small talk. offer-hold-gate routes\n//     here BEFORE If10, so neither the fallback member re-offer nor the clarification LLM can\n//     replace the pool that was already shown.\n// This node only COMPOSES the clarify ask; it sends nothing itself. compile-current-state runs AFTER\n// it on both lanes (clarify: measured node order, exec 12836119; offer-hold: the linear chain\n// offer-hold-reply \u2192 tag-offer-hold \u2192 escalate-catalog \u2192 cs-offer-gate \u2192 compile-current-state),\n// sees this node executed, puts clarify_text on the EXISTING send path (crossdomain-compose \u2192\n// sorento-sub-respond-sendmsg-respond2) and RE-persists the prior offer state (frozen phrase + rows\n// + roster plan + companies + selection_context) so the NEXT reply still resolves against the same\n// offer. Only an explicit decline or a brand-new business query clears it.\n//\n// COPY \u2014 the ask offers a NUMBER or a NAME, never a company. The company names are bold in the lead\n// (WhatsApp single *asterisks*) so the customer can see which pools are in play, but they are not an\n// affordance: the LIVE parser (sub-semantic-parser XTODTw @ 177c50a9) has NO company_pick handler \u2014\n// grepped, 0 occurrences \u2014 so a company-name reply comes back as Tier-4 junk and the bot re-prints\n// this same ask, forever. Both gates upstream require an OPEN member picker before this node can run\n// (offer-hold-gate: selection_context === 'member_offer'; clarify-company-gate: that PLUS a\n// non-empty last_result_set), so a number or a name always has something to resolve against.\n// Re-open the company affordance only in the same change that ships a parser which parses it.\nconst prev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();\nconst pools = (Array.isArray(prev.routing_roster_plan) && prev.routing_roster_plan.length)\n  ? prev.routing_roster_plan\n  : (Array.isArray(prev.routing_companies) ? prev.routing_companies : []);\nconst names = [...new Set(pools.map(p => p && p.company_name).filter(Boolean))];\nconst bold = names.map(n => `*${n}*`);\nconst joinedBold = bold.length > 1 ? `${bold.slice(0, -1).join(', ')} and ${bold[bold.length - 1]}` : (bold[0] || '');\nconst lead = names.length === 2 ? `Both ${joinedBold} teams are listed`\n  : (joinedBold ? `${joinedBold} teams are listed` : `More than one team is listed`);\nconst clarify_text = `${lead} - reply a number or a name and I'll assign automatically.`;\nreturn [{ json: { ...$input.first().json, clarify_company: true, clarify_text } }];\n"
+      },
+      "position": [
+        1984,
+        4000
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "tag-offer-hold-node",
+      "name": "tag-offer-hold",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "tag-offer-hold-a1",
+              "name": "branch_kind",
+              "type": "string",
+              "value": "offer_hold"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "position": [
+        2208,
+        4000
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
     },
     {
       "credentials": {
@@ -6246,6 +6374,53 @@
       "position": [
         12080,
         1904
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "clarify-company-gate-node",
+      "name": "clarify-company-gate",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "clarify-company-gate-cond-1",
+              "leftValue": "={{ (() => { try {\n  /* clarify-company-gate \u2014 diverts escalation-context away from Call 'sub-human-intervention'\n     when the turn resolved routing_source === 'multi_company_unpicked': a real round-robin assign\n     (with the staff email/WhatsApp ripple) on a company pool the customer never picked.\n     NARROW ON PURPOSE. escalation-context sets that routing_source on TWO arms and they are not\n     equivalent. The rp.length > 1 arm has member rows and an armed picker, so a number or a name\n     resolves the follow-up and the customer has a way out. The cos.length > 1 arm has NO member\n     rows: nothing numeric resolves, and the only affordance the clarify copy could offer is a\n     company name, which the LIVE parser has no handler for (company_pick: 0 occurrences in\n     sub-semantic-parser XTODTw @ 177c50a9). Diverting THAT arm livelocks the customer and they\n     never reach a human at all \u2014 live's imperfect assignment is better. So the divert requires\n     persisted state that can actually resolve the next reply: an open member_offer with rows.\n     Fail-closed: any missing signal or throw => false => today's ungated human-intervention call. */\n  if ($json.routing_source !== 'multi_company_unpicked') return false;\n  const s = $('get-session-vars').first().json;\n  const prev = (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {};\n  if (prev.selection_context !== 'member_offer') return false;\n  return Array.isArray(prev.last_result_set) && prev.last_result_set.length > 0;\n} catch (err) { return false; } })() }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        12192,
+        2016
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "clarify-company-reply-node",
+      "name": "clarify-company-reply",
+      "parameters": {
+        "jsCode": "// \u2500\u2500 offer-hold-reply / clarify-company-reply (ONE body deployed to BOTH nodes) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// A MULTI-company offer is open and this reply did not resolve it. Two lanes arrive here:\n//   * clarify-company-reply \u2014 a bare \"yes\": escalation-context resolved\n//     routing_source === 'multi_company_unpicked' and clarify-company-gate diverted the\n//     human-intervention call here, because silently assigning would round-robin a pool the\n//     customer never chose (the open live bug this node closes).\n//   * offer-hold-reply \u2014 the parser stayed in the offer but resolved nothing\n//     (escalation.member_reprompt 'out_of_range'/'multi', or escalation.offer_hold on a parser that\n//     emits it): junk, an out-of-range number, an ambiguous name, small talk. offer-hold-gate routes\n//     here BEFORE If10, so neither the fallback member re-offer nor the clarification LLM can\n//     replace the pool that was already shown.\n// This node only COMPOSES the clarify ask; it sends nothing itself. compile-current-state runs AFTER\n// it on both lanes (clarify: measured node order, exec 12836119; offer-hold: the linear chain\n// offer-hold-reply \u2192 tag-offer-hold \u2192 escalate-catalog \u2192 cs-offer-gate \u2192 compile-current-state),\n// sees this node executed, puts clarify_text on the EXISTING send path (crossdomain-compose \u2192\n// sorento-sub-respond-sendmsg-respond2) and RE-persists the prior offer state (frozen phrase + rows\n// + roster plan + companies + selection_context) so the NEXT reply still resolves against the same\n// offer. Only an explicit decline or a brand-new business query clears it.\n//\n// COPY \u2014 the ask offers a NUMBER or a NAME, never a company. The company names are bold in the lead\n// (WhatsApp single *asterisks*) so the customer can see which pools are in play, but they are not an\n// affordance: the LIVE parser (sub-semantic-parser XTODTw @ 177c50a9) has NO company_pick handler \u2014\n// grepped, 0 occurrences \u2014 so a company-name reply comes back as Tier-4 junk and the bot re-prints\n// this same ask, forever. Both gates upstream require an OPEN member picker before this node can run\n// (offer-hold-gate: selection_context === 'member_offer'; clarify-company-gate: that PLUS a\n// non-empty last_result_set), so a number or a name always has something to resolve against.\n// Re-open the company affordance only in the same change that ships a parser which parses it.\nconst prev = (() => { try { const s = $('get-session-vars').first().json; return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();\nconst pools = (Array.isArray(prev.routing_roster_plan) && prev.routing_roster_plan.length)\n  ? prev.routing_roster_plan\n  : (Array.isArray(prev.routing_companies) ? prev.routing_companies : []);\nconst names = [...new Set(pools.map(p => p && p.company_name).filter(Boolean))];\nconst bold = names.map(n => `*${n}*`);\nconst joinedBold = bold.length > 1 ? `${bold.slice(0, -1).join(', ')} and ${bold[bold.length - 1]}` : (bold[0] || '');\nconst lead = names.length === 2 ? `Both ${joinedBold} teams are listed`\n  : (joinedBold ? `${joinedBold} teams are listed` : `More than one team is listed`);\nconst clarify_text = `${lead} - reply a number or a name and I'll assign automatically.`;\nreturn [{ json: { ...$input.first().json, clarify_company: true, clarify_text } }];\n"
+      },
+      "position": [
+        12192,
+        2160
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2

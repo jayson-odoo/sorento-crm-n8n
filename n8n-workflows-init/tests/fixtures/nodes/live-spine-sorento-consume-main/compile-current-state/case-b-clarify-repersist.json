@@ -1,0 +1,205 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "Case B on the CLARIFY lane - the bare \"yes\" after a multi-company member offer. divert-suggest-yes fanned out to escalation-context (which resolved routing_source 'multi_company_unpicked') and to tag-out-of-scope; clarify-company-gate diverted the human-intervention call to clarify-company-reply, so NO assignment happened and the out_of_scope catalog line is the only thing on the send path. Contract, derived before running the body: (1) output.user_response is REPLACED by clarify_text - without it the customer gets the out_of_scope arm's includeResponse:false, i.e. total silence after the gate suppressed the assignment. (2) All six persisted offer fields are re-persisted VERBATIM from get-session-vars - variables.response, last_result_set, selection_context, routing_roster_plan, routing_company, routing_companies - so the NEXT reply (a number or a name) still resolves against the same frozen offer; without the re-persist the axes block above would blank them and the offer would be lost mid-conversation. (3) variables.response in particular keeps the frozen /would you like me to escalate/i prefix the parser's confirmation arm keys on. Asserted field by field in tests/unit/offer-hold-clarify-divert.test.js."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "request_for_help",
+      "intent_hint": "escalate",
+      "domain_hint": null,
+      "user_goal": "confirming the escalation offer",
+      "entities": [],
+      "routing": {
+       "suggested_team": "customer_service"
+      },
+      "escalation": {
+       "is_escalation_confirmation": true
+      },
+      "member_pick_context": true,
+      "is_affirmative": true
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000013
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "respond_io_id": "900000013",
+     "session_vars": {
+      "variables": {
+       "message_type": "business_query",
+       "domain_hint": "order",
+       "routing": {
+        "suggested_team": "customer_service"
+       },
+       "escalation": {},
+       "entities": [],
+       "response": "Here are the delivery orders you asked about.\n\nWould you like me to escalate to customer_service team?",
+       "last_result_set": [
+        {
+         "idx": 1,
+         "uuid": "cs-0001",
+         "label": "Aisyah Rahman",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento"
+        },
+        {
+         "idx": 2,
+         "uuid": "cs-0002",
+         "label": "Wong Mei Ling",
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha"
+        }
+       ],
+       "selection_context": "member_offer",
+       "routing_roster_plan": [
+        {
+         "plan_idx": 0,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "plan_idx": 1,
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ],
+       "routing_brand": null,
+       "routing_brand_source": null,
+       "routing_company": null,
+       "routing_companies": [
+        {
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ]
+      }
+     }
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "branch_kind": "out_of_scope",
+     "response": "Informed the user that request is out of scope and will proceed to escalate to the customer_service team",
+     "manualResponse": true,
+     "includeResponse": false,
+     "is_escalate_offer": false
+    }
+   }
+  ],
+  "clarify-company-reply": [
+   {
+    "json": {
+     "brand_code": null,
+     "company_id": null,
+     "company_name": null,
+     "routing_source": "multi_company_unpicked",
+     "team": "customer_service",
+     "clarify_company": true,
+     "clarify_text": "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically."
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "out_of_scope"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "request_for_help",
+     "intent_hint": "escalate",
+     "domain_hint": null,
+     "user_goal": "confirming the escalation offer",
+     "entities": [],
+     "routing": {
+      "suggested_team": "customer_service"
+     },
+     "escalation": {
+      "is_escalation_confirmation": true
+     },
+     "response": "Here are the delivery orders you asked about.\n\nWould you like me to escalate to customer_service team?",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": "cs-0001",
+       "label": "Aisyah Rahman",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento"
+      },
+      {
+       "idx": 2,
+       "uuid": "cs-0002",
+       "label": "Wong Mei Ling",
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha"
+      }
+     ],
+     "selection_context": "member_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento"
+      },
+      {
+       "plan_idx": 1,
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha",
+       "brand_code": "mocha"
+      }
+     ],
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": [
+      {
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento"
+      },
+      {
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha",
+       "brand_code": "mocha"
+      }
+     ]
+    },
+    "user_response": "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically."
+   }
+  }
+ ],
+ "runIndex": 0
+}

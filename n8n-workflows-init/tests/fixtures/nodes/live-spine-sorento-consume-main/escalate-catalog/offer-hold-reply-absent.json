@@ -1,0 +1,48 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "The offer_hold arm's by-reference read must FAIL OPEN, not throw. tag-offer-hold can only be reached through offer-hold-reply today, so an absent offer-hold-reply means something upstream changed - and a Code node that throws here takes the whole turn down (the customer gets nothing at all), which is strictly worse than an empty response the send path then skips. Same shape as the not_found arm's `_annotated` probe: isExecuted is checked first, and the whole read sits in a try/catch. Expected, derived before running: response '' (the IIFE's else branch), and the three flags UNCHANGED from the happy arm - manualResponse true, includeResponse true, is_escalate_offer false - because they are literals, not derived from the missing node. n8n-shim's $() returns an accessor with isExecuted false for a name absent from ctx, which is exactly what production does for a node that did not run."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "casual",
+      "domain_hint": null,
+      "correction": true,
+      "member_pick_context": true,
+      "routing": {
+       "suggested_team": "customer_service"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false,
+       "member_reprompt": "out_of_range"
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "offer_hold"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "branch_kind": "offer_hold",
+    "response": "",
+    "manualResponse": true,
+    "includeResponse": true,
+    "is_escalate_offer": false
+   }
+  }
+ ],
+ "runIndex": 0
+}

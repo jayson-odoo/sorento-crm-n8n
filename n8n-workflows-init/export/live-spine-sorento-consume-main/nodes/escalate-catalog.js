@@ -80,6 +80,15 @@ switch (kind) {
     includeResponse   = true;
     is_escalate_offer = false;                     // → cs-offer-gate FALSE → straight to compile-current-state
     break;
+  case 'offer_hold':
+    // miss-company-routing rev-4: an unresolved reply on an open MULTI-company offer. The clarify ask
+    // was composed upstream by offer-hold-reply (same body as clarify-company-reply); pull it by
+    // reference — no LLM, no roster refetch, and compile-current-state re-persists the offer state.
+    response          = (() => { try { const n = $('offer-hold-reply'); return n.isExecuted ? String(n.first().json.clarify_text || '') : ''; } catch (e) { return ''; } })();
+    manualResponse    = true;
+    includeResponse   = true;
+    is_escalate_offer = false;                     // → cs-offer-gate FALSE → straight to compile-current-state
+    break;
 }
 
 out.response          = response;

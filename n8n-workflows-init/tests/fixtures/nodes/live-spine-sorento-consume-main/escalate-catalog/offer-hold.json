@@ -1,0 +1,56 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "C1. Without the `case 'offer_hold':` arm this switch has no matching case, falls through to the initialised defaults, and emits response '' / manualResponse false / includeResponse true / is_escalate_offer false on a branch that has already tagged itself branch_kind 'offer_hold' - a lie about the turn (manualResponse false means the clarification LLM is allowed to reshape a reply that must not change), rescued only by compile-current-state's Case B arm re-writing user_response afterwards. The arm's contract, derived before running the body: (1) response is pulled BY REFERENCE from offer-hold-reply (no LLM, no roster refetch) so it is byte-equal to clarify_text; (2) manualResponse true - the text is frozen; (3) includeResponse true - the customer must actually see it, unlike out_of_scope; (4) is_escalate_offer false so cs-offer-gate takes its FALSE edge straight to compile-current-state instead of refetching a CS roster for a pool that is already open."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "casual",
+      "domain_hint": null,
+      "correction": true,
+      "member_pick_context": true,
+      "routing": {
+       "suggested_team": "customer_service"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false,
+       "member_reprompt": "out_of_range"
+      }
+     }
+    }
+   }
+  ],
+  "offer-hold-reply": [
+   {
+    "json": {
+     "clarify_company": true,
+     "clarify_text": "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically."
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "offer_hold"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "branch_kind": "offer_hold",
+    "response": "Both *Sorento* and *Mocha* teams are listed - reply a number or a name and I'll assign automatically.",
+    "manualResponse": true,
+    "includeResponse": true,
+    "is_escalate_offer": false
+   }
+  }
+ ],
+ "runIndex": 0
+}
