@@ -1270,7 +1270,18 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
   // different result set." `_isDisambig` (declared with the roster ladder above) asks the same
   // question THROUGH that chain, so the roster this block persists is always the roster the rest of
   // the node decided the customer was shown.
-  const _cpBornNow = _isDisambig && Array.isArray(last_result_set) && last_result_set.length > 0;
+  //
+  // AND THE ROSTER MUST BE THE PICKER'S OWN. `_isDisambig` only asks whether the GATE raised a
+  // picker; it says nothing about which roster `last_result_set` ended up holding. The ladder above
+  // reassigns `last_result_set` for `_merge`/`_mem` (the CS member roster), `_sug`, `_promo` and
+  // `_tier`, and `selection_context` is the single value that records which of those won. Without
+  // this clause a turn where the gate raised a picker AND a member offer was built would persist
+  // the CS MEMBER ROSTER labelled `kind: 'disambiguation'` - a sticky carry of the arming pin on
+  // the CS-assign path, wearing the one label this block is willing to carry. That double-offer
+  // turn is exactly what cs-offer-gate's `g4-no-double-picker` now refuses to build; this clause is
+  // the second, independent lock, so the carry cannot resurrect it if g4 is ever widened.
+  const _cpBornNow = _isDisambig && selection_context === 'disambiguation'
+    && Array.isArray(last_result_set) && last_result_set.length > 0;
   // The offer born THIS turn: {set, kind, fam}. ONLY the require_specific picker lane.
   //
   // THE MEMBER AND TIER OFFERS ARE DELIBERATELY NOT CARRIED. `selection_context: 'member_offer'` is
@@ -1318,6 +1329,23 @@ if (_dymLastResultSet) output.variables.dym_last_result_set = _dymLastResultSet;
     // re-seat: the next positional reply resolves against the OFFER, not the answer rows
     output.variables.last_result_set  = _cpSet;
     output.variables.selection_context = _cpKind;
+  }
+  // THE FAMILY OUTLIVES THE ROSTER (captain, 2026-08-24). picker_families maps a picked candidate to
+  // the ACCOUNTS it stands for. Above it is kept only while the picker roster is alive, but the PIN
+  // is not bound to that lifetime - an entity keeps its uuid for as long as the customer keeps
+  // talking about it. So the roster expired, the family went with it, and the pick covered 1 account
+  // instead of the 12 the picker had measured (exec 13695546 vs 13695091).
+  // Safe to carry only now that a pinned customer re-resolves by NAME: the first attempt at this
+  // was reverted because re-resolution by debtor code let DENHO HARDWARE - a different company's
+  // customer sharing code 300-D059 - into the scope alongside the family.
+  if (!output.variables.picker_families) {
+    const _famPinned = (Array.isArray(qf.entities) ? qf.entities : [])
+      .some(e => e && String(e.hint || '').toLowerCase() === 'customer' && e.uuid);
+    const _famKeep = _cpPrev && _cpPrev.picker_families;
+    if (_famPinned && _famKeep && Object.keys(_famKeep).length) {
+      output.variables.picker_families = _famKeep;
+      output.variables.picker_families_carried = true;   // diagnostic
+    }
   }
 }
 // brand-company-routing: routing axes for the escalation turn (report §5.2; null-inert for replay norm)

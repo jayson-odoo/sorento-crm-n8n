@@ -1,0 +1,165 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "G-A. An `order` turn whose customer token fuzzy-resolves to THREE unrelated companies must ASK, not union (captain 2026-08-20; exec 13207261 answered with 16 orders across three of them). `order` is not in REQUIRE_SPECIFIC_DOMAINS, so nothing else in this node raises a picker on this turn - the picker here is G-A's and only G-A's. Contract: require_specific true, gate_passed false, a numbered COMPANY list in gate_clarification, compatible_entities replaced by the same rows in the same order (the positional pick resolves against it) each carrying `title`, plus the two new keys the splice consumes: customer_probe_entities (what probe-customer-orders queries) and picker_families (what the pick turn expands through)."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [
+       {
+        "raw": "4 smart",
+        "hint": "customer",
+        "current_message": true
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "or",
+     "tokens": [
+      "4 smart"
+     ],
+     "unresolved_tokens": [],
+     "resolutions": [
+      {
+       "token": "4 smart",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "uuid": "cu1",
+         "canonical_code": "300-A001",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "4 SMART PLUS SDN BHD"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "cu2",
+         "canonical_code": "300-B002",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "SB SMART CONCEPT SDN BHD"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "cu3",
+         "canonical_code": "300-C003",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "DE SMART HOME TRADING"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "4 smart"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "4 smart"
+    ],
+    "gate_passed": false,
+    "require_specific": true,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "'order' customer token matches 3 different companies; user must pick",
+    "gate_clarification": "Which customer do you mean? Please choose:\n1. 4 SMART PLUS SDN BHD\n2. SB SMART CONCEPT SDN BHD\n3. DE SMART HOME TRADING",
+    "compatible_entities": [
+     {
+      "uuid": "cu1",
+      "entity_type": "customer",
+      "code": "300-A001",
+      "title": "4 SMART PLUS SDN BHD"
+     },
+     {
+      "uuid": "cu2",
+      "entity_type": "customer",
+      "code": "300-B002",
+      "title": "SB SMART CONCEPT SDN BHD"
+     },
+     {
+      "uuid": "cu3",
+      "entity_type": "customer",
+      "code": "300-C003",
+      "title": "DE SMART HOME TRADING"
+     }
+    ],
+    "customer_probe_entities": [
+     {
+      "uuid": "cu1",
+      "entity_type": "customer",
+      "code": "300-A001"
+     },
+     {
+      "uuid": "cu2",
+      "entity_type": "customer",
+      "code": "300-B002"
+     },
+     {
+      "uuid": "cu3",
+      "entity_type": "customer",
+      "code": "300-C003"
+     }
+    ],
+    "picker_families": {
+     "4 SMART PLUS": [
+      "cu1"
+     ],
+     "SB SMART CONCEPT": [
+      "cu2"
+     ],
+     "DE SMART HOME TRADING": [
+      "cu3"
+     ]
+    },
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ]
+}

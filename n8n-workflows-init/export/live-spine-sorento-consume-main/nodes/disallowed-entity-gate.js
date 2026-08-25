@@ -269,6 +269,241 @@ if (specific_options.length > 0) {
   }
 }
 
+let _custProbeEntities = null;   // set by the ambiguity picker below; consumed by probe-customer-orders
+let _custFamilies = null;        // base -> [uuid,...] for the rendered candidates; persisted for the pick turn
+
+// ── AMBIGUOUS CUSTOMER → ASK WHICH COMPANY (captain, 2026-08-20) ──────────────
+// A fuzzy customer token can resolve to several UNRELATED companies: "4 smart" returned 15
+// accounts across 4 SMART PLUS, SB SMART CONCEPT, EUROSMART BATHROOM SOLUTION, DE SMART HOME
+// TRADING, FOUR SMART PLUS ENTERPRISE and V SMART KITCHEN, and the answer listed 16 orders
+// belonging to three of them (exec 13207261). The If3 miss gate cannot catch this — the customer
+// DID resolve, just to too many — so ask instead of unioning, reusing the require_specific picker
+// this node already renders (numbered list -> selection_context 'disambiguation' -> positional
+// pick). No new lane, no new node.
+//
+// Accounts of the SAME company are NOT ambiguity: "MASTILE KLANG SDN BHD", "… [A/C I]",
+// "… - [IBORN]" share one base name and must keep answering together (the blessed case returns
+// exactly one order and must not start asking). Grouping is therefore by BASE NAME, with
+// bracketed/parenthesised account suffixes and the SDN BHD form stripped before counting.
+//
+// Never fires when the customer arrived via an explicit PICK — the captain's rule is that a pick
+// merges the whole family — nor when another picker already claimed this turn (!require_specific).
+// shared by the ambiguity picker AND the pinned-pick block below — ONE definition, so the two
+// can never disagree about what counts as "the same company".
+const _custName = (m) => {
+  const d = (m && m.display) || {};
+  // strip the ACCOUNT suffix only ("- [IBORN]", "[A/C I]") — the legal name, including a
+  // parenthesised "(M)", stays. The picker lists COMPANIES; account markers are noise here.
+  return String(d.customer_name || d.debtor_name || '').trim()
+    .replace(/\s*-\s*\[[^\]]*\]\s*$/, '')
+    .replace(/\s*\[[^\]]*\]\s*$/, '')
+    .trim();
+};
+const _custBase = (m) => (_custName(m) || String((m && m.canonical_code) || ''))
+  .toUpperCase()
+  .replace(/\[[^\]]*\]|\([^)]*\)/g, ' ')          // [A/C I], (CERAMIC & ELLECI)
+  .replace(/\bSDN\.?\s*BHD\.?\b|\bSDN\b|\bBHD\b/g, ' ')
+  .replace(/[^A-Z0-9]+/g, ' ')
+  .trim();
+
+let _custPinKept = false;
+if (!require_specific && (ALLOWED[domain] ?? []).includes('customer')) {
+  const _pickApplied = parser.dym_pick_applied === true
+    || Number(parser.dym_partial_pick) > 0
+    || (Array.isArray(parser.reference_positions) && parser.reference_positions.length > 0);
+  const _bases = new Map();
+  for (const m of flat) {
+    if (!m || !m.uuid || String(m.entity_type).toLowerCase() !== 'customer') continue;
+    const b = _custBase(m);
+    if (b && !_bases.has(b)) _bases.set(b, m);          // first row wins: resolver ranks by similarity
+  }
+  // R2 (captain journey, 2026-08-23): a customer the user ALREADY picked stays PINNED; re-ask only
+  // when they name a new one. Measured, exec 13633742: the carried entity was
+  // { raw:'DELUXE HOME CENTRE SDN BHD (SETAPAK)', uuid:'84011929-...', ordinal:1,
+  //   current_message:false } - an explicit pick from an earlier turn - and the picker re-opened
+  // anyway. Typing a PRODUCT was answered with "Which customer do you mean?", and the pick the
+  // user had already made was thrown away.
+  const _custPinned = (() => {
+    const ents = Array.isArray(parser.entities) ? parser.entities : [];
+    const _isCust = (e) => e && String(e.hint || '').toLowerCase() === 'customer';
+    // naming a customer THIS turn is a fresh question - re-asking is fair there
+    if (ents.some(e => _isCust(e) && e.current_message === true)) return false;
+    // carried AND already resolved to a specific account = settled
+    return ents.some(e => _isCust(e) && e.current_message !== true && (e.uuid || e.canonical_code));
+  })();
+  if (_custPinned) _custPinKept = true;   // diagnostic; emitted with the rest of `out` below
+  if (!_pickApplied && !_custPinned && _bases.size > 1) {
+    const _reps = [..._bases.values()].slice(0, 8);     // cap the list; 8 lines is already a lot to read
+    // FORWARD PROBE INPUT (captain, 2026-08-21): the picker is about to replace compatible_entities
+    // with the customer options, which would drop the product/date scope the customer actually asked
+    // about. Keep a merged list — the candidates PLUS everything else that resolved this turn — so the
+    // probe can ask "does this customer have a matching delivery?" under the SAME filters.
+    // Send the WHOLE ACCOUNT FAMILY of each candidate, keyed by canonical code — a representative
+    // uuid alone probes the wrong rows: YOO LIVING HOUSE's orders sit on a sibling account, so a
+    // one-uuid-per-company probe came back empty and every line read "no delivery" (exec 13250405).
+    const _repBases = new Set(_reps.map(_custBase).filter(Boolean));
+    const _famRowsAll = flat.filter(m => m && m.uuid
+      && String(m.entity_type).toLowerCase() === 'customer'
+      && _repBases.has(_custBase(m)));
+    const _famRows = _famRowsAll;
+    const _famSeen = new Set();
+    // Remember WHICH uuids each rendered candidate stands for. The pick turn re-resolves only the
+    // label it was given, and a label like "A CRAFT IDEA SDN BHD (SRT)" matches exactly ONE account,
+    // so family expansion had nothing to expand and the answer covered one account while the probe
+    // had counted the whole family — "has delivery" on the picker, "no delivery" after picking
+    // (execs 13256193 / 13256248). Persisted by compile-current-state, read back below on the pick.
+    _custFamilies = {};
+    for (const _m of _famRowsAll) {
+      const _b = _custBase(_m);
+      if (!_b || !_repBases.has(_b)) continue;
+      (_custFamilies[_b] = _custFamilies[_b] || []).push(String(_m.uuid));
+    }
+    _custProbeEntities = [
+      ..._famRows.filter(m => !_famSeen.has(String(m.uuid)) && _famSeen.add(String(m.uuid)))
+                 .map(m => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code })),
+      ...compatible_entities.filter(c => String(c && c.entity_type).toLowerCase() !== 'customer'),
+    ];
+    require_specific   = true;
+    gate_passed        = false;
+    gate_reason        = `'${domain}' customer token matches ${_bases.size} different companies; user must pick`;
+    gate_clarification = 'Which customer do you mean? Please choose:\n'
+      + _reps.map((m, i) => `${i + 1}. ${_custName(m) || m.canonical_code}`).join('\n');
+    // the roster compile-current-state persists comes from compatible_entities, so it must be the
+    // SAME rows in the SAME order as the numbered lines above or the positional pick misresolves.
+    // `title` is what compile-current-state labels the roster row with (its priority is
+    // title -> code -> canonical_code), so the persisted rows read as company NAMES and a reply
+    // by name resolves as well as a reply by number. `code` stays the canonical debtor code.
+    compatible_entities = _reps.map(m => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code, title: _custName(m) || m.canonical_code }));
+  }
+}
+
+// ── A PINNED PICK WINS OVER FUZZY RE-RESOLUTION (captain, 2026-08-20) ────────
+// An entity carrying a uuid came from a roster pick — the customer already told us which row they
+// meant. The resolver still re-resolves its NAME as text, and that sprays siblings: picking
+// "SIGNATURE BUILDING MATERIAL SDN BHD" off the picker matched 9 customers, KL BUILDING MATERIALS
+// among them, and the answer showed the wrong company (exec 13212841). Restrict the picked
+// entity's TYPE to the pinned uuids; other types (the product, the date-scoped rest) are untouched.
+// Fails open: applied only when every pinned uuid actually survived resolution, so a stale pin
+// leaves the turn byte-identical.
+if (!require_specific) {
+  const _pins = (Array.isArray(parser.entities) ? parser.entities : [])
+    .filter(e => e && e.current_message === true && e.uuid);
+  const _pinUuids = new Set(_pins.map(e => String(e.uuid)));
+  // Gate entry on carried pins too, not just this-turn ones. A customer picked two turns ago is
+  // re-sent by the parser with current_message:false ("carried"), and on exec 13705266 that meant
+  // _pinUuids (this-turn only) was empty, so the whole block below - re-seat AND family expansion -
+  // never ran. compatible_entities collapsed from the remembered 12-account family (set on the pick
+  // turn, exec 13705226) down to the 2 accounts the resolver could text-match from the carried
+  // label, and the CRM lookup for WESERP10B under only those 2 accounts came back "No matching
+  // results found" even though the product exists under the customer's other accounts. The RESTRICT
+  // filter further down stays keyed on _pins/_pinUuids (this-turn only) - see its own comment - so a
+  // carried row still cannot narrow a scope the customer just named fresh.
+  const _pinsAll = (Array.isArray(parser.entities) ? parser.entities : []).filter(e => e && e.uuid);
+  const _pinUuidsAll = new Set(_pinsAll.map(e => String(e.uuid)));
+  if (_pinUuidsAll.size) {
+    // A PICK IS AUTHORITATIVE — DO NOT MAKE IT SURVIVE TEXT RE-RESOLUTION.
+    // The roster row we ourselves rendered carries the uuid the customer chose, but the spine still
+    // re-resolves its LABEL as text, and a label the CRM cannot match back ("YOO LIVING HOUSE
+    // [A/C III] - PRICETAG", canonical_code DBR-59e57de1b7) resolves to nothing: the picked customer
+    // vanished, If3 refused the turn, and the reply named only the product (exec 13245182 — the gate
+    // was right to block, but the customer should never have gone missing). Re-seat any pinned row
+    // the resolver dropped. Type-checked against the domain's allow-list, and the uuid can only come
+    // from a roster this flow built, so nothing unvetted enters here.
+    const _allowedPin = ALLOWED[domain] ?? null;
+    // Re-seat CARRIED picks too (current_message false): a customer chosen two turns ago is just as
+    // authoritative as one chosen now, and its label re-resolves no better. Only the RESTRICT filter
+    // below stays keyed on this-turn pins, so a carried row can never narrow a freshly named scope.
+    // (_pinsAll/_pinUuidsAll defined above, at the block's entry-condition.)
+    for (const _e of _pinsAll) {
+      const _u = String(_e.uuid);
+      if (compatible_entities.some(c => String(c.uuid) === _u)) continue;
+      const _t = String(_e.hint || '').toLowerCase();
+      if (!_t || (_allowedPin && !_allowedPin.includes(_t))) continue;
+      // Label with something a human recognises: a picked customer's canonical_code is often a
+      // synthetic debtor id (DBR-59e57de1b7), which the miss/answer renderers print verbatim —
+      // "customer: DBR-59e57de1b7". The entity's raw IS the roster label we showed, so prefer it
+      // whenever the canonical code is synthetic. Products keep their canonical code.
+      const _synthetic = /^(dbr-|[0-9a-f]{8}-[0-9a-f]{4}-)/i.test(String(_e.canonical_code || ''));
+      const _label = (_synthetic ? (_e.raw || _e.canonical_code) : (_e.canonical_code || _e.raw)) || null;
+      compatible_entities = [...compatible_entities,
+        { uuid: _u, entity_type: _t, code: _label }];
+    }
+    const _pinTypes = new Set(_pins.map(e => String(e.hint || '').toLowerCase()).filter(Boolean));
+    // Gated on ALL pins (carried included), not just _pinUuids: the re-seat loop above (_pinsAll)
+    // already put every pinned uuid - carried or fresh - back into compatible_entities, so checking
+    // the wider set is just confirming that loop did its job before the family widens. Narrowing this
+    // back to _pinUuids would silently skip family expansion whenever a carried pin's row hadn't
+    // resolved (rare, but the whole point of the re-seat is that it now has).
+    const _allPresent = [..._pinUuidsAll].every(u => compatible_entities.some(c => String(c.uuid) === u));
+    if (_allPresent) {
+      // A picked CUSTOMER selects its whole ACCOUNT FAMILY, never just the pinned row — the
+      // captain's rule is that a pick answers the company. Picking "SIGNATURE BUILDING MATERIAL
+      // SDN BHD" therefore keeps 300-S292/S293/S294 ([A/C I]/[III]/[IV]) and drops KL BUILDING
+      // MATERIALS, KOW HOCK, MKH, TEK WEE and TROPICANA, which merely share the words.
+      // A pick must cover the SAME accounts the picker's probe counted. This turn's resolver only
+      // sees the label it was handed, so read the family remembered from the picker turn.
+      const _famMem = (() => { try {
+        const _s = $('get-session-vars').first().json;
+        const _v = (_s && _s.session_vars && _s.session_vars.variables) || (_s && _s.variables) || {};
+        return (_v && typeof _v.picker_families === 'object' && _v.picker_families) || null;
+      } catch (e) { return null; } })();
+      const _famAdded = new Set();
+      if (_famMem) {
+        const _have = new Set(compatible_entities.map(c => String(c && c.uuid)));
+        // Iterate _pinsAll (carried + this-turn), not _pins (this-turn only) - a carried customer
+        // pin must widen the family exactly like a fresh one (exec 13705266, see the block-entry
+        // comment above).
+        for (const _e of _pinsAll) {
+          if (String(_e.hint || '').toLowerCase() !== 'customer') continue;
+          const _b = _custBase({ display: {}, canonical_code: _e.raw || _e.canonical_code });
+          const _fam = _famMem[_b];
+          if (!Array.isArray(_fam)) continue;
+          for (const _u of _fam) {
+            if (_have.has(String(_u))) continue;
+            compatible_entities = [...compatible_entities, { uuid: String(_u), entity_type: 'customer', code: _e.raw || _e.canonical_code }];
+            _have.add(String(_u)); _famAdded.add(String(_u));
+          }
+        }
+      }
+      const _rowByUuid = new Map(flat.filter(m => m && m.uuid).map(m => [String(m.uuid), m]));
+      const _pinBases = new Set([..._pinUuids]
+        .map(u => _rowByUuid.get(u))
+        .filter(m => m && String(m.entity_type).toLowerCase() === 'customer')
+        .map(_custBase).filter(Boolean));
+      // FIX C - A PRODUCT PIN MUST GET THE SAME BASE-EQUIVALENCE A CUSTOMER PIN GETS.
+      // Without this the arm below reads `t !== 'customer'` and drops every non-pinned row of a
+      // pinned type, including the SIBLING COMPANY'S ROW FOR THE SAME CANONICAL CODE. Those twins
+      // collapse to ONE printed line upstream, so the customer was shown a single option and
+      // cannot have chosen a company - the filter reads a company choice into a keystroke that
+      // never made one. Measured on exec-13488926: MWC7625-SH-S10 exists under Mocha and under
+      // Sorento; a pin on the Mocha uuid silently deleted the Sorento row, collapsing
+      // routing_companies from 2 to 1 and stamping a routing_company that was never picked.
+      // Keyed on canonical_code, and built ONLY from the NON-customer pinned rows: a customer's
+      // canonical_code is a debtor code and must never be able to keep a product row alive.
+      // The anti-spray property is preserved exactly - a row with a DIFFERENT canonical_code is
+      // still dropped (exec 13212841), which is the whole point of the restrict filter.
+      const _pinCodes = new Set([..._pinUuids]
+        .map(u => _rowByUuid.get(u))
+        .filter(m => m && String(m.entity_type).toLowerCase() !== 'customer')
+        .map(m => String(m.canonical_code || '').toUpperCase()).filter(Boolean));
+      const _kept = compatible_entities.filter(c => {
+        const t = String(c.entity_type).toLowerCase();
+        if (!_pinTypes.has(t)) return true;                       // other types untouched
+        if (_pinUuids.has(String(c.uuid))) return true;           // the pinned row itself
+        if (_famAdded.has(String(c.uuid))) return true;           // remembered family of the pick
+        if (t !== 'customer') {                                   // FIX C: same-code twins survive
+          const row = _rowByUuid.get(String(c.uuid));
+          return !!row && _pinCodes.has(String(row.canonical_code || '').toUpperCase());
+        }
+        if (!_pinBases.size) return false;                        // customer pin with no base -> exact
+        const row = _rowByUuid.get(String(c.uuid));
+        return !!row && _pinBases.has(_custBase(row));            // same company -> keep
+      });
+      if (_kept.length) compatible_entities = _kept;
+    }
+  }
+}
+
 // ── document-class precision (container-status S1) ────────────────────────────
 // The CRM resolver answers an attachment miss with a word-tier fallback over
 // attachment_type: "container status list" returns Packing List (word:list),
@@ -347,6 +582,106 @@ if (_dcSoleUuid && Array.isArray(out.resolutions)) {
     res.resolved_by = 'document-class-narrowing';
   }
 }
+// ── DROPPED-FILTER GATE (captain 2026-08-23; unparks the floor_missed leak) ───────────────
+// The resolver reports per-token outcomes, but the gate only ever blocked on a TOTAL miss
+// (every token unresolved AND nothing compatible). So a question naming two things, where ONE
+// does not exist, was answered as though that filter had never been typed.
+// Measured, exec 13626807: "wesrp10b" for customer 300-D059 - the product resolved to ZERO
+// candidates, the CRM returned floor_missed:true, the gate still said gate_reason 'ok', and the
+// customer's ENTIRE order list came back, none of it containing the product asked about. The
+// user reads that as an answer to their question. Silently widening a question is worse than
+// admitting the miss.
+//
+// Deliberately NARROW, so this does not turn today's did-you-mean turns into refusals:
+//   - only a HARD miss counts: a resolution with ZERO candidates. A token WITH candidates is
+//     already the did-you-mean lane's job and still answers exactly as before.
+//   - only tokens the USER typed. The resolver also keys a resolution on the whole query;
+//     that one is machine-made and must never block a turn (the same protection
+//     build-suggest-offer's F1 derived-token guard applies on the DYM side).
+//   - a picker turn RECORDS the miss and says it; it does not need to set gate_passed, because the
+//     picker already blocks. Journey rule R3 (captain, 2026-08-23): when several things are wrong,
+//     say them in the SAME turn. Measured, exec 13633742: 'mfg6651-gm' matched nothing AND the
+//     carried customer was ambiguous; the picker won and the product was never mentioned, so the
+//     reply read as "why are you asking about the customer, I gave you a product".
+// SCOPED TO THE PICKER LANE ON LIVE. The clone runs this on `gate_passed || require_specific`
+// and, when a filter was genuinely lost on a PASSING turn, flips gate_passed to false. That
+// half is a broad every-turn change to the miss lane and is deliberately NOT part of the
+// customer-picker set: it belongs to whoever owns the miss lane, with its own review. What is
+// ported here is R3 only - a turn that is ALREADY showing a picker must name the miss in the
+// SAME message. So the condition is `require_specific`, and a turn that would still pass is
+// left byte-identical: no new output key, no new text, nothing to regress.
+// To take the blocking half later, widen this to `gate_passed || require_specific` and restore
+// the `if (gate_passed) { gate_passed = false; gate_reason = ... }` tail after the prepend.
+if (require_specific) {
+  const _dfN = s => String(s ?? '').trim().toLowerCase();
+  // resolve-entity strips separators for product-hint tokens ("mfg6651-gm" -> "mfg6651gm"), so a
+  // literal comparison against the parser raw decides the user never typed it and the gate stays
+  // silent — on dashed product codes, i.e. most of them (measured, execs 13633742 / 13633783:
+  // mfg6651-gm resolved to ZERO candidates and the customer's whole order book came back instead).
+  const _dfS = s => _dfN(s).replace(/[^a-z0-9]+/g, '');
+  const _dfTyped = (Array.isArray(parser.entities) ? parser.entities : []).map(e => _dfN(e.raw)).filter(Boolean);
+  const _dfUnres = new Set((resolver.unresolved_tokens ?? []).map(_dfN));
+  const _dfMissed = (Array.isArray(resolver.resolutions) ? resolver.resolutions : [])
+    .filter(r => {
+      const t = _dfN(r && r.token);
+      if (!t || !_dfUnres.has(t)) return false;
+      if (Array.isArray(r.matches) && r.matches.length > 0) return false;   // has candidates -> DYM's job
+      const ts = _dfS(t);
+      return _dfTyped.some((raw) => {
+        if (raw === t || raw.includes(t) || t.includes(raw)) return true;
+        const rs = _dfS(raw);                      // separator-insensitive, both directions
+        return !!rs && !!ts && (rs === ts || rs.includes(ts) || ts.includes(rs));
+      });
+    })
+    .map(r => String(r.token));
+  // A miss only matters if the FILTER was actually lost. When the same axis already carries a
+  // resolved entity the user's filter IS applied, and the missed token is a superseded spelling,
+  // not a dropped constraint. Measured, exec 13628845: the captain corrected "wesrp10b" to
+  // "WESERP10B"; the parser echoed BOTH as current-message product entities, so the stale one
+  // still resolved to zero and blocked a turn that had in fact been answered correctly - the
+  // correction was refused twice and the conversation could not move on.
+  const _dfSatisfied = new Set((Array.isArray(compatible_entities) ? compatible_entities : [])
+    .map(e => _dfN(e && e.entity_type)).filter(Boolean));
+  const _dfHintOf = (tok) => {
+    const t = _dfN(tok), ts = _dfS(tok);
+    const hit = (Array.isArray(parser.entities) ? parser.entities : [])
+      .find(e => {
+        const r = _dfN(e.raw), rs = _dfS(e.raw);
+        return r === t || r.includes(t) || t.includes(r)
+            || (!!rs && !!ts && (rs === ts || rs.includes(ts) || ts.includes(rs)));
+      });
+    return _dfN(hit && hit.hint);
+  };
+  const _dfLost = _dfMissed.filter(tok => {
+    const h = _dfHintOf(tok);
+    return !(h && _dfSatisfied.has(h));
+  });
+  if (_dfLost.length) {
+    // recorded on EVERY lane, picker included, so the reply can name it (R3)
+    out.dropped_filter_tokens = _dfLost;
+    // R3: when a picker is ALREADY being shown, the miss must ride in the SAME message rather than
+    // wait for a turn that may never come. Rendered in the miss lane's own shape - the quoted raw
+    // the user typed (not the separator-stripped resolver token) plus its entity-type label.
+    if (gate_clarification) {
+      const _dfRawOf = (tok) => {
+        const t = _dfN(tok), ts = _dfS(tok);
+        const hit = (Array.isArray(parser.entities) ? parser.entities : []).find(e => {
+          const r = _dfN(e.raw), rs = _dfS(e.raw);
+          return r === t || r.includes(t) || t.includes(r)
+              || (!!rs && !!ts && (rs === ts || rs.includes(ts) || ts.includes(rs)));
+        });
+        return (hit && hit.raw) || tok;
+      };
+      const _dfLines = _dfLost.map((t) => {
+        const h = _dfHintOf(t);
+        return `"${_dfRawOf(t)}"${h ? ` (${h})` : ''}`;
+      });
+      gate_clarification = `Couldn't find: ${_dfLines.join(', ')}.\n\n${gate_clarification}`;
+      out.gate_clarification = gate_clarification;
+    }
+  }
+}
+if (_custPinKept) out.customer_pin_kept = true;
 out.gate_passed = gate_passed;
 out.require_specific = require_specific;
 // ── #9 multi-company routing ──────────────────────────────────────────────
@@ -538,5 +873,7 @@ out.require_specific = require_specific;
 out.gate_reason = gate_reason;
 out.gate_clarification = gate_clarification;   // '' when nothing to ask
 out.compatible_entities = compatible_entities;
+if (_custProbeEntities && _custProbeEntities.length) out.customer_probe_entities = _custProbeEntities;
+if (_custFamilies && Object.keys(_custFamilies).length) out.picker_families = _custFamilies;
 out.gate_debug = { domain, allowed_lookup: ALLOWED[domain], entities_count: entities.length };
 return out;

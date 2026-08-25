@@ -1,0 +1,134 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "G-A, the blessed case. Three ACCOUNTS of ONE company ('MASTILE KLANG SDN BHD', '... [A/C I]', '... - [IBORN]') are not ambiguity - they must keep answering together. Grouping is by BASE name with bracketed account suffixes and the SDN BHD form stripped, so _bases collapses to 1 and the picker never fires. This is the fixture that stops G-A turning every multi-account customer into a question; without the base rule it would fire on almost every order turn."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [
+       {
+        "raw": "mastile klang",
+        "hint": "customer",
+        "current_message": true
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "or",
+     "tokens": [
+      "mastile klang"
+     ],
+     "unresolved_tokens": [],
+     "resolutions": [
+      {
+       "token": "mastile klang",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "uuid": "mk1",
+         "canonical_code": "300-M001",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "MASTILE KLANG SDN BHD"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "mk2",
+         "canonical_code": "300-M002",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "MASTILE KLANG SDN BHD [A/C I]"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "mk3",
+         "canonical_code": "300-M003",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "MASTILE KLANG SDN BHD - [IBORN]"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mastile klang"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mastile klang"
+    ],
+    "gate_passed": true,
+    "require_specific": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "mk1",
+      "entity_type": "customer",
+      "code": "300-M001"
+     },
+     {
+      "uuid": "mk2",
+      "entity_type": "customer",
+      "code": "300-M002"
+     },
+     {
+      "uuid": "mk3",
+      "entity_type": "customer",
+      "code": "300-M003"
+     }
+    ],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ]
+}

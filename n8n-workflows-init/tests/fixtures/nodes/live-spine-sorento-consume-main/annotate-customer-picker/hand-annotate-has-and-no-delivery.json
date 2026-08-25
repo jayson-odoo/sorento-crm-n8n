@@ -1,0 +1,145 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "The whole point of the node: say which of the offered companies actually has a matching delivery, under the same product/date filters the customer asked with. Two of three candidates come back with rows (one of them on an ACCOUNT of the company, '... [A/C I]', which must still credit the base name the line was rendered from); the third gets '- no delivery'. THE SEPARATOR IS A PLAIN HYPHEN. The clone body used ' \\u2014 has delivery'; U+2014 is banned in customer copy (captain hard rule 2026-08-22) and the sibling annotate-incoming-picker already renders '- has incoming'. A hardcoded literal must not lean on the downstream compose-time sanitizer to fix it. The no-em-dash assertion is in tests/flow/customer-picker.test.js, on the rendered reply, not only here."
+ },
+ "ctx": {
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "gate_passed": false,
+     "require_specific": true,
+     "gate_clarification": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD\n2. MASTILE KLANG SDN BHD\n3. YOO LIVING HOUSE SDN BHD",
+     "compatible_entities": [
+      {
+       "uuid": "ac1",
+       "entity_type": "customer",
+       "code": "300-A100",
+       "title": "A CRAFT IDEA SDN BHD"
+      },
+      {
+       "uuid": "mk1",
+       "entity_type": "customer",
+       "code": "300-M001",
+       "title": "MASTILE KLANG SDN BHD"
+      },
+      {
+       "uuid": "yl1",
+       "entity_type": "customer",
+       "code": "300-Y001",
+       "title": "YOO LIVING HOUSE SDN BHD"
+      }
+     ],
+     "customer_probe_entities": [
+      {
+       "uuid": "ac1",
+       "entity_type": "customer",
+       "code": "300-A100"
+      },
+      {
+       "uuid": "mk1",
+       "entity_type": "customer",
+       "code": "300-M001"
+      },
+      {
+       "uuid": "yl1",
+       "entity_type": "customer",
+       "code": "300-Y001"
+      }
+     ]
+    }
+   }
+  ],
+  "probe-customer-orders": [
+   {
+    "json": {
+     "answers": [
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "MASTILE KLANG SDN BHD [A/C I]"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {}
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_clarification": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD\n2. MASTILE KLANG SDN BHD\n3. YOO LIVING HOUSE SDN BHD",
+    "compatible_entities": [
+     {
+      "uuid": "ac1",
+      "entity_type": "customer",
+      "code": "300-A100",
+      "title": "A CRAFT IDEA SDN BHD"
+     },
+     {
+      "uuid": "mk1",
+      "entity_type": "customer",
+      "code": "300-M001",
+      "title": "MASTILE KLANG SDN BHD"
+     },
+     {
+      "uuid": "yl1",
+      "entity_type": "customer",
+      "code": "300-Y001",
+      "title": "YOO LIVING HOUSE SDN BHD"
+     }
+    ],
+    "customer_probe_entities": [
+     {
+      "uuid": "ac1",
+      "entity_type": "customer",
+      "code": "300-A100"
+     },
+     {
+      "uuid": "mk1",
+      "entity_type": "customer",
+      "code": "300-M001"
+     },
+     {
+      "uuid": "yl1",
+      "entity_type": "customer",
+      "code": "300-Y001"
+     }
+    ],
+    "is_clarification": false,
+    "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD - has delivery\n2. MASTILE KLANG SDN BHD - has delivery\n3. YOO LIVING HOUSE SDN BHD - no delivery",
+    "customer_probe_hits": 2,
+    "customer_probe_skip_reason": null
+   }
+  }
+ ]
+}

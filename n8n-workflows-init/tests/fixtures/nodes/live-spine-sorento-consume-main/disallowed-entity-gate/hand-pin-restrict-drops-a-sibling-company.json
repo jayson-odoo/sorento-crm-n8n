@@ -1,0 +1,133 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "exec 13212841 in its original shape, and the reason G-B exists: the customer picked SIGNATURE BUILDING MATERIAL SDN BHD off the picker, the spine re-resolved that LABEL as free text, it fuzzy-matched KL BUILDING MATERIALS too, and the answer showed the wrong company - a cross-customer leak on the pick turn, which is the very leak the picker was built to close. The pinned company's OTHER ACCOUNT ([A/C I], same base name) must be kept; the unrelated company that merely shares the words must be dropped. FIX C touches only the non-customer arm, so this fixture is what proves it left the customer arm alone. `dym_pick_applied` is load-bearing here and not decoration: without it G-A re-opens the picker on the pick turn and G-B (`if (!require_specific)`) never runs at all - the two blocks are sequenced, not independent."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "dym_pick_applied": true,
+      "entities": [
+       {
+        "raw": "SIGNATURE BUILDING MATERIAL SDN BHD",
+        "hint": "customer",
+        "current_message": true,
+        "ordinal": 1,
+        "uuid": "sig1",
+        "canonical_code": "300-S292"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "or",
+     "tokens": [
+      "signature building material sdn bhd"
+     ],
+     "unresolved_tokens": [],
+     "resolutions": [
+      {
+       "token": "signature building material sdn bhd",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "uuid": "sig1",
+         "canonical_code": "300-S292",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "SIGNATURE BUILDING MATERIAL SDN BHD"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "sig2",
+         "canonical_code": "300-S293",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "SIGNATURE BUILDING MATERIAL SDN BHD [A/C I]"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "kl1",
+         "canonical_code": "300-K101",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "KL BUILDING MATERIALS SDN BHD"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "signature building material sdn bhd"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "signature building material sdn bhd"
+    ],
+    "gate_passed": true,
+    "require_specific": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "sig1",
+      "entity_type": "customer",
+      "code": "300-S292"
+     },
+     {
+      "uuid": "sig2",
+      "entity_type": "customer",
+      "code": "300-S293"
+     }
+    ],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,132 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "FIX E, and it is a safety fixture, not a tidiness one. `_isDisambig` only asks whether the GATE raised a picker; the roster ladder above can still have reassigned `last_result_set` to the CS MEMBER roster on the same turn (`_mem`). Without the `selection_context === 'disambiguation'` clause, `_cpBornNow` is true here and this node persists the member roster under `picker_last_result_set` / `picker_selection_context: 'disambiguation'` - a sticky, invisible carry of the arming pin on the CS-assign path, wearing the one label the carry is willing to keep. The parser's output_exchange opens its member arm on that context and can emit `preferred_assignee_id`, i.e. a real assignment with the staff email/WhatsApp ripple, for a customer who was never shown a member list on the turn they replied to. cs-offer-gate's g4-no-double-picker now refuses to BUILD this turn; this clause is the independent second lock, so the carry stays shut even if g4 is ever widened or bypassed."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {},
+      "entities": []
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "require_specific": true,
+     "compatible_entities": [
+      {
+       "uuid": "cu1",
+       "entity_type": "customer",
+       "code": "300-A001",
+       "title": "4 SMART PLUS SDN BHD"
+      },
+      {
+       "uuid": "cu2",
+       "entity_type": "customer",
+       "code": "300-B002",
+       "title": "SB SMART CONCEPT SDN BHD"
+      }
+     ]
+    }
+   }
+  ],
+  "build-cs-member-offer": [
+   {
+    "json": {
+     "response": "Who would you like me to assign this to?\n1. Amirah\n2. Boon Keat",
+     "manualResponse": true,
+     "includeResponse": true,
+     "selection_context": "member_offer",
+     "cs_last_result_set": [
+      {
+       "idx": 1,
+       "uuid": "m1",
+       "label": "Amirah",
+       "entity_type": "cs_member",
+       "respond_user_id": 111
+      },
+      {
+       "idx": 2,
+       "uuid": "m2",
+       "label": "Boon Keat",
+       "entity_type": "cs_member",
+       "respond_user_id": 222
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "escalate_offer"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "entities": [],
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {},
+     "response": "Who would you like me to assign this to?\n1. Amirah\n2. Boon Keat",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": "m1",
+       "label": "Amirah",
+       "entity_type": "cs_member",
+       "respond_user_id": 111
+      },
+      {
+       "idx": 2,
+       "uuid": "m2",
+       "label": "Boon Keat",
+       "entity_type": "cs_member",
+       "respond_user_id": 222
+      }
+     ],
+     "selection_context": "member_offer",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Who would you like me to assign this to?\n1. Amirah\n2. Boon Keat"
+   }
+  }
+ ]
+}

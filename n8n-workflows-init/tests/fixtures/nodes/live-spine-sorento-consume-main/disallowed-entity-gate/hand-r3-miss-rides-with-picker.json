@@ -1,0 +1,161 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "G-C, R3 arm. When several things are wrong, say them in the SAME turn (captain 2026-08-23). Measured on exec 13633742: 'mfg6651-gm' matched nothing AND the carried customer was ambiguous; the picker won and the product was never mentioned, so the reply read as 'why are you asking about the customer, I gave you a product'. Note the two spellings: resolve-entity strips separators for product hints so the resolution token is `mfg6651gm`, while the customer typed `mfg6651-gm` - the quoted text must be the RAW the customer typed, never the normalized echo (resolver-token-is-not-entity-raw). Only this arm is ported to live: the clone additionally flips gate_passed on a PASSING turn, which is the miss lane's change, not the picker's."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [
+       {
+        "raw": "mfg6651-gm",
+        "hint": "product",
+        "current_message": true
+       },
+       {
+        "raw": "4 smart",
+        "hint": "customer",
+        "current_message": true
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "or",
+     "tokens": [
+      "mfg6651gm",
+      "4 smart"
+     ],
+     "unresolved_tokens": [
+      "mfg6651gm"
+     ],
+     "resolutions": [
+      {
+       "token": "mfg6651gm",
+       "resolved": false,
+       "ambiguous": false,
+       "matches": []
+      },
+      {
+       "token": "4 smart",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "uuid": "cu1",
+         "canonical_code": "300-A001",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "4 SMART PLUS SDN BHD"
+         }
+        },
+        {
+         "entity_type": "customer",
+         "uuid": "cu2",
+         "canonical_code": "300-B002",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "SB SMART CONCEPT SDN BHD"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "mfg6651gm",
+     "4 smart"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "mfg6651gm",
+     "4 smart"
+    ],
+    "dropped_filter_tokens": [
+     "mfg6651gm"
+    ],
+    "gate_clarification": "Couldn't find: \"mfg6651-gm\" (product).\n\nWhich customer do you mean? Please choose:\n1. 4 SMART PLUS SDN BHD\n2. SB SMART CONCEPT SDN BHD",
+    "gate_passed": false,
+    "require_specific": true,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "'order' customer token matches 2 different companies; user must pick",
+    "compatible_entities": [
+     {
+      "uuid": "cu1",
+      "entity_type": "customer",
+      "code": "300-A001",
+      "title": "4 SMART PLUS SDN BHD"
+     },
+     {
+      "uuid": "cu2",
+      "entity_type": "customer",
+      "code": "300-B002",
+      "title": "SB SMART CONCEPT SDN BHD"
+     }
+    ],
+    "customer_probe_entities": [
+     {
+      "uuid": "cu1",
+      "entity_type": "customer",
+      "code": "300-A001"
+     },
+     {
+      "uuid": "cu2",
+      "entity_type": "customer",
+      "code": "300-B002"
+     }
+    ],
+    "picker_families": {
+     "4 SMART PLUS": [
+      "cu1"
+     ],
+     "SB SMART CONCEPT": [
+      "cu2"
+     ]
+    },
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ]
+}

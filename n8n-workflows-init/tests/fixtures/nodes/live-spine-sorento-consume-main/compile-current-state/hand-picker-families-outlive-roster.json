@@ -1,0 +1,126 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "THE FAMILY OUTLIVES THE ROSTER (captain 2026-08-24). picker_families maps a picked candidate to the ACCOUNTS it stands for; the block above keeps it only while the picker ROSTER is alive, but the PIN is not bound to that lifetime - an entity keeps its uuid for as long as the customer keeps talking about it. Measured, exec 13695546 vs 13695091: the roster expired, the family went with it, and the pick then covered 1 account instead of the 12 the picker had measured. Here the customer is two turns past the pick - the roster is gone from session state, the customer pin is carried, and this turn names a product - so the main block writes no picker_* keys at all and the carry is the only thing that can keep the family. Stage A deleted this block as 'no producer, no consumer'; disallowed-entity-gate's G-A produces picker_families and G-B consumes it back off get-session-vars, so both premises are now false."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "routing": {
+       "suggested_team": "customer_service"
+      },
+      "escalation": {},
+      "entities": [
+       {
+        "raw": "A CRAFT IDEA SDN BHD",
+        "hint": "customer",
+        "current_message": false,
+        "uuid": "ac1",
+        "canonical_code": "300-A100"
+       },
+       {
+        "raw": "WESERP10B",
+        "hint": "product",
+        "current_message": true
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "variables": {
+      "picker_families": {
+       "A CRAFT IDEA": [
+        "ac1",
+        "ac2",
+        "ac3"
+       ]
+      }
+     }
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "response": "Would you like me to escalate to customer service team?",
+     "manualResponse": false,
+     "includeResponse": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "not_found"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "entities": [
+      {
+       "raw": "A CRAFT IDEA SDN BHD",
+       "hint": "customer",
+       "current_message": false,
+       "uuid": "ac1",
+       "canonical_code": "300-A100"
+      },
+      {
+       "raw": "WESERP10B",
+       "hint": "product",
+       "current_message": true
+      }
+     ],
+     "routing": {
+      "suggested_team": "customer_service"
+     },
+     "escalation": {},
+     "response": "Previous turn (order): no results.",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "picker_families": {
+      "A CRAFT IDEA": [
+       "ac1",
+       "ac2",
+       "ac3"
+      ]
+     },
+     "picker_families_carried": true,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Would you like me to escalate to customer service team?"
+   }
+  }
+ ]
+}

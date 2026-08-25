@@ -1,0 +1,166 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "FIX C must WIDEN the pin to same-code twins and NOTHING else - the anti-spray property G-B exists for (exec 13212841: picking one row matched 9 and the answer showed the wrong company) has to survive. Domain `order` deliberately, because `order` is not a REQUIRE_SPECIFIC domain: the exact-match collapse never runs, so all three rows are still in compatible_entities when the RESTRICT filter sees them and the filter is the only thing that can remove one. Pinned MWC7625-SH-S10 (Sorento): its Mocha TWIN carries the same canonical_code and must be KEPT (FIX C); MWC7625-SH-S99 is a different code the fuzzy resolver also returned and must still be DROPPED. A FIX C keyed on anything looser than canonical_code lets that row through."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [
+       {
+        "raw": "MWC7625-SH-S10",
+        "hint": "product",
+        "current_message": true,
+        "uuid": "p-sorento",
+        "canonical_code": "MWC7625-SH-S10"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "or",
+     "tokens": [
+      "MWC7625-SH-S10"
+     ],
+     "unresolved_tokens": [],
+     "resolutions": [
+      {
+       "token": "MWC7625-SH-S10",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "product",
+         "uuid": "p-sorento",
+         "canonical_code": "MWC7625-SH-S10",
+         "match_tier": "and",
+         "match_field": "product_code",
+         "company_id": "co-sorento",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "MWC7625-SH-S10"
+         }
+        },
+        {
+         "entity_type": "product",
+         "uuid": "p-mocha",
+         "canonical_code": "MWC7625-SH-S10",
+         "match_tier": "and",
+         "match_field": "product_code",
+         "company_id": "co-mocha",
+         "company_name": "Mocha",
+         "display": {
+          "product_name": "MWC7625-SH-S10"
+         }
+        },
+        {
+         "entity_type": "product",
+         "uuid": "p-other",
+         "canonical_code": "MWC7625-SH-S99",
+         "match_tier": "and",
+         "match_field": "product_code",
+         "company_id": "co-sorento",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "MWC7625-SH-S99"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "MWC7625-SH-S10"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "MWC7625-SH-S10"
+    ],
+    "gate_passed": true,
+    "require_specific": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [
+     "sorento",
+     "mocha"
+    ],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [
+     {
+      "company_id": "co-mocha",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
+      ]
+     },
+     {
+      "company_id": "co-sorento",
+      "company_name": "Sorento",
+      "brand_code": null,
+      "codes": [
+       "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
+      ]
+     }
+    ],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "p-sorento",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     },
+     {
+      "uuid": "p-mocha",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     }
+    ],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 3
+    }
+   }
+  }
+ ]
+}

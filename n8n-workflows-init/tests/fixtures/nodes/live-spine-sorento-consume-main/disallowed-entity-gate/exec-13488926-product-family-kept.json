@@ -1,0 +1,465 @@
+{
+ "source": {
+  "hand_crafted": false,
+  "expected_from": "runData",
+  "reasoned_from": "contract",
+  "rationale": "FIX C, and the only fixture that can see it. Real ctx from live exec 13488926 (product MWC7625-SH-S10 exists under company Sorento AND company Mocha; the parser pinned the Sorento uuid). G-B's RESTRICT filter is what stops a pick spraying siblings (exec 13212841), but as written on the clone its non-customer arm is `t !== 'customer' => drop`, which deletes the twin row for the SAME canonical_code. Those twins collapse to ONE printed line upstream, so the customer was shown a single option and cannot have chosen a company - the filter would be reading a company choice into a keystroke that never made one, collapsing routing_companies from 2 to 1 and stamping a routing_company nobody picked. `expected` here is LIVE's own recorded output for this execution, byte-for-byte: the candidate must not move it. Run the clone's G-B against this fixture and it goes red - that is the discrimination proof."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming",
+      "domain_hint": "incoming",
+      "scope_intent": null,
+      "is_affirmative": null,
+      "user_goal": "trying to select the first result from the previous list",
+      "access_levels": [],
+      "date_mode": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "match_mode": "and",
+      "demand_qty": null,
+      "entities": [
+       {
+        "raw": "MWC7625-SH-S10",
+        "hint": "product",
+        "ordinal": 1,
+        "current_message": true,
+        "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+        "canonical_code": "MWC7625-SH-S10"
+       }
+      ],
+      "entity_op": "reuse",
+      "scope_exclusive": false,
+      "requested_attributes": [],
+      "contains_flyer": false,
+      "reference_positions": [
+       1
+      ],
+      "reference_target": "result",
+      "person_mention": null,
+      "is_active": null,
+      "order_status": null,
+      "correction": false,
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "domain_signal_source": "intent_none",
+      "domain_reused_entityless": true,
+      "entity_op_applied": "reuse",
+      "query_brands": [],
+      "positions_resolved": 1,
+      "positions_out_of_range": [],
+      "domain_inherited_compatible": true,
+      "entities_filtered": false,
+      "entities_emptied_by_filter": false,
+      "_pending_pick": true
+     },
+     "_parser_raw": {
+      "message_type": "clarification",
+      "intent_hint": null,
+      "domain_hint": null,
+      "scope_intent": null,
+      "is_affirmative": null,
+      "user_goal": "trying to select the first result from the previous list",
+      "access_levels": [],
+      "date_mode": null,
+      "date_filter_start": null,
+      "date_filter_end": null,
+      "match_mode": "and",
+      "demand_qty": null,
+      "entities": [],
+      "entity_op": "reuse",
+      "scope_exclusive": false,
+      "requested_attributes": [],
+      "contains_flyer": false,
+      "reference_positions": [
+       1
+      ],
+      "reference_target": "result",
+      "person_mention": null,
+      "is_active": null,
+      "order_status": null,
+      "correction": false,
+      "routing": {
+       "suggested_team": null,
+       "suggested_agent": null
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "and",
+     "tokens": [
+      "MWC7625-SH-S10"
+     ],
+     "elapsed_ms": 91.87,
+     "intersection": [
+      {
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+       "match_field": "product_code",
+       "match_tier": "and",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "display": {
+        "product_name": "MWC7625-SH-S10",
+        "is_active": true,
+        "brand": {
+         "brand_id": "c90ce49e-86ee-4f1f-9a6c-46247aadeee2",
+         "brand_code": "MOCHA",
+         "brand_name": "MOCHA"
+        }
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+       "match_field": "product_code",
+       "match_tier": "and",
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha",
+       "display": {
+        "product_name": "MWC7625-SH-S10",
+        "is_active": true,
+        "brand": null
+       }
+      }
+     ],
+     "by_entity_type": {
+      "product": [
+       {
+        "entity_type": "product",
+        "canonical_code": "MWC7625-SH-S10",
+        "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+        "match_field": "product_code",
+        "match_tier": "and",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento",
+        "display": {
+         "product_name": "MWC7625-SH-S10",
+         "is_active": true,
+         "brand": {
+          "brand_id": "c90ce49e-86ee-4f1f-9a6c-46247aadeee2",
+          "brand_code": "MOCHA",
+          "brand_name": "MOCHA"
+         }
+        }
+       },
+       {
+        "entity_type": "product",
+        "canonical_code": "MWC7625-SH-S10",
+        "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+        "match_field": "product_code",
+        "match_tier": "and",
+        "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+        "company_name": "Mocha",
+        "display": {
+         "product_name": "MWC7625-SH-S10",
+         "is_active": true,
+         "brand": null
+        }
+       }
+      ]
+     },
+     "empty": false,
+     "unresolved_tokens": [],
+     "alternatives": [],
+     "token_coverage": [
+      {
+       "token": "MWC7625-SH-S10",
+       "match_semantics": "max_coverage",
+       "coverage": [
+        {
+         "entity_type": "product",
+         "matched_words": [
+          "MWC7625-SH-S10"
+         ],
+         "unmatched_words": [],
+         "truncated": false
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "match_mode": "and",
+    "tokens": [
+     "MWC7625-SH-S10"
+    ],
+    "elapsed_ms": 91.87,
+    "intersection": [
+     {
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "MWC7625-SH-S10",
+       "is_active": true,
+       "brand": {
+        "brand_id": "c90ce49e-86ee-4f1f-9a6c-46247aadeee2",
+        "brand_code": "MOCHA",
+        "brand_name": "MOCHA"
+       }
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "display": {
+       "product_name": "MWC7625-SH-S10",
+       "is_active": true,
+       "brand": null
+      }
+     }
+    ],
+    "by_entity_type": {
+     "product": [
+      {
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+       "match_field": "product_code",
+       "match_tier": "and",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "display": {
+        "product_name": "MWC7625-SH-S10",
+        "is_active": true,
+        "brand": {
+         "brand_id": "c90ce49e-86ee-4f1f-9a6c-46247aadeee2",
+         "brand_code": "MOCHA",
+         "brand_name": "MOCHA"
+        }
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+       "match_field": "product_code",
+       "match_tier": "and",
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha",
+       "display": {
+        "product_name": "MWC7625-SH-S10",
+        "is_active": true,
+        "brand": null
+       }
+      }
+     ]
+    },
+    "empty": false,
+    "unresolved_tokens": [],
+    "alternatives": [],
+    "token_coverage": [
+     {
+      "token": "MWC7625-SH-S10",
+      "match_semantics": "max_coverage",
+      "coverage": [
+       {
+        "entity_type": "product",
+        "matched_words": [
+         "MWC7625-SH-S10"
+        ],
+        "unmatched_words": [],
+        "truncated": false
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "match_mode": "and",
+    "tokens": [
+     "MWC7625-SH-S10"
+    ],
+    "elapsed_ms": 91.87,
+    "intersection": [
+     {
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "display": {
+       "product_name": "MWC7625-SH-S10",
+       "is_active": true,
+       "brand": {
+        "brand_id": "c90ce49e-86ee-4f1f-9a6c-46247aadeee2",
+        "brand_code": "MOCHA",
+        "brand_name": "MOCHA"
+       }
+      }
+     },
+     {
+      "entity_type": "product",
+      "canonical_code": "MWC7625-SH-S10",
+      "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+      "match_field": "product_code",
+      "match_tier": "and",
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "display": {
+       "product_name": "MWC7625-SH-S10",
+       "is_active": true,
+       "brand": null
+      }
+     }
+    ],
+    "by_entity_type": {
+     "product": [
+      {
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+       "match_field": "product_code",
+       "match_tier": "and",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "display": {
+        "product_name": "MWC7625-SH-S10",
+        "is_active": true,
+        "brand": {
+         "brand_id": "c90ce49e-86ee-4f1f-9a6c-46247aadeee2",
+         "brand_code": "MOCHA",
+         "brand_name": "MOCHA"
+        }
+       }
+      },
+      {
+       "entity_type": "product",
+       "canonical_code": "MWC7625-SH-S10",
+       "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+       "match_field": "product_code",
+       "match_tier": "and",
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha",
+       "display": {
+        "product_name": "MWC7625-SH-S10",
+        "is_active": true,
+        "brand": null
+       }
+      }
+     ]
+    },
+    "empty": false,
+    "unresolved_tokens": [],
+    "alternatives": [],
+    "token_coverage": [
+     {
+      "token": "MWC7625-SH-S10",
+      "match_semantics": "max_coverage",
+      "coverage": [
+       {
+        "entity_type": "product",
+        "matched_words": [
+         "MWC7625-SH-S10"
+        ],
+        "unmatched_words": [],
+        "truncated": false
+       }
+      ]
+     }
+    ],
+    "gate_passed": true,
+    "require_specific": false,
+    "resolved_company": "mocha",
+    "company_team": null,
+    "resolved_companies": [
+     "mocha"
+    ],
+    "routing_brand": "mocha",
+    "routing_brand_source": "resolved",
+    "routing_companies": [
+     {
+      "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "company_name": "Mocha",
+      "brand_code": null,
+      "codes": [
+       "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
+      ]
+     },
+     {
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "mocha",
+      "codes": [
+       "MWC7625-SH-S10"
+      ],
+      "labels": [
+       "MWC7625-SH-S10"
+      ]
+     }
+    ],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "0f2fe976-c76c-417a-a7ce-e2ca7b6ad1b8",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     },
+     {
+      "uuid": "a7dfc428-f106-4367-8a59-3be98d2510e4",
+      "entity_type": "product",
+      "code": "MWC7625-SH-S10"
+     }
+    ],
+    "gate_debug": {
+     "domain": "incoming",
+     "allowed_lookup": [
+      "product",
+      "inbound_shipment",
+      "category",
+      "brand"
+     ],
+     "entities_count": 2
+    }
+   }
+  }
+ ]
+}

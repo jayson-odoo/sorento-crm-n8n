@@ -1,0 +1,379 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "F. The CRM caps an external order list at 20 rows when no date filter is given (_EXTERNAL_ORDERS_LIST_LIMIT_CAP, orders.py:22), nothing in the envelope reports truncation, and the probe asks about EVERY candidate in ONE flat date-ordered page. Measured on exec 13590613: one busy customer filled all 20 rows, so five other candidates were never reached and would each have rendered a confident '- no delivery' on evidence that was never gathered. All 20 rows here belong to A CRAFT IDEA, which is exactly that shape. Mirrors dym-annotate's _PAGE_SATURATION: a saturated page withholds the annotation entirely and can never invent one. Note it withholds it from A CRAFT IDEA too, even though that one IS proven to have deliveries - a page half of whose lines are measured and half guessed is the asymmetry the suppress-all rule exists to avoid."
+ },
+ "ctx": {
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "gate_passed": false,
+     "require_specific": true,
+     "gate_clarification": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD\n2. MASTILE KLANG SDN BHD\n3. YOO LIVING HOUSE SDN BHD",
+     "compatible_entities": [
+      {
+       "uuid": "ac1",
+       "entity_type": "customer",
+       "code": "300-A100",
+       "title": "A CRAFT IDEA SDN BHD"
+      },
+      {
+       "uuid": "mk1",
+       "entity_type": "customer",
+       "code": "300-M001",
+       "title": "MASTILE KLANG SDN BHD"
+      },
+      {
+       "uuid": "yl1",
+       "entity_type": "customer",
+       "code": "300-Y001",
+       "title": "YOO LIVING HOUSE SDN BHD"
+      }
+     ],
+     "customer_probe_entities": [
+      {
+       "uuid": "ac1",
+       "entity_type": "customer",
+       "code": "300-A100"
+      },
+      {
+       "uuid": "mk1",
+       "entity_type": "customer",
+       "code": "300-M001"
+      },
+      {
+       "uuid": "yl1",
+       "entity_type": "customer",
+       "code": "300-Y001"
+      }
+     ]
+    }
+   }
+  ],
+  "probe-customer-orders": [
+   {
+    "json": {
+     "answers": [
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      },
+      {
+       "title": "DO-2026-0001",
+       "fields": [
+        {
+         "label": "Customer",
+         "value": "A CRAFT IDEA SDN BHD"
+        },
+        {
+         "label": "Status",
+         "value": "Delivered"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {}
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "gate_passed": false,
+    "require_specific": true,
+    "gate_clarification": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD\n2. MASTILE KLANG SDN BHD\n3. YOO LIVING HOUSE SDN BHD",
+    "compatible_entities": [
+     {
+      "uuid": "ac1",
+      "entity_type": "customer",
+      "code": "300-A100",
+      "title": "A CRAFT IDEA SDN BHD"
+     },
+     {
+      "uuid": "mk1",
+      "entity_type": "customer",
+      "code": "300-M001",
+      "title": "MASTILE KLANG SDN BHD"
+     },
+     {
+      "uuid": "yl1",
+      "entity_type": "customer",
+      "code": "300-Y001",
+      "title": "YOO LIVING HOUSE SDN BHD"
+     }
+    ],
+    "customer_probe_entities": [
+     {
+      "uuid": "ac1",
+      "entity_type": "customer",
+      "code": "300-A100"
+     },
+     {
+      "uuid": "mk1",
+      "entity_type": "customer",
+      "code": "300-M001"
+     },
+     {
+      "uuid": "yl1",
+      "entity_type": "customer",
+      "code": "300-Y001"
+     }
+    ],
+    "is_clarification": false,
+    "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD\n2. MASTILE KLANG SDN BHD\n3. YOO LIVING HOUSE SDN BHD",
+    "customer_probe_hits": null,
+    "customer_probe_skip_reason": "page_saturated"
+   }
+  }
+ ]
+}

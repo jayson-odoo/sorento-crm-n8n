@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
 - versionId **d7956e1f-de32-46ca-84ce-64106ab2c436** · activeVersionId **d7956e1f-de32-46ca-84ce-64106ab2c436** · DRAFT == ACTIVE
-- 142 nodes
+- 145 nodes
 
 ## Edges
-_170 edge groups_
+_174 edge groups_
 
 ```
 Aggregate[0] -> tier-gate
@@ -22,10 +22,12 @@ Edit Fields2[0] -> If8
 Execute 'sub-get-rag'[0] -> tool-filter
 If[0] -> get-access-types
 If[1] -> If7
+If-customer-picker[0] -> probe-customer-orders
+If-customer-picker[1] -> not-found-error-message
 If-ideate[0] -> ideate-turn-http
 If-ideate[1] -> offer-hold-gate
 If-incoming-picker[0] -> probe-incoming
-If-incoming-picker[1] -> not-found-error-message
+If-incoming-picker[1] -> If-customer-picker
 If1[0] -> tag-clarify-menu
 If1[1] -> not-supported-domain
 If10[0] -> tag-escalate-offer
@@ -56,6 +58,7 @@ Switch[2] -> send-message-files
 Transcribe a recording[0] -> sorento-sub-respond-sendmsg-respond-transcribed-message, transcribed-message
 When Executed by Another Workflow[0] -> redis-pop-main-message-list
 access-level-choice-message[0] -> tag-access-choice
+annotate-customer-picker[0] -> build-suggest-offer
 annotate-incoming-picker[0] -> build-suggest-offer
 attach-merge[0] -> if-got-attachments
 build-cs-member-offer[0] -> compile-current-state
@@ -135,6 +138,7 @@ offer-hold-gate[1] -> If10
 offer-hold-reply[0] -> tag-offer-hold
 patch-transcript[0] -> tf-message
 presign-fail-notice[0] -> sorento-sub-respond-sendmsg-presign-fail
+probe-customer-orders[0] -> annotate-customer-picker
 probe-incoming[0] -> annotate-incoming-picker
 promo-dym-plan[0] -> promo-dym-probe
 promo-dym-probe[0] -> dym-annotate
@@ -183,7 +187,7 @@ wait-media-poll[0] -> media-poll-http
 
 > Rewiring alone does NOT redirect these. Repoint the expression too.
 
-- **Aggregate** ← crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-incoming, promo-dym-probe, resolve-entity-clarification, sibling-probe
+- **Aggregate** ← crossdomain-probe, disallowed-entity-gate, dym-probe, dym-probe-partial, not-found-error-message, probe-customer-orders, probe-incoming, promo-dym-probe, resolve-entity-clarification, sibling-probe
 - **Edit Fields2** ← validator
 - **Loop Over Items1** ← send-message-video
 - **Remove Duplicates** ← presign-fail-notice
@@ -203,14 +207,14 @@ wait-media-poll[0] -> media-poll-http
 - **crossdomain-zeroset** ← compile-current-state, crossdomain-render
 - **cs-roster-plan** ← build-cs-member-offer, compile-current-state
 - **detect-media** ← media-extract-http, media-route
-- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, cs-roster-plan, dym-transform, dym-transform-partial, escalate-catalog, family-fetch, miss-roster-plan, not-found-error-message, probe-incoming, promo-picker, sibling-gate, sibling-transform, tier-probe, tool-filter
+- **disallowed-entity-gate** ← Call 'sub-get-results', If-customer-picker, If-incoming-picker, If3, annotate-customer-picker, annotate-incoming-picker, build-suggest-offer, compile-current-state, cs-offer-gate, cs-roster-plan, dym-transform, dym-transform-partial, escalate-catalog, family-fetch, miss-roster-plan, not-found-error-message, probe-customer-orders, probe-incoming, promo-picker, sibling-gate, sibling-transform, tier-probe, tool-filter
 - **dym-annotate** ← build-suggest-offer
 - **dym-transform** ← dym-probe, promo-dym-plan, promo-dym-probe
 - **dym-transform-partial** ← dym-probe-partial
 - **escalate-catalog** ← build-cs-member-offer, compile-current-state, cs-offer-gate
 - **escalation-context** ← Call 'sub-human-intervention'
 - **get-cs-members** ← build-cs-member-offer
-- **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, clarify-company-gate, clarify-company-reply, compile-current-state, construct-user-prompt, crossdomain-zeroset, escalation-context, ideate-turn-http, offer-hold-gate, offer-hold-reply
+- **get-session-vars** ← Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, clarify-company-gate, clarify-company-reply, compile-current-state, construct-user-prompt, crossdomain-zeroset, disallowed-entity-gate, escalation-context, ideate-turn-http, offer-hold-gate, offer-hold-reply
 - **ideate-turn-http** ← build-ideate-reply
 - **is-human-intervened** ← transcribed-message
 - **media-route** ← media-poll-merge
@@ -218,6 +222,7 @@ wait-media-poll[0] -> media-poll-http
 - **not-found-error-message** ← escalate-catalog
 - **offer-hold-reply** ← escalate-catalog
 - **patch-transcript** ← compile-current-state, resolve-entity, send-transcript-confirm
+- **probe-customer-orders** ← annotate-customer-picker
 - **probe-incoming** ← annotate-incoming-picker
 - **promo-picker** ← compile-current-state, miss-roster-gate
 - **redis-pop-main-message-list** ← patch-transcript, send-media-reply, sorento-sub-respond-findcontact-respond, sorento-sub-respond-sendmsg-presign-fail
@@ -226,7 +231,7 @@ wait-media-poll[0] -> media-poll-http
 - **set-ran-query-formulator** ← sorento-sub-respond-sendmsg-respond
 - **sibling-probe** ← build-suggest-offer
 - **sibling-transform** ← build-suggest-offer, sibling-probe
-- **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-incoming, promo-dym-probe, resolve-entity, resolve-entity-clarification, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5, tier-probe
+- **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-customer-orders, probe-incoming, promo-dym-probe, resolve-entity, resolve-entity-clarification, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5, tier-probe
 - **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, compile-current-state, construct-user-prompt, get-session-vars, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **tier-gate** ← Call 'sub-get-results', disallowed-entity-gate, if-tier-ask, tier-probe-collect, tier-probe-plan
 - **tier-probe-collect** ← access-level-choice-message
@@ -256,6 +261,7 @@ wait-media-poll[0] -> media-poll-http
 | crossdomain-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | dym-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | dym-probe-partial | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
+| probe-customer-orders | `rysSPgUssLDf6xJc` | sub-get-results TEST |
 | probe-incoming | `rysSPgUssLDf6xJc` | sub-get-results TEST |
 | promo-dym-probe | `Fss5aAaXthJSWpZCgKiKR` | sub-get-results |
 | send-media-reply | `aoydkG1dbItXR5jXFEQsP` | sorento-sub-respond-sendmsg-respond |
@@ -298,11 +304,11 @@ wait-media-poll[0] -> media-poll-http
 
 | node | lines |
 |---|---|
-| compile-current-state | 1801 |
+| compile-current-state | 1829 |
+| disallowed-entity-gate | 879 |
 | not-found-error-message | 631 |
 | build-suggest-offer | 594 |
 | promo-picker | 583 |
-| disallowed-entity-gate | 542 |
 | dym-transform | 416 |
 | dym-transform-partial | 409 |
 | tier-gate | 195 |
@@ -317,6 +323,7 @@ wait-media-poll[0] -> media-poll-http
 | crossdomain-compose | 101 |
 | miss-roster-plan | 97 |
 | access-level-choice-message | 95 |
+| annotate-customer-picker | 94 |
 | detect-media | 91 |
 | presign-fail-notice | 62 |
 | tool-filter | 59 |

@@ -164,9 +164,11 @@ test('the LIVE spine PASSES with --expect-live-spine', () => {
 
 test('the pass prints what was actually checked, not just "ok"', () => {
   const { out } = check(LIVE_SPINE, '--expect-live-spine');
-  assert.match(out, /nodes: 142/);   // 134 + the Stage B set 4 plain-miss lane (gate, plan, offer)
+  assert.match(out, /nodes: 145/);   // 134 + the Stage B set 4 plain-miss lane (gate, plan, offer)
                                      // + Stage B sets 1+2: offer-hold-gate/-reply, tag-offer-hold,
                                      //   clarify-company-gate/-reply
+                                     // + the customer picker: If-customer-picker,
+                                     //   probe-customer-orders, annotate-customer-picker
   assert.match(out, /credentials \(19 credential-bearing nodes\)/);
   for (const n of ['send-message-files', 'send-message-images', 'send-message-video',
     'update-human-intervened', 'save-session-vars']) {
@@ -185,7 +187,12 @@ test("live's two known-inert carriers are WARNED about, never refused", () => {
   assert.match(out, /nodes \(2\): When Executed by Another Workflow, detect-media/);
   // (b) rysSPgUssLDf6xJc carries live's main CRM read path today (deploy.py KNOWN_ID_LABELS).
   assert.match(out, /\[warn check 3\][\s\S]*?rysSPgUssLDf6xJc/);
-  assert.match(out, /nodes \(3\): Call 'sub-get-results', probe-incoming, tier-probe/);
+  // probe-customer-orders joins the list with the customer picker, and it is a deliberate choice,
+  // not a copy: the live split between the two byte-identical get-results subs is by entity SOURCE
+  // - every node reading $('disallowed-entity-gate') calls rys, every node reading a transform
+  // calls Fss5. probe-customer-orders reads the gate. (The clone pointed it at a third copy,
+  // t4QvrtrPnTwRU6br, which no live node calls.)
+  assert.match(out, /nodes \(4\): Call 'sub-get-results', probe-customer-orders, probe-incoming, tier-probe/);
 });
 
 // ---------------------------------------------------------------------------------------------

@@ -1,0 +1,133 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "G-B family expansion, the other half of the picker. The pick turn re-resolves only the LABEL it was handed, and a label like 'A CRAFT IDEA SDN BHD (SRT)' text-matches exactly one account - so the answer covered 1 account while the picker's probe had counted the whole family ('has delivery' on the picker, 'no delivery' after picking; execs 13256193 / 13256248). The families map the gate wrote on the picker turn is read back from get-session-vars and the siblings are re-seated. This fixture is why compile-current-state has to persist picker_families at all."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "domain_hint": "order",
+      "entities": [
+       {
+        "raw": "A CRAFT IDEA SDN BHD",
+        "hint": "customer",
+        "current_message": true,
+        "ordinal": 1,
+        "uuid": "ac1",
+        "canonical_code": "300-A100"
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "match_mode": "or",
+     "tokens": [
+      "a craft idea sdn bhd"
+     ],
+     "unresolved_tokens": [],
+     "resolutions": [
+      {
+       "token": "a craft idea sdn bhd",
+       "resolved": true,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "uuid": "ac1",
+         "canonical_code": "300-A100",
+         "match_tier": "fuzzy",
+         "display": {
+          "customer_name": "A CRAFT IDEA SDN BHD"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "variables": {
+      "picker_families": {
+       "A CRAFT IDEA": [
+        "ac1",
+        "ac2",
+        "ac3"
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "tokens": [
+     "a craft idea sdn bhd"
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "tokens": [
+     "a craft idea sdn bhd"
+    ],
+    "gate_passed": true,
+    "require_specific": false,
+    "resolved_company": null,
+    "company_team": null,
+    "resolved_companies": [],
+    "routing_brand": null,
+    "routing_brand_source": null,
+    "routing_companies": [],
+    "routing_company": null,
+    "access_denied_levels": [],
+    "access_notice": "",
+    "brand_gate_empty": false,
+    "brand_unheld": false,
+    "gate_reason": "ok",
+    "gate_clarification": "",
+    "compatible_entities": [
+     {
+      "uuid": "ac1",
+      "entity_type": "customer",
+      "code": "300-A100"
+     },
+     {
+      "uuid": "ac2",
+      "entity_type": "customer",
+      "code": "A CRAFT IDEA SDN BHD"
+     },
+     {
+      "uuid": "ac3",
+      "entity_type": "customer",
+      "code": "A CRAFT IDEA SDN BHD"
+     }
+    ],
+    "gate_debug": {
+     "domain": "order",
+     "allowed_lookup": [
+      "order",
+      "customer_order",
+      "transporter",
+      "customer",
+      "product"
+     ],
+     "entities_count": 1
+    }
+   }
+  }
+ ]
+}

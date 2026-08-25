@@ -1,0 +1,104 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "The other side of hand-picker-families-outlive-roster, and the reason the carry is safe. The family may only outlive its roster while the customer is still PINNED to one of its members - a turn that names no customer at all has nothing for the family to scope, and keeping it would let a stale account set widen a later lookup nobody asked to widen. The first attempt at this carry was reverted for exactly that class of leak (a different company's customer sharing debtor code 300-D059 rode into scope). Same session state as the fixture above, same expired roster; the ONLY difference is that this turn's entities carry no customer uuid, and the family must be gone."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "routing": {
+       "suggested_team": "customer_service"
+      },
+      "escalation": {},
+      "entities": [
+       {
+        "raw": "WESERP10B",
+        "hint": "product",
+        "current_message": true
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "variables": {
+      "picker_families": {
+       "A CRAFT IDEA": [
+        "ac1",
+        "ac2",
+        "ac3"
+       ]
+      }
+     }
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "response": "Would you like me to escalate to customer service team?",
+     "manualResponse": false,
+     "includeResponse": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "not_found"
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "entities": [
+      {
+       "raw": "WESERP10B",
+       "hint": "product",
+       "current_message": true
+      }
+     ],
+     "routing": {
+      "suggested_team": "customer_service"
+     },
+     "escalation": {},
+     "response": "Previous turn (order): no results.",
+     "last_result_set": [],
+     "selection_context": null,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": null,
+     "routing_brand": null,
+     "routing_brand_source": null,
+     "routing_company": null,
+     "routing_companies": null
+    },
+    "user_response": "Would you like me to escalate to customer service team?"
+   }
+  }
+ ]
+}
