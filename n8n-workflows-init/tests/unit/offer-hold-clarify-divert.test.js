@@ -165,28 +165,37 @@ test('C2/C5 flipped: the ask offers the company, and every invited name resolves
 });
 
 // The claim above is only worth anything while the parser-vs-copy state is what we think it is.
-// This test used to assert the parser exports NO company_pick handler - the fact the copy's
-// "never say company" rule rested on. 2026-08-25 the deterministic handler shipped into the export
-// (plans/company-pick-parser.md, scope deterministic), so the test now asserts the NEW true
-// contract instead: the handler exists, it is code-only (_coCompanyPick in output_exchange.js),
-// and the PROMPT is still clean - the LLM was never taught to emit company_pick, so the only
-// producer is the deterministic tier validating against the persisted pool. If the prompt half
-// (plan Stage 2) ever ships, this goes red again and must be re-argued, not re-pinned.
-test('the fact C2/C5 rests on, updated: the handler is deterministic-only and the prompt is untouched', () => {
+// This test has flipped twice, each time by explicit order, never by re-pin:
+//   - originally it asserted the parser exports NO company_pick handler (the copy's "never say
+//     company" rule rested on that);
+//   - 2026-08-25 (deterministic port) it asserted handler-exists + PROMPT-clean, and its own
+//     message said a prompt ship "goes red again and must be re-argued, not re-pinned";
+//   - 2026-08-25, later (CAPTAIN-ORDERED prompt promote): the fork's 602-line systemMessage
+//     shipped to live BYTE-EXACT, so the LLM is now TAUGHT to emit company_pick (plan Stage 2 /
+//     part 3's gate closes by that order). This is the re-argument the message demanded: the
+//     semantic fallback is safe because BOTH producers are validated against the persisted pool
+//     - the deterministic tier wins, and pickLlm accepts the LLM's name only after exactly-one
+//     pool-match with no negator and no domain query, while C1 strips the raw key from every
+//     non-arm path. parser-prompt-consumers.test.js pins the shipped prompt sha and the full
+//     emitter/consumer table; the invited-reply cross-check above is unchanged.
+test('the fact C2/C5 rests on, re-flipped: the prompt now teaches company_pick and both producers validate', () => {
   const dir = path.resolve(__dirname, '../../export/sub-semantic-parser/nodes');
   const hits = fs.readdirSync(dir)
     .filter((f) => f.endsWith('.js'))
     .filter((f) => fs.readFileSync(path.join(dir, f), 'utf8').includes('company_pick'));
   assert.deepStrictEqual(hits, ['output_exchange.js'],
-    'company_pick must live in output_exchange.js and NOWHERE else in the parser export');
+    'company_pick must live in output_exchange.js and NOWHERE else in the parser code');
   const body = fs.readFileSync(path.join(dir, 'output_exchange.js'), 'utf8');
   assert.ok(body.includes('function _coCompanyPick('), 'the deterministic resolver is the handler');
+  assert.ok(body.includes('any: pick || pickLlm'),
+    'deterministic-wins precedence is gone - the LLM fallback may no longer outrank the deterministic tier');
   const wf = JSON.parse(fs.readFileSync(
     path.resolve(__dirname, '../../export/sub-semantic-parser/workflow.json'), 'utf8'));
   const agent = wf.nodes.find((n) => n.name === 'AI Agent');
-  assert.equal((agent.parameters.options.systemMessage.match(/company_pick/g) || []).length, 0,
-    'the systemMessage now teaches company_pick - that is the plan\'s Stage 2 (scope: parser), ' +
-    'a separate measured change, not something to ride in with a code edit');
+  assert.equal((agent.parameters.options.systemMessage.match(/company_pick/g) || []).length, 6,
+    'the systemMessage\'s company_pick teaching moved (6 = the COMPANY-NAME REPLY section + the ' +
+    'schema line, fork @ 5dc53753) - a prompt edit here must be re-argued and re-clone-tested, ' +
+    'never re-pinned');
 });
 
 // ── 3. the Case B re-persist, asserted against the session it claims to restore ───────────────

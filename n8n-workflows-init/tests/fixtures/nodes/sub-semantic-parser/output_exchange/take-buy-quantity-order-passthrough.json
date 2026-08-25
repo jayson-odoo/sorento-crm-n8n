@@ -1,0 +1,153 @@
+{
+ "source": {
+  "execution_id": null,
+  "workflow_id": "XTODTw-dJcV0uRdC056hG",
+  "node": "output_exchange",
+  "captured_at": "2026-08-25T00:00:00+00:00",
+  "expected_from": "reasoned",
+  "rationale": "Buckets b + d2 (prompt promote 2026-08-25): 'eco world have take srtwc8605' now classifies order/check_order with customer+product entities and requested_attributes ['quantity'] (bucket b), and a customer delivery question is order - GOODS GOING OUT - never incoming (bucket d2). The parser has no requested_attributes consumer by design: the field threads through output_exchange untouched to the spine's semantic_input and sub-get-results' output-structurer reads it generically. Expected is REASONED passthrough: replace_combine keeps both current entities, requested_attributes ['quantity'] byte-equal, order_status null, domain order. [invariant, not discriminating: byte-identical output on the pre-promote body (proven 2026-08-25) - it pins how EXISTING code consumes the newly-taught emission, not a code delta.]"
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "eco world have take srtwc8605\n\n",
+     "contact_id": 437264483,
+     "is_test": null,
+     "mock_reformulator_output": null,
+     "previous_conversation_state": {
+      "selection_context": null,
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "general_enquiries"
+      },
+      "response": "Here are your promotions for August.",
+      "entities": [],
+      "last_result_set": []
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_order\",\"domain_hint\":\"order\",\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"how much srtwc8605 did eco world take\",\"access_levels\":[],\"broaden_axis\":null,\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"eco world\",\"hint\":\"customer\",\"confident\":true,\"canonical_code\":null,\"current_message\":true},{\"raw\":\"srtwc8605\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":null,\"current_message\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[\"quantity\"],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "how much srtwc8605 did eco world take",
+     "access_levels": [],
+     "broaden_axis": null,
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "eco world",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": true
+      },
+      {
+       "raw": "srtwc8605",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [
+      "quantity"
+     ],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_explicit",
+     "scope_exclusive_applied": false,
+     "entity_op_applied": "replace_combine",
+     "query_brands": [],
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "how much srtwc8605 did eco world take",
+     "access_levels": [],
+     "broaden_axis": null,
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "eco world",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": true
+      },
+      {
+       "raw": "srtwc8605",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [
+      "quantity"
+     ],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false,
+      "company_pick": null
+     }
+    }
+   }
+  }
+ ]
+}

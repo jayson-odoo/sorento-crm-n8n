@@ -1,0 +1,145 @@
+{
+ "source": {
+  "execution_id": null,
+  "workflow_id": "XTODTw-dJcV0uRdC056hG",
+  "node": "output_exchange",
+  "captured_at": "2026-08-25T00:00:00+00:00",
+  "expected_from": "reasoned",
+  "rationale": "Bucket c (prompt promote 2026-08-25): BARE ENTITY CONTINUATION teaches the LLM that a naked value continues the previous domain - it emits the carried domain_hint/intent_hint itself, message_type business_query, entity_op replace_combine, and the value as a current_message entity. The consumer is the EXISTING entity-op executor: no new field, nothing fork-only. Expected is REASONED: replace_combine swaps the product axis - the new code replaces the prior product - and the turn stays a stock enquiry. [invariant, not discriminating: byte-identical output on the pre-promote body (proven 2026-08-25) - it pins how EXISTING code consumes the newly-taught emission, not a code delta.]"
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "srtwc286-sh\n\n",
+     "contact_id": 437264483,
+     "is_test": null,
+     "mock_reformulator_output": null,
+     "previous_conversation_state": {
+      "selection_context": null,
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "general_enquiries"
+      },
+      "response": "SRTWC8354 has 120 units on hand.",
+      "entities": [
+       {
+        "raw": "srtwc8354",
+        "hint": "product",
+        "confident": true,
+        "canonical_code": "SRTWC8354",
+        "current_message": false
+       }
+      ],
+      "last_result_set": [],
+      "domain_hint": "inventory",
+      "intent_hint": "check_stock"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":\"check_stock\",\"domain_hint\":\"inventory\",\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"check stock for srtwc286-sh\",\"access_levels\":[],\"broaden_axis\":null,\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[{\"raw\":\"srtwc286-sh\",\"hint\":\"product\",\"confident\":true,\"canonical_code\":null,\"current_message\":true}],\"entity_op\":\"replace_combine\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "check stock for srtwc286-sh",
+     "access_levels": [],
+     "broaden_axis": null,
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "srtwc286-sh",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "warehouse",
+      "suggested_agent": "general_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_explicit",
+     "scope_exclusive_applied": false,
+     "entity_op_applied": "replace_combine",
+     "query_brands": [],
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": "check_stock",
+     "domain_hint": "inventory",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "check stock for srtwc286-sh",
+     "access_levels": [],
+     "broaden_axis": null,
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "srtwc286-sh",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": true
+      }
+     ],
+     "entity_op": "replace_combine",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false,
+      "company_pick": null
+     }
+    }
+   }
+  }
+ ]
+}

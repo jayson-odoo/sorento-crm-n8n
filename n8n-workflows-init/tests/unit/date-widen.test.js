@@ -7,13 +7,14 @@
 // entities [] + domain null, the executor wiped the carried scope, and the clarification LLM
 // improvised; turn 4 "all of them" got the generic menu — context gone.
 //
-// The BROADEN AXIS prompt rules exist only in the fork's systemMessage (company-pick-parser.md §3
-// bucket d3, 37 lines, not shipped); the fork's output_exchange has NO deterministic phrase
-// detector — its AXIS BROADEN restore and carryDateWindow's `broaden_axis === 'date'` arm only
-// consume the LLM-emitted broaden_axis field. So this is a FRESH deterministic arm (same playbook
-// as the shipped company_pick): detect the bare widen phrase in code, re-emit the exact carried
-// business_query shape exec 13873233 proved re-runs the search on the UNCHANGED spine, with the
-// window forced open.
+// The BROADEN AXIS prompt rules SHIPPED to live with the 2026-08-25 captain-ordered prompt
+// promote (company-pick-parser.md §3 bucket d3), together with their consumers (the AXIS BROADEN
+// restore, the reuse arm's `broaden_axis === 'date'` force-open, the final-pass drop — see
+// llm-broaden-fallback.test.js). This deterministic arm predates that promote (it detects the
+// bare phrase in code, which the LLM consumers cannot) and now sits FIRST in the documented
+// precedence: deterministic phrase-match decides, the LLM broaden_axis field is the fallback for
+// phrasings the detector cannot see. It re-emits the exact carried business_query shape exec
+// 13873233 proved re-runs the search on the UNCHANGED spine, with the window forced open.
 //
 // tests/unit/_all-nodes.test.js deep-equals every widen-* fixture already; this file re-asserts
 // the LOAD-BEARING decision fields by name so a fixture re-pin cannot silently flip the contract

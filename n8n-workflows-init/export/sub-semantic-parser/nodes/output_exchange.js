@@ -451,6 +451,18 @@ const DOMAIN_SUBJECT_AXIS = {
   order: 'order_scope', spo_allocation: 'order_scope',
   goods_receive: 'doc', forms: 'doc', portal_link: 'doc',
 };
+
+// Domain -> the entity HINT that names that domain's own subject ("master_products" enquiries are
+// about a "product", "order" enquiries are about an "order", ...). Hoisted to module scope from
+// the reference-positions block's local copy (same move the fork made when it grew a second
+// reader) so the AXIS BROADEN restore below can reuse the SAME map instead of hand-writing
+// another one.
+const DOMAIN_SUBJECT_HINT = {
+  product_attachment: 'product', master_products: 'product', inventory: 'product',
+  incoming: 'product', resource_attachment: 'attachment', portal_link: 'form',
+  goods_receive: 'goods_receive', spo_allocation: 'spo', forms: 'form',
+  order: 'order', promotion: 'promotion',
+};
 // Diagnostic so the RESIDUAL unrecognised class is MEASURABLE in production instead of assumed
 // empty. Emitted only when non-empty ⇒ drop-when-absent in the replay norm() (LESSONS §40).
 const _ceUnknownHints = new Set();
@@ -469,12 +481,16 @@ const _ceAxisFor = (e, domain) => {
 // reply "all dates" came back from the LLM as scope_intent 'broaden' + entity_op 'clear' +
 // entities [] + domain null. The executor's 'clear' arm wiped the carried scope, downstream had
 // nothing to query, and the clarification LLM improvised ("confirm which product code…"); the
-// next turn ("all of them") lost the context entirely. The BROADEN AXIS prompt rules live only in
-// the fork (company-pick-parser.md §3 bucket d3, not shipped); the fork's own deterministic code
-// (its AXIS BROADEN restore + carryDateWindow's broaden_axis === 'date' arm) only CORRECTS the
-// LLM-emitted broaden_axis field — it cannot detect the phrase. This arm is the same playbook as
-// the shipped deterministic company_pick: detect the bare phrase in code, ride the existing
-// spine contract, teach the LLM nothing.
+// next turn ("all of them") lost the context entirely. The BROADEN AXIS prompt rules SHIPPED
+// with the 2026-08-25 prompt promote (company-pick-parser.md §3 bucket d3), and their consumers
+// — the AXIS BROADEN restore below this arm, the reuse arm's broaden_axis === 'date' force-open,
+// and the final-pass axis drop before the return — only CORRECT/apply the LLM-emitted
+// broaden_axis field; none of them can detect the phrase. PRECEDENCE (decided at the prompt
+// promote, mirroring the shipped deterministic company_pick where deterministic wins): THIS
+// phrase-match arm decides first — it never reads broaden_axis, and its part-2 writes after the
+// executor land after the restore's, so on a turn where both fire the two agree by construction
+// (same prior domain restored, same open window). The LLM broaden_axis field is the FALLBACK for
+// phrasings this detector cannot see ("not just August", Malay, any free-form widen).
 //
 // The re-emitted contract is byte-shaped on the turn that WORKED (exec 13873233): carried
 // entities (current_message:false) + entity_op 'reuse' + business_query + the prior domain re-ran
@@ -538,6 +554,66 @@ if (_dateWiden) {
   output.output.date_widen_applied  = true;        // diagnostic + provenance (drop-when-absent, LESSONS §40)
 }
 
+// The domain the conversation was already in. Hoisted out of the AXIS BROADEN block below (it was
+// `_prevDom0` there) so it is read once at module scope. parent_input is never written to, so
+// reading it earlier is the same read.
+const _prevStateDomain = parent_input.previous_conversation_state?.domain_hint || null;
+
+// ── AXIS BROADEN: naming a KIND of thing widens one filter, it does not change the subject ──
+// Measured (exec 13624889): after "srt59-cr for mastile klang" in the order domain, "all products"
+// came back domain_hint=master_products, entity_op=clear, entities=[] - it jumped to the catalogue
+// AND dropped the customer the user was still asking about. Restore the domain BEFORE the executor
+// so axis mapping and the drop below both run against the domain the user is actually in.
+{
+  // ANY widening keeps the subject. "all products", "all time" and "show me everything" all ask
+  // for MORE of the same question - none of them changes what is being asked about. The axis the
+  // model picks must not decide this: the same words came back broaden_axis 'product' on one run
+  // and 'all' on the next (fork 13692500), and when only the first carried the domain, the second
+  // answered "A master_products enquiry can't be answered with a general search".
+  const _ba = String(output.output.broaden_axis || '').toLowerCase();
+  const _prevDom0 = _prevStateDomain;
+  const _wanderedDom0 = output.output.domain_hint || null;   // capture BEFORE the restore below overwrites it
+  if (_ba && _prevDom0) {
+    output.output.domain_hint = _prevDom0;
+    output.output.intent_hint = parent_input.previous_conversation_state?.intent_hint || output.output.intent_hint || null;
+    output.output.broaden_axis_domain_restored = true;   // diagnostic
+
+    // exec 13728314: "all products" on an order in progress (customer + product both pinned) came
+    // back domain_hint master_products / entity_op "clear" / broaden_axis "all" / scope_intent the
+    // STRING "null" - the model misread ONE axis being widened as a request for the whole product
+    // catalogue. The restore above fixes only the domain; it leaves entity_op "clear" standing, so
+    // the executor below still wipes EVERY entity, taking the customer out with the product, and
+    // the gate then has nothing left to scope 'order' on. The prompt's own BROADEN AXIS section
+    // gives the contract for a widened axis: "entity_op = 'reuse': the rest of the scope stands.
+    // Deterministic code drops the widened axis; do NOT try to hand-prune entities yourself." -
+    // that contract still applies when the model named "all" instead of the specific axis.
+    //
+    // scope_intent "broaden" is the model's real everything-signal (its own SCOPE INTENT section:
+    // "scope_intent means the user broadened EVERY axis at once. Widening ONE axis is not that").
+    // A genuine broaden-everything turn must still clear - only a MISREAD "all" gets rescued here.
+    // The model emitted the STRING "null" in this exec, not a JSON null, so compare defensively.
+    const _scopeIntent = String(output.output.scope_intent ?? '').toLowerCase();
+    if (_ba === 'all' && _scopeIntent !== 'broaden') {
+      if (output.output.entity_op === 'clear') {
+        output.output.entity_op = 'reuse';
+        output.output.broaden_axis_clear_rescued = true;   // diagnostic
+      }
+
+      // The domain the model wandered TO names the axis it actually meant: it answered
+      // "master_products" because it thought the subject was products, so the product axis is the
+      // one being dropped, not every axis. DOMAIN_SUBJECT_HINT is the SAME domain -> entity-hint
+      // map the pick-rehydration and bare-token paths already use - reused here instead of a
+      // fourth guess at what "master_products" means.
+      const _wanderedHint = _wanderedDom0 ? DOMAIN_SUBJECT_HINT[_wanderedDom0] : null;
+      if (_wanderedHint) {
+        output.output.broaden_axis = _wanderedHint;
+        output.output.broaden_axis_resolved_from_domain = _wanderedDom0;   // diagnostic
+      }
+      // an unmapped wandered domain leaves broaden_axis as "all" - fail open, never guess.
+    }
+  }
+}
+
 // ── ENTITY OPERATION EXECUTOR (op + axis-aware replace/combine) ──
 if (output.output && !output.output.is_menu_label) {
     const domain = output.output.domain_hint;
@@ -562,7 +638,17 @@ if (output.output && !output.output.is_menu_label) {
       finalEntities = prior;
       // date: only carry if THIS turn named no date
       const hasCurrentDate = output.output.date_filter_start || output.output.date_filter_end;
-      if (!hasCurrentDate) {
+      // broaden_axis "date" = the user explicitly asked to drop the window ("all time", "remove the
+      // date filter"). Such a turn names no date, so the carry below would silently restore the
+      // PREVIOUS window and answer the opposite of what was asked. Force the window open instead.
+      // (LLM-emitted fallback for phrasings the deterministic _dateWiden arm above cannot see;
+      // when both fire they agree - the window ends open either way.)
+      const _allTime = String(output.output.broaden_axis || '').toLowerCase() === 'date';
+      if (_allTime) {
+        output.output.date_filter_start = null;
+        output.output.date_filter_end   = null;
+        output.output.date_mode         = null;
+      } else if (!hasCurrentDate) {
         if (parent_input.previous_conversation_state?.date_filter_start) output.output.date_filter_start = parent_input.previous_conversation_state?.date_filter_start;
         if (parent_input.previous_conversation_state?.date_filter_end)   output.output.date_filter_end   = parent_input.previous_conversation_state?.date_filter_end;
         if (parent_input.previous_conversation_state?.date_mode)         output.output.date_mode         = parent_input.previous_conversation_state?.date_mode;
@@ -950,12 +1036,8 @@ if (output.output && !output.output.is_menu_label &&
   // The legacy `|| 'promotion'` tail is DROPPED, not preserved: it is itself an instance of this
   // same defect (a pick on an unknown domain became a *promotion* entity). Every real promotion
   // turn keeps its hint byte-identical via DOMAIN_SUBJECT_HINT.promotion.
-  const DOMAIN_SUBJECT_HINT = {
-    product_attachment: 'product', master_products: 'product', inventory: 'product',
-    incoming: 'product', resource_attachment: 'attachment', portal_link: 'form',
-    goods_receive: 'goods_receive', spo_allocation: 'spo', forms: 'form',
-    order: 'order', promotion: 'promotion',
-  };
+  // (DOMAIN_SUBJECT_HINT itself is hoisted to module scope, near AXIS_BY_DOMAIN - the AXIS
+  // BROADEN restore above needs the same domain -> subject-hint map.)
   const KNOWN_ENTITY_HINTS = new Set([
     'product','promotion','customer','transporter','inbound_shipment','warehouse','attachment',
     'form','order','category','brand','attachment_type','certificate','flyer','order_number',
@@ -1204,7 +1286,12 @@ if (output.output && !output.output.is_menu_label && _ceUnknownHints.size) {
 
 if (output.output?.entities && Array.isArray(output.output.entities)) {
   const domain = output.output.domain_hint;
-  const isBroaden = output.output.scope_intent === 'broaden';
+  // A TIME-only or single-axis widening is not an entity-scope broaden: it keeps the customer
+  // and product the user already named. Without this, DOMAIN_BROADEN_BLOCKED_HINTS would strip
+  // exactly those hints (order: ['order','customer'], inventory: ['product']) and "all time"
+  // would silently become "all orders". Belt-and-braces with the prompt rule.
+  const _baRaw = String(output.output.broaden_axis || '').toLowerCase();
+  const isBroaden = output.output.scope_intent === 'broaden' && (!_baRaw || _baRaw === 'all');
 
   // union of always-blocked + (broaden-blocked if broadening)
   const blocked = new Set([
@@ -1707,7 +1794,7 @@ if (!DATE_FILTER_DOMAINS.has(output.output.domain_hint)) {
 // (dym_pick_applied), and the offer we made records which token each candidate was for
 // (dym_offer.candidates[].for_raw). Comparing a code the customer named against a code the
 // resolver returned is mechanical; nothing here interprets their sentence.
-// Runs in the final pass because mid-chain writers get undone.
+// Runs in the final pass for the same reason as the axis drop below: mid-chain writers get undone.
 {
   const _dymApplied = output.output?.dym_pick_applied === true;
   const _dymCands = parent_input.previous_conversation_state?.dym_offer?.candidates;
@@ -1732,6 +1819,33 @@ if (!DATE_FILTER_DOMAINS.has(output.output.domain_hint)) {
       output.output.entities = output.output.entities.filter(e => !_superseded.has(_sn(e && e.raw)));
       output.output.dym_superseded_dropped = _before - output.output.entities.length;   // diagnostic
     }
+  }
+}
+
+// ── AXIS BROADEN, FINAL PASS: the widened filter must not come back ──────────────────────────
+// This drop used to sit right after the entity-op executor on the fork. The logic ran correctly
+// there - exec 13636691 reported broaden_axis 'product', broaden_axis_dropped 1, domain restored
+// to 'order' - and a LATER writer re-attached the product anyway, so "all products" still
+// answered scoped to srtwc286. output_exchange has ~47 sites that assign entities/domain_hint
+// (SIMPLIFY-spine-audit); being one of them is not enough, so this runs after all of them.
+// Placed immediately before the return, where `output.output.entities` is final by definition.
+//
+// REBASED FOR LIVE: the fork drops by AXIS (_ceAxisFor) because its maps split customer and
+// transporter out of order_scope; live's maps still lump customer/product/order into ONE
+// order_scope, so an axis-equality drop here would take the customer out with the product - the
+// exact defect (exec 13728314) the restore above exists to prevent. Drop by HINT instead: the
+// prompt's own BROADEN AXIS contract is "Use the SAME hint name you would use for an entity of
+// that kind", so the emitted broaden_axis IS an entity hint; equality on the hint drops exactly
+// the widened kind and nothing else. Strictly narrower than the fork's drop - a kind-synonym on
+// the same axis survives and the turn degrades to re-answering with the old scope, fail-open.
+// Revisit (restore the fork's _ceAxisFor form) when the customer_scope/transporter_scope axis
+// split ships to live.
+{
+  const _ba = String(output.output?.broaden_axis || '').toLowerCase();
+  if (_ba && _ba !== 'all' && _ba !== 'date' && Array.isArray(output.output?.entities)) {
+    const _before = output.output.entities.length;
+    output.output.entities = output.output.entities.filter(e => String((e && e.hint) || '').toLowerCase() !== _ba);
+    output.output.broaden_axis_dropped = _before - output.output.entities.length;   // diagnostic
   }
 }
 

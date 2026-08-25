@@ -17,8 +17,10 @@
 //
 // "Inert without a pick" is a claim about behaviour, so this file measures it:
 //
-//   A. SOURCE. The producer lives ONLY in the parser's output_exchange.js (deterministic tier +
-//      the C1 strip of the raw LLM key); the prompt teaches nothing about it. `escalation-context`
+//   A. SOURCE. The producer code lives ONLY in the parser's output_exchange.js (deterministic
+//      tier + the C1 strip of the raw LLM key). Since the 2026-08-25 captain-ordered prompt
+//      promote the systemMessage ALSO teaches the LLM to emit it (6 occurrences, pinned) - both
+//      producers validate against the persisted pool, deterministic wins. `escalation-context`
 //      is the only live-spine node with an EXECUTABLE reference to it (four other nodes name it,
 //      all in comments explaining the ordering).
 //   B. STRUCTURE. No identifier the hunk introduces is visible outside it, and every declaration
@@ -95,7 +97,7 @@ function run(body, fixture) {
 // (This test asserted zero occurrences until 2026-08-25; the deterministic port flipped it. It
 // now pins the producer's shape so anything BEYOND that shape - a prompt mention, a second node
 // touching the field - fails loudly and gets re-argued rather than re-pinned.)
-test('A1: the parser export carries company_pick only in output_exchange.js, and the prompt is clean', () => {
+test('A1: company_pick lives in output_exchange.js code and the systemMessage teaching, nowhere else', () => {
   const man = manifestOf(PARSER_SLUG);
   const dir = path.join(EXPORT_ROOT, PARSER_SLUG, 'nodes');
   const hits = [];
@@ -110,14 +112,23 @@ test('A1: the parser export carries company_pick only in output_exchange.js, and
   assert.ok(/'company_pick' in output\.output\.escalation\) delete output\.output\.escalation\.company_pick/.test(body),
     'the C1 strip of the raw LLM key is the SAFETY half of the producer - it must never be dropped');
   // the whole deployed artifact, not just the Code bodies - an If expression or the prompt could
-  // carry it too. Blank the folded jsCode bodies out and require zero occurrences anywhere else.
+  // carry it too. Blank the folded jsCode bodies out; what remains must be EXACTLY the
+  // systemMessage's 6 teachings and nothing else. (This asserted zero until 2026-08-25, when the
+  // captain-ordered prompt promote shipped the fork's 602-line systemMessage byte-exact - plan
+  // Stage 2, reviewed as such; parser-prompt-consumers.test.js pins the prompt sha and the
+  // emitter/consumer completeness. A 7th occurrence outside the prompt - an If expression, a
+  // second node - is still a new consumer that must be re-argued.)
   const wf = JSON.parse(fs.readFileSync(path.join(EXPORT_ROOT, PARSER_SLUG, 'workflow.json'), 'utf8'));
+  const agent = wf.nodes.find((n) => n.name === 'AI Agent');
+  assert.equal((agent.parameters.options.systemMessage.match(/company_pick/g) || []).length, 6,
+    'the systemMessage\'s company_pick teaching moved - re-argue, do not re-pin');
   for (const n of wf.nodes) {
     if (n.parameters && typeof n.parameters.jsCode === 'string') n.parameters.jsCode = '';
+    if (n.name === 'AI Agent') n.parameters.options.systemMessage = '';
   }
   assert.equal((JSON.stringify(wf).match(/company_pick/g) || []).length, 0,
-    'company_pick appears in the parser workflow.json outside a Code body - if that is the ' +
-    'systemMessage, the plan\'s Stage 2 (scope: parser) just shipped and must be reviewed as such');
+    'company_pick appears in the parser workflow.json outside a Code body and outside the ' +
+    'systemMessage - a new producer/consumer surface nothing has reviewed');
   assert.equal(man.id, 'XTODTw-dJcV0uRdC056hG', 'the parser slug no longer points at the live parser');
 });
 

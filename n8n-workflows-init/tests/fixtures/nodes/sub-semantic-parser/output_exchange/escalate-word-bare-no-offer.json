@@ -1,0 +1,116 @@
+{
+ "source": {
+  "execution_id": null,
+  "workflow_id": "XTODTw-dJcV0uRdC056hG",
+  "node": "output_exchange",
+  "captured_at": "2026-08-25T00:00:00+00:00",
+  "expected_from": "reasoned",
+  "rationale": "Bucket d1 (prompt promote 2026-08-25): the shipped MESSAGE TYPE rule 1 makes the bare word 'escalate' request_for_help 'whether or not an escalation was offered before'. This is a NEW path to a real assign: on the live spine If2's second condition (message_type == request_for_help && domain_hint != portal_link) opens the divert/human-intervention lane, exactly as on the clone. Expected is REASONED passthrough: output_exchange must leave message_type request_for_help standing (the reuse arm's domain carry is explicitly gated off request_for_help), entities stay [], escalation stays bare is_escalation_confirmation false (C1 strips the null company_pick key), and no arm invents an is_escalation_confirmation true - the assign happens on the spine's terms, never the parser's. [invariant, not discriminating: byte-identical output on the pre-promote body (proven 2026-08-25) - it pins how EXISTING code consumes the newly-taught emission, not a code delta.]"
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "escalate\n\n",
+     "contact_id": 437264483,
+     "is_test": null,
+     "mock_reformulator_output": null,
+     "previous_conversation_state": {
+      "selection_context": null,
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "general_enquiries"
+      },
+      "response": "Here are your promotions for August.",
+      "entities": [],
+      "last_result_set": []
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"request_for_help\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":null,\"is_affirmative\":null,\"user_goal\":\"wants to escalate to a person\",\"access_levels\":[],\"broaden_axis\":null,\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "request_for_help",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "wants to escalate to a person",
+     "access_levels": [],
+     "broaden_axis": null,
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "general_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_none",
+     "entity_op_applied": "reuse",
+     "query_brands": []
+    },
+    "_parser_raw": {
+     "message_type": "request_for_help",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "wants to escalate to a person",
+     "access_levels": [],
+     "broaden_axis": null,
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false,
+      "company_pick": null
+     }
+    }
+   }
+  }
+ ]
+}

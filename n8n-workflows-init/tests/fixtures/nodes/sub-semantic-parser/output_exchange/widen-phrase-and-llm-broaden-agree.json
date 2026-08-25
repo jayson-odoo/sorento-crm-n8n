@@ -1,0 +1,279 @@
+{
+ "source": {
+  "execution_id": null,
+  "workflow_id": "XTODTw-dJcV0uRdC056hG",
+  "node": "output_exchange",
+  "captured_at": "2026-08-25T00:00:00+00:00",
+  "expected_from": "reasoned",
+  "rationale": "The broaden-precedence seam, pinned: 'all dates' is in the deterministic _DW_PHRASES family AND the post-promote LLM now emits broaden_axis 'date' for it - plus a misread is_affirmative true this fixture injects on purpose. Expected is REASONED: the deterministic arm decides (date_widen_applied true, is_affirmative neutralised to null, escalation reset to bare false), the AXIS BROADEN restore fires too (broaden_axis_domain_restored true) and AGREES - same prior domain, same open window - which is the documented deterministic-first/LLM-fallback contract (the two must not fight). [Proven RED against the pre-promote body (git HEAD 1f79077 output_exchange, 2026-08-25): the pre-port output differs on the decision fields named above.]"
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "all dates\n\n",
+     "contact_id": 437264483,
+     "is_test": null,
+     "mock_reformulator_output": null,
+     "previous_conversation_state": {
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "entities": [
+       {
+        "raw": "full shun",
+        "hint": "customer",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       },
+       {
+        "raw": "srtwc286",
+        "hint": "product",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       }
+      ],
+      "ideation": null,
+      "response": "full shun bought SRTWC286-SH-200 twice in that window: 2026-08-25 (qty 40, delivered) and 2026-08-27 (qty 12, pending).",
+      "date_mode": null,
+      "dym_offer": {
+       "id": "13873233",
+       "ttl": 3,
+       "domain": "order",
+       "picked": [],
+       "candidates": [
+        {
+         "code": "SRTWC286-SH-200",
+         "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+         "for_raw": "srtwc286",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        },
+        {
+         "code": "SRTWC286-SH-P",
+         "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+         "for_raw": "srtwc286",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        },
+        {
+         "code": "SRTWC286-SH-PP",
+         "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+         "for_raw": "srtwc286",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        }
+       ]
+      },
+      "user_goal": "trying to narrow the previous results to this week only",
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "match_mode": "and",
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "message_type": "business_query",
+      "query_brands": [],
+      "access_levels": [],
+      "routing_brand": "sorento",
+      "contains_flyer": false,
+      "dym_candidates": [
+       {
+        "code": "SRTWC286-SH-200",
+        "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+        "for_raw": "srtwc286",
+        "for_hint": "product",
+        "entity_type": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "SRTWC286-SH-P",
+        "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+        "for_raw": "srtwc286",
+        "for_hint": "product",
+        "entity_type": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "SRTWC286-SH-PP",
+        "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+        "for_raw": "srtwc286",
+        "for_hint": "product",
+        "entity_type": "product",
+        "for_canonical": null
+       }
+      ],
+      "date_filter_end": "2026-08-30",
+      "last_result_set": [],
+      "routing_company": "00000000-0000-0000-0000-000000000001",
+      "date_filter_start": "2026-08-24",
+      "routing_companies": [
+       {
+        "codes": [
+         "300-F017",
+         "300-F026",
+         "305-F001",
+         "300-F010",
+         "300-F004",
+         "300-F029",
+         "DBR-0ca5493ae8",
+         "DBR-f4d722b0a6",
+         "DBR-40b5a0151c",
+         "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+         "SRTWC286-SH-200",
+         "SRTWC286-SH-P",
+         "SRTWC286-SH-PP",
+         "SRTWC286-SH",
+         "SRTWC286-SH-UF",
+         "SRTWC286-SH-NEW-150",
+         "SRTWC286-SH-150",
+         "SRTWC286-SH-NEW-P",
+         "SRTWC286-SH-NEW-200",
+         "SRTWC286-SH-NEW"
+        ],
+        "labels": [
+         "FULLSHUN SANITARYWARE SDN BHD",
+         "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+         "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+         "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+         "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+         "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+         "SRTWC286-SH-200",
+         "SRTWC286-SH-P",
+         "SRTWC286-SH-PP",
+         "SRTWC286-SH",
+         "SRTWC286-SH-UF",
+         "SRTWC286-SH-NEW-150",
+         "SRTWC286-SH-150",
+         "SRTWC286-SH-NEW-P",
+         "SRTWC286-SH-NEW-200",
+         "SRTWC286-SH-NEW"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento"
+       }
+      ],
+      "selection_context": null,
+      "routing_roster_plan": [],
+      "routing_brand_source": "resolved"
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":null,\"is_affirmative\":true,\"user_goal\":\"all dates\",\"access_levels\":[],\"broaden_axis\":\"date\",\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false,\"company_pick\":null}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "all dates",
+     "access_levels": [],
+     "broaden_axis": "date",
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "full shun",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      },
+      {
+       "raw": "srtwc286",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      }
+     ],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_none",
+     "date_widen_applied": true,
+     "broaden_axis_domain_restored": true,
+     "domain_reused_entityless": true,
+     "entity_op_applied": "reuse",
+     "query_brands": [],
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": true,
+     "user_goal": "all dates",
+     "access_levels": [],
+     "broaden_axis": "date",
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false,
+      "company_pick": null
+     }
+    }
+   }
+  }
+ ]
+}
