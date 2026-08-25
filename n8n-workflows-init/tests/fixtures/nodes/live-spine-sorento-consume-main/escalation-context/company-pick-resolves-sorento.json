@@ -1,0 +1,101 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "THE FORWARD-COMPATIBILITY FIXTURE. It exercises a path that is UNREACHABLE ON LIVE TODAY: the live parser (sub-semantic-parser XTODTw @ 177c50a9) has ZERO occurrences of company_pick, so nothing on live can populate escalation.company_pick and the `else if (cpickRow)` arm can never be entered. It is here so the consumer is already proven correct on the day the parser half lands, and so a later edit to the arm fails loudly instead of silently. State is IDENTICAL to company-pick-absent-inert.json except for the one added key: same team on both sides, no preferred_assignee_id, the same two-entry routing_roster_plan. With company_pick = 'sorento' the pool is the roster plan (non-empty, so routing_companies is not consulted), the name key 'sorento' matches exactly one row, and the arm sends that row's axes VERBATIM - company_id and company_name from the Sorento row, brand_code 'sorento' - with routing_source 'company_pick'. Without the key the same state yields multi_company_unpicked / all axes null, which is the A/B the pair exists to state."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "escalation": {
+       "is_escalation_confirmation": true,
+       "company_pick": "sorento"
+      },
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "customer_service_enquiries"
+      },
+      "query_brands": []
+     }
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "respond_io_id": "900000013",
+     "session_vars": {
+      "variables": {
+       "response": "Would you like me to escalate to customer_service team?",
+       "routing": {
+        "suggested_team": "customer_service",
+        "suggested_agent": "customer_service_enquiries"
+       },
+       "last_result_set": [],
+       "selection_context": null,
+       "routing_brand": null,
+       "routing_company": null,
+       "routing_roster_plan": [
+        {
+         "plan_idx": 0,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "plan_idx": 1,
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ],
+       "routing_companies": [
+        {
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "allowed": true,
+    "decision": "allow",
+    "agent_name": "Customer Service Enquiries",
+    "attributes": null,
+    "all_attributes_allowed": null
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "allowed": true,
+    "decision": "allow",
+    "agent_name": "Customer Service Enquiries",
+    "attributes": null,
+    "all_attributes_allowed": null,
+    "brand_code": "sorento",
+    "company_id": "00000000-0000-0000-0000-000000000001",
+    "company_name": "Sorento",
+    "routing_source": "company_pick",
+    "team": "customer_service"
+   }
+  }
+ ],
+ "runIndex": 0
+}

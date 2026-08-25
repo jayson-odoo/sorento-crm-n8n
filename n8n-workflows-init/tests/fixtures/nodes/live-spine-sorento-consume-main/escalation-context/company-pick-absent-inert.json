@@ -1,0 +1,100 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "THE INERTNESS FIXTURE for the company_pick consumer. escalation carries only is_escalation_confirmation - the exact shape the LIVE parser (sub-semantic-parser XTODTw @ 177c50a9) emits, which has ZERO occurrences of company_pick. So `cpick` is null, the cpickRow IIFE returns null on its first line, and control falls to the sameTeam arm exactly as it did before the consumer was added. Same team (customer_service on both sides), no preferred_assignee_id, and a TWO-entry routing_roster_plan, so rp.length > 1 and routing_source is multi_company_unpicked with all three axes null - live's behaviour today, unchanged. This is deliberately the same state as company-pick-resolves-sorento.json minus the company_pick key, so the pair is a clean A/B on that one field."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "escalation": {
+       "is_escalation_confirmation": true
+      },
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "customer_service_enquiries"
+      },
+      "query_brands": []
+     }
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "respond_io_id": "900000013",
+     "session_vars": {
+      "variables": {
+       "response": "Would you like me to escalate to customer_service team?",
+       "routing": {
+        "suggested_team": "customer_service",
+        "suggested_agent": "customer_service_enquiries"
+       },
+       "last_result_set": [],
+       "selection_context": null,
+       "routing_brand": null,
+       "routing_company": null,
+       "routing_roster_plan": [
+        {
+         "plan_idx": 0,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "plan_idx": 1,
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ],
+       "routing_companies": [
+        {
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "brand_code": "sorento"
+        },
+        {
+         "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+         "company_name": "Mocha",
+         "brand_code": "mocha"
+        }
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "allowed": true,
+    "decision": "allow",
+    "agent_name": "Customer Service Enquiries",
+    "attributes": null,
+    "all_attributes_allowed": null
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "allowed": true,
+    "decision": "allow",
+    "agent_name": "Customer Service Enquiries",
+    "attributes": null,
+    "all_attributes_allowed": null,
+    "brand_code": null,
+    "company_id": null,
+    "company_name": null,
+    "routing_source": "multi_company_unpicked",
+    "team": "customer_service"
+   }
+  }
+ ],
+ "runIndex": 0
+}
