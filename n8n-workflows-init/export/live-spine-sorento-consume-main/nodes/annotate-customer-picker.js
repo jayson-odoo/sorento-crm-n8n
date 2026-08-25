@@ -5,10 +5,12 @@ const probe = (() => { try { return $('probe-customer-orders').first().json ?? {
 // window: the parser's own bounds when the customer named one, else an injected default of the
 // last 90 days ($now - 90d, computed in the probe's semantic_input expression). This mirror of
 // that exact rule - "defaulted iff the parser supplied NEITHER bound" - is what keeps the suffix
-// wording honest: on a defaulted probe the miss claim is scoped to "the last 90 days" (the only
-// window that was actually measured), on a customer-dated turn the ask itself named the window,
-// so the shorter "- no delivery" reads against it. The two rules are two halves of one sentence;
-// change the probe's default without changing this and the customer is told the wrong window.
+// wording honest: on a defaulted probe the miss claim says "no recent delivery" - "recent" bounds
+// the claim to the window that was actually measured (captain copy decision 2026-08-25: naming
+// "the last 90 days" read like a search limit, but a bare "- no delivery" would be a false
+// universal, so the bounded word stays) - while on a customer-dated turn the ask itself named the
+// window, so the plain "- no delivery" reads against it. The two rules are two halves of one
+// sentence; change the probe's default without revisiting this and the miss claim loses its bound.
 const parserOut = (() => { try { return $("Call 'sub-query-reformulator'").first().json.output ?? {}; } catch (e) { return {}; } })();
 const probeWindowed = (parserOut.date_filter_start ?? null) === null
                    && (parserOut.date_filter_end   ?? null) === null;
@@ -94,11 +96,12 @@ for (const r of rows) {
 // NO reordering, no renumbering - the numbers are the pick affordance. Suffixes only, and the plain
 // hyphen, never an em-dash (captain hard rule 2026-08-22; the sibling annotate-incoming-picker
 // already uses "- has incoming"). A hardcoded literal must not rely on a downstream sanitizer.
-// The miss suffix names the 90-day window on a defaulted probe because the window is
-// customer-visible semantics: a hit is a hit whenever it happened inside the probed window, but
-// "no delivery" with no window would be a false universal - the probe never looked further back.
+// On a defaulted probe the miss suffix says "no recent delivery": the probe only looked back 90
+// days, so an unqualified "no delivery" could be false about an older delivery - "recent" claims
+// exactly what was measured, without naming a window that reads like a search limit (captain copy
+// decision 2026-08-25; the probe window itself is unchanged at 90 days).
 const SUFFIX_HIT  = ' - has delivery';
-const SUFFIX_MISS = probeWindowed ? ' - no delivery in the last 90 days' : ' - no delivery';
+const SUFFIX_MISS = probeWindowed ? ' - no recent delivery' : ' - no delivery';
 const annotated = bare.split('\n').map(line => {
   const m = line.match(/^\s*\d+\.\s+(.+?)\s*$/);
   if (!m) return line;                                  // header / non-item line
@@ -109,7 +112,7 @@ const annotated = bare.split('\n').map(line => {
 let msg = annotated;
 if (withDelivery.size === 0) {
   msg += probeWindowed
-    ? '\n\nNone of these have a delivery in the last 90 days.'
+    ? '\n\nNone of these have a recent delivery.'
     : '\n\nNone of these have a matching delivery.';
 }
 

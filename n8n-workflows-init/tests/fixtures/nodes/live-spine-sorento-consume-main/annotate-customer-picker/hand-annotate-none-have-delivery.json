@@ -3,7 +3,7 @@
   "hand_crafted": true,
   "expected_from": "reasoned",
   "reasoned_from": "contract",
-  "rationale": "The zero-hit close. An empty (but successful) probe is a MEASURED zero, not a failure, so the node is entitled to say so - and it says it once, in a sentence, instead of leaving the customer to read three '- no delivery' suffixes and infer it. Distinguishing this from hand-annotate-probe-failed-renders-bare is the entire reason D2 exists: same rendered shape upstream, opposite entitlement to make a claim. customer_probe_hits is 0 here and null there. RETUNED 2026-08-25 (90-day probe window): the probe now always sends a delivery-date window - the parser's own bounds, else an injected last-90-days default - so the miss suffix and the zero-hit close are scoped to that window ('- no delivery in the last 90 days'); a bare '- no delivery' would be a false universal, the probe never looked further back. The parser ctx entry here carries NEITHER date bound, which is exactly the defaulted-window case; hand-annotate-customer-dated-window.json pins the other arm. customer_probe_window_days is the diagnostic mirror of that rule (90 = defaulted window, null = the customer's own dates)."
+  "rationale": "The zero-hit close. An empty (but successful) probe is a MEASURED zero, not a failure, so the node is entitled to say so - and it says it once, in a sentence, instead of leaving the customer to read three '- no delivery' suffixes and infer it. Distinguishing this from hand-annotate-probe-failed-renders-bare is the entire reason D2 exists: same rendered shape upstream, opposite entitlement to make a claim. customer_probe_hits is 0 here and null there. RETUNED 2026-08-25 (90-day probe window): the probe now always sends a delivery-date window - the parser's own bounds, else an injected last-90-days default - so the miss suffix and the zero-hit close stay bounded to that window; a bare '- no delivery' would be a false universal, the probe never looked further back. REPIN captain copy decision 2026-08-25: window wording dropped, 'recent' keeps the claim bounded - the defaulted-arm strings are now '- no recent delivery' and 'None of these have a recent delivery.' (naming 'the last 90 days' read like a search limit; the probe window itself is unchanged at 90 days). The parser ctx entry here carries NEITHER date bound, which is exactly the defaulted-window case; hand-annotate-customer-dated-window.json pins the other arm. customer_probe_window_days is the diagnostic mirror of that rule (90 = defaulted window, null = the customer's own dates)."
  },
  "ctx": {
   "disallowed-entity-gate": [
@@ -119,7 +119,7 @@
      }
     ],
     "is_clarification": false,
-    "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD - no delivery in the last 90 days\n2. MASTILE KLANG SDN BHD - no delivery in the last 90 days\n3. YOO LIVING HOUSE SDN BHD - no delivery in the last 90 days\n\nNone of these have a delivery in the last 90 days.",
+    "escalate_message": "Which customer do you mean? Please choose:\n1. A CRAFT IDEA SDN BHD - no recent delivery\n2. MASTILE KLANG SDN BHD - no recent delivery\n3. YOO LIVING HOUSE SDN BHD - no recent delivery\n\nNone of these have a recent delivery.",
     "customer_probe_hits": 0,
     "customer_probe_skip_reason": null,
     "customer_probe_window_days": 90
