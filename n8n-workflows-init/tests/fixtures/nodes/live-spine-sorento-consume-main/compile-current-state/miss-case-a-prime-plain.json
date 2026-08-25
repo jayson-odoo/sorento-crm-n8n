@@ -1,0 +1,252 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "Case A' (the PLAIN miss offer), the only arm of the miss-company block this promote makes reachable. build-miss-member-offer ran and set miss_plain_offer with a single-entry plan. Decision fields derived from the contract BEFORE running the body: (1) the frozen phrase is APPENDED to the customer reply and to variables.response, and its prefix is byte-exact 'Would you like me to escalate' — the parser's regex contract /would you like me to escalate/i; a single miss names the company bold after 'to' and the team comes from the plan item's `team`, not from a hard-coded default. (2) selection_context stays NULL — no picker was shown, so the parser's member-pick arm must NOT open. (3) last_result_set is the ordinary compressed answer view, UNTOUCHED — Case A's `_mcBase.concat(_mcRows)` is the one concatenation on live and it is unreachable here because miss_member_offer is never set. (4) the pool identity is persisted: routing_roster_plan with the one entry, routing_company and routing_brand from it. (5) the miss_plain_offer / miss_roster_plan keys on the input item do NOT leak into the output — this node builds a fresh object literal."
+ },
+ "ctx": {
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming_stock",
+      "domain_hint": "incoming",
+      "user_goal": "check incoming stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MUB6201",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000003
+    }
+   }
+  ],
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "build-miss-member-offer": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true,
+     "miss_plain_offer": true,
+     "miss_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "team": "purchasing"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true,
+    "miss_plain_offer": true,
+    "miss_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "team": "purchasing"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_incoming_stock",
+     "domain_hint": "incoming",
+     "user_goal": "check incoming stock",
+     "query_scope": "specific",
+     "entities": [
+      {
+       "raw": "MUB6201",
+       "hint": "product"
+      }
+     ],
+     "routing": {
+      "suggested_team": "purchasing",
+      "suggested_agent": "incoming_stock_enquiries"
+     },
+     "escalation": {},
+     "response": "Previous turn (incoming): returned 1 records\n\nWould you like me to escalate to *Sorento* purchasing team?",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "uuid": null,
+       "label": "MUB6201",
+       "entity_type": null,
+       "product": null,
+       "attachment_type": null,
+       "filename": null
+      }
+     ],
+     "selection_context": null,
+     "match_mode": "or",
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento"
+      }
+     ],
+     "routing_brand": "sorento",
+     "routing_brand_source": null,
+     "routing_company": "00000000-0000-0000-0000-000000000001",
+     "routing_companies": null
+    },
+    "user_response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.\n\nWould you like me to escalate to *Sorento* purchasing team?"
+   }
+  }
+ ],
+ "runIndex": 0
+}

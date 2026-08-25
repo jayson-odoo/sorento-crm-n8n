@@ -1,10 +1,10 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
 - versionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · activeVersionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · DRAFT == ACTIVE
-- 134 nodes
+- 137 nodes
 
 ## Edges
-_160 edge groups_
+_164 edge groups_
 
 ```
 Aggregate[0] -> tier-gate
@@ -60,8 +60,9 @@ annotate-incoming-picker[0] -> build-suggest-offer
 attach-merge[0] -> if-got-attachments
 build-cs-member-offer[0] -> compile-current-state
 build-ideate-reply[0] -> compile-current-state
+build-miss-member-offer[0] -> dym-transform-partial
 build-suggest-offer[0] -> tag-not-found
-central-exchange[0] -> dym-transform-partial
+central-exchange[0] -> miss-roster-gate
 check-access[0] -> If5
 compile-current-state[0] -> crossdomain-compose
 construct-user-prompt[0] -> Basic LLM Chain
@@ -121,6 +122,9 @@ media-extract-http[0] -> media-extract
 media-poll-http[0] -> media-poll-merge
 media-poll-merge[0] -> media-route
 media-route[0] -> if-media-poll
+miss-roster-gate[0] -> miss-roster-plan
+miss-roster-gate[1] -> dym-transform-partial
+miss-roster-plan[0] -> build-miss-member-offer
 not-found-error-message[0] -> sibling-gate
 not-supported-domain[0] -> tag-not-supported
 not-supported-domain[1] -> If
@@ -183,17 +187,17 @@ wait-media-poll[0] -> media-poll-http
 - **annotate-incoming-picker** ← escalate-catalog
 - **build-cs-member-offer** ← compile-current-state
 - **build-ideate-reply** ← compile-current-state
-- **build-miss-member-offer** ← compile-current-state  ⚠️ TARGET NOT IN THIS WORKFLOW
+- **build-miss-member-offer** ← compile-current-state
 - **build-suggest-offer** ← compile-current-state, escalate-catalog
-- **central-exchange** ← attach-merge, compile-current-state, dym-transform, dym-transform-partial
+- **central-exchange** ← attach-merge, build-miss-member-offer, compile-current-state, dym-transform, dym-transform-partial, miss-roster-plan
 - **check-access** ← If5
 - **construct-user-prompt** ← Basic LLM Chain
 - **crossdomain-compose** ← Call 'sub-respond-save-message-redis'2, attach-merge, presign-fail-notice, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond2
-- **crossdomain-render** ← attach-merge, crossdomain-compose
+- **crossdomain-render** ← attach-merge, crossdomain-compose, miss-roster-gate
 - **crossdomain-zeroset** ← compile-current-state, crossdomain-render
 - **cs-roster-plan** ← build-cs-member-offer, compile-current-state
 - **detect-media** ← media-extract-http, media-route
-- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, cs-roster-plan, dym-transform, dym-transform-partial, escalate-catalog, family-fetch, not-found-error-message, probe-incoming, promo-picker, sibling-gate, sibling-transform, tier-probe, tool-filter
+- **disallowed-entity-gate** ← Call 'sub-get-results', If-incoming-picker, If3, annotate-incoming-picker, build-suggest-offer, compile-current-state, cs-roster-plan, dym-transform, dym-transform-partial, escalate-catalog, family-fetch, miss-roster-plan, not-found-error-message, probe-incoming, promo-picker, sibling-gate, sibling-transform, tier-probe, tool-filter
 - **dym-annotate** ← build-suggest-offer
 - **dym-transform** ← dym-probe, promo-dym-plan, promo-dym-probe
 - **dym-transform-partial** ← dym-probe-partial
@@ -204,10 +208,11 @@ wait-media-poll[0] -> media-poll-http
 - **ideate-turn-http** ← build-ideate-reply
 - **is-human-intervened** ← transcribed-message
 - **media-route** ← media-poll-merge
+- **miss-roster-plan** ← build-miss-member-offer
 - **not-found-error-message** ← escalate-catalog
 - **patch-transcript** ← compile-current-state, resolve-entity, send-transcript-confirm
 - **probe-incoming** ← annotate-incoming-picker
-- **promo-picker** ← compile-current-state
+- **promo-picker** ← compile-current-state, miss-roster-gate
 - **redis-pop-main-message-list** ← patch-transcript, send-media-reply, sorento-sub-respond-findcontact-respond, sorento-sub-respond-sendmsg-presign-fail
 - **resolve-entity** ← If3, build-suggest-offer, compile-current-state, crossdomain-zeroset, disallowed-entity-gate, dym-transform, dym-transform-partial, not-found-error-message, promo-picker
 - **resolve-entity-clarification** ← construct-user-prompt
@@ -219,7 +224,7 @@ wait-media-poll[0] -> media-poll-http
 - **tier-gate** ← Call 'sub-get-results', disallowed-entity-gate, if-tier-ask, tier-probe-collect, tier-probe-plan
 - **tier-probe-collect** ← access-level-choice-message
 - **tier-probe-plan** ← tier-probe-collect
-- **tool-filter** ← Call 'sub-get-results', tier-probe
+- **tool-filter** ← Call 'sub-get-results', miss-roster-gate, miss-roster-plan, tier-probe
 - **validator** ← If6, compile-current-state, crossdomain-render, sibling-gate
 - **x** ← dym-transform, dym-transform-partial  ⚠️ TARGET NOT IN THIS WORKFLOW
 
@@ -299,8 +304,10 @@ wait-media-poll[0] -> media-poll-http
 | media-route | 151 |
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
+| build-miss-member-offer | 137 |
 | build-cs-member-offer | 107 |
 | crossdomain-compose | 101 |
+| miss-roster-plan | 97 |
 | access-level-choice-message | 95 |
 | detect-media | 91 |
 | escalate-catalog | 89 |

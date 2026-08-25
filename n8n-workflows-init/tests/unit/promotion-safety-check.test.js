@@ -164,7 +164,7 @@ test('the LIVE spine PASSES with --expect-live-spine', () => {
 
 test('the pass prints what was actually checked, not just "ok"', () => {
   const { out } = check(LIVE_SPINE, '--expect-live-spine');
-  assert.match(out, /nodes: 134/);
+  assert.match(out, /nodes: 137/);   // 134 + the Stage B set 4 plain-miss lane (gate, plan, offer)
   assert.match(out, /credentials \(19 credential-bearing nodes\)/);
   for (const n of ['send-message-files', 'send-message-images', 'send-message-video',
     'update-human-intervened', 'save-session-vars']) {

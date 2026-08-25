@@ -1,0 +1,197 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "Every queried company answered, so the miss set is empty. The node must still emit exactly one item or it starves the happy lane of its envelope: the null-company sentinel, with _miss_plan_empty true and members false (a sentinel must never look like a roster fetch). build-miss-member-offer drops null-company items, so the turn stays byte-identical."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      },
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Sorento"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 3
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "tool-filter": [
+   {
+    "json": {
+     "name": "crm_incoming_stock_list",
+     "similarity": 0.31
+    }
+   }
+  ],
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming_stock",
+      "domain_hint": "incoming",
+      "user_goal": "check incoming stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MUB6201",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "routing_companies": []
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     },
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Sorento"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 3
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "plan_idx": 0,
+    "company_id": null,
+    "company_name": null,
+    "brand_code": null,
+    "codes": [],
+    "multi_company": false,
+    "companies": [],
+    "team": null,
+    "members": false,
+    "_miss_plan_empty": true
+   }
+  }
+ ],
+ "runIndex": 0
+}

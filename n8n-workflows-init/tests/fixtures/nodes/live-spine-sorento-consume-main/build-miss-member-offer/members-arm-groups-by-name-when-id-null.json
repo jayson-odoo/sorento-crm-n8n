@@ -1,0 +1,231 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "UNREACHABLE ON LIVE — this drives the members arm, which no live wiring can feed (miss-roster-plan stamps members:false on every row, and even bypassing that, $input carries plan items rather than http rosters — see members-true-still-passes-through). It exists only to pin the ONE change this promote made inside that arm: grouping falls back to a normalized company_name when company_id is null on both sides. Before the fix, `(id || null) === (p.company_id || null)` matched null against null and printed EVERY member under EVERY company header; the expected output here has Jereen Tee under *Mocha:* only and Lucas Lim under *Sorento:* only. Numbering base is 1 (one numbered block in the reply, one answer), so the rows continue at 2 and 3."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Nexus\n*Quantity On Hand:* 7",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Nexus"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 7
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "miss-roster-plan": [
+   {
+    "json": {
+     "plan_idx": 0,
+     "company_id": null,
+     "company_name": "Mocha",
+     "brand_code": "mocha",
+     "codes": [
+      "MUB6201"
+     ],
+     "multi_company": true,
+     "companies": [
+      "Mocha",
+      "Sorento"
+     ],
+     "team": "purchasing",
+     "members": true
+    }
+   },
+   {
+    "json": {
+     "plan_idx": 1,
+     "company_id": null,
+     "company_name": "Sorento",
+     "brand_code": "sorento",
+     "codes": [
+      "MUB6201"
+     ],
+     "multi_company": true,
+     "companies": [
+      "Mocha",
+      "Sorento"
+     ],
+     "team": "purchasing",
+     "members": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "body": [
+     {
+      "user_id": "u-1",
+      "respond_user_id": 101,
+      "name": "Jereen Tee"
+     }
+    ]
+   }
+  },
+  {
+   "json": {
+    "body": [
+     {
+      "user_id": "u-2",
+      "respond_user_id": 102,
+      "name": "Lucas Lim"
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Nexus\n*Quantity On Hand:* 7",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Nexus"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 7
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true,
+    "miss_member_offer": true,
+    "miss_member_rows": [
+     {
+      "idx": 2,
+      "label": "Jereen Tee",
+      "uuid": "u-1",
+      "respond_user_id": 101,
+      "company_id": null,
+      "company_name": "Mocha",
+      "brand_code": "mocha",
+      "company_ids": [
+       null
+      ],
+      "companies": [
+       "Mocha"
+      ]
+     },
+     {
+      "idx": 3,
+      "label": "Lucas Lim",
+      "uuid": "u-2",
+      "respond_user_id": 102,
+      "company_id": null,
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       null
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     }
+    ],
+    "miss_offer_text": "Please choose who to route to (reply with the number):\n*Mocha:*\n2. Jereen Tee\n*Sorento:*\n3. Lucas Lim\n\nIf you have no preference, reply with the company name (*Mocha* / *Sorento*) and we'll assign accordingly.",
+    "miss_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": null,
+      "company_name": "Mocha",
+      "brand_code": "mocha",
+      "codes": [
+       "MUB6201"
+      ],
+      "multi_company": true,
+      "companies": [
+       "Mocha",
+       "Sorento"
+      ],
+      "team": "purchasing",
+      "members": true
+     },
+     {
+      "plan_idx": 1,
+      "company_id": null,
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "codes": [
+       "MUB6201"
+      ],
+      "multi_company": true,
+      "companies": [
+       "Mocha",
+       "Sorento"
+      ],
+      "team": "purchasing",
+      "members": true
+     }
+    ]
+   }
+  }
+ ],
+ "runIndex": 0
+}

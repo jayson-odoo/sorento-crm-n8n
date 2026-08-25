@@ -1,0 +1,183 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "The shipped shape: two companies were queried, only Mocha answered, so Sorento is the one miss. Decision fields derived from the node's contract BEFORE running it: exactly one item (one miss); members FALSE because every LANE row now says so and the members half is not deployed; team = the PARSER's suggested_team ('purchasing'), not a hard-coded row field; brand_code + codes lifted from disallowed-entity-gate's routing_companies entry matched by company_id; multi_company false and companies = the one miss name."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "tool-filter": [
+   {
+    "json": {
+     "name": "crm_incoming_stock_list",
+     "similarity": 0.31
+    }
+   }
+  ],
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming_stock",
+      "domain_hint": "incoming",
+      "user_goal": "check incoming stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MUB6201",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "routing_companies": [
+      {
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "codes": [
+        "MUB6201"
+       ],
+       "labels": [
+        "MUB6201"
+       ]
+      },
+      {
+       "company_id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "company_name": "Mocha",
+       "brand_code": null,
+       "codes": [
+        "MUB6201"
+       ],
+       "labels": [
+        "MUB6201"
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "plan_idx": 0,
+    "company_id": "00000000-0000-0000-0000-000000000001",
+    "company_name": "Sorento",
+    "brand_code": "sorento",
+    "codes": [
+     "MUB6201"
+    ],
+    "multi_company": false,
+    "companies": [
+     "Sorento"
+    ],
+    "team": "purchasing",
+    "members": false
+   }
+  }
+ ],
+ "runIndex": 0
+}

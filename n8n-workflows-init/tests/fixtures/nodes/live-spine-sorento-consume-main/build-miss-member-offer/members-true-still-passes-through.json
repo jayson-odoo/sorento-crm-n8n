@@ -1,0 +1,139 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "BARRIER (b) OF THE M1/M2 UNREACHABILITY PROOF, asserted independently of barrier (a). Suppose a future edit put `members: true` back on a LANE row without deploying get-cs-members-miss: the plain arm's `real.every(p => p.members === false)` no longer holds and control reaches the roster parse. It still cannot produce a picker, because $input on this wiring is miss-roster-plan's OWN items — rosterAt() finds neither a `body` array nor a bare array, yields zero members, and the `!members.length` guard returns the untouched envelope. Expected is therefore the byte-identical central-exchange envelope: no miss_member_offer (M1's last_result_set concatenation stays dead) and no miss_offer_text (M2's 'reply with the company name' close is never composed)."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "miss-roster-plan": [
+   {
+    "json": {
+     "plan_idx": 0,
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento",
+     "codes": [
+      "MUB6201"
+     ],
+     "multi_company": false,
+     "companies": [
+      "Sorento"
+     ],
+     "team": "purchasing",
+     "members": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "plan_idx": 0,
+    "company_id": "00000000-0000-0000-0000-000000000001",
+    "company_name": "Sorento",
+    "brand_code": "sorento",
+    "codes": [
+     "MUB6201"
+    ],
+    "multi_company": false,
+    "companies": [
+     "Sorento"
+    ],
+    "team": "purchasing",
+    "members": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true
+   }
+  }
+ ],
+ "runIndex": 0
+}

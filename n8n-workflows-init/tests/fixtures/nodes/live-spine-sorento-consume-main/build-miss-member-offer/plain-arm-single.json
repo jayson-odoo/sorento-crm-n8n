@@ -1,0 +1,149 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "THE ARM THAT SHIPS, and the M1/M2 unreachability proof. Input is miss-roster-plan's own item (members:false), not an http roster, because get-cs-members-miss is not deployed. Decision fields derived before running: miss_plain_offer TRUE; miss_roster_plan carries the plan identity INCLUDING team ('purchasing') so compile-current-state's frozen phrase names the team HI would assign to; codes/multi_company/companies/members are NOT forwarded (the ccs contract is plan_idx/company_id/company_name/brand_code/team). The expected item is compared by deep-equality, so this fixture also ASSERTS THE ABSENCE of miss_member_offer, miss_member_rows and miss_offer_text — M1 (compile-current-state Case A's last_result_set concatenation) keys on miss_member_offer === true, and M2 (the members arm's 'reply with the company name' close, which the live parser has no company_pick arm for) lives in miss_offer_text. Neither key can be produced on this path."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "miss-roster-plan": [
+   {
+    "json": {
+     "plan_idx": 0,
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento",
+     "codes": [
+      "MUB6201"
+     ],
+     "multi_company": false,
+     "companies": [
+      "Sorento"
+     ],
+     "team": "purchasing",
+     "members": false
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "plan_idx": 0,
+    "company_id": "00000000-0000-0000-0000-000000000001",
+    "company_name": "Sorento",
+    "brand_code": "sorento",
+    "codes": [
+     "MUB6201"
+    ],
+    "multi_company": false,
+    "companies": [
+     "Sorento"
+    ],
+    "team": "purchasing",
+    "members": false
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true,
+    "miss_plain_offer": true,
+    "miss_roster_plan": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "team": "purchasing"
+     }
+    ]
+   }
+  }
+ ],
+ "runIndex": 0
+}

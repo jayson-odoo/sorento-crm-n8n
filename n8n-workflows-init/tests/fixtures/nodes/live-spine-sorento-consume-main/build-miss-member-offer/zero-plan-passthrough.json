@@ -1,0 +1,133 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "The sentinel path, which is where BOTH a no-miss turn and a capped multi-company miss land. Every plan item is dropped (null company / _miss_plan_empty), so `real` is empty, the plain arm's `real.length` guard is false, the roster parse finds no members, and the node returns the central-exchange envelope EXACTLY — no miss_plain_offer, no added key at all. Byte-identical envelope is the whole assertion: compile-current-state's miss block then sees neither miss_member_offer nor miss_plain_offer and leaves the turn alone."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "miss-roster-plan": [
+   {
+    "json": {
+     "plan_idx": 0,
+     "company_id": null,
+     "company_name": null,
+     "brand_code": null,
+     "codes": [],
+     "multi_company": false,
+     "companies": [],
+     "team": null,
+     "members": false,
+     "_miss_plan_empty": true
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "plan_idx": 0,
+    "company_id": null,
+    "company_name": null,
+    "brand_code": null,
+    "codes": [],
+    "multi_company": false,
+    "companies": [],
+    "team": null,
+    "members": false,
+    "_miss_plan_empty": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true
+   }
+  }
+ ],
+ "runIndex": 0
+}

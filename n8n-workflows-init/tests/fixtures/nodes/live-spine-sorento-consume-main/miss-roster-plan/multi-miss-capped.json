@@ -1,0 +1,177 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "reasoned_from": "contract",
+  "rationale": "THREE companies queried, only Mocha answered: two misses. A two-entry routing_roster_plan is what escalation-context turns into routing_source 'multi_company_unpicked' with a null company, which it hands to sub-human-intervention with no gate — a real round-robin assign on a pool the customer never picked. The cap suppresses it: miss.length !== 1 degrades to the same null-company sentinel as the no-miss case, so the turn is left untouched and nothing is persisted. NOT a plan with two entries, and NOT the first miss silently chosen."
+ },
+ "ctx": {
+  "central-exchange": [
+   {
+    "json": {
+     "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.\n*Nexus:* no incoming stock records for MUB6201.",
+     "response_intro": "Incoming stock found for the requested products.",
+     "answers": [
+      {
+       "title": "MUB6201",
+       "fields": [
+        {
+         "key": "product_code",
+         "label": "Product Code",
+         "value": "MUB6201"
+        },
+        {
+         "key": "company_name",
+         "label": "Company",
+         "value": "Mocha"
+        },
+        {
+         "key": "quantity_on_hand",
+         "label": "Quantity On Hand",
+         "value": 12
+        }
+       ]
+      }
+     ],
+     "attachments": [],
+     "action_links": [],
+     "has_result": true,
+     "lookup_companies": [
+      {
+       "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+       "name": "Mocha"
+      },
+      {
+       "id": "00000000-0000-0000-0000-000000000001",
+       "name": "Sorento"
+      },
+      {
+       "id": "11111111-2222-3333-4444-555555555555",
+       "name": "Nexus"
+      }
+     ],
+     "alternatives": [],
+     "is_valid": true
+    }
+   }
+  ],
+  "tool-filter": [
+   {
+    "json": {
+     "name": "crm_incoming_stock_list",
+     "similarity": 0.31
+    }
+   }
+  ],
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_incoming_stock",
+      "domain_hint": "incoming",
+      "user_goal": "check incoming stock",
+      "query_scope": "specific",
+      "entities": [
+       {
+        "raw": "MUB6201",
+        "hint": "product"
+       }
+      ],
+      "routing": {
+       "suggested_team": "purchasing",
+       "suggested_agent": "incoming_stock_enquiries"
+      },
+      "escalation": {},
+      "match_mode": "or"
+     }
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "routing_companies": [
+      {
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "codes": [
+        "MUB6201"
+       ],
+       "labels": [
+        "MUB6201"
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "response": "Incoming stock found for the requested products.\n\n1. *Product Code:* MUB6201\n*Company:* Mocha\n*Quantity On Hand:* 12\n\n*Sorento:* no incoming stock records for MUB6201.\n*Nexus:* no incoming stock records for MUB6201.",
+    "response_intro": "Incoming stock found for the requested products.",
+    "answers": [
+     {
+      "title": "MUB6201",
+      "fields": [
+       {
+        "key": "product_code",
+        "label": "Product Code",
+        "value": "MUB6201"
+       },
+       {
+        "key": "company_name",
+        "label": "Company",
+        "value": "Mocha"
+       },
+       {
+        "key": "quantity_on_hand",
+        "label": "Quantity On Hand",
+        "value": 12
+       }
+      ]
+     }
+    ],
+    "attachments": [],
+    "action_links": [],
+    "has_result": true,
+    "lookup_companies": [
+     {
+      "id": "38db4f20-ab6b-4bd0-a6fc-3a6728f0dee2",
+      "name": "Mocha"
+     },
+     {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "Sorento"
+     },
+     {
+      "id": "11111111-2222-3333-4444-555555555555",
+      "name": "Nexus"
+     }
+    ],
+    "alternatives": [],
+    "is_valid": true
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "plan_idx": 0,
+    "company_id": null,
+    "company_name": null,
+    "brand_code": null,
+    "codes": [],
+    "multi_company": false,
+    "companies": [],
+    "team": null,
+    "members": false,
+    "_miss_plan_empty": true
+   }
+  }
+ ],
+ "runIndex": 0
+}
