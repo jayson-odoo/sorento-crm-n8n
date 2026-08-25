@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **ccbdd208-fa39-4118-97d5-0adea4816f31** · activeVersionId **ccbdd208-fa39-4118-97d5-0adea4816f31** · DRAFT == ACTIVE
+- versionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · activeVersionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · DRAFT == ACTIVE
 - 134 nodes
 
 ## Edges
@@ -183,6 +183,7 @@ wait-media-poll[0] -> media-poll-http
 - **annotate-incoming-picker** ← escalate-catalog
 - **build-cs-member-offer** ← compile-current-state
 - **build-ideate-reply** ← compile-current-state
+- **build-miss-member-offer** ← compile-current-state  ⚠️ TARGET NOT IN THIS WORKFLOW
 - **build-suggest-offer** ← compile-current-state, escalate-catalog
 - **central-exchange** ← attach-merge, compile-current-state, dym-transform, dym-transform-partial
 - **check-access** ← If5
@@ -285,7 +286,7 @@ wait-media-poll[0] -> media-poll-http
 
 | node | lines |
 |---|---|
-| compile-current-state | 1696 |
+| compile-current-state | 1787 |
 | not-found-error-message | 624 |
 | build-suggest-offer | 584 |
 | promo-picker | 575 |
