@@ -1,0 +1,374 @@
+{
+ "source": {
+  "execution_id": "13873582",
+  "workflow_id": "XTODTw-dJcV0uRdC056hG",
+  "node": "output_exchange",
+  "captured_at": "2026-08-25T11:09:13+00:00",
+  "expected_from": "reasoned",
+  "rationale": "Turn 3 of the captain-reported live cascade 13873180 -> 13873233 -> 13873581 -> 13873625 (spine exec 13873581, parser sub-exec 13873582): after 'this week only' persisted a 2026-08-24..2026-08-30 window with entities [customer full shun, product srtwc286] and a member_offer, the bare widen reply 'all dates' came back scope_intent broaden + entity_op clear + entities [] + domain null; the executor's clear arm wiped the carried scope and the clarification LLM improvised. Input and ctx are the sub-exec's runData VERBATIM; expected is REASONED per the date-widen contract, red on the pre-fix body by construction: the carried entities re-attached current_message:false via the reuse arm (the exact shape exec 13873233 proved re-runs the search on the unchanged spine), entity_op/entity_op_applied reuse, domain/intent pinned from prior state (order/check_order, domain_reused_entityless), dates forced null (the widen itself), scope_intent null (one axis widened, not an entity broaden - DOMAIN_BROADEN_BLOCKED_HINTS.order would strip order+customer), blocklist flags present-false because the domain is now set, date_widen_applied stamped. _pending_pick stays true (member roster pending, no new scope) exactly as on the working turn 2."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "all dates\n\n",
+     "contact_id": 437264483,
+     "previous_conversation_state": {
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "entities": [
+       {
+        "raw": "full shun",
+        "hint": "customer",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       },
+       {
+        "raw": "srtwc286",
+        "hint": "product",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       }
+      ],
+      "ideation": null,
+      "response": "Couldn't find \"srtwc286\" (product). Did you mean SRTWC286-SH-200, SRTWC286-SH-P, or SRTWC286-SH-PP? Reply with a code to continue, or would you like me to escalate to *Sorento* customer service team?\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n3. Aisyah\n4. Balqis\n5. Niki\n6. Nurain\n\nOr just reply 'yes' and we'll assign automatically.",
+      "date_mode": null,
+      "dym_offer": {
+       "id": "13873233",
+       "ttl": 3,
+       "domain": "order",
+       "picked": [],
+       "candidates": [
+        {
+         "code": "SRTWC286-SH-200",
+         "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+         "for_raw": "srtwc286",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        },
+        {
+         "code": "SRTWC286-SH-P",
+         "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+         "for_raw": "srtwc286",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        },
+        {
+         "code": "SRTWC286-SH-PP",
+         "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+         "for_raw": "srtwc286",
+         "for_hint": "product",
+         "entity_type": "product",
+         "for_canonical": null
+        }
+       ]
+      },
+      "user_goal": "trying to narrow the previous results to this week only",
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "match_mode": "and",
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "message_type": "business_query",
+      "query_brands": [],
+      "access_levels": [],
+      "routing_brand": "sorento",
+      "contains_flyer": false,
+      "dym_candidates": [
+       {
+        "code": "SRTWC286-SH-200",
+        "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+        "for_raw": "srtwc286",
+        "for_hint": "product",
+        "entity_type": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "SRTWC286-SH-P",
+        "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+        "for_raw": "srtwc286",
+        "for_hint": "product",
+        "entity_type": "product",
+        "for_canonical": null
+       },
+       {
+        "code": "SRTWC286-SH-PP",
+        "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+        "for_raw": "srtwc286",
+        "for_hint": "product",
+        "entity_type": "product",
+        "for_canonical": null
+       }
+      ],
+      "date_filter_end": "2026-08-30",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+        "label": "Maryam Ariffin",
+        "companies": [
+         "Sorento"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_ids": [
+         "00000000-0000-0000-0000-000000000001"
+        ],
+        "company_name": "Sorento",
+        "respond_user_id": "1144607"
+       },
+       {
+        "idx": 2,
+        "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+        "label": "Cyndi",
+        "companies": [
+         "Sorento"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_ids": [
+         "00000000-0000-0000-0000-000000000001"
+        ],
+        "company_name": "Sorento",
+        "respond_user_id": "1144556"
+       },
+       {
+        "idx": 3,
+        "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+        "label": "Aisyah",
+        "companies": [
+         "Sorento"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_ids": [
+         "00000000-0000-0000-0000-000000000001"
+        ],
+        "company_name": "Sorento",
+        "respond_user_id": "1144561"
+       },
+       {
+        "idx": 4,
+        "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+        "label": "Balqis",
+        "companies": [
+         "Sorento"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_ids": [
+         "00000000-0000-0000-0000-000000000001"
+        ],
+        "company_name": "Sorento",
+        "respond_user_id": "1144558"
+       },
+       {
+        "idx": 5,
+        "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+        "label": "Niki",
+        "companies": [
+         "Sorento"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_ids": [
+         "00000000-0000-0000-0000-000000000001"
+        ],
+        "company_name": "Sorento",
+        "respond_user_id": "1144554"
+       },
+       {
+        "idx": 6,
+        "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+        "label": "Nurain",
+        "companies": [
+         "Sorento"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_ids": [
+         "00000000-0000-0000-0000-000000000001"
+        ],
+        "company_name": "Sorento",
+        "respond_user_id": "1144604"
+       }
+      ],
+      "routing_company": "00000000-0000-0000-0000-000000000001",
+      "date_filter_start": "2026-08-24",
+      "routing_companies": [
+       {
+        "codes": [
+         "300-F017",
+         "300-F026",
+         "305-F001",
+         "300-F010",
+         "300-F004",
+         "300-F029",
+         "DBR-0ca5493ae8",
+         "DBR-f4d722b0a6",
+         "DBR-40b5a0151c",
+         "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+         "SRTWC286-SH-200",
+         "SRTWC286-SH-P",
+         "SRTWC286-SH-PP",
+         "SRTWC286-SH",
+         "SRTWC286-SH-UF",
+         "SRTWC286-SH-NEW-150",
+         "SRTWC286-SH-150",
+         "SRTWC286-SH-NEW-P",
+         "SRTWC286-SH-NEW-200",
+         "SRTWC286-SH-NEW"
+        ],
+        "labels": [
+         "FULLSHUN SANITARYWARE SDN BHD",
+         "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+         "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+         "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+         "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+         "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+         "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+         "SRTWC286-SH-200",
+         "SRTWC286-SH-P",
+         "SRTWC286-SH-PP",
+         "SRTWC286-SH",
+         "SRTWC286-SH-UF",
+         "SRTWC286-SH-NEW-150",
+         "SRTWC286-SH-150",
+         "SRTWC286-SH-NEW-P",
+         "SRTWC286-SH-NEW-200",
+         "SRTWC286-SH-NEW"
+        ],
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento"
+       }
+      ],
+      "selection_context": "member_offer",
+      "routing_roster_plan": [
+       {
+        "plan_idx": 0,
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento"
+       }
+      ],
+      "routing_brand_source": "resolved"
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":\"broaden\",\"is_affirmative\":null,\"user_goal\":\"trying to get all dates\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"clear\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "trying to get all dates",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "full shun",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      },
+      {
+       "raw": "srtwc286",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      }
+     ],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_none",
+     "entity_op_applied": "reuse",
+     "query_brands": [],
+     "_pending_pick": true,
+     "domain_reused_entityless": true,
+     "date_widen_applied": true,
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": "broaden",
+     "is_affirmative": null,
+     "user_goal": "trying to get all dates",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "clear",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,177 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "body-run",
+  "rationale": "Precedence: a bare 'yes' on an open offer filler-strips to NOTHING, which is not a widen phrase - the arm must NOT fire even though the state carries both a window and entities. The offer confirmation (is_escalation_confirmation true via the offeredEscalation clobber + the Delta-3 affirmative arm) must stand exactly as pre-fix. Expected frozen from the pre-fix HEAD body (15e7dbd)."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "yes",
+     "contact_id": 900000004,
+     "previous_conversation_state": {
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "entities": [
+       {
+        "raw": "full shun",
+        "hint": "customer",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       },
+       {
+        "raw": "srtwc286",
+        "hint": "product",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       }
+      ],
+      "response": "Couldn't find \"srtwc286\" (product). Did you mean SRTWC286-SH-200 or SRTWC286-SH-P? Reply with a code to continue, or would you like me to escalate to *Sorento* customer service team?\n\nTo escalate, choose who to route to. Reply the number or name:\n1. Maryam Ariffin\n2. Cyndi\n\nOr just reply 'yes' and we'll assign automatically.",
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "message_type": "business_query",
+      "date_filter_start": "2026-08-24",
+      "date_filter_end": "2026-08-30",
+      "date_mode": null,
+      "match_mode": "and",
+      "selection_context": "member_offer",
+      "last_result_set": [
+       {
+        "idx": 1,
+        "uuid": "m1",
+        "label": "Maryam Ariffin",
+        "respond_user_id": "1144607"
+       },
+       {
+        "idx": 2,
+        "uuid": "m2",
+        "label": "Cyndi",
+        "respond_user_id": "1144556"
+       }
+      ],
+      "routing_roster_plan": [
+       {
+        "plan_idx": 0,
+        "brand_code": "sorento",
+        "company_id": "00000000-0000-0000-0000-000000000001",
+        "company_name": "Sorento"
+       }
+      ],
+      "access_levels": [],
+      "query_brands": [],
+      "contains_flyer": false,
+      "escalation": {
+       "is_escalation_confirmation": false
+      }
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"casual\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":null,\"is_affirmative\":true,\"user_goal\":\"agreeing to the escalation offer\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"reuse\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "casual",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": true,
+     "user_goal": "agreeing to the escalation offer",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "full shun",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      },
+      {
+       "raw": "srtwc286",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      }
+     ],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": true
+     },
+     "domain_signal_source": "intent_none",
+     "entity_op_applied": "reuse",
+     "query_brands": [],
+     "member_pick_context": true,
+     "date_filter_gated": null,
+     "_pending_pick": true
+    },
+    "_parser_raw": {
+     "message_type": "casual",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": null,
+     "is_affirmative": true,
+     "user_goal": "agreeing to the escalation offer",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}

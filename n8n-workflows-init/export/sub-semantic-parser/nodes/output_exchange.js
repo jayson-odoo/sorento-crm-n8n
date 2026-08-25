@@ -463,6 +463,81 @@ const _ceAxisFor = (e, domain) => {
   return DOMAIN_SUBJECT_AXIS[domain] || 'unscoped_scope';
 };
 
+// ── DATE-WIDEN RE-ATTACH (deterministic; no prompt change) ────────────────────────────────────
+// Measured live cascade, execs 13873180 → 13873233 → 13873581 → 13873625 (2026-08-25): after a
+// windowed answer ("this week only", window 2026-08-24→2026-08-30 persisted), the bare widen
+// reply "all dates" came back from the LLM as scope_intent 'broaden' + entity_op 'clear' +
+// entities [] + domain null. The executor's 'clear' arm wiped the carried scope, downstream had
+// nothing to query, and the clarification LLM improvised ("confirm which product code…"); the
+// next turn ("all of them") lost the context entirely. The BROADEN AXIS prompt rules live only in
+// the fork (company-pick-parser.md §3 bucket d3, not shipped); the fork's own deterministic code
+// (its AXIS BROADEN restore + carryDateWindow's broaden_axis === 'date' arm) only CORRECTS the
+// LLM-emitted broaden_axis field — it cannot detect the phrase. This arm is the same playbook as
+// the shipped deterministic company_pick: detect the bare phrase in code, ride the existing
+// spine contract, teach the LLM nothing.
+//
+// The re-emitted contract is byte-shaped on the turn that WORKED (exec 13873233): carried
+// entities (current_message:false) + entity_op 'reuse' + business_query + the prior domain re-ran
+// the search on the UNCHANGED spine. This arm produces that exact shape with the window forced
+// open (date_filter_* null — the fork carryDateWindow contract for a date widen: "Such a turn
+// names no date, so the carry below would silently restore the PREVIOUS window and answer the
+// opposite of what was asked. Force the window open instead.").
+//
+// Fires ONLY when ALL of:
+//   (1) the filler-stripped message IS a widen phrase of the "all dates" family. Phrases sourced
+//       from the fork prompt's BROADEN AXIS section (fork @ 339a66d9, F372/F377-379: "all time",
+//       "any date", "all dates", "every date", "no date limit", "remove the date filter", "since
+//       ever") plus the captain-reported "no date filter". Fillers = the confirmation/politeness
+//       subset of _coFillers, the fork's trailing emphatic particles ("...one", "...lah",
+//       F380-381), and the articles/prepositions the fork's own examples embed ("remove THE date
+//       filter"). Deliberately NOT here: "not just August" (names a month — semantic, prompt
+//       territory) and Malay phrasings (the fork covers those only via the LLM's "in ANY phrasing
+//       or language" rule — no deterministic source to port, none invented).
+//   (2) the prior state carries entities — otherwise there is no scope to widen onto;
+//   (3) the prior state carries a date window — otherwise the carried query is already
+//       unwindowed, nothing is deterministically widenable, and the turn stays LLM-classified.
+// Precedence: a widen phrase is disjoint by construction from every pick signal — a bare "yes"
+// strips to NOTHING (not a phrase), a number is not a phrase, "all of them" is not in the family
+// (that turn needs the prompt rule — out of scope), and no member/company label is a date phrase.
+// The neutralisations below (is_affirmative / person_mention / positions / escalation) therefore
+// only ever suppress LLM misreads ON a proven widen turn — "yes all dates" read as a bare
+// offer-yes would otherwise hit the offeredEscalation confirm clobber below and ASSIGN — never a
+// real pick.
+const _dwFillers = new Set(['yes','ya','yeah','yep','yup','ok','okay','okie','oki','k','sure',
+  'please','pls','plz','pl','kindly','thanks','thank','ty','tq',
+  'lah','la','leh','lor','ah','one',            // trailing emphatic particles (fork F380-381)
+  'the','a','an','to','for','of']);             // articles/prepositions ("for all dates", "remove the date filter")
+const _DW_PHRASES = new Set(['all dates','all date','all time','all times','any date','any dates',
+  'every date','no date limit','no date filter','remove date filter','since ever']);
+const _dateWiden = (() => {
+  if (!output.output || output.output.is_menu_label) return false;
+  // a did-you-mean code reply is its own re-attach (applyDymPick already carried scope + window);
+  // it must never be re-widened off the entities it just minted.
+  if (output.output.dym_pick_applied === true) return false;
+  const _msg = String(parent_input.latest_user_message ?? '').split(/\s*reply to:/i)[0].trim().toLowerCase();
+  if (!_msg) return false;
+  const _kept = (_msg.match(/[a-z0-9]+/g) || []).filter(t => !_dwFillers.has(t));
+  if (!_DW_PHRASES.has(_kept.join(' '))) return false;
+  const _pv = parent_input.previous_conversation_state || {};
+  if (!(Array.isArray(_pv.entities) && _pv.entities.length)) return false;   // (2) nothing to widen onto
+  if (!(_pv.date_filter_start || _pv.date_filter_end)) return false;         // (3) no window to drop
+  return true;
+})();
+if (_dateWiden) {
+  output.output.entity_op    = 'reuse';            // the executor's reuse arm below re-attaches the carried scope
+  output.output.message_type = 'business_query';   // the spine re-runs the search, never the clarify LLM
+  output.output.scope_intent = null;               // ONE axis widened, not an entity broaden — the
+                                                   // broaden-blocklist must not strip the carried scope
+                                                   // (DOMAIN_BROADEN_BLOCKED_HINTS.order = order + customer)
+  // LLM-misread neutralisation, widen turns only (see the precedence note above):
+  output.output.is_affirmative      = null;
+  output.output.person_mention      = null;
+  output.output.reference_positions = [];
+  output.output.reference_target    = null;
+  output.output.escalation          = { is_escalation_confirmation: false };
+  output.output.date_widen_applied  = true;        // diagnostic + provenance (drop-when-absent, LESSONS §40)
+}
+
 // ── ENTITY OPERATION EXECUTOR (op + axis-aware replace/combine) ──
 if (output.output && !output.output.is_menu_label) {
     const domain = output.output.domain_hint;
@@ -537,6 +612,26 @@ if (output.output && !output.output.is_menu_label) {
 
   output.output.entities = finalEntities;
   output.output.entity_op_applied = op;
+}
+
+// ── DATE-WIDEN RE-ATTACH, part 2: force the window open and pin the domain ───────────────────
+// Runs AFTER the executor because the reuse arm above has just RESTORED the prior window (its
+// date carry is exactly the restore the fork's carryDateWindow refuses on a date widen); and the
+// domain pin exists because the fork prompt's own rule (F381-384) is that a date widen "is ALWAYS
+// a request to widen the date FILTER on whatever the user is already asking about; it is NEVER
+// evidence of a shipment/ETA question, and it must NEVER move domain_hint to incoming or anywhere
+// else" — when the LLM guessed a decisive domain this turn (_explicit, so the reuse arm's own
+// carry was skipped), the prior domain still wins. A prior state with no domain_hint leaves the
+// turn's domain alone — fail-open, downstream clarifies as it does today.
+if (_dateWiden) {
+  output.output.date_filter_start = null;
+  output.output.date_filter_end   = null;
+  output.output.date_mode         = null;
+  const _dwPv = parent_input.previous_conversation_state || {};
+  if (_dwPv.domain_hint) {
+    output.output.domain_hint = _dwPv.domain_hint;
+    output.output.intent_hint = _dwPv.intent_hint || null;
+  }
 }
 // (A) A positional pick continues the PRIOR business query — the parser may have
 // mislabeled the bare "1" as casual with null domain. Inherit prior context FIRST,

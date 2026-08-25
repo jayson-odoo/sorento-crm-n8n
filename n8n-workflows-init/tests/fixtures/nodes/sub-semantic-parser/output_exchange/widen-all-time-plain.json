@@ -1,0 +1,158 @@
+{
+ "source": {
+  "hand_crafted": true,
+  "expected_from": "reasoned",
+  "rationale": "The widen arm is not member_offer-bound: a plain windowed conversation (no selection_context, no roster, no open offer) widened with 'all time' (fork prompt F372/F377 phrase) re-attaches the carried scope with dates null. REASONED: entities carried cm:false, entity_op reuse, business_query, domain/intent carried (order/check_order), _pending_pick ABSENT (no roster pending). Full object frozen from the patched body after the decision fields held."
+ },
+ "ctx": {
+  "When Executed by Another Workflow": [
+   {
+    "json": {
+     "latest_user_message": "all time",
+     "contact_id": 900000004,
+     "previous_conversation_state": {
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "entities": [
+       {
+        "raw": "full shun",
+        "hint": "customer",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       },
+       {
+        "raw": "srtwc286",
+        "hint": "product",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       }
+      ],
+      "response": "Delivery orders for FULL SHUN (product SRTWC286), 2026-08-24 to 2026-08-30: none found.",
+      "domain_hint": "order",
+      "intent_hint": "check_order",
+      "message_type": "business_query",
+      "date_filter_start": "2026-08-24",
+      "date_filter_end": "2026-08-30",
+      "date_mode": null,
+      "match_mode": "and",
+      "selection_context": null,
+      "last_result_set": [],
+      "routing_roster_plan": [],
+      "access_levels": [],
+      "query_brands": [],
+      "contains_flyer": false,
+      "escalation": {
+       "is_escalation_confirmation": false
+      }
+     },
+     "is_test": null,
+     "mock_reformulator_output": null
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "output": "{\"message_type\":\"business_query\",\"intent_hint\":null,\"domain_hint\":null,\"scope_intent\":\"broaden\",\"is_affirmative\":null,\"user_goal\":\"asking for all time\",\"access_levels\":[],\"date_mode\":null,\"date_filter_start\":null,\"date_filter_end\":null,\"match_mode\":\"and\",\"demand_qty\":null,\"entities\":[],\"entity_op\":\"clear\",\"scope_exclusive\":false,\"requested_attributes\":[],\"contains_flyer\":false,\"reference_positions\":[],\"reference_target\":null,\"person_mention\":null,\"is_active\":null,\"order_status\":null,\"correction\":false,\"routing\":{\"suggested_team\":null,\"suggested_agent\":null},\"escalation\":{\"is_escalation_confirmation\":false}}"
+   }
+  }
+ ],
+ "runIndex": 0,
+ "expected": [
+  {
+   "json": {
+    "output": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "scope_intent": null,
+     "is_affirmative": null,
+     "user_goal": "asking for all time",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [
+      {
+       "raw": "full shun",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      },
+      {
+       "raw": "srtwc286",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      }
+     ],
+     "entity_op": "reuse",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "domain_signal_source": "intent_none",
+     "date_widen_applied": true,
+     "domain_reused_entityless": true,
+     "entity_op_applied": "reuse",
+     "query_brands": [],
+     "entities_filtered": false,
+     "entities_emptied_by_filter": false
+    },
+    "_parser_raw": {
+     "message_type": "business_query",
+     "intent_hint": null,
+     "domain_hint": null,
+     "scope_intent": "broaden",
+     "is_affirmative": null,
+     "user_goal": "asking for all time",
+     "access_levels": [],
+     "date_mode": null,
+     "date_filter_start": null,
+     "date_filter_end": null,
+     "match_mode": "and",
+     "demand_qty": null,
+     "entities": [],
+     "entity_op": "clear",
+     "scope_exclusive": false,
+     "requested_attributes": [],
+     "contains_flyer": false,
+     "reference_positions": [],
+     "reference_target": null,
+     "person_mention": null,
+     "is_active": null,
+     "order_status": null,
+     "correction": false,
+     "routing": {
+      "suggested_team": null,
+      "suggested_agent": null
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     }
+    }
+   }
+  }
+ ]
+}
