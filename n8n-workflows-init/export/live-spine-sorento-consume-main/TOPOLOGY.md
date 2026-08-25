@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · activeVersionId **05c58410-8202-4196-b9df-35b9b94d4ed3** · DRAFT == ACTIVE
+- versionId **d7956e1f-de32-46ca-84ce-64106ab2c436** · activeVersionId **d7956e1f-de32-46ca-84ce-64106ab2c436** · DRAFT == ACTIVE
 - 142 nodes
 
 ## Edges
@@ -298,10 +298,10 @@ wait-media-poll[0] -> media-poll-http
 
 | node | lines |
 |---|---|
-| compile-current-state | 1787 |
-| not-found-error-message | 624 |
-| build-suggest-offer | 584 |
-| promo-picker | 575 |
+| compile-current-state | 1801 |
+| not-found-error-message | 631 |
+| build-suggest-offer | 594 |
+| promo-picker | 583 |
 | disallowed-entity-gate | 542 |
 | dym-transform | 416 |
 | dym-transform-partial | 409 |
@@ -312,9 +312,9 @@ wait-media-poll[0] -> media-poll-http
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
 | build-miss-member-offer | 137 |
-| build-cs-member-offer | 107 |
+| build-cs-member-offer | 110 |
+| escalate-catalog | 104 |
 | crossdomain-compose | 101 |
-| escalate-catalog | 98 |
 | miss-roster-plan | 97 |
 | access-level-choice-message | 95 |
 | detect-media | 91 |
