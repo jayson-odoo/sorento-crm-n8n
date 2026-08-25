@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **2d7ebc6c-9b67-4e4b-8e91-d61fd8a52845** · activeVersionId **2d7ebc6c-9b67-4e4b-8e91-d61fd8a52845** · DRAFT == ACTIVE
+- versionId **ccbdd208-fa39-4118-97d5-0adea4816f31** · activeVersionId **ccbdd208-fa39-4118-97d5-0adea4816f31** · DRAFT == ACTIVE
 - 134 nodes
 
 ## Edges
@@ -214,7 +214,7 @@ wait-media-poll[0] -> media-poll-http
 - **sibling-probe** ← build-suggest-offer
 - **sibling-transform** ← build-suggest-offer, sibling-probe
 - **sorento-sub-respond-findcontact-respond** ← Call 'sub-get-results', Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Execution Data, If7, check-access, compile-current-state, crossdomain-probe, dym-probe, dym-probe-partial, get-access-types, get-cs-members, get-session-vars, ideate-turn-http, is-human-intervened, probe-incoming, promo-dym-probe, resolve-entity, resolve-entity-clarification, save-session-vars, send-message-files, send-message-images, send-message-video, send-transcript-confirm, sibling-probe, sorento-sub-respond-sendmsg-presign-fail, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond3, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5, tier-probe
-- **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, construct-user-prompt, get-session-vars, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
+- **tf-message** ← Call 'sub-human-intervention', Call 'sub-query-reformulator', Call 'sub-respond-save-message-redis'2, Code in JavaScript, Transcribe a recording, compile-current-state, construct-user-prompt, get-session-vars, ideate-turn-http, if-message-is-audio, patch-transcript, sorento-sub-respond-sendmsg-respond, sorento-sub-respond-sendmsg-respond-transcribed-message, sorento-sub-respond-sendmsg-respond2, sorento-sub-respond-sendmsg-respond4, sorento-sub-respond-sendmsg-respond5
 - **tier-gate** ← Call 'sub-get-results', disallowed-entity-gate, if-tier-ask, tier-probe-collect, tier-probe-plan
 - **tier-probe-collect** ← access-level-choice-message
 - **tier-probe-plan** ← tier-probe-collect
@@ -285,11 +285,11 @@ wait-media-poll[0] -> media-poll-http
 
 | node | lines |
 |---|---|
-| compile-current-state | 902 |
+| compile-current-state | 1696 |
+| not-found-error-message | 624 |
 | build-suggest-offer | 584 |
 | promo-picker | 575 |
 | disallowed-entity-gate | 542 |
-| not-found-error-message | 436 |
 | dym-transform | 416 |
 | dym-transform-partial | 409 |
 | tier-gate | 195 |
