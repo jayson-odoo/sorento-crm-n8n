@@ -504,10 +504,13 @@ if (missingAttachmentType) {
   const buildBreakdownMsg = (domainWord, notFoundRaw) => {
     const nf = (notFoundRaw ?? _notFoundRaw).map(_labelTok);
     const parts = [];
+    // _fmtD hoisted out of the header block (2026-08-25): the windowed miss sentence below now
+    // names its dates through the SAME formatter as the "Dates:" header two lines above it.
+    const _fmtD = (v) => { const m = String(v ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v ?? ''); };
+    const _isOrderScope = _DATE_SCOPE_DOMAINS.has(String(q.domain_hint || '').toLowerCase());
     // Only for a delivery-order search; elsewhere this is noise on an answer it does not apply to.
-    if (_DATE_SCOPE_DOMAINS.has(String(q.domain_hint || '').toLowerCase())) {
+    if (_isOrderScope) {
       const _ds = q.date_filter_start || null, _de = q.date_filter_end || null;
-      const _fmtD = (v) => { const m = String(v ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v ?? ''); };
       const _head = [];
       for (const axis of _AXES) {
         const words = _axisWords(axis);
@@ -524,8 +527,29 @@ if (missingAttachmentType) {
     }
     if (_foundLines.length) parts.push(`Here's what you want:\n${_foundLines.join('\n')}`);
     if (nf.length) parts.push(`Couldn't find: ${nf.join(', ')}.`);
+    // ── A WINDOWED MISS NAMES ITS DATES THE WAY THE HEADER DOES, AND OFFERS THE WIDEN ──────────
+    // (captain 2026-08-25; execs 13873180 -> 13873233; branch commit e7668d2's rule: tell the
+    // customer which dates the answer covers, and let them widen it.) Two defects in one
+    // sentence: the suffix printed the ISO window ("from 2026-08-24 to 2026-08-30") one line
+    // under a header reading "Dates: 24/08/2026 to 30/08/2026" - the same window in two
+    // spellings in one message (stage-A finding 6's defect class) - and it offered ONLY
+    // escalation, when the one move that resolves a window-caused miss is widening the window.
+    // ⚠ LOCKSTEP WITH THE PARSER'S DATE-WIDEN ARM (output_exchange, commit 1f79077): the invite
+    // names 'all dates' because that exact phrase is what the deterministic widen detects -
+    // it re-attaches the carried scope with the window forced open, which execs 13873581/
+    // 13873625 measured the raw LLM CANNOT do (scope_intent broaden + entity_op clear wiped
+    // the carried scope; turn 4 got the generic menu). This copy must not reach live ahead of
+    // that arm, and the phrase quoted here must stay inside that arm's widen family.
+    // Scoped to the order-domain windowed arm; every windowless / non-order miss is
+    // byte-identical, and the frozen /would you like me to escalate/i contract is preserved -
+    // the invite lands BEFORE the would-clause.
+    const _missWindow = (_isOrderScope && q.date_filter_start && q.date_filter_end)
+      ? ` from ${_fmtD(q.date_filter_start)} to ${_fmtD(q.date_filter_end)}` : dateRange;
+    const _escAsk = (_isOrderScope && (q.date_filter_start || q.date_filter_end))
+      ? `Reply 'all dates' to search without the date filter, or would you like me to escalate to ${team} team?`
+      : `Would you like me to escalate to ${team} team?`;
     parts.push(_entitlementMiss
-      || `But no${active_inactive} ${domainWord}${dateRange}${access} matched these${_coSuffix}. Would you like me to escalate to ${team} team?`);
+      || `But no${active_inactive} ${domainWord}${_missWindow}${access} matched these${_coSuffix}. ${_escAsk}`);
     return parts.join('\n\n');
   };
 

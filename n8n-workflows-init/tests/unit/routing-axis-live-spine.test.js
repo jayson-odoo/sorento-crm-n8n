@@ -220,6 +220,17 @@ test('exec 13743718: the offer lists both companies teams, and still no note', (
 // (`(?:[a-z0-9-]+ )*[a-z0-9-]+ team\?`, the same form compile-current-state ships), because the
 // prettified `customer service` has a space the clone's `\S+` could never cross. The frozen
 // `Would you like me to escalate` prefix the parser matches sits BEFORE the insertion, untouched.
+//
+// RE-PINNED again 2026-08-25 (window-blame fix, execs 13873180/13873233), and ONLY on the miss
+// sentence of the windowed order arm: the window is now named DD/MM ("from 01/08/2026 to
+// 31/08/2026"), the same _fmtD spelling as the `Dates:` header two lines above it (the capture
+// printed one window in two formats), and the sentence gains the widen invite "Reply 'all dates'
+// to search without the date filter, or would you like me to escalate ..." - a window-caused
+// miss's one useful next move (branch e7668d2's rule), naming EXACTLY the phrase the parser's
+// deterministic date-widen arm (1f79077) detects. The frozen /would you like me to escalate/i contract
+// still matches - the invite lands BEFORE the would-clause - and build-cs-member-offer's
+// *company* insertion regex spans the new clause unchanged, which is exactly what these two
+// pins now re-assert. Everything else is byte-identical.
 const SINGLE_COMPANY_OFFER = [
   'Customer: mastile klang',
   'Product: SRTKS7646',
@@ -229,7 +240,7 @@ const SINGLE_COMPANY_OFFER = [
   '• customer: MASTILE KLANG SDN BHD (+1 more)',
   '• product: SRTKS7646 (+1 more)',
   '',
-  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to *Sorento* customer service team?',
+  "But no order from 01/08/2026 to 31/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to *Sorento* customer service team?",
   '',
   'Please choose who to route to (reply with the number):',
   '1. Emily',
@@ -265,7 +276,7 @@ const PRODUCT_ONLY_OFFER = [
   "Here's what you want:",
   '• product: SRTKS7646 (+1 more)',
   '',
-  'But no order from 2026-08-01 to 2026-08-31 matched these. Would you like me to escalate to *Sorento* customer service team?',
+  "But no order from 01/08/2026 to 31/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to *Sorento* customer service team?",
   '',
   'Please choose who to route to (reply with the number):',
   '1. Emily',

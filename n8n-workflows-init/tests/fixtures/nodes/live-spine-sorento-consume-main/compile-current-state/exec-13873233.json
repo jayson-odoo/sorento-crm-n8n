@@ -1,0 +1,2420 @@
+{
+ "source": {
+  "execution_id": "13873233",
+  "workflow_id": "9qVyfUxmRQqrpGRMDLRuz",
+  "node": "compile-current-state",
+  "captured_at": "2026-08-25T11:25:57+00:00",
+  "expected_from": "reasoned",
+  "ctx_pruned_to_read_nodes": "ctx holds only the nodes this body reads via $('...'); the other nodes that ran in this execution were dropped for the 400 KB budget. `ran` still lists every node in real execution order.",
+  "reasoned_from": "contract, confirmed by a body-run of the UNCHANGED compile-current-state against the threaded ctx",
+  "reasoned": true,
+  "ctx_threaded": "ctx['build-suggest-offer'] holds that node's POST-FIX output (suggest_offer:false, dym_window_excused, the threaded escalate_message) and ctx['build-cs-member-offer'].response / input.response carry not-found-error-message's post-fix copy with build-cs-member-offer's own *Sorento* insertion (its regex spans the new 'or would you like me to escalate to ...' clause unchanged). ctx['escalate-catalog'] deliberately keeps the captured pre-fix text: on this lane the member-offer override wins and compile-current-state never reads _cat.response. Everything else is the capture, byte-for-byte.",
+  "rationale": "THE ACCEPTANCE REPLY, PINNED (turn 2 of 13873180/13873233). Live exec 13873233's recorded reply was the did-you-mean 'Couldn't find \"srtwc286\" (product) ...' + the CS picker - it blamed a token that had ANSWERED one turn earlier (exec 13873180) for an emptiness the DATE window caused. compile-current-state itself is UNCHANGED by this fix; with build-suggest-offer standing down (see that node's exec-13873233 fixture), the member-offer lane renders not-found-error-message's window-scoped breakdown: the E2 header naming the carried customer/product and the real window, the found-bullets, 'But no order from 24/08/2026 to 30/08/2026 matched these', the widen invite, the *Sorento* escalate offer, and the member picker. variables deltas vs the capture follow the lane switch: selection_context 'member_offer' (was 'suggest_offer'), dym_candidates [] / dym_offer null (no offer to arm), last_result_set = the member roster (was the three dym codes), and no top-level quick_reply (the dym code buttons are gone). Cites branch commits e7668d2 (name the window, let them widen) and d5cc77e/cc0e6b0 (a filter that resolved and answered is not a miss)."
+ },
+ "ctx": {
+  "tf-message": [
+   {
+    "json": {
+     "event_type": "message.received",
+     "event_id": "a4dfecbf-6e7b-46da-acff-370476f3329c",
+     "contact": {
+      "id": 900000001,
+      "firstName": "Person 1",
+      "lastName": "",
+      "phone": "+60100000003",
+      "email": null,
+      "language": null,
+      "profilePic": null,
+      "countryCode": "MY",
+      "status": "open",
+      "assignee": {
+       "id": 900000005,
+       "email": "person11@example.com",
+       "firstName": "Person 16",
+       "lastName": "Person 17",
+       "role": "user"
+      },
+      "created_at": 1777336715
+     },
+     "message": {
+      "messageId": 1787655911000000,
+      "channelMessageId": "wamid.HBgLNjAxNjY3NTMzMjgVAgASGBQzQjc4OUMxOTEwQTJGNkVBRjRFNwA=",
+      "contactId": 900000001,
+      "channelId": 453209,
+      "traffic": "incoming",
+      "timestamp": 1787655911000,
+      "message": {
+       "type": "text",
+       "text": "this week only"
+      }
+     },
+     "channel": {
+      "id": 453209,
+      "name": "Internal (+60 11-1673 1179)",
+      "source": "whatsapp_business",
+      "meta": "{\"meta\":{\"profile\":{\"name\":\"Person 1\"},\"wa_id\":\"60100000003\",\"user_id\":\"MY.900000006\",\"firstName\":\"Person 1\",\"lastName\":\"\"}}",
+      "created_at": 1767682908
+     },
+     "sender": {
+      "source": "contact",
+      "userId": null,
+      "teamId": null,
+      "workflowId": null,
+      "broadcastHistoryId": null
+     }
+    }
+   }
+  ],
+  "sorento-sub-respond-findcontact-respond": [
+   {
+    "json": {
+     "id": 900000001,
+     "firstName": "Person 1",
+     "lastName": null,
+     "phone": "+60100000003",
+     "email": null,
+     "language": null,
+     "profilePic": null,
+     "locale": null,
+     "countryCode": "MY",
+     "status": "open",
+     "isBlocked": false,
+     "custom_fields": [
+      {
+       "name": "enquiry_type",
+       "value": null
+      },
+      {
+       "name": "user_type",
+       "value": "end_user"
+      },
+      {
+       "name": "complaint_id",
+       "value": null
+      },
+      {
+       "name": "is_allowed_stock",
+       "value": "true"
+      },
+      {
+       "name": "is_human_intervened",
+       "value": "false"
+      },
+      {
+       "name": "backend_id",
+       "value": "https://fe-sorento.foundryx.my/user-management/contacts/80560c8f-6358-4115-8b2c-e139ef31e48e"
+      },
+      {
+       "name": "is_allowed_ai",
+       "value": "true"
+      },
+      {
+       "name": "is_allowed_voice",
+       "value": null
+      }
+     ],
+     "tags": [],
+     "assignee": {
+      "id": 900000005,
+      "firstName": "Person 16",
+      "lastName": "Person 17",
+      "email": "person11@example.com"
+     },
+     "lifecycle": null,
+     "created_at": 1777336715
+    }
+   }
+  ],
+  "get-session-vars": [
+   {
+    "json": {
+     "respond_io_id": "900000001",
+     "session_vars": {
+      "variables": {
+       "routing": {
+        "suggested_team": "customer_service",
+        "suggested_agent": "order_enquiries"
+       },
+       "entities": [
+        {
+         "raw": "full shun",
+         "hint": "customer",
+         "confident": true,
+         "canonical_code": null,
+         "current_message": true
+        },
+        {
+         "raw": "srtwc286",
+         "hint": "product",
+         "confident": true,
+         "canonical_code": null,
+         "current_message": true
+        }
+       ],
+       "ideation": null,
+       "response": "Previous turn (order): returned 20 records",
+       "date_mode": null,
+       "dym_offer": null,
+       "user_goal": "trying to check the delivery status for customer Full Shun's order SRTWC286",
+       "escalation": {
+        "is_escalation_confirmation": false
+       },
+       "match_mode": "and",
+       "domain_hint": "order",
+       "intent_hint": "check_order",
+       "message_type": "business_query",
+       "query_brands": [],
+       "access_levels": [],
+       "routing_brand": "sorento",
+       "contains_flyer": false,
+       "dym_candidates": [],
+       "date_filter_end": null,
+       "last_result_set": [
+        {
+         "idx": 1,
+         "uuid": null,
+         "label": "202608-3206",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 2,
+         "uuid": null,
+         "label": "202608-2864",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 3,
+         "uuid": null,
+         "label": "202607-3669",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 4,
+         "uuid": null,
+         "label": "202607-2283",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 5,
+         "uuid": null,
+         "label": "202607-2119",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 6,
+         "uuid": null,
+         "label": "202607-2121",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 7,
+         "uuid": null,
+         "label": "202606-3009",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 8,
+         "uuid": null,
+         "label": "202606-3882",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 9,
+         "uuid": null,
+         "label": "202606-3641",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 10,
+         "uuid": null,
+         "label": "202606-1945",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 11,
+         "uuid": null,
+         "label": "202606-1641",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 12,
+         "uuid": null,
+         "label": "202606-1635",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 13,
+         "uuid": null,
+         "label": "202605-2093",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 14,
+         "uuid": null,
+         "label": "202605-2620",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 15,
+         "uuid": null,
+         "label": "202605-1080",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 16,
+         "uuid": null,
+         "label": "202605-1085",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 17,
+         "uuid": null,
+         "label": "202604-2973",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 18,
+         "uuid": null,
+         "label": "202604-3662",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 19,
+         "uuid": null,
+         "label": "202604-3257",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        },
+        {
+         "idx": 20,
+         "uuid": null,
+         "label": "202608-3224",
+         "product": null,
+         "filename": null,
+         "entity_type": null,
+         "attachment_type": null
+        }
+       ],
+       "routing_company": "00000000-0000-0000-0000-000000000001",
+       "date_filter_start": null,
+       "routing_companies": [
+        {
+         "codes": [
+          "300-F017",
+          "300-F026",
+          "305-F001",
+          "300-F010",
+          "300-F004",
+          "300-F029",
+          "DBR-0ca5493ae8",
+          "DBR-f4d722b0a6",
+          "DBR-40b5a0151c",
+          "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+          "SRTWC286-SH-200",
+          "SRTWC286-SH-P",
+          "SRTWC286-SH-PP",
+          "SRTWC286-SH",
+          "SRTWC286-SH-UF",
+          "SRTWC286-SH-NEW-150",
+          "SRTWC286-SH-150",
+          "SRTWC286-SH-NEW-P",
+          "SRTWC286-SH-NEW-200",
+          "SRTWC286-SH-NEW"
+         ],
+         "labels": [
+          "FULLSHUN SANITARYWARE SDN BHD",
+          "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+          "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+          "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+          "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+          "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+          "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+          "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+          "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+          "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+          "SRTWC286-SH-200",
+          "SRTWC286-SH-P",
+          "SRTWC286-SH-PP",
+          "SRTWC286-SH",
+          "SRTWC286-SH-UF",
+          "SRTWC286-SH-NEW-150",
+          "SRTWC286-SH-150",
+          "SRTWC286-SH-NEW-P",
+          "SRTWC286-SH-NEW-200",
+          "SRTWC286-SH-NEW"
+         ],
+         "brand_code": "sorento",
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento"
+        }
+       ],
+       "selection_context": null,
+       "routing_roster_plan": null,
+       "routing_brand_source": "resolved"
+      },
+      "user_response": "Customer: full shun\nProduct: srtwc286\nDates: all dates\n\nHere are the orders I found.\n\n1. *Order Number:* 202608-3206\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 19/08/2026\n*Actual Delivery Date:* 22/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 12:09:00\n*Transporter:* SORENTO\n*Driver:* KHAIRY\n*Lorry Plate:* VAR1678\n*Warehouse:* BRW\n*Products:* SRTWC8354-SH-UF-150 (8), SRTWC8354-SH-UF-150 (7), SRTWC286-SH-NEW (10), SRTWC286-SH-150 (7), WESERP10B (32), SRTSP224 (2), SRTUB206 (3), SRTUFV101 (3), SRTBF11840 (1), SRTBF11412 (1)\n\n2. *Order Number:* 202608-2864\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 18/08/2026\n*Actual Delivery Date:* 18/08/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:08:00\n*Transporter:* SORENTO\n*Driver:* SAMSUDIN\n*Lorry Plate:* VCH1678\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW (10), SRTWC286-SH-NEW (7), SRTWC286-SH-150 (10), SRTWC286-SH-NEW-200 (5), SRTWC286-SH-150 (2), WESERP10B (34)\n\n3. *Order Number:* 202607-3669\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 22/07/2026\n*Actual Delivery Date:* 23/07/2026\n*Status:* New Order\n*Pickup Time:* 16:50:00\n*Transporter:* TP TRANSPORT\n*Driver:* JINLI\n*Lorry Plate:* JRT2701\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW-P (1), WESERP10B (1)\n\n4. *Order Number:* 202607-2283\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 14/07/2026\n*Actual Delivery Date:* 15/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 19:21:00\n*Transporter:* TP TRANSPORT\n*Driver:* JRT2701\n*Lorry Plate:* JINLI\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-200 (5), WESERP10B (5)\n\n5. *Order Number:* 202607-2119\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 13/07/2026\n*Actual Delivery Date:* 13/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:00:00\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* VCH1678\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW (1), WESERP10B (1)\n\n6. *Order Number:* 202607-2121\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 13/07/2026\n*Actual Delivery Date:* 13/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:00:00\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* VCH1678\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW (10), SRTWC286-SH-NEW (2), WESERP10B (12)\n\n7. *Order Number:* 202606-3009\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 22/06/2026\n*Actual Delivery Date:* 01/07/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:01:00\n*Transporter:* SORENTO\n*Driver:* YUSUF\n*Lorry Plate:* PPS1678\n*Warehouse:* BRW\n*Products:* SRTSCBD701 (10), SRTSCBD701 (3), SRTSCBD315 (5), SRTSCBD322 (10), SRTSCBD322 (2), SRTSCBD319-UF (5), SRTSCBD330-UF (5), SRTWC286-SH-150 (10), SRTWC286-SH-200 (7), SRTWC286-SH-NEW (10), SRTWC286-SH-NEW (7), SRTWC8354-SH (8), SRTWC8354-SH (7), SRTWC8354-SH-150 (8), SRTWC8354-SH-200 (7), SRTWC8066-S-NEW (5), SRTWC8066-S-NEW (4), SRTWC8066-S-150-NEW (5), SRTWC8066-S-200-NEW (4), WESERP10B (82)\n\n8. *Order Number:* 202606-3882\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 25/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:51:00\n*Transporter:* TP TRANSPORT\n*Driver:* JINLI\n*Lorry Plate:* JRT2701\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW (7), SRTWC286-SH-NEW (5), WESERP10B (12)\n\n9. *Order Number:* 202606-3641\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 24/06/2026\n*Actual Delivery Date:* 26/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:51:00\n*Transporter:* TP TRANSPORT\n*Driver:* JINLI\n*Lorry Plate:* JRT2701\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-200 (4), WESERP10B (4)\n\n10. *Order Number:* 202606-1945\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 11/06/2026\n*Actual Delivery Date:* 15/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:50:00\n*Transporter:* SORENTO\n*Driver:* EZRAIRIN\n*Lorry Plate:* VCH1678\n*Warehouse:* BRW\n*Products:* SRTWB1456 (1), SRTWB1419 (1), SRTWB1542 (1), SRTWB1421 (1), SRTWB1549 (1), SRTBF11904 (1), SRTWT6202-RG (1), SRTMCB8083-BL (1), SRTBF11828-NEW (1), SRTWT6201 (1), SRTMR607-RG (1), SRTBF11837 (1), SRTWT6204-MBL (1), SRTBF11827 (1), SRTWT6202-RG (1), SRTMCB8082-BL (1), SRTBF11712 (1), SRTMCB21701-NEW (1), SRTWC286-SH-NEW (1), SRTWC8066-S-150-NEW (1), SRTWC8354-SH-200 (1), SRTWC200-S-150-UF-RL (1), SRTWC8517-SH-UF-200 (1), SRTWC8366-300-RL-UF (1), WESERP10B (6), SRTBF11621 (1), SRTMCB21621 (1)\n\n11. *Order Number:* 202606-1641\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 10/06/2026\n*Actual Delivery Date:* 10/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:55:00\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* VAR1678\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW (3), WESERP10B (3)\n\n12. *Order Number:* 202606-1635\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 10/06/2026\n*Actual Delivery Date:* 10/06/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:55:00\n*Transporter:* SORENTO\n*Driver:* RAUF\n*Lorry Plate:* VAR1678\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-NEW (7), WESERP10B (7), SRTWC191-G2 (2)\n\n13. *Order Number:* 202605-2093\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 14/05/2026\n*Actual Delivery Date:* 20/05/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 17:59:00\n*Transporter:* SORENTO\n*Driver:* ARIF\n*Lorry Plate:* BNK1678\n*Warehouse:* BRW\n*Products:* SRTWC200-S-150-UF-RL (1), SRTWC8066-S-NEW (1), SRTWC286-SH (1), SRTWC8354-SH-200 (1), SRTWC8366-200-RL-UF (1), SRTSCBD701 (1), SRTBF11833 (1), SRTMCB8083-BL (1), SRTWT8259-GM (1), SRTBF31512-NEW (1), SRTMCB21512 (1), SRTBF11714 (1), SRTBF11413 (1)\n\n14. *Order Number:* 202605-2620\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 19/05/2026\n*Actual Delivery Date:* 19/05/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:17:00\n*Transporter:* SUNCREST\n*Driver:* SIVAN\n*Lorry Plate:* NDN7743\n*Warehouse:* BRW\n*Products:* SRTWC286-SH (10), WESERP10B (10)\n\n15. *Order Number:* 202605-1080\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 11/05/2026\n*Actual Delivery Date:* 11/05/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 20:12:00\n*Transporter:* SORENTO\n*Driver:* YUSUF\n*Lorry Plate:* BRW8761\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-200 (7), WESERP10B (7), SRTWC286-SH (10), SRTWC286-SH (7), WESERP10B (17)\n\n16. *Order Number:* 202605-1085\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 11/05/2026\n*Actual Delivery Date:* 09/05/2026\n*Status:* Picked Up / In Transit\n*Pickup Time:* 15:42:00\n*Transporter:* SORENTO\n*Driver:* KAMARUL\n*Lorry Plate:* VCH1678\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-200 (3), WESERP10B (3)\n\n17. *Order Number:* 202604-2973\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 21/04/2026\n*Status:* New Order\n*Warehouse:* BRW\n*Products:* SRTBF11833 (1), SRTMCB8083-BL (1), SRTWT6203-GM (1), SRTBF12612 (1), SRTMCB22612 (1), SRTWT8264-GM (1), SRTWC286-SH-150 (1), SRTWC8066-S-200-NEW (1), SRTWC7614-RL (1), SRTWC8354-SH-150 (1), SRTWC8366-RL-UF (1), SRTSCBD702 (1)\n\n18. *Order Number:* 202604-3662\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 27/04/2026\n*Status:* New Order\n*Warehouse:* BRW\n*Products:* SRTWC286-SH (10), SRTWC286-SH (7), WESERP10B (17)\n\n19. *Order Number:* 202604-3257\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 22/04/2026\n*Status:* New Order\n*Warehouse:* BRW\n*Products:* SRTWC286-SH-150 (10), WESERP10B (10)\n\n20. *Order Number:* 202608-3224\n*Customer:* FULLSHUN SANITARYWARE SDN BHD [A/C III]\n*Order Date:* 19/08/2026\n*Status:* New Order\n*Warehouse:* BRW\n*Products:* SRTWC200-S-150-UF-RL (1), SRTWC8066-S-200-NEW (1), SRTWC286-SH-150 (1), SRTWC8354-SH-UF-150 (1), SRTWC8366-RL-UF (1), WESERP10B (5), SRTSCBD702 (1), SRTBF11841 (1), SRTMCB8083-BL (1), SRTWT8270-BL (1), SRTBF11621 (1), SRTMCB21621 (1), SRTBF11714-NEW (1), SRTBF11413-NEW (1)\n\n_Data last updated: 24/08/2026 17:42:40_"
+     }
+    }
+   }
+  ],
+  "Call 'sub-query-reformulator'": [
+   {
+    "json": {
+     "output": {
+      "message_type": "business_query",
+      "intent_hint": "check_order",
+      "domain_hint": "order",
+      "scope_intent": "specific",
+      "is_affirmative": null,
+      "user_goal": "trying to narrow the previous results to this week only",
+      "access_levels": [],
+      "date_mode": null,
+      "date_filter_start": "2026-08-24",
+      "date_filter_end": "2026-08-30",
+      "match_mode": "and",
+      "demand_qty": null,
+      "entities": [
+       {
+        "raw": "full shun",
+        "hint": "customer",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       },
+       {
+        "raw": "srtwc286",
+        "hint": "product",
+        "confident": true,
+        "canonical_code": null,
+        "current_message": false
+       }
+      ],
+      "entity_op": "reuse",
+      "scope_exclusive": true,
+      "requested_attributes": [],
+      "contains_flyer": false,
+      "reference_positions": [],
+      "reference_target": null,
+      "person_mention": null,
+      "is_active": null,
+      "order_status": null,
+      "correction": false,
+      "routing": {
+       "suggested_team": "customer_service",
+       "suggested_agent": "order_enquiries"
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      },
+      "domain_signal_source": "intent_none",
+      "domain_reused_entityless": true,
+      "entity_op_applied": "reuse",
+      "query_brands": [],
+      "entities_filtered": false,
+      "entities_emptied_by_filter": false,
+      "_pending_pick": true
+     },
+     "_parser_raw": {
+      "message_type": "business_query",
+      "intent_hint": null,
+      "domain_hint": null,
+      "scope_intent": "specific",
+      "is_affirmative": null,
+      "user_goal": "trying to narrow the previous results to this week only",
+      "access_levels": [],
+      "date_mode": null,
+      "date_filter_start": "2026-08-24",
+      "date_filter_end": "2026-08-30",
+      "match_mode": "and",
+      "demand_qty": null,
+      "entities": [],
+      "entity_op": "reuse",
+      "scope_exclusive": true,
+      "requested_attributes": [],
+      "contains_flyer": false,
+      "reference_positions": [],
+      "reference_target": null,
+      "person_mention": null,
+      "is_active": null,
+      "order_status": null,
+      "correction": false,
+      "routing": {
+       "suggested_team": null,
+       "suggested_agent": null
+      },
+      "escalation": {
+       "is_escalation_confirmation": false
+      }
+     }
+    }
+   }
+  ],
+  "resolve-entity": [
+   {
+    "json": {
+     "tokens": [
+      "full shun",
+      "srtwc286"
+     ],
+     "elapsed_ms": 186.26,
+     "resolutions": [
+      {
+       "token": "full shun",
+       "resolved": false,
+       "ambiguous": false,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F017",
+         "uuid": "c44c2aff-7f36-40d2-ab20-81721ac51fff",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F026",
+         "uuid": "9f0c2dea-4273-4f94-b917-8a93e11e9bab",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "305-F001",
+         "uuid": "c971fd31-1535-4b52-841c-8241c7bc357a",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F010",
+         "uuid": "026977c4-9f09-408f-8039-95252b68511d",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+          "phone_number": "607-357 3966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F004",
+         "uuid": "108e7169-3570-49a8-b0d0-695a76de430a",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F017",
+         "uuid": "84611b0d-7ad1-478d-aee6-08395af886a4",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F026",
+         "uuid": "cdabd5e7-a348-46ce-8661-491eae2a975b",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F029",
+         "uuid": "5525f716-fe4b-4894-8f58-214218854d51",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "DBR-0ca5493ae8",
+         "uuid": "7a58be74-d9af-4fc1-bddc-243579ebd975",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F004",
+         "uuid": "5fd0770b-6a12-44e6-b7ca-c88ef6c1ef20",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F026",
+         "uuid": "64d9432e-d969-4c1a-9539-af52877af64f",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "DBR-f4d722b0a6",
+         "uuid": "9ca6568c-6d2d-40de-bfdb-220ab1172a33",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "DBR-40b5a0151c",
+         "uuid": "e7fd5960-e46e-49c9-b5cc-ef9e4a18c76c",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F017",
+         "uuid": "9ae85807-9761-40fb-8649-b9f3c89b9ada",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+         "uuid": "64d9432e-d969-4c1a-9539-af52877af64f",
+         "match_field": "debtor_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "debtor_name": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+          "debtor_code": "300-F026",
+          "source": "orders"
+         }
+        }
+       ],
+       "alternatives": []
+      },
+      {
+       "token": "srtwc286",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-200",
+         "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-200",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-P",
+         "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-P",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-PP",
+         "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-PP",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH",
+         "uuid": "0d0ed752-fd6f-4759-ad8f-0b40e0cbc601",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-UF",
+         "uuid": "d55d8829-5e3d-4386-ab77-6c93e26d73e7",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-UF",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW-150",
+         "uuid": "13ffa633-91db-4db6-9050-5de7a0deb9b8",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW-150",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-150",
+         "uuid": "78c96bfa-edea-4695-a215-4a02cc0c53a0",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-150",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW-P",
+         "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW-P",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW-200",
+         "uuid": "dcaeb074-6b9f-46bd-9e86-97a16e976b59",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW-200",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW",
+         "uuid": "77a5e4da-877a-462d-a0f8-cc558fdc5a51",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        }
+       ],
+       "alternatives": []
+      }
+     ],
+     "unresolved_tokens": [],
+     "fallback_match_mode": "or",
+     "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens."
+    }
+   }
+  ],
+  "disallowed-entity-gate": [
+   {
+    "json": {
+     "tokens": [
+      "full shun",
+      "srtwc286"
+     ],
+     "elapsed_ms": 186.26,
+     "resolutions": [
+      {
+       "token": "full shun",
+       "resolved": false,
+       "ambiguous": false,
+       "matches": [
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F017",
+         "uuid": "c44c2aff-7f36-40d2-ab20-81721ac51fff",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F026",
+         "uuid": "9f0c2dea-4273-4f94-b917-8a93e11e9bab",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "305-F001",
+         "uuid": "c971fd31-1535-4b52-841c-8241c7bc357a",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F010",
+         "uuid": "026977c4-9f09-408f-8039-95252b68511d",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+          "phone_number": "607-357 3966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F004",
+         "uuid": "108e7169-3570-49a8-b0d0-695a76de430a",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F017",
+         "uuid": "84611b0d-7ad1-478d-aee6-08395af886a4",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F026",
+         "uuid": "cdabd5e7-a348-46ce-8661-491eae2a975b",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F029",
+         "uuid": "5525f716-fe4b-4894-8f58-214218854d51",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+          "phone_number": "07-3573966",
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "DBR-0ca5493ae8",
+         "uuid": "7a58be74-d9af-4fc1-bddc-243579ebd975",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F004",
+         "uuid": "5fd0770b-6a12-44e6-b7ca-c88ef6c1ef20",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F026",
+         "uuid": "64d9432e-d969-4c1a-9539-af52877af64f",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "DBR-f4d722b0a6",
+         "uuid": "9ca6568c-6d2d-40de-bfdb-220ab1172a33",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "DBR-40b5a0151c",
+         "uuid": "e7fd5960-e46e-49c9-b5cc-ef9e4a18c76c",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "300-F017",
+         "uuid": "9ae85807-9761-40fb-8649-b9f3c89b9ada",
+         "match_field": "customer_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "customer_name": "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+          "phone_number": null,
+          "email": null
+         }
+        },
+        {
+         "entity_type": "customer",
+         "canonical_code": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+         "uuid": "64d9432e-d969-4c1a-9539-af52877af64f",
+         "match_field": "debtor_name",
+         "match_tier": "exact",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "debtor_name": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+          "debtor_code": "300-F026",
+          "source": "orders"
+         }
+        }
+       ],
+       "alternatives": []
+      },
+      {
+       "token": "srtwc286",
+       "resolved": false,
+       "ambiguous": true,
+       "matches": [
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-200",
+         "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-200",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-P",
+         "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-P",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-PP",
+         "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-PP",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH",
+         "uuid": "0d0ed752-fd6f-4759-ad8f-0b40e0cbc601",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-UF",
+         "uuid": "d55d8829-5e3d-4386-ab77-6c93e26d73e7",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-UF",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW-150",
+         "uuid": "13ffa633-91db-4db6-9050-5de7a0deb9b8",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW-150",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-150",
+         "uuid": "78c96bfa-edea-4695-a215-4a02cc0c53a0",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-150",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW-P",
+         "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW-P",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW-200",
+         "uuid": "dcaeb074-6b9f-46bd-9e86-97a16e976b59",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW-200",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        },
+        {
+         "entity_type": "product",
+         "canonical_code": "SRTWC286-SH-NEW",
+         "uuid": "77a5e4da-877a-462d-a0f8-cc558fdc5a51",
+         "match_field": "product_code",
+         "match_tier": "prefix",
+         "similarity": null,
+         "company_id": "00000000-0000-0000-0000-000000000001",
+         "company_name": "Sorento",
+         "display": {
+          "product_name": "SRTWC286-SH-NEW",
+          "is_active": true,
+          "brand": {
+           "brand_id": "438cab0b-ec83-4eae-bbcf-e1dc5bf7943c",
+           "brand_code": "SORENTO",
+           "brand_name": "SORENTO"
+          }
+         }
+        }
+       ],
+       "alternatives": []
+      }
+     ],
+     "unresolved_tokens": [],
+     "fallback_match_mode": "or",
+     "fallback_reason": "AND-mode produced zero intersection; switched to OR-mode under the whitelist so per-token fallback can apply only to unresolved tokens.",
+     "gate_passed": true,
+     "require_specific": false,
+     "resolved_company": "sorento",
+     "company_team": null,
+     "resolved_companies": [
+      "sorento"
+     ],
+     "routing_brand": "sorento",
+     "routing_brand_source": "resolved",
+     "routing_companies": [
+      {
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "codes": [
+        "300-F017",
+        "300-F026",
+        "305-F001",
+        "300-F010",
+        "300-F004",
+        "300-F029",
+        "DBR-0ca5493ae8",
+        "DBR-f4d722b0a6",
+        "DBR-40b5a0151c",
+        "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+        "SRTWC286-SH-200",
+        "SRTWC286-SH-P",
+        "SRTWC286-SH-PP",
+        "SRTWC286-SH",
+        "SRTWC286-SH-UF",
+        "SRTWC286-SH-NEW-150",
+        "SRTWC286-SH-150",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-200",
+        "SRTWC286-SH-NEW"
+       ],
+       "labels": [
+        "FULLSHUN SANITARYWARE SDN BHD",
+        "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+        "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+        "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+        "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+        "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+        "SRTWC286-SH-200",
+        "SRTWC286-SH-P",
+        "SRTWC286-SH-PP",
+        "SRTWC286-SH",
+        "SRTWC286-SH-UF",
+        "SRTWC286-SH-NEW-150",
+        "SRTWC286-SH-150",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-200",
+        "SRTWC286-SH-NEW"
+       ]
+      }
+     ],
+     "routing_company": "00000000-0000-0000-0000-000000000001",
+     "access_denied_levels": [],
+     "access_notice": "",
+     "brand_gate_empty": false,
+     "brand_unheld": false,
+     "gate_reason": "ok",
+     "gate_clarification": "",
+     "compatible_entities": [
+      {
+       "uuid": "c44c2aff-7f36-40d2-ab20-81721ac51fff",
+       "entity_type": "customer",
+       "code": "300-F017"
+      },
+      {
+       "uuid": "9f0c2dea-4273-4f94-b917-8a93e11e9bab",
+       "entity_type": "customer",
+       "code": "300-F026"
+      },
+      {
+       "uuid": "c971fd31-1535-4b52-841c-8241c7bc357a",
+       "entity_type": "customer",
+       "code": "305-F001"
+      },
+      {
+       "uuid": "026977c4-9f09-408f-8039-95252b68511d",
+       "entity_type": "customer",
+       "code": "300-F010"
+      },
+      {
+       "uuid": "108e7169-3570-49a8-b0d0-695a76de430a",
+       "entity_type": "customer",
+       "code": "300-F004"
+      },
+      {
+       "uuid": "84611b0d-7ad1-478d-aee6-08395af886a4",
+       "entity_type": "customer",
+       "code": "300-F017"
+      },
+      {
+       "uuid": "cdabd5e7-a348-46ce-8661-491eae2a975b",
+       "entity_type": "customer",
+       "code": "300-F026"
+      },
+      {
+       "uuid": "5525f716-fe4b-4894-8f58-214218854d51",
+       "entity_type": "customer",
+       "code": "300-F029"
+      },
+      {
+       "uuid": "7a58be74-d9af-4fc1-bddc-243579ebd975",
+       "entity_type": "customer",
+       "code": "DBR-0ca5493ae8"
+      },
+      {
+       "uuid": "5fd0770b-6a12-44e6-b7ca-c88ef6c1ef20",
+       "entity_type": "customer",
+       "code": "300-F004"
+      },
+      {
+       "uuid": "64d9432e-d969-4c1a-9539-af52877af64f",
+       "entity_type": "customer",
+       "code": "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)"
+      },
+      {
+       "uuid": "9ca6568c-6d2d-40de-bfdb-220ab1172a33",
+       "entity_type": "customer",
+       "code": "DBR-f4d722b0a6"
+      },
+      {
+       "uuid": "e7fd5960-e46e-49c9-b5cc-ef9e4a18c76c",
+       "entity_type": "customer",
+       "code": "DBR-40b5a0151c"
+      },
+      {
+       "uuid": "9ae85807-9761-40fb-8649-b9f3c89b9ada",
+       "entity_type": "customer",
+       "code": "300-F017"
+      },
+      {
+       "uuid": "65514803-1609-4fe8-8b60-2e908c8f9bd4",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-200"
+      },
+      {
+       "uuid": "d73a33f3-956b-401f-90c7-0ad6ff792ea1",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-P"
+      },
+      {
+       "uuid": "7a8f2543-ef3b-4e5f-9dad-e29f6f688485",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-PP"
+      },
+      {
+       "uuid": "0d0ed752-fd6f-4759-ad8f-0b40e0cbc601",
+       "entity_type": "product",
+       "code": "SRTWC286-SH"
+      },
+      {
+       "uuid": "d55d8829-5e3d-4386-ab77-6c93e26d73e7",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-UF"
+      },
+      {
+       "uuid": "13ffa633-91db-4db6-9050-5de7a0deb9b8",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-NEW-150"
+      },
+      {
+       "uuid": "78c96bfa-edea-4695-a215-4a02cc0c53a0",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-150"
+      },
+      {
+       "uuid": "677b6eb7-f21f-4a65-8195-b969a0a465dd",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-NEW-P"
+      },
+      {
+       "uuid": "dcaeb074-6b9f-46bd-9e86-97a16e976b59",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-NEW-200"
+      },
+      {
+       "uuid": "77a5e4da-877a-462d-a0f8-cc558fdc5a51",
+       "entity_type": "product",
+       "code": "SRTWC286-SH-NEW"
+      }
+     ],
+     "gate_debug": {
+      "domain": "order",
+      "allowed_lookup": [
+       "order",
+       "customer_order",
+       "transporter",
+       "customer",
+       "product"
+      ],
+      "entities_count": 24
+     }
+    }
+   }
+  ],
+  "Call 'sub-get-results'": [
+   {
+    "json": {
+     "response": "No matching results found.",
+     "response_intro": "No matching results found.",
+     "answers": [],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": false,
+     "alternatives": [
+      {
+       "value": "2026-08-22",
+       "display": "2026-08-22 (DO 202608-3206)",
+       "order_number": "202608-3206"
+      },
+      {
+       "value": "2026-08-18",
+       "display": "2026-08-18 (DO 202608-2864)",
+       "order_number": "202608-2864"
+      },
+      {
+       "value": "2026-07-23",
+       "display": "2026-07-23 (DO 202607-3669)",
+       "order_number": "202607-3669"
+      }
+     ],
+     "relaxed_axis": "date",
+     "field_access": null,
+     "requested_attributes": [],
+     "keys_served": false
+    }
+   }
+  ],
+  "validator": [
+   {
+    "json": {
+     "response": "No matching results found.",
+     "response_intro": "No matching results found.",
+     "answers": [],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": false,
+     "alternatives": [
+      {
+       "value": "2026-08-22",
+       "display": "2026-08-22 (DO 202608-3206)",
+       "order_number": "202608-3206"
+      },
+      {
+       "value": "2026-08-18",
+       "display": "2026-08-18 (DO 202608-2864)",
+       "order_number": "202608-2864"
+      },
+      {
+       "value": "2026-07-23",
+       "display": "2026-07-23 (DO 202607-3669)",
+       "order_number": "202607-3669"
+      }
+     ],
+     "relaxed_axis": "date",
+     "field_access": null,
+     "requested_attributes": [],
+     "keys_served": false,
+     "is_valid": true
+    }
+   }
+  ],
+  "promo-picker": [
+   {
+    "json": {
+     "response": "No matching results found.",
+     "response_intro": "No matching results found.",
+     "answers": [],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": false,
+     "alternatives": [
+      {
+       "value": "2026-08-22",
+       "display": "2026-08-22 (DO 202608-3206)",
+       "order_number": "202608-3206"
+      },
+      {
+       "value": "2026-08-18",
+       "display": "2026-08-18 (DO 202608-2864)",
+       "order_number": "202608-2864"
+      },
+      {
+       "value": "2026-07-23",
+       "display": "2026-07-23 (DO 202607-3669)",
+       "order_number": "202607-3669"
+      }
+     ],
+     "relaxed_axis": "date",
+     "field_access": null,
+     "requested_attributes": [],
+     "keys_served": false,
+     "is_valid": true
+    }
+   }
+  ],
+  "crossdomain-zeroset": [
+   {
+    "json": {
+     "response": "No matching results found.",
+     "response_intro": "No matching results found.",
+     "answers": [],
+     "attachments": [],
+     "action_links": [],
+     "last_updated_at": null,
+     "has_result": false,
+     "alternatives": [
+      {
+       "value": "2026-08-22",
+       "display": "2026-08-22 (DO 202608-3206)",
+       "order_number": "202608-3206"
+      },
+      {
+       "value": "2026-08-18",
+       "display": "2026-08-18 (DO 202608-2864)",
+       "order_number": "202608-2864"
+      },
+      {
+       "value": "2026-07-23",
+       "display": "2026-07-23 (DO 202607-3669)",
+       "order_number": "202607-3669"
+      }
+     ],
+     "relaxed_axis": "date",
+     "field_access": null,
+     "requested_attributes": [],
+     "keys_served": false,
+     "is_valid": true,
+     "_xd": {
+      "active": false,
+      "why": "domain"
+     }
+    }
+   }
+  ],
+  "build-suggest-offer": [
+   {
+    "json": {
+     "response_intro": [
+      "No matching results found."
+     ],
+     "escalate_message": "Customer: full shun\nProduct: srtwc286\nDates: 24/08/2026 to 30/08/2026\n\nHere's what you want:\n• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)\n\nBut no order from 24/08/2026 to 30/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to customer service team?",
+     "is_clarification": false,
+     "found_summary": "• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)",
+     "suggest_offer": false,
+     "dym_window_excused": [
+      "srtwc286"
+     ]
+    }
+   }
+  ],
+  "escalate-catalog": [
+   {
+    "json": {
+     "branch_kind": "not_found",
+     "response": "Customer: full shun\nProduct: srtwc286\nDates: 24/08/2026 to 30/08/2026\n\nHere's what you want:\n• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)\n\nBut no order from 2026-08-24 to 2026-08-30 matched these. Would you like me to escalate to customer service team?",
+     "manualResponse": true,
+     "includeResponse": true,
+     "is_escalate_offer": true
+    }
+   }
+  ],
+  "cs-roster-plan": [
+   {
+    "json": {
+     "plan_idx": 0,
+     "company_id": "00000000-0000-0000-0000-000000000001",
+     "company_name": "Sorento",
+     "brand_code": "sorento",
+     "codes": [
+      "300-F017",
+      "300-F026",
+      "305-F001",
+      "300-F010",
+      "300-F004",
+      "300-F029",
+      "DBR-0ca5493ae8",
+      "DBR-f4d722b0a6",
+      "DBR-40b5a0151c",
+      "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+      "SRTWC286-SH-200",
+      "SRTWC286-SH-P",
+      "SRTWC286-SH-PP",
+      "SRTWC286-SH",
+      "SRTWC286-SH-UF",
+      "SRTWC286-SH-NEW-150",
+      "SRTWC286-SH-150",
+      "SRTWC286-SH-NEW-P",
+      "SRTWC286-SH-NEW-200",
+      "SRTWC286-SH-NEW"
+     ],
+     "labels": [
+      "FULLSHUN SANITARYWARE SDN BHD",
+      "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+      "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+      "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+      "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+      "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+      "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+      "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+      "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+      "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+      "SRTWC286-SH-200",
+      "SRTWC286-SH-P",
+      "SRTWC286-SH-PP",
+      "SRTWC286-SH",
+      "SRTWC286-SH-UF",
+      "SRTWC286-SH-NEW-150",
+      "SRTWC286-SH-150",
+      "SRTWC286-SH-NEW-P",
+      "SRTWC286-SH-NEW-200",
+      "SRTWC286-SH-NEW"
+     ],
+     "multi_company": false,
+     "companies": [
+      "Sorento"
+     ]
+    }
+   }
+  ],
+  "build-cs-member-offer": [
+   {
+    "json": {
+     "branch_kind": "not_found",
+     "response": "Customer: full shun\nProduct: srtwc286\nDates: 24/08/2026 to 30/08/2026\n\nHere's what you want:\n• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)\n\nBut no order from 24/08/2026 to 30/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to *Sorento* customer service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 3\n2. Person 4\n3. Person 5\n4. Person 6\n5. Person 7\n6. Person 8\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+     "manualResponse": true,
+     "includeResponse": true,
+     "is_escalate_offer": true,
+     "routing_companies": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "codes": [
+        "300-F017",
+        "300-F026",
+        "305-F001",
+        "300-F010",
+        "300-F004",
+        "300-F029",
+        "DBR-0ca5493ae8",
+        "DBR-f4d722b0a6",
+        "DBR-40b5a0151c",
+        "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+        "SRTWC286-SH-200",
+        "SRTWC286-SH-P",
+        "SRTWC286-SH-PP",
+        "SRTWC286-SH",
+        "SRTWC286-SH-UF",
+        "SRTWC286-SH-NEW-150",
+        "SRTWC286-SH-150",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-200",
+        "SRTWC286-SH-NEW"
+       ],
+       "labels": [
+        "FULLSHUN SANITARYWARE SDN BHD",
+        "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+        "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+        "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+        "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+        "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+        "SRTWC286-SH-200",
+        "SRTWC286-SH-P",
+        "SRTWC286-SH-PP",
+        "SRTWC286-SH",
+        "SRTWC286-SH-UF",
+        "SRTWC286-SH-NEW-150",
+        "SRTWC286-SH-150",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-200",
+        "SRTWC286-SH-NEW"
+       ],
+       "multi_company": false,
+       "companies": [
+        "Sorento"
+       ]
+      }
+     ],
+     "cs_multi_close": null,
+     "cs_offer_company": "Sorento",
+     "member_offer": true,
+     "selection_context": "member_offer",
+     "cs_last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 3",
+       "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+       "respond_user_id": "1144607",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 2,
+       "label": "Person 4",
+       "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+       "respond_user_id": "1144556",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 3,
+       "label": "Person 5",
+       "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+       "respond_user_id": "1144561",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 4,
+       "label": "Person 6",
+       "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+       "respond_user_id": "1144558",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 5,
+       "label": "Person 7",
+       "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+       "respond_user_id": "1144554",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 6,
+       "label": "Person 8",
+       "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+       "respond_user_id": "1144604",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "input": [
+  {
+   "json": {
+    "branch_kind": "not_found",
+    "response": "Customer: full shun\nProduct: srtwc286\nDates: 24/08/2026 to 30/08/2026\n\nHere's what you want:\n• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)\n\nBut no order from 24/08/2026 to 30/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to *Sorento* customer service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 3\n2. Person 4\n3. Person 5\n4. Person 6\n5. Person 7\n6. Person 8\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+    "manualResponse": true,
+    "includeResponse": true,
+    "is_escalate_offer": true,
+    "routing_companies": [
+     {
+      "plan_idx": 0,
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "codes": [
+       "300-F017",
+       "300-F026",
+       "305-F001",
+       "300-F010",
+       "300-F004",
+       "300-F029",
+       "DBR-0ca5493ae8",
+       "DBR-f4d722b0a6",
+       "DBR-40b5a0151c",
+       "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+       "SRTWC286-SH-200",
+       "SRTWC286-SH-P",
+       "SRTWC286-SH-PP",
+       "SRTWC286-SH",
+       "SRTWC286-SH-UF",
+       "SRTWC286-SH-NEW-150",
+       "SRTWC286-SH-150",
+       "SRTWC286-SH-NEW-P",
+       "SRTWC286-SH-NEW-200",
+       "SRTWC286-SH-NEW"
+      ],
+      "labels": [
+       "FULLSHUN SANITARYWARE SDN BHD",
+       "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+       "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+       "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+       "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+       "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+       "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+       "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+       "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+       "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+       "SRTWC286-SH-200",
+       "SRTWC286-SH-P",
+       "SRTWC286-SH-PP",
+       "SRTWC286-SH",
+       "SRTWC286-SH-UF",
+       "SRTWC286-SH-NEW-150",
+       "SRTWC286-SH-150",
+       "SRTWC286-SH-NEW-P",
+       "SRTWC286-SH-NEW-200",
+       "SRTWC286-SH-NEW"
+      ],
+      "multi_company": false,
+      "companies": [
+       "Sorento"
+      ]
+     }
+    ],
+    "cs_multi_close": null,
+    "cs_offer_company": "Sorento",
+    "member_offer": true,
+    "selection_context": "member_offer",
+    "cs_last_result_set": [
+     {
+      "idx": 1,
+      "label": "Person 3",
+      "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+      "respond_user_id": "1144607",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 2,
+      "label": "Person 4",
+      "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+      "respond_user_id": "1144556",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 3,
+      "label": "Person 5",
+      "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+      "respond_user_id": "1144561",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 4,
+      "label": "Person 6",
+      "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+      "respond_user_id": "1144558",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 5,
+      "label": "Person 7",
+      "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+      "respond_user_id": "1144554",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     },
+     {
+      "idx": 6,
+      "label": "Person 8",
+      "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+      "respond_user_id": "1144604",
+      "company_id": "00000000-0000-0000-0000-000000000001",
+      "company_name": "Sorento",
+      "brand_code": "sorento",
+      "company_ids": [
+       "00000000-0000-0000-0000-000000000001"
+      ],
+      "companies": [
+       "Sorento"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "expected": [
+  {
+   "json": {
+    "variables": {
+     "message_type": "business_query",
+     "intent_hint": "check_order",
+     "domain_hint": "order",
+     "user_goal": "trying to narrow the previous results to this week only",
+     "query_brands": [],
+     "access_levels": [],
+     "entities": [
+      {
+       "raw": "full shun",
+       "hint": "customer",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      },
+      {
+       "raw": "srtwc286",
+       "hint": "product",
+       "confident": true,
+       "canonical_code": null,
+       "current_message": false
+      }
+     ],
+     "routing": {
+      "suggested_team": "customer_service",
+      "suggested_agent": "order_enquiries"
+     },
+     "escalation": {
+      "is_escalation_confirmation": false
+     },
+     "response": "Customer: full shun\nProduct: srtwc286\nDates: 24/08/2026 to 30/08/2026\n\nHere's what you want:\n• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)\n\nBut no order from 24/08/2026 to 30/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to *Sorento* customer service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 3\n2. Person 4\n3. Person 5\n4. Person 6\n5. Person 7\n6. Person 8\n\nIf you have no preference, just reply 'yes' and we'll assign automatically.",
+     "last_result_set": [
+      {
+       "idx": 1,
+       "label": "Person 3",
+       "uuid": "0d69dfb7-dcf7-41fe-8457-f45897895182",
+       "respond_user_id": "1144607",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 2,
+       "label": "Person 4",
+       "uuid": "12246ae8-59e0-46a1-9cf0-fd80f45c1db9",
+       "respond_user_id": "1144556",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 3,
+       "label": "Person 5",
+       "uuid": "70578600-0cc5-4040-ac81-c27bb31e917b",
+       "respond_user_id": "1144561",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 4,
+       "label": "Person 6",
+       "uuid": "a41fbc80-db8c-4c4d-bbe1-7006fb438a06",
+       "respond_user_id": "1144558",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 5,
+       "label": "Person 7",
+       "uuid": "b69bb614-afed-49a2-ae1f-f0351c325bfd",
+       "respond_user_id": "1144554",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      },
+      {
+       "idx": 6,
+       "label": "Person 8",
+       "uuid": "c483d959-f8b5-488a-bb9d-168fa0292d75",
+       "respond_user_id": "1144604",
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "company_ids": [
+        "00000000-0000-0000-0000-000000000001"
+       ],
+       "companies": [
+        "Sorento"
+       ]
+      }
+     ],
+     "selection_context": "member_offer",
+     "date_filter_start": "2026-08-24",
+     "date_filter_end": "2026-08-30",
+     "date_mode": null,
+     "match_mode": "and",
+     "contains_flyer": false,
+     "dym_offer": null,
+     "dym_candidates": [],
+     "ideation": null,
+     "routing_roster_plan": [
+      {
+       "plan_idx": 0,
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento"
+      }
+     ],
+     "routing_brand": "sorento",
+     "routing_brand_source": "resolved",
+     "routing_company": "00000000-0000-0000-0000-000000000001",
+     "routing_companies": [
+      {
+       "company_id": "00000000-0000-0000-0000-000000000001",
+       "company_name": "Sorento",
+       "brand_code": "sorento",
+       "codes": [
+        "300-F017",
+        "300-F026",
+        "305-F001",
+        "300-F010",
+        "300-F004",
+        "300-F029",
+        "DBR-0ca5493ae8",
+        "DBR-f4d722b0a6",
+        "DBR-40b5a0151c",
+        "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+        "SRTWC286-SH-200",
+        "SRTWC286-SH-P",
+        "SRTWC286-SH-PP",
+        "SRTWC286-SH",
+        "SRTWC286-SH-UF",
+        "SRTWC286-SH-NEW-150",
+        "SRTWC286-SH-150",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-200",
+        "SRTWC286-SH-NEW"
+       ],
+       "labels": [
+        "FULLSHUN SANITARYWARE SDN BHD",
+        "*FULLSHUN SANITARYWARE SDN BHD (SHOWCASE)",
+        "FULLSHUN SANITARYWARE SDN BHD (PROJECT)",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C I]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C II]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C III]",
+        "FULLSHUN SANITARYWARE SDN BHD [A/C IV]",
+        "FULLSHUN SANITARYWARE SDN BHD (CERAMIC & ELLECI)",
+        "FULLSHUN SANITARYWARE SDN BHD (SAMPLE)",
+        "FULLSHUN SANITARYWARE SDN BHD (BRAVAT)",
+        "SRTWC286-SH-200",
+        "SRTWC286-SH-P",
+        "SRTWC286-SH-PP",
+        "SRTWC286-SH",
+        "SRTWC286-SH-UF",
+        "SRTWC286-SH-NEW-150",
+        "SRTWC286-SH-150",
+        "SRTWC286-SH-NEW-P",
+        "SRTWC286-SH-NEW-200",
+        "SRTWC286-SH-NEW"
+       ]
+      }
+     ]
+    },
+    "user_response": "Customer: full shun\nProduct: srtwc286\nDates: 24/08/2026 to 30/08/2026\n\nHere's what you want:\n• customer: FULLSHUN SANITARYWARE SDN BHD (+9 more)\n• product: SRTWC286-SH-200 (+9 more)\n\nBut no order from 24/08/2026 to 30/08/2026 matched these. Reply 'all dates' to search without the date filter, or would you like me to escalate to *Sorento* customer service team?\n\nPlease choose who to route to (reply with the number):\n1. Person 3\n2. Person 4\n3. Person 5\n4. Person 6\n5. Person 7\n6. Person 8\n\nIf you have no preference, just reply 'yes' and we'll assign automatically."
+   }
+  }
+ ],
+ "runIndex": 0,
+ "execution": {
+  "id": "13873233"
+ },
+ "ran": [
+  "When Executed by Another Workflow",
+  "redis-pop-main-message-list",
+  "detect-media",
+  "if-media-in",
+  "tf-message",
+  "sorento-sub-respond-findcontact-respond",
+  "if-transcribed-confirm",
+  "is-human-intervened",
+  "if-message-is-audio",
+  "get-session-vars",
+  "Call 'sub-query-reformulator'",
+  "check-access",
+  "If5",
+  "If2",
+  "If-ideate",
+  "offer-hold-gate",
+  "If10",
+  "is-escalation-declined",
+  "If9",
+  "If1",
+  "not-supported-domain",
+  "If",
+  "If7",
+  "resolve-entity",
+  "disallowed-entity-gate",
+  "If3",
+  "Execute 'sub-get-rag'",
+  "tool-filter",
+  "if-tier-ask",
+  "Call 'sub-get-results'",
+  "validator",
+  "promo-picker",
+  "crossdomain-zeroset",
+  "crossdomain-gate",
+  "If6",
+  "Aggregate1",
+  "not-found-error-message",
+  "sibling-gate",
+  "dym-transform",
+  "dym-gate",
+  "build-suggest-offer",
+  "tag-not-found",
+  "escalate-catalog",
+  "cs-offer-gate",
+  "cs-roster-plan",
+  "get-cs-members",
+  "build-cs-member-offer",
+  "compile-current-state",
+  "crossdomain-compose",
+  "sorento-sub-respond-sendmsg-respond2",
+  "Execution Data",
+  "attach-merge",
+  "if-got-attachments",
+  "save-session-vars",
+  "Call 'sub-respond-save-message-redis'2"
+ ]
+}

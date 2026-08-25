@@ -28,7 +28,15 @@ const { loadFixture, loadWorkflow, derivePathFromCtx, jsonNormalize } = require(
 const SLUG = 'live-spine-sorento-consume-main';
 const START = 'not-found-error-message';
 const END = 'build-suggest-offer';
-const EXECS = ['exec-13462354', 'exec-13469053', 'exec-13479632', 'exec-13484326', 'exec-13488926'];
+// exec-13873233 (added 2026-08-25): the WINDOW-BLAMED plain-miss lane — same node path as the
+// plain miss (sibling-gate FALSE, dym-gate FALSE), but the CRM attributed the emptiness to the
+// DATE axis (relaxed_axis 'date') and every "missed" token's candidates were already in the
+// searched set, so build-suggest-offer must stand down (suggest_offer false, dym_window_excused)
+// instead of raising the did-you-mean that live sent (turn 2 of the 13873180/13873233 pair).
+// Its ctx['build-suggest-offer'] is the POST-FIX output, so this lane is the end-to-end red/green
+// proof: the lane re-runs not-found-error-message and build-suggest-offer with the real bodies.
+const EXECS = ['exec-13462354', 'exec-13469053', 'exec-13479632', 'exec-13484326', 'exec-13488926',
+  'exec-13873233'];
 
 test('flow: miss-dym (not-found-error-message -> build-suggest-offer)', async (t) => {
   const wf = loadWorkflow(SLUG);

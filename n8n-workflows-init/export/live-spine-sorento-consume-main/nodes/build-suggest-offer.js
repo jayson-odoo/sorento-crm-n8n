@@ -230,6 +230,61 @@ if (!isClar && !requireSpec) {
   d1s = d1s.slice(0, 5);
 }
 
+// ── D2's alternatives scan, HOISTED above D1 (2026-08-25) so the window-exculpation block below
+// can read the CRM's own relaxed_axis attribution. Pure read; D2 further down consumes these same
+// two variables unchanged, through the same `if (!alts) return out;` gate it always had. ─────────
+// get-results runs EXACTLY ONCE per turn (tool-loop-removal, 2026-08-03); the run scan is retained
+// UNCHANGED and self-terminates at run 0 via its own catch -> break. Gate on alternatives != null
+// (never invent).
+let alts = null, axis = 'entity';
+try {
+  const node = $('Call \'sub-get-results\'');
+  if (node.isExecuted) {
+    for (let ri = 0; ri < 25; ri++) {
+      let items;
+      try { items = node.all(0, ri); } catch (e) { break; }
+      if (!items || !items.length) break;
+      const hit = items.find(it => it && it.json && Array.isArray(it.json.alternatives) && it.json.alternatives.length);
+      if (hit) { alts = hit.json.alternatives; axis = hit.json.relaxed_axis || 'entity'; break; }
+    }
+  }
+} catch (e) { alts = null; }
+
+// ── W1: THE WINDOW, NOT THE TOKENS, EMPTIED THIS TURN (captain 2026-08-25) ──────────────────────
+// Measured, live execs 13873180 -> 13873233: "customer full shun delivery status for srtwc286"
+// family-resolved BOTH tokens and ANSWERED. The follow-up "this week only" carried both entities,
+// the CRM correctly found zero orders in that week, and this arm then blamed the product token -
+// 'Couldn't find "srtwc286" (product). Did you mean SRTWC286-SH-200 ...' - a did-you-mean for a
+// token that had answered one turn earlier, offering codes the search had ALREADY included.
+// The rule is the gate's superseded-spelling exemption (branch d5cc77e/b68ab0c: a miss only
+// matters when the FILTER was lost), read here from the CRM's own attribution instead of
+// re-derived: when a date window was applied AND relaxing the DATE axis is what produced rows
+// (relaxed_axis 'date' + alternatives), the entity filters as a whole matched data - so a
+// "missed" token whose candidates sit in the searched set (gate.compatible_entities) had its
+// filter APPLIED, and its did-you-mean must not fire. Per-token on purpose: a token whose
+// candidates never entered the search keeps its D1 exactly as before, beside the excused ones
+// (the genuine-miss path - exec-13498401, the HC-D1 family - is untouched).
+if (Array.isArray(alts) && alts.length && axis === 'date'
+    && (q?.date_filter_start || q?.date_filter_end) && d1s.length) {
+  const _wCompat = new Set((Array.isArray(gate?.compatible_entities) ? gate.compatible_entities : [])
+    .map(c => c && c.uuid).filter(Boolean).map(String));
+  const _wKept = [], _wExcused = [];
+  for (const b of d1s) {
+    const _searched = b.cands.some(m => m && m.uuid && _wCompat.has(String(m.uuid)));
+    (_searched ? _wExcused : _wKept).push(b);
+  }
+  if (_wExcused.length) {
+    d1s = _wKept;
+    out.dym_window_excused = _wExcused.map(b => String(b.token));   // named, never a silent drop
+  }
+}
+// Every candidate-bearing token excused => the emptiness is the WINDOW's doing, and the
+// window-scoped breakdown not-found-error-message already built (real dates + carried filters +
+// widen invite) is the honest reply. The D2 date-alternatives override stands down WITH D1 on
+// this shape - "reply with a date" here would re-blame the axis the customer just chose - while
+// every other D2 turn (no excused token) reaches it exactly as before.
+if (!d1s.length && out.dym_window_excused) return out;
+
 // ── dym-probe-before-offer: has-it annotation inputs ──────────────────────────
 // dym-annotate (upstream, sibling-gate[1] path only) reports which of the offered
 // codes actually HAVE the thing the user asked for. If it did not run, failed, or
@@ -493,23 +548,8 @@ if (d1) {
 }
 
 // ── D2: data-miss "alternatives" (domain tool alternatives[] + relaxed_axis) ────
-// get-results now runs EXACTLY ONCE per turn (tool-loop-removal, 2026-08-03: one tool
-// per turn; the per-tool splitOut + splitInBatches fan-out is deleted). The run scan
-// below is retained UNCHANGED and self-terminates at run 0 via its own catch -> break,
-// so this edit is comment-only. Gate on alternatives != null (never invent).
-let alts = null, axis = 'entity';
-try {
-  const node = $('Call \'sub-get-results\'');
-  if (node.isExecuted) {
-    for (let ri = 0; ri < 25; ri++) {
-      let items;
-      try { items = node.all(0, ri); } catch (e) { break; }
-      if (!items || !items.length) break;
-      const hit = items.find(it => it && it.json && Array.isArray(it.json.alternatives) && it.json.alternatives.length);
-      if (hit) { alts = hit.json.alternatives; axis = hit.json.relaxed_axis || 'entity'; break; }
-    }
-  }
-} catch (e) { alts = null; }
+// `alts` / `axis` come from the run scan HOISTED above D1 (see the W1 block) - same scan,
+// same values, gate on alternatives != null (never invent) unchanged.
 if (!alts) return out;   // no alternatives on any run → keep existing "escalate?" behaviour
 
 const rawPicks = cap3(alts);
