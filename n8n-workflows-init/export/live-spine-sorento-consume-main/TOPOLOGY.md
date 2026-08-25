@@ -1,6 +1,6 @@
 # TOPOLOGY — sorento-consume-main  (`9qVyfUxmRQqrpGRMDLRuz`)
 
-- versionId **83f62f90-d9c9-4b63-b970-c7d53002cfe1** · activeVersionId **83f62f90-d9c9-4b63-b970-c7d53002cfe1** · DRAFT == ACTIVE
+- versionId **177ddf3f-c17b-48cb-b903-36d155a80588** · activeVersionId **177ddf3f-c17b-48cb-b903-36d155a80588** · DRAFT == ACTIVE
 - 145 nodes
 
 ## Edges
@@ -319,11 +319,11 @@ wait-media-poll[0] -> media-poll-http
 | dym-annotate-partial | 144 |
 | crossdomain-zeroset | 143 |
 | build-miss-member-offer | 139 |
+| annotate-customer-picker | 119 |
 | escalate-catalog | 104 |
 | crossdomain-compose | 101 |
 | miss-roster-plan | 97 |
 | access-level-choice-message | 95 |
-| annotate-customer-picker | 94 |
 | detect-media | 91 |
 | escalation-context | 89 |
 | presign-fail-notice | 62 |
