@@ -1,0 +1,24 @@
+931a932,954
+>   // (C) A CUSTOMER PICK NARROWS *WHO*, NOT *WHAT* (captain, 2026-08-20) ──────
+>   // The positional path replaces the whole entity set with the picked rows, so answering the
+>   // "Which customer do you mean?" picker threw the rest of the question away: "yoo living delivery
+>   // status for srtwc286" -> pick "1" -> EVERY order for YOO LIVING HOUSE, the product gone (exec
+>   // 13214595; the session carried both entities into that turn). Re-attach the prior scope for every
+>   // OTHER entity type, exactly as (B) re-attaches attachment_type. The customer itself is
+>   // deliberately NOT carried — replacing it is the entire point of the pick.
+>   if (Array.isArray(output.output.entities)
+>       && output.output.entities.some(e => e && String(e.hint || '').toLowerCase() === 'customer' && e.ordinal !== undefined)) {
+>     const _cpPrior = Array.isArray(prevState.entities) ? prevState.entities : [];
+>     const _cpKey = (e) => String((e && e.hint) || '').toLowerCase() + '|'
+>       + String((e && (e.canonical_code || e.raw)) || '').toLowerCase();
+>     const _cpSeen = new Set(output.output.entities.map(_cpKey));
+>     for (const _p of _cpPrior) {
+>       const _h = String((_p && _p.hint) || '').toLowerCase();
+>       if (!_h || _h === 'customer') continue;
+>       const _k = _cpKey(_p);
+>       if (_cpSeen.has(_k)) continue;
+>       output.output.entities.push({ ..._p, current_message: true });
+>       _cpSeen.add(_k);
+>     }
+>   }
+> 

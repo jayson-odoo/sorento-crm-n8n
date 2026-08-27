@@ -1,0 +1,54 @@
+155a156,163
+>   // customer rows arrive multiply-coded (same account as debtor NAME, debtor CODE and a
+>   // DBR-hash canonical_code — measured, exec 13186947), so code-keyed dedup rendered one
+>   // customer as three "codes". Key customers on their display name instead; resolver
+>   // similarity order keeps the name-coded row first, so the kept candidate labels as the name.
+>   const _custKey = (m) => {
+>     const d = (m && m.display) || {};
+>     return 'cust:' + String(d.debtor_name || d.customer_name || m.canonical_code || '').trim().toLowerCase();
+>   };
+162,163c170,172
+<     if (seen.has(code)) continue;
+<     seen.add(code); keep.push(m);   // API ranks variants-first / by similarity → keep order
+---
+>     const key = String(m.entity_type || '').toLowerCase() === 'customer' ? _custKey(m) : code;
+>     if (seen.has(key)) continue;
+>     seen.add(key); keep.push(m);   // API ranks variants-first / by similarity → keep order
+210c219,229
+<   if (_sentTokens.size) return !_sentTokens.has(k);
+---
+>   if (_sentTokens.size) {
+>     if (_sentTokens.has(k)) return false;
+>     // resolve-entity strips qualifier prefixes ("Customer Mastiles Klang" -> token
+>     // "Mastiles Klang"), so exact membership misses a genuinely-sent token and this
+>     // guard then eats the REAL miss from the DYM (measured: execs 13184999/13186532 —
+>     // the customer's MASTILE KLANG alternatives never rendered). A token contained
+>     // inside ONE parser raw was sent by us; the CRM's query-keyed resolution (the
+>     // whole sentence) can never be a substring of a single entity raw.
+>     if (k.length >= 3) { for (const s of _sentTokens) { if (s.includes(k)) return false; } }
+>     return true;
+>   }
+212a232,249
+> // A token whose matches SURVIVED to compatible_entities was not missed — it passed
+> // (an ambiguous product's variants all get queried on the answer lane; the exact same
+> // matches sit in the gate output). Without this, a gated turn re-labels the passed
+> // product a miss and asks about the wrong token ("Couldn't find Srtwc286" while the
+> // customer was the miss — measured, exec 13184999).
+> const _compatKeys = (() => {
+>   try {
+>     const g = $('disallowed-entity-gate').first().json ?? {};
+>     const s = new Set();
+>     for (const c of (g.compatible_entities ?? [])) {
+>       if (c && c.uuid) s.add(String(c.uuid));
+>       if (c && c.code) s.add(String(c.code));
+>     }
+>     return s;
+>   } catch (e) { return new Set(); }
+> })();
+> const _passedThrough = (res) => Array.isArray(res?.matches)
+>   && res.matches.some(m => m && (_compatKeys.has(String(m.uuid)) || _compatKeys.has(String(m.canonical_code))));
+218c255,256
+<     && !_isDerivedQueryToken(res.token));
+---
+>     && !_isDerivedQueryToken(res.token)
+>     && !_passedThrough(res));

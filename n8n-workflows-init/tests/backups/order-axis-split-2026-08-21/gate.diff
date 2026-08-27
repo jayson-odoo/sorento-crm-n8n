@@ -1,0 +1,8 @@
+354c354,358
+<     for (const _e of _pins) {
+---
+>     // Re-seat CARRIED picks too (current_message false): a customer chosen two turns ago is just as
+>     // authoritative as one chosen now, and its label re-resolves no better. Only the RESTRICT filter
+>     // below stays keyed on this-turn pins, so a carried row can never narrow a freshly named scope.
+>     const _pinsAll = (Array.isArray(parser.entities) ? parser.entities : []).filter(e => e && e.uuid);
+>     for (const _e of _pinsAll) {

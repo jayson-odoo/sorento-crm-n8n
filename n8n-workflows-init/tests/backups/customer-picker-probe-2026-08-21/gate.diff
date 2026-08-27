@@ -1,0 +1,23 @@
+270a271,272
+> 
+> let _custProbeEntities = null;   // set by the ambiguity picker below; consumed by probe-customer-orders
+317a320,336
+>     // FORWARD PROBE INPUT (captain, 2026-08-21): the picker is about to replace compatible_entities
+>     // with the customer options, which would drop the product/date scope the customer actually asked
+>     // about. Keep a merged list — the candidates PLUS everything else that resolved this turn — so the
+>     // probe can ask "does this customer have a matching delivery?" under the SAME filters.
+>     // Send the WHOLE ACCOUNT FAMILY of each candidate, keyed by canonical code — a representative
+>     // uuid alone probes the wrong rows: YOO LIVING HOUSE's orders sit on a sibling account, so a
+>     // one-uuid-per-company probe came back empty and every line read "no delivery" (exec 13250405).
+>     const _repBases = new Set(_reps.map(_custBase).filter(Boolean));
+>     const _famRows = flat.filter(m => m && m.uuid
+>       && String(m.entity_type).toLowerCase() === 'customer'
+>       && _repBases.has(_custBase(m)));
+>     const _famSeen = new Set();
+>     _custProbeEntities = [
+>       ..._famRows.filter(m => !_famSeen.has(String(m.uuid)) && _famSeen.add(String(m.uuid)))
+>                  .map(m => ({ uuid: m.uuid, entity_type: 'customer', code: m.canonical_code })),
+>       ...compatible_entities.filter(c => String(c && c.entity_type).toLowerCase() !== 'customer'),
+>     ];
+630a650
+> if (_custProbeEntities && _custProbeEntities.length) out.customer_probe_entities = _custProbeEntities;

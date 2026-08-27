@@ -1,0 +1,36 @@
+560a561,595
+>       // ── A DOMAIN CHANGE IS A NEW ENQUIRY (captain, 2026-08-21) ────────────────
+>       // Since customer/product stopped sharing one axis, scope that the turn did not name survives —
+>       // which is right for a follow-up inside one domain ("...and for yoo living?") but wrong across
+>       // domains: "any offer for srtwc286-sh" (promotion) followed by "customer yoo living deliveyr"
+>       // (order) inherited SRTWC286-SH and filtered the delivery question by it (exec 13255552).
+>       // Only the paths where the customer NAMED new scope clear it; a pure `reuse` turn ("any
+>       // promotion for it") is exactly the cross-domain carry that must keep working, and is handled
+>       // by the case above, never here. A null current domain (a bare pick, a casual reply) is not a
+>       // change — the domain is inherited further down.
+>       const _prevDom = parent_input.previous_conversation_state?.domain_hint || null;
+>       const _curDom  = output.output.domain_hint || null;
+>       if (_prevDom && _curDom && _prevDom !== _curDom && current.length > 0) {
+>         if (keptPrior.length) output.output.scope_cleared_on_domain_change = keptPrior.length;   // diagnostic
+>         keptPrior = [];
+>       }
+>       // ── NAMING A NEW ENTITY IS A NEW QUESTION (captain, 2026-08-21) ───────────
+>       // An unnamed filter that survives is INVISIBLE: the answer prints "Here are the orders I
+>       // found" with no statement of scope, so a carried product silently narrows the result and a
+>       // short list — or "No delivery in July" — reads as ground truth. That is more dangerous than
+>       // the leak was, because nothing on screen shows it happened.
+>       // Scope: the ORDER domain only, where it was measured. Other domains keep their carry
+>       // semantics (product_attachment's "and the technical drawing?" must still reuse the product).
+>       // EXCEPTION — the carried CUSTOMER survives: dropping it on a product-only follow-up
+>       // ("what about srtwc8318") turns the turn into a product-only order query, which enumerates
+>       // every customer who bought it. That is the exact exposure the If3 gate closed. A newly named
+>       // customer still replaces it through the axis rule above.
+>       // The LLM often returns a null domain for a short follow-up ("what about customer yoo living");
+>       // the domain is inherited further down. Judge on the EFFECTIVE domain, or the rule silently
+>       // never fires on exactly the turns it is meant to catch (measured, exec 13258638).
+>       const _effDom = String(_curDom || _prevDom || '').toLowerCase();
+>       if (_effDom === 'order' && current.length > 0 && keptPrior.length) {
+>         const _kpBefore = keptPrior.length;
+>         keptPrior = keptPrior.filter(e => String((e && e.hint) || '').toLowerCase() === 'customer');
+>         if (keptPrior.length !== _kpBefore) output.output.scope_cleared_on_new_entity = _kpBefore - keptPrior.length;
+>       }

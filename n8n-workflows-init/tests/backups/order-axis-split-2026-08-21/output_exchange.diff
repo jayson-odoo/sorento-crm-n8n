@@ -1,0 +1,38 @@
+106a107,127
+> // ── the carried-vs-renamed test must not hinge on WHICH key an entity happens to carry ──
+> // _ceKey collapses to `canonical_code || raw`, so the SAME entity keys differently depending on
+> // whether it has been resolved yet: prior state holds the picked customer as
+> // `customer|dbr-59e57de1b7` while the LLM re-emits it as `customer|yoo living house [a/c iii] -
+> // pricetag`. The sets then never intersect, the entity looks un-renamed, and the eviction pass
+> // drops it — retyping "customer yoo living delivery status for srtwc286" lost the customer and
+> // answered 20 orders across other companies (fork exec 13246777 -> spine exec 13246769).
+> // Compare on BOTH forms instead, so an entity counts as re-named when the LLM names EITHER its
+> // code or its raw text. _ceKey itself is untouched (the pick-provenance sets key on it).
+> const _ceKeysOf = (e) => {
+>   const _h = _ceNorm(e && e.hint) + '|';
+>   const _out = [];
+>   if (e && e.canonical_code) _out.push(_h + _ceNorm(e.canonical_code));
+>   if (e && e.raw) _out.push(_h + _ceNorm(e.raw));
+>   return _out.length ? _out : [_ceKey(e)];
+> };
+> const _cePriorKeysAny = new Set(
+>   (Array.isArray(parent_input.previous_conversation_state?.entities)
+>     ? parent_input.previous_conversation_state.entities : []).flatMap(_ceKeysOf));
+> const _ceLlmKeysAny = new Set(
+>   (Array.isArray(_parser_raw_snapshot?.entities) ? _parser_raw_snapshot.entities : []).flatMap(_ceKeysOf));
+122c143,144
+<   return _cePriorKeys.has(_k) && !_ceLlmKeys.has(_k);
+---
+>   const _ks = _ceKeysOf(e);
+>   return _ks.some(k => _cePriorKeysAny.has(k)) && !_ks.some(k => _ceLlmKeysAny.has(k));
+405c427,434
+<     customer: 'order_scope', transporter: 'order_scope', product: 'order_scope',
+---
+>     // WHO / WHAT / WHO-DELIVERS are INDEPENDENT filters in this domain — they AND together in the
+>     // query, so they cannot share one axis. They used to: every order hint mapped to 'order_scope',
+>     // and the executor keeps prior entities only on axes the current turn did NOT name
+>     // (keptPrior = prior.filter(e => !currentAxes.has(axisOf(e)))). So naming a PRODUCT evicted the
+>     // carried CUSTOMER, and re-typing "customer yoo living delivery status for srtwc286" — where the
+>     // LLM re-emits the customer as carried and the product as current — answered 20 orders across
+>     // other companies (fork exec 13246777 -> spine exec 13246769).
+>     customer: 'customer_scope', transporter: 'transporter_scope', product: 'order_scope',

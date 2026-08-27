@@ -1,0 +1,24 @@
+344a345,367
+>     // A PICK IS AUTHORITATIVE — DO NOT MAKE IT SURVIVE TEXT RE-RESOLUTION.
+>     // The roster row we ourselves rendered carries the uuid the customer chose, but the spine still
+>     // re-resolves its LABEL as text, and a label the CRM cannot match back ("YOO LIVING HOUSE
+>     // [A/C III] - PRICETAG", canonical_code DBR-59e57de1b7) resolves to nothing: the picked customer
+>     // vanished, If3 refused the turn, and the reply named only the product (exec 13245182 — the gate
+>     // was right to block, but the customer should never have gone missing). Re-seat any pinned row
+>     // the resolver dropped. Type-checked against the domain's allow-list, and the uuid can only come
+>     // from a roster this flow built, so nothing unvetted enters here.
+>     const _allowedPin = ALLOWED[domain] ?? null;
+>     for (const _e of _pins) {
+>       const _u = String(_e.uuid);
+>       if (compatible_entities.some(c => String(c.uuid) === _u)) continue;
+>       const _t = String(_e.hint || '').toLowerCase();
+>       if (!_t || (_allowedPin && !_allowedPin.includes(_t))) continue;
+>       // Label with something a human recognises: a picked customer's canonical_code is often a
+>       // synthetic debtor id (DBR-59e57de1b7), which the miss/answer renderers print verbatim —
+>       // "customer: DBR-59e57de1b7". The entity's raw IS the roster label we showed, so prefer it
+>       // whenever the canonical code is synthetic. Products keep their canonical code.
+>       const _synthetic = /^(dbr-|[0-9a-f]{8}-[0-9a-f]{4}-)/i.test(String(_e.canonical_code || ''));
+>       const _label = (_synthetic ? (_e.raw || _e.canonical_code) : (_e.canonical_code || _e.raw)) || null;
+>       compatible_entities = [...compatible_entities,
+>         { uuid: _u, entity_type: _t, code: _label }];
+>     }

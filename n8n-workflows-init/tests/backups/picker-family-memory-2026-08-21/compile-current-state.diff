@@ -1,0 +1,5 @@
+1164a1165,1168
+>     // the candidate -> account-family map the gate built for this picker, so the PICK turn can cover
+>     // exactly the accounts the picker's probe counted (see disallowed-entity-gate, picker_families)
+>     const _cpFam = _cpBornNow ? ((_cpGate && _cpGate.picker_families) || null) : (_cpPrev.picker_families || null);
+>     if (_cpFam && Object.keys(_cpFam).length) output.variables.picker_families = _cpFam;

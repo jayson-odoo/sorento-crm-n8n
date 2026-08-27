@@ -1,0 +1,42 @@
+1114a1115,1155
+> 
+> // ── CUSTOMER PICKER ROSTER SURVIVES THE ANSWER (captain, 2026-08-20) ─────────
+> // "I choose 4 5 6 7 8, then I want to choose 4 — cannot. I prefer the list to persist, like the
+> // tier ask, until the next enquiry or domain change."  Measured (execs 13212372/407/465): the
+> // picker turn persists the 8-customer roster correctly, the pick works and multi-select works,
+> // but the ANSWER then overwrites last_result_set with its own 20 order rows — so the next "4"
+> // resolved to order #4 instead of customer #4. (That order-row pick returns the row already
+> // printed in the list, so nothing of value is lost by preferring the customer roster.)
+> //
+> // Same shape as dym_last_result_set above: keep the roster in its OWN field, and while it is
+> // alive re-seat it as last_result_set so the EXISTING positional machinery keeps resolving picks
+> // against customers. No parser change, no new lane.
+> //
+> // Lifetime — exactly what the captain asked for: born on the picker turn; carried while the
+> // domain is unchanged and the turn named no freshly-typed entity; dropped on a new enquiry
+> // (a current_message entity with no pick provenance — picked rows carry `ordinal`/`dym_slot`)
+> // or on a domain change.
+> {
+>   const _cpPrev = (() => { try { const s = $('get-session-vars').first().json;
+>     return (s && s.session_vars && s.session_vars.variables) || (s && s.variables) || {}; } catch (e) { return {}; } })();
+>   const _cpGate = (() => { try { const n = $('disallowed-entity-gate'); return n.isExecuted ? n.first().json : null; } catch (e) { return null; } })();
+>   const _cpBornNow = !!(_cpGate && _cpGate.require_specific === true
+>     && Array.isArray(_cpGate.compatible_entities) && _cpGate.compatible_entities.length > 0
+>     && _cpGate.compatible_entities.every(c => String(c && c.entity_type).toLowerCase() === 'customer')
+>     && Array.isArray(last_result_set) && last_result_set.length > 0);
+>   const _cpFreshTyped = (Array.isArray(qf.entities) ? qf.entities : [])
+>     .some(e => e && e.current_message === true && e.ordinal == null && e.dym_slot == null);
+>   const _cpCarried = (!_cpBornNow
+>     && Array.isArray(_cpPrev.cust_last_result_set) && _cpPrev.cust_last_result_set.length > 0
+>     && _cpPrev.cust_pick_domain === qf.domain_hint
+>     && !_cpFreshTyped)
+>       ? _cpPrev.cust_last_result_set : null;
+>   const _cpSet = _cpBornNow ? last_result_set : _cpCarried;
+>   if (_cpSet) {
+>     output.variables.cust_last_result_set = _cpSet;
+>     output.variables.cust_pick_domain     = _cpBornNow ? (qf.domain_hint ?? null) : _cpPrev.cust_pick_domain;
+>     // re-seat: the next positional reply resolves against the CUSTOMER list, not the answer rows
+>     output.variables.last_result_set  = _cpSet;
+>     output.variables.selection_context = 'disambiguation';
+>   }
+> }

@@ -1,0 +1,27 @@
+1116c1116
+< // ── CUSTOMER PICKER ROSTER SURVIVES THE ANSWER (captain, 2026-08-20) ─────────
+---
+> // ── A PICKER ROSTER SURVIVES THE ANSWER (captain, 2026-08-20) ───────────────
+1135a1136,1139
+>   // EVERY require_specific picker, not just the customer one — the captain's rule is that the
+>   // list stays until a new enquiry or a domain change, and that applies equally to the incoming
+>   // and product_attachment choose-lists ("Multiple matches found. Please choose: 1. SRTWC286-SH-200
+>   // …"), which until now were also wiped by their own answer.
+1138d1141
+<     && _cpGate.compatible_entities.every(c => String(c && c.entity_type).toLowerCase() === 'customer')
+1155,1156c1158,1159
+<     && Array.isArray(_cpPrev.cust_last_result_set) && _cpPrev.cust_last_result_set.length > 0
+<     && _cpPrev.cust_pick_domain === qf.domain_hint
+---
+>     && Array.isArray(_cpPrev.picker_last_result_set) && _cpPrev.picker_last_result_set.length > 0
+>     && _cpPrev.picker_domain === qf.domain_hint
+1158c1161
+<       ? _cpPrev.cust_last_result_set : null;
+---
+>       ? _cpPrev.picker_last_result_set : null;
+1161,1162c1164,1165
+<     output.variables.cust_last_result_set = _cpSet;
+<     output.variables.cust_pick_domain     = _cpBornNow ? (qf.domain_hint ?? null) : _cpPrev.cust_pick_domain;
+---
+>     output.variables.picker_last_result_set = _cpSet;
+>     output.variables.picker_domain     = _cpBornNow ? (qf.domain_hint ?? null) : _cpPrev.picker_domain;

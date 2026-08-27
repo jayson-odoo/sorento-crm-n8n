@@ -1,0 +1,8 @@
+160c160,164
+<     items = items.filter(e => String(e.entity_type).toLowerCase() === 'product');
+---
+>     // The picker roster mirrors what the gate rendered. It was product-only because the gate's
+>     // choose-list was product-only; the customer-ambiguity picker (2026-08-20) also renders
+>     // CUSTOMER rows, and filtering them out left the roster empty, so the positional reply had
+>     // nothing to resolve and the turn died as "can't be answered with a general search".
+>     items = items.filter(e => ['product', 'customer'].includes(String(e.entity_type).toLowerCase()));

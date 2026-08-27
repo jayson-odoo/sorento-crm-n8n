@@ -1,0 +1,47 @@
+272a273
+> let _custFamilies = null;        // base -> [uuid,...] for the rendered candidates; persisted for the pick turn
+328c329
+<     const _famRows = flat.filter(m => m && m.uuid
+---
+>     const _famRowsAll = flat.filter(m => m && m.uuid
+330a332
+>     const _famRows = _famRowsAll;
+331a334,344
+>     // Remember WHICH uuids each rendered candidate stands for. The pick turn re-resolves only the
+>     // label it was given, and a label like "A CRAFT IDEA SDN BHD (SRT)" matches exactly ONE account,
+>     // so family expansion had nothing to expand and the answer covered one account while the probe
+>     // had counted the whole family — "has delivery" on the picker, "no delivery" after picking
+>     // (execs 13256193 / 13256248). Persisted by compile-current-state, read back below on the pick.
+>     _custFamilies = {};
+>     for (const _m of _famRowsAll) {
+>       const _b = _custBase(_m);
+>       if (!_b || !_repBases.has(_b)) continue;
+>       (_custFamilies[_b] = _custFamilies[_b] || []).push(String(_m.uuid));
+>     }
+397a411,432
+>       // A pick must cover the SAME accounts the picker's probe counted. This turn's resolver only
+>       // sees the label it was handed, so read the family remembered from the picker turn.
+>       const _famMem = (() => { try {
+>         const _s = $('get-session-vars').first().json;
+>         const _v = (_s && _s.session_vars && _s.session_vars.variables) || (_s && _s.variables) || {};
+>         return (_v && typeof _v.picker_families === 'object' && _v.picker_families) || null;
+>       } catch (e) { return null; } })();
+>       const _famAdded = new Set();
+>       if (_famMem) {
+>         const _have = new Set(compatible_entities.map(c => String(c && c.uuid)));
+>         for (const _e of _pins) {
+>           if (String(_e.hint || '').toLowerCase() !== 'customer') continue;
+>           const _b = _custBase({ display: {}, canonical_code: _e.raw || _e.canonical_code });
+>           const _fam = _famMem[_b];
+>           if (!Array.isArray(_fam)) continue;
+>           for (const _u of _fam) {
+>             if (_have.has(String(_u))) continue;
+>             compatible_entities = [...compatible_entities, { uuid: String(_u), entity_type: 'customer', code: _e.raw || _e.canonical_code }];
+>             _have.add(String(_u)); _famAdded.add(String(_u));
+>           }
+>         }
+>       }
+406a442
+>         if (_famAdded.has(String(c.uuid))) return true;           // remembered family of the pick
+650a687
+> if (_custFamilies && Object.keys(_custFamilies).length) out.picker_families = _custFamilies;
